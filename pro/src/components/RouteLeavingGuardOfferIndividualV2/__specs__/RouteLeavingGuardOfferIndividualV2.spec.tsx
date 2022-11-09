@@ -12,8 +12,8 @@ import { Link } from 'react-router-dom'
 import { configureTestStore } from 'store/testUtils'
 
 import RouteLeavingGuardOfferIndividual, {
-  RouteLeavingGuardOfferIndividualProps,
-} from '../RouteLeavingGuardOfferIndividual'
+  RouteLeavingGuardOfferIndividualV2Props,
+} from '../RouteLeavingGuardOfferIndividualV2'
 
 const stepsUrls: { [key: string]: string } = {
   offer: '/offre/individuel/creation',
@@ -24,7 +24,7 @@ const stepsUrls: { [key: string]: string } = {
 }
 
 const renderRouteLeavingGuard = async (
-  props: RouteLeavingGuardOfferIndividualProps,
+  props: RouteLeavingGuardOfferIndividualV2Props,
   history: History,
   storeOverride = {}
 ) => {
@@ -45,7 +45,7 @@ const renderRouteLeavingGuard = async (
 }
 
 describe('components | RouteLeavingGuardOfferIndividual', () => {
-  let props: RouteLeavingGuardOfferIndividualProps
+  let props: RouteLeavingGuardOfferIndividualV2Props
   let history: History
 
   beforeEach(() => {

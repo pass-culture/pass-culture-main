@@ -26,13 +26,13 @@ const collectiveUrlPatterns: { [key: string]: RegExp } = {
     /\/offre\/(((T-){0,1}[A-Z0-9]+)|duplication)\/collectif(\/vitrine)?(\/[A-Z,0-9]+)?\/confirmation/g,
 }
 
-export interface RouteLeavingGuardOfferCreationProps {
+export interface RouteLeavingGuardCollectiveOfferCreationProps {
   when?: boolean
 }
 
-const RouteLeavingGuardOfferCreation = ({
+const RouteLeavingGuardCollectiveOfferCreation = ({
   when = true,
-}: RouteLeavingGuardOfferCreationProps): JSX.Element => {
+}: RouteLeavingGuardCollectiveOfferCreationProps): JSX.Element => {
   const location = useLocation()
   const isSubtypeChosenAtCreation = useActiveFeature(
     'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
@@ -118,4 +118,4 @@ const RouteLeavingGuardOfferCreation = ({
   )
 }
 
-export default RouteLeavingGuardOfferCreation
+export default RouteLeavingGuardCollectiveOfferCreation

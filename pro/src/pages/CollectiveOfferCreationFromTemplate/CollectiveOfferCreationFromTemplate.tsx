@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 
-import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
+import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
@@ -100,7 +100,7 @@ const CollectiveOfferCreationFromTemplate = () => {
         mode={Mode.CREATION}
         isTemplate={false}
       />
-      <RouteLeavingGuardOfferCreation />
+      <RouteLeavingGuardCollectiveOfferCreation />
     </>
   )
 }

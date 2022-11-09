@@ -1,6 +1,6 @@
 import React from 'react'
 
-import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
+import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   getEducationalCategoriesAdapter,
   CollectiveOffer,
@@ -44,7 +44,7 @@ const CollectiveOfferSummaryCreation = ({
         categories={categories}
         setOffer={setOffer}
       />
-      <RouteLeavingGuardOfferCreation />
+      <RouteLeavingGuardCollectiveOfferCreation />
     </>
   )
 }

@@ -12,12 +12,12 @@ import type { Store } from 'redux'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
-import RouteLeavingGuardOfferCreation, {
-  RouteLeavingGuardOfferCreationProps,
-} from '../RouteLeavingGuardOfferCreation'
+import RouteLeavingGuardCollectiveOfferCreation, {
+  RouteLeavingGuardCollectiveOfferCreationProps,
+} from '../RouteLeavingGuardCollectiveOfferCreation'
 
-const renderRouteLeavingGuardOfferCreation = async (
-  props: RouteLeavingGuardOfferCreationProps,
+const renderRouteLeavingGuardCollectiveOfferCreation = async (
+  props: RouteLeavingGuardCollectiveOfferCreationProps,
   history: History,
   store = configureTestStore({})
 ) => {
@@ -29,20 +29,20 @@ const renderRouteLeavingGuardOfferCreation = async (
         <Link to={`/offre/AE/collective/stocks`}>Stocks</Link>
         <Link to={`/offre/AE/collectif/visibilite`}>Visibilité</Link>
         <Link to={`/offre/AE/collective/confirmation`}>Confirmation</Link>
-        <RouteLeavingGuardOfferCreation {...props} />
+        <RouteLeavingGuardCollectiveOfferCreation {...props} />
       </Router>
     </Provider>
   )
 }
 
-describe('components | RouteLeavingGuardOfferCreation', () => {
-  const props: RouteLeavingGuardOfferCreationProps = { when: true }
+describe('components | RouteLeavingGuardCollectiveOfferCreation', () => {
+  const props: RouteLeavingGuardCollectiveOfferCreationProps = { when: true }
   const history = createBrowserHistory()
 
   describe('when following creation flow', () => {
     it('should not display confirmation modal when following creation flow', async () => {
       history.push('/offre/creation/collectif')
-      renderRouteLeavingGuardOfferCreation(props, history)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
 
       history.push('/offre/AE/collectif/stocks')
       expect(
@@ -67,7 +67,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
     it('should not display confirmation modal when following template creation flow - FF OFF', async () => {
       history.push('/offre/creation/collectif')
-      renderRouteLeavingGuardOfferCreation(props, history)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
 
       history.push('/offre/AE/collectif/stocks')
       expect(
@@ -97,7 +97,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
           ],
         },
       })
-      renderRouteLeavingGuardOfferCreation(props, history, store)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history, store)
 
       history.push('/offre/AE/collectif/vitrine/creation/recapitulatif')
       expect(
@@ -112,7 +112,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
     it('should not display confirmation modal when following duplication flow', async () => {
       history.push('/offre/duplication/collectif/PU')
-      renderRouteLeavingGuardOfferCreation(props, history)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
 
       history.push('/offre/duplication/collectif/AE/stocks')
       expect(
@@ -139,7 +139,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
   describe('when leaving creation flow', () => {
     it('should display confirmation modal when leaving offer creation', () => {
       history.push('/offre/creation/collectif')
-      renderRouteLeavingGuardOfferCreation(props, history)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
       history.push('/')
 
       expect(
@@ -149,7 +149,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
     it('should display confirmation modal when leaving stock creation', () => {
       history.push('/offre/AE/collectif/stocks')
-      renderRouteLeavingGuardOfferCreation(props, history)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
       history.push('/')
 
       expect(
@@ -159,7 +159,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
     it('should display confirmation modal when leaving visibility creation', () => {
       history.push('/offre/AE/collectif/visibilite')
-      renderRouteLeavingGuardOfferCreation(props, history)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
       history.push('/')
 
       expect(
@@ -169,7 +169,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
     it('should display confirmation modal when leaving summary creation', () => {
       history.push('/offre/AE/collectif/creation/recapitulatif')
-      renderRouteLeavingGuardOfferCreation(props, history)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
       history.push('/')
 
       expect(
@@ -179,7 +179,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
     it('should not display confirmation modal when leaving confirmation page', () => {
       history.push('/offre/AE/collectif/confirmation')
-      renderRouteLeavingGuardOfferCreation(props, history)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
       history.push('/')
 
       expect(
@@ -189,7 +189,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
     it('should display confirmation modal when leaving offer creation', () => {
       history.push('/offre/duplication/collectif/PU')
-      renderRouteLeavingGuardOfferCreation(props, history)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
       history.push('/')
 
       expect(
@@ -199,7 +199,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
     it('should display confirmation modal when leaving stock creation', () => {
       history.push('/offre/duplication/collectif/AE/stocks')
-      renderRouteLeavingGuardOfferCreation(props, history)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
       history.push('/')
 
       expect(
@@ -209,7 +209,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
     it('should display confirmation modal when leaving visibility creation', () => {
       history.push('/offre/duplication/collectif/AE/visibilite')
-      renderRouteLeavingGuardOfferCreation(props, history)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
       history.push('/')
 
       expect(
@@ -219,7 +219,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
     it('should display confirmation modal when leaving summary creation', () => {
       history.push('/offre/duplication/collectif/AE/recapitulatif')
-      renderRouteLeavingGuardOfferCreation(props, history)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
       history.push('/')
 
       expect(
@@ -232,7 +232,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
     describe('with FF OFF', () => {
       it('should display confirmation modal when going from stocks to offer creation', () => {
         history.push('/offre/AE/collectif/stocks')
-        renderRouteLeavingGuardOfferCreation(props, history)
+        renderRouteLeavingGuardCollectiveOfferCreation(props, history)
         history.push('/offre/creation/collectif')
 
         expect(
@@ -242,7 +242,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
       it('should display confirmation modal when going from visibility to stocks creation', () => {
         history.push('/offre/AE/collectif/visibilite')
-        renderRouteLeavingGuardOfferCreation(props, history)
+        renderRouteLeavingGuardCollectiveOfferCreation(props, history)
         history.push('/offre/AE/collectif/stocks')
 
         expect(
@@ -252,7 +252,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
       it('should display confirmation modal when going from summary to visibility creation', () => {
         history.push('/offre/AE/collectif/creation/recapitulatif')
-        renderRouteLeavingGuardOfferCreation(props, history)
+        renderRouteLeavingGuardCollectiveOfferCreation(props, history)
         history.push('/offre/AE/collectif/visibilite')
 
         expect(
@@ -262,7 +262,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
       it('should display confirmation modal when going from summary to stocks creation', () => {
         history.push('/offre/T-AE/collectif/creation/recapitulatif')
-        renderRouteLeavingGuardOfferCreation(props, history)
+        renderRouteLeavingGuardCollectiveOfferCreation(props, history)
         history.push('/offre/AE/collectif/stocks')
 
         expect(
@@ -272,7 +272,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
       it('should redirect to collective offers page when going from confirmation to summary', () => {
         history.push('/offre/AE/collectif/confirmation')
-        renderRouteLeavingGuardOfferCreation(props, history)
+        renderRouteLeavingGuardCollectiveOfferCreation(props, history)
         history.push('/offre/AE/collectif/creation/recapitulatif')
 
         expect(
@@ -283,7 +283,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
       it('should display confirmation modal when going from stocks to offer creation', () => {
         history.push('/offre/duplication/collectif/AE/stocks')
-        renderRouteLeavingGuardOfferCreation(props, history)
+        renderRouteLeavingGuardCollectiveOfferCreation(props, history)
         history.push('/offre/duplication/collectif/PU')
 
         expect(
@@ -293,7 +293,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
       it('should display confirmation modal when going from visibility to stocks creation', () => {
         history.push('/offre/duplication/collectif/AE/visibilite')
-        renderRouteLeavingGuardOfferCreation(props, history)
+        renderRouteLeavingGuardCollectiveOfferCreation(props, history)
         history.push('/offre/duplication/collectif/AE/stocks')
 
         expect(
@@ -303,7 +303,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
       it('should display confirmation modal when going from summary to visibility creation', () => {
         history.push('/offre/duplication/collectif/AE/recapitulatif')
-        renderRouteLeavingGuardOfferCreation(props, history)
+        renderRouteLeavingGuardCollectiveOfferCreation(props, history)
         history.push('/offre/duplication/collectif/AE/visibilite')
 
         expect(
@@ -330,7 +330,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
       it('should not display confirmation modal when going from stocks to offer creation', () => {
         history.push('/offre/AE/collectif/stocks')
-        renderRouteLeavingGuardOfferCreation(props, history, store)
+        renderRouteLeavingGuardCollectiveOfferCreation(props, history, store)
         history.push('/offre/creation/collectif')
 
         expect(
@@ -340,7 +340,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
 
       it('should not display confirmation modal when going from stocks to offer creation with offer id in url', () => {
         history.push('/offre/AE/collectif/stocks')
-        renderRouteLeavingGuardOfferCreation(props, history, store)
+        renderRouteLeavingGuardCollectiveOfferCreation(props, history, store)
         history.push('/offre/collectif/AE/creation')
 
         expect(

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
+import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import CollectiveOfferConfirmationScreen from 'screens/CollectiveOfferConfirmation'
 
@@ -29,7 +29,7 @@ const CollectiveOfferConfirmation = ({
         offererId={offer.venue.managingOffererId}
         institutionDisplayName={getInstitutionDisplayName()}
       />
-      <RouteLeavingGuardOfferCreation />
+      <RouteLeavingGuardCollectiveOfferCreation />
     </>
   )
 }
