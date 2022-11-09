@@ -25,6 +25,7 @@ from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
+from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferTemplateBodyModel
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.utils import rest
 from pcapi.utils.human_ids import dehumanize
@@ -200,7 +201,7 @@ def get_educational_domains_from_ids(
 
 
 def create_collective_offer_template(
-    offer_data: PostCollectiveOfferBodyModel,
+    offer_data: PostCollectiveOfferTemplateBodyModel,
     user: User,
     offer_id: int | None = None,
 ) -> educational_models.CollectiveOfferTemplate:
@@ -224,6 +225,7 @@ def create_collective_offer_template(
         motorDisabilityCompliant=offer_data.motor_disability_compliant,
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
+        priceDetail=offer_data.price_detail,
     )
     collective_offer_template.bookingEmails = offer_data.booking_emails
     db.session.add(collective_offer_template)
