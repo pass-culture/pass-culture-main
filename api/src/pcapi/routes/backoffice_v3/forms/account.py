@@ -20,6 +20,10 @@ class EditAccountForm(FlaskForm):
 
 
 class ManualReviewForm(FlaskForm):
-    status = fields.PCSelectField("Statut", choices=utils.choices_from_enum(fraud_models.FraudReviewStatus))
-    eligibility = fields.PCSelectField("Eligibilité", choices=utils.choices_from_enum(users_models.EligibilityType))
-    reason = fields.PCStringField("Raison du changement")
+    status = fields.PCSelectWithPlaceholderValueField(
+        "Statut", choices=utils.choices_from_enum(fraud_models.FraudReviewStatus)
+    )
+    eligibility = fields.PCSelectWithPlaceholderValueField(
+        "Eligibilité", choices=utils.choices_from_enum(users_models.EligibilityType)
+    )
+    reason = fields.PCOptStringField("Raison du changement")
