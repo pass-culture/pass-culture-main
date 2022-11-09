@@ -54,7 +54,7 @@ def roles_with_permissions_fixture() -> None:
 
 
 @pytest.fixture(scope="function", name="legit_user")
-def legit_user_fixture(roles_with_permissions) -> users_models.User:
+def legit_user_fixture(roles_with_permissions: None) -> users_models.User:
     user = users_factories.UserFactory(isActive=True)
 
     user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
@@ -63,3 +63,8 @@ def legit_user_fixture(roles_with_permissions) -> users_models.User:
     db.session.commit()
 
     return user
+
+
+@pytest.fixture(scope="function", name="authenticated_client")
+def authenticated_client_fixture(client, legit_user):  # type: ignore
+    return client.with_session_auth(legit_user.email)

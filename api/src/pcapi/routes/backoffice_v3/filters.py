@@ -59,9 +59,18 @@ def format_amount(amount: float | None) -> str:
     return f"{amount:,.2f} €".replace(",", "&#8239;").replace(".", ",")
 
 
+def format_bool(data: bool | None) -> str:
+    if data is None:
+        return ""
+
+    if data:
+        return "Oui"
+    return "Non"
+
+
 def parse_referrer(url: str) -> str:
     """
-    Ensure that a relative is used which, will be understand.
+    Ensure that a relative path is used, which will be understood.
     Referrer can be modified by the client, therefore cannot be trusted.
     """
     try:
@@ -78,4 +87,5 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_amount"] = format_amount
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
     app.jinja_env.filters["format_date"] = format_date
+    app.jinja_env.filters["format_bool"] = format_bool
     app.jinja_env.filters["parse_referrer"] = parse_referrer

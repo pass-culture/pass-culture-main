@@ -38,7 +38,7 @@ from .serialization import search
 
 @blueprint.backoffice_v3_web.route("/public_accounts/search", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT)
-def search_public_accounts() -> utils.Response:
+def search_public_accounts() -> utils.BackofficeResponse:
     """
     Renders two search pages: first the one with the search form, then
     the one of the results.
@@ -100,7 +100,7 @@ def render_search_template(form: search_forms.SearchForm | None = None) -> str:
 
 @blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
-def get_public_account(user_id: int) -> utils.Response:
+def get_public_account(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
     domains_credit = users_api.get_domains_credit(user) if user.is_beneficiary else None
     history = users_api.public_account_history(user)
@@ -120,7 +120,7 @@ def get_public_account(user_id: int) -> utils.Response:
 
 @blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>/edit", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def edit_public_account(user_id: int) -> utils.Response:
+def edit_public_account(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
     form = account_forms.EditAccountForm(
         last_name=user.lastName,
@@ -134,7 +134,7 @@ def edit_public_account(user_id: int) -> utils.Response:
 
 @blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>", methods=["PATCH"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def update_public_account(user_id: int) -> utils.Response:
+def update_public_account(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
 
     form = account_forms.EditAccountForm()
@@ -165,7 +165,7 @@ def update_public_account(user_id: int) -> utils.Response:
 
 @blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>/resend-validation-email", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def resend_validation_email(user_id: int) -> utils.Response:
+def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
 
     if user.has_admin_role or user.has_pro_role:
@@ -181,7 +181,7 @@ def resend_validation_email(user_id: int) -> utils.Response:
 
 @blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>/send-validation-code", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def send_validation_code(user_id: int) -> utils.Response:
+def send_validation_code(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
 
     if not user.phoneNumber:
@@ -221,7 +221,7 @@ def send_validation_code(user_id: int) -> utils.Response:
 
 @blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>/review", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def edit_public_account_review(user_id: int) -> utils.Response:
+def edit_public_account_review(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
     form = account_forms.ManualReviewForm()
     return render_template("accounts/edit_review.html", form=form, user=user)
@@ -229,7 +229,7 @@ def edit_public_account_review(user_id: int) -> utils.Response:
 
 @blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>/review", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def review_public_account(user_id: int) -> utils.Response:
+def review_public_account(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
 
     form = account_forms.ManualReviewForm()

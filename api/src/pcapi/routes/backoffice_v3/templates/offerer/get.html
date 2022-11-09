@@ -1,71 +1,110 @@
-{% extends "layouts/connected.html" %}
+{% extends "layouts/pro.html" %}
 
-{% block page %}
-<div class="pt-3 px-5">
-    <div class="d-flex justify-content-between">
-        <h2 class="fw-light">Acteurs culturels</h2>
+{% block pro_extra_header %}
+    {% if request.referrer is not none %}
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="{{ request.referrer | parse_referrer }}">
+                <i class="bi bi-chevron-left"></i>
+                Retour
+            </a>
+        </div>
+    {% endif %}
+{% endblock %}
 
+{% block pro_main_content %}
+<div class="row row-cols-1 g-4 py-3">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title mb-3">
+                    {{ offerer.name }}
 
-        <p>
-            <a href="{{ url_for('backoffice_v3_web.search_pro') }}">
-                &lt; Page de recherche (pro) </a>
-        </p>
-    </div>
-    <div class="card mt-4">
-        <div class="card-body">
-            <h3 class="card-title">
-                {{ offerer.name }}
-                {% if offerer.isActive %}
-                <span class="badge rounded-pill bg-success mx-4">Actif</span>
-                {% else %}
-                <span class="badge rounded-pill bg-light text-dark mx-4">Inactif</span>
-                {% endif %}
-            </h3>
-
-
-            <p class="card-text">
-                <label>SIREN :</label>
-                <span class="fw-light">
-                    {{ offerer.siren }}
+                    <span class="fs-5 ps-4 mb-3 align-middle">
+                        {% include "components/offerer/badges.html" %}
                     </span>
-            </p>
-            <p class="card-text">
-                <label>Région CT :</label>
-                <span class="fw-light">
-                    {{ region }}
-                </span>
-            </p>
-            <p class="card-text">
-                <label>Présence de CB dans les lieux :</label>
-                <span class="fw-light">
-                    {{ offerer.bank_informations.ok }} OK / {{ offerer.bank_informations.ko }} KO
+                </h3>
+
+                <h4 class="card-subtitle text-muted mb-3 h4">
+                    User ID : {{ offerer.id }}
+                </h4>
+
+                <h4 class="card-subtitle text-muted mb-3 h4">
+                    SIREN : {{ offerer.siren | empty_string_if_null }}
+                </h4>
+
+                <div class="row pt-3">
+
+                    <div class="col-lg-4">
+                        <div class="fs-6">
+                            {% if is_collective_eligible is not none %}
+                                <p class="mb-1">
+                                    <span class="fw-bold">&Eacute;ligible EAC :</span>
+                                    {{ is_collective_eligible | format_bool }}
+                                </p>
+                            {% endif %}
+
+                            {% if offerer.email %}
+                                <p class="mb-1">
+                                    <span class="fw-bold">Email :</span>
+                                    {{ offerer.email }}
+                                </p>
+                            {% endif %}
+
+                            {% if offerer.phoneNumber %}
+                                <p class="mb-1">
+                                    <span class="fw-bold">Tél :</span>
+                                    {{ offerer.phoneNumber | format_phone_number }}
+                                </p>
+                            {% endif %}
+
+                            <p class="mb-1">
+                                <span class="fw-bold">R&eacute;gion :</span>
+                                {{ region }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <p class="mb-1">
+                            <span class="fw-bold">Pr&eacute;sence CB dans les lieux :</span>
+                            {{ bank_information_status.ok }} OK
+                            / {{ bank_information_status.ko }} KO
+                        </p>
+                    </div>
+
+                    <div class="col-lg-4 d-flex justify-content-center">
+                        <a href="#" class="card-link">
+                            <button class="btn btn-outline-primary lead fw-bold mt-2">
+                                ACC&Eacute;DER AU DOSSIER DMS
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <turbo-frame id="total_revenue_frame" src="{{ url_for(".get_offerer_stats", offerer_id=offerer.id) }}">
+                <p class="text-center">
+                    <span class="spinner-grow spinner-grow-sm" role="status">
+                        <span class="visually-hidden">Chargement...</span>
                     </span>
-            </p>
+                    Chargement...
+                </p>
+            </turbo-frame>
+        </div>
+
+        <div class="mt-4">
+            <turbo-frame id="offerer_history_frame" src="{{ url_for(".get_offerer_history", offerer_id=offerer.id) }}">
+                <p class="text-center">
+                    <span class="spinner-grow spinner-grow-sm" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </span>
+                    Chargement...
+                </p>
+            </turbo-frame>
         </div>
     </div>
-
-    <div class="mt-4">
-        <turbo-frame id="total_revenue_frame" src="{{ url_for('.get_offerer_stats', offerer_id=offerer.id) }}">
-            <p class="text-center">
-                <span class="spinner-grow spinner-grow-sm" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </span>
-                Chargement...
-            </p>
-        </turbo-frame>
-    </div>
-
-    <div class="mt-4">
-        <turbo-frame id="offerer_history_frame" src="{{ url_for('.get_offerer_history', offerer_id=offerer.id) }}">
-            <p class="text-center">
-                <span class="spinner-grow spinner-grow-sm" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </span>
-                Chargement...
-            </p>
-        </turbo-frame>
-    </div>
-
 </div>
 
 {% endblock %}
