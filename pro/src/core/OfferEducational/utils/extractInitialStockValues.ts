@@ -1,4 +1,7 @@
-import { CollectiveStockResponseModel } from 'apiClient/v1'
+import {
+  CollectiveStockResponseModel,
+  GetCollectiveOfferCollectiveStockResponseModel,
+} from 'apiClient/v1'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
@@ -9,7 +12,10 @@ import {
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 export const extractInitialStockValues = (
-  stock: CollectiveStockResponseModel | null,
+  stock:
+    | GetCollectiveOfferCollectiveStockResponseModel
+    | CollectiveStockResponseModel
+    | null,
   offer: CollectiveOffer | CollectiveOfferTemplate
 ): OfferEducationalStockFormValues => {
   if (!stock) {

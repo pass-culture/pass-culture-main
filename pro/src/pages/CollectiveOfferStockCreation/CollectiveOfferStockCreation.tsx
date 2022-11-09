@@ -4,13 +4,14 @@ import { useHistory } from 'react-router-dom'
 import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
 import {
   CollectiveOffer,
-  DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
+  extractInitialStockValues,
   Mode,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useNotification from 'hooks/useNotification'
+import patchCollectiveStockAdapter from 'pages/CollectiveOfferStockEdition/adapters/patchCollectiveStockAdapter'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'
@@ -25,6 +26,11 @@ const CollectiveOfferStockCreation = ({
 }: OfferEducationalStockCreationProps): JSX.Element | null => {
   const notify = useNotification()
   const history = useHistory()
+
+  const initialValues = extractInitialStockValues(
+    offer.collectiveStock ?? null,
+    offer
+  )
 
   const handleSubmitStock = async (
     offer: CollectiveOffer,
@@ -45,10 +51,17 @@ const CollectiveOfferStockCreation = ({
       message = response.message
       payload = response.payload
     } else {
-      const response = await postCollectiveStockAdapter({
-        offer,
-        values,
-      })
+      const response = offer.collectiveStock
+        ? await patchCollectiveStockAdapter({
+            offer,
+            stockId: offer.collectiveStock.id,
+            values,
+            initialValues,
+          })
+        : await postCollectiveStockAdapter({
+            offer,
+            values,
+          })
       isOk = response.isOk
       message = response.message
       payload = response.payload
@@ -74,7 +87,7 @@ const CollectiveOfferStockCreation = ({
   return (
     <>
       <OfferEducationalStockScreen
-        initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
+        initialValues={initialValues}
         mode={Mode.CREATION}
         offer={offer}
         onSubmit={handleSubmitStock}
