@@ -1,12 +1,9 @@
 import logging
-import time
 
 from flask_login import current_user
 from flask_login import login_required
-import jwt
 import sqlalchemy.orm as sqla_orm
 
-from pcapi import settings
 import pcapi.core.educational.exceptions as educational_exceptions
 from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
@@ -248,16 +245,6 @@ def get_offerer_stats_dashboard_url(
     offerer_id: str,
 ) -> offerers_serialize.OffererStatsResponseModel:
     offerer = offerers_models.Offerer.query.get_or_404(dehumanize(offerer_id))
-    check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))  # type: ignore [arg-type]
-
-    payload = {
-        "resource": {"dashboard": settings.METABASE_DASHBOARD_ID},
-        "params": {"siren": [offerer.siren], "venueid": [str(venue.id) for venue in offerer.managedVenues]},
-        # dashboard token expire after 10 min (note that after that delay user has to refresh his page to interact with the dashbaord (e.g export content))
-        "exp": round(time.time()) + (60 * 10),
-    }
-    token = jwt.encode(payload, settings.METABASE_SECRET_KEY, algorithm="HS256")
-
-    iframeUrl = settings.METABASE_SITE_URL + "/embed/dashboard/" + token + "#bordered=false&titled=false"
-
-    return offerers_serialize.OffererStatsResponseModel(dashboardUrl=iframeUrl)
+    check_user_has_access_to_offerer(current_user, offerer.id)
+    url = api.get_metabase_stats_iframe_url(offerer, venues=offerer.managedVenues)
+    return offerers_serialize.OffererStatsResponseModel(dashboardUrl=url)
