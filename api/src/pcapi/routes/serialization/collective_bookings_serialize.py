@@ -123,6 +123,7 @@ def build_status_history(
     date_used: datetime | None,
     confirmation_date: datetime | None,
     is_confirmed: bool | None,
+    is_collective: bool = False,
 ) -> list[BookingStatusHistoryResponseModel]:
 
     if booking_status == models.CollectiveBookingStatus.PENDING:
@@ -139,7 +140,7 @@ def build_status_history(
 
     serialized_booking_status_history = [
         _serialize_collective_booking_status_info(
-            CollectiveBookingRecapStatus.booked, confirmation_date or booking_date
+            CollectiveBookingRecapStatus.booked, booking_date if is_collective else (confirmation_date or booking_date)
         )
     ]
     if is_confirmed and confirmation_date is not None:
@@ -234,6 +235,7 @@ def serialize_collective_booking(collective_booking: CollectiveBookingNamedTuple
             date_used=collective_booking.usedAt,
             confirmation_date=collective_booking.confirmationDate,
             is_confirmed=collective_booking.isConfirmed,
+            is_collective=True,
         ),
         booking_identifier=humanize(collective_booking.collectiveBookingId),
     )

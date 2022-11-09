@@ -90,7 +90,7 @@ class Returns200Test:
                 "booking_status_history": [
                     {
                         "status": "booked",
-                        "date": "2022-03-12T11:15:00+01:00",
+                        "date": "2022-03-11T11:15:00+01:00",
                     },
                     {
                         "status": "confirmed",
@@ -204,7 +204,7 @@ class Returns200Test:
         assert booking_recap["booking_status_history"] == [
             {
                 "status": "booked",
-                "date": "2022-03-12T13:15:00+01:00",
+                "date": "2022-03-11T11:15:00+01:00",
             },
             {
                 "status": "confirmed",
@@ -252,7 +252,7 @@ class Returns200Test:
         assert booking_recap["booking_status_history"] == [
             {
                 "status": "booked",
-                "date": "2022-03-12T13:15:00+01:00",
+                "date": "2022-03-11T11:15:00+01:00",
             },
             {
                 "status": "confirmed",
@@ -346,7 +346,7 @@ class Returns200Test:
         assert booking_recap["booking_status_history"] == [
             {
                 "status": "booked",
-                "date": "2022-03-12T13:15:00+01:00",
+                "date": "2022-03-11T11:15:00+01:00",
             },
             {
                 "status": "confirmed",
@@ -464,7 +464,7 @@ class Returns200Test:
                 "booking_status_history": [
                     {
                         "status": "booked",
-                        "date": "2022-03-12T11:15:00+01:00",
+                        "date": "2022-03-11T11:15:00+01:00",
                     },
                     {
                         "status": "confirmed",
@@ -543,7 +543,7 @@ class Returns200Test:
                 "booking_status_history": [
                     {
                         "status": "booked",
-                        "date": "2022-03-12T11:15:00+01:00",
+                        "date": "2022-03-11T11:15:00+01:00",
                     },
                     {
                         "status": "confirmed",
@@ -624,7 +624,7 @@ class Returns200Test:
                 "booking_status_history": [
                     {
                         "status": "booked",
-                        "date": "2022-02-12T11:15:00+01:00",
+                        "date": "2022-02-11T11:15:00+01:00",
                     },
                     {
                         "status": "confirmed",
