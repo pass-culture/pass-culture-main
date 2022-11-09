@@ -177,3 +177,26 @@ class GetShowtimeRemainingSeatsTest:
         nb_remaining_online_seats = boost.get_showtime_remaining_online_seats(35278)
 
         assert nb_remaining_online_seats == 122
+
+
+class BookTicketTest:
+    def test_should_book_duo_tickets(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/35278", json=fixtures.ShowtimeDetailsEndpointResponse.DATA
+        )
+        requests_mock.post(
+            "https://cinema-0.example.com/api/sale/complete",
+            json=fixtures.ConfirmedSaleEndpointResponse.DATA,
+            headers={"Content-Type": "application/json"},
+        )
+
+        boost = BoostClientAPI(cinema_str_id)
+        tickets = boost.book_ticket(show_id=35278, quantity=2)
+
+        assert len(tickets) == 2
+        assert tickets == [
+            external_bookings_models.Ticket(barcode="PCU-000001-7171980", seat_number=None),
+            external_bookings_models.Ticket(barcode="PCU-000002-7171981", seat_number=None),
+        ]
