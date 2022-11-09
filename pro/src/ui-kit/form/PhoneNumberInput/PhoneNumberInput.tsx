@@ -51,6 +51,9 @@ const PhoneNumberInput = ({ name, disabled }: PhoneNumberInputProps) => {
 
   const onPhoneCodeChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setCountryCode(e.target.value as CountryCode)
+    if (phoneInutValue) {
+      validatePhoneNumber(phoneInutValue)
+    }
   }
 
   const onPhoneNumberBlur = (event: FocusEvent<HTMLInputElement>) => {
