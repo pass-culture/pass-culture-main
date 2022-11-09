@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { CollectiveStockResponseModel } from 'apiClient/v1'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import {
-  DEFAULT_EAC_STOCK_FORM_VALUES,
   Mode,
   OfferEducationalStockFormValues,
   cancelCollectiveBookingAdapter,
@@ -13,11 +11,9 @@ import {
   patchIsCollectiveOfferActiveAdapter,
   CollectiveOffer,
 } from 'core/OfferEducational'
-import { getCollectiveStockAdapter } from 'core/OfferEducational/adapters/getCollectiveStockAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useNotification from 'hooks/useNotification'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
-import Spinner from 'ui-kit/Spinner/Spinner'
 
 import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'
 
@@ -32,23 +28,20 @@ const CollectiveOfferStockEdition = ({
 }: OfferEducationalStockEditionProps): JSX.Element => {
   const history = useHistory()
 
-  const [initialValues, setInitialValues] =
-    useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
-  const [stock, setStock] = useState<CollectiveStockResponseModel | null>(null)
-  const [isReady, setIsReady] = useState<boolean>(false)
+  const initialValues = extractInitialStockValues(offer)
   const notify = useNotification()
 
   const handleSubmitStock = async (
     offer: CollectiveOffer,
     values: OfferEducationalStockFormValues
   ) => {
-    if (!stock) {
+    if (!offer.collectiveStock) {
       return notify.error('Impossible de mettre à jour le stock.')
     }
 
     const stockResponse = await patchCollectiveStockAdapter({
       offer,
-      stockId: stock.id,
+      stockId: offer.collectiveStock.id,
       values,
       initialValues,
     })
@@ -101,37 +94,15 @@ const CollectiveOfferStockEdition = ({
     reloadCollectiveOffer()
   }
 
-  useEffect(() => {
-    if (!isReady) {
-      const loadStockAndOffer = async () => {
-        const stockResponse = await getCollectiveStockAdapter({
-          offerId: offer.id,
-        })
-
-        if (!stockResponse.isOk) {
-          return notify.error(stockResponse.message)
-        }
-        setStock(stockResponse.payload.stock)
-        const initialValuesFromStock = extractInitialStockValues(
-          stockResponse.payload.stock,
-          offer
-        )
-        setInitialValues(initialValuesFromStock)
-        setIsReady(true)
-      }
-      loadStockAndOffer()
-    }
-  }, [offer.id, isReady, notify, history])
-
-  if (!isReady) {
-    return <Spinner />
-  }
-
   return (
     <OfferEducationalStockScreen
       cancelActiveBookings={cancelActiveBookings}
       initialValues={initialValues}
-      mode={stock?.isEducationalStockEditable ? Mode.EDITION : Mode.READ_ONLY}
+      mode={
+        offer.collectiveStock?.isEducationalStockEditable
+          ? Mode.EDITION
+          : Mode.READ_ONLY
+      }
       offer={offer}
       onSubmit={handleSubmitStock}
       setIsOfferActive={setIsOfferActive}

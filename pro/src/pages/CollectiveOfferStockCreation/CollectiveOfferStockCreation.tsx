@@ -29,10 +29,7 @@ const CollectiveOfferStockCreation = ({
   const notify = useNotification()
   const history = useHistory()
 
-  const initialValues = extractInitialStockValues(
-    offer.collectiveStock ?? null,
-    offer
-  )
+  const initialValues = extractInitialStockValues(offer)
 
   const handleSubmitStock = async (
     offer: CollectiveOffer,

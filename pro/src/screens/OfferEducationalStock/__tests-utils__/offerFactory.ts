@@ -60,13 +60,14 @@ export const offerFactory = (
 })
 
 export const collectiveOfferStockFactory = (
-  stockExtend: Partial<GetCollectiveOfferCollectiveStockResponseModel>
+  stockExtend?: Partial<GetCollectiveOfferCollectiveStockResponseModel>
 ): GetCollectiveOfferCollectiveStockResponseModel => ({
   id: 'STOCK_ID',
   isBooked: false,
   isCancellable: true,
+  isEducationalStockEditable: true,
   price: 10,
-  ...stockExtend,
+  ...(stockExtend ?? {}),
 })
 
 export const collectiveOfferTemplateFactory = (
