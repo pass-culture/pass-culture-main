@@ -1553,7 +1553,13 @@ def test_public_api(client):
                     "title": "UserRole",
                 },
                 "YoungStatusResponse": {
-                    "properties": {"statusType": {"$ref": "#/components/schemas/YoungStatusType"}},
+                    "properties": {
+                        "statusType": {"$ref": "#/components/schemas/YoungStatusType"},
+                        "subscriptionStatus": {
+                            "anyOf": [{"$ref": "#/components/schemas/SubscriptionStatus"}],
+                            "nullable": True,
+                        },
+                    },
                     "required": ["statusType"],
                     "title": "YoungStatusResponse",
                     "type": "object",
@@ -1568,6 +1574,11 @@ def test_public_api(client):
                         "suspended",
                     ],
                     "title": "YoungStatusType",
+                },
+                "SubscriptionStatus": {
+                    "description": "An enumeration.",
+                    "enum": ["has_to_complete_subscription", "has_subscription_pending", "has_subscription_issues"],
+                    "title": "SubscriptionStatus",
                 },
                 "UserSuspensionDateResponse": {
                     "properties": {
