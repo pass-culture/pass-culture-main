@@ -30,6 +30,7 @@ import {
   EVENT_ADDRESS_SCHOOL_LABEL,
   INTERVENTION_AREA_LABEL,
   INTERVENTION_AREA_PLURAL_LABEL,
+  PRICE_INFORMATION,
 } from '../../constants/labels'
 import styles from '../OfferEducationalForm.module.scss'
 
@@ -37,6 +38,7 @@ interface IFormEventAddressProps {
   venuesOptions: SelectOptions
   currentOfferer: GetEducationalOffererResponseModel | null
   disableForm: boolean
+  isTemplate: boolean
 }
 
 const adressTypeRadios = [
@@ -58,6 +60,7 @@ const FormEventAddress = ({
   venuesOptions,
   currentOfferer,
   disableForm,
+  isTemplate,
 }: IFormEventAddressProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<IOfferEducationalFormValues>()
@@ -202,6 +205,21 @@ const FormEventAddress = ({
             maxLength={200}
             name="eventAddress.otherAddress"
             disabled={disableForm}
+          />
+        </FormLayout.Row>
+      )}
+
+      {isTemplate && (
+        <FormLayout.Row>
+          <TextArea
+            className={styles['price-details']}
+            countCharacters
+            disabled={disableForm}
+            isOptional
+            label={PRICE_INFORMATION}
+            maxLength={1000}
+            name="priceDetail"
+            placeholder="Par exemple : tarif par élève ou par groupe scolaire, politique tarifaire REP/REP+ et accompagnateurs... "
           />
         </FormLayout.Row>
       )}

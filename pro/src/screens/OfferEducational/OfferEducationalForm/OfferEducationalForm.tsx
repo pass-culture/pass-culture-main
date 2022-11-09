@@ -40,6 +40,7 @@ const OfferEducationalForm = ({
   getIsOffererEligible,
   mode,
   domainsOptions,
+  isTemplate,
 }: IOfferEducationalFormProps): JSX.Element => {
   const notify = useNotification()
 
@@ -128,6 +129,7 @@ const OfferEducationalForm = ({
             currentOfferer={currentOfferer}
             venuesOptions={venuesOptions}
             disableForm={mode === Mode.READ_ONLY}
+            isTemplate={isTemplate}
           />
           <FormParticipants disableForm={mode === Mode.READ_ONLY} />
           <FormAccessibility disableForm={mode === Mode.READ_ONLY} />

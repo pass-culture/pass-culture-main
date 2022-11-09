@@ -166,6 +166,7 @@ const CollectiveOfferEdition = ({
       mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
       onSubmit={editOffer}
       setIsOfferActive={setIsOfferActive}
+      isTemplate={offer.isTemplate}
     />
   )
 }

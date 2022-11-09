@@ -17,3 +17,4 @@ export const NOTIFICATIONS_EMAIL_LABEL =
 export const INTERVENTION_AREA_LABEL = 'Zone de mobilité pour l’évènement'
 export const INTERVENTION_AREA_PLURAL_LABEL =
   'Zones de mobilité pour l’évènement'
+export const PRICE_INFORMATION = 'Informations sur le prix'

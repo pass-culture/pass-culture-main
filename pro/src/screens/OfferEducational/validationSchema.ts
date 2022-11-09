@@ -133,4 +133,5 @@ export const validationSchema = yup.object().shape({
       then: schema => schema.required(''),
       otherwise: schema => schema,
     }),
+  priceDetail: yup.string().max(1000),
 })

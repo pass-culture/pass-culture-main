@@ -57,6 +57,7 @@ export const defaultCreationProps: IOfferEducationalProps = {
   }),
   mode: Mode.CREATION,
   domainsOptions: [{ value: 1, label: 'domain1' }],
+  isTemplate: false,
 }
 
 const allParticipantsOptionsToTrue = {
@@ -105,4 +106,5 @@ export const defaultEditionProps: IOfferEducationalProps = {
   },
   mode: Mode.EDITION,
   domainsOptions: [{ value: 1, label: 'domain1' }],
+  isTemplate: false,
 }
