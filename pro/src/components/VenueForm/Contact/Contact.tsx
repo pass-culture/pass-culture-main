@@ -2,6 +2,7 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { InfoBox, TextInput } from 'ui-kit'
+import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 const Contact = () => {
   return (
@@ -14,12 +15,7 @@ const Contact = () => {
         }
       >
         <FormLayout.Row>
-          <TextInput
-            name="phoneNumber"
-            label="Téléphone"
-            isOptional
-            placeholder={'0639980101'}
-          />
+          <PhoneNumberInput name="phoneNumber" isOptional />
         </FormLayout.Row>
         <FormLayout.Row>
           <TextInput
