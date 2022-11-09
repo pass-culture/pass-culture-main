@@ -134,13 +134,27 @@ class AccountTest:
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
             "subscriptionMessage": None,
-            "status": {"statusType": young_status.YoungStatusType.BENEFICIARY.value},
+            "status": {
+                "statusType": young_status.YoungStatusType.BENEFICIARY.value,
+                "subscriptionStatus": None,
+            },
         }
         EXPECTED_DATA.update(USER_DATA)
 
         assert response.status_code == 200
         assert response.json == EXPECTED_DATA
         assert user.dateOfBirth == datetime(2000, 1, 1)
+
+    def test_status_contains_subscription_status_when_eligible(self, client):
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/me")
+
+        assert response.json["status"] == {
+            "statusType": young_status.YoungStatusType.ELIGIBLE.value,
+            "subscriptionStatus": young_status.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION.value,
+        }
 
     def test_get_user_not_beneficiary(self, client, app):
         users_factories.UserFactory(email=self.identifier)
