@@ -100,11 +100,11 @@ describe('components | Address', () => {
     const adressInput = screen.getByLabelText('Adresse postale')
 
     await userEvent.type(adressInput, '12 rue ')
-    const suggestion = await screen.findByText(
+    const suggestion = await screen.findAllByText(
       '12 rue des tournesols 75003 Paris'
     )
 
-    await userEvent.click(suggestion)
+    await userEvent.click(suggestion[1])
     await userEvent.click(buttonSubmit)
 
     await waitFor(() => {
