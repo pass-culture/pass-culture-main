@@ -52,7 +52,10 @@ def format_date(data: datetime.date | datetime.datetime, strformat: str = "%d/%m
     return data.strftime(strformat)
 
 
-def format_amount(amount: float) -> str:
+def format_amount(amount: float | None) -> str:
+    if amount is None:
+        amount = 0.0
+
     return f"{amount:,.2f} €".replace(",", "&#8239;").replace(".", ",")
 
 
