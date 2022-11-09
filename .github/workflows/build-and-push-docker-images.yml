@@ -63,8 +63,6 @@ jobs:
         push: true
         target: pcapi
         tags: ${{ env.DOCKER_REPO }}/pcapi:${{ inputs.tag }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
     - name: "Build and push pcapi-console image"
       uses: docker/build-push-action@v2
       if: ${{ inputs.console == true }}
@@ -73,8 +71,6 @@ jobs:
         push: true
         target: pcapi-console
         tags: ${{ env.DOCKER_REPO }}/pcapi-console:${{ inputs.tag }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
     - name: "Build and push pcapi-tests image"
       uses: docker/build-push-action@v2
       if: ${{ inputs.tests == true }}
@@ -83,5 +79,3 @@ jobs:
         push: true
         target: pcapi-tests
         tags: ${{ env.DOCKER_REPO }}/pcapi-tests:${{ inputs.tag }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
