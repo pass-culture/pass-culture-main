@@ -1,13 +1,13 @@
-import fr from 'date-fns/locale/fr'
 import { useField } from 'formik'
-import React, { ChangeEvent, useCallback } from 'react'
+import React from 'react'
 
 import TextInput from '../TextInput'
 
-interface IDurationInput {
+import { parseMinutesToHours } from './utils/parseMinutesToHours'
+
+export interface IDurationInputProps {
   label: string
   name: string
-  placeholder: string
   isOptional?: boolean
   className?: string
 }
@@ -15,56 +15,40 @@ interface IDurationInput {
 const DurationInput = ({
   label,
   name,
-  placeholder,
   isOptional = false,
   className,
-}: IDurationInput): JSX.Element => {
+}: IDurationInputProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name })
 
-  const translateMinutesToHours = (durationInMinutes: number | null) => {
-    if (durationInMinutes === null) return ''
-    const hours = Math.floor(durationInMinutes / 60)
-    const minutes = (durationInMinutes % 60).toString().padStart(2, '0')
-    return `${hours}:${minutes}`
-  }
-
   const onDurationBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    const updatedHoursDuration = event.target.value
-
     if (!meta.touched) {
       helpers.setTouched(true, false)
     }
-
-    if (updatedHoursDuration !== '') {
-      const [updatedHours, updatedMinutes] = updatedHoursDuration.split(':')
-
-      const updatedDurationInMinutes =
-        parseInt(updatedHours || '0') * 60 + parseInt(updatedMinutes || '0')
-      const durationMinutes = translateMinutesToHours(updatedDurationInMinutes)
-      translateMinutesToHours(updatedDurationInMinutes)
-      helpers.setValue(durationMinutes)
-    } else {
-      helpers.setValue('')
-    }
+    const [updatedHours, updatedMinutes] = event.target.value.split(':')
+    const updatedDurationInMinutes =
+      parseInt(updatedHours || '0') * 60 + parseInt(updatedMinutes || '0')
+    const durationMinutes = parseMinutesToHours(updatedDurationInMinutes)
+    helpers.setValue(durationMinutes)
   }
+
   const onDurationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const durationInputValue = event.target.value
-    if (durationInputValue !== '' && !/^[\d:]*$/.test(durationInputValue)) {
-      const durationInputValueReplaced = durationInputValue.match(/^[\d:]*$/)
-      helpers.setValue(durationInputValueReplaced)
-    } else {
-      helpers.setValue(durationInputValue)
-    }
+    const durationInputValueReplaced = durationInputValue.replace(
+      /[^\d:]+/g,
+      ''
+    )
+    helpers.setValue(durationInputValueReplaced)
   }
+
   return (
     <TextInput
-      name={name}
+      name={field.name}
       label={label}
-      placeholder={placeholder}
       onChange={onDurationChange}
       onBlur={onDurationBlur}
       className={className}
       isOptional={isOptional}
+      placeholder="HH:MM"
     />
   )
 }
