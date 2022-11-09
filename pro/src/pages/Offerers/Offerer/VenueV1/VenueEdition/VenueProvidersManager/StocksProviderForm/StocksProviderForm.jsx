@@ -16,10 +16,12 @@ const StocksProviderForm = ({
 
   const handleOpenConfirmDialog = useCallback(event => {
     event.preventDefault()
+    event.stopPropagation()
     setIsConfirmDialogOpened(true)
   }, [])
 
   const handleCloseConfirmDialog = useCallback(() => {
+    /* istanbul ignore next: DEBT, TO FIX */
     setIsConfirmDialogOpened(false)
   }, [])
 
