@@ -163,7 +163,9 @@ class HasImageMixin:
         self.imageHasOriginal = None
 
 
-class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, Model):
+class CollectiveOffer(
+    PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, HasImageMixin, Model
+):
     __tablename__ = "collective_offer"
 
     offerId = sa.Column(sa.BigInteger, nullable=True)
@@ -325,7 +327,7 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
 
 
 class CollectiveOfferTemplate(
-    PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, Base, Model
+    PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, HasImageMixin, Base, Model
 ):
     __tablename__ = "collective_offer_template"
 
