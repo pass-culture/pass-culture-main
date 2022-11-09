@@ -52,6 +52,7 @@ export interface IRoute {
   title?: string
   meta?: IRouteMeta
   featureName?: string
+  disabledFeatureName?: string
 }
 
 const RedirectToConnexionComponent = () => {
@@ -206,24 +207,26 @@ const routes: IRoute[] = [
     exact: true,
     path: '/structures/:offererId([A-Z0-9]+)/lieux/creation',
     title: 'Structures',
+    disabledFeatureName: 'VENUE_FORM_V2',
   },
   {
     component: VenueV1Edition,
     exact: true,
     path: '/structures/:offererId([A-Z0-9]+)/lieux/:venueId([A-Z0-9]+)',
     title: 'Structures',
+    disabledFeatureName: 'VENUE_FORM_V2',
   },
   {
     component: VenueCreation,
     exact: true,
-    path: '/structures/:offererId([A-Z0-9]+)/lieux/v2/creation',
+    path: '/structures/:offererId([A-Z0-9]+)/lieux/creation',
     title: 'Structures',
     featureName: 'VENUE_FORM_V2',
   },
   {
     component: VenueEdition,
     exact: true,
-    path: '/structures/:offererId([A-Z0-9]+)/lieux/v2/:venueId([A-Z0-9]+)',
+    path: '/structures/:offererId([A-Z0-9]+)/lieux/:venueId([A-Z0-9]+)',
     title: 'Structures',
     featureName: 'VENUE_FORM_V2',
   },

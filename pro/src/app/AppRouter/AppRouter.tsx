@@ -12,8 +12,13 @@ import { selectActiveFeatures } from 'store/features/selectors'
 const AppRouter = (): JSX.Element => {
   const activeFeatures = useSelector(selectActiveFeatures)
   const activeRoutes = routes.filter(
-    route => !route.featureName || activeFeatures.includes(route.featureName)
+    route =>
+      (!route.featureName && !route.disabledFeatureName) ||
+      activeFeatures.includes(route.featureName) ||
+      (route.disabledFeatureName &&
+        !activeFeatures.includes(route.disabledFeatureName))
   )
+
   const activeRoutesWithoutLayout = routesWithoutLayout.filter(
     route => !route.featureName || activeFeatures.includes(route.featureName)
   )
