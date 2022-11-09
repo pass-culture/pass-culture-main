@@ -26,6 +26,7 @@ base_collective_offer_payload = {
     "visualDisabilityCompliant": False,
     "interventionArea": ["75", "92", "93"],
     "templateId": None,
+    "priceDetail": "Le détail ici",
 }
 
 
@@ -83,6 +84,7 @@ class Returns200Test:
         assert len(offer.domains) == 2
         assert set(offer.domains) == {educational_domain1, educational_domain2}
         assert offer.description == "Ma super description"
+        assert offer.priceDetail == "Le détail ici"
 
     def test_create_collective_offer_template_empty_intervention_area(self, client):
         # Given
@@ -105,7 +107,7 @@ class Returns200Test:
             "interventionArea": [],
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/collective/offers-template", json=data)
 
         # Then
         assert response.status_code == 201
@@ -133,7 +135,7 @@ class Returns403Test:
             },
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+            response = client.with_session_auth(user.email).post("/collective/offers-template", json=data)
 
         # Then
         assert response.status_code == 403
@@ -161,7 +163,7 @@ class Returns403Test:
             },
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer", side_effect=raise_ac):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/collective/offers-template", json=data)
 
         # Then
         assert response.status_code == 403
@@ -188,7 +190,7 @@ class Returns400Test:
             },
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+            response = client.with_session_auth(user.email).post("/collective/offers-template", json=data)
 
         # Then
         assert response.status_code == 400
@@ -213,13 +215,13 @@ class Returns400Test:
             },
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+            response = client.with_session_auth(user.email).post("/collective/offers-template", json=data)
 
         # Then
         assert response.status_code == 400
         assert CollectiveOfferTemplate.query.count() == 0
 
-    def test_create_collective_offer_template_no_collective__category(self, client):
+    def test_create_collective_offer_template_no_collective_category(self, client):
         # Given
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
@@ -238,7 +240,7 @@ class Returns400Test:
             },
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+            response = client.with_session_auth(user.email).post("/collective/offers-template", json=data)
 
         # Then
         assert response.status_code == 400
@@ -263,7 +265,32 @@ class Returns400Test:
             },
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+            response = client.with_session_auth(user.email).post("/collective/offers-template", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert CollectiveOfferTemplate.query.count() == 0
+
+    def test_create_collective_offer_template_too_long_price_details(self, client):
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
+
+        # When
+        data = {
+            **base_collective_offer_payload,
+            "venueId": humanize(venue.id),
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "offerVenue": {
+                "addressType": "school",
+                "venueId": humanize(125),
+                "otherAddress": "17 rue aléatoire",
+            },
+            "priceDetail": "a" * 1001,
+        }
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth(user.email).post("/collective/offers-template", json=data)
 
         # Then
         assert response.status_code == 400
@@ -294,7 +321,7 @@ class Returns404Test:
         }
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+            response = client.with_session_auth("user@example.com").post("/collective/offers-template", json=data)
 
         # Then
         assert response.status_code == 404
