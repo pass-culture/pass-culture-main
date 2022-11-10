@@ -10,7 +10,6 @@ import {
 } from 'components/OfferIndividualForm'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
 import {
   createIndividualOffer,
   getOfferIndividualAdapter,
@@ -210,7 +209,7 @@ const Informations = ({
           step: isSubmittingDraft
             ? OFFER_WIZARD_STEP_IDS.INFORMATIONS
             : OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: isSubmittingDraft ? OFFER_WIZARD_MODE.DRAFT : mode,
+          mode,
         })
       )
     } else {

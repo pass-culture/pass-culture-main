@@ -303,4 +303,23 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     ).toBeInTheDocument()
     expect(pcapi.postThumbnail).not.toHaveBeenCalled()
   })
+  it('should leave the user to creation page on draft save', async () => {
+    renderInformationsScreen(props, store, contextOverride)
+
+    const categorySelect = await screen.findByLabelText('Catégorie')
+    await userEvent.selectOptions(categorySelect, 'A')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    await userEvent.selectOptions(subCategorySelect, 'physical')
+    const nameField = screen.getByLabelText("Titre de l'offre")
+    await userEvent.type(nameField, 'Le nom de mon offre')
+
+    await userEvent.click(await screen.findByText('Sauvegarder le brouillon'))
+
+    expect(api.postOffer).toHaveBeenCalledTimes(1)
+    expect(
+      screen.getByText(
+        'Tous les champs sont obligatoires sauf mention contraire.'
+      )
+    ).toBeInTheDocument()
+  })
 })
