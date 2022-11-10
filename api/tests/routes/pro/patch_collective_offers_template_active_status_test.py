@@ -36,12 +36,10 @@ class Returns204Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
-        collective_offers_update_queries = 3  # collective + release savepoint
-
         # When
         client = client.with_session_auth("pro@example.com")
         data = {"ids": [humanize(offer1.id), humanize(offer2.id)], "isActive": False}
-        with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES + collective_offers_update_queries):
+        with testing.assert_no_duplicated_queries():
             response = client.patch("/collective/offers-template/active-status", json=data)
 
         # Then

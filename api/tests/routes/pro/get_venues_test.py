@@ -2,9 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -101,9 +100,7 @@ def test_admin_call_num_queries(app):
     client = TestClient(app.test_client()).with_session_auth(admin_user.email)
 
     # when
-    n_queries = testing.AUTHENTICATION_QUERIES
-    n_queries += 1  # get venues + offerers
-    with assert_num_queries(n_queries):
+    with assert_no_duplicated_queries():
         response = client.get("/venues")
 
     # then

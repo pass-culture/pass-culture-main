@@ -18,7 +18,7 @@ from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.offers.models import WithdrawalTypeEnum
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -166,10 +166,7 @@ class GetBookingsTest:
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
-        # 1: get the user
-        # 1: get the bookings
-        # 1: rollback
-        with assert_num_queries(3):
+        with assert_no_duplicated_queries():
             response = test_client.get("/native/v1/bookings")
 
         assert response.status_code == 200

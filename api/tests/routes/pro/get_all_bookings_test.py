@@ -5,13 +5,12 @@ from unittest.mock import patch
 from dateutil.tz import tz
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -118,7 +117,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
+        with assert_no_duplicated_queries():
             response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
 
         expected_bookings_recap = [
@@ -177,7 +176,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
+        with assert_no_duplicated_queries():
             response = client.get(
                 f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&eventDate={requested_date_iso_format}"
             )
@@ -199,7 +198,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
+        with assert_no_duplicated_queries():
             response = client.get(
                 "/bookings/pro?bookingPeriodBeginningDate=%s&bookingPeriodEndingDate=%s&bookingStatusFilter=booked"
                 % (booking_period_beginning_date_iso, booking_period_ending_date_iso)

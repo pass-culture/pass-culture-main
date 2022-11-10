@@ -27,10 +27,8 @@ class Returns200Test:
         offerers_factories.VenueEducationalStatusFactory(id=4, name="Établissement privé")
         offerers_factories.VenueEducationalStatusFactory(id=5, name="micro-entreprise, auto-entrepreneur")
 
-        n_queries = testing.AUTHENTICATION_QUERIES
-        n_queries += 1  # query to retrieve all the venues educational status
         auth_client = client.with_session_auth(pro.email)
-        with testing.assert_num_queries(n_queries):
+        with testing.assert_no_duplicated_queries():
             response = auth_client.get("/venues-educational-statuses")
 
         expected_serialized_offerer = {

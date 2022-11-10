@@ -31,24 +31,6 @@ class AssertNoDuplicatedQueriesTest:
                 self._run_dummy_query()
                 self._run_dummy_query()
 
-    def test_passes_when_duplicated_query_and_max_param(self):
-        with assert_no_duplicated_queries(max_number_of_duplicated_queries=1):
-            self._run_dummy_query()
-            self._run_dummy_query()
-            self._run_dummy_query()
-
-    def test_passes_when_duplicated_query_below_duplication_limit(self):
-        with assert_no_duplicated_queries(max_number_of_duplications=2):
-            self._run_dummy_query()
-            self._run_dummy_query()
-
-    def test_fails_when_duplicated_query_above_duplication_limit(self):
-        with pytest.raises(AssertionError):
-            with assert_no_duplicated_queries(max_number_of_duplications=2):
-                self._run_dummy_query()
-                self._run_dummy_query()
-                self._run_dummy_query()
-
 
 @override_settings(IS_RUNNING_TESTS=2)
 def test_override_settings_on_function():

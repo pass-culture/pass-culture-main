@@ -142,12 +142,8 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         db.session.commit()  # clear SQLA cached objects
-        n_queries = (
-            testing.AUTHENTICATION_QUERIES  # 2
-            + 1  # Venue and eager loading of relations
-            + 1  # check_user_has_access_to_offerer()
-        )
-        with testing.assert_num_queries(n_queries):
+
+        with testing.assert_no_duplicated_queries():
             response = auth_request.get("/venues/%s" % humanize(venue_id))
 
         assert response.status_code == 200

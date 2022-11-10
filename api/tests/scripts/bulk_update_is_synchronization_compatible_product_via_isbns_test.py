@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core.offers.factories import ProductFactory
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.scripts.bulk_update_is_synchronization_compatible_product_via_isbns import (
     bulk_update_is_synchronization_compatible_via_isbns,
 )
@@ -16,9 +16,7 @@ def test_should_mark_synchronized_offers_and_products_as_not_synchronization_com
 
     isbns_list = ["5555555555555", "6666666666666", "8888888888888", "7777777777777"]
 
-    queries = 1  # update product
-    queries += 1  # commit
-    with assert_num_queries(queries):
+    with assert_no_duplicated_queries():
         bulk_update_is_synchronization_compatible_via_isbns(
             isbns_list, is_synchronization_compatible=False, batch_size=4
         )

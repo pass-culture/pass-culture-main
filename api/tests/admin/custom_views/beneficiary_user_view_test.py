@@ -113,10 +113,7 @@ class BeneficiaryUserViewTest:
         users_factories.BeneficiaryGrant18Factory.create_batch(3)
 
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-        n_queries = testing.AUTHENTICATION_QUERIES
-        n_queries += 1  # select COUNT
-        n_queries += 1  # select users
-        with testing.assert_num_queries(n_queries):
+        with testing.assert_no_duplicated_queries():
             response = client.get("/pc/back-office/beneficiary_users")
 
         assert response.status_code == 200

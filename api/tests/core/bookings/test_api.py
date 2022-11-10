@@ -34,7 +34,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users.external.batch import BATCH_DATETIME_FORMAT
 import pcapi.core.users.factories as users_factories
@@ -487,24 +487,9 @@ class CancelByBeneficiaryTest:
         stock = offers_factories.StockFactory(offer__bookingEmail="offerer@example.com")
         booking = booking_factories.IndividualBookingFactory.create_batch(20, stock=stock)[0]
 
-        queries = 2  # select stock ; select booking
-        queries += 1  # update booking
-        queries += 1  # select feature_flag
-        queries += 3  # update stock ; update booking ;  release savepoint
-        queries += 7  # (update batch attributes): select booking ; individualBooking ; user_offerer exists ; user.bookings ;  favorites ; deposit ; wallet balance
-        queries += 1  # select venue by id
-        queries += 2  # select user by email ; select venue by same booking email
-        queries += 1  # select offerer by id
-        queries += 1  # select bank_information by venue.id
-        queries += 1  # select exists offer
-        queries += 1  # select exists booking
-        queries += 1  # select stock
-        queries += 1  # select booking ; offer
-        queries += 1  # select external_booking
-
         individual_booking = booking.individualBooking
         user = individual_booking.user
-        with assert_num_queries(queries):
+        with assert_no_duplicated_queries():
             api.cancel_booking_by_beneficiary(user, booking)
 
         # cancellation can trigger more than one request to Batch
