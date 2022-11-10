@@ -50,6 +50,7 @@ const Notification = (): JSX.Element | null => {
   if (type === 'error') {
     iconComponent = <ErrorIcon />
   } else if (type === 'pending') {
+    /* istanbul ignore next: DEBT, TO FIX */
     iconComponent = <PendingIcon />
   } else if (type === 'information') {
     iconComponent = <InfoIcon />
