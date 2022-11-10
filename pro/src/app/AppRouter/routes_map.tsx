@@ -279,6 +279,7 @@ const routes: IRoute[] = [
       '/offre/duplication/collectif',
       '/offre/creation/collectif',
       '/offre/collectif/:offerId/creation',
+      '/offre/collectif/vitrine/:offerId/creation',
     ],
     title: 'Edition d’une offre collective',
   },

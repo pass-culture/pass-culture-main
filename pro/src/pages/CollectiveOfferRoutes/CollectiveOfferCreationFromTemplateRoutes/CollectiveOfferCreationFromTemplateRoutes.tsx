@@ -64,6 +64,7 @@ const CollectiveOfferCreationRoutes = (): JSX.Element => {
           {collectiveOffer ? (
             <CollectiveOfferCreationVisibility
               setOffer={setCollectiveOffer}
+              offer={collectiveOffer}
               isDuplicatingOffer
             />
           ) : (

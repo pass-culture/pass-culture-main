@@ -33,7 +33,10 @@ export const patchCollectiveOfferTemplateAdapter: patchCollectiveOfferTemplateAd
       return {
         isOk: true,
         message: 'Votre offre a bien été modifiée.',
-        payload: { ...updatedOffer, isTemplate: true },
+        payload: {
+          ...updatedOffer,
+          isTemplate: true,
+        },
       }
     } catch (error) {
       return {

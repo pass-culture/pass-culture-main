@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
 import FormLayout from 'components/FormLayout'
@@ -12,7 +12,8 @@ import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/compute
 import { computeOffersUrl } from 'core/Offers'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
-import { Banner, Button } from 'ui-kit'
+import { Banner, Button, ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import publishCollectiveOfferAdapter from './adapters/publishCollectiveOfferAdapter'
 import publishCollectiveOfferTemplateAdapter from './adapters/publishCollectiveOfferTemplateAdapter'
@@ -56,7 +57,9 @@ const CollectiveOfferSummaryCreation = ({
     }
     return history.push(confirmationUrl)
   }
-
+  const backRedirectionUrl = offer.isTemplate
+    ? `/offre/collectif/vitrine/${offer.id}/creation`
+    : `/offre/${offer.id}/collectif/visibilite`
   return (
     <div className={styles['summary']}>
       <Banner type="notification-info" className={styles['summary-banner']}>
@@ -65,9 +68,19 @@ const CollectiveOfferSummaryCreation = ({
       </Banner>
       <CollectiveOfferSummary offer={offer} categories={categories} />
       <FormLayout.Actions>
-        <Link className="secondary-link" to={computeOffersUrl({})}>
-          Annuler et quitter
-        </Link>
+        <ButtonLink
+          variant={ButtonVariant.SECONDARY}
+          link={{
+            to: isSubtypeChosenAtCreation
+              ? backRedirectionUrl
+              : computeOffersUrl({}),
+            isExternal: false,
+          }}
+        >
+          {isSubtypeChosenAtCreation
+            ? 'Etape précédente'
+            : 'Annuler et quitter'}
+        </ButtonLink>
         <Button onClick={publishOffer}>Publier l’offre</Button>
       </FormLayout.Actions>
     </div>
