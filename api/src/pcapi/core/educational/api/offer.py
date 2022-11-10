@@ -512,7 +512,9 @@ def edit_collective_offer_public(
     return offer
 
 
-def publish_collective_offer(offer: educational_models.CollectiveOffer, user: User) -> None:
+def publish_collective_offer(
+    offer: educational_models.CollectiveOffer, user: User
+) -> educational_models.CollectiveOffer:
     from pcapi.core.offers.api import update_offer_fraud_information
 
     if offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
@@ -520,14 +522,20 @@ def publish_collective_offer(offer: educational_models.CollectiveOffer, user: Us
         search.async_index_collective_offer_ids([offer.id])
         db.session.commit()
 
+    return offer
 
-def publish_collective_offer_template(offer_template: educational_models.CollectiveOffer, user: User) -> None:
+
+def publish_collective_offer_template(
+    offer_template: educational_models.CollectiveOfferTemplate, user: User
+) -> educational_models.CollectiveOfferTemplate:
     from pcapi.core.offers.api import update_offer_fraud_information
 
     if offer_template.validation == offer_mixin.OfferValidationStatus.DRAFT:
         update_offer_fraud_information(offer_template, user)
         search.async_index_collective_offer_template_ids([offer_template.id])
         db.session.commit()
+
+    return offer_template
 
 
 # PRIVATE
