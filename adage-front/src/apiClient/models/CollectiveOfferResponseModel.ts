@@ -19,6 +19,8 @@ export type CollectiveOfferResponseModel = {
   educationalInstitution?: EducationalInstitutionResponseModel | null;
   educationalPriceDetail?: string | null;
   id: number;
+  imageCredit?: string | null;
+  imageUrl?: string | null;
   interventionArea: Array<string>;
   isExpired: boolean;
   isSoldOut: boolean;

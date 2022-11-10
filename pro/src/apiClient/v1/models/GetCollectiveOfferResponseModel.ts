@@ -23,6 +23,8 @@ export type GetCollectiveOfferResponseModel = {
   durationMinutes?: number | null;
   hasBookingLimitDatetimesPassed: boolean;
   id: string;
+  imageCredit?: string | null;
+  imageUrl?: string | null;
   institution?: EducationalInstitutionResponseModel | null;
   interventionArea: Array<string>;
   isActive: boolean;
