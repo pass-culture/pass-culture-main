@@ -15,7 +15,7 @@ const STEP_RECAP = 'summary'
 
 const collectiveUrlPatterns: { [key: string]: RegExp } = {
   [STEP_OFFER]: /\/offre\/creation\/collectif/g,
-  [STEP_OFFER_EDITION]: /\/offre\/collectif\/[A-Z,0-9]+\/creation/g,
+  [STEP_OFFER_EDITION]: /\/offre\/collectif(\/vitrine)?\/[A-Z,0-9]+\/creation/g,
   [STEP_STOCKS]:
     /\/offre(\/(((T-){0,1}[A-Z0-9]+)|duplication))\/collectif(\/[A-Z,0-9]+)?\/stocks/g,
   [STEP_VISIBILITY]:
@@ -60,14 +60,15 @@ const RouteLeavingGuardOfferCreation = ({
       if (toMatchs.length) {
         to = toMatchs.reverse()[0]
       }
-
       // going back
       if (
         (from === STEP_STOCKS && to === STEP_OFFER) ||
         (from === STEP_STOCKS && to === STEP_OFFER_EDITION) ||
         (from === STEP_VISIBILITY && to === STEP_STOCKS) ||
         (from === STEP_RECAP && to === STEP_VISIBILITY) ||
-        (from === STEP_RECAP && to === STEP_STOCKS)
+        (from === STEP_RECAP && to === STEP_STOCKS) ||
+        (from === STEP_RECAP && to === STEP_OFFER_EDITION) ||
+        (from === STEP_RECAP && to === STEP_OFFER)
       ) {
         if (isSubtypeChosenAtCreation) {
           return { shouldBlock: false }
@@ -83,7 +84,6 @@ const RouteLeavingGuardOfferCreation = ({
         }
         return { redirectPath, shouldBlock: false }
       }
-
       if (
         // going to stocks
         to === STEP_STOCKS ||

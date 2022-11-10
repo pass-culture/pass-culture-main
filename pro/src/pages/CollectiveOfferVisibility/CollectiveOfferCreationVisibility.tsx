@@ -8,6 +8,7 @@ import {
   DEFAULT_VISIBILITY_FORM_VALUES,
   Mode,
 } from 'core/OfferEducational'
+import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'
@@ -16,11 +17,13 @@ import patchEducationalInstitutionAdapter from './adapters/patchEducationalInsti
 interface CollectiveOfferVisibilityProps {
   setOffer: (offer: CollectiveOffer) => void
   isDuplicatingOffer?: boolean
+  offer: CollectiveOffer
 }
 
 const CollectiveOfferVisibility = ({
   setOffer,
   isDuplicatingOffer = false,
+  offer,
 }: CollectiveOfferVisibilityProps) => {
   const history = useHistory()
 
@@ -52,12 +55,15 @@ const CollectiveOfferVisibility = ({
     })
   }, [])
 
+  const initialValues = offer
+    ? extractInitialVisibilityValues(offer.institution)
+    : DEFAULT_VISIBILITY_FORM_VALUES
   return (
     <>
       <CollectiveOfferVisibilityScreen
         mode={Mode.CREATION}
         patchInstitution={patchEducationalInstitutionAdapter}
-        initialValues={DEFAULT_VISIBILITY_FORM_VALUES}
+        initialValues={initialValues}
         onSuccess={onSuccess}
         institutions={institutions}
         isLoadingInstitutions={isLoadingInstitutions}

@@ -81,6 +81,8 @@ const CollectiveOfferCreationRoutes = ({
           '/offre/:offerId/collectif',
           '/offre/creation/collectif',
           '/offre/collectif/:offerId/creation',
+          '/offre/creation/collectif/vitrine',
+          '/offre/collectif/vitrine/:offerId/creation',
         ]}
         exact={false}
       >
@@ -94,7 +96,10 @@ const CollectiveOfferCreationRoutes = ({
         >
           <Switch>
             <Route path="/offre/creation/collectif/vitrine">
-              <CollectiveOfferTemplateCreation />
+              <CollectiveOfferTemplateCreation
+                offer={collectiveOfferTemplate}
+                setOfferTemplate={setCollectiveOfferTemplate}
+              />
             </Route>
             <Route path="/offre/creation/collectif">
               <CollectiveOfferCreation
@@ -114,6 +119,18 @@ const CollectiveOfferCreationRoutes = ({
                 )}
               </Route>
             )}
+            {isSubtypeChosenAtCreation && (
+              <Route path="/offre/collectif/vitrine/:offerId/creation">
+                {collectiveOfferTemplate ? (
+                  <CollectiveOfferTemplateCreation
+                    offer={collectiveOfferTemplate}
+                    setOfferTemplate={setCollectiveOfferTemplate}
+                  />
+                ) : (
+                  <Spinner />
+                )}
+              </Route>
+            )}
             <Route path="/offre/:offerId/collectif/stocks">
               {collectiveOffer ? (
                 <CollectiveOfferStockCreation offer={collectiveOffer} />
@@ -124,6 +141,7 @@ const CollectiveOfferCreationRoutes = ({
             <Route path="/offre/:offerId/collectif/visibilite">
               {collectiveOffer ? (
                 <CollectiveOfferVisibilityCreation
+                  offer={collectiveOffer}
                   setOffer={setCollectiveOffer}
                 />
               ) : (
