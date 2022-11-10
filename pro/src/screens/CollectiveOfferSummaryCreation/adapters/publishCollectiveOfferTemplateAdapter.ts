@@ -1,15 +1,20 @@
 import { api } from 'apiClient/api'
+import { CollectiveOfferTemplate } from 'core/OfferEducational'
 
-type PublishCollectiveOfferTemplateAdapter = Adapter<string, null, null>
+type PublishCollectiveOfferTemplateAdapter = Adapter<
+  string,
+  CollectiveOfferTemplate,
+  null
+>
 
 const publishCollectiveOfferTemplateAdapter: PublishCollectiveOfferTemplateAdapter =
   async offerId => {
     try {
-      await api.patchCollectiveOfferTemplatePublication(offerId)
+      const offer = await api.patchCollectiveOfferTemplatePublication(offerId)
       return {
         isOk: true,
         message: '',
-        payload: null,
+        payload: { ...offer, isTemplate: true },
       }
     } catch (error) {
       return {
