@@ -84,7 +84,6 @@ const Venue = ({
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
-  const isVenueFormV2 = useActiveFeature('VENUE_FORM_V2')
   const isNewBankInformationActive = useActiveFeature(
     'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
   )
@@ -116,9 +115,7 @@ const Venue = ({
     })
   }, [offererId])
 
-  let editVenueLink = isVenueFormV2
-    ? `/structures/${offererId}/lieux/V2/${id}?modification`
-    : `/structures/${offererId}/lieux/${id}?modification`
+  let editVenueLink = `/structures/${offererId}/lieux/${id}?modification`
 
   return (
     <div
