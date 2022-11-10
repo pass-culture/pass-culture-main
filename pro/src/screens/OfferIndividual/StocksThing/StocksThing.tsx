@@ -58,7 +58,9 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
     /* istanbul ignore next: DEBT, TO FIX */
     if (isOk) {
-      notify.success(message)
+      notify.success(message, {
+        withStickyActionBar: true,
+      })
       const response = await getOfferIndividualAdapter(offer.id)
       if (response.isOk) {
         setOffer && setOffer(response.payload)
