@@ -116,6 +116,8 @@ class Returns200Test:
             "domainLabels": [domain.name for domain in offer.domains],
             "domainIds": [domain.id for domain in offer.domains],
             "interventionArea": offer.interventionArea,
+            "imageUrl": None,
+            "imageCredit": None,
         }
         assert (
             CollectiveBooking.query.filter(CollectiveBooking.id == booking.id).one().status

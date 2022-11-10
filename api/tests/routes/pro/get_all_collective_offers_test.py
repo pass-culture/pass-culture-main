@@ -42,6 +42,8 @@ class Returns200Test:
         assert response_json[0]["stocks"][0]["id"] == humanize(stock.id)
         assert response_json[0]["isShowcase"] == False
         assert response_json[0]["educationalInstitution"]["name"] == institution.name
+        assert response_json[0]["imageCredit"] == None
+        assert response_json[0]["imageUrl"] == None
 
     def test_one_simple_collective_offer_template(self, app):
         # Given
@@ -65,18 +67,25 @@ class Returns200Test:
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == ""
         assert response_json[0]["isShowcase"] == True
+        assert response_json[0]["imageCredit"] == None
+        assert response_json[0]["imageUrl"] == None
 
     def test_mix_collective_offer_and_template(self, app):
         # Given
+        image_crop = {}
         user = users_factories.UserFactory()
         offerer = offerer_factories.OffererFactory()
         offerer_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
+            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1, imageCrop=image_crop, imageCredit="offer"
         )
         template = educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=10), offerId=2
+            venue=venue,
+            dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=10),
+            offerId=2,
+            imageCrop=image_crop,
+            imageCredit="template",
         )
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
@@ -94,11 +103,17 @@ class Returns200Test:
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == ""
         assert response_json[0]["isShowcase"] == True
+        assert response_json[0]["imageCredit"] == "template"
+        assert (
+            response_json[0]["imageUrl"] == f"http://localhost/storage/thumbs/collectiveoffertemplate/{template.id}.jpg"
+        )
         assert response_json[1]["venueId"] == humanize(venue.id)
         assert response_json[1]["id"] == humanize(offer.id)
         assert len(response_json[1]["stocks"]) == 1
         assert response_json[1]["stocks"][0]["id"] == humanize(stock.id)
         assert response_json[1]["isShowcase"] == False
+        assert response_json[1]["imageCredit"] == "offer"
+        assert response_json[1]["imageUrl"] == f"http://localhost/storage/thumbs/collectiveoffer/{offer.id}.jpg"
 
     def test_one_collective_offer_with_template_id(self, client):
         # Given

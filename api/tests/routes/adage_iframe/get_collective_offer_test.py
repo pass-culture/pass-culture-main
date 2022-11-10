@@ -18,8 +18,7 @@ educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8
 
 @freeze_time("2020-11-17 15:00:00")
 class Returns200Test:
-    @classmethod
-    def test_get_collective_offer(cls, client):
+    def test_get_collective_offer(self, client):
         # Given
         institution = educational_factories.EducationalInstitutionFactory()
         stock = educational_factories.CollectiveStockFactory(
@@ -82,16 +81,19 @@ class Returns200Test:
             "domains": [{"id": stock.collectiveOffer.domains[0].id, "name": stock.collectiveOffer.domains[0].name}],
             "educationalInstitution": {
                 "id": institution.id,
+                "institutionType": institution.institutionType,
                 "name": institution.name,
                 "city": institution.city,
                 "postalCode": institution.postalCode,
             },
+            "interventionArea": ["93", "94", "95"],
+            "imageCredit": None,
+            "imageUrl": None,
         }
 
 
 class Returns404Test:
-    @classmethod
-    def test_should_return_404_when_no_collective_offer(cls, client):
+    def test_should_return_404_when_no_collective_offer(self, client):
         # Given
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
