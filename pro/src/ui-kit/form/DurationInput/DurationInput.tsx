@@ -22,8 +22,6 @@ const DurationInput = ({
   const [field, meta, helpers] = useField({ name })
 
   const onDurationBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    helpers.setTouched(true, false)
-
     const [updatedHours, updatedMinutes] = event.target.value.split(':')
     const updatedDurationInMinutes =
       parseInt(updatedHours || '0') * 60 + parseInt(updatedMinutes || '0')
@@ -34,7 +32,9 @@ const DurationInput = ({
 
   const onDurationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const durationInputValue = event.target.value.match(/\d*:?[0-5]?\d?/)
-    durationInputValue && helpers.setValue(durationInputValue[0])
+    !meta.touched &&
+      durationInputValue &&
+      helpers.setValue(durationInputValue[0])
   }
 
   return (
