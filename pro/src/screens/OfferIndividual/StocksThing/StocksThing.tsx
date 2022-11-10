@@ -54,6 +54,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       offerId: offer.id,
       formValues,
       departementCode: offer.venue.departmentCode,
+      mode,
     })
 
     /* istanbul ignore next: DEBT, TO FIX */
