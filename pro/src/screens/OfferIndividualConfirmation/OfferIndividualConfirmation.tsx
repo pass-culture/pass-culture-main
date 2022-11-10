@@ -75,7 +75,7 @@ const OfferIndividualConfirmation = ({
       <div className={styles['confirmation-actions']}>
         <ButtonLink
           link={{
-            to: `/offre/creation/individuel${queryString}`,
+            to: `/offre/creation/individuelle${queryString}`,
             isExternal: false,
           }}
           variant={ButtonVariant.SECONDARY}
