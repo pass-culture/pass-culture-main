@@ -27,9 +27,11 @@ const StockThingForm = ({
   return (
     <>
       <TextInput
+        className={styles['price-field']}
         smallLabel
         name="price"
         label="Prix"
+        type="number"
         placeholder="Ex: 20€"
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('price')}
