@@ -1,6 +1,3 @@
-from dataclasses import InitVar
-from dataclasses import asdict
-from dataclasses import dataclass
 from datetime import datetime
 import hashlib
 import json
@@ -31,41 +28,30 @@ def get_client():  # type: ignore [no-untyped-def]
     return get_client.client
 
 
-@dataclass
-class CloudTaskHttpRequest:
-    http_method: tasks_v2.HttpMethod
-    url: str
-    headers: dict | None = None
-    body: bytes | None = None
-    json: InitVar[bytes] = None
-
-    def __post_init__(self, json_param):  # type: ignore [no-untyped-def]
-        if json is not None:
-            self.body = json.dumps(json_param).encode()
-
-
 def enqueue_task(
-    queue: str, http_request: CloudTaskHttpRequest, task_id: str = None, schedule_time: datetime = None
+    queue: str, http_request: tasks_v2.HttpRequest, task_id: str = None, schedule_time: datetime = None
 ) -> str | None:
 
     client = get_client()
     parent = client.queue_path(settings.GCP_PROJECT, settings.GCP_REGION_CLOUD_TASK, queue)
 
-    task_request = {"http_request": asdict(http_request)}
+    task = tasks_v2.Task(http_request=http_request)
 
     # task_id must be used for de-duplication:
     # https://cloud.google.com/tasks/docs/reference/rest/v2/projects.locations.queues.tasks/create
     if task_id:
-        task_request["name"] = client.task_path(settings.GCP_PROJECT, settings.GCP_REGION_CLOUD_TASK, queue, task_id)
+        task.name = client.task_path(settings.GCP_PROJECT, settings.GCP_REGION_CLOUD_TASK, queue, task_id)
 
     if schedule_time:
         timestamp = timestamp_pb2.Timestamp()
         timestamp.FromDatetime(schedule_time)
-        task_request["schedule_time"] = timestamp
+        task.schedule_time = timestamp
+
+    task_request = tasks_v2.CreateTaskRequest(parent=parent, task=task)
 
     try:
         response = client.create_task(
-            request={"parent": parent, "task": task_request},
+            request=task_request,
             retry=retry.Retry(
                 initial=settings.CLOUD_TASK_RETRY_INITIAL_DELAY,
                 maximum=settings.CLOUD_TASK_RETRY_MAXIMUM_DELAY,
@@ -97,11 +83,11 @@ def enqueue_internal_task(queue, path, payload, deduplicate: bool = False, delay
         _call_internal_api_endpoint(queue, url, payload)
         return None
 
-    http_request = CloudTaskHttpRequest(
-        http_method=tasks_v2.HttpMethod.POST,  # type: ignore [arg-type]
-        url=url,
+    http_request = tasks_v2.HttpRequest(
+        body=json.dumps(payload).encode(),
         headers={"Content-type": "application/json", AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
-        json=payload,
+        http_method=tasks_v2.HttpMethod.POST,
+        url=url,
     )
 
     # According to Google Cloud Tasks documentation, "Using hashed strings for the task id or for the prefix of the task
