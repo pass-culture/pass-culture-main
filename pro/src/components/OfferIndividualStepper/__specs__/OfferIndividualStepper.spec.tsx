@@ -66,7 +66,7 @@ const renderOfferIndividualStepper = (
     </OfferIndividualContext.Provider>
   )
 
-  const tabInformations = screen.queryByText('Informations')
+  const tabInformations = screen.queryByText("Détails de l'offre")
   const tabStocks = screen.queryByText('Stock & Prix')
   const tabSummary = screen.queryByText('Récapitulatif')
   const tabConfirmation = screen.queryByText('Confirmation')
@@ -221,7 +221,7 @@ describe('test OfferIndividualStepper', () => {
       )
 
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
-      expect(screen.getByTestId('bc-default')).toBeInTheDocument()
+      expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
     })
 
     it('should render steps on Information', async () => {

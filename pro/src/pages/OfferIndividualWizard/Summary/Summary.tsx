@@ -3,7 +3,9 @@ import React from 'react'
 
 import PageTitle from 'components/PageTitle/PageTitle'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
+import { useOfferWizardMode } from 'hooks'
 import {
   Summary as SummaryScreen,
   Template as WizardTemplate,
@@ -23,6 +25,7 @@ const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
   } = useOfferIndividualContext()
   // FIXME : we should not need  as IOfferIndividual cause parent route would redirect on offer loading error
   const offer = contextOffer as IOfferIndividual
+  const mode = useOfferWizardMode()
   const {
     providerName,
     offer: offerData,
@@ -38,7 +41,7 @@ const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
   return (
     <WizardTemplate
       title={isOfferV2 ? null : 'Récapitulatif'}
-      withStepper={false}
+      withStepper={mode === OFFER_WIZARD_MODE.CREATION}
     >
       <PageTitle title="Récapitulatif" />
       <SummaryScreen
