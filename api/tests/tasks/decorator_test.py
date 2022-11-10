@@ -78,6 +78,7 @@ class CloudTaskDecoratorTest:
         inner_task = MagicMock()
         test_task = generate_task(inner_task)
         payload = VoidTaskPayload(chouquette_price=12)
+        cloud_task_client.queue_path.return_value = "queue_path"
 
         test_task.delay(payload)
 
@@ -85,12 +86,17 @@ class CloudTaskDecoratorTest:
 
         _, call_args = cloud_task_client.create_task.call_args
 
-        assert call_args["request"]["task"]["http_request"] == {
-            "body": b'{"chouquette_price": 12}',
-            "headers": {"AUTHORIZATION": "Bearer " "secret-token", "Content-type": "application/json"},
-            "http_method": tasks_v2.HttpMethod.POST,
-            "url": f"{settings.API_URL}/cloud-tasks/void_task",
-        }
+        assert call_args["request"] == tasks_v2.CreateTaskRequest(
+            parent="queue_path",
+            task=tasks_v2.Task(
+                http_request=tasks_v2.HttpRequest(
+                    body=b'{"chouquette_price": 12}',
+                    headers={"AUTHORIZATION": "Bearer " "secret-token", "Content-type": "application/json"},
+                    http_method=tasks_v2.HttpMethod.POST,
+                    url=f"{settings.API_URL}/cloud-tasks/void_task",
+                )
+            ),
+        )
 
     @patch("pcapi.tasks.decorator.cloud_task_api.route")
     def test_creates_a_handler_endoint(self, route_helper, app):
