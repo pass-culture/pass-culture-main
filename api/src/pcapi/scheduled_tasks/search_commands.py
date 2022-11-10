@@ -1,5 +1,5 @@
 from pcapi.core import search
-import pcapi.core.educational.api as educational_api
+from pcapi.core.educational.api.offer import unindex_expired_collective_offers
 import pcapi.core.offers.api as offers_api
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
@@ -57,7 +57,7 @@ def delete_expired_collective_offers_in_algolia():  # type: ignore [no-untyped-d
     days. For example, if run on Thursday (whatever the time), this
     function handles collective offers that have expired between Tuesday 00:00
     and Wednesday 23:59 (included)."""
-    educational_api.unindex_expired_collective_offers()
+    unindex_expired_collective_offers()
 
 
 @blueprint.cli.command("index_offers_in_error_in_algolia_by_offer")

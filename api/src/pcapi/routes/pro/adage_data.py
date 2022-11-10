@@ -3,7 +3,8 @@ import math
 
 from flask_login import login_required
 
-from pcapi.core.educational import api
+from pcapi.core.educational.api import adage as educational_api_adage
+from pcapi.core.educational.api import institution as educational_api_institution
 from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
@@ -28,7 +29,7 @@ def get_educational_institutions(
     query: educational_institutions.EducationalInstitutionsQueryModel,
 ) -> educational_institutions.EducationalInstitutionsResponseModel:
 
-    institutions, total = api.get_all_educational_institutions(
+    institutions, total = educational_api_institution.get_all_educational_institutions(
         page=query.page,
         per_page_limit=query.per_page_limit,
     )
@@ -60,8 +61,8 @@ def get_educational_institutions(
     api=blueprint.pro_private_schema,
 )
 def get_educational_partners() -> venues_serialize.AdageCulturalPartnersResponseModel:
-    data = api.get_cultural_partners()
-    return venues_serialize.AdageCulturalPartnersResponseModel.from_orm(data)
+    venues = educational_api_adage.get_cultural_partners()
+    return venues_serialize.AdageCulturalPartnersResponseModel.from_orm(venues)
 
 
 @private_api.route("/cultural-partner/<siret>", methods=["GET"])
@@ -74,7 +75,7 @@ def get_educational_partners() -> venues_serialize.AdageCulturalPartnersResponse
 )
 def get_educational_partner(siret: str) -> venues_serialize.AdageCulturalPartnerResponseModel:
     try:
-        data = api.get_cultural_partner(siret)
+        data = educational_api_adage.get_cultural_partner(siret)
     except CulturalPartnerNotFoundException:
         raise ApiErrors({"code": "CULTURAL_PARTNER_NOT_FOUND"}, status_code=404)
     return venues_serialize.AdageCulturalPartnerResponseModel(**data.dict())

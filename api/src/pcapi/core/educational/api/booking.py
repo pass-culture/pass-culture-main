@@ -253,33 +253,6 @@ def get_collective_booking_by_id(booking_id: int) -> educational_models.Collecti
     return collective_booking
 
 
-def cancel_collective_booking_by_offerer(
-    collective_stock: educational_models.CollectiveStock,
-) -> educational_models.CollectiveBooking:
-    """
-    Cancel booking.
-    Note that this will not reindex the associated offer in Algolia
-    """
-    booking_to_cancel: educational_models.CollectiveBooking | None = next(
-        (
-            collective_booking
-            for collective_booking in collective_stock.collectiveBookings
-            if collective_booking.is_cancellable_from_offerer
-        ),
-        None,
-    )
-
-    if booking_to_cancel is None:
-        raise exceptions.NoCollectiveBookingToCancel()
-
-    _cancel_collective_booking(
-        booking_to_cancel,
-        educational_models.CollectiveBookingCancellationReasons.OFFERER,
-    )
-
-    return booking_to_cancel
-
-
 def cancel_collective_offer_booking(offer_id: int) -> None:
     collective_offer: educational_models.CollectiveOffer | None = (
         educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == offer_id)
@@ -300,7 +273,7 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
     collective_stock = collective_offer.collectiveStock
 
     # Offer is reindexed in the end of this function
-    cancelled_booking = cancel_collective_booking_by_offerer(collective_stock)
+    cancelled_booking = _cancel_collective_booking_by_offerer(collective_stock)
 
     search.async_index_collective_offer_ids([offer_id])
 
@@ -389,3 +362,30 @@ def _cancel_collective_booking(
             "reason": str(reason),
         },
     )
+
+
+def _cancel_collective_booking_by_offerer(
+    collective_stock: educational_models.CollectiveStock,
+) -> educational_models.CollectiveBooking:
+    """
+    Cancel booking.
+    Note that this will not reindex the associated offer in Algolia
+    """
+    booking_to_cancel: educational_models.CollectiveBooking | None = next(
+        (
+            collective_booking
+            for collective_booking in collective_stock.collectiveBookings
+            if collective_booking.is_cancellable_from_offerer
+        ),
+        None,
+    )
+
+    if booking_to_cancel is None:
+        raise exceptions.NoCollectiveBookingToCancel()
+
+    _cancel_collective_booking(
+        booking_to_cancel,
+        educational_models.CollectiveBookingCancellationReasons.OFFERER,
+    )
+
+    return booking_to_cancel

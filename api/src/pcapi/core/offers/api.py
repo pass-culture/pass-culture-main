@@ -25,8 +25,8 @@ import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.conf import can_create_from_isbn
 import pcapi.core.criteria.models as criteria_models
-from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.external_bookings.api import get_shows_stock
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
@@ -301,7 +301,7 @@ def update_collective_offer(
 
     search.async_index_collective_offer_ids([offer_to_update.id])
 
-    educational_api.notify_educational_redactor_on_collective_offer_or_stock_edit(
+    educational_api_offer.notify_educational_redactor_on_collective_offer_or_stock_edit(
         offer_to_update.id,
         updated_fields,
     )
@@ -330,7 +330,7 @@ def _update_collective_offer(
             continue
 
         if key == "domains":
-            domains = educational_api.get_educational_domains_from_ids(value)
+            domains = educational_api_offer.get_educational_domains_from_ids(value)
             offer.domains = domains
             continue
 

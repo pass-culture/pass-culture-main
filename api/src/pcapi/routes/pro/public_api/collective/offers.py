@@ -1,7 +1,7 @@
-from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation as educational_validation
+from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
@@ -48,7 +48,7 @@ def get_collective_offers_public(
     """Récuperation de l'offre collective avec l'identifiant offer_id.
     Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées."""
 
-    offers = educational_api.list_public_collective_offers(
+    offers = educational_api_offer.list_public_collective_offers(
         offerer_id=current_api_key.offererId,  # type: ignore [attr-defined]
         venue_id=query.venue_id,
         status=query.status,
@@ -148,7 +148,7 @@ def post_collective_offer_public(
     # in French, to be used by Swagger for the API documentation
     """Création d'une offre collective."""
     try:
-        offer = educational_api.create_collective_offer_public(
+        offer = educational_api_offer.create_collective_offer_public(
             offerer_id=current_api_key.offererId,  # type: ignore [attr-defined]
             body=body,
         )
@@ -306,7 +306,7 @@ def patch_collective_offer_public(
 
     # real edition
     try:
-        offer = educational_api.edit_collective_offer_public(
+        offer = educational_api_offer.edit_collective_offer_public(
             offerer_id=current_api_key.offererId,  # type: ignore [attr-defined]
             new_values=new_values,
             offer=offer,
