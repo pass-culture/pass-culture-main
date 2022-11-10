@@ -13,7 +13,7 @@ import pcapi.core.finance.conf as finance_conf
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.external import BookingsAttributes
 from pcapi.core.users.external import TRACKED_PRODUCT_IDS
@@ -47,21 +47,7 @@ def test_update_external_user():
     )
     IndividualBookingFactory(individualBooking__user=user)
 
-    n_query_get_user = 1
-    n_query_get_bookings = 1
-    n_query_get_deposit = 1
-    n_query_is_pro = 1
-    n_query_get_last_favorite = 1
-    n_query_get_wallet_balance = 1
-
-    with assert_num_queries(
-        n_query_get_user
-        + n_query_get_bookings
-        + n_query_get_deposit
-        + n_query_is_pro
-        + n_query_get_last_favorite
-        + n_query_get_wallet_balance
-    ):
+    with assert_no_duplicated_queries():
         update_external_user(user)
 
     assert len(batch_testing.requests) == 2
@@ -87,10 +73,7 @@ def test_email_should_not_be_blacklisted_in_sendinblue_by_default():
 def test_update_external_pro_user():
     user = ProFactory()
 
-    n_query_get_user = 1
-    n_query_is_pro = 3
-
-    with assert_num_queries(n_query_get_user + n_query_is_pro):
+    with assert_no_duplicated_queries():
         update_external_user(user)
 
     assert len(batch_testing.requests) == 0
@@ -116,14 +99,7 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
 
     last_date_created = max(booking.dateCreated for booking in [b1, b2])
 
-    n_query = 1  # user
-    n_query += 1  # booking
-    n_query += 1  # deposit
-    n_query += 1  # is pro
-    n_query += 1  # favorite
-    n_query += 1  # get_wallet_balance
-
-    with assert_num_queries(n_query):
+    with assert_no_duplicated_queries():
         attributes = get_user_attributes(user)
 
     assert attributes == UserAttributes(
@@ -177,14 +153,7 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
         )
 
-    n_query = 1  # user
-    n_query += 1  # booking
-    n_query += 1  # deposit
-    n_query += 1  # is pro
-    n_query += 1  # favorite
-    n_query += 0  # get_wallet_balance not called when expiration date is reached
-
-    with assert_num_queries(n_query):
+    with assert_no_duplicated_queries():
         attributes = get_user_attributes(user)
 
     assert attributes == UserAttributes(
@@ -239,14 +208,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
     offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
     booking = IndividualBookingFactory(individualBooking__user=user, amount=300, stock__offer=offer)
 
-    n_query = 1  # user
-    n_query += 1  # booking
-    n_query += 1  # deposit
-    n_query += 1  # is pro
-    n_query += 1  # favorite
-    n_query += 1  # get_wallet_balance
-
-    with assert_num_queries(n_query):
+    with assert_no_duplicated_queries():
         attributes = get_user_attributes(user)
 
     assert attributes == UserAttributes(
@@ -356,14 +318,7 @@ def test_get_user_attributes_not_beneficiary():
         user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.PENDING
     )
 
-    n_query = 1  # user
-    n_query += 1  # booking
-    n_query += 1  # favorite
-    n_query += 1  # is pro
-    n_query += 1  # deposit
-    n_query += 1  # fraud checks
-
-    with assert_num_queries(n_query):
+    with assert_no_duplicated_queries():
         attributes = get_user_attributes(user)
 
     assert attributes == UserAttributes(

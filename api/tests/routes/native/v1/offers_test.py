@@ -20,6 +20,7 @@ from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.models import OfferReport
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -73,9 +74,7 @@ class OffersTest:
         BookingFactory(stock=exhaustedStock)
 
         offer_id = offer.id
-        queries = 1  # select offer
-        queries += 1  # select feature
-        with assert_num_queries(queries):
+        with assert_no_duplicated_queries():
             response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -181,9 +180,7 @@ class OffersTest:
         ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        queries = 1  # select offer
-        queries += 1  # select feature
-        with assert_num_queries(queries):
+        with assert_no_duplicated_queries():
             response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -199,12 +196,8 @@ class OffersTest:
         stock = StockWithActivationCodesFactory()
         offer_id = stock.offer.id
 
-        queries = 1  # select offer
-        queries += 1  # get available_activation_code for each offer.stocks
-        queries += 1  # select feature
-
         # when
-        with assert_num_queries(queries):
+        with assert_no_duplicated_queries():
             response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
 
         # then
@@ -216,12 +209,8 @@ class OffersTest:
         stock = StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2050, 1, 1))
         offer_id = stock.offer.id
 
-        queries = 1  # select offer
-        queries += 1  # get available_activation_code for each offer.stocks
-        queries += 1  # select feature
-
         # when
-        with assert_num_queries(queries):
+        with assert_no_duplicated_queries():
             response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
 
         # then
@@ -233,12 +222,8 @@ class OffersTest:
         stock = StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2000, 1, 1))
         offer_id = stock.offer.id
 
-        queries = 1  # select offer
-        queries += 1  # get available_activation_code for each offer.stocks
-        queries += 1  # select feature
-
         # when
-        with assert_num_queries(queries):
+        with assert_no_duplicated_queries():
             response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
 
         # then
@@ -250,9 +235,7 @@ class OffersTest:
         stock = EventStockFactory(beginningDatetime=datetime.utcnow() - timedelta(days=1))
 
         offer_id = stock.offer.id
-        queries = 1  # select offer
-        queries += 1  # select feature
-        with assert_num_queries(queries):
+        with assert_no_duplicated_queries():
             response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
 
         assert response.json["isExpired"]
@@ -318,10 +301,7 @@ class SendOfferWebAppLinkTest:
     def test_send_offer_webapp_link_by_email_not_found(self, app):
         _, test_client = create_user_and_test_client(app)
 
-        # expected queries:
-        #   * get User
-        #   * try to find Offer
-        with assert_num_queries(2):
+        with assert_no_duplicated_queries():
             response = test_client.post("/native/v1/send_offer_webapp_link_by_email/98765432123456789")
             assert response.status_code == 404
         assert not mails_testing.outbox
@@ -331,11 +311,7 @@ class SendOfferWebAppLinkTest:
         user = users_factories.BeneficiaryGrant18Factory()
         test_client = client.with_token(user.email)
 
-        # expected queries:
-        #   * get User
-        #   * find Offer
-        #   * get FF ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION.isactive
-        with assert_num_queries(3):
+        with assert_no_duplicated_queries():
             response = test_client.post(f"/native/v1/send_offer_webapp_link_by_email/{offer_id}")
             assert response.status_code == 204
 
@@ -360,10 +336,7 @@ class SendOfferLinkNotificationTest:
 
         user, test_client = create_user_and_test_client(app)
 
-        # expected queries:
-        #   * get user
-        #   * get offer
-        with assert_num_queries(2):
+        with assert_no_duplicated_queries():
             response = test_client.post(f"/native/v1/send_offer_link_by_push/{offer_id}")
             assert response.status_code == 204
 
@@ -378,10 +351,7 @@ class SendOfferLinkNotificationTest:
         """Test that no push notification is sent when offer is not found"""
         _, test_client = create_user_and_test_client(app)
 
-        # expected queries:
-        #   * get user
-        #   * search for offer
-        with assert_num_queries(2):
+        with assert_no_duplicated_queries():
             response = test_client.post("/native/v1/send_offer_link_by_push/9999999999")
             assert response.status_code == 404
 
@@ -456,11 +426,7 @@ class ReportOfferTest:
 
         OfferReportFactory(user=user, offer=offer)
 
-        # expected queries:
-        #   * get user
-        #   * get offer
-        #   * rollback
-        with assert_num_queries(3):
+        with assert_no_duplicated_queries():
             response = test_client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "PRICE_TOO_HIGH"})
             assert response.status_code == 400
             assert response.json["code"] == "OFFER_ALREADY_REPORTED"
@@ -478,10 +444,7 @@ class ReportOfferTest:
         email = user.email
         offer_id = offer.id
 
-        # expected queries:
-        #   * get user
-        #   * rollback
-        with assert_num_queries(2):
+        with assert_no_duplicated_queries():
             dst = f"/native/v1/offer/{offer_id}/report"
             response = client.with_token(email).post(dst, json={"reason": "OTHER"})
             assert response.status_code == 400

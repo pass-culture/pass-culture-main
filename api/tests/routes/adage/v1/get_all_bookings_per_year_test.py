@@ -3,7 +3,7 @@ import pytest
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -29,7 +29,7 @@ class Returns200Test:
         client = client.with_eac_token()
         adage_id = booking1.educationalYear.adageId
 
-        with assert_num_queries(2):
+        with assert_no_duplicated_queries():
             response = client.get(f"/adage/v1/years/{adage_id}/prebookings")
 
         assert response.status_code == 200

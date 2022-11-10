@@ -43,9 +43,7 @@ class Returns200Test:
         client.with_session_auth(email="user@example.com")
         humanized_offer_id = humanize(offer.id)
 
-        num_queries = 3  # select collective offer template
-
-        with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES + num_queries):
+        with testing.assert_no_duplicated_queries():
             client.get(f"/collective/offers-template/{humanized_offer_id}")
 
 

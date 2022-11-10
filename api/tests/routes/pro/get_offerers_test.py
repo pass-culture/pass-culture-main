@@ -35,12 +35,8 @@ def test_access_by_pro(client):
     offerers_factories.OffererFactory(name="not returned")
 
     client = client.with_session_auth(pro.email)
-    n_queries = testing.AUTHENTICATION_QUERIES
-    n_queries += 1  # select offerers
-    n_queries += 1  # select count of offerers
-    n_queries_per_offerer = 3  # select count of offers, collective and template for all venues of one offerer
-    n_queries += n_queries_per_offerer * 2  # 2 offerers
-    with testing.assert_num_queries(n_queries):
+
+    with testing.assert_no_duplicated_queries():
         response = client.get("/offerers")
 
     assert response.status_code == 200

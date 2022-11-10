@@ -337,12 +337,7 @@ class AccountTest:
         assert response.status_code == 200
         client.with_token(user.email)
 
-        n_queries = 1  # get user
-        n_queries += 1  # get bookings for deposit remaining amount
-        n_queries += 1  # get bookings for booked offers info
-        n_queries += 1  # get feature enable_native_cultural_survey
-
-        with testing.assert_num_queries(n_queries):
+        with testing.assert_no_duplicated_queries():
             response = client.get("/native/v1/me")
 
 

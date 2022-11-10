@@ -44,18 +44,8 @@ def test_basics(client):
     offerer_id = offerer.id
     client = client.with_session_auth(pro.email)
     db.session.commit()
-    n_queries = (
-        testing.AUTHENTICATION_QUERIES
-        + 1  # check_user_has_access_to_offerer
-        + 1  # Offerer
-        + 1  # Offerer api_key prefix
-        + 1  # venues (manual with joinedload)
-        + 1  # Offerer hasDigitalVenueAtLeastOneOffer
-        + 1  # Offerer BankInformation
-        + 1  # Offerer hasMissingBankInformation
-        + 1  # Offerer.managedVenues (automatic by Pydantic)
-    )
-    with testing.assert_num_queries(n_queries):
+
+    with testing.assert_no_duplicated_queries():
         response = client.get(f"/offerers/{humanize(offerer_id)}")
 
     expected_serialized_offerer = {

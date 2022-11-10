@@ -78,11 +78,7 @@ class Returns200Test:
         client.with_session_auth(email=user_offerer.user.email)
         humanized_offer_id = humanize(offer.id)
 
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user access to offerer
-        num_queries += 1  # Get offer by id
-
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_no_duplicated_queries():
             client.get(f"/offers/{humanized_offer_id}")
 
     def test_access_even_if_offerer_has_no_siren(self, app):

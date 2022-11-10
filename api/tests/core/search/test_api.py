@@ -7,6 +7,7 @@ from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.search.testing as search_testing
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -98,10 +99,7 @@ class ReindexOfferIdsTest:
     def test_no_unexpected_query_made(self):
         offer_ids = [make_bookable_offer().id for _ in range(3)]
 
-        # 1: get offers
-        # 2. get FF
-        # 3. get the offers's venue id
-        with assert_num_queries(3):
+        with assert_no_duplicated_queries():
             search.reindex_offer_ids(offer_ids)
 
     def test_unindex_unbookable_offer(self, app):
@@ -162,6 +160,7 @@ class ReindexVenueIdsTest:
         # load venues (1 query)
         # load FF (1 query)
         # find whether venue has at least one bookable offer (1 query per venue)
+        # TODO(atrancart): the query to find bookable offers is duplicated, we might want fix this N+1 problem
         with assert_num_queries(5):
             search.reindex_venue_ids(venue_ids)
 

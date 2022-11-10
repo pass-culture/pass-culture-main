@@ -4,7 +4,7 @@ from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.offers.utils import offer_app_link
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -26,7 +26,7 @@ class Returns200Test:
 
         client = client.with_eac_token()
 
-        with assert_num_queries(3):
+        with assert_no_duplicated_queries():
             response = client.get(
                 f"/adage/v1/years/{educational_year.adageId}/educational_institution/{educational_institution.institutionId}/prebookings"
             )

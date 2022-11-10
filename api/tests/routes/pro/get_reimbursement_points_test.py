@@ -48,9 +48,7 @@ def test_get_reimbursement_points_by_pro(client):
     offerers_factories.UserOffererFactory(offerer=pro_reimbursement_point_1.managingOfferer, user=pro)
 
     client = client.with_session_auth(pro.email)
-    n_queries = testing.AUTHENTICATION_QUERIES
-    n_queries += 1  # select reimbursement points
-    with testing.assert_num_queries(n_queries):
+    with testing.assert_no_duplicated_queries():
         response = client.get("/finance/reimbursement-points")
 
     assert response.status_code == 200

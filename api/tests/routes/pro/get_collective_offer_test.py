@@ -98,14 +98,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
         humanized_offer_id = humanize(offer.id)
 
-        NUM_QUERIES = 0
-        NUM_QUERIES += 1  # get user_session
-        NUM_QUERIES += 1  # get user information
-        NUM_QUERIES += 1  # get offerer from offer
-        NUM_QUERIES += 1  # check user has access to offerer
-        NUM_QUERIES += 1  # get offer
-
-        with testing.assert_num_queries(NUM_QUERIES):
+        with testing.assert_no_duplicated_queries():
             client.get(f"/collective/offers/{humanized_offer_id}")
 
 

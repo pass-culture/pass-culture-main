@@ -23,7 +23,7 @@ from pcapi.core.categories import subcategories
 import pcapi.core.finance.api as finance_api
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import EligibilityType
 from pcapi.domain.booking_recap import booking_recap_history
@@ -2269,12 +2269,12 @@ def test_get_deposit_booking():
     previous_deposit_id = user.deposits[0].id
     current_deposit_id = user.deposit.id
 
-    with assert_num_queries(1):
+    with assert_no_duplicated_queries():
         previous_deposit_bookings = get_bookings_from_deposit(previous_deposit_id)
 
     assert previous_deposit_bookings == [previous_deposit_booking]
 
-    with assert_num_queries(1):
+    with assert_no_duplicated_queries():
         current_deposit_bookings = get_bookings_from_deposit(current_deposit_id)
 
     assert set(current_deposit_bookings) == {current_deposit_booking, current_deposit_booking_2}
@@ -2301,7 +2301,7 @@ class SoonExpiringBookingsTest:
         bookings = [bookings_factories.IndividualBookingFactory(stock=stock) for stock in stocks]
 
         remaining_days = (bookings[0].expirationDate.date() - date.today()).days
-        with assert_num_queries(1):
+        with assert_no_duplicated_queries():
             list(booking_repository.get_soon_expiring_bookings(remaining_days))
 
 
@@ -2358,7 +2358,7 @@ class GetTomorrowEventOfferTest:
             )
         )
 
-        with assert_num_queries(1):
+        with assert_no_duplicated_queries():
             bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
 
         assert len(bookings) == 1

@@ -26,17 +26,11 @@ class Returns200Test:
             publicName="Association des démons",
         )
         finance_factories.BankInformationFactory(venue=venue_without_siret, status=BankInformationStatus.ACCEPTED)
-        _venue_without_bank_info_nor_siret = offerers_factories.VenueFactory(
-            siret=None, comment="Pas de SIRET", managingOfferer=offerer
-        )
+        offerers_factories.VenueFactory(siret=None, comment="Pas de SIRET", managingOfferer=offerer)
 
         client = client.with_session_auth("user.pro@example.com")
-        n_queries = (
-            testing.AUTHENTICATION_QUERIES
-            + 1  # check_user_has_access_to_offerer
-            + 1  # eligible Venues with their eagerly loaded BankInformation
-        )
-        with testing.assert_num_queries(n_queries):
+
+        with testing.assert_no_duplicated_queries():
             response = client.get(f"/offerers/{offerer.id}/reimbursement-points")
 
         assert response.status_code == 200

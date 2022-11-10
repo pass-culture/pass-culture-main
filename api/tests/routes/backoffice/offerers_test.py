@@ -11,7 +11,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions.models import Permissions
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -35,20 +35,15 @@ class GetOffererUsersTest:
         )
         uo3 = offerers_factories.NotValidatedUserOffererFactory(offerer=offerer1, user=users_factories.ProFactory())
 
-        offerer1_id = offerer1.id  # request from offerer outside assert_num_queries
-
         offerer2 = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer2, user=users_factories.ProFactory())
 
         auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
 
-        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
-        n_queries += 1  # query should load all data in a single query
-
         # when
-        with assert_num_queries(n_queries):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
-                url_for("backoffice_blueprint.get_offerer_users", offerer_id=offerer1_id)
+                url_for("backoffice_blueprint.get_offerer_users", offerer_id=offerer1.id)
             )
 
         # then
@@ -136,15 +131,10 @@ class GetOffererBasicInfoTest:
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
 
-        offerer_id = offerer.id  # request id from offerer outside assert_num_queries
-
-        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
-        n_queries += 1  # query should load all data in a single query
-
         # when
-        with assert_num_queries(n_queries):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
-                url_for("backoffice_blueprint.get_offerer_basic_info", offerer_id=offerer_id)
+                url_for("backoffice_blueprint.get_offerer_basic_info", offerer_id=offerer.id)
             )
 
         # then
@@ -304,15 +294,10 @@ class GetOffererTotalRevenueTest:
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
 
-        offerer_id = offerer.id  # request id from offerer outside assert_num_queries
-
-        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
-        n_queries += 1  # query should load all data in a single query
-
         # when
-        with assert_num_queries(n_queries):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
-                url_for("backoffice_blueprint.get_offerer_total_revenue", offerer_id=offerer_id)
+                url_for("backoffice_blueprint.get_offerer_total_revenue", offerer_id=offerer.id)
             )
 
         # then
@@ -436,15 +421,10 @@ class GetOffererOffersStatsTest:
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
 
-        offerer_id = offerer.id  # request id from offerer outside assert_num_queries
-
-        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
-        n_queries += 1  # query should load all data in a single query
-
         # when
-        with assert_num_queries(n_queries):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
-                url_for("backoffice_blueprint.get_offerer_offers_stats", offerer_id=offerer_id)
+                url_for("backoffice_blueprint.get_offerer_offers_stats", offerer_id=offerer.id)
             )
 
         # then
@@ -628,12 +608,8 @@ class GetOffererHistoryTest:
 
         offerer_id = user_offerer.offerer.id
 
-        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
-        n_queries += 1  # query should load all data in a single query
-        n_queries += 1  # count() for pagination
-
         # when
-        with assert_num_queries(n_queries):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for("backoffice_blueprint.get_offerer_history", offerer_id=offerer_id)
             )
@@ -1060,11 +1036,8 @@ class GetOfferersTagsTest:
         tag2 = offerers_factories.OffererTagFactory(name="test-type-ei", label="Entreprise individuelle")
         auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PRO_ENTITY])
 
-        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
-        n_queries += 1  # query should load all data in a single query
-
         # when
-        with assert_num_queries(n_queries):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for("backoffice_blueprint.get_offerers_tags_list")
             )
@@ -1323,11 +1296,8 @@ class OfferersStatsTest:
         )
         auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
 
-        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
-        n_queries += 1  # query should load all data in a single query
-
         # when
-        with assert_num_queries(n_queries):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(url_for("backoffice_blueprint.get_offerers_stats"))
 
         # then
@@ -1340,11 +1310,8 @@ class OfferersStatsTest:
         # given
         auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
 
-        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
-        n_queries += 1  # query should load all data in a single query
-
         # when
-        with assert_num_queries(n_queries):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(url_for("backoffice_blueprint.get_offerers_stats"))
 
         # then
@@ -1377,11 +1344,6 @@ class OfferersStatsTest:
 
 
 class ListOfferersToBeValidatedTest:
-    # 2: permission_required: features (ENABLE_BACKOFFICE_API) + user
-    # +1: query should load all data in a single query
-    # +1: count() for pagination
-    N_QUERIES = 4
-
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_list_only_offerers_to_be_validated(self, client):
         # given
@@ -1402,7 +1364,7 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for("backoffice_blueprint.list_offerers_to_be_validated")
             )
@@ -1463,7 +1425,7 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for("backoffice_blueprint.list_offerers_to_be_validated")
             )
@@ -1532,7 +1494,7 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for("backoffice_blueprint.list_offerers_to_be_validated")
             )
@@ -1559,7 +1521,7 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for("backoffice_blueprint.list_offerers_to_be_validated")
             )
@@ -1705,7 +1667,7 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for(
                     "backoffice_blueprint.list_offerers_to_be_validated",
@@ -1778,7 +1740,7 @@ class ListOfferersToBeValidatedTest:
         offerers_factories.UserNotValidatedOffererFactory(offerer__dateCreated=datetime.datetime(2022, 11, 10, 7))
 
         # when
-        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for(
                     "backoffice_blueprint.list_offerers_to_be_validated",
@@ -1828,7 +1790,7 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for("backoffice_blueprint.list_offerers_to_be_validated", q="123004004")
             )
@@ -1880,7 +1842,7 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for("backoffice_blueprint.list_offerers_to_be_validated", q=search_filter)
             )
@@ -1911,7 +1873,7 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for(
                     "backoffice_blueprint.list_offerers_to_be_validated",
@@ -2381,11 +2343,6 @@ class ToggleTopActorTagTest:
 
 
 class ListUserOffererToBeValidatedTest:
-    # 2: permission_required: features (ENABLE_BACKOFFICE_API) + user
-    # +1: query should load all data in a single query
-    # +1: count() for pagination
-    N_QUERIES = 4
-
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_list_only_user_offerer_to_be_validated(self, client):
         # given
@@ -2414,7 +2371,7 @@ class ListUserOffererToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        with assert_num_queries(ListUserOffererToBeValidatedTest.N_QUERIES):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for("backoffice_blueprint.list_offerers_attachments_to_be_validated")
             )
@@ -2470,7 +2427,7 @@ class ListUserOffererToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        with assert_num_queries(ListUserOffererToBeValidatedTest.N_QUERIES):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for("backoffice_blueprint.list_offerers_attachments_to_be_validated")
             )
@@ -2508,7 +2465,7 @@ class ListUserOffererToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        with assert_num_queries(ListUserOffererToBeValidatedTest.N_QUERIES):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for("backoffice_blueprint.list_offerers_attachments_to_be_validated")
             )
@@ -2590,7 +2547,7 @@ class ListUserOffererToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        with assert_num_queries(ListUserOffererToBeValidatedTest.N_QUERIES):
+        with assert_no_duplicated_queries():
             response = client.with_explicit_token(auth_token).get(
                 url_for(
                     "backoffice_blueprint.list_offerers_attachments_to_be_validated",
