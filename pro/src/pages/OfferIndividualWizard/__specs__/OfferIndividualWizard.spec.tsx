@@ -356,7 +356,7 @@ describe('test OfferIndividualWisard', () => {
         await screen.findByRole('heading', { name: 'Créer une offre' })
       ).toBeInTheDocument()
 
-      const tabInformations = screen.getByText('Informations', {
+      const tabInformations = screen.getByText("Détails de l'offre", {
         selector: 'span',
       })
       const tabStocks = screen.getByText('Stock & Prix', {
@@ -386,7 +386,7 @@ describe('test OfferIndividualWisard', () => {
         await screen.findByRole('heading', { name: "Modifier l'offre" })
       ).toBeInTheDocument()
 
-      const tabInformations = screen.queryByText('Informations', {
+      const tabInformations = screen.queryByText("Détails de l'offre", {
         selector: 'span',
       })
       const tabStocks = screen.queryByText('Stock & Prix', {
@@ -414,7 +414,7 @@ describe('test OfferIndividualWisard', () => {
         await screen.findByRole('heading', { name: 'Récapitulatif' })
       ).toBeInTheDocument()
 
-      const tabInformations = screen.getByText('Informations', {
+      const tabInformations = screen.getByText("Détails de l'offre", {
         selector: 'span',
       })
       const tabStocks = screen.getByText('Stock & Prix', {
