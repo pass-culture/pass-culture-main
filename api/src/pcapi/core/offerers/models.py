@@ -717,6 +717,36 @@ class Offerer(
         ).is_(True)
 
     @hybrid_property
+    def isNew(self) -> bool:
+        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
+        if self.validationStatus is None and self.validationToken is not None:
+            return True
+        return self.validationStatus == ValidationStatus.NEW
+
+    @isNew.expression  # type: ignore [no-redef]
+    def isNew(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
+        return sa.or_(
+            sa.and_(cls.validationStatus.is_(None), cls.validationToken.is_not(None)),
+            cls.validationStatus == ValidationStatus.NEW,
+        ).is_(True)
+
+    @hybrid_property
+    def isPending(self) -> bool:
+        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
+        if self.validationStatus is None and self.validationToken is not None:
+            return True
+        return self.validationStatus == ValidationStatus.PENDING
+
+    @isPending.expression  # type: ignore [no-redef]
+    def isPending(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
+        return sa.or_(
+            sa.and_(cls.validationStatus.is_(None), cls.validationToken.is_not(None)),
+            cls.validationStatus == ValidationStatus.PENDING,
+        ).is_(True)
+
+    @hybrid_property
     def requestDate(self) -> datetime:
         # Offerer may have been registered, rejected, then registered again, get the last 'NEW' date
         return max(
