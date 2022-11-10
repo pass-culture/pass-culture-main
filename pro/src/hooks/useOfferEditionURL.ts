@@ -15,21 +15,19 @@ export const useOfferEditionURL = (
     return `/offre/${id}/collectif/recapitulatif`
   }
   if (status && status == OFFER_STATUS_DRAFT)
-    return isOfferFormV3
-      ? getOfferIndividualUrl({
-          offerId,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        })
-      : `/offre/${offerId}/individuel/brouillon`
+    return getOfferIndividualUrl({
+      offerId,
+      mode: OFFER_WIZARD_MODE.DRAFT,
+      step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+      isV2: !isOfferFormV3,
+    })
 
-  return isOfferFormV3
-    ? getOfferIndividualUrl({
-        offerId,
-        mode: OFFER_WIZARD_MODE.EDITION,
-        step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-      })
-    : `/offre/${offerId}/individuel/recapitulatif`
+  return getOfferIndividualUrl({
+    offerId,
+    mode: OFFER_WIZARD_MODE.EDITION,
+    step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+    isV2: !isOfferFormV3,
+  })
 }
 
 export const useOfferStockEditionURL = (
@@ -43,11 +41,10 @@ export const useOfferStockEditionURL = (
     return `/offre/${id}/collectif/stocks/edition`
   }
 
-  return isOfferFormV3
-    ? getOfferIndividualUrl({
-        offerId,
-        mode: OFFER_WIZARD_MODE.EDITION,
-        step: OFFER_WIZARD_STEP_IDS.STOCKS,
-      })
-    : `/offre/${offerId}/individuel/stocks`
+  return getOfferIndividualUrl({
+    offerId,
+    mode: OFFER_WIZARD_MODE.EDITION,
+    step: OFFER_WIZARD_STEP_IDS.STOCKS,
+    isV2: !isOfferFormV3,
+  })
 }

@@ -118,6 +118,7 @@ const Summary = (
         offerId,
         mode,
         step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+        isV2: !isOfferFormV3,
       })
     )
   }
@@ -135,6 +136,7 @@ const Summary = (
         offerId,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         mode,
+        isV2: !isOfferFormV3,
       })
     )
   }
