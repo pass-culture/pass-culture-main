@@ -24,7 +24,7 @@ const OfferIndividualStepper = () => {
   const stepPatternList: IStepPattern[] = [
     {
       id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-      label: 'Informations',
+      label: "Détails de l'offre",
       path: {
         [OFFER_WIZARD_MODE.CREATION]:
           '/offre/:offerId/v3/creation/individuelle/informations',
@@ -88,7 +88,7 @@ const OfferIndividualStepper = () => {
       styleType={
         mode !== OFFER_WIZARD_MODE.EDITION
           ? BreadcrumbStyle.STEPPER
-          : BreadcrumbStyle.DEFAULT
+          : BreadcrumbStyle.TAB
       }
       className={
         mode !== OFFER_WIZARD_MODE.EDITION ? styles['stepper-creation'] : ''
