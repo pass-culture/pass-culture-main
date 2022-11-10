@@ -193,7 +193,10 @@ const Informations = ({
       notify.success(
         isSubmittingDraft
           ? 'Brouillon sauvegardé dans la liste des offres'
-          : 'Vos modifications ont bien été enregistrées'
+          : 'Vos modifications ont bien été enregistrées',
+        {
+          withStickyActionBar: true,
+        }
       )
       navigate(
         getOfferIndividualUrl({
