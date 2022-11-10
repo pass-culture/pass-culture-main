@@ -31,10 +31,10 @@
     text-overflow: ellipsis;
 
     &:focus {
-      border-color: rem.torem(2px) solid colors.$black-medium;
+      border-color: colors.$black-medium;
     }
     &:hover {
-      border-color: rem.torem(2px) solid colors.$hover-strong;
+      border-color: colors.$hover-strong;
     }
     
 
