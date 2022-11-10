@@ -17,10 +17,13 @@ const DurationInput = ({
   name,
   isOptional = false,
   className,
+  ...props
 }: IDurationInputProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name })
 
   const onDurationBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    helpers.setTouched(true, false)
+
     const [updatedHours, updatedMinutes] = event.target.value.split(':')
     const updatedDurationInMinutes =
       parseInt(updatedHours || '0') * 60 + parseInt(updatedMinutes || '0')
@@ -43,6 +46,7 @@ const DurationInput = ({
       className={className}
       isOptional={isOptional}
       placeholder="HH:MM"
+      {...props}
     />
   )
 }
