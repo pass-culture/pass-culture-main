@@ -7,6 +7,7 @@ import {
   IEducationalCategory,
   IEducationalSubCategory,
   IOfferEducationalFormValues,
+  MAX_DETAILS_LENGTH,
 } from 'core/OfferEducational'
 import { SelectOption } from 'custom_types/form'
 import { MultiSelectAutocomplete, Select, TextArea, TextInput } from 'ui-kit'
@@ -127,7 +128,7 @@ const FormOfferType = ({
         <TextArea
           countCharacters
           label={DESCRIPTION_LABEL}
-          maxLength={1000}
+          maxLength={MAX_DETAILS_LENGTH}
           name="description"
           placeholder="Détaillez ici votre projet et son interêt pédagogique"
           disabled={disableForm}

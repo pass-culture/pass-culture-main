@@ -10,6 +10,7 @@ import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   EducationalOfferType,
+  MAX_DETAILS_LENGTH,
   Mode,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
@@ -170,7 +171,7 @@ const OfferEducationalStock = <
                   disabled={mode === Mode.READ_ONLY}
                   isOptional
                   label={DETAILS_PRICE_LABEL}
-                  maxLength={1000}
+                  maxLength={MAX_DETAILS_LENGTH}
                   name="priceDetail"
                   placeholder="Détaillez ici des informations complémentaires"
                 />
