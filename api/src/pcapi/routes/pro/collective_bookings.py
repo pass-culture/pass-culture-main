@@ -8,9 +8,9 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.bookings.models import BookingExportType
-from pcapi.core.educational import api as collective_api
 from pcapi.core.educational import exceptions as collective_exceptions
 from pcapi.core.educational import repository as collective_repository
+from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.models.api_errors import ApiErrors
@@ -75,7 +75,7 @@ def get_collective_bookings_pro(
 def get_collective_booking_by_id(booking_id: str) -> collective_bookings_serialize.CollectiveBookingByIdResponseModel:
     dehumanized_id = dehumanize_or_raise(booking_id)
     try:
-        booking = collective_api.get_collective_booking_by_id(dehumanized_id)
+        booking = educational_api_booking.get_collective_booking_by_id(dehumanized_id)
     except collective_exceptions.EducationalBookingNotFound:
         ApiErrors({"offerer": ["Réservation collective non trouvée."]}, status_code=404)
     check_user_has_access_to_offerer(current_user, booking.offererId)
@@ -125,7 +125,7 @@ def _create_collective_bookings_export_file(
         )
     booking_status = query.booking_status_filter
 
-    export_data = collective_api.get_collective_booking_report(
+    export_data = educational_api_booking.get_collective_booking_report(
         user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
         booking_period=booking_period,
         status_filter=booking_status,
@@ -168,7 +168,7 @@ def cancel_collective_offer_booking(offer_id: str) -> None:
         check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        collective_api.cancel_collective_offer_booking(dehumanized_offer_id)
+        educational_api_booking.cancel_collective_offer_booking(dehumanized_offer_id)
     except collective_exceptions.CollectiveStockNotFound:
         raise ApiErrors(
             {"code": "NO_ACTIVE_STOCK_FOUND", "message": "No active stock has been found with this id"}, 404

@@ -1,6 +1,6 @@
 from typing import cast
 
-from pcapi.core.educational import api as educational_api
+from pcapi.core.educational.api.institution import search_educational_institution
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import public_api_collective_offers_serialize
@@ -39,7 +39,7 @@ def list_educational_institutions(
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste établissements scolaires."""
 
-    institutions = educational_api.search_educational_institution(
+    institutions = search_educational_institution(
         name=query.name,
         city=query.city,
         postal_code=query.postal_code,

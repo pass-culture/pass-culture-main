@@ -290,14 +290,6 @@ def get_venue_and_check_access_for_offer_creation(
     return venue
 
 
-def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOffer:
-    return educational_repository.get_collective_offer_by_id(offer_id)
-
-
-def get_collective_offer_template_by_id(offer_id: int) -> educational_models.CollectiveOffer:
-    return educational_repository.get_collective_offer_template_by_id(offer_id)
-
-
 def create_collective_offer_template_from_collective_offer(
     price_detail: str | None, user: User, offer_id: int
 ) -> educational_models.CollectiveOfferTemplate:
@@ -318,6 +310,14 @@ def create_collective_offer_template_from_collective_offer(
         extra={"collectiveOfferTemplate": collective_offer_template.id, "CollectiveOffer": offer.id},
     )
     return collective_offer_template
+
+
+def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOffer:
+    return educational_repository.get_collective_offer_by_id(offer_id)
+
+
+def get_collective_offer_template_by_id(offer_id: int) -> educational_models.CollectiveOffer:
+    return educational_repository.get_collective_offer_template_by_id(offer_id)
 
 
 def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:

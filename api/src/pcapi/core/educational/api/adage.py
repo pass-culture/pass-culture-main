@@ -6,6 +6,7 @@ from pydantic import parse_obj_as
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.api.venue import get_relative_venues_by_siret
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.repository import get_emails_by_venue
@@ -39,6 +40,7 @@ def get_cultural_partners(*, force_update: bool = False) -> venues_serialize.Ada
         return_type=str,
         force_update=force_update,
     )
+
     cultural_partners_json = typing.cast(str, cultural_partners_json)
     cultural_partners = json.loads(cultural_partners_json)
     return parse_obj_as(venues_serialize.AdageCulturalPartners, {"partners": cultural_partners})
@@ -51,7 +53,6 @@ def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartnerRes
 def get_venue_by_siret_for_adage_iframe(
     siret: str, search_relative: bool
 ) -> tuple[offerers_models.Venue | None, list[int]]:
-    from pcapi.core.educational.api.venue import get_relative_venues_by_siret
 
     relative = []
     venue = None

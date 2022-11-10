@@ -2,7 +2,7 @@ import logging
 
 from sqlalchemy.orm import exc as orm_exc
 
-from pcapi.core.educational import api
+from pcapi.core.educational.api import venue as educational_api_venue
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
@@ -28,10 +28,10 @@ def get_venues_from_siret(
 ) -> venue_serialization.GetVenuesResponseModel:
 
     if query.getRelative:
-        venues = api.get_relative_venues_by_siret(venues_siret)
+        venues = educational_api_venue.get_relative_venues_by_siret(venues_siret)
     else:
         try:
-            venues = api.get_venues_by_siret(venues_siret)
+            venues = educational_api_venue.get_venues_by_siret(venues_siret)
         except orm_exc.NoResultFound:
             venues = []
     if not venues:
@@ -53,9 +53,9 @@ def get_venues_from_name(
     venues_name: str, query: venue_serialization.GetRelativeVenuesQueryModel
 ) -> venue_serialization.GetVenuesResponseModel:
     if query.getRelative:
-        venues = api.get_relative_venues_by_name(venues_name)
+        venues = educational_api_venue.get_relative_venues_by_name(venues_name)
     else:
-        venues = api.get_venues_by_name(venues_name)
+        venues = educational_api_venue.get_venues_by_name(venues_name)
     if len(venues) == 0:
         raise ApiErrors({"code": "VENUES_NOT_FOUND"}, status_code=404)
 
@@ -75,7 +75,7 @@ def get_venues_from_name(
 def get_all_venues(
     query: venue_serialization.GetAllVenuesQueryModel,
 ) -> venue_serialization.GetVenuesResponseModel:
-    venues = api.get_all_venues(query.page, query.per_page)
+    venues = educational_api_venue.get_all_venues(query.page, query.per_page)
 
     return venue_serialization.GetVenuesResponseModel(
         venues=[venue_serialization.VenueModel.from_orm(venue) for venue in venues]

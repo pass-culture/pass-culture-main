@@ -4,10 +4,11 @@ import logging
 import pathlib
 from typing import Iterable
 
-from pcapi.core.educational import api
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import utils
+from pcapi.core.educational.api.deposit import create_educational_deposit
+from pcapi.core.educational.api.institution import create_educational_institution
 from pcapi.core.educational.models import Ministry
 
 
@@ -69,7 +70,7 @@ def _process_educational_csv(
 
         educational_institution = educational_repository.find_educational_institution_by_uai_code(institution_id)
         if educational_institution is None:
-            educational_institution = api.create_educational_institution(institution_id, institution_data)
+            educational_institution = create_educational_institution(institution_id, institution_data)
             logger.info("Educational institution with UAI code %s has been created", institution_id)
 
         if educational_repository.find_educational_deposit_by_institution_id_and_year(
@@ -79,7 +80,7 @@ def _process_educational_csv(
                 f"\033[93mWARNING: deposit for educational institution with id {educational_institution.institutionId} already exists\033[0m"
             )
             continue
-        educational_deposit = api.create_educational_deposit(
+        educational_deposit = create_educational_deposit(
             educational_year.adageId, educational_institution.id, deposit_amount, ministry
         )
         logger.info(

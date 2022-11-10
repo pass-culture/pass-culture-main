@@ -2,9 +2,9 @@ import csv
 import logging
 from typing import Iterable
 
-from pcapi.core.educational import api
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import utils
+from pcapi.core.educational.api.institution import update_educational_institution_data
 from pcapi.models import db
 
 
@@ -57,7 +57,7 @@ def _process_educational_csv(educational_institutions_rows: Iterable[dict]) -> N
             print(f"\033[91mEducational institution with id {institution_id} has not been found.\033[0m")
 
         if educational_institution is not None:
-            educational_institution = api.update_educational_institution_data(institution_id, institution_data)
+            educational_institution = update_educational_institution_data(institution_id, institution_data)
 
             db.session.add(educational_institution)
             nb_rows_to_save = nb_rows_to_save + 1
