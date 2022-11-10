@@ -91,7 +91,7 @@ const VenueFormScreen = ({
           : '/accueil'
         history.push(
           isCreatingVenue
-            ? `/structures/${offerer.id}/lieux/v2/${response.id}`
+            ? `/structures/${offerer.id}/lieux/${response.id}`
             : venuesUrl,
           isNewBankInformationCreation
         )
