@@ -2,6 +2,7 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
 import { OfferAddressType } from 'apiClient/v1'
+import { MAX_DETAILS_LENGTH } from 'core/OfferEducational'
 
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
@@ -32,7 +33,7 @@ export const validationSchema = yup.object().shape({
       message: 'Veuillez renseigner une description',
       test: isNotEmpty,
     })
-    .max(1000),
+    .max(MAX_DETAILS_LENGTH),
   duration: yup
     .string()
     .matches(
@@ -133,5 +134,5 @@ export const validationSchema = yup.object().shape({
       then: schema => schema.required(''),
       otherwise: schema => schema,
     }),
-  priceDetail: yup.string().max(1000),
+  priceDetail: yup.string().max(MAX_DETAILS_LENGTH),
 })

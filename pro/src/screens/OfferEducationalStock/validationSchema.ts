@@ -1,5 +1,7 @@
 import * as yup from 'yup'
 
+import { MAX_DETAILS_LENGTH } from 'core/OfferEducational'
+
 const todayAtMidnight = () => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -54,9 +56,9 @@ export const validationSchema = yup.object().shape({
       test: isBeforeEventDate,
     })
     .nullable(),
-  priceDetail: yup.string().nullable().max(1000),
+  priceDetail: yup.string().nullable().max(MAX_DETAILS_LENGTH),
 })
 
 export const showcaseOfferValidationSchema = yup
   .object()
-  .shape({ priceDetail: yup.string().nullable().max(1000) })
+  .shape({ priceDetail: yup.string().nullable().max(MAX_DETAILS_LENGTH) })

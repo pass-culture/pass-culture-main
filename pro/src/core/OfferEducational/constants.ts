@@ -58,3 +58,5 @@ export const DEFAULT_VISIBILITY_FORM_VALUES: VisibilityFormValues = {
   institution: '',
   'search-institution': '',
 }
+
+export const MAX_DETAILS_LENGTH = 1000
