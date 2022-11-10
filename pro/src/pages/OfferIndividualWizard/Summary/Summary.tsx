@@ -49,7 +49,7 @@ const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
         stockEventList={stockEventList}
         subCategories={subCategories}
         preview={preview}
-        formOfferV2
+        formOfferV2={isOfferV2}
       />
     </WizardTemplate>
   )
