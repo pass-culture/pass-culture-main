@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Fragment, forwardRef } from 'react'
 
-import Icon from 'ui-kit/Icon/Icon'
+import { ReactComponent as DownloadIcon } from 'icons/ico-other-download.svg'
 
 import ActivationCodesUploadErrorDescription from './ActivationCodesUploadErrorDescription'
 import ActivationCodesUploadInformationDescription from './ActivationCodesUploadInformationDescription'
@@ -52,7 +52,7 @@ export const ActivationCodeCsvForm = forwardRef(function ActivationCodeCsvForm(
             target="_blank"
             type="text/csv"
           >
-            <Icon svg="ico-other-download" />
+            <DownloadIcon />
             Gabarit CSV<span>(.csv, 50 ko)</span>
           </a>
         </p>
