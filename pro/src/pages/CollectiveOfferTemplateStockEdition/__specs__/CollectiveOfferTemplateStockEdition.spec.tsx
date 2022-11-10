@@ -10,8 +10,8 @@ import { Router } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { CollectiveOfferTemplate } from 'core/OfferEducational'
-import { collectiveOfferTemplateFactory } from 'screens/OfferEducationalStock/__tests-utils__'
 import { configureTestStore } from 'store/testUtils'
+import { collectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
 
 import CollectiveOfferTemplateStockEdition from '../CollectiveOfferTemplateStockEdition'
 
