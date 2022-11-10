@@ -72,5 +72,9 @@ export const computeInitialValuesFromOffer = (
       offer.interventionArea ?? DEFAULT_EAC_FORM_VALUES.interventionArea,
     venueId: offer.venueId,
     offererId: offer.venue.managingOffererId,
+    priceDetail:
+      offer.isTemplate && offer.educationalPriceDetail
+        ? offer.educationalPriceDetail
+        : DEFAULT_EAC_FORM_VALUES.priceDetail,
   }
 }

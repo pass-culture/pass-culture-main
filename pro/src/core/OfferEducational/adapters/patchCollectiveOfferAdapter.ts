@@ -33,7 +33,7 @@ const patchCollectiveOfferAdapter: PatchCollectiveOfferAdapter = async ({
   initialValues,
 }) => {
   try {
-    const payload = createPatchOfferPayload(offer, initialValues)
+    const payload = createPatchOfferPayload(offer, initialValues, false)
     const updatedOffer = await api.editCollectiveOffer(offerId, payload)
 
     return {

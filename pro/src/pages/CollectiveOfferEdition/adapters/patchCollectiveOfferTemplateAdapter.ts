@@ -24,7 +24,7 @@ export const patchCollectiveOfferTemplateAdapter: patchCollectiveOfferTemplateAd
       // the api returns no understandable error when the id is not valid, so we deal before calling the api
       if (!offerId || offerId === '')
         throw new Error('L’identifiant de l’offre n’est pas valide.')
-      const payload = createPatchOfferPayload(offer, initialValues)
+      const payload = createPatchOfferPayload(offer, initialValues, true)
       const updatedOffer = await api.editCollectiveOfferTemplate(
         offerId,
         payload
