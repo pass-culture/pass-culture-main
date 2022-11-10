@@ -38,7 +38,7 @@ const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
   return (
     <WizardTemplate
       title={isOfferV2 ? null : 'Récapitulatif'}
-      withStepper={!isOfferV2}
+      withStepper={false}
     >
       <PageTitle title="Récapitulatif" />
       <SummaryScreen
