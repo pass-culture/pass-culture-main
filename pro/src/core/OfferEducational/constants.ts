@@ -40,6 +40,7 @@ export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   domains: [],
   'search-domains': '',
   'search-interventionArea': '',
+  priceDetail: '',
 }
 
 export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {

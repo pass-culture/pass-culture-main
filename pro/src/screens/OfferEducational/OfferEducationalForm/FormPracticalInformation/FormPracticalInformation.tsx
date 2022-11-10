@@ -34,7 +34,7 @@ import {
 } from '../../constants/labels'
 import styles from '../OfferEducationalForm.module.scss'
 
-interface IFormPracticalInformationProps {
+export interface IFormPracticalInformationProps {
   venuesOptions: SelectOptions
   currentOfferer: GetEducationalOffererResponseModel | null
   disableForm: boolean

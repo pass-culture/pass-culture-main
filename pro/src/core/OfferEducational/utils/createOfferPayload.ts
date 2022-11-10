@@ -1,4 +1,7 @@
-import { OfferAddressType, PostCollectiveOfferBodyModel } from 'apiClient/v1'
+import {
+  OfferAddressType,
+  PostCollectiveOfferTemplateBodyModel,
+} from 'apiClient/v1'
 
 import { IOfferEducationalFormValues } from '../types'
 
@@ -8,7 +11,7 @@ import { serializeParticipants } from './serializeParticipants'
 const disabilityCompliances = (
   accessibility: IOfferEducationalFormValues['accessibility']
 ): Pick<
-  PostCollectiveOfferBodyModel,
+  PostCollectiveOfferTemplateBodyModel,
   | 'audioDisabilityCompliant'
   | 'mentalDisabilityCompliant'
   | 'motorDisabilityCompliant'
@@ -23,7 +26,7 @@ const disabilityCompliances = (
 export const createCollectiveOfferPayload = (
   offer: IOfferEducationalFormValues,
   offerTemplateId?: string
-): PostCollectiveOfferBodyModel => ({
+): PostCollectiveOfferTemplateBodyModel => ({
   venueId: offer.venueId,
   subcategoryId: offer.subCategory,
   name: offer.title,
@@ -41,4 +44,5 @@ export const createCollectiveOfferPayload = (
       ? []
       : offer.interventionArea,
   templateId: offerTemplateId,
+  priceDetail: offer.priceDetail,
 })
