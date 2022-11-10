@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { VenueProviderResponse } from 'apiClient/v1'
@@ -13,6 +13,9 @@ import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/Reimburse
 import { ButtonLink, SubmitButton } from 'ui-kit'
 
 import { ButtonVariant } from '../../ui-kit/Button/types'
+import RouteLeavingGuard, {
+  IShouldBlockNavigationReturnValue,
+} from '../RouteLeavingGuard'
 
 import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
@@ -67,7 +70,18 @@ const VenueForm = ({
       )
     )
   }, [])
-
+  const shouldBlockNavigation = useCallback(
+    (nextLocation: Location): IShouldBlockNavigationReturnValue => {
+      if (nextLocation.pathname.match(/\/structures\/([A-Z0-9]+)\/lieux/g)) {
+        return {
+          shouldBlock: false,
+        }
+      } else {
+        return { shouldBlock: true }
+      }
+    },
+    [location]
+  )
   return (
     <div>
       <FormLayout fullWidthActions>
@@ -107,6 +121,13 @@ const VenueForm = ({
             venue={venue}
           />
         )}
+        <RouteLeavingGuard
+          shouldBlockNavigation={shouldBlockNavigation}
+          when={isCreatingVenue}
+          dialogTitle="Voulez-vous quitter la création de lieu ?"
+        >
+          <p>Les informations non enregistrées seront perdues.</p>
+        </RouteLeavingGuard>
         <FormLayout.Actions>
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
