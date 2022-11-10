@@ -25,6 +25,7 @@ const disabilityCompliances = (
 
 export const createCollectiveOfferPayload = (
   offer: IOfferEducationalFormValues,
+  isTemplate: boolean,
   offerTemplateId?: string
 ): PostCollectiveOfferTemplateBodyModel => ({
   venueId: offer.venueId,
@@ -44,5 +45,5 @@ export const createCollectiveOfferPayload = (
       ? []
       : offer.interventionArea,
   templateId: offerTemplateId,
-  priceDetail: offer.priceDetail,
+  priceDetail: isTemplate ? offer.priceDetail : undefined,
 })
