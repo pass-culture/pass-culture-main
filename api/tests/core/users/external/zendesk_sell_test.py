@@ -27,7 +27,6 @@ def test_create_offerer():
     assert posted.call_count == 1
     posted_json = posted.last_request.json()
     assert posted_json["data"]["is_organization"] is True
-    assert posted_json["data"]["name"] == offerer.name
     assert posted_json["data"]["address"] == {
         "line1": offerer.address,
         "city": offerer.city,
@@ -58,7 +57,6 @@ def test_update_offerer():
     assert put.call_count == 1
     put_json = put.last_request.json()
     assert put_json["data"]["is_organization"] is True
-    assert put_json["data"]["name"] == offerer.name
     assert put_json["data"]["address"] == {
         "line1": offerer.address,
         "city": offerer.city,
@@ -98,7 +96,6 @@ def test_create_venue():
     assert posted.call_count == 1
     posted_json = posted.last_request.json()
     assert posted_json["data"]["is_organization"] is True
-    assert posted_json["data"]["name"] == venue.name
     assert posted_json["data"]["parent_organization_id"] == zendesk_parent_id
     assert posted_json["data"]["email"] == venue.bookingEmail
     assert posted_json["data"]["phone"] == venue.contact.phone_number
@@ -145,7 +142,6 @@ def test_update_venue():
     assert put.call_count == 1
     put_json = put.last_request.json()
     assert put_json["data"]["is_organization"] is True
-    assert put_json["data"]["name"] == venue.name
     assert put_json["data"]["parent_organization_id"] == zendesk_parent_id
     assert put_json["data"]["email"] == venue.bookingEmail
     assert put_json["data"]["phone"] is None
@@ -193,7 +189,6 @@ def test_create_venue_without_parent_offerer():
 
     posted_venue_json = posted.last_request.json()
     assert posted_venue_json["data"]["is_organization"] is True
-    assert posted_venue_json["data"]["name"] == venue.name
     assert posted_venue_json["data"]["parent_organization_id"] is None  # No parent created
     assert posted_venue_json["data"]["email"] == venue.bookingEmail
     assert posted_venue_json["data"]["phone"] == venue.contact.phone_number
@@ -240,7 +235,6 @@ def test_create_venue_and_parent_offerer():
 
     posted_offerer_json = posted.request_history[0].json()
     assert posted_offerer_json["data"]["is_organization"] is True
-    assert posted_offerer_json["data"]["name"] == offerer.name
     assert posted_offerer_json["data"]["address"] == {
         "line1": offerer.address,
         "city": offerer.city,
@@ -255,7 +249,6 @@ def test_create_venue_and_parent_offerer():
 
     posted_venue_json = posted.request_history[1].json()
     assert posted_venue_json["data"]["is_organization"] is True
-    assert posted_venue_json["data"]["name"] == venue.name
     assert posted_venue_json["data"]["parent_organization_id"] == ret_id
     assert posted_venue_json["data"]["email"] == venue.bookingEmail
     assert posted_venue_json["data"]["phone"] == venue.contact.phone_number
