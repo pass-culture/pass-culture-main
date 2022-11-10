@@ -440,12 +440,12 @@ export class DefaultService {
   /**
    * patch_collective_offer_template_publication <PATCH>
    * @param offerId
-   * @returns void
+   * @returns GetCollectiveOfferTemplateResponseModel OK
    * @throws ApiError
    */
   public patchCollectiveOfferTemplatePublication(
     offerId: string,
-  ): CancelablePromise<void> {
+  ): CancelablePromise<GetCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/collective/offers-template/{offer_id}/publish',
@@ -604,12 +604,12 @@ export class DefaultService {
   /**
    * patch_collective_offer_publication <PATCH>
    * @param offerId
-   * @returns void
+   * @returns GetCollectiveOfferResponseModel OK
    * @throws ApiError
    */
   public patchCollectiveOfferPublication(
     offerId: string,
-  ): CancelablePromise<void> {
+  ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/collective/offers/{offer_id}/publish',
