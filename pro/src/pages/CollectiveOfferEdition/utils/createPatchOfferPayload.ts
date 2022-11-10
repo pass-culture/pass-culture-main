@@ -66,17 +66,6 @@ const serializer = {
   offererId: (payload: PatchCollectiveOfferBodyModel) => payload,
   venueId: (payload: PatchCollectiveOfferBodyModel) => payload,
   category: (payload: PatchCollectiveOfferBodyModel) => payload,
-  domains: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
-  ) => ({
-    ...payload,
-    domains: offer.domains,
-  }),
-}
-
-const collectiveOfferSerializer = {
-  ...serializer,
   eventAddress: (
     payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
@@ -121,13 +110,27 @@ const collectiveOfferSerializer = {
   }),
 }
 
+const templateSerializer = {
+  ...serializer,
+  priceDetail: (
+    payload: PatchCollectiveOfferBodyModel,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    priceDetail: offer.priceDetail,
+  }),
+}
+
 export const createPatchOfferPayload = (
   offer: IOfferEducationalFormValues,
-  initialValues: IOfferEducationalFormValues
+  initialValues: IOfferEducationalFormValues,
+  isTemplate: boolean
 ): PatchCollectiveOfferBodyModel => {
   let changedValues: PatchCollectiveOfferBodyModel = {}
 
   const offerKeys = Object.keys(offer) as (keyof IOfferEducationalFormValues)[]
+
+  const offerSerializer = isTemplate ? templateSerializer : serializer
 
   offerKeys.forEach(key => {
     if (
@@ -136,7 +139,7 @@ export const createPatchOfferPayload = (
     ) {
       // This is because startsWith eliminates the two keys that are not defined in the collectiveOfferSerializer
       // @ts-expect-error (7053) Element implicitly has an 'any' type because expression of type 'keyof IOfferEducationalFormValues' can't be used to index type
-      changedValues = collectiveOfferSerializer[key](changedValues, offer)
+      changedValues = offerSerializer[key](changedValues, offer)
     }
   })
 
