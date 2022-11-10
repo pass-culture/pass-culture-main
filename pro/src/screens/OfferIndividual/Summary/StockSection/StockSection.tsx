@@ -47,18 +47,12 @@ const StockSection = ({
     })
   }
 
-  const stocksUrlsV2 = {
-    [OFFER_WIZARD_MODE.CREATION]: `/offre/${offerId}/individuel/creation/stocks`,
-    [OFFER_WIZARD_MODE.DRAFT]: `/offre/${offerId}/individuel/brouillon/stocks`,
-    [OFFER_WIZARD_MODE.EDITION]: `/offre/${offerId}/individuel/stocks`,
-  }
-  const editLink = isOfferFormV3
-    ? getOfferIndividualUrl({
-        offerId,
-        step: OFFER_WIZARD_STEP_IDS.STOCKS,
-        mode,
-      })
-    : stocksUrlsV2[mode]
+  const editLink = getOfferIndividualUrl({
+    offerId,
+    step: OFFER_WIZARD_STEP_IDS.STOCKS,
+    mode,
+    isV2: !isOfferFormV3,
+  })
 
   const hasNoStock = !stockThing && !stockEventList?.length
 

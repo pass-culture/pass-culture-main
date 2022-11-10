@@ -3,12 +3,14 @@ import React from 'react'
 import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
 import AccessibilitySummarySection from 'components/AccessibilitySummarySection'
 import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { SummaryLayout } from 'components/SummaryLayout'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WITHDRAWAL_TYPE_LABELS, OFFER_WIZARD_MODE } from 'core/Offers'
+import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -65,20 +67,14 @@ const OfferSummary = ({
 }: IOfferSummaryProps): JSX.Element => {
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const mode = useOfferWizardMode()
-  const informationsUrls = isOfferFormV3
-    ? {
-        creation: `/offre/${offer.id}/v3/creation/individuelle/informations`,
-        edition: `/offre/${offer.id}/v3/individuelle/informations`,
-      }
-    : {
-        creation: `/offre/${offer.id}/individuel/creation`,
-        edition: `/offre/${offer.id}/individuel/edition`,
-      }
-  const editLink =
-    mode === OFFER_WIZARD_MODE.CREATION
-      ? informationsUrls.creation
-      : informationsUrls.edition
   const { logEvent } = useAnalytics()
+
+  const editLink = getOfferIndividualUrl({
+    offerId: offer.id,
+    step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+    mode,
+    isV2: !isOfferFormV3,
+  })
 
   const logEditEvent = () => {
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {

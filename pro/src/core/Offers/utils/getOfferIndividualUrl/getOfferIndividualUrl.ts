@@ -1,4 +1,3 @@
-/* istanbul ignore file: not needed */
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 
@@ -17,6 +16,7 @@ const getOfferIndividualUrl = ({
   step,
   isV2 = false,
 }: IGetOfferIndividualUrlArgs) => {
+  // remove me when deleting OFFER_FORM_V3
   if (isV2)
     return getOfferIndividualUrlV2({
       offerId,
