@@ -548,7 +548,7 @@ class UserProfileUpdateTest:
 
     @override_settings(BATCH_SECRET_API_KEY="coucou-la-cle")
     @override_settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
-    def test_unsubscribe_push_notifications_with_batch(self, client, app, cloud_task_client):
+    def test_unsubscribe_push_notifications_with_batch(self, client):
         users_factories.UserFactory(email=self.identifier)
 
         with patch("pcapi.notifications.push.backends.batch.requests.delete") as mock_delete:
