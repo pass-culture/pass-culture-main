@@ -74,7 +74,10 @@ const CollectiveOfferCreationRoutes = (): JSX.Element => {
         </Route>
         <Route path="/offre/duplication/collectif/:offerId/recapitulatif">
           {collectiveOffer ? (
-            <CollectiveOfferSummaryCreation offer={collectiveOffer} />
+            <CollectiveOfferSummaryCreation
+              offer={collectiveOffer}
+              setOffer={setCollectiveOffer}
+            />
           ) : (
             <Spinner />
           )}

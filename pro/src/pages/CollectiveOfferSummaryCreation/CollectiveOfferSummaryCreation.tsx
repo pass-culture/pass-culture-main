@@ -13,10 +13,14 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface CollectiveOfferSummaryCreationProps {
   offer: CollectiveOffer | CollectiveOfferTemplate
+  setOffer:
+    | ((offer: CollectiveOffer) => void)
+    | ((offer: CollectiveOfferTemplate) => void)
 }
 
 const CollectiveOfferSummaryCreation = ({
   offer,
+  setOffer,
 }: CollectiveOfferSummaryCreationProps) => {
   const notify = useNotification()
 
@@ -38,6 +42,7 @@ const CollectiveOfferSummaryCreation = ({
       <CollectiveOfferSummaryCreationScreen
         offer={offer}
         categories={categories}
+        setOffer={setOffer}
       />
       <RouteLeavingGuardOfferCreation />
     </>
