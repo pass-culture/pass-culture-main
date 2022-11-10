@@ -380,11 +380,12 @@ def patch_collective_offers_educational_institution(
 @private_api.route("/collective/offers/<offer_id>/publish", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    on_success_status=204,
+    on_success_status=200,
     on_error_statuses=[403, 404],
     api=blueprint.pro_private_schema,
+    response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
 )
-def patch_collective_offer_publication(offer_id: str) -> None:
+def patch_collective_offer_publication(offer_id: str) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     dehumanized_id = dehumanize_or_raise(offer_id)
     try:
         offer = educational_api.get_collective_offer_by_id(dehumanized_id)
@@ -393,20 +394,25 @@ def patch_collective_offer_publication(offer_id: str) -> None:
     else:
         check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    educational_api.publish_collective_offer(
+    offer = educational_api.publish_collective_offer(
         offer=offer,
         user=current_user,
     )
+
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/collective/offers-template/<offer_id>/publish", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    on_success_status=204,
+    on_success_status=200,
     on_error_statuses=[403, 404],
     api=blueprint.pro_private_schema,
+    response_model=collective_offers_serialize.GetCollectiveOfferTemplateResponseModel,
 )
-def patch_collective_offer_template_publication(offer_id: str) -> None:
+def patch_collective_offer_template_publication(
+    offer_id: str,
+) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
     dehumanized_id = dehumanize_or_raise(offer_id)
     try:
         offer = educational_api.get_collective_offer_template_by_id(dehumanized_id)
@@ -415,7 +421,9 @@ def patch_collective_offer_template_publication(offer_id: str) -> None:
     else:
         check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    educational_api.publish_collective_offer_template(offer_template=offer, user=current_user)
+    offer = educational_api.publish_collective_offer_template(offer_template=offer, user=current_user)
+
+    return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
 
 
 @private_api.route("/collective/offers-template", methods=["POST"])
