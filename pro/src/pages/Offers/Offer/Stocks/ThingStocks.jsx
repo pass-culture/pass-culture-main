@@ -381,6 +381,7 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
                 isDigital={offer.isDigital}
                 isDisabled={isDisabled}
                 isEvent={false}
+                isNewStock={stock.id === undefined}
                 key={stock.id}
                 lastProvider={offer.lastProvider}
                 onChange={updateStock}
