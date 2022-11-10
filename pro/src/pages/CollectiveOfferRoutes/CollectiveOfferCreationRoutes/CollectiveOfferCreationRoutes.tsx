@@ -140,7 +140,14 @@ const CollectiveOfferCreationRoutes = ({
               ]}
             >
               {offer ? (
-                <CollectiveOfferSummaryCreation offer={offer} />
+                <CollectiveOfferSummaryCreation
+                  offer={offer}
+                  setOffer={
+                    offer.isTemplate
+                      ? setCollectiveOfferTemplate
+                      : setCollectiveOffer
+                  }
+                />
               ) : (
                 <Spinner />
               )}

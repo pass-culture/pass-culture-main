@@ -21,11 +21,15 @@ import styles from './CollectiveOfferSummaryCreation.module.scss'
 interface CollectiveOfferSummaryCreationProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
   categories: EducationalCategories
+  setOffer:
+    | ((offer: CollectiveOffer) => void)
+    | ((offer: CollectiveOfferTemplate) => void)
 }
 
 const CollectiveOfferSummaryCreation = ({
   offer,
   categories,
+  setOffer,
 }: CollectiveOfferSummaryCreationProps) => {
   const notify = useNotification()
   const history = useHistory()
@@ -47,6 +51,8 @@ const CollectiveOfferSummaryCreation = ({
       if (!response.isOk) {
         return notify.error(response.message)
       }
+      const typedSetOffer = setOffer as (offer: CollectiveOfferTemplate) => void
+      typedSetOffer(response.payload)
       return history.push(confirmationUrl)
     }
 
@@ -54,6 +60,8 @@ const CollectiveOfferSummaryCreation = ({
     if (!response.isOk) {
       return notify.error(response.message)
     }
+    const typedSetOffer = setOffer as (offer: CollectiveOffer) => void
+    typedSetOffer(response.payload)
     return history.push(confirmationUrl)
   }
 
