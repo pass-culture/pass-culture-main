@@ -3,6 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 
 import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
 import {
+  CollectiveOfferTemplate,
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   Mode,
@@ -13,6 +14,7 @@ import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/ge
 import postCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/postCollectiveOfferTemplateAdapter'
 import useNotification from 'hooks/useNotification'
 // @debt deprecated "Mathilde: should not import utility from legacy page"
+import { patchCollectiveOfferTemplateAdapter } from 'pages/CollectiveOfferEdition/adapters/patchCollectiveOfferTemplateAdapter'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
@@ -23,7 +25,15 @@ type AsyncScreenProps = Pick<
   'categories' | 'userOfferers' | 'domainsOptions'
 >
 
-const CollectiveOfferTemplateCreation = () => {
+interface CollectiveOfferTemplateCreationProps {
+  offer?: CollectiveOfferTemplate
+  setOfferTemplate: (offer: CollectiveOfferTemplate) => void
+}
+
+const CollectiveOfferTemplateCreation = ({
+  offer,
+  setOfferTemplate,
+}: CollectiveOfferTemplateCreationProps) => {
   const history = useHistory()
   const location = useLocation()
 
@@ -37,32 +47,46 @@ const CollectiveOfferTemplateCreation = () => {
 
   const notify = useNotification()
 
-  const createTemplateOffer = async (offer: IOfferEducationalFormValues) => {
-    const { payload, isOk, message } = await postCollectiveOfferTemplateAdapter(
-      {
-        offer,
-      }
-    )
+  const createTemplateOffer = async (
+    offerValues: IOfferEducationalFormValues
+  ) => {
+    const adapter = offer
+      ? () =>
+          patchCollectiveOfferTemplateAdapter({
+            offer: offerValues,
+            initialValues,
+            offerId: offer.id,
+          })
+      : () => postCollectiveOfferTemplateAdapter({ offer: offerValues })
+
+    const { payload, isOk, message } = await adapter()
 
     if (!isOk) {
       return notify.error(message)
     }
 
+    if (offer) {
+      setOfferTemplate({ ...offer, ...payload })
+    }
+
     history.push(
-      `/offre/${payload.offerId}/collectif/vitrine/creation/recapitulatif`
+      `/offre/${payload.id}/collectif/vitrine/creation/recapitulatif`
     )
   }
 
   useEffect(() => {
     if (!isReady) {
       const loadData = async () => {
-        const result = await getCollectiveOfferFormDataApdater({ offererId })
+        const result = await getCollectiveOfferFormDataApdater({
+          offererId,
+          offer,
+        })
 
         if (!result.isOk) {
           notify.error(result.message)
         }
 
-        const { categories, offerers, domains } = result.payload
+        const { categories, offerers, domains, initialValues } = result.payload
 
         setScreenProps({
           categories: categories,
@@ -71,7 +95,12 @@ const CollectiveOfferTemplateCreation = () => {
         })
 
         setInitialValues(values =>
-          setInitialFormValues(values, offerers, offererId, venueId)
+          setInitialFormValues(
+            { ...values, ...initialValues },
+            offerers,
+            offererId,
+            venueId
+          )
         )
 
         setIsReady(true)
