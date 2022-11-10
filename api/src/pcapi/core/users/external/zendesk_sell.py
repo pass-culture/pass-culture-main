@@ -148,7 +148,7 @@ def _get_venue_data(venue: offerers_models.Venue, parent_organization_id: int | 
     params: dict = {
         "data": {
             "is_organization": True,
-            "name": venue.publicName if venue.publicName else venue.name,
+            # "name" is not updated because sometimes the name in the product is not the same in Zendesk Sell,
             "parent_organization_id": parent_organization_id,  # if None, then it will send null on the request
             "last_name": "",  # leave that empty for the Zendesk api
             "description": venue.description,
@@ -190,7 +190,7 @@ def _get_offerer_data(offerer: offerers_models.Offerer, created: bool = False) -
     params: dict = {
         "data": {
             "is_organization": True,
-            "name": offerer.name if offerer.name else "N/A",
+            # "name" is not updated because sometimes the name in the product is not the same in Zendesk Sell,
             "last_name": "",
             "address": {
                 "line1": offerer.address,
