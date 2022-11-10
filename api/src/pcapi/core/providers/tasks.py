@@ -18,13 +18,22 @@ class SynchronizeVenueProvidersRequest(BaseModel):
 
 @task(settings.GCP_SYNCHRONIZE_VENUE_PROVIDERS_QUEUE_NAME, "/providers/synchronize_venue_providers", task_request_timeout=30 * 60)  # type: ignore [arg-type]
 def synchronize_venue_providers_task(payload: SynchronizeVenueProvidersRequest) -> None:
-    start_timer = time.perf_counter()
+    venue_provider_ids = payload.venue_provider_ids
+    venue_providers = models.VenueProvider.query.filter(models.VenueProvider.id.in_(venue_provider_ids)).all()
 
-    venue_providers = models.VenueProvider.query.filter(models.VenueProvider.id.in_(payload.venue_provider_ids)).all()
+    if not venue_providers:
+        return
+
+    start_timer = time.perf_counter()
+    logger.info("Synchronization job started", extra={"venue_providers": venue_provider_ids})
+
     provider_manager.synchronize_venue_providers(venue_providers)
 
     duration = time.perf_counter() - start_timer
-
     if duration >= 0.5 * 60 * 60:  # 50% of time between two ProviderAPIsSync cron jobs
-        provider = venue_providers[0].provider
-        logger.error("Synchronization with provider=%s took a long time", provider.name, extra={"duration": duration})
+        logger.error(
+            "Synchronization of venue providers took a long time",
+            extra={"duration": duration, "venue_providers": venue_provider_ids},
+        )
+
+    logger.info("Synchronization with provider finished", extra={"duration": duration})
