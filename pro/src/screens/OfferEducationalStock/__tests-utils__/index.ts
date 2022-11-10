@@ -1,3 +1,2 @@
 export * from './defaultProps'
-export * from './offerFactory'
 export * from './renderOfferEducationalStock'

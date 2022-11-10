@@ -16,7 +16,6 @@ import CollectiveOfferStockSection from './components/CollectiveOfferStockSectio
 import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection'
 import CollectiveOfferVenueSection from './components/CollectiveOfferVenueSection'
 import CollectiveOfferVisibilitySection from './components/CollectiveOfferVisibilitySection'
-import { DEFAULT_RECAP_VALUE } from './components/constants'
 
 interface ICollectiveOfferSummaryProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
@@ -56,21 +55,14 @@ const CollectiveOfferSummary = ({
               />
             )}
           </SummaryLayout.Section>
-          <SummaryLayout.Section title="Date & Prix" editLink={stockEditLink}>
-            {offer.isTemplate ? (
-              <SummaryLayout.Row
-                title="Détails"
-                description={
-                  offer.educationalPriceDetail || DEFAULT_RECAP_VALUE
-                }
-              />
-            ) : (
+          {!offer.isTemplate && (
+            <SummaryLayout.Section title="Date & Prix" editLink={stockEditLink}>
               <CollectiveOfferStockSection
                 stock={offer.collectiveStock}
                 venueDepartmentCode={offer.venue.departementCode}
               />
-            )}
-          </SummaryLayout.Section>
+            </SummaryLayout.Section>
+          )}
           {!offer.isTemplate && (
             <SummaryLayout.Section
               title="Visibilité"

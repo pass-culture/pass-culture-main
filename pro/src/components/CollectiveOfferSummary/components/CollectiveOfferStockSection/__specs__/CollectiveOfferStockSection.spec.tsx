@@ -3,8 +3,8 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import { collectiveOfferStockFactory } from 'screens/OfferEducationalStock/__tests-utils__'
 import { TOTAL_PRICE_LABEL } from 'screens/OfferEducationalStock/constants/labels'
+import { collectiveStockFactory } from 'utils/collectiveApiFactories'
 
 import CollectiveOfferStockSection, {
   ICollectiveOfferStockSectionProps,
@@ -19,7 +19,7 @@ const renderCollectiveOfferStockSection = (
 describe('CollectiveOfferStockSection', () => {
   it('render component', () => {
     const props = {
-      stock: collectiveOfferStockFactory(),
+      stock: collectiveStockFactory(),
     }
     renderCollectiveOfferStockSection(props)
 

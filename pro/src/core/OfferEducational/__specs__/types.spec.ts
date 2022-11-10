@@ -1,7 +1,7 @@
 import {
+  collectiveOfferFactory,
   collectiveOfferTemplateFactory,
-  offerFactory,
-} from 'screens/OfferEducationalStock/__tests-utils__'
+} from 'utils/collectiveApiFactories'
 import { itShouldReturnFalseIfGivenUndefinedOrNull } from 'utils/types'
 
 import { isCollectiveOffer, isCollectiveOfferTemplate } from '../types'
@@ -10,7 +10,7 @@ describe('isCollectiveOffer', () => {
   itShouldReturnFalseIfGivenUndefinedOrNull(isCollectiveOffer)
 
   it('should return true if the object is a collective offer', () => {
-    expect(isCollectiveOffer(offerFactory())).toBe(true)
+    expect(isCollectiveOffer(collectiveOfferFactory())).toBe(true)
   })
 
   it('should return false if the object is not a collective offer', () => {
@@ -30,6 +30,6 @@ describe('isCollectiveOfferTemplate', () => {
 
   it('should return false if the object is not a collective offer template', () => {
     expect(isCollectiveOfferTemplate({ someProp: 'test' })).toBe(false)
-    expect(isCollectiveOfferTemplate(offerFactory())).toBe(false)
+    expect(isCollectiveOfferTemplate(collectiveOfferFactory())).toBe(false)
   })
 })

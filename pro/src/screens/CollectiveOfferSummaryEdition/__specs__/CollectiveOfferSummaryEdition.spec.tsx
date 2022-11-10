@@ -19,12 +19,12 @@ import {
   categoriesFactory,
   subCategoriesFactory,
 } from 'screens/OfferEducational/__tests-utils__'
-import {
-  collectiveOfferStockFactory,
-  collectiveOfferTemplateFactory,
-  offerFactory,
-} from 'screens/OfferEducationalStock/__tests-utils__'
 import { configureTestStore } from 'store/testUtils'
+import {
+  collectiveStockFactory,
+  collectiveOfferTemplateFactory,
+  collectiveOfferFactory,
+} from 'utils/collectiveApiFactories'
 
 import CollectiveOfferSummaryEdition from '../CollectiveOfferSummaryEdition'
 
@@ -99,10 +99,10 @@ describe('CollectiveOfferSummary', () => {
   })
 
   it('should display cancel booking button when offer is booked', () => {
-    offer = offerFactory({
+    offer = collectiveOfferFactory({
       isTemplate: false,
       isActive: true,
-      collectiveStock: collectiveOfferStockFactory({ isBooked: true }),
+      collectiveStock: collectiveStockFactory({ isBooked: true }),
     })
     renderCollectiveOfferSummaryEdition(offer, categories)
 

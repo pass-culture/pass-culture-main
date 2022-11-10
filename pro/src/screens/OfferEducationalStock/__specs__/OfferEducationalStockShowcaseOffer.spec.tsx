@@ -8,13 +8,12 @@ import {
   EducationalOfferType,
   Mode,
 } from 'core/OfferEducational'
-
 import {
+  collectiveOfferFactory,
   collectiveOfferTemplateFactory,
-  defaultProps,
-  offerFactory,
-  renderOfferEducationalStock,
-} from '../__tests-utils__'
+} from 'utils/collectiveApiFactories'
+
+import { defaultProps, renderOfferEducationalStock } from '../__tests-utils__'
 import {
   BOOKING_LIMIT_DATETIME_LABEL,
   DETAILS_PRICE_LABEL,
@@ -67,7 +66,7 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
   it('should not show radio buttons if offer has a stock and is not showcase', () => {
     const testProps: IOfferEducationalStockProps = {
       ...defaultProps,
-      offer: offerFactory({}),
+      offer: collectiveOfferFactory({}),
       initialValues: {
         eventDate: new Date('2022-02-10T00:00:00.000Z'),
         eventTime: new Date('2022-02-10T00:00:00.000Z'),
