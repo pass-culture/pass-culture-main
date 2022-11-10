@@ -7,3 +7,8 @@
 .field-layout-footer {
   min-height: rem.torem(32px);
 }
+
+ .price-field input:not(:placeholder-shown) {
+    background: url(/icons/ico-euro-grey.svg) no-repeat 85% center;
+    background-size: rem.torem(16px);
+}
