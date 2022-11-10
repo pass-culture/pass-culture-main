@@ -286,9 +286,7 @@ describe('screen | VenueForm', () => {
       await userEvent.click(screen.getByText(/Enregistrer et continuer/))
 
       await waitFor(() => {
-        expect(history.location.pathname).toMatch(
-          /\/structures\/.*\/lieux\/v2\/.*/
-        )
+        expect(history.location.pathname).toMatch(/\/structures\/.*\/lieux\/.*/)
       })
     })
 
