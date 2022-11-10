@@ -323,7 +323,7 @@ class HasImageMixinTest:
         image.id = 1
         image.imageCrop = {}
         image.imageCredit = "toto"
-        image.hasOriginal = True
+        image.imageHasOriginal = True
 
         assert image.imageUrl == "http://localhost/storage/thumbs/image/1.jpg"
         assert image.imageOriginalUrl == "http://localhost/storage/thumbs/image/1_original.jpg"
@@ -342,7 +342,7 @@ class HasImageMixinTest:
 
         image = Image()
         image.id = 1
-        image.hasOriginal = False
+        image.imageHasOriginal = False
         image.imageCrop = None
         image_data = b"unprocessed image"
         ratio = ImageRatio.PORTRAIT

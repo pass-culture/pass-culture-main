@@ -110,6 +110,8 @@ class Returns200Test:
                     "domainIds": [domain.id for domain in offer.domains],
                     "domainLabels": [domain.name for domain in offer.domains],
                     "interventionArea": offer.interventionArea,
+                    "imageUrl": None,
+                    "imageCredit": None,
                 }
             ],
         }
@@ -201,6 +203,8 @@ class Returns200Test:
                     "domainIds": [domain.id for domain in offer.domains],
                     "domainLabels": [domain.name for domain in offer.domains],
                     "interventionArea": offer.interventionArea,
+                    "imageUrl": None,
+                    "imageCredit": None,
                 }
             ],
         }

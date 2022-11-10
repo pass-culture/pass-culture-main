@@ -77,6 +77,8 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     domain_ids: list[int]
     domain_labels: list[str]
     interventionArea: list[str]
+    imageCredit: str | None = Field(description="Credit for the source image")
+    imageUrl: str | None = Field(description="Url for offer image")
 
     class Config:
         title = "Prebooking detailed response"
@@ -198,6 +200,8 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         domain_ids=[domain.id for domain in domains],
         domain_labels=[domain.name for domain in domains],
         interventionArea=offer.interventionArea,
+        imageCredit=offer.imageCredit,
+        imageUrl=offer.imageUrl,
     )
 
 

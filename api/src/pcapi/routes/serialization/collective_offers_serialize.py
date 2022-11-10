@@ -82,6 +82,8 @@ class CollectiveOfferResponseModel(BaseModel):
     educationalInstitution: EducationalInstitutionResponseModel | None
     interventionArea: list[str]
     templateId: str | None
+    imageCredit: str | None
+    imageUrl: str | None
 
 
 class ListCollectiveOffersResponseModel(BaseModel):
@@ -123,6 +125,8 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         educationalInstitution=EducationalInstitutionResponseModel.from_orm(institution) if institution else None,
         interventionArea=offer.interventionArea,
         templateId=templateId,
+        imageCredit=offer.imageCredit,
+        imageUrl=offer.imageUrl,
     )
 
 
@@ -276,6 +280,8 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     domains: list[OfferDomain]
     interventionArea: list[str]
     is_cancellable_from_offerer: bool = Field(alias="isCancellable")
+    imageCredit: str | None
+    imageUrl: str | None
 
     _humanize_id = humanize_field("id")
     _humanize_offerId = humanize_field("offerId")
