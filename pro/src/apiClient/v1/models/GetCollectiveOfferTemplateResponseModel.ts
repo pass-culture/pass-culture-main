@@ -21,6 +21,8 @@ export type GetCollectiveOfferTemplateResponseModel = {
   educationalPriceDetail?: string | null;
   hasBookingLimitDatetimesPassed: boolean;
   id: string;
+  imageCredit?: string | null;
+  imageUrl?: string | null;
   interventionArea: Array<string>;
   isActive: boolean;
   isCancellable: boolean;
