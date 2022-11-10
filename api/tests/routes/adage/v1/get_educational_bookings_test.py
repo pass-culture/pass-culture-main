@@ -87,6 +87,8 @@ class Returns200Test:
                     "domainIds": [domain.id for domain in offer1.domains],
                     "domainLabels": [domain.name for domain in offer1.domains],
                     "interventionArea": offer1.interventionArea,
+                    "imageUrl": None,
+                    "imageCredit": None,
                 },
                 {
                     "address": offer2.offerVenue["otherAddress"],
@@ -133,6 +135,8 @@ class Returns200Test:
                     "domainIds": [domain.id for domain in offer2.domains],
                     "domainLabels": [domain.name for domain in offer2.domains],
                     "interventionArea": offer2.interventionArea,
+                    "imageUrl": None,
+                    "imageCredit": None,
                 },
             ]
         }
@@ -210,6 +214,8 @@ class Returns200Test:
                     "domainIds": [domain.id for domain in offer1.domains],
                     "domainLabels": [domain.name for domain in offer1.domains],
                     "interventionArea": offer1.interventionArea,
+                    "imageUrl": None,
+                    "imageCredit": None,
                 }
             ]
         }
@@ -287,6 +293,8 @@ class Returns200Test:
                     "domainIds": [domain.id for domain in offer1.domains],
                     "domainLabels": [domain.name for domain in offer1.domains],
                     "interventionArea": offer1.interventionArea,
+                    "imageUrl": None,
+                    "imageCredit": None,
                 }
             ]
         }
@@ -364,6 +372,8 @@ class Returns200Test:
                     "domainIds": [domain.id for domain in offer1.domains],
                     "domainLabels": [domain.name for domain in offer1.domains],
                     "interventionArea": offer1.interventionArea,
+                    "imageUrl": None,
+                    "imageCredit": None,
                 }
             ]
         }
@@ -441,6 +451,8 @@ class Returns200Test:
                     "domainIds": [domain.id for domain in offer1.domains],
                     "domainLabels": [domain.name for domain in offer1.domains],
                     "interventionArea": offer1.interventionArea,
+                    "imageUrl": None,
+                    "imageCredit": None,
                 }
             ]
         }

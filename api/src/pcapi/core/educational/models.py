@@ -116,7 +116,7 @@ class HasImageMixin:
         return self._image_url(original=True)
 
     def _image_url(self, original: bool = False) -> str | None:
-        if not self.hasImage:
+        if not self.hasImage or (self.hasImage and original and not self.imageHasOriginal):
             return None
         return f"{self.BASE_URL}/{self._get_image_storage_id(original=original)}"
 

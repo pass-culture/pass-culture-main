@@ -146,6 +146,8 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     domains: list[OfferDomain]
     institution: EducationalInstitutionResponseModel | None = Field(alias="educationalInstitution")
     interventionArea: list[str]
+    imageCredit: str | None
+    imageUrl: str | None
 
     @classmethod
     def from_orm(cls, offer: educational_models.CollectiveOffer) -> "CollectiveOfferResponseModel":
@@ -185,6 +187,8 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     offerId: str | None
     domains: list[OfferDomain]
     interventionArea: list[str]
+    imageCredit: str | None
+    imageUrl: str | None
 
     @classmethod
     def from_orm(cls, offer: educational_models.CollectiveOfferTemplate) -> "CollectiveOfferTemplateResponseModel":
