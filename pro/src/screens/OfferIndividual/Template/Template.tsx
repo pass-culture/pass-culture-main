@@ -16,10 +16,16 @@ export interface ITemplateProps {
   // TODO: remove this '| null' on OFFER_FORM_V3 FF cleaning
   title?: string | null
   withStepper?: boolean
+  withStatus?: boolean
   children: JSX.Element | JSX.Element[]
 }
 
-const Template = ({ title, children, withStepper = true }: ITemplateProps) => {
+const Template = ({
+  title,
+  children,
+  withStepper = true,
+  withStatus = true,
+}: ITemplateProps) => {
   const { offer, setOffer } = useOfferIndividualContext()
   const mode = useOfferWizardMode()
   const notify = useNotification()
@@ -42,15 +48,17 @@ const Template = ({ title, children, withStepper = true }: ITemplateProps) => {
     [OFFER_WIZARD_MODE.EDITION]: "Modifier l'offre",
   }[mode]
 
-  const actions = mode !== OFFER_WIZARD_MODE.CREATION && offer && (
-    <Status
-      offerId={offer.id}
-      status={offer.status}
-      isActive={offer.isActive}
-      canDeactivate={mode !== OFFER_WIZARD_MODE.DRAFT}
-      reloadOffer={reloadOffer}
-    />
-  )
+  const actions = mode !== OFFER_WIZARD_MODE.CREATION &&
+    offer &&
+    withStatus && (
+      <Status
+        offerId={offer.id}
+        status={offer.status}
+        isActive={offer.isActive}
+        canDeactivate={mode !== OFFER_WIZARD_MODE.DRAFT}
+        reloadOffer={reloadOffer}
+      />
+    )
 
   return (
     <OfferFormLayout>
