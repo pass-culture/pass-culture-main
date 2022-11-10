@@ -125,6 +125,7 @@ class FeatureToggle(enum.Enum):
     )
     WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION = "Active l'écran carrefour sur la page de choix du type d’offre à créer, afin de pouvoir créer une offre collective vitrine dès le départ"
     WIP_ENABLE_BACKOFFICE_V3 = "Autorise l'accès au nouveau back-office (v3)"
+    WIP_IMAGE_COLLECTIVE_OFFER = "Active les images dans les offres collectives et les offres vitrines."
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
 
     def is_active(self) -> bool:
@@ -191,6 +192,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.TEMP_DISABLE_OFFERER_VALIDATION_EMAIL,
     FeatureToggle.WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION,
     FeatureToggle.WIP_ENABLE_BACKOFFICE_V3,
+    FeatureToggle.WIP_IMAGE_COLLECTIVE_OFFER,
 )
 
 
