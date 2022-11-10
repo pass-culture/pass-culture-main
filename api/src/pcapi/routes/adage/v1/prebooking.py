@@ -1,8 +1,8 @@
 import logging
 
 from pcapi.core.bookings import exceptions as bookings_exceptions
-from pcapi.core.educational import api
 from pcapi.core.educational import exceptions
+from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.repository import find_collective_bookings_for_adage
 from pcapi.core.educational.repository import get_paginated_collective_bookings_for_educational_year
 from pcapi.models.api_errors import ApiErrors
@@ -48,7 +48,7 @@ def get_educational_bookings(
 @adage_api_key_required
 def confirm_prebooking(educational_booking_id: int) -> prebooking_serialization.EducationalBookingResponse:
     try:
-        educational_booking = api.confirm_collective_booking(educational_booking_id)
+        educational_booking = educational_api_booking.confirm_collective_booking(educational_booking_id)
     except exceptions.InsufficientFund:
         raise ApiErrors({"code": "INSUFFICIENT_FUND"}, status_code=422)
     except exceptions.InsufficientMinistryFund:
@@ -81,7 +81,7 @@ def refuse_pre_booking(educational_booking_id: int) -> prebooking_serialization.
     Can only work if prebooking is confirmed or pending,
     is not yet used and still refusable."""
     try:
-        educational_booking = api.refuse_collective_booking(educational_booking_id)
+        educational_booking = educational_api_booking.refuse_collective_booking(educational_booking_id)
     except exceptions.EducationalBookingNotFound:
         raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
     except exceptions.EducationalBookingNotRefusable:

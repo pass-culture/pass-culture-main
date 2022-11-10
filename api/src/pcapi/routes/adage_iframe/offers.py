@@ -2,7 +2,8 @@ import logging
 
 from sqlalchemy.orm import exc as orm_exc
 
-from pcapi.core.educational import api as educational_api
+from pcapi.core.educational.api import offer as educational_api_offer
+from pcapi.core.educational.api.categories import get_educational_categories
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 def get_educational_offers_categories(
     authenticated_information: AuthenticatedInformation,
 ) -> serializers.CategoriesResponseModel:
-    educational_categories = educational_api.get_educational_categories()
+    educational_categories = get_educational_categories()
 
     return serializers.CategoriesResponseModel(
         categories=[
@@ -40,7 +41,7 @@ def get_collective_offer(
     authenticated_information: AuthenticatedInformation, offer_id: int
 ) -> serializers.CollectiveOfferResponseModel:
     try:
-        offer = educational_api.get_collective_offer_by_id_for_adage(offer_id)
+        offer = educational_api_offer.get_collective_offer_by_id_for_adage(offer_id)
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_NOT_FOUND"}, status_code=404)
 
@@ -56,7 +57,7 @@ def get_collective_offer_template(
     authenticated_information: AuthenticatedInformation, offer_id: int
 ) -> serializers.CollectiveOfferTemplateResponseModel:
     try:
-        offer = educational_api.get_collective_offer_template_by_id_for_adage(offer_id)
+        offer = educational_api_offer.get_collective_offer_template_by_id_for_adage(offer_id)
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
 

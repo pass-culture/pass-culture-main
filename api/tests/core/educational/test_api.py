@@ -9,9 +9,12 @@ import pytest
 import requests_mock
 
 from pcapi.core import search
-from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational.api import adage as educational_api_adage
+from pcapi.core.educational.api import booking as educational_api_booking
+from pcapi.core.educational.api import stock as educational_api_stock
+from pcapi.core.educational.api.offer import unindex_expired_collective_offers
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
@@ -80,7 +83,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         # When
-        educational_api.edit_collective_stock(
+        educational_api_stock.edit_collective_stock(
             stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
         )
 
@@ -108,7 +111,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         # When
-        educational_api.edit_collective_stock(
+        educational_api_stock.edit_collective_stock(
             stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
         )
 
@@ -136,7 +139,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         # When
-        educational_api.edit_collective_stock(
+        educational_api_stock.edit_collective_stock(
             stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
         )
 
@@ -159,7 +162,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         # When
-        educational_api.edit_collective_stock(
+        educational_api_stock.edit_collective_stock(
             stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
         )
 
@@ -185,7 +188,7 @@ class EditCollectiveOfferStocksTest:
     #     )
 
     #     # When
-    #     educational_api.edit_collective_stock(
+    #     edit_collective_stock(
     #         stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
     #     )
 
@@ -207,7 +210,7 @@ class EditCollectiveOfferStocksTest:
 
         # When
         with pytest.raises(exceptions.CollectiveOfferStockBookedAndBookingNotPending):
-            educational_api.edit_collective_stock(
+            educational_api_stock.edit_collective_stock(
                 stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
             )
 
@@ -240,7 +243,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         # When
-        educational_api.edit_collective_stock(
+        educational_api_stock.edit_collective_stock(
             stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
         )
 
@@ -277,7 +280,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         # When
-        educational_api.edit_collective_stock(
+        educational_api_stock.edit_collective_stock(
             stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
         )
 
@@ -308,7 +311,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         # When
-        educational_api.edit_collective_stock(
+        educational_api_stock.edit_collective_stock(
             stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
         )
 
@@ -336,7 +339,7 @@ class EditCollectiveOfferStocksTest:
 
         # When
         with pytest.raises(offers_exceptions.ApiErrors) as error:
-            educational_api.edit_collective_stock(
+            educational_api_stock.edit_collective_stock(
                 stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
             )
 
@@ -359,7 +362,7 @@ class EditCollectiveOfferStocksTest:
 
         # When
         with pytest.raises(offers_exceptions.ApiErrors) as error:
-            educational_api.edit_collective_stock(
+            educational_api_stock.edit_collective_stock(
                 stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
             )
 
@@ -384,7 +387,7 @@ class EditCollectiveOfferStocksTest:
 
         # When
         with pytest.raises(offers_exceptions.BookingLimitDatetimeTooLate):
-            educational_api.edit_collective_stock(
+            educational_api_stock.edit_collective_stock(
                 stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
             )
 
@@ -406,7 +409,7 @@ class EditCollectiveOfferStocksTest:
 
         # When
         with pytest.raises(offers_exceptions.BookingLimitDatetimeTooLate):
-            educational_api.edit_collective_stock(
+            educational_api_stock.edit_collective_stock(
                 stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
             )
 
@@ -431,7 +434,7 @@ class CreateCollectiveOfferStocksTest:
         )
 
         # When
-        stock_created = educational_api.create_collective_stock(stock_data=new_stock, user=user_pro)
+        stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock, user=user_pro)
 
         # Then
         stock = CollectiveStock.query.filter_by(id=stock_created.id).one()
@@ -456,7 +459,7 @@ class CreateCollectiveOfferStocksTest:
         )
 
         # When
-        stock_created = educational_api.create_collective_stock(stock_data=new_stock, user=user_pro)
+        stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock, user=user_pro)
 
         # Then
         stock = CollectiveStock.query.filter_by(id=stock_created.id).one()
@@ -476,7 +479,7 @@ class CreateCollectiveOfferStocksTest:
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            educational_api.create_collective_stock(stock_data=created_stock_data, user=user)
+            educational_api_stock.create_collective_stock(stock_data=created_stock_data, user=user)
 
         # Then
         assert error.value.errors == {
@@ -502,7 +505,7 @@ class CreateCollectiveOfferStocksTest:
         mocked_set_offer_status_based_on_fraud_criteria.return_value = OfferValidationStatus.PENDING
 
         # When
-        educational_api.create_collective_stock(stock_data=created_stock_data, user=user)
+        educational_api_stock.create_collective_stock(stock_data=created_stock_data, user=user)
 
         # Then
         assert not mocked_offer_creation_notification_to_admin.called
@@ -528,7 +531,7 @@ class UnindexExpiredOffersTest:
         educational_factories.CollectiveStockFactory(bookingLimitDatetime=datetime.datetime(2020, 1, 5, 12, 0))
 
         # When
-        educational_api.unindex_expired_collective_offers()
+        unindex_expired_collective_offers()
 
         # Then
         assert mock_unindex_collective_offer_ids.mock_calls == [
@@ -546,7 +549,7 @@ class UnindexExpiredOffersTest:
         educational_factories.CollectiveStockFactory(bookingLimitDatetime=datetime.datetime(2020, 1, 5, 12, 0))
 
         # When
-        educational_api.unindex_expired_collective_offers(process_all_expired=True)
+        unindex_expired_collective_offers(process_all_expired=True)
 
         # Then
         assert mock_unindex_collective_offer_ids.mock_calls == [
@@ -561,7 +564,7 @@ class GetCulturalPartnersTest:
         redis_client.delete("api:adage_cultural_partner:cache")
 
         # when
-        result = educational_api.get_cultural_partners()
+        result = educational_api_adage.get_cultural_partners()
 
         # then
         assert json.loads(result.json()) == {
@@ -664,7 +667,7 @@ class GetCulturalPartnersTest:
         redis_client.set("api:adage_cultural_partner:cache", json.dumps(data).encode("utf-8"))
 
         # when
-        result = educational_api.get_cultural_partners()
+        result = educational_api_adage.get_cultural_partners()
 
         # then
         assert json.loads(result.json()) == {
@@ -738,7 +741,7 @@ class GetCulturalPartnersTest:
         redis_client.set("api:adage_cultural_partner:cache", json.dumps(data).encode("utf-8"))
 
         # when
-        result = educational_api.get_cultural_partners(force_update=True)
+        result = educational_api_adage.get_cultural_partners(force_update=True)
 
         # then
         # then
@@ -820,7 +823,7 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
         )
 
         # when
-        educational_api.notify_pro_pending_booking_confirmation_limit_in_3_days()
+        educational_api_booking.notify_pro_pending_booking_confirmation_limit_in_3_days()
 
         # then
         mock_mail_sender.assert_called_once()
@@ -849,7 +852,7 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
         )
 
         # when
-        educational_api.notify_pro_pending_booking_confirmation_limit_in_3_days()
+        educational_api_booking.notify_pro_pending_booking_confirmation_limit_in_3_days()
 
         # then
         mock_mail_sender.assert_not_called()
@@ -865,7 +868,7 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
         )
 
         # when
-        educational_api.notify_pro_pending_booking_confirmation_limit_in_3_days()
+        educational_api_booking.notify_pro_pending_booking_confirmation_limit_in_3_days()
 
         # then
         mock_mail_sender.assert_not_called()
@@ -923,7 +926,7 @@ def test_synchronize_adage_ids_on_venues(db_session):
             status_code=200,
             json=[venue1_data, venue2_data, venue3_data, venue4_data],
         )
-        educational_api.synchronize_adage_ids_on_venues()
+        educational_api_adage.synchronize_adage_ids_on_venues()
 
     assert venue1.adageId == "128028"
     assert venue2.adageId == "128029"
@@ -986,7 +989,7 @@ class NotifyProUserOneDayTest:
             collectiveStock__beginningDatetime=datetime.datetime(2021, 1, 6),
             status=CollectiveBookingStatus.CONFIRMED,
         )
-        educational_api.notify_pro_users_one_day()
+        educational_api_booking.notify_pro_users_one_day()
         assert mock_mail_sender.call_count == 2
         for args in mock_mail_sender.call_args_list:
             data = args.kwargs["data"]

@@ -1,7 +1,7 @@
 import click
 
 from pcapi.core import search
-import pcapi.core.educational.api as educational_api
+from pcapi.core.educational.api.offer import unindex_expired_collective_offers
 import pcapi.core.offers.api as offers_api
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_collective_offers_in_algolia_from_database
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_collective_offers_template_in_algolia_from_database
@@ -98,7 +98,7 @@ def process_expired_offers(all_offers: bool):  # type: ignore [no-untyped-def]
 @blueprint.cli.command("process_expired_collective_offers")
 @click.option("-a", "--all", help="Bypass the two days limit to delete all expired collective offers", default=False)
 def process_expired_collective_offers(all_offers: bool):  # type: ignore [no-untyped-def]
-    educational_api.unindex_expired_collective_offers(process_all_expired=all_offers)
+    unindex_expired_collective_offers(process_all_expired=all_offers)
 
 
 @blueprint.cli.command("process_venues_from_database")

@@ -9,6 +9,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
+from pcapi.core.educational.api.offer import notify_educational_redactor_on_collective_offer_or_stock_edit
 from pcapi.core.offers import validation as offer_validation
 from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.users.models import User
@@ -67,7 +68,6 @@ def create_collective_stock(
 def edit_collective_stock(
     stock: educational_models.CollectiveStock, stock_data: dict
 ) -> educational_models.CollectiveStock:
-    from pcapi.core.educational.api.offer import notify_educational_redactor_on_collective_offer_or_stock_edit
 
     beginning = stock_data.get("beginningDatetime")
     beginning = as_utc_without_timezone(beginning) if beginning else None

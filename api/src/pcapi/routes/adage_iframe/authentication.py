@@ -1,4 +1,4 @@
-from pcapi.core.educational.api import get_educational_institution_department_code
+from pcapi.core.educational.api.institution import get_educational_institution_department_code
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
