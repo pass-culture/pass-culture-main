@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 cloud_task_api = Blueprint("Cloud task internal API", __name__, url_prefix=CLOUD_TASK_SUBPATH)
 
 
-def task(queue: str, path: str, deduplicate: bool = False, delayed_seconds: int = 0):  # type: ignore [no-untyped-def]
+def task(queue: str, path: str, deduplicate: bool = False, delayed_seconds: int = 0, task_request_timeout: int | None = None):  # type: ignore [no-untyped-def]
     def decorator(f):  # type: ignore [no-untyped-def]
         payload_in_kwargs = f.__annotations__.get("payload")
 
@@ -40,7 +40,12 @@ def task(queue: str, path: str, deduplicate: bool = False, delayed_seconds: int 
             payload = json.loads(payload.json())  # type: ignore [attr-defined]
 
             cloud_task.enqueue_internal_task(
-                queue, path, payload, deduplicate=deduplicate, delayed_seconds=delayed_seconds
+                queue,
+                path,
+                payload,
+                deduplicate=deduplicate,
+                delayed_seconds=delayed_seconds,
+                task_request_timeout=task_request_timeout,
             )
 
         f.delay = delay
