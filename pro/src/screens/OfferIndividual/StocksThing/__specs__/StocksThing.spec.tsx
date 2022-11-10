@@ -153,6 +153,24 @@ describe('screens:StocksThing', () => {
     ).toBeInTheDocument()
   })
 
+  it('should submit stock and stay in creation mode when click on "Sauvegarder le brouillon"', async () => {
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+    })
+    renderStockThingScreen({ props, storeOverride, contextValue })
+
+    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
+    )
+    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+    expect(
+      screen.getByText('Vos modifications ont bien été prises en compte')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Save draft page')).toBeInTheDocument()
+    expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
+  })
+
   it('should submit stock form when click on "Étape suivante""', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stockIds: [{ id: 'CREATED_STOCK_ID' }],

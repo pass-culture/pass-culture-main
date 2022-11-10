@@ -99,7 +99,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
           step: saveDraft
             ? OFFER_WIZARD_STEP_IDS.STOCKS
             : OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode: saveDraft ? OFFER_WIZARD_MODE.DRAFT : mode,
+          mode,
         })
       )
       formik.handleSubmit()
