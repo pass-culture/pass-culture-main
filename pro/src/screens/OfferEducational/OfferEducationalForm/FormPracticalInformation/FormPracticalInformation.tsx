@@ -10,6 +10,7 @@ import FormLayout from 'components/FormLayout'
 import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
+  MAX_DETAILS_LENGTH,
 } from 'core/OfferEducational'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { offerInterventionOptions } from 'core/shared/interventionOptions'
@@ -217,7 +218,7 @@ const FormPracticalInformation = ({
             disabled={disableForm}
             isOptional
             label={PRICE_INFORMATION}
-            maxLength={1000}
+            maxLength={MAX_DETAILS_LENGTH}
             name="priceDetail"
             placeholder="Par exemple : tarif par élève ou par groupe scolaire, politique tarifaire REP/REP+ et accompagnateurs... "
           />
