@@ -5,7 +5,7 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
@@ -32,7 +32,7 @@ class Returns200Test:
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # When
-        with assert_num_queries(1):
+        with assert_no_duplicated_queries():
             response = client.get(f"/adage-iframe/collective/offers-template/{offer_id}")
 
         # Then

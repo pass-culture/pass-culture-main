@@ -36,9 +36,8 @@ def test_get_business_units_by_pro(client):
     offerers_factories.UserOffererFactory(offerer=venue1.managingOfferer, user=pro)
 
     client = client.with_session_auth(pro.email)
-    n_queries = testing.AUTHENTICATION_QUERIES
-    n_queries += 1  # select business units
-    with testing.assert_num_queries(n_queries):
+
+    with testing.assert_no_duplicated_queries():
         response = client.get("finance/business-units")
 
     assert response.status_code == 200

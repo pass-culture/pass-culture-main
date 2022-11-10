@@ -7,6 +7,7 @@ from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
@@ -34,13 +35,8 @@ class Returns200Test:
 
         # When
         offer_id = stock.offer.id
-        n_query_select_offerer = 1
-        n_query_exist_user_offerer = 1
-        n_query_select_stock = 1
 
-        with assert_num_queries(
-            testing.AUTHENTICATION_QUERIES + n_query_select_offerer + n_query_exist_user_offerer + n_query_select_stock
-        ):
+        with assert_no_duplicated_queries():
             response = client.get(f"/offers/{humanize(offer_id)}/stocks")
 
         # Then
@@ -132,6 +128,8 @@ class Returns200Test:
         n_query_exist_user_offerer = 1
         n_query_select_stock = 1
         n_query_select_activation_code = 2  # 1 query per stock
+        # TODO(atrancart): the select activation query is duplicated,
+        # check if solving this N+1 problem is worth it
 
         with assert_num_queries(
             testing.AUTHENTICATION_QUERIES
@@ -196,12 +194,10 @@ class Returns200Test:
         bookings_factories.BookingFactory(stock=stock_2)
         offerers_factories.UserOffererFactory(user=pro, offerer=offer.venue.managingOfferer)
         client = TestClient(app.test_client()).with_session_auth(email=pro.email)
-        check_user_has_rights_queries = 2
-        get_stock_queries = 1
         offer_id = offer.id
 
         # When
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + check_user_has_rights_queries + get_stock_queries):
+        with assert_no_duplicated_queries():
             response = client.get(f"/offers/{humanize(offer_id)}/stocks")
 
         # Then

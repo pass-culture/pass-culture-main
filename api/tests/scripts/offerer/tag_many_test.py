@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core.offerers import factories
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.scripts.offerer.tag_many import create_missing_mappings
 
 
@@ -15,11 +15,7 @@ def test_create_missing_mappings():
     tag_names = {tag.name for tag in tags}
     offerer_ids = {offerer.id for offerer in offerers}
 
-    # 1. load offerers
-    # 2. load tags (OfferTag)
-    # 3. insert mappings (OfferTagMapping)
-    # 4. commit
-    with assert_num_queries(4):
+    with assert_no_duplicated_queries():
         create_missing_mappings(offerer_ids, tag_names, dry_run=False)
 
     assert all(len(offerer.tags) == 2 for offerer in offerers)
@@ -38,11 +34,7 @@ def test_create_missing_mappings_when_some_tags_exists():
     tag_names = {tag.name for tag in tags}
     offerer_ids = {offerer.id for offerer in offerers}
 
-    # 1. load offerers
-    # 2. load tags (OfferTag)
-    # 3. insert mappings (OfferTagMapping)
-    # 4. commit
-    with assert_num_queries(4):
+    with assert_no_duplicated_queries():
         create_missing_mappings(offerer_ids, tag_names, dry_run=False)
 
     assert all(len(offerer.tags) == 2 for offerer in offerers)
@@ -59,10 +51,7 @@ def test_create_missing_mappings_dry_run():
     tag_names = {tag.name for tag in tags}
     offerer_ids = {offerer.id for offerer in offerers}
 
-    # 1. load offerers
-    # 2. load tags (OfferTag)
-    # 3. rollback
-    with assert_num_queries(3):
+    with assert_no_duplicated_queries():
         create_missing_mappings(offerer_ids, tag_names, dry_run=True)
 
     assert all(not offerer.tags for offerer in offerers)

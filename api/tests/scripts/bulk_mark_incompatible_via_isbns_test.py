@@ -4,6 +4,7 @@ import pytest
 
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.scripts.bulk_mark_incompatible_via_isbns import bulk_update_is_gcu_compatible_via_isbns
 
@@ -57,9 +58,7 @@ class BulkUpdateIsGcuCompatibleViaIsbnsTest:
 
         isbns_list = ["ABCDEFG", "HIJKLMN", "OPQRSTU", "HFGDS"]
 
-        queries = 2  # update; commit
-
-        with assert_num_queries(queries):
+        with assert_no_duplicated_queries():
             bulk_update_is_gcu_compatible_via_isbns(isbns_list, 4, is_compatible=True)
 
         assert product.isGcuCompatible

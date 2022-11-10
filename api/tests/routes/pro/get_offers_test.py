@@ -1,9 +1,8 @@
 from unittest.mock import patch
 
-from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -33,11 +32,9 @@ class Returns200Test:
         stock = offers_factories.StockFactory(offer=offer_on_requested_venue)
         client = TestClient(app.test_client()).with_session_auth(email=admin.email)
         path = f"/offers?venueId={humanize(requested_venue.id)}"
-        select_offers_nb_queries = 1  # FeatureFlag query
-        select_offers_nb_queries += 1  # Offer query
 
         # when
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + select_offers_nb_queries):
+        with assert_no_duplicated_queries():
             response = client.get(path)
 
         # then

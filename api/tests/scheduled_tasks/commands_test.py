@@ -12,7 +12,7 @@ from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficia
     get_booking_event_reminder_to_beneficiary_email_data,
 )
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import override_settings
 import pcapi.notifications.push.testing as notifications_testing
 from pcapi.scheduled_tasks.commands import _send_notification_favorites_not_booked
@@ -90,7 +90,7 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
         stock = offers_factories.EventStockFactory(beginningDatetime=tomorrow)
         bookings_factories.IndividualBookingFactory.create_batch(3, stock=stock)
 
-        with assert_num_queries(1):
+        with assert_no_duplicated_queries():
             send_email_reminder_tomorrow_event_to_beneficiaries()
 
             assert len(mails_testing.outbox) == 3

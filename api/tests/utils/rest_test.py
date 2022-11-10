@@ -2,7 +2,7 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.human_ids import humanize
@@ -18,14 +18,8 @@ class CheckUserHasAccessToOffererTest:
         pro = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        # fmt: off
-        n_queries = (
-            1  # select Offerer
-            + 1  # select User
-            + 1  # select UserOfferer
-        )
-        # fmt: on
-        with assert_num_queries(n_queries):
+
+        with assert_no_duplicated_queries():
             check_user_has_access_to_offerer(pro, offerer.id)
 
     def test_raises_if_user_cannot_access_offerer(self, app):

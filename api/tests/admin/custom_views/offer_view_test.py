@@ -539,10 +539,7 @@ class OfferValidationViewTest:
 
         client = client.with_session_auth(admin.email)
 
-        n_queries = testing.AUTHENTICATION_QUERIES
-        n_queries += 1  # count
-        n_queries += 1  # select offers
-        with testing.assert_num_queries(n_queries):
+        with testing.assert_no_duplicated_queries():
             response = client.get(url_for("validation.index_view"))
 
         assert response.status_code == 200
@@ -1000,10 +997,7 @@ class OfferValidationViewTest:
 
         client = client.with_session_auth(admin.email)
 
-        n_queries = testing.AUTHENTICATION_QUERIES
-        n_queries += 1  # count
-        n_queries += 1  # select offers
-        with testing.assert_num_queries(n_queries):
+        with testing.assert_no_duplicated_queries():
             response = client.get(url_for("validation-collective-offer.index_view"))
 
         assert response.status_code == 200
