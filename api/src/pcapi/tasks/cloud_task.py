@@ -7,7 +7,8 @@ from dateutil.relativedelta import relativedelta
 from google.api_core import retry
 from google.api_core.exceptions import AlreadyExists
 from google.cloud import tasks_v2
-from google.protobuf import timestamp_pb2  # type: ignore [import]
+from google.protobuf import duration_pb2  # type: ignore [import]
+from google.protobuf import timestamp_pb2
 
 from pcapi import settings
 from pcapi.utils import requests
@@ -29,7 +30,11 @@ def get_client():  # type: ignore [no-untyped-def]
 
 
 def enqueue_task(
-    queue: str, http_request: tasks_v2.HttpRequest, task_id: str = None, schedule_time: datetime = None
+    queue: str,
+    http_request: tasks_v2.HttpRequest,
+    task_id: str = None,
+    schedule_time: datetime = None,
+    task_request_timeout: int | None = None,
 ) -> str | None:
 
     client = get_client()
@@ -46,6 +51,12 @@ def enqueue_task(
         timestamp = timestamp_pb2.Timestamp()
         timestamp.FromDatetime(schedule_time)
         task.schedule_time = timestamp
+
+    if task_request_timeout:
+        # if the task request lasts more than this timeout, the task will be considered as failed (and may be retryied)
+        # if not specified, google cloud tasks will use a default timeout of 10 minutes
+        # https://cloud.google.com/tasks/docs/reference/rpc/google.cloud.tasks.v2#task
+        task.dispatch_deadline = duration_pb2.Duration(seconds=task_request_timeout)
 
     task_request = tasks_v2.CreateTaskRequest(parent=parent, task=task)
 
@@ -76,7 +87,7 @@ def enqueue_task(
     return task_id
 
 
-def enqueue_internal_task(queue, path, payload, deduplicate: bool = False, delayed_seconds: int = 0):  # type: ignore [no-untyped-def]
+def enqueue_internal_task(queue, path, payload, deduplicate: bool = False, delayed_seconds: int = 0, task_request_timeout: int | None = None):  # type: ignore [no-untyped-def]
     url = settings.API_URL + CLOUD_TASK_SUBPATH + path
 
     if settings.IS_DEV:
@@ -96,7 +107,9 @@ def enqueue_internal_task(queue, path, payload, deduplicate: bool = False, delay
 
     schedule_time = datetime.utcnow() + relativedelta(seconds=delayed_seconds) if delayed_seconds else None
 
-    return enqueue_task(queue, http_request, task_id=task_id, schedule_time=schedule_time)
+    return enqueue_task(
+        queue, http_request, task_id=task_id, schedule_time=schedule_time, task_request_timeout=task_request_timeout
+    )
 
 
 def _call_internal_api_endpoint(queue, url, payload):  # type: ignore [no-untyped-def]
