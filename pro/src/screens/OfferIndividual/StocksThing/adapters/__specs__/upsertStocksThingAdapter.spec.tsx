@@ -3,6 +3,7 @@ import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { STOCK_THING_FORM_DEFAULT_VALUES } from 'components/StockThingForm'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 
 import upsertStocksThingAdapter from '../upsertStocksThingAdapter'
 
@@ -23,6 +24,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
         price: '10',
       },
       departementCode: '75',
+      mode: OFFER_WIZARD_MODE.CREATION,
     })
     expect(api.upsertStocks).toHaveBeenCalledWith({
       humanizedOfferId: 'OFFER_ID',
@@ -52,6 +54,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
         price: '10',
       },
       departementCode: '75',
+      mode: OFFER_WIZARD_MODE.CREATION,
     })
     expect(api.upsertStocks).toHaveBeenCalledWith({
       humanizedOfferId: 'OFFER_ID',
@@ -93,6 +96,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
         quantity: '12',
         price: '10',
       },
+      mode: OFFER_WIZARD_MODE.CREATION,
       departementCode: '75',
     })
 

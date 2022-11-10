@@ -61,13 +61,22 @@ const Informations = ({
     ({ saveDraft = false } = {}) =>
     () => {
       setIsSubmittingDraft(saveDraft)
-      if (Object.keys(formik.errors).length !== 0)
-        notify.error(
-          'Une ou plusieurs erreurs sont présentes dans le formulaire',
-          {
-            withStickyActionBar: true,
-          }
-        )
+      if (Object.keys(formik.errors).length !== 0) {
+        if (saveDraft)
+          notify.error(
+            'Des informations sont nécessaires pour sauvegarder le brouillon',
+            {
+              withStickyActionBar: true,
+            }
+          )
+        else
+          notify.error(
+            'Une ou plusieurs erreurs sont présentes dans le formulaire',
+            {
+              withStickyActionBar: true,
+            }
+          )
+      }
       formik.handleSubmit()
     }
 
@@ -134,7 +143,7 @@ const Informations = ({
         cropParams,
       })
         .then(() => {
-          notify.success('Vos modifications ont bien été prises en compte', {
+          notify.success('Brouillon sauvegardé dans la liste des offres', {
             withStickyActionBar: true,
           })
         })
