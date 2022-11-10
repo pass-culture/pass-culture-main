@@ -54,7 +54,7 @@ describe('test OfferIndividualTemplate', () => {
     renderTemplate({})
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
-    expect(screen.getByText('Informations')).toBeInTheDocument()
+    expect(screen.getByText("Détails de l'offre")).toBeInTheDocument()
     expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
     expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
     expect(screen.getByText('Confirmation')).toBeInTheDocument()
@@ -75,7 +75,7 @@ describe('test OfferIndividualTemplate', () => {
     renderTemplate({ contextOverride })
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
-    expect(screen.getByText('Informations')).toBeInTheDocument()
+    expect(screen.getByText("Détails de l'offre")).toBeInTheDocument()
     expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
     expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
 
@@ -101,7 +101,7 @@ describe('test OfferIndividualTemplate', () => {
     })
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
-    expect(screen.getByText('Informations')).toBeInTheDocument()
+    expect(screen.getByText("Détails de l'offre")).toBeInTheDocument()
     expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
     expect(screen.queryByText('Récapitulatif')).not.toBeInTheDocument()
     expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
