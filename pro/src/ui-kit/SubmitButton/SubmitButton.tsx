@@ -4,7 +4,7 @@ import React, { ForwardedRef } from 'react'
 import { ReactComponent as SpinnerIcon } from './assets/loader.svg'
 import styles from './SubmitButton.module.scss'
 
-interface ISubmitButtonProps {
+export interface ISubmitButtonProps {
   className?: string
   disabled?: boolean
   isLoading?: boolean
