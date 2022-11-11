@@ -1,13 +1,18 @@
+import type { Story } from '@storybook/react'
 import React from 'react'
 
-import SubmitButton from './SubmitButton'
+import SubmitButton, { ISubmitButtonProps } from './SubmitButton'
 
 export default {
   title: 'ui-kit/SubmitButton',
   component: SubmitButton,
 }
 
-const Template = args => <SubmitButton {...args}>{args.children}</SubmitButton>
+const Template: Story<ISubmitButtonProps> = props => (
+  <div style={{ maxWidth: '316px' }}>
+    <SubmitButton {...props} />
+  </div>
+)
 
 export const Default = Template.bind({})
 
