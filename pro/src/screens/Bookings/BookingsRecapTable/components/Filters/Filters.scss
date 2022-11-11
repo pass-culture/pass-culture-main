@@ -68,7 +68,7 @@
     .fw-booking-text-filters-input {
       @include fonts.body();
 
-      border: rem.torem(1px) solid colors.$grey-semi-dark;
+      border: rem.torem(1px) solid colors.$grey-medium;
       border-left: none;
       border-radius: 0 rem.torem(20px) rem.torem(20px) 0;
       flex-grow: 1;
