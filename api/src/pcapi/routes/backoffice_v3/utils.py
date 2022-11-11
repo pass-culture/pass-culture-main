@@ -24,6 +24,10 @@ logger = logging.getLogger(__name__)
 BackofficeResponse = typing.Union[str, typing.Tuple[str, int], WerkzeugResponse]
 
 
+def has_current_user_permission(permission: perm_models.Permissions) -> bool:
+    return permission in current_user.backoffice_profile.permissions or settings.IS_TESTING
+
+
 def _check_permission(permission: perm_models.Permissions) -> None:
     if not current_user.is_authenticated:
         raise ApiErrors({"global": ["l'utilisateur n'est pas authentifié"]}, status_code=403)
@@ -31,7 +35,7 @@ def _check_permission(permission: perm_models.Permissions) -> None:
     if not current_user.backoffice_profile:
         raise ApiErrors({"global": ["utilisateur inconnu"]}, status_code=403)
 
-    if permission not in current_user.backoffice_profile.permissions and not settings.IS_TESTING:
+    if not has_current_user_permission(permission):
         logger.warning(
             "user %s missed permission %s while trying to access %s",
             current_user.email,

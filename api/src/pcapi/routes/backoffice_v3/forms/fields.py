@@ -32,6 +32,13 @@ class PCPostalCodeField(PCStringField):
     ]
 
 
+class PCCommentField(PCOptStringField):
+    validators = [
+        validators.InputRequired("Information obligatoire"),
+        validators.Length(min=2, max=1024, message="doit contenir entre %(min)d et %(max)d caractères"),
+    ]
+
+
 class PCEmailField(wtforms.EmailField):
     widget = partial(widget, template="components/forms/string_field.html")
     validators = [

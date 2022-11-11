@@ -1,0 +1,43 @@
+{% if can_add_comment %}
+    <a
+        href="{{ url_for('backoffice_v3_web.offerer_comment.new_comment', offerer_id=offerer.id) }}"
+        class="card-link"
+        >
+        <button class="btn btn-outline-primary fw-bolder">
+            Ajouter un commentaire
+        </button>
+    </a>
+{% endif %}
+
+<table class="table table-hover my-4">
+    <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Type</th>
+            <th scope="col">Date/Heure</th>
+            <th scope="col">Commentaire</th>
+            <th scope="col" class="px-4">Auteur</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        {% for event in history %}
+            <tr>
+                <th scope="row"></th>
+                <td>{{ event.type }}</td>
+                <td>{{ event.date | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
+                <td class="px-4 text-break">
+                    {% if event.accountName %}
+                        <a href="{{ url_for("backoffice_v3_web.pro_user.get", user_id=event.accountId) }}">
+                            <p>{{ event.accountName | empty_string_if_null }} - {{ event.accountId }}</p>
+                        </a>
+
+                        <p>{{ event.comment | empty_string_if_null }}</p>
+                    {% else %}
+                        <p>{{ event.comment | empty_string_if_null }}</p>
+                    {% endif %}
+                </td>
+                <td>{{ event.authorName | empty_string_if_null }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -1,0 +1,74 @@
+<turbo-frame id="offerer_history_frame">
+
+    <ul class="nav nav-tabs nav-fill" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button
+                class="nav-link active fw-bolder py-3"
+                id="pills-home-tab"
+                data-bs-toggle="pill"
+                data-bs-target="#pills-home"
+                type="button"
+                role="tab"
+                aria-controls="pills-home"
+                aria-selected="true"
+            >
+                HISTORIQUE DU COMPTE
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button
+                class="nav-link fw-bolder py-3"
+                id="pills-pro-users-tab"
+                data-bs-toggle="pill"
+                data-bs-target="#pills-pro-users"
+                type="button"
+                role="tab"
+                aria-controls="pills-pro-users"
+                aria-selected="false"
+            >
+                COMPTE(S) PRO RATTACHÉ(S)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button
+                class="nav-link fw-bolder py-3"
+                id="pills-details-tab"
+                data-bs-toggle="pill"
+                data-bs-target="#pills-details"
+                type="button"
+                role="tab"
+                aria-controls="pills-details"
+                aria-selected="false"
+            >
+             DÉTAILS STRUCTURE / LIEUX
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button
+                class="nav-link fw-bolder py-3"
+                id="pills-bookings-tab"
+                data-bs-toggle="pill"
+                data-bs-target="#pills-bookings"
+                type="button"
+                role="tab"
+                aria-controls="pills-bookings"
+                aria-selected="false"
+            >
+                RÉSERVATIONS
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content bg-body border border-top-0" id="pills-tabContent">
+        <div class="tab-pane fade show active p-4" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+            {% include "offerer/get/details/history.html" %}
+        </div>
+        <div class="tab-pane fade" id="pills-pro-users" role="tabpanel" aria-labelledby="pills-pro-users-tab" tabindex="0">
+        </div>
+        <div class="tab-pane fade" id="pills-details" role="tabpanel" aria-labelledby="pills-details-tab" tabindex="0">
+        </div>
+        <div class="tab-pane fade" id="pills-bookings" role="tabpanel" aria-labelledby="pills-bookings-tab" tabindex="0">
+        </div>
+    </div>
+
+</turbo-frame>
