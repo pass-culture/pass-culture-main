@@ -84,7 +84,7 @@
         </div>
 
         <div class="mt-4">
-            <turbo-frame id="total_revenue_frame" src="{{ url_for(".get_offerer_stats", offerer_id=offerer.id) }}">
+            <turbo-frame id="total_revenue_frame" src="{{ url_for("backoffice_v3_web.offerer.get_stats", offerer_id=offerer.id) }}">
                 <p class="text-center">
                     <span class="spinner-grow spinner-grow-sm" role="status">
                         <span class="visually-hidden">Chargement...</span>
@@ -95,7 +95,7 @@
         </div>
 
         <div class="mt-4">
-            <turbo-frame id="offerer_history_frame" src="{{ url_for(".get_offerer_history", offerer_id=offerer.id) }}">
+            <turbo-frame id="offerer_history_frame" src="{{ url_for("backoffice_v3_web.offerer.get_offerer_history", offerer_id=offerer.id) }}">
                 <p class="text-center">
                     <span class="spinner-grow spinner-grow-sm" role="status">
                         <span class="visually-hidden">Chargement...</span>
