@@ -43,12 +43,12 @@ const CollectiveOfferBreadcrumb = ({
       label: "Détails de l'offre",
       url: `/offre/${offerId}/collectif/edition`,
     }
-    stepList[CollectiveOfferBreadcrumbStep.STOCKS] = {
-      id: CollectiveOfferBreadcrumbStep.STOCKS,
-      label: 'Date et prix',
-      url: stockEditionUrl,
-    }
     if (!isTemplate) {
+      stepList[CollectiveOfferBreadcrumbStep.STOCKS] = {
+        id: CollectiveOfferBreadcrumbStep.STOCKS,
+        label: 'Date et prix',
+        url: stockEditionUrl,
+      }
       stepList[CollectiveOfferBreadcrumbStep.VISIBILITY] = {
         id: CollectiveOfferBreadcrumbStep.VISIBILITY,
         label: 'Visibilité',
@@ -60,11 +60,11 @@ const CollectiveOfferBreadcrumb = ({
       id: CollectiveOfferBreadcrumbStep.DETAILS,
       label: "Détails de l'offre",
     }
-    stepList[CollectiveOfferBreadcrumbStep.STOCKS] = {
-      id: CollectiveOfferBreadcrumbStep.STOCKS,
-      label: 'Date et prix',
-    }
     if (!isTemplate) {
+      stepList[CollectiveOfferBreadcrumbStep.STOCKS] = {
+        id: CollectiveOfferBreadcrumbStep.STOCKS,
+        label: 'Date et prix',
+      }
       stepList[CollectiveOfferBreadcrumbStep.VISIBILITY] = {
         id: CollectiveOfferBreadcrumbStep.VISIBILITY,
         label: 'Visibilité',
@@ -99,9 +99,11 @@ const CollectiveOfferBreadcrumb = ({
 
       // @ts-expect-error switch fallthrough
       case CollectiveOfferBreadcrumbStep.VISIBILITY:
-        stepList[
-          CollectiveOfferBreadcrumbStep.STOCKS
-        ].url = `/offre/${offerId}/collectif/stocks`
+        if (!isTemplate) {
+          stepList[
+            CollectiveOfferBreadcrumbStep.STOCKS
+          ].url = `/offre/${offerId}/collectif/stocks`
+        }
 
       case CollectiveOfferBreadcrumbStep.STOCKS:
         stepList[
