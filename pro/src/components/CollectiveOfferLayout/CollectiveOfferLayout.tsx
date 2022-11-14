@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React from 'react'
 
 import CollectiveOfferBreadcrumb, {
@@ -13,6 +14,7 @@ import { Tag, Title } from 'ui-kit'
 import styles from './CollectiveOfferLayout.module.scss'
 
 interface IBreadcrumbProps {
+  // TODO (alberict): remove OfferBreadcrumbStep when the feature flag is removed
   activeStep: OfferBreadcrumbStep | CollectiveOfferBreadcrumbStep
   isCreatingOffer: boolean
   offerId?: string
@@ -57,7 +59,9 @@ const CollectiveOfferLayout = ({
             <CollectiveOfferBreadcrumb
               // @ts-expect-error once the feature flag is removed the only type possible will be correct
               activeStep={breadCrumpProps.activeStep}
-              className={styles['eac-layout-breadcrumb']}
+              className={cn(styles['eac-layout-breadcrumb'], {
+                [styles['stepper-breadcrumb']]: breadCrumpProps.isCreatingOffer,
+              })}
               isCreatingOffer={breadCrumpProps.isCreatingOffer}
               isOfferEducational
               offerId={breadCrumpProps.offerId}
