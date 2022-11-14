@@ -880,17 +880,17 @@ class CreateOfferTest:
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         user = user_offerer.user
 
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
+        offer = api.create_offer(
+            user=user,
+            venue_id=humanize(venue.id),
             name="A pretty good offer",
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            externalTicketOfficeUrl="http://example.net",
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
+            subcategory_id=subcategories.SEANCE_CINE.id,
+            external_ticket_office_url="http://example.net",
+            audio_disability_compliant=True,
+            mental_disability_compliant=True,
+            motor_disability_compliant=True,
+            visual_disability_compliant=True,
         )
-        offer = api.create_offer(data, user)
 
         assert offer.name == "A pretty good offer"
         assert offer.venue == venue
@@ -902,6 +902,7 @@ class CreateOfferTest:
         assert offer.motorDisabilityCompliant
         assert offer.visualDisabilityCompliant
         assert offer.validation == models.OfferValidationStatus.DRAFT
+        assert offer.extraData is None
         assert not offer.bookingEmail
         assert models.Offer.query.count() == 1
 
@@ -918,17 +919,17 @@ class CreateOfferTest:
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         user = user_offerer.user
 
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
+        offer = api.create_offer(
+            venue_id=humanize(venue.id),
             name="FONDATION T.1",
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"isbn": "9782207300893", "author": "Isaac Asimov"},
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=False,
+            subcategory_id=subcategories.LIVRE_PAPIER.id,
+            extra_data={"isbn": "9782207300893", "author": "Isaac Asimov"},
+            audio_disability_compliant=True,
+            mental_disability_compliant=True,
+            motor_disability_compliant=True,
+            visual_disability_compliant=False,
+            user=user,
         )
-        offer = api.create_offer(data, user)
 
         assert offer.name == "FONDATION T.1"
         assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
@@ -954,19 +955,18 @@ class CreateOfferTest:
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         user = user_offerer.user
 
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
-            name="FONDATION T.1",
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"isbn": "9782207300893"},
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=False,
-        )
-
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.create_offer(data, user)
+            api.create_offer(
+                venue_id=humanize(venue.id),
+                name="FONDATION T.1",
+                subcategory_id=subcategories.LIVRE_PAPIER.id,
+                extra_data={"isbn": "9782207300893"},
+                audio_disability_compliant=True,
+                mental_disability_compliant=True,
+                motor_disability_compliant=True,
+                visual_disability_compliant=False,
+                user=user,
+            )
 
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
 
@@ -977,19 +977,18 @@ class CreateOfferTest:
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         user = user_offerer.user
 
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
-            name="FONDATION T.1",
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"isbn": "9782207300893"},
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=False,
-        )
-
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.create_offer(data, user)
+            api.create_offer(
+                venue_id=humanize(venue.id),
+                name="FONDATION T.1",
+                subcategory_id=subcategories.LIVRE_PAPIER.id,
+                extra_data={"isbn": "9782207300893"},
+                audio_disability_compliant=True,
+                mental_disability_compliant=True,
+                motor_disability_compliant=True,
+                visual_disability_compliant=False,
+                user=user,
+            )
 
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
 
@@ -997,16 +996,17 @@ class CreateOfferTest:
         venue = offerers_factories.VenueFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
         with pytest.raises(exceptions.SubCategoryIsInactive) as error:
-            data = offers_serialize.PostOfferBodyModel(
-                venueId=humanize(venue.id),
+
+            api.create_offer(
+                venue_id=humanize(venue.id),
                 name="An offer he can't refuse",
-                subcategoryId=subcategories.ACTIVATION_EVENT.id,
-                audioDisabilityCompliant=True,
-                mentalDisabilityCompliant=True,
-                motorDisabilityCompliant=True,
-                visualDisabilityCompliant=True,
+                subcategory_id=subcategories.ACTIVATION_EVENT.id,
+                audio_disability_compliant=True,
+                mental_disability_compliant=True,
+                motor_disability_compliant=True,
+                visual_disability_compliant=True,
+                user=user_offerer.user,
             )
-            api.create_offer(data, user_offerer.user)
 
         assert error.value.errors["subcategory"] == [
             "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
@@ -1016,48 +1016,49 @@ class CreateOfferTest:
         venue = offerers_factories.VenueFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
         with pytest.raises(exceptions.UnknownOfferSubCategory) as error:
-            data = offers_serialize.PostOfferBodyModel(
-                venueId=humanize(venue.id),
+            api.create_offer(
+                venue_id=humanize(venue.id),
                 name="An offer he can't refuse",
-                subcategoryId="TOTO",
-                audioDisabilityCompliant=True,
-                mentalDisabilityCompliant=True,
-                motorDisabilityCompliant=True,
-                visualDisabilityCompliant=True,
+                subcategory_id="TOTO",
+                audio_disability_compliant=True,
+                mental_disability_compliant=True,
+                motor_disability_compliant=True,
+                visual_disability_compliant=True,
+                user=user_offerer.user,
             )
-            api.create_offer(data, user_offerer.user)
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
     def test_fail_if_unknown_venue(self):
         user = users_factories.ProFactory()
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(1),
-            name="An awful offer",
-            subcategoryId=subcategories.CONCERT.id,
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-        )
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.create_offer(data, user)
+            api.create_offer(
+                venue_id=humanize(1),
+                name="An awful offer",
+                subcategory_id=subcategories.CONCERT.id,
+                audio_disability_compliant=True,
+                mental_disability_compliant=True,
+                motor_disability_compliant=True,
+                visual_disability_compliant=True,
+                user=user,
+            )
         err = "Aucun objet ne correspond à cet identifiant dans notre base de données"
         assert error.value.errors["global"] == [err]
 
     def test_fail_if_user_not_related_to_offerer(self):
         venue = offerers_factories.VenueFactory()
         user = users_factories.ProFactory()
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
-            subcategoryId=subcategories.CONCERT.id,
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-        )
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.create_offer(data, user)
+            api.create_offer(
+                venue_id=humanize(venue.id),
+                subcategory_id=subcategories.CONCERT.id,
+                audio_disability_compliant=True,
+                mental_disability_compliant=True,
+                motor_disability_compliant=True,
+                visual_disability_compliant=True,
+                name="Les users sans structure",
+                user=user,
+            )
         err = "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
         assert error.value.errors["global"] == [err]
 
@@ -1067,14 +1068,17 @@ class CreateOfferTest:
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         user = user_offerer.user
 
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
-            name="A pretty good offer",
-            subcategoryId=subcategories.CONCERT.id,
-        )
-
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.create_offer(data, user)
+            api.create_offer(
+                venue_id=humanize(venue.id),
+                name="A pretty good offer",
+                subcategory_id=subcategories.CONCERT.id,
+                user=user,
+                audio_disability_compliant=True,
+                mental_disability_compliant=True,
+                motor_disability_compliant=True,
+                visual_disability_compliant=True,
+            )
 
         assert error.value.errors["musicType"] == ["Ce champ est obligatoire"]
 
