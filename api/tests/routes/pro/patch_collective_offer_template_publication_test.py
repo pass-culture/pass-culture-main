@@ -4,6 +4,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import api as offers_api
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.human_ids import humanize
 
@@ -34,7 +35,7 @@ class Returns204Test:
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
         assert response.status_code == 200
-        assert response.json["validation"] == OfferValidationStatus.APPROVED
+        assert response.json["status"] == OfferStatus.ACTIVE.value
 
     def expect_offer_to_be_pending(self, client):
         offer = educational_factories.CollectiveOfferTemplateFactory(
@@ -48,7 +49,7 @@ class Returns204Test:
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
         assert response.status_code == 200
-        assert response.json["validation"] == OfferValidationStatus.PENDING
+        assert response.json["status"] == OfferStatus.PENDING.value
         assert not response.json["isActive"]
 
 
