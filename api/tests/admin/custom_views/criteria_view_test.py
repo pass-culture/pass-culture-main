@@ -13,7 +13,7 @@ from tests.conftest import clean_database
 class CriteriaViewTest:
     @pytest.mark.parametrize("name", ["tag", "tag_with_underscores", "[tag]!", "tag_140ch_" * 14])
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_create_criterion(self, mocked_validate_csrf_token, client, name):
         users_factories.AdminFactory(email="admin@example.com")
 
@@ -34,7 +34,7 @@ class CriteriaViewTest:
         "name", ["tag ", " tag", "t ag", "tag\t", "\ttag", "ta\tg", "\ntag", "t\nag", "\rtag", "tag\r", "t\rag"]
     )
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_create_criterion_with_whitespace(self, mocked_validate_csrf_token, client, name):
         users_factories.AdminFactory(email="admin@example.com")
 
@@ -50,7 +50,7 @@ class CriteriaViewTest:
         assert criteria_models.Criterion.query.count() == 0
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_create_criterion_too_long(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
 
@@ -66,7 +66,7 @@ class CriteriaViewTest:
         assert criteria_models.Criterion.query.count() == 0
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_delete_criterion(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
 

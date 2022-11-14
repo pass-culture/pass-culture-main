@@ -40,7 +40,7 @@ def base_form_data(venue: Venue) -> dict:
 
 class EditVenueTest:
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_update_adage_id(self, mocked_async_index_offers_of_venue_ids, _mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
@@ -56,7 +56,7 @@ class EditVenueTest:
         mocked_async_index_offers_of_venue_ids.assert_not_called()
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_add_siret_to_venue_without_pricing_point(
         self, mocked_async_index_offers_of_venue_ids, _mocked_validate_csrf_token, caplog, app
@@ -84,7 +84,7 @@ class EditVenueTest:
         }
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_edit_siret_with_self_pricing_point(
         self, mocked_async_index_offers_of_venue_ids, _mocked_validate_csrf_token, caplog, app
@@ -114,7 +114,7 @@ class EditVenueTest:
         assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Venue", "id": venue.id}]
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     @patch("pcapi.connectors.sirene.get_siret", side_effect=sirene.SireneApiException)
     def test_unavailable_sirene_api_warning(
@@ -146,7 +146,7 @@ class EditVenueTest:
         }
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_cannot_remove_siret(self, mocked_async_index_offers_of_venue_ids, _mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
@@ -165,7 +165,7 @@ class EditVenueTest:
         assert len(external_testing.zendesk_sell_requests) == 0
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_cannot_set_not_all_digits_siret(
         self, mocked_async_index_offers_of_venue_ids, _mocked_validate_csrf_token, app
@@ -186,7 +186,7 @@ class EditVenueTest:
         mocked_async_index_offers_of_venue_ids.assert_not_called()
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_cannot_use_inactive_siret(self, mocked_async_index_offers_of_venue_ids, _mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
@@ -206,7 +206,7 @@ class EditVenueTest:
         mocked_async_index_offers_of_venue_ids.assert_not_called()
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_cannot_set_already_used_siret(
         self, mocked_async_index_offers_of_venue_ids, _mocked_validate_csrf_token, app
@@ -232,7 +232,7 @@ class EditVenueTest:
         mocked_async_index_offers_of_venue_ids.assert_not_called()
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_cannot_add_siret_if_exisiting_pricing_point(
         self, mocked_async_index_offers_of_venue_ids, _mocked_validate_csrf_token, app
@@ -258,7 +258,7 @@ class EditVenueTest:
         assert len(external_testing.zendesk_sell_requests) == 0
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_update_venue_other_offer_id_at_provider(self, mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
         business_unit = finance_factories.BusinessUnitFactory(siret="11111111111111")
@@ -295,7 +295,7 @@ class EditVenueTest:
         assert offer.idAtProvider == "id_at_provider_ne_contenant_pas_le_siret"
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_update_venue_without_siret(self, mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
         business_unit = finance_factories.BusinessUnitFactory(siret="11111111111111")
@@ -324,7 +324,7 @@ class EditVenueTest:
         assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Venue", "id": venue.id}]
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_update_venue_reindex_all(self, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
@@ -358,7 +358,7 @@ class EditVenueTest:
         assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Venue", "id": venue.id}]
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_update_venue_reindex_venue_only(
@@ -394,7 +394,7 @@ class EditVenueTest:
         assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Venue", "id": venue.id}]
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     @patch("pcapi.core.search.async_index_venue_ids")
     @patch("pcapi.core.search.reindex_venue_ids")
@@ -435,7 +435,7 @@ class EditVenueTest:
 
 class DeleteVenueTest:
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_delete_venue(self, mocked_validate_csrf_token, client):
         admin = AdminFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory(bookingEmail="booking@example.com")
@@ -467,7 +467,7 @@ class DeleteVenueTest:
         ],
     )
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_delete_venue_rejected(self, mocked_validate_csrf_token, client, booking_status):
         admin = AdminFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory()
@@ -490,7 +490,7 @@ class DeleteVenueTest:
         assert len(external_testing.sendinblue_requests) == 0
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_delete_venue_rejected_because_of_princing_point(self, mocked_validate_csrf_token, client):
         admin = AdminFactory()
         venue = offerers_factories.VenueFactory(pricing_point="self")
@@ -540,7 +540,7 @@ class GetVenueProviderLinkTest:
 
 class VenueForOffererSubviewTest:
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_list_venues_for_offerer(self, mocked_validate_csrf_token, client):
         admin = AdminFactory(email="user@example.com")
         offerer = offerers_factories.OffererFactory()
@@ -560,7 +560,7 @@ class VenueForOffererSubviewTest:
         assert sorted(venue_ids) == sorted([str(venue1.id), str(venue2.id)])
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_list_venues_for_offerer_not_found(self, mocked_validate_csrf_token, client):
         admin = AdminFactory(email="user@example.com")
 

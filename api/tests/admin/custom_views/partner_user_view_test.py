@@ -94,7 +94,7 @@ class PartnerUserViewTest:
 
     @clean_database
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_super_admin_can_suspend_then_unsuspend_partner(self, mocked_validate_csrf_token, app):
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")
         partner = users_factories.UserFactory(email="partner@example.com")
@@ -113,7 +113,7 @@ class PartnerUserViewTest:
         assert partner.isActive
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.admin.custom_views.mixins.resend_validation_email_mixin.users_api.request_email_confirmation")
     def test_resend_validation_email_to_partner(
         self, mocked_request_email_confirmation, mocked_validate_csrf_token, app
@@ -129,7 +129,7 @@ class PartnerUserViewTest:
 
     @clean_database
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_clear_profile(self, mocked_validate_csrf_token, client):
         admin = users_factories.AdminFactory()
         user = users_factories.UserFactory(
@@ -181,7 +181,7 @@ class PartnerUserViewTest:
 
     @clean_database
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_clear_idpiecenumber(self, mocked_validate_csrf_token, client):
         admin = users_factories.AdminFactory(email="superadmin@example.com")
         user = users_factories.UserFactory(

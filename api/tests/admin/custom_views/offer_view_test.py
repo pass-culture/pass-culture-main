@@ -131,7 +131,7 @@ class OfferValidationViewTest:
         # then
         assert url_for(view_name) in response.data.decode("utf-8")
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_approve_offer_and_go_to_next_offer(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
         venue = offerers_factories.VenueFactory()
@@ -171,7 +171,7 @@ class OfferValidationViewTest:
         assert response.status_code == 302
         assert url_for("validation.edit", id=oldest_offer.id) in response.location
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_approve_last_pending_offer_and_go_to_the_next_offer_redirect_to_validation_page(
         self, mocked_validate_csrf_token, client
     ):
@@ -198,7 +198,7 @@ class OfferValidationViewTest:
         assert response.status_code == 302
         assert url_for("validation.index_view") in response.location
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
     def test_approve_virtual_offer_and_send_mail_to_managing_offerer(
         self,
@@ -226,7 +226,7 @@ class OfferValidationViewTest:
             offer, OfferValidationStatus.APPROVED, ["pro@example.com"]
         )
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
     def test_approve_physical_offer_and_send_mail_to_venue_booking_email(
         self,
@@ -251,7 +251,7 @@ class OfferValidationViewTest:
             offer, OfferValidationStatus.APPROVED, ["venue@example.com"]
         )
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
     def test_import_validation_config(self, mocked_validate_csrf_token, client):
         # Given
@@ -317,7 +317,7 @@ class OfferValidationViewTest:
             ],
         }
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
     def test_import_validation_config_fail_with_wrong_value(self, mocked_validate_csrf_token, client):
         # Given
@@ -351,7 +351,7 @@ class OfferValidationViewTest:
         # Then
         assert response.status_code == 400
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
     def test_import_validation_config_inaccessible_when_user_is_not_super_admin(
         self, mocked_validate_csrf_token, client
@@ -390,7 +390,7 @@ class OfferValidationViewTest:
         assert url_for("admin.index") in response.location
 
     @freeze_time("2020-11-17 15:00:00")
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_approve_offer_and_send_mail_to_administration(
         self,
@@ -432,7 +432,7 @@ class OfferValidationViewTest:
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
     @freeze_time("2020-11-17 15:00:00")
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_offer_and_send_mail_to_administration(
         self,
@@ -551,7 +551,7 @@ class OfferValidationViewTest:
     @pytest.mark.parametrize(
         "action,expected", [("approve", OfferValidationStatus.APPROVED), ("reject", OfferValidationStatus.REJECTED)]
     )
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_batch_approve_offers(self, mocked_validate_csrf_token, action, expected, client):
         users_factories.AdminFactory(email="admin@example.com")
         venue = offerers_factories.VenueFactory()
@@ -586,7 +586,7 @@ class OfferValidationViewTest:
         assert "2 offres ont été modifiées avec succès" in get_response.data.decode("utf8")
 
     @pytest.mark.parametrize("action", ["approve", "reject"])
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.offers.api.update_pending_offer_validation")
     def test_batch_approve_reject_offers_not_updated(
         self,
@@ -627,7 +627,7 @@ class OfferValidationViewTest:
         )
 
     @freeze_time("2020-11-17 15:00:00")
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_approve_collective_offer_template_and_send_mail_to_administration(
         self,
@@ -671,7 +671,7 @@ class OfferValidationViewTest:
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
     @freeze_time("2020-11-17 15:00:00")
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_collective_offer_template_and_send_mail_to_administration(
         self,
@@ -759,7 +759,7 @@ class OfferValidationViewTest:
     @pytest.mark.parametrize(
         "action,expected", [("approve", OfferValidationStatus.APPROVED), ("reject", OfferValidationStatus.REJECTED)]
     )
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_batch_approve_collective_offers_template(self, mocked_validate_csrf_token, action, expected, client):
         users_factories.AdminFactory(email="admin@example.com")
         venue = offerers_factories.VenueFactory()
@@ -794,7 +794,7 @@ class OfferValidationViewTest:
         assert "2 offres ont été modifiées avec succès" in get_response.data.decode("utf8")
 
     @pytest.mark.parametrize("action", ["approve", "reject"])
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.offers.api.update_pending_offer_validation")
     def test_batch_approve_reject_collective_offers_template_not_updated(
         self,
@@ -838,7 +838,7 @@ class OfferValidationViewTest:
 
     @freeze_time("2020-11-17 15:00:00")
     @override_settings(ADAGE_API_URL="https://adage_base_url")
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_approve_collective_offer_and_send_mail_to_administration_and_notify_adage(
         self,
@@ -889,7 +889,7 @@ class OfferValidationViewTest:
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/offre-assoc"
 
     @freeze_time("2020-11-17 15:00:00")
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_collective_offer_and_send_mail_to_administration(
         self,
@@ -1013,7 +1013,7 @@ class OfferValidationViewTest:
         "action,expected", [("approve", OfferValidationStatus.APPROVED), ("reject", OfferValidationStatus.REJECTED)]
     )
     @override_settings(ADAGE_API_URL="https://adage_base_url")
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_batch_approve_collective_offers(self, mocked_validate_csrf_token, action, expected, client):
         users_factories.AdminFactory(email="admin@example.com")
         venue = offerers_factories.VenueFactory()
@@ -1055,7 +1055,7 @@ class OfferValidationViewTest:
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/offre-assoc"
 
     @pytest.mark.parametrize("action", ["approve", "reject"])
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.offers.api.update_pending_offer_validation")
     def test_batch_approve_reject_collective_offers_not_updated(
         self,
@@ -1098,7 +1098,7 @@ class OfferValidationViewTest:
 
 class OfferViewTest:
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_approved_offer(
@@ -1132,7 +1132,7 @@ class OfferViewTest:
         )
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_approve_rejected_offer(
@@ -1162,7 +1162,7 @@ class OfferViewTest:
         assert mocked_send_offer_validation_status_update_email.call_count == 1
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     @patch("pcapi.workers.push_notification_job.send_cancel_booking_notification.delay")
@@ -1196,7 +1196,7 @@ class OfferViewTest:
         mocked_send_cancel_booking_notification.assert_called_once_with([unused_booking.id])
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_change_to_draft_approved_offer(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="admin@example.com")
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True)
@@ -1210,7 +1210,7 @@ class OfferViewTest:
         assert offer.lastValidationType == OfferValidationType.AUTO  # unchanged
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.search.reindex_offer_ids")
     def test_reindex_when_tags_updated(
         self,
@@ -1234,7 +1234,7 @@ class OfferViewTest:
 
 class OfferForVenueSubviewTest:
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_list_venues_for_offerer(self, mocked_validate_csrf_token, client):
         admin = users_factories.AdminFactory(email="user@example.com")
         client = client.with_session_auth(admin.email)
