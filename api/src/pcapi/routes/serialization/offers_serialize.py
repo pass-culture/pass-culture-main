@@ -5,6 +5,7 @@ from typing import Any
 from pydantic import EmailStr
 from pydantic import Field
 from pydantic import HttpUrl
+from pydantic import root_validator
 from pydantic import validator
 
 from pcapi.core.bookings.api import compute_cancellation_limit_date
@@ -61,40 +62,40 @@ class CategoryResponseModel(BaseModel):
 
 
 class PostOfferBodyModel(BaseModel):
-    venue_id: str
-    subcategory_id: str
-    name: str
+    # TODO (viconnex, 2022-11-14): remove the default value for the 4 following accessibility fields
+    #  once we are sure external partners (like pims) do send them or once they stop using the route
+    audio_disability_compliant: bool = False
     booking_email: EmailStr | None
-    external_ticket_office_url: HttpUrl | None
-    url: HttpUrl | None
     description: str | None
-    withdrawal_details: str | None
-    withdrawal_type: offers_models.WithdrawalTypeEnum | None
-    withdrawal_delay: int | None
     duration_minutes: int | None
-    is_national: bool | None
+    external_ticket_office_url: HttpUrl | None
+    extra_data: Any
     is_duo: bool | None
     is_educational = False
-    # TODO (schable, 2021-01-14): remove the default value for the 4 following accessibility fields
-    #  when new offer creation will be activated in pro app (current offer creation does not send those fields)
-    audio_disability_compliant: bool = False
+    is_national: bool | None
     mental_disability_compliant: bool = False
     motor_disability_compliant: bool = False
+    name: str
+    subcategory_id: str
+    url: HttpUrl | None
+    venue_id: str
     visual_disability_compliant: bool = False
-    extra_data: Any
+    withdrawal_delay: int | None
+    withdrawal_details: str | None
+    withdrawal_type: offers_models.WithdrawalTypeEnum | None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
         check_offer_name_length_is_valid(name)
         return name
 
-    @validator("extra_data", pre=True)
-    def validate_isbn(cls, extra_data_field: dict, values: dict) -> dict:
+    @root_validator()
+    def validate_isbn(cls, values: dict) -> dict:
         if FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active() and can_create_from_isbn(
-            subcategory_id=values["subcategory_id"]
+            subcategory_id=values.get("subcategory_id")
         ):
-            check_offer_isbn_is_valid(extra_data_field["isbn"])
-        return extra_data_field
+            check_offer_isbn_is_valid(values.get("extra_data", {}).get("isbn"))
+        return values
 
     class Config:
         alias_generator = to_camel
