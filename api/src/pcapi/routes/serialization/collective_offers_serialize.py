@@ -2,6 +2,7 @@ from datetime import datetime
 import enum
 import typing
 
+import flask
 from pydantic import Field
 from pydantic import validator
 
@@ -11,7 +12,8 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers.models import Venue
-import pcapi.core.offers.models as offers_models
+from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import validation as offers_validation
 from pcapi.core.offers.serialize import CollectiveOfferType
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
@@ -24,6 +26,7 @@ from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
+from pcapi.utils.image_conversion import CropParams
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
 
@@ -541,3 +544,42 @@ class PatchCollectiveOfferEducationalInstitution(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "allow"
+
+
+class AttachImageFormModel(BaseModel):
+    credit: str
+    cropping_rect_x: float
+    cropping_rect_y: float
+    cropping_rect_height: float
+    cropping_rect_width: float
+
+    class Config:
+        alias_generator = to_camel
+
+    @property
+    def crop_params(self) -> CropParams:
+        return CropParams.build(
+            x_crop_percent=self.cropping_rect_x,
+            y_crop_percent=self.cropping_rect_y,
+            height_crop_percent=self.cropping_rect_height,
+            width_crop_percent=self.cropping_rect_width,
+        )
+
+    def get_image_as_bytes(self, request: flask.Request) -> bytes:
+        """
+        Get the image from the POSTed data (request)
+        Only the max size is checked at this stage, and possibly the content type header
+        """
+        if "thumb" in request.files:
+            blob = request.files["thumb"]
+            image_as_bytes = blob.read()
+            return offers_validation.get_uploaded_image(image_as_bytes)
+
+        raise offers_validation.exceptions.MissingImage()
+
+
+class AttachImageResponseModel(BaseModel):
+    imageUrl: str
+
+    class Config:
+        orm_mode = True
