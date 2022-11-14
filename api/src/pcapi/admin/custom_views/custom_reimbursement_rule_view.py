@@ -3,6 +3,7 @@ import datetime
 from decimal import Decimal
 import typing
 
+from flask_admin.form import BaseForm
 from flask_login import current_user
 from jinja2.runtime import Context
 import markupsafe
@@ -55,7 +56,7 @@ def get_offerers(offerer_ids: list) -> list[dict[str, str]]:
 
 
 class AddForm(FlaskWTFSecureForm):
-    class Meta(FlaskWTFSecureForm.Meta):
+    class Meta(BaseForm.Meta):
         # Specify locale to use the comma as the decimal separator for
         # the `rate` field.
         locales = ["fr"]

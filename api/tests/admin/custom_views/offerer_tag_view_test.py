@@ -12,7 +12,7 @@ from tests.conftest import clean_database
 class OffererTagViewTest:
     @pytest.mark.parametrize("name", ["tag", "tag_with_underscores", "[tag]!", "tag_140ch_" * 14])
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_create_tag(self, mocked_validate_csrf_token, client, name):
         users_factories.AdminFactory(email="admin@example.com")
 
@@ -28,7 +28,7 @@ class OffererTagViewTest:
         "name", ["tag ", " tag", "t ag", "tag\t", "\ttag", "ta\tg", "\ntag", "t\nag", "\rtag", "tag\r", "t\rag"]
     )
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_create_tag_with_whitespace(self, mocked_validate_csrf_token, client, name):
         users_factories.AdminFactory(email="admin@example.com")
 
@@ -41,7 +41,7 @@ class OffererTagViewTest:
         assert offerers_models.OffererTag.query.count() == 0
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_create_tag_too_long(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
 
@@ -54,7 +54,7 @@ class OffererTagViewTest:
         assert offerers_models.OffererTag.query.count() == 0
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_delete_tag(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
 

@@ -38,7 +38,7 @@ class VenueProviderViewTest:
 
 class EditModelTest:
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
     def test_edit_venue_provider(
@@ -86,7 +86,7 @@ class EditModelTest:
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
     def test_provider_not_synchronizable(self, mock_siret_can_be_synchronized, validate_csrf_token, client):
         # Given
@@ -112,7 +112,7 @@ class EditModelTest:
         assert venue_provider.venueIdAtOfferProvider == "old-siret"
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
     def test_allocine_provider(self, synchronize_venue_provider, validate_csrf_token, client):
         # Given

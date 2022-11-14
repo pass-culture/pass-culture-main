@@ -16,7 +16,7 @@ from tests.conftest import clean_database
 
 class OffererViewTest:
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_edit_offerer_add_tags(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
 
@@ -49,7 +49,7 @@ class OffererViewTest:
         assert history_models.ActionHistory.query.count() == 0
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_edit_offerer_remove_tags(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
 
@@ -87,7 +87,7 @@ class OffererViewTest:
         "booking_status", [None, BookingStatus.USED, BookingStatus.CANCELLED, BookingStatus.REIMBURSED]
     )
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_deactivate_offerer(self, mocked_validate_csrf_token, client, booking_status):
         admin = users_factories.AdminFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory()
@@ -130,7 +130,7 @@ class OffererViewTest:
 
     @pytest.mark.parametrize("booking_status", [BookingStatus.PENDING, BookingStatus.CONFIRMED])
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_deactivate_offerer_rejected(self, mocked_validate_csrf_token, client, booking_status):
         admin = users_factories.AdminFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory()
@@ -165,7 +165,7 @@ class OffererViewTest:
         assert history_models.ActionHistory.query.count() == 0
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_reactivate_offerer(self, mocked_validate_csrf_token, client):
         admin = users_factories.AdminFactory(email="user@example.com")
         offerer = offerers_factories.OffererFactory(isActive=False)
@@ -205,7 +205,7 @@ class OffererViewTest:
         assert actions_list[0].offerer == offerer
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_delete_offerer(self, mocked_validate_csrf_token, client):
         # Can delete offerer because there is no booking
         admin = users_factories.AdminFactory(email="user@example.com")
@@ -237,7 +237,7 @@ class OffererViewTest:
         ],
     )
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_delete_offerer_rejected(self, mocked_validate_csrf_token, client, booking_status):
         admin = users_factories.AdminFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory()
@@ -261,7 +261,7 @@ class OffererViewTest:
         assert len(external_testing.sendinblue_requests) == 0
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_delete_offerer_rejected_because_of_princing_point(self, mocked_validate_csrf_token, client):
         admin = users_factories.AdminFactory()
         venue = offerers_factories.VenueFactory(pricing_point="self")
