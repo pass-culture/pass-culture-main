@@ -93,14 +93,14 @@ class UserAutomationsTest:
                 email="beneficiary1+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=1),
             )
-            assert user1.deposit.expirationDate == datetime(2034, 10, 31, 15, 0, 0)
+            assert user1.deposit.expirationDate == datetime(2034, 10, 31, 22, 59, 59, 999999)
 
         with freeze_time("2032-11-01 15:00:00"):
             user2 = users_factories.BeneficiaryGrant18Factory(
                 email="beneficiary2+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=2),
             )
-            assert user2.deposit.expirationDate == datetime(2034, 11, 1, 15, 0, 0)
+            assert user2.deposit.expirationDate == datetime(2034, 11, 1, 22, 59, 59, 999999)
             bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user2, quantity=1, amount=10)
             assert user2.real_wallet_balance > 0
 
@@ -109,28 +109,28 @@ class UserAutomationsTest:
                 email="beneficiary3+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=3),
             )
-            assert user3.deposit.expirationDate == datetime(2034, 12, 1, 15, 0, 0)
+            assert user3.deposit.expirationDate == datetime(2034, 12, 1, 22, 59, 59, 999999)
 
         with freeze_time("2033-01-30 15:00:00"):
             user4 = users_factories.BeneficiaryGrant18Factory(
                 email="beneficiary4+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=4),
             )
-            assert user4.deposit.expirationDate == datetime(2035, 1, 30, 15, 0, 0)
+            assert user4.deposit.expirationDate == datetime(2035, 1, 30, 22, 59, 59, 999999)
 
         with freeze_time("2033-01-31 15:00:00"):
             user5 = users_factories.BeneficiaryGrant18Factory(
                 email="beneficiary5+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=5),
             )
-            assert user5.deposit.expirationDate == datetime(2035, 1, 31, 15, 0, 0)
+            assert user5.deposit.expirationDate == datetime(2035, 1, 31, 22, 59, 59, 999999)
 
         with freeze_time("2033-03-10 15:00:00"):
             user6 = users_factories.BeneficiaryGrant18Factory(
                 email="beneficiary6+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=5),
             )
-            assert user6.deposit.expirationDate == datetime(2035, 3, 10, 15, 0, 0)
+            assert user6.deposit.expirationDate == datetime(2035, 3, 10, 22, 59, 59, 999999)
 
         with freeze_time("2033-05-01 17:00:00"):
             # user6 becomes ex-beneficiary
