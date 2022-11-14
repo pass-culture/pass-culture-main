@@ -59,7 +59,8 @@ describe('src | components | CollectiveOfferBreadcrumb', () => {
     renderCollectiveOfferBreadcrumb(props)
 
     const listItems = await screen.findAllByRole('listitem')
-    expect(listItems).toHaveLength(4)
+    expect(listItems).toHaveLength(3)
+    expect(screen.queryByText('Date et prix')).not.toBeInTheDocument()
     expect(screen.queryByText('Visibilité')).not.toBeInTheDocument()
   })
 
