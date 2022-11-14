@@ -103,7 +103,27 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
     try:
         check_offer_withdrawal(body.withdrawal_type, body.withdrawal_delay, body.subcategory_id)
-        offer = offers_api.create_offer(offer_data=body, user=current_user)
+        offer = offers_api.create_offer(
+            audio_disability_compliant=body.audio_disability_compliant,
+            booking_email=body.booking_email,
+            description=body.description,
+            duration_minutes=body.duration_minutes,
+            external_ticket_office_url=body.external_ticket_office_url,
+            extra_data=body.extra_data,
+            is_duo=body.is_duo,
+            is_national=body.is_national,
+            mental_disability_compliant=body.mental_disability_compliant,
+            motor_disability_compliant=body.motor_disability_compliant,
+            name=body.name,
+            subcategory_id=body.subcategory_id,
+            url=body.url,
+            user=current_user,
+            venue_id=body.venue_id,
+            visual_disability_compliant=body.visual_disability_compliant,
+            withdrawal_delay=body.withdrawal_delay,
+            withdrawal_details=body.withdrawal_details,
+            withdrawal_type=body.withdrawal_type,
+        )
 
     except exceptions.OfferCreationBaseException as error:
         raise ApiErrors(
