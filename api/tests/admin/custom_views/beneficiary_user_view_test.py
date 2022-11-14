@@ -27,7 +27,7 @@ class BeneficiaryUserViewTest:
     AGE18_ELIGIBLE_BIRTH_DATE = date.today() - relativedelta(years=18, months=4)
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_list_beneficiaries(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="admin@example.com")
         users_factories.BeneficiaryGrant18Factory.create_batch(3)
@@ -42,7 +42,7 @@ class BeneficiaryUserViewTest:
         assert response.status_code == 200
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_beneficiary_user_creation_for_deposit_v2(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="user@example.com")
 
@@ -145,7 +145,7 @@ class BeneficiaryUserViewTest:
     @clean_database
     # FIXME (dbaty, 2020-12-16): I could not find a quick way to
     #  generate a valid CSRF token in tests. This should be fixed.
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_suspend_beneficiary(self, mocked_validate_csrf_token, app):
         admin = users_factories.AdminFactory(email="admin15@example.com")
         booking = bookings_factories.IndividualBookingFactory()
@@ -166,7 +166,7 @@ class BeneficiaryUserViewTest:
     @clean_database
     # FIXME (dbaty, 2020-12-16): I could not find a quick way to
     #  generate a valid CSRF token in tests. This should be fixed.
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_unsuspend_beneficiary(self, mocked_validate_csrf_token, app):
         admin = users_factories.AdminFactory(email="admin15@example.com")
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="user15@example.com", isActive=False)
@@ -209,7 +209,7 @@ class BeneficiaryUserViewTest:
         assert _allow_suspension_and_unsuspension(super_admin)
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_beneficiary_user_edition_does_not_send_email(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="user@example.com")
         user_to_edit = users_factories.BeneficiaryGrant18Factory(email="not_yet_edited@email.com")
@@ -237,7 +237,7 @@ class BeneficiaryUserViewTest:
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     @patch("pcapi.admin.custom_views.mixins.resend_validation_email_mixin.users_api.request_email_confirmation")
     def test_resend_validation_email_to_beneficiary(
         self, mocked_request_email_confirmation, mocked_validate_csrf_token, app
@@ -255,7 +255,7 @@ class BeneficiaryUserViewTest:
 @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
 @pytest.mark.usefixtures("db_session")
 class BeneficiaryUserUpdateTest:
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_update_idpiecenumber(self, token, client):
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")
         client.with_session_auth(super_admin.email)
@@ -277,7 +277,7 @@ class BeneficiaryUserUpdateTest:
 
         assert user_to_update.idPieceNumber == "123123123"
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_clear_idpiecenumber(self, token, client):
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")
         client.with_session_auth(super_admin.email)
@@ -300,7 +300,7 @@ class BeneficiaryUserUpdateTest:
 
         assert user_to_update.idPieceNumber is None
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_update_idpiecenumber_not_updated(self, token, client):
         admin = users_factories.AdminFactory()  # not superadmin
 
@@ -321,7 +321,7 @@ class BeneficiaryUserUpdateTest:
 
         assert user_to_update.idPieceNumber != "123123123"
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_clear_ine_hash(self, token, client):
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")
         client.with_session_auth(super_admin.email)

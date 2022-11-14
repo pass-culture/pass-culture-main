@@ -20,7 +20,7 @@ from tests.conftest import clean_database
 
 class ProUserViewTest:
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_pro_user_creation(self, mocked_validate_csrf_token, app):
         # Given
         bo_user = users_factories.AdminFactory(email="USER@example.com")
@@ -89,7 +89,7 @@ class ProUserViewTest:
         assert actions_list[0].offerer == offerer_created
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_pro_user_edition(self, mocked_validate_csrf_token, app):
         # Given
         admin_user = users_factories.AdminFactory()
@@ -123,7 +123,7 @@ class ProUserViewTest:
         assert updated_user.phoneNumber == "+33601020304"
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_pro_user_edition_phone_number_error(self, mocked_validate_csrf_token, app):
         # Given
         admin_user = users_factories.AdminFactory()
@@ -201,7 +201,7 @@ class ProUserViewTest:
     @clean_database
     # FIXME (dbaty, 2020-12-16): I could not find a quick way to
     # generate a valid CSRF token in tests. This should be fixed.
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_suspend_pro(self, mocked_validate_csrf_token, app):
         admin = users_factories.AdminFactory(email="admin15@example.com")
         pro = users_factories.ProFactory(email="user15@example.com")
@@ -220,7 +220,7 @@ class ProUserViewTest:
     @clean_database
     # FIXME (dbaty, 2020-12-16): I could not find a quick way to
     # generate a valid CSRF token in tests. This should be fixed.
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_unsuspend_pro(self, mocked_validate_csrf_token, app):
         admin = users_factories.AdminFactory(email="admin15@example.com")
         pro = users_factories.ProFactory(email="user15@example.com", isActive=False)

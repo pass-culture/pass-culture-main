@@ -10,7 +10,7 @@ from tests.conftest import clean_database
 
 class UserOffererViewTest:
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_delete_user_offerer(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
 
