@@ -21,12 +21,11 @@ def check_siren(form: Form, field: Field) -> None:
 
 class ApiKeyView(BaseAdminView):
     can_create = True
-    column_list = ["offerer.siren", "value", "prefix"]
-    column_labels = {"offerer.siren": "Siren de la structure", "value": "Ancienne clé", "prefix": "Valeur"}
+    column_list = ["offerer.siren", "prefix"]
+    column_labels = {"offerer.siren": "Siren de la structure", "prefix": "Valeur"}
     form_columns = None
-    form_excluded_columns = ["offerer", "value", "prefix", "secret"]
+    form_excluded_columns = ["offerer", "prefix", "secret"]
     column_formatters = dict(
-        value=lambda v, c, m, p: f"{m.value[:8]}***" if m.value else None,
         prefix=lambda v, c, m, p: f"{m.prefix}{API_KEY_SEPARATOR}***" if m.prefix else None,
     )
 
