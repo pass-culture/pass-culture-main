@@ -1,6 +1,9 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
+import { Provider } from 'react-redux'
+
+import { configureTestStore } from 'store/testUtils'
 
 import CollectiveOfferLayout from '../CollectiveOfferLayout'
 
@@ -13,14 +16,18 @@ const renderCollectiveOfferLayout = ({
   title: string
   subTitle?: string
 }) => {
+  const store = configureTestStore()
+
   render(
-    <CollectiveOfferLayout
-      title={title}
-      subTitle={subTitle}
-      isTemplate={isTemplate}
-    >
-      Test
-    </CollectiveOfferLayout>
+    <Provider store={store}>
+      <CollectiveOfferLayout
+        title={title}
+        subTitle={subTitle}
+        isTemplate={isTemplate}
+      >
+        Test
+      </CollectiveOfferLayout>
+    </Provider>
   )
 }
 
