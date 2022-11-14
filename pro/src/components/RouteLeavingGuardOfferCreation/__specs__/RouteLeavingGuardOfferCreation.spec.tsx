@@ -347,6 +347,26 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
           screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
         ).not.toBeInTheDocument()
       })
+
+      it('should not display confirmation modal when going from visibility to stocks', () => {
+        history.push('/offre/AE/collectif/visibilite')
+        renderRouteLeavingGuardOfferCreation(props, history, store)
+        history.push('/offre/AE/collectif/stocks')
+
+        expect(
+          screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        ).not.toBeInTheDocument()
+      })
+
+      it('should not display confirmation modal when going from visibility to offer creation', () => {
+        history.push('/offre/AE/collectif/visibilite')
+        renderRouteLeavingGuardOfferCreation(props, history, store)
+        history.push('/offre/collectif/AE/creation')
+
+        expect(
+          screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        ).not.toBeInTheDocument()
+      })
     })
   })
 })
