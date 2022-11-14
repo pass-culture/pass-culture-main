@@ -25,12 +25,30 @@ class PCStringField(PCOptStringField):
     ]
 
 
+class PCPostalCodeField(PCStringField):
+    validators = [
+        validators.Optional(""),
+        validators.Length(min=5, max=5, message="Le code postal doit contenir %(max)d caractères"),
+    ]
+
+
 class PCEmailField(wtforms.EmailField):
     widget = partial(widget, template="components/forms/string_field.html")
     validators = [
         validators.Email("Email obligatoire"),
         validators.Length(min=3, max=128, message="doit contenir entre %(min)d et %(max)d caractères"),
     ]
+
+
+class PCDateField(wtforms.DateField):
+    widget = partial(widget, template="components/forms/date_field.html")
+
+    def gettext(self, string: str) -> str:
+        match string:
+            case "Not a valid date value.":
+                return "Date invalide"
+            case _:
+                return string
 
 
 class PCSelectField(wtforms.SelectField):

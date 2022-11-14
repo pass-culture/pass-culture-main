@@ -21,12 +21,12 @@
                     <li class="nav-item" role="presentation">
                         <button
                             class="nav-link active"
-                            id="personal-informations-tab"
+                            id="personal-information-tab"
                             data-bs-toggle="tab"
-                            data-bs-target="#personal-informations-tab-pane"
+                            data-bs-target="#personal-information-tab-pane"
                             type="button"
                             role="tab"
-                            aria-controls="personal-informations-tab-pane"
+                            aria-controls="personal-information-tab-pane"
                             aria-selected="false"
                         >
                             Informations personnelles
@@ -61,14 +61,15 @@
 
                     <div
                         class="tab-pane fade show active"
-                        id="personal-informations-tab-pane"
+                        id="personal-information-tab-pane"
                         role="tabpanel"
-                        aria-labelledby="personal-informations-tab"
+                        aria-labelledby="personal-information-tab"
                         tabindex="0"
                     >
-                        {% include "accounts/get/details/personal_informations_user_details.html" %}
+                        {% include "accounts/get/details/personal_information_bookmarks.html" %}
+                        {% include "accounts/get/details/personal_information_user_details.html" %}
                         {% for history_type, history in eligibility_history.items() %}
-                            {% include "accounts/get/details/personal_informations_registration.html" %}
+                            {% include "accounts/get/details/personal_information_registration.html" %}
                         {% endfor %}
                     </div>
 

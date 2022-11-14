@@ -6,12 +6,12 @@
                     {{ user.firstName }} {{ user.lastName | upper }}
 
                     {% for role in user.roles %}
-                        <span class="ms-5 me-2 badge rounded-pill text-bg-secondary align-middle">
+                        <span class="ms-5 me-2 badge rounded-pill text-bg-primary align-middle">
                             {{ role | format_role }}
                         </span>
                     {% endfor %}
                     {% if not user.isActive %}
-                        <span class="badge rounded-pill text-bg-primary align-middle">
+                        <span class="badge rounded-pill text-bg-secondary align-middle">
                             {{ user.isActive | format_state }}
                         </span>
                     {% endif %}
@@ -40,7 +40,7 @@
                     <div class="col-4">
                         <a href="{{ url_for('.edit_public_account_review', user_id=user.id) }}" class="card-link">
                             <button class="btn btn-outline-primary lead fw-bold mt-2">
-                                Confirmer manuellement
+                                Revue manuelle
                             </button>
                         </a>
                     </div>
