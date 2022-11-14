@@ -1,5 +1,6 @@
 import logging
 
+from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
@@ -501,3 +502,61 @@ def create_collective_offer_template(
         )
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
+
+
+@private_api.route("/collective/offers/<offer_id>/image", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    on_success_status=200,
+    response_model=collective_offers_serialize.AttachImageResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def attach_offer_image(
+    offer_id: str, form: collective_offers_serialize.AttachImageFormModel
+) -> collective_offers_serialize.AttachImageResponseModel:
+    dehumanized_id = dehumanize_or_raise(offer_id)
+    try:
+        offer = educational_api.get_collective_offer_by_id(dehumanized_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
+    else:
+        check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    image_as_bytes = form.get_image_as_bytes(request)
+    educational_api.attach_image(
+        obj=offer,
+        image=image_as_bytes,
+        crop_params=form.crop_params,
+        credit=form.credit,
+    )
+
+    return collective_offers_serialize.AttachImageResponseModel.from_orm(offer)
+
+
+@private_api.route("/collective/offers-template/<offer_id>/image", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    on_success_status=200,
+    response_model=collective_offers_serialize.AttachImageResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def attach_offer_template_image(
+    offer_id: str, form: collective_offers_serialize.AttachImageFormModel
+) -> collective_offers_serialize.AttachImageResponseModel:
+    dehumanized_id = dehumanize_or_raise(offer_id)
+    try:
+        offer = educational_api.get_collective_offer_template_by_id(dehumanized_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
+    else:
+        check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    image_as_bytes = form.get_image_as_bytes(request)
+    educational_api.attach_image(
+        obj=offer,
+        image=image_as_bytes,
+        crop_params=form.crop_params,
+        credit=form.credit,
+    )
+
+    return collective_offers_serialize.AttachImageResponseModel.from_orm(offer)
