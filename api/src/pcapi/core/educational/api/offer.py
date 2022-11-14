@@ -27,6 +27,7 @@ from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferTemplateBodyModel
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
+from pcapi.utils import image_conversion
 from pcapi.utils import rest
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import dehumanize_or_raise
@@ -538,6 +539,24 @@ def publish_collective_offer_template(
         db.session.commit()
 
     return offer_template
+
+
+def attach_image(
+    obj: educational_models.HasImageMixin, image: bytes, crop_params: image_conversion.CropParams, credit: str
+) -> None:
+    try:
+        obj.set_image(
+            image=image,
+            credit=credit,
+            crop_params=crop_params,
+            ratio=image_conversion.ImageRatio.PORTRAIT,
+            keep_original=False,
+        )
+    except:
+        db.session.rollback()
+        raise
+    else:
+        db.session.commit()
 
 
 # PRIVATE
