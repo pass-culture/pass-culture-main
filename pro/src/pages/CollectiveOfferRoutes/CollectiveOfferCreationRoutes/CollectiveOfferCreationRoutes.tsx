@@ -92,7 +92,9 @@ const CollectiveOfferCreationRoutes = ({
           breadCrumpProps={{
             activeStep: activeStep,
             isCreatingOffer: true,
+            offerId,
           }}
+          isTemplate={shouldRenderTemplateOffer}
         >
           <Switch>
             <Route path="/offre/creation/collectif/vitrine">
