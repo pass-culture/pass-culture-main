@@ -80,7 +80,6 @@ class Returns200Test:
         data = {
             "venueId": humanize(venue.id),
             "bookingEmail": "offer@example.com",
-            "mediaUrls": ["http://example.com/media"],
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "url": "http://example.com/offer",
@@ -146,7 +145,6 @@ class Returns400Test:
         data = {
             "venueId": humanize(1),
             "bookingEmail": "offer@example.com",
-            "mediaUrls": ["http://example.com/media"],
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "url": "http://example.com/offer",
@@ -229,7 +227,6 @@ class Returns400Test:
             "subcategoryId": subcategories.ACHAT_INSTRUMENT.id,
             "name": "Le grand jeu",
             "url": "http://legrandj.eu",
-            "mediaUrls": ["http://media.url"],
             "venueId": humanize(venue.id),
             "audioDisabilityCompliant": True,
             "mentalDisabilityCompliant": False,
@@ -352,6 +349,7 @@ class Returns403Test:
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
+            "name": "Les orphelins",
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
