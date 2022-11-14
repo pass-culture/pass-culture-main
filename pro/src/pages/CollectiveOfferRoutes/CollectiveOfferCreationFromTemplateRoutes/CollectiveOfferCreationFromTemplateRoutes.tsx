@@ -48,6 +48,7 @@ const CollectiveOfferCreationRoutes = (): JSX.Element => {
         breadCrumpProps={{
           activeStep: getActiveStep(location.pathname),
           isCreatingOffer: true,
+          offerId,
         }}
       >
         <Route path="/offre/duplication/collectif/:templateId" exact>
