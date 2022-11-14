@@ -109,6 +109,37 @@ def get_error_not_updatable_message(
     birth_date_error: fraud_models.DmsFieldErrorDetails | None,
     updated_at: datetime.datetime | None,
 ) -> models.SubscriptionMessage:
+    if not application_content or not (application_content.field_errors or birth_date_error):
+        user_message = "Ton dossier déposé sur le site demarches-simplifiees.fr contient des erreurs."
+    else:
+        user_message = ""
+        if application_content.field_errors:
+            user_message += _generate_form_field_error(
+                "Il semblerait que ton {formatted_error_fields} soit erroné. ",
+                "Il semblerait que ta {formatted_error_fields} soit erronée. ",
+                "Il semblerait que tes {formatted_error_fields} soient erronés. ",
+                application_content.field_errors or [],
+            )
+        if fraud_models.FraudReasonCode.NOT_ELIGIBLE in reason_codes or birth_date_error:
+            user_message += "Ta date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans. "
+
+    user_message += "Tu peux contacter le support pour plus d’informations."
+
+    return models.SubscriptionMessage(
+        user_message=user_message,
+        pop_over_icon=None,
+        call_to_action=subscription_messages.compute_support_call_to_action(user.id),
+        updated_at=updated_at,
+    )
+
+
+def get_error_processed_message(
+    user: users_models.User,
+    reason_codes: list[fraud_models.FraudReasonCode],
+    application_content: fraud_models.DMSContent | None,
+    birth_date_error: fraud_models.DmsFieldErrorDetails | None,
+    updated_at: datetime.datetime | None,
+) -> models.SubscriptionMessage:
     user_message = "Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé"
     pop_over_icon: models.PopOverIcon | None = models.PopOverIcon.ERROR
     call_to_action: models.CallToActionMessage | None = subscription_messages.compute_support_call_to_action(user.id)

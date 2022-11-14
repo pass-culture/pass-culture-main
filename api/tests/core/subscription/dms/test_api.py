@@ -285,7 +285,7 @@ class HandleDmsApplicationTest:
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message == subscription_models.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
+            user_message="Il semblerait que ton numéro de pièce d'identité soit erroné. Tu peux contacter le support pour plus d’informations.",
             call_to_action=subscription_models.CallToActionMessage(
                 title="Contacter le support",
                 link=f"{subscription_messages.MAILTO_SUPPORT}{subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
@@ -641,7 +641,7 @@ class DmsSubscriptionMessageTest:
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
     def test_pending_error_not_eligible_date(self, mock_send_user_message):
-        users_factories.UserFactory(email=self.user_email)
+        user = users_factories.UserFactory(email=self.user_email)
         not_eligible_application = make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.on_going,
@@ -654,9 +654,13 @@ class DmsSubscriptionMessageTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
 
         assert message == subscription_models.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans.",
-            call_to_action=None,
-            pop_over_icon=subscription_models.PopOverIcon.ERROR,
+            user_message="Ta date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans. Tu peux contacter le support pour plus d’informations.",
+            call_to_action=subscription_models.CallToActionMessage(
+                title="Contacter le support",
+                link=subscription_messages.MAILTO_SUPPORT
+                + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id),
+                icon=subscription_models.CallToActionIcon.EMAIL,
+            ),
             updated_at=fraud_check.updatedAt,
         )
 
