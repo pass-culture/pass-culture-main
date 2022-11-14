@@ -23,6 +23,7 @@ import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
+from pcapi.core.finance.repository import get_and_lock_deposit
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offers import repository as offers_repository
 import pcapi.core.offers.models as offers_models
@@ -64,6 +65,7 @@ def book_offer(
     # on the stock if validation issues an exception
     with transaction():
         stock = offers_repository.get_and_lock_stock(stock_id=stock_id)
+        get_and_lock_deposit(beneficiary.id)
         validation.check_offer_category_is_bookable_by_user(beneficiary, stock)
         validation.check_can_book_free_offer(beneficiary, stock)
         validation.check_offer_already_booked(beneficiary, stock.offer)

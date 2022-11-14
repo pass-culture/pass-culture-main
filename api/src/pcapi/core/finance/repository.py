@@ -501,3 +501,8 @@ def _get_legacy_payments_for_collective_bookings(
             models.Payment.collectiveBookingId.label("collective_booking_id"),
         )
     )
+
+
+def get_and_lock_deposit(userId: int) -> models.Deposit:
+    deposit = models.Deposit.query.filter_by(userId=userId).populate_existing().with_for_update().one_or_none()
+    return deposit
