@@ -320,3 +320,26 @@ class BeneficiaryUserUpdateTest:
         )
 
         assert user_to_update.idPieceNumber != "123123123"
+
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_clear_ine_hash(self, token, client):
+        super_admin = users_factories.AdminFactory(email="superadmin@example.com")
+        client.with_session_auth(super_admin.email)
+
+        user_to_update = users_factories.BeneficiaryGrant18Factory(
+            departementCode="92", postalCode="92700", ineHash="123123123"
+        )
+
+        client.post(
+            f"/pc/back-office/beneficiary_users/edit/?id={user_to_update.id}",
+            form={
+                "id": user_to_update.id,
+                "ineHash": "",
+                "departementCode": user_to_update.departementCode,
+                "csrf_token": "token",
+                "email": user_to_update.email,
+                "postalCode": user_to_update.postalCode,
+            },
+        )
+
+        assert user_to_update.ineHash is None
