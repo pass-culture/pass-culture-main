@@ -534,7 +534,7 @@ def get_dms_subscription_message(
         fraud_models.FraudCheckStatus.KO,
         fraud_models.FraudCheckStatus.ERROR,
     ):
-        return messages.get_error_not_updatable_message(
+        return messages.get_error_processed_message(
             dms_fraud_check.user,
             dms_fraud_check.reasonCodes or [],
             application_content,
