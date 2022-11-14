@@ -192,7 +192,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     hasSeenProTutorials: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     hasSeenProRgs: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     idPieceNumber = sa.Column(sa.String, nullable=True, unique=True)
-    ineHash = sa.Column(sa.Text, nullable=True, unique=True)
+    ineHash = sa.Column(sa.String, nullable=True, unique=True)
     isEmailValidated = sa.Column(sa.Boolean, nullable=True, server_default=expression.false())
     lastConnectionDate = sa.Column(sa.DateTime, nullable=True)
     lastName = sa.Column(sa.String(128), nullable=True)
