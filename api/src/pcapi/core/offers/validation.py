@@ -379,7 +379,7 @@ def check_booking_limit_datetime(
         raise exceptions.BookingLimitDatetimeTooLate()
 
 
-def check_offer_extra_data(offer: Offer | None, subcategory_id: str, extra_data: dict) -> dict:
+def check_offer_extra_data(offer: Offer | None, subcategory_id: str, extra_data: dict | None) -> dict:
     api_errors = ApiErrors()
     subcategory = ALL_SUBCATEGORIES_DICT[subcategory_id]
     mandatory_fields = OFFER_EXTRA_DATA_MANDATORY_FIELDS & set(subcategory.conditional_fields)

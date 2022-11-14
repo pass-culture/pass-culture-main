@@ -1,7 +1,7 @@
 import datetime
 import decimal
 import logging
-from typing import List
+import typing
 
 from flask_sqlalchemy import BaseQuery
 from psycopg2.errorcodes import CHECK_VIOLATION
@@ -65,7 +65,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.repository import transaction
-from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.utils import image_conversion
@@ -117,19 +116,59 @@ def list_offers_for_pro_user(
 
 
 def create_offer(
-    offer_data: PostOfferBodyModel,
+    audio_disability_compliant: bool,
+    mental_disability_compliant: bool,
+    motor_disability_compliant: bool,
+    name: str,
+    subcategory_id: str,
     user: User,
+    venue_id: str,
+    visual_disability_compliant: bool,
+    booking_email: str | None = None,
+    description: str | None = None,
+    duration_minutes: int | None = None,
+    external_ticket_office_url: str | None = None,
+    extra_data: typing.Any = None,
+    is_duo: bool | None = None,
+    is_national: bool | None = None,
+    url: str | None = None,
+    withdrawal_delay: int | None = None,
+    withdrawal_details: str | None = None,
+    withdrawal_type: models.WithdrawalTypeEnum | None = None,
 ) -> Offer:
-    venue = load_or_raise_error(Venue, offer_data.venue_id)
+    venue = load_or_raise_error(Venue, venue_id)
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
-    _check_offer_data_is_valid(offer_data)
-    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer_data.subcategory_id]
-    if _is_able_to_create_book_offer_from_isbn(subcategory):
-        offer = _initialize_book_offer_from_template(offer_data)
-    else:
-        offer = _initialize_offer_with_new_data(offer_data, subcategory, venue)
+    check_offer_subcategory_is_valid(subcategory_id)
+    validation.check_offer_extra_data(None, subcategory_id, extra_data)
 
-    _complete_common_offer_fields(offer, offer_data, venue)
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
+    if _is_able_to_create_book_offer_from_isbn(subcategory):
+        offer = _initialize_book_offer_from_template(description, extra_data, is_national, name, url)
+    else:
+        offer = _initialize_offer_with_new_data(
+            description,
+            duration_minutes,
+            extra_data,
+            is_duo,
+            is_national,
+            name,
+            subcategory_id,
+            url,
+            venue,
+            withdrawal_delay,
+            withdrawal_details,
+            withdrawal_type,
+        )
+
+    offer.audioDisabilityCompliant = audio_disability_compliant
+    offer.bookingEmail = booking_email
+    offer.externalTicketOfficeUrl = external_ticket_office_url
+    offer.isActive = False
+    offer.mentalDisabilityCompliant = mental_disability_compliant
+    offer.motorDisabilityCompliant = motor_disability_compliant
+    offer.validation = OfferValidationStatus.DRAFT
+    offer.venue = venue
+    offer.visualDisabilityCompliant = visual_disability_compliant
 
     repository.save(offer)
 
@@ -145,69 +184,77 @@ def create_offer(
 
 
 def _is_able_to_create_book_offer_from_isbn(subcategory: subcategories.Subcategory) -> bool:
+    # TODO(viconnex): add check on isbn presence
     return FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active() and can_create_from_isbn(
         subcategory_id=subcategory.id
     )
 
 
-def _initialize_book_offer_from_template(offer_data: PostOfferBodyModel) -> Offer:
-    product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])
-    extra_data = product.extraData
-    extra_data.update(offer_data.extra_data)
+def _initialize_book_offer_from_template(
+    description: str | None,
+    extra_data: typing.Any,
+    is_national: bool | None,
+    name: str,
+    url: str | None,
+) -> Offer:
+    product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(extra_data["isbn"])
+
     offer = Offer(
+        ageMax=product.ageMax,
+        ageMin=product.ageMin,
+        conditions=product.conditions,
+        description=description if description else product.description,
+        extraData=product.extraData | extra_data,
+        isNational=is_national if is_national else product.isNational,
+        name=name,
         product=product,
         subcategoryId=product.subcategoryId,
-        name=offer_data.name,  # type: ignore [arg-type]
-        description=offer_data.description if offer_data.description else product.description,
-        url=offer_data.url if offer_data.url else product.url,
-        conditions=offer_data.conditions if offer_data.conditions else product.conditions,
-        ageMin=offer_data.age_min if offer_data.age_min else product.ageMin,
-        ageMax=offer_data.age_max if offer_data.age_max else product.ageMax,
-        isNational=offer_data.is_national if offer_data.is_national else product.isNational,
-        extraData=extra_data,
+        url=url if url else product.url,
     )
     return offer
 
 
 def _initialize_offer_with_new_data(
-    offer_data: PostOfferBodyModel,
-    subcategory: subcategories.Subcategory,
+    description: str | None,
+    duration_minutes: int | None,
+    extra_data: typing.Any,
+    is_duo: bool | None,
+    is_national: bool | None,
+    name: str,
+    subcategory_id: str,
+    url: str | None,
     venue: Venue,
+    withdrawal_delay: int | None,
+    withdrawal_details: str | None,
+    withdrawal_type: models.WithdrawalTypeEnum | None,
 ) -> Offer:
-    data = offer_data.dict(by_alias=True)
-    product = Product()
-    if data.get("url"):
-        data["isNational"] = True
-    product.populate_from_dict(data)
-    offer = Offer()
-    offer.populate_from_dict(data)
-    offer.product = product
-    offer.subcategoryId = subcategory.id
-    offer.product.owningOfferer = venue.managingOfferer
+    is_national = True if url else bool(is_national)
+    product = Product(
+        name=name,
+        description=description,
+        url=url,
+        durationMinutes=duration_minutes,
+        isNational=bool(is_national),
+        owningOfferer=venue.managingOfferer,
+        subcategoryId=subcategory_id,
+    )
+
+    offer = Offer(
+        description=description,
+        durationMinutes=duration_minutes,
+        extraData=extra_data,
+        isDuo=bool(is_duo),
+        isNational=is_national,
+        name=name,
+        product=product,
+        subcategoryId=subcategory_id,
+        url=url,
+        withdrawalDelay=withdrawal_delay,
+        withdrawalDetails=withdrawal_details,
+        withdrawalType=withdrawal_type,
+    )
+
     return offer
-
-
-def _complete_common_offer_fields(
-    offer: Offer,
-    offer_data: PostOfferBodyModel,
-    venue: Venue,
-) -> None:
-    offer.venue = venue
-    offer.bookingEmail = offer_data.booking_email
-    offer.externalTicketOfficeUrl = offer_data.external_ticket_office_url
-    offer.audioDisabilityCompliant = offer_data.audio_disability_compliant
-    offer.mentalDisabilityCompliant = offer_data.mental_disability_compliant
-    offer.motorDisabilityCompliant = offer_data.motor_disability_compliant
-    offer.visualDisabilityCompliant = offer_data.visual_disability_compliant
-    offer.validation = OfferValidationStatus.DRAFT
-    offer.isActive = False
-
-
-def _check_offer_data_is_valid(
-    offer_data: PostOfferBodyModel,
-) -> None:
-    check_offer_subcategory_is_valid(offer_data.subcategory_id)
-    validation.check_offer_extra_data(None, offer_data.subcategory_id, offer_data.extra_data)
 
 
 def update_offer(
@@ -501,7 +548,7 @@ def _edit_stock(
     return stock
 
 
-def _notify_pro_upon_stock_edit_for_event_offer(stock: Stock, bookings: List[Booking]):  # type: ignore [no-untyped-def]
+def _notify_pro_upon_stock_edit_for_event_offer(stock: Stock, bookings: typing.List[Booking]):  # type: ignore [no-untyped-def]
     if stock.offer.isEvent:
         if not transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings)):
             logger.warning(
@@ -510,7 +557,7 @@ def _notify_pro_upon_stock_edit_for_event_offer(stock: Stock, bookings: List[Boo
             )
 
 
-def _notify_beneficiaries_upon_stock_edit(stock: Stock, bookings: List[Booking]):  # type: ignore [no-untyped-def]
+def _notify_beneficiaries_upon_stock_edit(stock: Stock, bookings: typing.List[Booking]):  # type: ignore [no-untyped-def]
     if bookings:
         bookings = update_cancellation_limit_dates(bookings, stock.beginningDatetime)  # type: ignore [arg-type]
         date_in_two_days = datetime.datetime.utcnow() + datetime.timedelta(days=2)

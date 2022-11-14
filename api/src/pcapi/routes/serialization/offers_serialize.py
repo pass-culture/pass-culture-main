@@ -71,7 +71,6 @@ class PostOfferBodyModel(BaseModel):
     external_ticket_office_url: HttpUrl | None
     extra_data: Any
     is_duo: bool | None
-    is_educational = False
     is_national: bool | None
     mental_disability_compliant: bool = False
     motor_disability_compliant: bool = False
