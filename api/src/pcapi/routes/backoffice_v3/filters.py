@@ -4,8 +4,12 @@ from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
 from flask import Flask
+import pytz
 
 from pcapi.core.users import models as users_models
+
+
+PARIS_TZ = pytz.timezone("Europe/Paris")
 
 
 def format_state(is_active: bool) -> str:
@@ -49,6 +53,8 @@ def empty_string_if_null(data: typing.Any | None) -> str:
 def format_date(data: datetime.date | datetime.datetime, strformat: str = "%d/%m/%Y") -> str:
     if not data:
         return ""
+    if isinstance(data, datetime.datetime):
+        return data.astimezone(PARIS_TZ).strftime(strformat)
     return data.strftime(strformat)
 
 

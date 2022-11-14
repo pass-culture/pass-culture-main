@@ -126,10 +126,15 @@ def edit_public_account(user_id: int) -> utils.BackofficeResponse:
         last_name=user.lastName,
         first_name=user.firstName,
         email=user.email,
+        birth_date=user.birth_date,
+        id_piece_number=user.idPieceNumber,
+        address=user.address,
+        postal_code=user.postalCode,
+        city=user.city,
     )
     dst = url_for(".update_public_account", user_id=user.id)
 
-    return render_template("accounts/edit.html", form=form, dst=dst)
+    return render_template("accounts/edit.html", form=form, dst=dst, user=user)
 
 
 @blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>", methods=["PATCH"])
@@ -140,12 +145,17 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
     form = account_forms.EditAccountForm()
     if not form.validate():
         dst = url_for(".update_public_account", user_id=user_id)
-        return render_template("accounts/edit.html", form=form, dst=dst), 400
+        return render_template("accounts/edit.html", form=form, dst=dst, user=user), 400
 
     users_api.update_user_information(
         user,
         first_name=form.first_name.data,
         last_name=form.last_name.data,
+        validated_birth_date=form.birth_date.data,
+        id_piece_number=form.id_piece_number.data,
+        address=form.address.data,
+        postal_code=form.postal_code.data,
+        city=form.city.data,
     )
 
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
@@ -154,7 +164,7 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
         except users_exceptions.EmailExistsError:
             form.email.errors.append("L'email est déjà associé à un autre utilisateur")
             dst = url_for(".update_public_account", user_id=user.id)
-            return render_template("accounts/edit.html", form=form, dst=dst), 400
+            return render_template("accounts/edit.html", form=form, dst=dst, user=user), 400
 
     db.session.commit()
     users_external.update_external_user(user)
@@ -274,10 +284,10 @@ def get_eligibility_history(user: users_models.User) -> dict[str, accounts.Eligi
 
     subscription_item_methods = [
         subscription_api.get_email_validation_subscription_item,
-        subscription_api.get_phone_validation_subscription_item,
-        subscription_api.get_user_profiling_subscription_item,
         subscription_api.get_profile_completion_subscription_item,
+        subscription_api.get_phone_validation_subscription_item,
         subscription_api.get_identity_check_subscription_item,
+        subscription_api.get_user_profiling_subscription_item,
         subscription_api.get_honor_statement_subscription_item,
     ]
 
@@ -297,7 +307,7 @@ def get_eligibility_history(user: users_models.User) -> dict[str, accounts.Eligi
         eligibility_types = list(users_models.EligibilityType)
 
     for eligibility in eligibility_types:
-        subscriptions[eligibility.name] = accounts.EligibilitySubscriptionHistoryModel(
+        subscriptions[eligibility.value] = accounts.EligibilitySubscriptionHistoryModel(
             subscriptionItems=[
                 accounts.SubscriptionItemModel.from_orm(method(user, eligibility))
                 for method in subscription_item_methods
