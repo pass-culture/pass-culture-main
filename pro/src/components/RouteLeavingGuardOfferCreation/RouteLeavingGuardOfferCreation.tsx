@@ -64,6 +64,7 @@ const RouteLeavingGuardOfferCreation = ({
       if (
         (from === STEP_STOCKS && to === STEP_OFFER) ||
         (from === STEP_STOCKS && to === STEP_OFFER_EDITION) ||
+        (from === STEP_VISIBILITY && to === STEP_OFFER_EDITION) ||
         (from === STEP_VISIBILITY && to === STEP_STOCKS) ||
         (from === STEP_RECAP && to === STEP_VISIBILITY) ||
         (from === STEP_RECAP && to === STEP_STOCKS) ||
