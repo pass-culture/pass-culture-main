@@ -1,0 +1,104 @@
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+<div class="card my-4">
+    <div class="card-body" id="{{ history_type }}">
+        <h5 class="card-title text-bold fs-2 m-3">
+            Parcours d'inscription
+            <span class="badge rounded-pill text-bg-primary fs-6 align-middle mx-4">
+                {{ history_type | i18n_public_account }}
+            </span>
+        </h5>
+
+        <div class="card-body">
+            <div class="row py-3">
+
+                {% for item in history.subscriptionItems %}
+                    <div class="col-6 dflex">
+                        <p class="d-flex justify-content-between">
+                            <span class="fs-6 fw-bold">{{ item.type | i18n_subscription_type }}</span>
+                            {% if item.status == 'ok' %}
+                                <i class="bi bi-check-circle-fill text-success me-5"></i>
+                            {% elif item.status == 'ko' %}
+                                <i class="bi bi-exclamation-circle-fill text-danger me-5"></i>
+                            {% elif item.status == 'error' %}
+                                <i class="bi bi-x-circle-fill text-danger me-5"></i>
+                            {% elif item.status == 'canceled' %}
+                                <i class="bi bi-trash3-fill text-danger me-5"></i>
+                            {% else %}
+                                <i class="bi bi-exclamation-circle-fill text-warning me-5" 
+                                data-toggle="tooltip" data-placement="left" title="{{ item.status }}"></i>
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+    </div>
+    {% for idCheckItem in history.idCheckHistory %}
+        <div class="card m-3 shadow">
+            <div class="card-body" id="{{ idCheckItem.thirdPartyId }}">
+                <h5 class="card-title text-bold fs-3 m-3">
+                    {{ idCheckItem.type }}
+                </h5>
+                <div class="card-body">
+                    <div class="row py-3">
+                        <div class="col-9 dflex">
+                            <p class="d-flex justify-content-between">
+                                <span class="fs-6">Date de création</span>
+                                <span class="fs-6">{{ idCheckItem.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</span>
+                            </p>
+                            <p class="d-flex justify-content-between">
+                                <span class="fs-6">ID Technique</span>
+                                <span class="fs-6">{{ idCheckItem.thirdPartyId }}</span>
+                            </p>
+                            <p class="d-flex justify-content-between">
+                                <span class="fs-6">Statut</span>
+                                {% if idCheckItem.status == 'ok' %}
+                                    <span class="fs-6 badge rounded-pill text-bg-success align-middle">
+                                        <i class="bi bi-check-circle"></i> {{ idCheckItem.status.upper() }}
+                                    </span>
+                                {% elif idCheckItem.status == 'ko' %}
+                                    <span class="fs-6 badge rounded-pill text-bg-danger align-middle">
+                                        <i class="bi bi-exclamation-circle"></i> {{ idCheckItem.status.upper() }}
+                                    </span>
+                                {% elif idCheckItem.status == 'suspicious' %}
+                                    <span class="fs-6 badge rounded-pill text-bg-warning align-middle">
+                                        <i class="bi bi-shield-shaded"></i> {{ idCheckItem.status.upper() }}
+                                    </span>
+                                {% else %}
+                                    <span class="fs-6 badge rounded-pill text-bg-warning align-middle">
+                                        <i class="bi bi-exclamation-circle"></i> {{ idCheckItem.status.upper() }}
+                                    </span>
+                                {% endif %}
+                            </p>
+                            <p class="d-flex justify-content-between">
+                                <span class="fs-6">Explication</span>
+                                <span class="fs-6">{{ idCheckItem.reason | empty_string_if_null }}</span>
+                            </p>
+                            <p class="d-flex justify-content-between">
+                                <span class="fs-6">Codes d'erreur</span>
+                                <span class="fs-6">{{ ", ".join(idCheckItem.reasonCodes) | empty_string_if_null }}</span>
+                            </p>
+                            <p class="d-flex justify-content-between">
+                                <button class="btn btn-primary fs-6" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-details">
+                                    Afficher les détails techniques
+                                </button>
+                            </p>
+                            <p>
+                                <span class="fs-6 collapse" id="collapse-details">
+                                    <code>{{ idCheckItem.technicalDetails | empty_string_if_null }}</code>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+

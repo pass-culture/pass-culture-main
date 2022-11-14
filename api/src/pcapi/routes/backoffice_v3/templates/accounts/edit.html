@@ -1,43 +1,38 @@
 {% extends "layouts/accounts.html" %}
 
 {% block accounts_main_content %}
+    <div class="row">
+        <div class="col-3">
+        </div>
 
-{% with %}
-    {% set title = "Éditer les informations" %}
-    {% set method = "PATCH" %}
-    {% set button_text = "Sauvegarder" %}
+        <div class="col-7 mt-5">
+            <h5 class="lead fs-1 my-4">Éditer les informations</h5>
 
-    {% include "components/forms/base_form.html" %}
-{% endwith %}
+            <div class="mt-5 text-center">
+                <form action="{{ dst }}" method="PATCH">
+                    {% for form_field in form %}
+                        <div class="w-100 my-4">
+                            {% for error in form_field.errors %}
+                                <p class="text-warning lead">{{ error }}</p>
+                            {% endfor %}
+                        </div>
 
-{# <div class="row"> #}
-{#     <div class="col-3"> #}
-{#     </div> #}
-{#  #}
-{#     <div class="col-6 mt-5"> #}
-{#         <h5 class="lead fs-1 my-4">Editer les informations</h5> #}
-{#  #}
-{#         <div class="mt-5 text-center"> #}
-{#  #}
-{#             <div class="w-100 my-4"> #}
-{#                 {% for form_field in form %} #}
-{#                     {% for error in form_field.errors %} #}
-{#                         <p class="text-warning lead">{{ error }}</p> #}
-{#                     {% endfor %} #}
-{#                 {% endfor %} #}
-{#                 </div> #}
-{#  #}
-{#                 <form action="{{ dst }}" method="PATCH"> #}
-{#                 {% for field in form %} #}
-{#                     {{ field }} #}
-{#                 {% endfor %} #}
-{#  #}
-{#                 <div class="col-12 text-start py-4"> #}
-{#                     <button type="submit" class="btn btn-primary">Sauvegarder</button> #}
-{#                 </div> #}
-{#             </form> #}
-{#         </div> #}
-{#     </div> #}
-{# </div> #}
+                        {{ form_field }}
+                    {% endfor %}
 
+                    <div class="col-12 text-end py-4">
+                        <a href="{{ url_for(".get_public_account", user_id=user.id) }}" class="btn btn-outline-primary"
+                            role="button">
+                            Annuler la modification
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            Sauvegarder
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-2">
+        </div>
+    </div>
 {% endblock %}

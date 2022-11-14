@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from wtforms import validators
 
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.models as users_models
@@ -12,6 +13,16 @@ class EditAccountForm(FlaskForm):
     first_name = fields.PCOptStringField("Prénom")
     last_name = fields.PCOptStringField("Nom")
     email = fields.PCEmailField("Email")
+    birth_date = fields.PCDateField("Date de naissance")
+    id_piece_number = fields.PCOptStringField("N° pièce d'identité")
+    address = fields.PCOptStringField("Adresse")
+    postal_code = fields.PCPostalCodeField("Code postal")
+    city = fields.PCOptStringField("Ville")
+
+    def validate_postal_code(self, postal_code: fields.PCPostalCodeField) -> fields.PCPostalCodeField:
+        if not postal_code.data.isnumeric():
+            raise validators.ValidationError("Un code postal doit être composé de chiffres")
+        return postal_code
 
     def filter_email(self, raw_email: str | None) -> str:
         if not raw_email:

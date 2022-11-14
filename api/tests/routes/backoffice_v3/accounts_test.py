@@ -76,11 +76,17 @@ class UpdatePublicAccountTest:
 
         new_email = user_to_edit.email + ".UPDATE  "
         expected_new_email = email_utils.sanitize_email(new_email)
+        expected_new_postal_code = "75000"
+        expected_city = user_to_edit.city
 
         base_form = {
             "first_name": user_to_edit.firstName,
             "last_name": user_to_edit.lastName,
             "email": new_email,
+            "birth_date": user_to_edit.birth_date,
+            "id_piece_number": user_to_edit.idPieceNumber,
+            "address": user_to_edit.address,
+            "postal_code": expected_new_postal_code,
         }
 
         response = self.update_account(client, legit_user, user_to_edit, base_form)
@@ -91,6 +97,9 @@ class UpdatePublicAccountTest:
 
         user_to_edit = users_models.User.query.get(user_to_edit.id)
         assert user_to_edit.email == expected_new_email
+        assert user_to_edit.idPieceNumber == user_to_edit.idPieceNumber
+        assert user_to_edit.postalCode == expected_new_postal_code
+        assert user_to_edit.city == expected_city
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_unknown_field(self, client, legit_user):
@@ -119,6 +128,17 @@ class UpdatePublicAccountTest:
 
         user_to_edit = users_models.User.query.get(user_to_edit.id)
         assert user_to_edit.email != other_user.email
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_invalid_postal_code(self, client, legit_user):
+        user_to_edit = users_factories.BeneficiaryGrant18Factory()
+
+        base_form = {
+            "postal_code": "7500",
+        }
+
+        response = self.update_account(client, legit_user, user_to_edit, base_form)
+        assert response.status_code == 400
 
     def update_account(self, client, legit_user, user_to_edit, form):
         # generate csrf token
