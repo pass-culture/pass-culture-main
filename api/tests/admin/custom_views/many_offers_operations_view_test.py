@@ -21,7 +21,7 @@ from tests.conftest import TestClient
 
 @pytest.mark.usefixtures("db_session")
 class ManyOffersOperationsViewTest:
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_search_product_from_isbn(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
@@ -45,7 +45,7 @@ class ManyOffersOperationsViewTest:
         get_response = client.get(response.headers["location"])
         assert get_response.status_code == 200
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_search_product_from_visa(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
@@ -60,7 +60,7 @@ class ManyOffersOperationsViewTest:
         assert response.status_code == 302
         assert response.headers["location"] == "http://localhost/pc/back-office/many_offers_operations/edit?visa=978148"
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_search_product_from_isbn_with_invalid_isbn(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
@@ -76,7 +76,7 @@ class ManyOffersOperationsViewTest:
         # Then
         assert response.status_code == 200
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_search_product_with_no_isbn_nor_visa(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
@@ -89,7 +89,7 @@ class ManyOffersOperationsViewTest:
         assert response.status_code == 200
 
     @patch("pcapi.core.search.async_index_offer_ids")
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_edit_product_offers_criteria_from_isbn(
         self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app
     ):
@@ -125,7 +125,7 @@ class ManyOffersOperationsViewTest:
         mocked_async_index_offer_ids.assert_called_once_with([offer1.id, offer2.id])
 
     @patch("pcapi.core.search.async_index_offer_ids")
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_edit_product_offers_criteria_from_visa(
         self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app
     ):
@@ -160,7 +160,7 @@ class ManyOffersOperationsViewTest:
         assert not unmatched_offer.criteria
         mocked_async_index_offer_ids.called_once_with([offer1.id, offer2.id])
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_edit_product_offers_criteria_from_isbn_without_offers(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
@@ -173,7 +173,7 @@ class ManyOffersOperationsViewTest:
         assert response.status_code == 302
         assert response.headers["location"] == "http://localhost/pc/back-office/many_offers_operations/"
 
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_edit_product_offers_criteria_from_visa_without_offers(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
@@ -215,7 +215,7 @@ class ManyOffersOperationsViewTest:
         ],
     )
     @patch("pcapi.core.search.async_index_offer_ids")
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_edit_product_gcu_compatibility(
         self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app, db_session, validation_status
     ):

@@ -18,7 +18,7 @@ from tests.conftest import clean_database
 
 class AdminUserViewTest:
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_admin_user_creation(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="admin@example.com")
 
@@ -54,7 +54,7 @@ class AdminUserViewTest:
         assert token.expirationDate > datetime.utcnow() + timedelta(hours=20)
 
     @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_admin_user_receive_a_reset_password_token(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="admin@example.com")
 
@@ -82,7 +82,7 @@ class AdminUserViewTest:
         assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.EMAIL_VALIDATION_TO_PRO.value)
 
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[])
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_admin_user_creation_is_restricted_in_prod(self, mocked_validate_csrf_token, app, db_session):
         users_factories.AdminFactory(email="user@example.com")
 
@@ -104,7 +104,7 @@ class AdminUserViewTest:
 
     @clean_database
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_super_admin_can_suspend_then_unsuspend_simple_admin(self, mocked_validate_csrf_token, app):
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")
         admin = users_factories.AdminFactory(email="admin@example.com")
@@ -128,7 +128,7 @@ class AdminUserViewTest:
 
     @clean_database
     @override_settings(IS_PROD=True)
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_simple_admin_can_not_suspend_admin(self, mocked_validate_csrf_token, app):
         admin_1 = users_factories.AdminFactory(email="admin1@example.com")
         admin_2 = users_factories.AdminFactory(email="admin2@example.com")
@@ -143,7 +143,7 @@ class AdminUserViewTest:
 
     @clean_database
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask_wtf.csrf.validate_csrf")
     def test_simple_admin_can_not_unsuspend_simple_admin(self, mocked_validate_csrf_token, app):
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")
         admin_1 = users_factories.AdminFactory(email="admin1@example.com")
