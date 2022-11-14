@@ -62,25 +62,19 @@ class CategoryResponseModel(BaseModel):
 
 class PostOfferBodyModel(BaseModel):
     venue_id: str
-    product_id: str | None
     subcategory_id: str
-    # FIXME (cgaunet, 2022-08-02): This field should not be nullable
-    name: str | None
+    name: str
     booking_email: EmailStr | None
     external_ticket_office_url: HttpUrl | None
     url: HttpUrl | None
-    media_urls: list[str] | None
     description: str | None
     withdrawal_details: str | None
     withdrawal_type: offers_models.WithdrawalTypeEnum | None
     withdrawal_delay: int | None
-    conditions: str | None
-    age_min: int | None
-    age_max: int | None
     duration_minutes: int | None
     is_national: bool | None
     is_duo: bool | None
-    is_educational: bool | None
+    is_educational = False
     # TODO (schable, 2021-01-14): remove the default value for the 4 following accessibility fields
     #  when new offer creation will be activated in pro app (current offer creation does not send those fields)
     audio_disability_compliant: bool = False
@@ -88,30 +82,22 @@ class PostOfferBodyModel(BaseModel):
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
     extra_data: Any
-    # FIXME (viconnex, 2020-12-02): this field is actually
-    # unused for the offer creation. But the webapp does send it so
-    # we must list them here.
-    offererId: str | None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
-        if not values["product_id"]:
-            check_offer_name_length_is_valid(name)
+        check_offer_name_length_is_valid(name)
         return name
 
     @validator("extra_data", pre=True)
     def validate_isbn(cls, extra_data_field: dict, values: dict) -> dict:
-        if (
-            FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active()
-            and not values["product_id"]
-            and can_create_from_isbn(subcategory_id=values["subcategory_id"])
+        if FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active() and can_create_from_isbn(
+            subcategory_id=values["subcategory_id"]
         ):
             check_offer_isbn_is_valid(extra_data_field["isbn"])
         return extra_data_field
 
     class Config:
         alias_generator = to_camel
-        extra = "forbid"
 
 
 class OfferAddressType(enum.Enum):

@@ -352,6 +352,7 @@ class Returns403Test:
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
+            "name": "Les orphelins",
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
