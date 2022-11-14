@@ -121,3 +121,8 @@ def get_users_with_attachment_by_offerer(offerer: offerers_models.Offerer) -> li
         .filter(offerers_models.UserOfferer.offererId == offerer.id)
         .all()
     )
+
+
+def get_and_lock_user(userId: int) -> models.User:
+    user = models.User.query.filter(models.User.id == userId).populate_existing().with_for_update().one_or_none()
+    return user

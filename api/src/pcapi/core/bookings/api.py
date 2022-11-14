@@ -32,6 +32,7 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
+from pcapi.core.users.repository import get_and_lock_user
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
@@ -64,6 +65,7 @@ def book_offer(
     # on the stock if validation issues an exception
     with transaction():
         stock = offers_repository.get_and_lock_stock(stock_id=stock_id)
+        get_and_lock_user(beneficiary.id)
         validation.check_offer_category_is_bookable_by_user(beneficiary, stock)
         validation.check_can_book_free_offer(beneficiary, stock)
         validation.check_offer_already_booked(beneficiary, stock.offer)

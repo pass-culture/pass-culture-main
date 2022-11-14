@@ -60,6 +60,12 @@ class BookOfferConcurrencyTest:
             with pytest.raises(sqlalchemy.exc.OperationalError):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
+        with engine.connect() as connection:
+            connection.execute(text("""SELECT * FROM "user" WHERE id = :user_id FOR UPDATE"""), user_id=beneficiary.id)
+
+            with pytest.raises(sqlalchemy.exc.OperationalError):
+                api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+
         assert models.Booking.query.count() == 0
         assert offers_models.Stock.query.filter_by(id=stock.id, dnBookedQuantity=5).count() == 1
 
