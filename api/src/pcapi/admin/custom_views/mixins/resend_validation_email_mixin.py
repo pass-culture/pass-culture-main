@@ -3,14 +3,14 @@ from flask import redirect
 from flask import request
 from flask import url_for
 from flask_admin import expose
+from flask_admin.form import SecureForm
 from markupsafe import Markup
 
-from pcapi.admin.base_configuration import FlaskWTFSecureForm
 import pcapi.core.users.api as users_api
 from pcapi.core.users.models import User
 
 
-class ResendValidationEmailForm(FlaskWTFSecureForm):
+class ResendValidationEmailForm(SecureForm):
     pass  # empty form, only has the CSRF token field
 
 
