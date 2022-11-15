@@ -79,6 +79,7 @@ class UnauthorizedHelper(UnauthorizedHelperBase):
         assert response.status_code == 400
 
 
+@pytest.mark.skip(reason="csrf temporarily deactivated")
 class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
     @property
     def method(self) -> str:
@@ -135,6 +136,7 @@ class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
         client.get(url_for("backoffice_v3_web.home"))
 
 
+@pytest.mark.skip(reason="csrf temporarily deactivated")
 class MissingCSRFHelper(base.BaseHelper):
     @property
     def method(self) -> str:
