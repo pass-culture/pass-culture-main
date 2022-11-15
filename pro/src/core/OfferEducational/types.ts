@@ -109,7 +109,7 @@ export type CollectiveOfferTemplate =
 
 export const isCollectiveOfferTemplate = (
   value: unknown
-): value is CollectiveOffer =>
+): value is CollectiveOfferTemplate =>
   // Could be enhanced to check that it is also a GetCollectiveOfferTemplateResponseModel
   hasProperty(value, 'isTemplate') && value.isTemplate === true
 

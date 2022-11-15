@@ -16,6 +16,13 @@ import DuplicateOfferDialog from './DuplicateOfferDialog'
 
 export const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
 
+export const createOfferFromTemplate = async (
+  history: ReturnType<typeof useHistory>,
+  templateOfferId: string
+) => {
+  history.push(`/offre/duplication/collectif/${templateOfferId}`)
+}
+
 const DuplicateOfferCell = ({
   isTemplate,
   templateOfferId,
@@ -36,7 +43,7 @@ const DuplicateOfferCell = ({
     if (shouldNotDisplayModalAgain) {
       localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
     }
-    return history.push(`/offre/duplication/collectif/${templateOfferId}`)
+    createOfferFromTemplate(history, templateOfferId)
   }
 
   const handleCreateOfferClick = () => {
@@ -44,7 +51,7 @@ const DuplicateOfferCell = ({
       logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
         from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS,
       })
-      return history.push(`/offre/duplication/collectif/${templateOfferId}`)
+      createOfferFromTemplate(history, templateOfferId)
     }
     setIsModalOpen(true)
   }
