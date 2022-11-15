@@ -70,7 +70,6 @@ from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.utils import image_conversion
 from pcapi.utils.cds import get_cds_show_id_from_uuid
 from pcapi.utils.rest import check_user_has_access_to_offerer
-from pcapi.utils.rest import load_or_raise_error
 from pcapi.workers import push_notification_job
 
 from . import exceptions
@@ -122,7 +121,7 @@ def create_offer(
     name: str,
     subcategory_id: str,
     user: User,
-    venue_id: str,
+    venue_id: int,
     visual_disability_compliant: bool,
     booking_email: str | None = None,
     description: str | None = None,
@@ -136,7 +135,9 @@ def create_offer(
     withdrawal_details: str | None = None,
     withdrawal_type: models.WithdrawalTypeEnum | None = None,
 ) -> Offer:
-    venue = load_or_raise_error(Venue, venue_id)
+    venue: Venue | None = Venue.query.get(venue_id)
+    if not venue:
+        raise exceptions.VenueNotFound()
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
     check_offer_subcategory_is_valid(subcategory_id)
     validation.check_offer_extra_data(None, subcategory_id, extra_data)
