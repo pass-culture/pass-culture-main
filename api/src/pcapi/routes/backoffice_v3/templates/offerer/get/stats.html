@@ -3,8 +3,8 @@
         <div class="col-md-4">
             <div class="card h-100">
                 <div class="card-body">
-                    <h6 class="fs-3 card-title">
-                        {{ total_revenue | format_amount }}
+                    <h6 class="display-6 card-title">
+                        {{ total_revenue | format_amount | safe }}
                     </h6>
                     <p class="card-text fw-light small">
                         de CA
