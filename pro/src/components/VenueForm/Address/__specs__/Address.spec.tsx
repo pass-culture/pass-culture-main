@@ -101,7 +101,8 @@ describe('components | Address', () => {
 
     await userEvent.type(adressInput, '12 rue ')
     const suggestion = await screen.getByText(
-      '12 rue des tournesols 75003 Paris'
+      '12 rue des tournesols 75003 Paris',
+      { selector: 'span' }
     )
 
     await userEvent.click(suggestion)
