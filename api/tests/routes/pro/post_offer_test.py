@@ -157,7 +157,7 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 404
-        assert response.json["global"] == ["Aucun objet ne correspond à cet identifiant dans notre base de données"]
+        assert response.json["global"] == ["Aucun lieu ne correspond à cet identifiant dans notre base de données"]
 
     def test_fail_if_name_too_long(self, client):
         # Given
