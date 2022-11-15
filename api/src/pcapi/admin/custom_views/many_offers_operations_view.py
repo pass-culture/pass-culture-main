@@ -6,13 +6,13 @@ from flask.helpers import flash
 from flask.helpers import url_for
 from flask_admin import expose
 from flask_admin.contrib.sqla.fields import QuerySelectMultipleField
+from flask_admin.form import SecureForm
 from sqlalchemy.orm import joinedload
 from werkzeug.wrappers import Response
 from wtforms import StringField
 from wtforms import validators
 
 from pcapi.admin.base_configuration import BaseCustomAdminView
-from pcapi.admin.base_configuration import FlaskWTFSecureForm
 from pcapi.core.categories import categories
 from pcapi.core.criteria.models import Criterion
 from pcapi.core.offers.api import add_criteria_to_offers
@@ -22,7 +22,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
-class SearchForm(FlaskWTFSecureForm):
+class SearchForm(SecureForm):
     isbn = StringField(
         "ISBN",
     )
@@ -43,7 +43,7 @@ def _is_isbn_valid(isbn: str) -> bool:
     return len(_format_isbn(isbn)) == 13
 
 
-class OfferCriteriaForm(FlaskWTFSecureForm):
+class OfferCriteriaForm(SecureForm):
     criteria = QuerySelectMultipleField(
         query_factory=_select_criteria,
         allow_blank=True,

@@ -4,6 +4,7 @@ from flask import request
 from flask import url_for
 from flask_admin import expose
 from flask_admin.actions import action
+from flask_admin.form import SecureForm
 from flask_login import current_user
 from markupsafe import Markup
 from werkzeug.exceptions import Conflict
@@ -11,14 +12,13 @@ from werkzeug.exceptions import Forbidden
 import wtforms.validators
 
 from pcapi import settings
-from pcapi.admin.base_configuration import FlaskWTFSecureForm
 import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.users.api as users_api
 import pcapi.core.users.constants as users_constants
 from pcapi.core.users.models import User
 
 
-class SuspensionForm(FlaskWTFSecureForm):
+class SuspensionForm(SecureForm):
     reason = wtforms.SelectField(
         "Raison de la suspension",
         choices=(("", "---"),) + users_constants.SUSPENSION_REASON_CHOICES,
@@ -26,7 +26,7 @@ class SuspensionForm(FlaskWTFSecureForm):
     )
 
 
-class UnsuspensionForm(FlaskWTFSecureForm):
+class UnsuspensionForm(SecureForm):
     pass  # empty form, only has the CSRF token field
 
 
