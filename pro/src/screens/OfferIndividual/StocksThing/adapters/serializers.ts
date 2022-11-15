@@ -32,10 +32,10 @@ export const serializeStockThingList = (
   }
   if (formValues.activationCodes.length > 0) {
     apiStock.activationCodes = formValues.activationCodes
-    if (formValues.activationCodesExpirationDateTime)
+    if (formValues.activationCodesExpirationDatetime)
       apiStock.activationCodesExpirationDatetime =
         serializeThingBookingLimitDatetime(
-          formValues.activationCodesExpirationDateTime,
+          formValues.activationCodesExpirationDatetime,
           departementCode
         )
   }

@@ -17,7 +17,7 @@ describe('screens::StockThing::serializers:serializeStockThingList', () => {
       quantity: '12',
       bookingLimitDatetime: new Date('2022-10-26T23:00:00+0200'),
       price: '10',
-      activationCodesExpirationDateTime: null,
+      activationCodesExpirationDatetime: null,
       activationCodes: [],
     }
     departementCode = '75'

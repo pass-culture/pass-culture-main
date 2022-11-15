@@ -20,8 +20,8 @@ export const buildInitialValues = (
       ? new Date(offer.stocks[0].bookingLimitDatetime)
       : null,
     price: offer.stocks[0].price.toString(),
-    activationCodesExpirationDateTime:
-      offer.stocks[0].activationCodesExpirationDateTime,
+    activationCodesExpirationDatetime:
+      offer.stocks[0].activationCodesExpirationDatetime,
     activationCodes: offer.stocks[0].activationCodes,
   }
 }
