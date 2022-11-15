@@ -301,6 +301,7 @@ class GetOfferProductResponseModel(BaseModel):
 
 class GetOfferStockResponseModel(BaseModel):
     beginningDatetime: datetime | None
+    activationCodesExpirationDatetime: datetime | None
     bookingLimitDatetime: datetime | None
     dnBookedQuantity: int = Field(alias="bookingsQuantity")
     cancellationLimitDate: datetime | None
@@ -329,9 +330,15 @@ class GetOfferStockResponseModel(BaseModel):
     def from_orm(cls, stock: offers_models.Stock) -> "GetOfferStockResponseModel":
         # here we have N+1 requests (for each stock we query an activation code)
         # but it should be more efficient than loading all activationCodes of all stocks
-        stock.hasActivationCode = (
-            stock.canHaveActivationCodes and offers_repository.get_available_activation_code(stock) is not None
-        )
+        if stock.canHaveActivationCodes:
+            availble_activation_code = offers_repository.get_available_activation_code(stock)
+            stock.hasActivationCode = availble_activation_code is not None
+            stock.activationCodesExpirationDatetime = (
+                availble_activation_code.expirationDate if availble_activation_code else None
+            )
+        else:
+            stock.hasActivationCode = False
+            stock.activationCodesExpirationDatetime = None
         return super().from_orm(stock)
 
     @validator("cancellationLimitDate", pre=True, always=True)
