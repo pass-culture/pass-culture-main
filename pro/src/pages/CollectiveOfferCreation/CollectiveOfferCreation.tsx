@@ -7,7 +7,6 @@ import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   isCollectiveOffer,
-  isCollectiveOfferTemplate,
   Mode,
   setInitialFormValues,
 } from 'core/OfferEducational'
@@ -66,10 +65,7 @@ const CollectiveOfferCreation = ({
       return notify.error(message)
     }
 
-    if (
-      offer &&
-      (isCollectiveOffer(payload) || isCollectiveOfferTemplate(payload))
-    ) {
+    if (offer && isCollectiveOffer(payload)) {
       setOffer(payload)
     }
 
