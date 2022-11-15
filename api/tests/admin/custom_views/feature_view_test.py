@@ -9,7 +9,7 @@ from tests.conftest import clean_database
 
 class FeatureViewTest:
     @clean_database
-    @patch("flask_wtf.csrf.validate_csrf")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_feature_edition(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
         inactive_feature = Feature.query.filter_by(isActive=False).first()

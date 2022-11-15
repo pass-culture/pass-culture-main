@@ -12,7 +12,7 @@ from tests.conftest import clean_database
 
 class CreateCineOfficePivotTest:
     @clean_database
-    @patch("flask_wtf.csrf.validate_csrf")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_create_cine_office_information(self, _mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory()
@@ -40,7 +40,7 @@ class CreateCineOfficePivotTest:
 
 class EditCineOfficePivotTest:
     @clean_database
-    @patch("flask_wtf.csrf.validate_csrf")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_update_cine_office_information(self, _mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory()
@@ -70,7 +70,7 @@ class EditCineOfficePivotTest:
 
 class DeleteCineOfficePivotTest:
     @clean_database
-    @patch("flask_wtf.csrf.validate_csrf")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_delete_cine_office_information(self, _mocked_validate_csrf_token, app):
         AdminFactory(email="admin@example.fr")
         cds_provider = get_provider_by_local_class("CDSStocks")
@@ -90,7 +90,7 @@ class DeleteCineOfficePivotTest:
         assert providers_models.CinemaProviderPivot.query.count() == 0
 
     @clean_database
-    @patch("flask_wtf.csrf.validate_csrf")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_should_not_delete_cine_office_pivot_when_venue_provider_exist(self, _mocked_validate_csrf_token, app):
         AdminFactory(email="admin@example.fr")
         cds_provider = get_provider_by_local_class("CDSStocks")
