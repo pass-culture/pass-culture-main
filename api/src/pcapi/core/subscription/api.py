@@ -735,4 +735,7 @@ def get_subscription_message(user: users_models.User) -> models.SubscriptionMess
 
 
 def has_subscription_issues(user: users_models.User) -> bool:
-    return get_subscription_message(user) is not None
+    return get_identity_check_subscription_status(user, user.eligibility) in [
+        models.SubscriptionItemStatus.SUSPICIOUS,
+        models.SubscriptionItemStatus.KO,
+    ]
