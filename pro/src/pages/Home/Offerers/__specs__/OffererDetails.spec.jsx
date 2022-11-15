@@ -238,7 +238,7 @@ describe('offererDetailsLegacy', () => {
     // Then
     expect(
       screen.queryByText(
-        'Le rattachement à votre structure est en cours de validation'
+        'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
       )
     ).not.toBeInTheDocument()
   })
@@ -697,7 +697,9 @@ describe('offererDetailsLegacy', () => {
 
       // Then
       expect(
-        within(offerer).getByText('Votre structure est en cours de validation')
+        within(offerer).getByText(
+          'Votre structure est en cours de traitement par les équipes du pass Culture'
+        )
       ).toBeInTheDocument()
     })
 
@@ -749,7 +751,7 @@ describe('offererDetailsLegacy', () => {
       // Then
       expect(
         screen.queryByText(
-          'Le rattachement à votre structure est en cours de validation'
+          'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
         )
       ).toBeInTheDocument()
     })

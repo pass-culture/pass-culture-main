@@ -223,7 +223,8 @@ const OffererDetails = ({
                 ]}
               >
                 <strong>
-                  Le rattachement à votre structure est en cours de validation
+                  Le rattachement à votre structure est en cours de traitement
+                  par les équipes du pass Culture
                 </strong>
                 <br />
                 Un e-mail vous sera envoyé lors de la validation de votre
@@ -246,11 +247,13 @@ const OffererDetails = ({
                     },
                   ]}
                 >
-                  <strong>Votre structure est en cours de validation</strong>
+                  <strong>
+                    Votre structure est en cours de traitement par les équipes
+                    du pass Culture
+                  </strong>
                   <br />
                   Toutes les offres créées à l’échelle de vos lieux seront
-                  publiées sous réserve de validation de votre structure par nos
-                  équipes.
+                  publiées sous réserve de validation de votre structure.
                 </Banner>
               )}
             {!selectedOfferer.isValidated &&
@@ -267,13 +270,17 @@ const OffererDetails = ({
                     },
                   ]}
                 >
-                  <strong>Votre structure est en cours de validation</strong>
+                  <strong>
+                    Votre structure est en cours de traitement par les équipes
+                    du pass Culture
+                  </strong>
                   <br />
                   Nous vous invitons à créer un lieu afin de pouvoir proposer
-                  des offres physiques ou des évènements. <br />
-                  Vous pouvez dès à présent créer des offres numériques.
-                  L’ensemble de ces offres sera publié une fois votre structure
-                  validée.
+                  des offres physiques ou des événements. Vous pouvez dès à
+                  présent créer des offres numériques.
+                  <br />
+                  L’ensemble de ces offres seront publiées sous réserve de
+                  validation de votre structure.
                 </Banner>
               )}
 
