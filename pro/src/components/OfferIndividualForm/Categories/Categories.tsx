@@ -34,11 +34,21 @@ const Categories = ({
     setFieldTouched,
   } = useFormikContext<IOfferIndividualFormValues>()
   useEffect(() => {
-    if (formValues.subcategoryId !== '') {
+    const currentSubcategories = subCategories.filter(
+      e => e.categoryId === formValues.categoryId
+    )
+    const containsSubcategory = currentSubcategories.some(
+      e => e.id === formValues.subcategoryId
+    )
+    if (
+      formValues.subcategoryId === '' ||
+      formValues.categoryId === '' ||
+      (currentSubcategories.length > 1 && !containsSubcategory)
+    ) {
+      setFieldValue('subcategoryId', FORM_DEFAULT_VALUES.subcategoryId)
+      setFieldValue('subCategoryFields', FORM_DEFAULT_VALUES.subCategoryFields)
       setFieldTouched('subcategoryId', false)
     }
-    setFieldValue('subcategoryId', FORM_DEFAULT_VALUES.subcategoryId)
-    setFieldValue('subCategoryFields', FORM_DEFAULT_VALUES.subCategoryFields)
   }, [formValues.categoryId])
 
   const categoryOptions: SelectOptions = categories
