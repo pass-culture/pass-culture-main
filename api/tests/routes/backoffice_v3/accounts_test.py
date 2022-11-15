@@ -127,7 +127,7 @@ class UpdatePublicAccountTest:
 
         url = url_for("backoffice_v3_web.update_public_account", user_id=user_to_edit.id)
 
-        form["csrf_token"] = g.csrf_token
+        form["csrf_token"] = g.get("csrf_token", "")
         return client.with_session_auth(legit_user.email).patch(url, form=form)
 
 
@@ -173,7 +173,7 @@ class ResendValidationEmailTest:
         client.with_session_auth(legit_user.email).get(account_detail_url)
 
         url = url_for("backoffice_v3_web.resend_validation_email", user_id=user.id)
-        form = {"csrf_token": g.csrf_token}
+        form = {"csrf_token": g.get("csrf_token", "")}
 
         return client.with_session_auth(legit_user.email).post(url, form=form)
 
@@ -231,7 +231,7 @@ class SendValidationCodeTest:
         client.with_session_auth(legit_user.email).get(account_detail_url)
 
         url = url_for("backoffice_v3_web.send_validation_code", user_id=user.id)
-        form = {"csrf_token": g.csrf_token}
+        form = {"csrf_token": g.get("csrf_token", "")}
 
         return client.with_session_auth(legit_user.email).post(url, form=form)
 
@@ -344,5 +344,5 @@ class UpdatePublicAccountReviewTest:
 
         url = url_for("backoffice_v3_web.review_public_account", user_id=user_to_edit.id)
 
-        form["csrf_token"] = g.csrf_token
+        form["csrf_token"] = g.get("csrf_token", "")
         return client.with_session_auth(legit_user.email).post(url, form=form)
