@@ -11,7 +11,7 @@ from tests.conftest import clean_database
 
 
 @clean_database
-@mock.patch("flask_wtf.csrf.validate_csrf")
+@mock.patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
 def test_create_rule(mocked_validate_csrf_token, client, app):
     admin = users_factories.AdminFactory()
     offerer = offerers_factories.OffererFactory()
@@ -36,7 +36,7 @@ def test_create_rule(mocked_validate_csrf_token, client, app):
 
 
 @clean_database
-@mock.patch("flask_wtf.csrf.validate_csrf")
+@mock.patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
 def test_edit_rule(mocked_validate_csrf_token, client, app):
     admin = users_factories.AdminFactory()
     timespan = (datetime.datetime.today() - datetime.timedelta(days=10), None)

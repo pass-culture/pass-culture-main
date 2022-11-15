@@ -8,13 +8,12 @@ from flask_admin import expose
 from flask_admin.base import AdminIndexView as AdminIndexBaseView
 from flask_admin.base import BaseView
 from flask_admin.contrib.sqla import ModelView
-from flask_admin.form import BaseForm
+from flask_admin.form import SecureForm
 from flask_admin.helpers import get_form_data
 from flask_login import current_user
 from flask_login import login_user
 from flask_login import logout_user
 from flask_sqlalchemy import Model
-from flask_wtf.form import FlaskForm
 import werkzeug
 
 from pcapi import settings
@@ -73,15 +72,26 @@ class BaseSuperAdminMixin(BaseAdminMixin):
         return authorized
 
 
-class FlaskWTFSecureForm(BaseForm, FlaskForm):
+class FlaskWTFSecureForm(SecureForm):
     """
-    FlaskForm handles all the CSRF protection.
+    To be used only if Flask-WTF is activated: it will handle all the
+    CSRF protection. Both FlaskAdmin internal configuration for CSRF
+    protection and Flask-WTF cannot work together.
 
-    BaseForm is needed because FlaskAdmin expects forms to inherit from
-    this base class.
+    The later adds some defaults (config and jinja filters) that will
+    automatically add a CSRF token and run all the related security
+    checks.
+
+    Note:
+        Flask-WTF has an `exempt()` method that deactivates CSRF
+        protection for a blueprint... which sounds great but the
+        overriden defaults stays. The result is that a FlaskAdmin view
+        with a SecureForm will have two CSRF tokens... and the form will
+        be considered invalid.
     """
 
-    pass  # pylint: disable=unnecessary-pass
+    class Meta:
+        csrf = False
 
 
 class BaseAdminView(BaseAdminMixin, ModelView):
@@ -95,7 +105,7 @@ class BaseAdminView(BaseAdminMixin, ModelView):
     def inaccessible_callback(self, name, **kwargs):  # type: ignore [no-untyped-def]
         return werkzeug.utils.redirect(url_for("admin.index"))
 
-    def after_model_change(self, form: FlaskWTFSecureForm, model: Model, is_created: bool) -> None:
+    def after_model_change(self, form: SecureForm, model: Model, is_created: bool) -> None:
         action = "Création" if is_created else "Modification"
         model_name = str(model)
         logger.info("[ADMIN] %s du modèle %s par l'utilisateur %s", action, model_name, current_user)

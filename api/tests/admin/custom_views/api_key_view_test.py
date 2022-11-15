@@ -10,7 +10,7 @@ from tests.conftest import clean_database
 
 class ApiKeyViewTest:
     @clean_database
-    @patch("flask_wtf.csrf.validate_csrf")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_api_key_creation(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="admin@example.com")
         offerer = offerers_factories.OffererFactory(siren=123456789)
@@ -29,7 +29,7 @@ class ApiKeyViewTest:
         assert api_key.secret is not None
 
     @clean_database
-    @patch("flask_wtf.csrf.validate_csrf")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_api_key_creation_with_wrong_siren(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="admin@example.com")
 
