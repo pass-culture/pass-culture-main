@@ -26,6 +26,7 @@ export interface SelectAutocompleteProps {
   placeholder?: string
   pluralLabel?: string
   smallLabel?: boolean
+  resetOnOpen?: boolean
 }
 
 const SelectAutocomplete = ({
@@ -44,6 +45,7 @@ const SelectAutocomplete = ({
   placeholder,
   pluralLabel,
   smallLabel = false,
+  resetOnOpen = true,
 }: SelectAutocompleteProps): JSX.Element => {
   const { setFieldTouched, setFieldValue } = useFormikContext<any>()
 
@@ -66,7 +68,7 @@ const SelectAutocomplete = ({
   }, [options])
 
   useEffect(() => {
-    if (isOpen && searchField.value !== '')
+    if (isOpen && resetOnOpen && searchField.value !== '')
       setFieldValue(`search-${fieldName}`, '', false)
   }, [isOpen])
 
@@ -136,6 +138,7 @@ const SelectAutocomplete = ({
         break
       case 'Enter':
         if (isOpen && hoveredOptionIndex !== null) {
+          event.preventDefault()
           selectOption(filteredOptions[hoveredOptionIndex].value)
         }
         break

@@ -2,7 +2,7 @@ import { useField, useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { SelectAutocomplete } from 'ui-kit'
+import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete2/SelectAutocomplete'
 import { IAutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
 
 import { IVenueFormValues } from '../types'
@@ -91,6 +91,7 @@ const Address = () => {
             placeholder="Entrez votre adresse et sélectionnez une suggestion"
             options={options}
             hideArrow={true}
+            resetOnOpen={false}
           ></SelectAutocomplete>
         </FormLayout.Row>
       </FormLayout.Section>
