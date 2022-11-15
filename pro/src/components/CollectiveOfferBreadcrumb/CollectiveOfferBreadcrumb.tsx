@@ -106,9 +106,15 @@ const CollectiveOfferBreadcrumb = ({
         }
 
       case CollectiveOfferBreadcrumbStep.STOCKS:
-        stepList[
-          CollectiveOfferBreadcrumbStep.DETAILS
-        ].url = `/offre/collectif/${offerId}/creation`
+        if (isTemplate) {
+          stepList[
+            CollectiveOfferBreadcrumbStep.DETAILS
+          ].url = `/offre/collectif/vitrine/${offerId}/creation`
+        } else {
+          stepList[
+            CollectiveOfferBreadcrumbStep.DETAILS
+          ].url = `/offre/collectif/${offerId}/creation`
+        }
     }
   }
 
