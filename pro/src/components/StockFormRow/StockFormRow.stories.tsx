@@ -147,7 +147,7 @@ Create.args = {
 const TemplateWithInitialValues: ComponentStory<typeof StockFormRow> =
   renderStockFormRow({
     initialValues: {
-      activationCodesExpirationDateTime: null,
+      activationCodesExpirationDatetime: null,
       activationCodes: [],
       stockId: 'STOCK_ID',
       remainingQuantity: '7',

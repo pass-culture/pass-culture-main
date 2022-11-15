@@ -124,7 +124,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         today={today}
         readOnlyFields={setFormReadOnlyFields(offer, formik.values)}
         showExpirationDate={
-          formik.values.activationCodesExpirationDateTime !== null
+          formik.values.activationCodesExpirationDatetime !== null
         }
       />
     )

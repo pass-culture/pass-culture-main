@@ -70,7 +70,7 @@ Default.args = {
 const TemplateWithInitialValues: ComponentStory<typeof StockThingForm> =
   renderStockThingForm({
     initialValues: {
-      activationCodesExpirationDateTime: null,
+      activationCodesExpirationDatetime: null,
       activationCodes: [],
       stockId: 'STOCK_ID',
       remainingQuantity: '7',

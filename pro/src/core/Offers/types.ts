@@ -102,7 +102,7 @@ export interface IOfferIndividualStock {
   price: number
   quantity?: number | null
   remainingQuantity: number | string
-  activationCodesExpirationDateTime: Date | null
+  activationCodesExpirationDatetime: Date | null
   activationCodes: string[]
 }
 
