@@ -882,7 +882,7 @@ class CreateOfferTest:
 
         offer = api.create_offer(
             user=user,
-            venue_id=humanize(venue.id),
+            venue_id=venue.id,
             name="A pretty good offer",
             subcategory_id=subcategories.SEANCE_CINE.id,
             external_ticket_office_url="http://example.net",
@@ -920,7 +920,7 @@ class CreateOfferTest:
         user = user_offerer.user
 
         offer = api.create_offer(
-            venue_id=humanize(venue.id),
+            venue_id=venue.id,
             name="FONDATION T.1",
             subcategory_id=subcategories.LIVRE_PAPIER.id,
             extra_data={"isbn": "9782207300893", "author": "Isaac Asimov"},
@@ -957,7 +957,7 @@ class CreateOfferTest:
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(
-                venue_id=humanize(venue.id),
+                venue_id=venue.id,
                 name="FONDATION T.1",
                 subcategory_id=subcategories.LIVRE_PAPIER.id,
                 extra_data={"isbn": "9782207300893"},
@@ -979,7 +979,7 @@ class CreateOfferTest:
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(
-                venue_id=humanize(venue.id),
+                venue_id=venue.id,
                 name="FONDATION T.1",
                 subcategory_id=subcategories.LIVRE_PAPIER.id,
                 extra_data={"isbn": "9782207300893"},
@@ -998,7 +998,7 @@ class CreateOfferTest:
         with pytest.raises(exceptions.SubCategoryIsInactive) as error:
 
             api.create_offer(
-                venue_id=humanize(venue.id),
+                venue_id=venue.id,
                 name="An offer he can't refuse",
                 subcategory_id=subcategories.ACTIVATION_EVENT.id,
                 audio_disability_compliant=True,
@@ -1017,7 +1017,7 @@ class CreateOfferTest:
         user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
         with pytest.raises(exceptions.UnknownOfferSubCategory) as error:
             api.create_offer(
-                venue_id=humanize(venue.id),
+                venue_id=venue.id,
                 name="An offer he can't refuse",
                 subcategory_id="TOTO",
                 audio_disability_compliant=True,
@@ -1031,9 +1031,9 @@ class CreateOfferTest:
 
     def test_fail_if_unknown_venue(self):
         user = users_factories.ProFactory()
-        with pytest.raises(api_errors.ApiErrors) as error:
+        with pytest.raises(exceptions.VenueNotFound) as error:
             api.create_offer(
-                venue_id=humanize(1),
+                venue_id=1,
                 name="An awful offer",
                 subcategory_id=subcategories.CONCERT.id,
                 audio_disability_compliant=True,
@@ -1043,14 +1043,14 @@ class CreateOfferTest:
                 user=user,
             )
         err = "Aucun objet ne correspond à cet identifiant dans notre base de données"
-        assert error.value.errors["global"] == [err]
+        assert error.value.errors == {"venue": ["not found"]}
 
     def test_fail_if_user_not_related_to_offerer(self):
         venue = offerers_factories.VenueFactory()
         user = users_factories.ProFactory()
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(
-                venue_id=humanize(venue.id),
+                venue_id=venue.id,
                 subcategory_id=subcategories.CONCERT.id,
                 audio_disability_compliant=True,
                 mental_disability_compliant=True,
@@ -1070,7 +1070,7 @@ class CreateOfferTest:
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(
-                venue_id=humanize(venue.id),
+                venue_id=venue.id,
                 name="A pretty good offer",
                 subcategory_id=subcategories.CONCERT.id,
                 user=user,

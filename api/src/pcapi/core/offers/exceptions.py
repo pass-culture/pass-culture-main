@@ -76,6 +76,11 @@ class OfferCreationBaseException(ClientError):
     pass
 
 
+class VenueNotFound(OfferCreationBaseException):
+    def __init__(self) -> None:
+        super().__init__("venue", "not found")
+
+
 class SubcategoryNotEligibleForEducationalOffer(OfferCreationBaseException):
     def __init__(self):  # type: ignore [no-untyped-def]
         super().__init__(

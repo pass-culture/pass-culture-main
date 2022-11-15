@@ -101,6 +101,9 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     api=blueprint.pro_private_schema,
 )
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
+    venue_id = human_ids.dehumanize(body.venue_humanized_id)
+    if not venue_id:
+        raise ApiErrors(errors={"venueId": ["L'id n'est pas au bon format"]}, status_code=404)
     try:
         check_offer_withdrawal(body.withdrawal_type, body.withdrawal_delay, body.subcategory_id)
         offer = offers_api.create_offer(
@@ -118,11 +121,18 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
             subcategory_id=body.subcategory_id,
             url=body.url,
             user=current_user,
-            venue_id=body.venue_id,
+            venue_id=venue_id,
             visual_disability_compliant=body.visual_disability_compliant,
             withdrawal_delay=body.withdrawal_delay,
             withdrawal_details=body.withdrawal_details,
             withdrawal_type=body.withdrawal_type,
+        )
+    except exceptions.VenueNotFound:
+        raise ApiErrors(
+            errors={
+                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
+            },
+            status_code=404,
         )
 
     except exceptions.OfferCreationBaseException as error:
