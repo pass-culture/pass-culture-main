@@ -53,7 +53,7 @@ const Informations = ({
           sideComponent={
             <InfoBox
               type="info"
-              text="C’est ce nom qui sera visible par le grand public et affiché sur votre justificatif de remboursement."
+              text="À remplir si différent du nom juridique. En le remplissant, c’est ce dernier qui sera utilisé comme nom principal."
             />
           }
         >
