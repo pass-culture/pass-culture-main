@@ -12,7 +12,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-@mock.patch("flask_wtf.csrf.validate_csrf", lambda *args, **kwargs: True)
+@mock.patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token", lambda *args, **kwargs: True)
 class BookingViewTest:
     def test_search_booking(self, app):
         users_factories.AdminFactory(email="admin@example.com")
