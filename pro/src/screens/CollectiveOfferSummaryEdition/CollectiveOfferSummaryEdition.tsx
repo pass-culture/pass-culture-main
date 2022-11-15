@@ -1,4 +1,5 @@
 import React from 'react'
+import { useHistory } from 'react-router'
 
 import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
 import OfferEducationalActions from 'components/OfferEducationalActions'
@@ -17,7 +18,8 @@ import {
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { ButtonLink } from 'ui-kit'
+import { createOfferFromTemplate } from 'pages/Offers/Offers/OfferItem/Cells/DuplicateOfferCell/DuplicateOfferCell'
+import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './CollectiveOfferSummaryEdition.module.scss'
@@ -34,6 +36,7 @@ const CollectiveOfferSummaryEdition = ({
   reloadCollectiveOffer,
 }: CollectiveOfferSummaryEditionProps) => {
   const notify = useNotification()
+  const history = useHistory()
 
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
     offer.id,
@@ -105,20 +108,17 @@ const CollectiveOfferSummaryEdition = ({
             &nbsp;· L’offre associée à l’établissement devra être pré-réservée
             par l’enseignant(e) qui vous a contacté
           </p>
-          <ButtonLink
+          <Button
             variant={ButtonVariant.PRIMARY}
-            onClick={() =>
+            onClick={() => {
               logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
                 from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
               })
-            }
-            link={{
-              isExternal: false,
-              to: `/offre/duplication/collectif/${offer.id}`,
+              createOfferFromTemplate(history, offer.id)
             }}
           >
             Créer une offre réservable pour un établissement scolaire
-          </ButtonLink>
+          </Button>
         </div>
       )}
       <CollectiveOfferSummary
