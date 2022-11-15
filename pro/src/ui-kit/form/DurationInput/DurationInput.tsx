@@ -40,6 +40,7 @@ const DurationInput = ({
   return (
     <TextInput
       name={field.name}
+      value={field.value || ''}
       label={label}
       onChange={onDurationChange}
       onBlur={onDurationBlur}

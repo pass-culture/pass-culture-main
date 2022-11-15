@@ -25,7 +25,7 @@ export interface IOfferIndividualFormValues {
   speaker?: string
   stageDirector?: string
   visa?: string
-  durationMinutes?: string
+  durationMinutes?: string | null
   receiveNotificationEmails: boolean
   bookingEmail: string
   isDuo: boolean
