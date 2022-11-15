@@ -37,7 +37,7 @@ const StockThingForm = ({
       {showExpirationDate && (
         <DatePicker
           smallLabel
-          name="activationCodesExpirationDateTime"
+          name="activationCodesExpirationDatetime"
           label="Date d'expiration"
           classNameFooter={styles['field-layout-footer']}
           disabled={true}

@@ -63,7 +63,7 @@ describe('serializer', () => {
       price: 150,
       quantity: 20,
       remainingQuantity: 10,
-      activationCodesExpirationDateTime: null,
+      activationCodesExpirationDatetime: null,
       activationCodes: [],
     }
 
@@ -104,7 +104,7 @@ describe('serializer', () => {
       price: 150,
       quantity: 20,
       remainingQuantity: 'unlimited',
-      activationCodesExpirationDateTime: null,
+      activationCodesExpirationDatetime: null,
       activationCodes: [],
     }
 
@@ -508,7 +508,7 @@ describe('serializer', () => {
           price: 10,
           quantity: 1000,
           remainingQuantity: 998,
-          activationCodesExpirationDateTime: null,
+          activationCodesExpirationDatetime: null,
           activationCodes: [],
         },
       ],

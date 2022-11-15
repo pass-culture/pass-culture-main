@@ -8,5 +8,5 @@ export const STOCK_THING_FORM_DEFAULT_VALUES: IStockThingFormValues = {
   bookingLimitDatetime: null,
   price: '',
   activationCodes: [],
-  activationCodesExpirationDateTime: null,
+  activationCodesExpirationDatetime: null,
 }

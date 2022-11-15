@@ -6,5 +6,5 @@ export interface IStockThingFormValues {
   bookingLimitDatetime: Date | null
   price: string
   activationCodes: string[]
-  activationCodesExpirationDateTime: Date | null
+  activationCodesExpirationDatetime: Date | null
 }

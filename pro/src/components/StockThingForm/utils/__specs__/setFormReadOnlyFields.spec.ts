@@ -28,7 +28,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
         'bookingLimitDatetime',
         'price',
         'activationCodes',
-        'activationCodesExpirationDateTime',
+        'activationCodesExpirationDatetime',
       ])
     }
   )
@@ -46,7 +46,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
       'bookingLimitDatetime',
       'price',
       'activationCodes',
-      'activationCodesExpirationDateTime',
+      'activationCodesExpirationDatetime',
     ])
   })
 
