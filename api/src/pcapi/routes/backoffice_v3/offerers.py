@@ -14,7 +14,6 @@ import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.history import models as history_models
-from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -25,6 +24,7 @@ import pcapi.utils.regions as regions_utils
 
 from . import search_utils
 from . import utils
+from .forms import empty as empty_forms
 from .forms import offerer as offerer_forms
 from .serialization import offerers as serialization
 
@@ -117,8 +117,12 @@ def _is_offerer_new_action_type(historyItem: serialization.HistoryItem) -> bool:
     return history_models.ActionType(historyItem.type) == history_models.ActionType.OFFERER_NEW
 
 
-def get_offerer_history_data(offerer_id: int) -> typing.Sequence[serialization.HistoryItem]:
-    actions = history_repository.find_all_actions_by_offerer(offerer_id)
+def get_offerer_history_data(offerer: offerers_models.Offerer) -> typing.Sequence[serialization.HistoryItem]:
+    # this should not be necessary but in case there is a huge amount
+    # of actions, it is safer to set a limit
+    max_actions_count = 50
+
+    actions = sorted(offerer.action_history, key=lambda action: action.actionDate, reverse=True)
     return [
         serialization.HistoryItem(
             type=action.actionType.value,
@@ -129,20 +133,46 @@ def get_offerer_history_data(offerer_id: int) -> typing.Sequence[serialization.H
             accountId=action.userId,
             accountName=action.user.full_name if action.user else None,
         )
-        for action in actions
+        for action in actions[:max_actions_count]
     ]
 
 
-@offerer_blueprint.route("/history", methods=["GET"])
-def get_offerer_history(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
-    history = get_offerer_history_data(offerer_id)
-    can_add_comment = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def get_offerer(offerer_id: int) -> offerers_models.Offerer:
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .options(
+            sa.orm.joinedload(offerers_models.Offerer.UserOfferers).joinedload(offerers_models.UserOfferer.user),
+        )
+        .options(
+            sa.orm.joinedload(offerers_models.Offerer.action_history).joinedload(history_models.ActionHistory.user),
+            sa.orm.joinedload(offerers_models.Offerer.action_history).joinedload(
+                history_models.ActionHistory.authorUser
+            ),
+        )
+        .one_or_none()
+    )
+
+    if not offerer:
+        raise NotFound()
+
+    return offerer
+
+
+@offerer_blueprint.route("/details", methods=["GET"])
+def get_details(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = get_offerer(offerer_id)
+
+    history = get_offerer_history_data(offerer)
+
+    validate_user_offerer_form = empty_forms.EmptyForm()
+
     return render_template(
         "offerer/get/details.html",
         offerer=offerer,
         history=history,
-        can_add_comment=can_add_comment,
+        users_offerer=offerer.UserOfferers,
+        validate_user_offerer_form=validate_user_offerer_form,
+        active_tab=request.args.get("active_tab", "history"),
         is_user_offerer_action_type=_is_user_offerer_action_type,
         is_offerer_new_action_type=_is_offerer_new_action_type,
     )
@@ -437,7 +467,7 @@ def user_offerer_validate(user_offerer_id: int) -> utils.BackofficeResponse:
             f"Le rattachement de {user_offerer.user.email} à la structure {user_offerer.offerer.name} est déjà validé",
             "warning",
         )
-        return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id, code=400)
+        return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
     flash(
         f"Le rattachement de {user_offerer.user.email} à la structure {user_offerer.offerer.name} a été validé",
@@ -455,7 +485,7 @@ def user_offerer_reject(user_offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
         flash("Les données envoyées comportent des erreurs", "warning")
-        return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id, code=400)
+        return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
     offerers_api.reject_offerer_attachment(user_offerer, current_user, form.comment.data)
 
@@ -475,7 +505,7 @@ def user_offerer_set_pending(user_offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
         flash("Les données envoyées comportent des erreurs", "warning")
-        return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id, code=400)
+        return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
     offerers_api.set_offerer_attachment_pending(user_offerer, current_user, form.comment.data)
     flash(

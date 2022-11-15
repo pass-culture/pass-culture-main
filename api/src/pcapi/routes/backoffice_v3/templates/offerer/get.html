@@ -100,7 +100,7 @@
         </div>
 
         <div class="mt-4">
-            <turbo-frame id="offerer_history_frame" src="{{ url_for("backoffice_v3_web.offerer.get_offerer_history", offerer_id=offerer.id) }}">
+            <turbo-frame id="offerer_details_frame" src="{{ url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id, active_tab=request.args.get("active_tab", "history")) }}">
                 <p class="text-center">
                     <span class="spinner-grow spinner-grow-sm" role="status">
                         <span class="visually-hidden">Chargement...</span>
