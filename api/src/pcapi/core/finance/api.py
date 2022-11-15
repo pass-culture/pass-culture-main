@@ -1872,7 +1872,7 @@ def edit_reimbursement_rule(
     return rule
 
 
-def _compute_eighteenth_birthday(birth_date: datetime.date | None) -> datetime.datetime:
+def compute_underage_deposit_expiration_datetime(birth_date: datetime.date | None) -> datetime.datetime:
     if not birth_date:
         raise exceptions.UserNotGrantable("User has no validated birth date")
     return datetime.datetime.combine(birth_date, datetime.time(0, 0)) + relativedelta(years=18)
@@ -1889,7 +1889,7 @@ def get_granted_deposit(
 
         return models.GrantedDeposit(
             amount=conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[age_at_registration],
-            expiration_date=_compute_eighteenth_birthday(beneficiary.validatedBirthDate),
+            expiration_date=compute_underage_deposit_expiration_datetime(beneficiary.validatedBirthDate),
             type=models.DepositType.GRANT_15_17,
             version=1,
         )
