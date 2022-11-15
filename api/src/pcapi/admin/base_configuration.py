@@ -72,35 +72,13 @@ class BaseSuperAdminMixin(BaseAdminMixin):
         return authorized
 
 
-class FlaskWTFSecureForm(SecureForm):
-    """
-    To be used only if Flask-WTF is activated: it will handle all the
-    CSRF protection. Both FlaskAdmin internal configuration for CSRF
-    protection and Flask-WTF cannot work together.
-
-    The later adds some defaults (config and jinja filters) that will
-    automatically add a CSRF token and run all the related security
-    checks.
-
-    Note:
-        Flask-WTF has an `exempt()` method that deactivates CSRF
-        protection for a blueprint... which sounds great but the
-        overriden defaults stays. The result is that a FlaskAdmin view
-        with a SecureForm will have two CSRF tokens... and the form will
-        be considered invalid.
-    """
-
-    class Meta:
-        csrf = False
-
-
 class BaseAdminView(BaseAdminMixin, ModelView):
     page_size = 25
     can_set_page_size = True
     can_create = False
     can_edit = False
     can_delete = False
-    form_base_class = FlaskWTFSecureForm
+    form_base_class = SecureForm
 
     def inaccessible_callback(self, name, **kwargs):  # type: ignore [no-untyped-def]
         return werkzeug.utils.redirect(url_for("admin.index"))

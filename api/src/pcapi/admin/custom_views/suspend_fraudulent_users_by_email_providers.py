@@ -1,17 +1,17 @@
 from flask import flash
 from flask import request
 from flask_admin.base import expose
+from flask_admin.form import SecureForm
 from flask_login import current_user
 from werkzeug import Response
 from wtforms import StringField
 from wtforms.validators import DataRequired
 
 from pcapi.admin.base_configuration import BaseCustomSuperAdminView
-from pcapi.admin.base_configuration import FlaskWTFSecureForm
 from pcapi.scripts.suspend_fraudulent_beneficiary_users import suspend_fraudulent_beneficiary_users_by_email_providers
 
 
-class EmailDomainsForm(FlaskWTFSecureForm):
+class EmailDomainsForm(SecureForm):
     domains = StringField(
         "Noms de domaine",
         [
