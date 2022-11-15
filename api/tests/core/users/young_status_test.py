@@ -109,14 +109,19 @@ class YoungStatusTest:
                 phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
-                status=fraud_models.FraudCheckStatus.OK,
                 type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+                status=fraud_models.FraudCheckStatus.OK,
                 user=user,
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
-                reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
-                status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+                status=fraud_models.FraudCheckStatus.KO,
+                reasonCodes=[fraud_models.FraudReasonCode.INVALID_ID_PIECE_NUMBER],
                 type=fraud_models.FraudCheckType.UBBLE,
+                user=user,
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                status=fraud_models.FraudCheckStatus.OK,
+                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
                 user=user,
             )
 
