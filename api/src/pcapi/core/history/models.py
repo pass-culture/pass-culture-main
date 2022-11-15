@@ -1,13 +1,17 @@
 import enum
+import typing
 
 import sqlalchemy as sa
 
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.pc_object import PcObject
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.offerers import models as offerers_models
 
 
 class ActionType(enum.Enum):
@@ -80,7 +84,7 @@ class ActionHistory(PcObject, Base, Model, ExtraDataMixin):
     offererId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=True
     )
-    offerer: offerers_models.Offerer | None = sa.orm.relationship(
+    offerer: sa.orm.Mapped["offerers_models.Offerer | None"] = sa.orm.relationship(
         "Offerer",
         foreign_keys=[offererId],
         backref=sa.orm.backref(
@@ -91,7 +95,7 @@ class ActionHistory(PcObject, Base, Model, ExtraDataMixin):
     venueId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=True
     )
-    venue: offerers_models.Venue | None = sa.orm.relationship(
+    venue: sa.orm.Mapped["offerers_models.Venue | None"] = sa.orm.relationship(
         "Venue",
         foreign_keys=[venueId],
         backref=sa.orm.backref(

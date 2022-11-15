@@ -11,7 +11,6 @@ import flask.wrappers
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
 from flask_login import current_user
-from flask_wtf.csrf import CSRFProtect
 import redis
 import sentry_sdk
 from sqlalchemy import orm
@@ -141,6 +140,7 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = settings.JWT_ACCESS_TOKEN_EXPIRES
 app.config["RATELIMIT_STORAGE_URL"] = settings.REDIS_URL
 app.config["GOOGLE_CLIENT_ID"] = settings.GOOGLE_CLIENT_ID
 app.config["GOOGLE_CLIENT_SECRET"] = settings.GOOGLE_CLIENT_SECRET
+app.config["WTF_CSRF_ENABLED"] = False
 
 oauth = OAuth(app)
 oauth.register(
@@ -152,8 +152,6 @@ oauth.register(
 jwt = JWTManager(app)
 
 rate_limiter.init_app(app)
-
-csrf = CSRFProtect(app)
 
 
 @app.teardown_request  # type: ignore [arg-type]
