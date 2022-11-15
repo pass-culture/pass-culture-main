@@ -31,7 +31,7 @@ const WithdrawalDetails = ({ isCreatedEntity }: IWithdrawalDetails) => {
           name="withdrawalDetails"
           label="Informations de retrait"
           maxLength={500}
-          placeholder="Par exemple : Venir récupérer les places au guichet du théâtre…"
+          placeholder="Par exemple : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par e-mail..."
           countCharacters
           isOptional
         />

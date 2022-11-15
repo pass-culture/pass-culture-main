@@ -79,7 +79,7 @@ const SiretOrCommentFields = ({
       isSiretSelected ? (
         <InfoBox
           type="info"
-          text="Le SIRET du lieu doit être lié au SIREN de votre structure. Attention, ce SIRET ne sera plus modifiable. "
+          text="Le SIRET du lieu doit être lié au SIREN de votre structure. Attention, ce SIRET ne sera plus modifiable et ne pourra plus être utilisé pour un autre lieu."
         />
       ) : (
         <></>
@@ -111,7 +111,7 @@ const SiretOrCommentFields = ({
         <TextArea
           label="Commentaire du lieu sans SIRET"
           name="comment"
-          placeholder="Par exemple : Le lieu est un équipement culturel donc je n’ai pas de SIRET"
+          placeholder="Par exemple : le lieu est un équipement culturel qui n’appartient pas à ma structure."
           isOptional={isSiretSelected}
         />
       )}
