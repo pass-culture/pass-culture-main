@@ -138,6 +138,7 @@ def create_offer(
     venue: Venue | None = Venue.query.get(venue_id)
     if not venue:
         raise exceptions.VenueNotFound()
+    check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id)
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
     check_offer_subcategory_is_valid(subcategory_id)
     validation.check_offer_extra_data(None, subcategory_id, extra_data)

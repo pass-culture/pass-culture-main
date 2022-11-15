@@ -12,7 +12,6 @@ from pcapi.core.offers import exceptions
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
-from pcapi.core.offers.validation import check_offer_withdrawal
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
@@ -105,7 +104,6 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
     if not venue_id:
         raise ApiErrors(errors={"venueId": ["L'id n'est pas au bon format"]}, status_code=404)
     try:
-        check_offer_withdrawal(body.withdrawal_type, body.withdrawal_delay, body.subcategory_id)
         offer = offers_api.create_offer(
             audio_disability_compliant=body.audio_disability_compliant,
             booking_email=body.booking_email,
