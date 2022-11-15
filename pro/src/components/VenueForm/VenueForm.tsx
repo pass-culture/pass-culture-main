@@ -82,6 +82,7 @@ const VenueForm = ({
     },
     [location]
   )
+
   return (
     <div>
       <FormLayout fullWidthActions>
@@ -117,7 +118,7 @@ const VenueForm = ({
           <ReimbursementFields
             offerer={offerer}
             readOnly={false}
-            scrollToSection={!!location.state}
+            scrollToSection={!!location.state || !!location.hash}
             venue={venue}
           />
         )}

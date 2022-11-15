@@ -195,7 +195,7 @@ describe('venues', () => {
 
       // Then
       expect(screen.getByRole('link', { name: 'Ajouter un RIB' }).href).toBe(
-        'http://localhost/structures/OFFERER01/lieux/VENUE01?modification'
+        'http://localhost/structures/OFFERER01/lieux/VENUE01?modification#remboursement'
       )
     })
 
@@ -218,7 +218,7 @@ describe('venues', () => {
 
       // Then
       expect(screen.getByRole('link', { name: 'Ajouter un RIB' }).href).toBe(
-        'http://localhost/structures/OFFERER01/lieux/VENUE01?modification'
+        'http://localhost/structures/OFFERER01/lieux/VENUE01?modification#remboursement'
       )
     })
   })
