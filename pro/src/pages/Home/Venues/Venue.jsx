@@ -116,6 +116,7 @@ const Venue = ({
   }, [offererId])
 
   let editVenueLink = `/structures/${offererId}/lieux/${id}?modification`
+  let reimbursementSectionLink = `/structures/${offererId}/lieux/${id}?modification#remboursement`
 
   return (
     <div
@@ -155,7 +156,7 @@ const Venue = ({
                       className="add-rib-link tertiary-link"
                       variant={ButtonVariant.TERNARY}
                       link={{
-                        to: editVenueLink,
+                        to: reimbursementSectionLink,
                         isExternal: false,
                       }}
                       Icon={IcoPlus}
