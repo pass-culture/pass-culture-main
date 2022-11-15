@@ -33,7 +33,6 @@ from pcapi.models import api_errors
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.notifications.push import testing as push_testing
-from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization import stock_serialize
 from pcapi.utils.human_ids import humanize
 
@@ -1042,7 +1041,6 @@ class CreateOfferTest:
                 visual_disability_compliant=True,
                 user=user,
             )
-        err = "Aucun objet ne correspond à cet identifiant dans notre base de données"
         assert error.value.errors == {"venue": ["not found"]}
 
     def test_fail_if_user_not_related_to_offerer(self):
