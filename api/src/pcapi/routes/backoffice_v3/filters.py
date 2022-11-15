@@ -94,14 +94,14 @@ def parse_referrer(url: str) -> str:
 
 
 def install_template_filters(app: Flask) -> None:
-    app.jinja_env.filters["format_state"] = format_state
-    app.jinja_env.filters["format_role"] = format_role
-    app.jinja_env.filters["format_phone_number"] = format_phone_number
-    app.jinja_env.filters["format_amount"] = format_amount
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
-    app.jinja_env.filters["format_date"] = format_date
+    app.jinja_env.filters["format_amount"] = format_amount
     app.jinja_env.filters["format_bool"] = format_bool
     app.jinja_env.filters["format_string_list"] = format_string_list
+    app.jinja_env.filters["format_date"] = format_date
+    app.jinja_env.filters["format_phone_number"] = format_phone_number
+    app.jinja_env.filters["format_role"] = format_role
+    app.jinja_env.filters["format_state"] = format_state
     app.jinja_env.filters["parse_referrer"] = parse_referrer
     app.jinja_env.filters["pc_pro_offerer_link"] = urls.build_pc_pro_offerer_link
     app.jinja_env.filters["pc_pro_venue_link"] = urls.build_pc_pro_venue_link

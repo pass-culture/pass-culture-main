@@ -218,16 +218,19 @@ class GetOffererStatsDataTest:
         assert total_revenue == 0.0
 
 
-class GetOffererHistoryTest:
+class GetOffererDetailsTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.offerer.get_offerer_history"
+        endpoint = "backoffice_v3_web.offerer.get_details"
         endpoint_kwargs = {"offerer_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-    def test_get_history(self, authenticated_client, offerer):
+    def test_get_history(self, authenticated_client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offerer = user_offerer.offerer
         action = history_factories.ActionHistoryFactory(offerer=offerer)
-        url = url_for("backoffice_v3_web.offerer.get_offerer_history", offerer_id=offerer.id)
+
+        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
 
         # if offerer is not removed from the current session, any get
         # query won't be executed because of this specific testing
@@ -238,9 +241,8 @@ class GetOffererHistoryTest:
         # get session (1 query)
         # get user with profile and permissions (1 query)
         # get FF (1 query)
-        # get offerer (1 query)
-        # get history (1 query)
-        with assert_num_queries(5):
+        # get offerer and its users and history (1 query)
+        with assert_num_queries(4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -249,9 +251,11 @@ class GetOffererHistoryTest:
         assert action.comment in content
         assert action.authorUser.full_name in content
 
+        assert user_offerer.user.email in content
+
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-    def test_no_history(self, authenticated_client, offerer):
-        url = url_for("backoffice_v3_web.offerer.get_offerer_history", offerer_id=offerer.id)
+    def test_no_details_data(self, authenticated_client, offerer):
+        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
 
         # if offerer is not removed from the current session, any get
         # query won't be executed because of this specific testing
@@ -262,9 +266,8 @@ class GetOffererHistoryTest:
         # get session (1 query)
         # get user with profile and permissions (1 query)
         # get FF (1 query)
-        # get offerer (1 query)
-        # get history (1 query)
-        with assert_num_queries(5):
+        # get offerer and its users and history (1 query)
+        with assert_num_queries(4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -291,7 +294,7 @@ class GetOffererHistoryTest:
             offerer=offerer,
             comment=None,
         )
-        url = url_for("backoffice_v3_web.offerer.get_offerer_history", offerer_id=offerer.id)
+        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
 
         with assert_no_duplicated_queries():
             response = authenticated_client.get(url)
@@ -315,11 +318,11 @@ class GetOffererHistoryDataTest:
             comment=None,
         )
 
-        offerer_id = user_offerer.offerer.id
+        # load with joinedload
+        offerer = offerers.get_offerer(user_offerer.offererId)
 
-        # get history (1 query)
-        with assert_num_queries(1):
-            history = offerers.get_offerer_history_data(offerer_id)
+        with assert_num_queries(0):
+            history = offerers.get_offerer_history_data(offerer)
 
         assert len(history) == 1
 
@@ -330,11 +333,7 @@ class GetOffererHistoryDataTest:
         assert found_action.authorName == action.authorUser.full_name
 
     def test_no_action(self, offerer):
-        offerer_id = offerer.id
-
-        # get history (1 query)
-        with assert_num_queries(1):
-            assert not offerers.get_offerer_history_data(offerer_id)
+        assert not offerers.get_offerer_history_data(offerer)
 
     def test_many_actions(self):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -345,12 +344,9 @@ class GetOffererHistoryDataTest:
             offerer=user_offerer.offerer,
         )
 
-        offerer_id = user_offerer.offerer.id
+        offerer = user_offerer.offerer
 
-        # get history (1 query)
-        with assert_num_queries(1):
-            history = offerers.get_offerer_history_data(offerer_id)
-
+        history = offerers.get_offerer_history_data(offerer)
         assert len(history) == len(actions)
 
         found_comments = {event.comment for event in history}
@@ -1346,7 +1342,7 @@ class ValidateOffererAttachmentTest:
         )
 
         # then
-        assert response.status_code == 400
+        assert response.status_code == 303
 
         redirected_response = authenticated_client.get(response.headers["location"])
         assert "est déjà validé" in redirected_response.data.decode("utf8")

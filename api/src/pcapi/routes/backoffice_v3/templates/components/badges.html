@@ -1,3 +1,25 @@
+{% macro build_badges(object, new, pending, validated, rejected) %}
+
+    {% if object.isNew %}
+        <span class="me-1 pb-1 badge rounded-pill text-bg-info">
+            Nouvelle
+        </span>
+    {% elif object.isPending %}
+        <span class="me-1 pb-1 badge rounded-pill text-bg-warning">
+            En attente
+        </span>
+    {% elif object.isValidated %}
+        <span class="me-1 pb-1 badge rounded-pill text-bg-success">
+            Validée
+        </span>
+    {% elif object.isRejected %}
+        <span class="me-1 pb-1 badge rounded-pill text-bg-danger">
+            Rejetée
+        </span>
+    {% endif %}
+
+{% endmacro %}
+
 {% macro build_venue_badges(venue) %}
     <span class="me-1 pb-1 badge rounded-pill text-bg-secondary align-middle">
         {% if venue.isPermanent %}
@@ -13,28 +35,16 @@
         Structure
     </span>
 
-    {% if offerer.isNew %}
-        <span class="me-1 pb-1 badge rounded-pill text-bg-info">
-            Nouvelle
-        </span>
-    {% elif offerer.isPending %}
-        <span class="me-1 pb-1 badge rounded-pill text-bg-warning">
-            En attente
-        </span>
-    {% elif offerer.isValidated %}
-        <span class="me-1 pb-1 badge rounded-pill text-bg-success">
-            Validée
-        </span>
-    {% elif offerer.isRejected %}
-        <span class="me-1 pb-1 badge rounded-pill text-bg-danger">
-            Rejetée
-        </span>
-    {% endif %}
+    {{  build_badges(offerer, "Nouvelle", "En attente", "Validée", "Rejetée") }}
 
     {% if not offerer.isActive %}
         <span class="me-1 pb-1 badge rounded-pill text-bg-dark">
             <i class="bi bi-x-circle"></i> 
-            Suspendue
+                Suspendue
         </span>
     {% endif %}
+{% endmacro %}
+
+{% macro build_user_offerer_badges(user_offerer) %}
+    {{  build_badges(user_offerer, "Nouveau", "En attente", "Validé", "Rejeté") }}
 {% endmacro %}
