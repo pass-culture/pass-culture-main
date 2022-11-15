@@ -8,8 +8,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
-from .forms import empty as empty_forms
-
 
 backoffice_v3_web = Blueprint("backoffice_v3_web", __name__, template_folder="templates")
 CORS(
@@ -48,4 +46,4 @@ def require_ff() -> None:
 
 @backoffice_v3_web.context_processor
 def add_logout_csrf_token() -> dict:
-    return {"logout_csrf_token": empty_forms.EmptyForm().csrf_token}
+    return {"logout_csrf_token": ""}

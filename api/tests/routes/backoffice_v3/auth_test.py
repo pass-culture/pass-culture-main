@@ -114,11 +114,12 @@ class LogoutTest:
         client.get(url_for("backoffice_v3_web.home"))
 
         url = url_for("backoffice_v3_web.logout")
-        response = client.with_session_auth(user.email).post(url, form={"csrf_token": g.csrf_token})
+        response = client.with_session_auth(user.email).post(url, form={"csrf_token": g.get("csrf_token", "")})
 
         assert response.status_code == 302
         assert response.location == url_for("backoffice_v3_web.home", _external=True)
 
+    @pytest.mark.skip(reason="csrf temporarily deactivated")
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_no_csrf_token(self, client):  # type: ignore
         response = client.post(url_for("backoffice_v3_web.logout"))

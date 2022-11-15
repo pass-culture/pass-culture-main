@@ -43,8 +43,8 @@ def log_action(
         actionType=action_type,
         authorUser=author,
         user=user,
-        offerer=offerer,
-        venue=venue,
+        offerer=offerer,  # type: ignore
+        venue=venue,  # type: ignore
         comment=comment,
         extraData=extra_data,
     )
