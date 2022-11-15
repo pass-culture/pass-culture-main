@@ -47,12 +47,13 @@ const AddActivationCodeForm = ({
         <p className={styles['activation-codes-upload-gabarit']}>Gabarits</p>
         <ButtonLink
           link={{
-            isExternal: false,
+            isExternal: true,
             to:
               process.env.PUBLIC_URL +
               '/csvtemplates/CodesActivations-Gabarit.csv',
             target: '_blank',
             rel: 'noopener noreferrer',
+            type: 'text/csv',
           }}
           Icon={DownloadIcon}
         >

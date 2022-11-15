@@ -12,6 +12,7 @@ export type LinkProps = {
   rel?: string
   target?: string
   'aria-label'?: string
+  type?: string
 }
 interface IButtonProps extends SharedButtonProps {
   link: LinkProps
