@@ -54,14 +54,21 @@ describe('src | components | CollectiveOfferBreadcrumb', () => {
     expect(links).toHaveLength(0)
   })
 
-  it('should not display visibility step if offer is template', async () => {
+  it('should show different links if offer is template', async () => {
     props.isTemplate = true
+    props.activeStep = CollectiveOfferBreadcrumbStep.SUMMARY
     renderCollectiveOfferBreadcrumb(props)
 
     const listItems = await screen.findAllByRole('listitem')
     expect(listItems).toHaveLength(3)
     expect(screen.queryByText('Date et prix')).not.toBeInTheDocument()
     expect(screen.queryByText('Visibilité')).not.toBeInTheDocument()
+
+    const links = await screen.queryAllByRole('link')
+    expect(links).toHaveLength(1)
+    expect(links[0].getAttribute('href')).toBe(
+      '/offre/collectif/vitrine/A1/creation'
+    )
   })
 
   it('should show links if stocks is the active step', async () => {
