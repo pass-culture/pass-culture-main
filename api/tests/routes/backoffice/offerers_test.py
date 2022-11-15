@@ -1911,7 +1911,7 @@ class ValidateOffererAttachmentTest:
         assert response.json["user_offerer_id"] == "Le rattachement n'existe pas"
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_validate_offerer_attachment_already_validated(self, client):
+    def test_cannotvalidate_offerer_attachment_already_validated(self, client):
         # given
         user_offerer = offerers_factories.UserOffererFactory()
         auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
@@ -1926,7 +1926,7 @@ class ValidateOffererAttachmentTest:
         assert response.json["user_offerer_id"] == "Le rattachement est déjà validé"
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_validate_offerer_attachment_without_permission(self, client):
+    def test_cannotvalidate_offerer_attachment_without_permission(self, client):
         # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
         auth_token = generate_token(
@@ -1945,7 +1945,7 @@ class ValidateOffererAttachmentTest:
         assert history_models.ActionHistory.query.count() == 0
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_validate_offerer_attachment_as_anonymous(self, client):
+    def test_cannotvalidate_offerer_attachment_as_anonymous(self, client):
         # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 

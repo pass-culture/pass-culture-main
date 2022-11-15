@@ -1,0 +1,87 @@
+{% from "offerer/edit_status_modal.html" import build_edit_status_modal with context %}
+{% from "components/badges.html" import build_user_offerer_badges %}
+
+<table class="table table-hover my-4">
+    <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">ID</th>
+            <th scope="col">Statut</th>
+            <th scope="col">Nom</th>
+            <th scope="col">Prénom</th>
+            <th scope="col">Email</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for user_offerer in users_offerer %}
+            <tr>
+
+                <td class="fw-bolder">
+                <div class="dropdown">
+                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn p-0">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-item">
+                            <form
+                                action="{{ url_for(
+                                    "backoffice_v3_web.user_offerer.user_offerer_validate",
+                                    user_offerer_id=user_offerer.id,
+                                ) }}"
+                                method="POST">
+                                {{ validate_user_offerer_form.csrf_token }}
+
+                                <button type="submit" class="btn btn-sm">
+                                    Valider
+                                </button>
+                            </form>
+                        </li>
+                        <li class="dropdown-item">
+                            <button type="button"
+                                    class="btn btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#reject-modal-{{ user_offerer.userId }}">
+                                Rejeter
+                            </button>
+                        </li>
+                        <li class="dropdown-item">
+                            <button type="button"
+                                    class="btn btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#pending-modal-{{ user_offerer.userId }}">
+                                Mettre en attente
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                </td>
+
+                <td class="fw-bolder">
+                    <a href="{{ url_for("backoffice_v3_web.pro_user.get", user_id=user_offerer.userId) }}">
+                        {{ user_offerer.userId }}
+                    </a>
+                </td>
+                <td class="text-muted">
+                    {{ build_user_offerer_badges(user_offerer) }}
+                </td>
+                <td class="fw-bolder text-break">{{ user_offerer.user.lastName | empty_string_if_null }}</td>
+                <td class="text-muted">{{ user_offerer.user.firstName | empty_string_if_null }}</td>
+                <td class="fw-bolder">{{ user_offerer.user.email | empty_string_if_null }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% for user_offerer in users_offerer %}
+    {% call build_edit_status_modal(
+        url_for("backoffice_v3_web.user_offerer.user_offerer_reject", user_offerer_id=user_offerer.id),
+        "reject-modal-" + user_offerer.userId|string, "Rejeter le rattachement") %}
+        Rejeter le rattachement de {{ user_offerer.user.email }}
+    {% endcall %}
+    {% call build_edit_status_modal(
+        url_for("backoffice_v3_web.user_offerer.user_offerer_set_pending", user_offerer_id=user_offerer.id),
+        "pending-modal-" + user_offerer.userId|string, "Mettre en attente le rattachement") %}
+        Mettre en attente le rattachement de {{ user_offerer.user.email }}
+    {% endcall %}
+{% endfor %}
