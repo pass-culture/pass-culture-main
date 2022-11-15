@@ -74,11 +74,6 @@
     }
   }
 
-  &:hover:not(.menu-item-disabled),
-  &:focus:not(.menu-item-disabled) {
-    text-decoration: underline;
-  }
-
   &.menu-item-disabled {
     cursor: not-allowed;
   }
@@ -90,6 +85,9 @@
   width: rem.torem(215px);
 
   .menu-item {
+    &:hover {
+        background: colors.$grey-medium;
+    }
     &.menu-item-disabled {
       svg {
         path {
