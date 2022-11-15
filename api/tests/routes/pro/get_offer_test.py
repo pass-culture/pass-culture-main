@@ -222,6 +222,7 @@ class Returns200Test:
             "status": "ACTIVE",
             "stocks": [
                 {
+                    "activationCodesExpirationDatetime": None,
                     "beginningDatetime": "2020-10-15T01:00:00Z",
                     "bookingLimitDatetime": "2020-10-15T01:00:00Z",
                     "bookingsQuantity": 0,

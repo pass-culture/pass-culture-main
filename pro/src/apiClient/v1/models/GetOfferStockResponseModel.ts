@@ -3,6 +3,7 @@
 /* eslint-disable */
 
 export type GetOfferStockResponseModel = {
+  activationCodesExpirationDatetime?: string | null;
   beginningDatetime?: string | null;
   bookingLimitDatetime?: string | null;
   bookingsQuantity: number;
