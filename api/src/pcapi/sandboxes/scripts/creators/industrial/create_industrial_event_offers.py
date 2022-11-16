@@ -1,8 +1,8 @@
 import logging
 
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.repository import repository
 
 
@@ -50,8 +50,11 @@ def create_industrial_event_offers(
                 is_duo = False
             else:
                 is_duo = True
-            event_offers_by_name[name] = create_offer_with_event_product(
-                event_venue, product=event, event_subcategory_id=event.subcategoryId, is_active=is_active, is_duo=is_duo
+            event_offers_by_name[name] = offers_factories.OfferFactory(
+                venue=event_venue,
+                product=event,
+                isActive=is_active,
+                isDuo=is_duo,
             )
             offer_index += 1
 
