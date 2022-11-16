@@ -106,22 +106,6 @@ const Summary = (
   }
 
   const history = useHistory()
-  const handleNextStep = () => {
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OfferBreadcrumbStep.SUMMARY,
-      to: OfferBreadcrumbStep.CONFIRMATION,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-    })
-    history.push(
-      getOfferIndividualUrl({
-        offerId,
-        mode,
-        step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-        isV2: !isOfferFormV3,
-      })
-    )
-  }
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handlePreviousStep = () => {
@@ -201,7 +185,7 @@ const Summary = (
             />
           ) : (
             <ActionBar
-              onClickNext={handleNextStep}
+              onClickNext={publishOffer}
               onClickPrevious={handlePreviousStep}
               step={OFFER_WIZARD_STEP_IDS.SUMMARY}
             />
