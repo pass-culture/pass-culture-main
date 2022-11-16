@@ -1,7 +1,8 @@
 from functools import wraps
 import logging
-from typing import Callable
+import typing
 
+import flask
 from flask import _request_ctx_stack
 from flask import g
 from flask import request
@@ -13,8 +14,7 @@ from pcapi.core.offerers.models import ApiKey
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import User
-from pcapi.models.api_errors import ApiErrors
-from pcapi.models.api_errors import UnauthorizedError
+from pcapi.models import api_errors
 from pcapi.routes.pro.blueprint import API_KEY_AUTH
 from pcapi.routes.pro.blueprint import COOKIE_AUTH
 from pcapi.serialization.spec_tree import add_security_scheme
@@ -25,39 +25,47 @@ logger = logging.getLogger(__name__)
 
 def check_user_is_logged_in_or_email_is_provided(user: User, email: str | None) -> None:
     if not (user.is_authenticated or email):
-        api_errors = ApiErrors()
-        api_errors.add_error("email", "Vous devez préciser l'email de l'utilisateur quand vous n'êtes pas connecté(e)")
-        raise api_errors
+        raise api_errors.ApiErrors(
+            {"email": ["Vous devez préciser l'email de l'utilisateur quand vous n'êtes pas connecté(e)"]}
+        )
 
 
-def login_or_api_key_required(function: Callable) -> Callable:
+def login_or_api_key_required(function: typing.Callable) -> typing.Callable:
     add_security_scheme(function, API_KEY_AUTH)
     add_security_scheme(function, COOKIE_AUTH)
 
     @wraps(function)
-    def wrapper(*args, **kwds):  # type: ignore[no-untyped-def]
+    def wrapper(*args: typing.Any, **kwds: typing.Any) -> flask.Response:
         _fill_current_api_key()
         basic_authentication()
 
         if not g.current_api_key and not current_user.is_authenticated:
-            raise UnauthorizedError(errors={"auth": "API key or login required"})
+            raise api_errors.UnauthorizedError(errors={"auth": "API key or login required"})
+        if g.current_api_key:
+            _check_active_offerer(g.current_api_key)
         return function(*args, **kwds)
 
     return wrapper
 
 
-def api_key_required(route_function: Callable) -> Callable:
+def api_key_required(route_function: typing.Callable) -> typing.Callable:
     add_security_scheme(route_function, API_KEY_AUTH)
 
     @wraps(route_function)
-    def wrapper(*args, **kwds):  # type: ignore[no-untyped-def]
+    def wrapper(*args: typing.Any, **kwds: typing.Any) -> flask.Response:
         _fill_current_api_key()
 
         if not g.current_api_key:
-            raise UnauthorizedError(errors={"auth": "API key required"})
+            raise api_errors.UnauthorizedError(errors={"auth": "API key required"})
+        _check_active_offerer(g.current_api_key)
         return route_function(*args, **kwds)
 
     return wrapper
+
+
+def _check_active_offerer(api_key: ApiKey) -> None:
+    if not api_key.offerer.isActive:
+        raise api_errors.ForbiddenError(errors={"auth": ["Inactive offerer"]})
 
 
 def _fill_current_api_key() -> None:
@@ -89,7 +97,7 @@ def basic_authentication() -> User | None:
     # for any auth that is not basic auth.
     if not auth or not auth.password or auth.username is None:
         return None
-    errors = UnauthorizedError(www_authenticate="Basic")
+    errors = api_errors.UnauthorizedError(www_authenticate="Basic")
     try:
         user = users_repo.get_user_with_credentials(auth.username, auth.password)
     except users_exceptions.InvalidIdentifier as exc:
