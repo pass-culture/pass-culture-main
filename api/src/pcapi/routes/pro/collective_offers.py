@@ -516,14 +516,14 @@ def attach_offer_image(
 ) -> collective_offers_serialize.AttachImageResponseModel:
     dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_api.get_collective_offer_by_id(dehumanized_id)
+        offer = educational_api_offer.get_collective_offer_by_id(dehumanized_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
     else:
         check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     image_as_bytes = form.get_image_as_bytes(request)
-    educational_api.attach_image(
+    educational_api_offer.attach_image(
         obj=offer,
         image=image_as_bytes,
         crop_params=form.crop_params,
@@ -545,14 +545,14 @@ def attach_offer_template_image(
 ) -> collective_offers_serialize.AttachImageResponseModel:
     dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_api.get_collective_offer_template_by_id(dehumanized_id)
+        offer = educational_api_offer.get_collective_offer_template_by_id(dehumanized_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
     else:
         check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     image_as_bytes = form.get_image_as_bytes(request)
-    educational_api.attach_image(
+    educational_api_offer.attach_image(
         obj=offer,
         image=image_as_bytes,
         crop_params=form.crop_params,
