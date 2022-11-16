@@ -16,7 +16,9 @@ describe('src | components | layout | Notification', () => {
   let store
 
   const renderNotification = sentNotification => {
-    store = configureTestStore({ notification: sentNotification })
+    store = configureTestStore({
+      notification: { notification: sentNotification },
+    })
 
     return render(
       <Provider store={store}>
