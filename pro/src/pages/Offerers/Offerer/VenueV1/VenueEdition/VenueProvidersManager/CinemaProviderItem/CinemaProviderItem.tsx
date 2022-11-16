@@ -1,10 +1,9 @@
 import React, { useCallback, useState } from 'react'
-import { useDispatch } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
 import { VenueProviderResponse } from 'apiClient/v1'
-import { showNotification } from 'store/reducers/notificationReducer'
+import useNotification from 'hooks/useNotification'
 
 import { CinemaProviderFormDialog } from '../CinemaProviderFormDialog/CinemaProviderFormDialog'
 import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
@@ -26,32 +25,24 @@ export const CinemaProviderItem = ({
   venueDepartementCode,
 }: ICinemaProviderItemProps) => {
   const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
-  const dispatch = useDispatch()
+  const notify = useNotification()
   const editVenueProvider = useCallback(
     (payload: any) => {
       api
         .updateVenueProvider(payload)
         .then(editedVenueProvider => {
           afterVenueProviderEdit({ editedVenueProvider })
-          dispatch(
-            showNotification({
-              text: 'Les modifications ont bien été importées et s’appliqueront aux nouvelles séances créées.',
-              type: 'success',
-            })
+          notify.success(
+            'Les modifications ont bien été importées et s’appliqueront aux nouvelles séances créées.'
           )
         })
         .catch(error => {
           if (isErrorAPIError(error)) {
-            dispatch(
-              showNotification({
-                text: getRequestErrorStringFromErrors(getError(error)),
-                type: 'error',
-              })
-            )
+            notify.error(getRequestErrorStringFromErrors(getError(error)))
           }
         })
     },
-    [afterVenueProviderEdit, dispatch]
+    [afterVenueProviderEdit]
   )
 
   const openFormDialog = useCallback(() => {

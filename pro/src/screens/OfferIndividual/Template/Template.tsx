@@ -36,9 +36,7 @@ const Template = ({
     if (response.isOk) {
       setOffer && setOffer(response.payload)
     } else {
-      notify.error(response.message, {
-        withStickyActionBar: true,
-      })
+      notify.error(response.message)
     }
   }
 

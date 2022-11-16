@@ -2,12 +2,13 @@ import {
   closeNotification,
   notificationReducer,
   showNotification,
+  notificationInitialState,
 } from 'store/reducers/notificationReducer'
 
 describe('src | reducers | notification', () => {
   let initialState
   beforeEach(() => {
-    initialState = []
+    initialState = notificationInitialState
   })
 
   describe('when action.type is CLOSE_NOTIFICATION', () => {
@@ -19,7 +20,7 @@ describe('src | reducers | notification', () => {
       const state = notificationReducer(initialState, action)
 
       // then
-      expect(state).toBeNull()
+      expect(state.notification).toBeNull()
     })
   })
 
@@ -36,7 +37,7 @@ describe('src | reducers | notification', () => {
       const state = notificationReducer(initialState, action)
 
       // then
-      expect(state).toStrictEqual({ ...notificationMessage })
+      expect(state.notification).toStrictEqual(notificationMessage)
     })
   })
 })

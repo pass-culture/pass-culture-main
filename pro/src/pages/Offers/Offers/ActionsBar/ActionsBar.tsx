@@ -139,8 +139,7 @@ const ActionsBar = ({
       handleUpdateOffersStatus(true)
     } else {
       notify.error(
-        'Vous ne pouvez pas publier des brouillons depuis cette liste',
-        { withStickyActionBar: true }
+        'Vous ne pouvez pas publier des brouillons depuis cette liste'
       )
     }
   }, [handleUpdateOffersStatus])
@@ -160,9 +159,7 @@ const ActionsBar = ({
 
   const handleDelete = useCallback(async () => {
     if (!canDeleteOffers(selectedOfferIds)) {
-      notify.error('Seuls les  brouillons peuvent être supprimés', {
-        withStickyActionBar: true,
-      })
+      notify.error('Seuls les  brouillons peuvent être supprimés')
       return
     }
     const { isOk, message } = await deleteDraftOffersAdapter({
@@ -170,9 +167,9 @@ const ActionsBar = ({
       nbSelectedOffers,
     })
     if (!isOk) {
-      notify.error(message, { withStickyActionBar: true })
+      notify.error(message)
     } else {
-      notify.success(message, { withStickyActionBar: true })
+      notify.success(message)
       refreshOffers()
       clearSelectedOfferIds()
     }
@@ -181,9 +178,7 @@ const ActionsBar = ({
 
   const handleOpenDeleteDialog = () => {
     if (!canDeleteOffers(selectedOfferIds)) {
-      notify.error('Seuls les brouillons peuvent être supprimés', {
-        withStickyActionBar: true,
-      })
+      notify.error('Seuls les brouillons peuvent être supprimés')
       return
     }
     showDeleteDialog()

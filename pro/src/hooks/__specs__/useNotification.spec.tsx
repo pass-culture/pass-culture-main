@@ -12,15 +12,12 @@ const TestComponent = (): JSX.Element | null => {
 
   notify.success('notfication sucess', {
     duration: 1,
-    withStickyActionBar: true,
   })
   notify.error('notfication error', {
     duration: 2,
   })
   notify.pending('notfication pending')
-  notify.information('notfication information', {
-    withStickyActionBar: true,
-  })
+  notify.information('notfication information')
   notify.close()
 
   return null
@@ -52,25 +49,21 @@ describe('useNotification', () => {
       duration: 1,
       text: 'notfication sucess',
       type: 'success',
-      withStickyActionBar: true,
     })
     expect(mockShowNotification).toHaveBeenNthCalledWith(2, {
       duration: 2,
       text: 'notfication error',
       type: 'error',
-      withStickyActionBar: false,
     })
     expect(mockShowNotification).toHaveBeenNthCalledWith(3, {
       duration: 5000,
       text: 'notfication pending',
       type: 'pending',
-      withStickyActionBar: false,
     })
     expect(mockShowNotification).toHaveBeenNthCalledWith(4, {
       duration: 5000,
       text: 'notfication information',
       type: 'information',
-      withStickyActionBar: true,
     })
     expect(mockCloseNotification).toHaveBeenCalledTimes(1)
     expect(mockCloseNotification).toHaveBeenCalledWith()
