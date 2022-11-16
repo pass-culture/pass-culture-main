@@ -17,6 +17,7 @@ interface ISummaryProps {
   isOfferV2?: boolean
 }
 
+// FIX ME: remove isOfferV2 props when removing OFFER_FORM_V3 FF
 const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
   const {
     offer: contextOffer,
@@ -41,7 +42,7 @@ const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
   return (
     <WizardTemplate
       title={isOfferV2 ? null : 'Récapitulatif'}
-      withStepper={mode !== OFFER_WIZARD_MODE.EDITION}
+      withStepper={!isOfferV2 && mode !== OFFER_WIZARD_MODE.EDITION}
     >
       <PageTitle title="Récapitulatif" />
       <SummaryScreen
