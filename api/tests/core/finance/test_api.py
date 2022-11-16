@@ -920,6 +920,36 @@ class GenerateCashflowsTest:
         api.generate_cashflows(cutoff)
         assert models.Cashflow.query.count() == 0
 
+    def test_check_pricing_integrity(self):
+        # Price an individual and a collective booking.
+        venue1 = offerers_factories.VenueFactory()
+        factories.BankInformationFactory(venue=venue1)
+        booking1 = bookings_factories.UsedBookingFactory(
+            stock__offer__venue__pricing_point=venue1,
+            stock__offer__venue__reimbursement_point=venue1,
+        )
+        api.price_booking(booking1)
+        venue2 = offerers_factories.VenueFactory()
+        factories.BankInformationFactory(venue=venue2)
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        booking2 = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__beginningDatetime=past,
+            collectiveStock__collectiveOffer__venue__pricing_point=venue2,
+            collectiveStock__collectiveOffer__venue__reimbursement_point=venue2,
+        )
+        api.price_booking(booking2)
+
+        # Do something terrible: change amount of the individual
+        # booking and the collective stock without re-pricing
+        # bookings.
+        booking1.amount -= 1
+        booking2.collectiveStock.price -= 1
+        db.session.commit()
+
+        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+
+        assert models.Cashflow.query.count() == 0
+
     def test_assert_num_queries(self):
         venue1 = offerers_factories.VenueFactory(reimbursement_point="self")
         factories.BankInformationFactory(venue=venue1)
@@ -946,8 +976,9 @@ class GenerateCashflowsTest:
         n_queries += 1  # commit
         n_queries += 1  # select CashflowBatch again after commit
         n_queries += 1  # select business unit and bank account ids to process
-        n_queries += 2 * sum(  # 2 business units
+        n_queries += 2 * sum(  # 2 reimbursement points
             (
+                1,  # check integration of pricings
                 1,  # compute sum of pricings
                 1,  # insert Cashflow
                 1,  # select pricings to...

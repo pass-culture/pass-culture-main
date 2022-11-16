@@ -854,6 +854,36 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                         *filters,
                     )
                 )
+
+                # Check integrity by looking for bookings whose amount
+                # has been changed after they have been priced.
+                diff = (
+                    pricings.join(models.Pricing.lines)
+                    .filter(
+                        models.PricingLine.category == models.PricingLineCategory.OFFERER_REVENUE,
+                        models.PricingLine.amount
+                        != -100
+                        * sqla.case(
+                            (
+                                bookings_models.Booking.id.isnot(None),
+                                bookings_models.Booking.amount * bookings_models.Booking.quantity,
+                            ),
+                            else_=educational_models.CollectiveStock.price,
+                        ),
+                    )
+                    .with_entities(models.Pricing.id)
+                )
+                diff = {_pricing_id for _pricing_id, in diff.all()}
+                if diff:
+                    logger.error(
+                        "Found integrity error on booking prices vs. pricing lines",
+                        extra={
+                            "pricing_lines": diff,
+                            "reimbursement_point": reimbursement_point_id,
+                        },
+                    )
+                    continue
+
                 total = pricings.with_entities(sqla.func.sum(models.Pricing.amount)).scalar()
                 if not total:
                     # Mark as `PROCESSED` even if there is no cashflow, so
