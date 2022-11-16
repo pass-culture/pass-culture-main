@@ -8,6 +8,7 @@ import typing
 from flask_sqlalchemy import BaseQuery
 import jwt
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors import sirene
@@ -362,12 +363,17 @@ def find_api_key(key: str) -> models.ApiKey | None:
         # their secret).
         env = settings.ENV
         prefix_identifier, clear_secret = key[:8], key[8:]
-        prefix = _create_prefix(env, prefix_identifier)
     else:
         env, prefix_identifier, clear_secret = key.split(API_KEY_SEPARATOR)
-        prefix = _create_prefix(env, prefix_identifier)
+    prefix = _create_prefix(env, prefix_identifier)
 
-    api_key = models.ApiKey.query.filter_by(prefix=prefix).one_or_none()
+    api_key = (
+        models.ApiKey.query.filter_by(prefix=prefix)
+        .options(
+            sa_orm.joinedload(models.ApiKey.offerer),
+        )
+        .one_or_none()
+    )
 
     if not api_key:
         return None
