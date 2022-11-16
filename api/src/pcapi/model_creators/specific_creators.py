@@ -257,29 +257,6 @@ def create_stock_from_event_occurrence(
     return stock
 
 
-def create_stock_from_offer(
-    offer: Offer,
-    price: Decimal = Decimal(9.90),
-    quantity: int | None = 10,
-    soft_deleted: bool = False,
-    booking_limit_datetime: datetime = None,
-    beginning_datetime: datetime = None,
-    idx: int = None,
-    date_modified: datetime = datetime.utcnow(),
-) -> Stock:
-    stock = Stock()
-    stock.id = idx  # type: ignore [assignment]
-    stock.offer = offer
-    stock.price = price
-    stock.quantity = quantity
-    stock.isSoftDeleted = soft_deleted
-    stock.bookingLimitDatetime = booking_limit_datetime
-    stock.beginningDatetime = beginning_datetime
-    stock.dateModified = date_modified
-
-    return stock
-
-
 def create_stock_with_thing_offer(
     offerer: Offerer,
     venue: Venue,
