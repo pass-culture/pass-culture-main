@@ -28,14 +28,14 @@ def _create_cine_offers(provider_name: str, provider: Provider) -> Venue:
         name=f"Séance ciné solo ({provider_name})",
         venue=venue,
         subcategoryId=subcategories.SEANCE_CINE.id,
-        lastProviderId=provider.id,
+        lastProvider=provider,
     )
     stock_solo = EventStockFactory(offer=offer_solo)
     offer_duo = EventOfferFactory(
         name=f"Séance ciné duo ({provider_name})",
         venue=venue,
         subcategoryId=subcategories.SEANCE_CINE.id,
-        lastProviderId=provider.id,
+        lastProvider=provider,
     )
     stock_duo = EventStockFactory(offer=offer_duo)
     user_bene = BeneficiaryGrant18Factory(email=f"jeune-has-{provider_name}-external-bookings@example.com")
