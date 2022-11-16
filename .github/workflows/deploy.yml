@@ -161,3 +161,16 @@ jobs:
       - run: |
           set -a; source ../config/run_envs/${{ inputs.environment }};
           yarn deploy:${{ inputs.environment }}
+
+  apply-algolia-config:
+    name: "apply Algolia settings"
+    if: inputs.environment == 'production'
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backoffice
+    needs: deploy-helm-release
+    steps:
+      - run: su pcapi -c "flask algolia_settings --dry-run=false ${ALGOLIA_OFFERS_INDEX_NAME} set"
+
