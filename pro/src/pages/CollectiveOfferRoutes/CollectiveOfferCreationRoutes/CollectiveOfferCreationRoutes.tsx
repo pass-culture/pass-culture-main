@@ -87,7 +87,11 @@ const CollectiveOfferCreationRoutes = ({
         exact={false}
       >
         <CollectiveOfferLayout
-          title="Créer une nouvelle offre collective"
+          title={
+            collectiveOffer?.templateId
+              ? 'Créer une offre pour un établissement scolaire'
+              : 'Créer une nouvelle offre collective'
+          }
           subTitle={collectiveOffer?.name}
           breadCrumpProps={{
             activeStep: activeStep,
