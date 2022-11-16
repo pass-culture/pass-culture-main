@@ -424,12 +424,12 @@ class BeneficiaryUserUpdateTest:
 
         assert user_to_update.ineHash is None
 
-    @patch("flask_wtf.csrf.validate_csrf")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_deposit_expiration_date_updated_when_user_is_underage_beneficiary(self, token, client):
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")
         client.with_session_auth(super_admin.email)
 
-        user_to_update = users_factories.UnderageBeneficiaryFactory(departementCode="92", postalCode="92700")
+        user_to_update = users_factories.UnderageBeneficiaryFactory(postalCode="92700")
 
         old_deposit_expiration_date = user_to_update.deposit.expirationDate
         old_user_birth_date = user_to_update.validatedBirthDate
@@ -440,7 +440,6 @@ class BeneficiaryUserUpdateTest:
             form={
                 "id": user_to_update.id,
                 "validatedBirthDate": new_user_birth_date,
-                "departementCode": user_to_update.departementCode,
                 "csrf_token": "token",
                 "email": user_to_update.email,
                 "postalCode": user_to_update.postalCode,
