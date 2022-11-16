@@ -53,7 +53,6 @@ export const serializePostOffer = (
       formValues.accessibility[AccessiblityEnum.MENTAL],
     motorDisabilityCompliant: formValues.accessibility[AccessiblityEnum.MOTOR],
     name: formValues.name,
-    offererId: formValues.offererId,
     subcategoryId: formValues.subcategoryId,
     venueId: formValues.venueId,
     visualDisabilityCompliant:
