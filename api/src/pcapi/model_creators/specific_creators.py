@@ -4,70 +4,12 @@ import string
 from typing import Iterable
 
 from pcapi.core.categories import subcategories
-from pcapi.core.criteria.models import Criterion
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Product
 from pcapi.core.providers.models import Provider
-
-
-def create_offer_with_event_product(
-    venue: Venue = None,
-    booking_email: str = "booking@example.net",
-    criteria: list[Criterion] = None,
-    date_created: datetime = datetime.utcnow(),
-    description: str | None = None,
-    duration_minutes: int | None = 60,
-    event_name: str = "Test event",
-    event_subcategory_id: str = subcategories.SPECTACLE_REPRESENTATION.id,
-    id_at_provider: str = None,
-    idx: int = None,
-    is_active: bool = True,
-    is_duo: bool = False,
-    is_national: bool = False,
-    last_provider_id: int = None,
-    product: Product = None,
-    last_provider: Provider = None,
-    ranking_weight: int = None,
-    thumb_count: int = 0,
-    withdrawal_details: str | None = None,
-    extra_data: dict | None = None,
-    validation: OfferValidationStatus = OfferValidationStatus.APPROVED,
-) -> Offer:
-    offer = Offer()
-    if product is None:
-        product = create_product_with_event_subcategory(
-            event_name=event_name,
-            event_subcategory_id=event_subcategory_id,
-            duration_minutes=duration_minutes,  # type: ignore [arg-type]
-            thumb_count=thumb_count,
-            is_national=is_national,
-        )
-    if criteria:
-        offer.criteria = criteria  # type: ignore [call-overload]
-    offer.product = product
-    offer.venue = venue  # type: ignore [assignment]
-    offer.name = product.name
-    offer.subcategoryId = product.subcategoryId
-    offer.description = description
-    offer.isNational = product.isNational
-    offer.durationMinutes = product.durationMinutes
-    offer.dateCreated = date_created
-    offer.bookingEmail = booking_email
-    offer.isActive = is_active
-    offer.id = idx  # type: ignore [assignment]
-    offer.lastProviderId = last_provider_id
-    offer.lastProvider = last_provider
-    offer.idAtProvider = id_at_provider
-    offer.isDuo = is_duo
-    offer.validation = validation
-    offer.withdrawalDetails = withdrawal_details
-    offer.extraData = extra_data  # type: ignore [assignment]
-    offer.rankingWeight = ranking_weight
-
-    return offer
 
 
 def create_offer_with_thing_product(
