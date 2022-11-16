@@ -15,6 +15,7 @@ import { ReactComponent as IcoAlertGrey } from 'icons/ico-alert-grey.svg'
 import { ReactComponent as IcoAttention } from 'icons/ico-attention.svg'
 import { ReactComponent as IcoBreadcrumbArrowRight } from 'icons/ico-breadcrumb-arrow-right.svg'
 import { ReactComponent as IcoBulb } from 'icons/ico-bulb.svg'
+import { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.svg'
 import { ReactComponent as IcoCalendarDisabled } from 'icons/ico-calendar-disabled.svg'
 import { ReactComponent as IcoCalendarV2 } from 'icons/ico-calendar-v2.svg'
 import { ReactComponent as IcoCalendar } from 'icons/ico-calendar.svg'
@@ -65,6 +66,7 @@ import { ReactComponent as StatusSoldOutIcon } from 'icons/ico-status-sold-out.s
 import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
 import { ReactComponent as IcoStructure } from 'icons/ico-structure.svg'
 import { ReactComponent as IcoTag } from 'icons/ico-tag.svg'
+import { ReactComponent as TemplateOfferIcon } from 'icons/ico-template-offer.svg'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { ReactComponent as IcoTrash } from 'icons/ico-trash.svg'
 import { ReactComponent as TropheeIcon } from 'icons/ico-trophee.svg'
@@ -637,6 +639,18 @@ export const Icons = () => (
           <StatusSoldOutIcon />
         </td>
         <td>StatusSoldOut</td>
+      </tr>
+      <tr>
+        <td>
+          <CalendarCheckIcon />
+        </td>
+        <td>CalendarCheckIcon</td>
+      </tr>
+      <tr>
+        <td>
+          <TemplateOfferIcon />
+        </td>
+        <td>TemplateOfferIcon</td>
       </tr>
     </body>
   </table>

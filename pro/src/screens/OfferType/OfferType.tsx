@@ -4,7 +4,9 @@ import { useHistory, useLocation } from 'react-router-dom'
 import FormLayout from 'components/FormLayout'
 import { OFFER_SUBTYPES, OFFER_TYPES } from 'core/Offers'
 import useActiveFeature from 'hooks/useActiveFeature'
+import { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.svg'
 import { ReactComponent as CaseIcon } from 'icons/ico-case.svg'
+import { ReactComponent as TemplateOfferIcon } from 'icons/ico-template-offer.svg'
 import { ReactComponent as PhoneIcon } from 'icons/info-phone.svg'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
@@ -115,7 +117,7 @@ const OfferType = (): JSX.Element => {
             <FormLayout.Row inline>
               <OfferTypeButton
                 name="offer-subtype"
-                Icon={PhoneIcon}
+                Icon={CalendarCheckIcon}
                 isSelected={offerSubtype === OFFER_SUBTYPES.COLLECTIVE}
                 label="Une offre réservable"
                 description="Cette offre a une date et un prix. Vous pouvez choisir de la rendre visible par tous les établissements scolaires ou par un seul."
@@ -126,7 +128,7 @@ const OfferType = (): JSX.Element => {
             <FormLayout.Row inline>
               <OfferTypeButton
                 name="offer-subtype"
-                Icon={CaseIcon}
+                Icon={TemplateOfferIcon}
                 isSelected={offerSubtype === OFFER_SUBTYPES.TEMPLATE}
                 label="Une offre vitrine"
                 description="Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée. "
