@@ -218,11 +218,9 @@ describe('screens:StocksThing', () => {
 
     renderStockThingScreen({ props, storeOverride, contextValue })
 
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape précédente' })
     )
-    expect(screen.getByText('Previous page')).toBeInTheDocument()
     expect(api.upsertStocks).not.toHaveBeenCalled()
     expect(
       screen.queryByText('Brouillon sauvegardé dans la liste des offres')
