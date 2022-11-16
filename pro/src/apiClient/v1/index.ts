@@ -12,6 +12,7 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 export type { AdageCulturalPartnerResponseModel } from './models/AdageCulturalPartnerResponseModel';
 export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalPartnersResponseModel';
 export type { Address } from './models/Address';
+export type { AttachImageResponseModel } from './models/AttachImageResponseModel';
 export type { BannerMetaModel } from './models/BannerMetaModel';
 export { BookingExportType } from './models/BookingExportType';
 export type { BookingRecapResponseBeneficiaryModel } from './models/BookingRecapResponseBeneficiaryModel';
