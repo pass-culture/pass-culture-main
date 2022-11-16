@@ -6,7 +6,6 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
 
@@ -38,7 +37,8 @@ const OfferBreadcrumb = ({
   haveStock = false,
 }: IOfferBreadcrumb): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
+  // it is never OfferFormV3 in this breadcrumb
+  const isOfferFormV3 = false
   const stockEditionUrl = useOfferStockEditionURL(
     isOfferEducational,
     offerId,
@@ -53,7 +53,8 @@ const OfferBreadcrumb = ({
   if (
     !isCreatingOffer &&
     activeStep == OfferBreadcrumbStep.SUMMARY &&
-    !isOfferEducational
+    !isOfferEducational &&
+    !isCompletingDraft
   )
     return <></>
 
