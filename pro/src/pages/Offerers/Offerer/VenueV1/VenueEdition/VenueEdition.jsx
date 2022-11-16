@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Form } from 'react-final-form'
-import { useDispatch } from 'react-redux'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -19,7 +18,6 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { ReactComponent as CircledRightArrow } from 'icons/ico-right-circle-arrow.svg'
-import { showNotification } from 'store/reducers/notificationReducer'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Titles from 'ui-kit/Titles/Titles'
@@ -65,7 +63,6 @@ const VenueEdition = () => {
   const deleteBusinessUnitConfirmed = useRef(false)
   const { offererId, venueId } = useParams()
   const history = useHistory()
-  const dispatch = useDispatch()
   const location = useLocation()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
@@ -110,25 +107,14 @@ const VenueEdition = () => {
     if (errors.global) {
       text = `${text} ${errors.global[0]}`
     }
-
-    dispatch(
-      showNotification({
-        text,
-        type: 'error',
-      })
-    )
+    notify.error(text)
   }
 
   const handleSubmitRequestSuccess = (_action, { hasDelayedUpdates }) => {
     const text = hasDelayedUpdates
       ? 'Vos modifications ont bien été prises en compte, cette opération peut durer plusieurs minutes'
       : 'Vos modifications ont bien été prises en compte'
-    dispatch(
-      showNotification({
-        text,
-        type: hasDelayedUpdates ? 'pending' : 'success',
-      })
-    )
+    hasDelayedUpdates ? notify.pending(text) : notify.success(text)
   }
 
   const onDeleteImage = useCallback(() => {

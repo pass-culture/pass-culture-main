@@ -4,7 +4,10 @@ import { useSelector } from 'react-redux'
 
 import { NOTIFICATION_TRANSITION_DURATION } from 'core/Notification/constants'
 import useNotification from 'hooks/useNotification'
-import { notificationSelector } from 'store/selectors/notificationSelector'
+import {
+  notificationSelector,
+  isStickyBarOpenSelector,
+} from 'store/selectors/notificationSelector'
 
 import { ReactComponent as ErrorIcon } from './assets/notification-error-white.svg'
 import { ReactComponent as InfoIcon } from './assets/notification-information.svg'
@@ -16,6 +19,7 @@ const Notification = (): JSX.Element | null => {
   const [isVisible, setIsVisible] = useState(false)
   const [isInDom, setIsInDom] = useState(false)
   const notification = useSelector(notificationSelector)
+  const isStickyBarOpen = useSelector(isStickyBarOpenSelector)
   const notificationHook = useNotification()
 
   useEffect(() => {
@@ -55,7 +59,6 @@ const Notification = (): JSX.Element | null => {
   } else if (type === 'information') {
     iconComponent = <InfoIcon />
   }
-
   if (isInDom) {
     return (
       <div
@@ -66,7 +69,7 @@ const Notification = (): JSX.Element | null => {
             styles['notification'],
             styles[`is-${type || 'success'}`],
             isVisible ? styles['show'] : styles['hide'],
-            notification.withStickyActionBar && styles['with-sticky-action-bar']
+            isStickyBarOpen && styles['with-sticky-action-bar']
           )
         }
       >

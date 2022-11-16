@@ -64,17 +64,11 @@ const Informations = ({
       if (Object.keys(formik.errors).length !== 0) {
         if (saveDraft)
           notify.error(
-            'Des informations sont nécessaires pour sauvegarder le brouillon',
-            {
-              withStickyActionBar: true,
-            }
+            'Des informations sont nécessaires pour sauvegarder le brouillon'
           )
         else
           notify.error(
-            'Une ou plusieurs erreurs sont présentes dans le formulaire',
-            {
-              withStickyActionBar: true,
-            }
+            'Une ou plusieurs erreurs sont présentes dans le formulaire'
           )
       }
       formik.handleSubmit()
@@ -143,16 +137,11 @@ const Informations = ({
         cropParams,
       })
         .then(() => {
-          notify.success('Brouillon sauvegardé dans la liste des offres', {
-            withStickyActionBar: true,
-          })
+          notify.success('Brouillon sauvegardé dans la liste des offres')
         })
         .catch(() => {
           notify.error(
-            'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard',
-            {
-              withStickyActionBar: true,
-            }
+            'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'
           )
         })
       return Promise.resolve()
@@ -171,9 +160,7 @@ const Informations = ({
       if (response.isOk) {
         setImageOffer(undefined)
       } else {
-        notify.error('Une erreur est survenue. Merci de réessayer plus tard.', {
-          withStickyActionBar: true,
-        })
+        notify.error('Une erreur est survenue. Merci de réessayer plus tard.')
       }
     }
     Promise.resolve()
@@ -202,10 +189,7 @@ const Informations = ({
       notify.success(
         isSubmittingDraft
           ? 'Brouillon sauvegardé dans la liste des offres'
-          : 'Vos modifications ont bien été enregistrées',
-        {
-          withStickyActionBar: true,
-        }
+          : 'Vos modifications ont bien été enregistrées'
       )
       navigate(
         getOfferIndividualUrl({

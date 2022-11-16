@@ -8,7 +8,7 @@ import {
   showNotification,
 } from 'store/reducers/notificationReducer'
 
-enum TypeEnum {
+export enum NotificationTypeEnum {
   SUCCESS = 'success',
   ERROR = 'error',
   PENDING = 'pending',
@@ -17,7 +17,6 @@ enum TypeEnum {
 
 interface IOptions {
   duration?: number
-  withStickyActionBar?: boolean
 }
 
 const useNotification = () => {
@@ -25,18 +24,14 @@ const useNotification = () => {
   const dispatchNotification = useCallback(
     (
       textMessage: string | null,
-      type: TypeEnum,
-      {
-        duration = NOTIFICATION_SHOW_DURATION,
-        withStickyActionBar = false,
-      }: IOptions
+      type: NotificationTypeEnum,
+      { duration = NOTIFICATION_SHOW_DURATION }: IOptions
     ) => {
       dispatch(
         showNotification({
           text: textMessage,
           type: type,
           duration,
-          withStickyActionBar,
         })
       )
     },
@@ -50,13 +45,13 @@ const useNotification = () => {
   return useMemo(
     () => ({
       success: (msg: string | null, options: IOptions = {}) =>
-        dispatchNotification(msg, TypeEnum.SUCCESS, options),
+        dispatchNotification(msg, NotificationTypeEnum.SUCCESS, options),
       error: (msg: string | null, options: IOptions = {}) =>
-        dispatchNotification(msg, TypeEnum.ERROR, options),
+        dispatchNotification(msg, NotificationTypeEnum.ERROR, options),
       pending: (msg: string | null, options: IOptions = {}) =>
-        dispatchNotification(msg, TypeEnum.PENDING, options),
+        dispatchNotification(msg, NotificationTypeEnum.PENDING, options),
       information: (msg: string | null, options: IOptions = {}) =>
-        dispatchNotification(msg, TypeEnum.INFORMATION, options),
+        dispatchNotification(msg, NotificationTypeEnum.INFORMATION, options),
       close: () => dispatchCloseNotification(),
     }),
     [dispatchCloseNotification, dispatchNotification]

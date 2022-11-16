@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
-import { useDispatch } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
 import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
-import { showNotification } from 'store/reducers/notificationReducer'
+import useNotification from 'hooks/useNotification'
 
 import AllocineProviderForm from '../AllocineProviderForm/AllocineProviderForm'
 import { CinemaProviderForm } from '../CinemaProviderForm/CinemaProviderForm'
@@ -15,33 +14,23 @@ import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringF
 const VenueProviderForm = ({ afterSubmit, provider, venue }) => {
   const displayAllocineProviderForm = isAllocineProvider(provider)
   const displayCDSProviderForm = isCinemaProvider(provider)
-  const dispatch = useDispatch()
+  const notify = useNotification()
   const createVenueProvider = useCallback(
     payload => {
       api
         .createVenueProvider(payload)
         .then(createdVenueProvider => {
-          dispatch(
-            showNotification({
-              text: 'La synchronisation a bien été initiée.',
-              type: 'success',
-            })
-          )
+          notify.success('La synchronisation a bien été initiée.')
           afterSubmit(createdVenueProvider)
         })
         .catch(error => {
           if (isErrorAPIError(error)) {
-            dispatch(
-              showNotification({
-                text: getRequestErrorStringFromErrors(getError(error)),
-                type: 'error',
-              })
-            )
+            notify.error(getRequestErrorStringFromErrors(getError(error)))
             afterSubmit()
           }
         })
     },
-    [afterSubmit, dispatch]
+    [afterSubmit]
   )
 
   return displayAllocineProviderForm ? (
