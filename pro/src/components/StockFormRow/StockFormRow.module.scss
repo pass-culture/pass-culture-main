@@ -8,10 +8,10 @@
     display: flex;
     align-items: center;
     > *:not(:last-child) {
-      margin-right: rem.torem(24px);
+      margin-right: rem.torem(16px);
     }
     &:not(:last-child) {
-      margin-right: rem.torem(24px);
+      margin-right: rem.torem(16px);
     }
   }
 
