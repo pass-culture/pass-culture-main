@@ -47,15 +47,14 @@ const ConfirmDialog = ({
     >
       {!hideIcon && <Icon className={styles['confirm-dialog-icon']} />}
       <div className={styles['confirm-dialog-title']}>
-        <strong>{title}</strong>
-        <strong>{secondTitle}</strong>
+        {title}
+        <span>{secondTitle}</span>
       </div>
       {children && (
         <div className={styles['confirm-dialog-explanation']}>{children}</div>
       )}
       <div className={styles['confirm-dialog-actions']}>
         <Button
-          className="secondary-button"
           onClick={leftButtonAction}
           type="submit"
           data-testid="confirm-dialog-button-cancel"
@@ -64,7 +63,6 @@ const ConfirmDialog = ({
           {cancelText}
         </Button>
         <SubmitButton
-          className="primary-button"
           isLoading={isLoading}
           onClick={onConfirm}
           testId="confirm-dialog-button-confirm"
