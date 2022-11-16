@@ -78,15 +78,7 @@ describe('CollectiveOfferSummary', () => {
       setLogEvent: null,
     }))
   })
-  it('should render create from template button if offer is template', () => {
-    renderCollectiveOfferSummaryEdition(offer, categories)
 
-    const createFromTemplateButton = screen.getByRole('link', {
-      name: 'Créer une offre réservable pour un établissement scolaire',
-    })
-
-    expect(createFromTemplateButton).toBeInTheDocument()
-  })
   it('should display desactive offer option when offer is active and not booked', () => {
     offer = collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
     renderCollectiveOfferSummaryEdition(offer, categories)
@@ -117,7 +109,7 @@ describe('CollectiveOfferSummary', () => {
     offer = collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
     renderCollectiveOfferSummaryEdition(offer, categories)
 
-    const duplicateOffer = screen.getByRole('link', {
+    const duplicateOffer = screen.getByRole('button', {
       name: 'Créer une offre réservable pour un établissement scolaire',
     })
     await userEvent.click(duplicateOffer)

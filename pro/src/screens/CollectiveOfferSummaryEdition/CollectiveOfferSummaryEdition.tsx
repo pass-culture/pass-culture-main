@@ -16,9 +16,13 @@ import {
   patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { createOfferFromTemplate } from 'pages/Offers/Offers/OfferItem/Cells/DuplicateOfferCell/DuplicateOfferCell'
+import {
+  createOfferFromTemplate,
+  oldCreateOfferFromTemplate,
+} from 'pages/Offers/Offers/OfferItem/Cells/DuplicateOfferCell/DuplicateOfferCell'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -37,6 +41,9 @@ const CollectiveOfferSummaryEdition = ({
 }: CollectiveOfferSummaryEditionProps) => {
   const notify = useNotification()
   const history = useHistory()
+  const isSubtypeChosenAtCreation = useActiveFeature(
+    'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
+  )
 
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
     offer.id,
@@ -114,7 +121,11 @@ const CollectiveOfferSummaryEdition = ({
               logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
                 from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
               })
-              createOfferFromTemplate(history, offer.id)
+              if (isSubtypeChosenAtCreation) {
+                createOfferFromTemplate(history, notify, offer.id)
+              } else {
+                oldCreateOfferFromTemplate(history, offer.id)
+              }
             }}
           >
             Créer une offre réservable pour un établissement scolaire
