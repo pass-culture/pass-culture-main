@@ -47,7 +47,6 @@ export const serializePostOffer = (
     bookingEmail: formValues.bookingEmail || null,
     description: formValues.description || null,
     extraData: serializeExtraData(formValues),
-    isEducational: false,
     isNational: formValues.isNational,
     isDuo: formValues.isDuo,
     mentalDisabilityCompliant:
