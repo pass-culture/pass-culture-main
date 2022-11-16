@@ -236,7 +236,7 @@ ACTIVITES_ANSWERS = [
 
 SORTIES = CulturalSurveyQuestion(
     id=CulturalSurveyQuestionEnum.SORTIES,
-    title="Au cours de l'année précédente, tu es allé au moins une fois ...",
+    title="Au cours de l'année précédente, tu as été au moins une fois ...",
     answers=SORTIES_ANSWERS,
 )
 
