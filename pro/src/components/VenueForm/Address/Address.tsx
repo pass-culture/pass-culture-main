@@ -17,7 +17,6 @@ const Address = () => {
   >({})
   const [searchField] = useField('search-addressAutocomplete')
   const [selectedField] = useField('addressAutocomplete')
-
   useEffect(() => {
     setOptions([{ label: selectedField.value, value: selectedField.value }])
   }, [])
@@ -28,7 +27,7 @@ const Address = () => {
         setAddressesMap(
           response.reduce<Record<string, IAutocompleteItemProps>>(
             (acc, add: IAutocompleteItemProps) => {
-              acc[add.label] = add
+              acc[add.label.toUpperCase()] = add
               return acc
             },
             {}

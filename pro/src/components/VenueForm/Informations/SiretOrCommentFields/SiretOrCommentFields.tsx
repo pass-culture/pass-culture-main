@@ -69,6 +69,18 @@ const SiretOrCommentFields = ({
               response.payload.values.siret.length > 0
           )
           setFieldValue('name', response.payload.values?.name)
+          setFieldValue(
+            'search-addressAutocomplete',
+            `${response.payload.values?.address} ${response.payload.values?.postalCode} ${response.payload.values?.city}`.toUpperCase()
+          )
+          setTimeout(
+            () =>
+              setFieldValue(
+                'addressAutocomplete',
+                `${response.payload.values?.address} ${response.payload.values?.postalCode} ${response.payload.values?.city}`.toUpperCase()
+              ),
+            500
+          )
         }
       })
   }, [touched.siret, errors.siret, isSiretSelected])
