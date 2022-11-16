@@ -4,13 +4,9 @@ import { CATEGORIES_DEFAULT_VALUES } from './constants'
 
 const validationSchema = {
   categoryId: yup.string().required('Veuillez sélectionner une catégorie'),
-  subcategoryId: yup.string().when('categoryId', {
-    is: (categoryId: string) => categoryId !== undefined,
-    then: yup.string().required('Veuillez sélectionner une sous-catégorie'),
-    otherwise: yup
-      .string()
-      .required('Veuillez sélectionner une sous-catégorie'),
-  }),
+  subcategoryId: yup
+    .string()
+    .required('Veuillez sélectionner une sous-catégorie'),
   musicType: yup.string().when('subCategoryFields', {
     is: (subCategoryFields: string[]) =>
       subCategoryFields.includes('musicType'),
