@@ -96,30 +96,6 @@ def create_offer_with_thing_product(
     return offer
 
 
-def create_product_with_event_subcategory(
-    event_name: str = "Test event",
-    event_subcategory_id: str = subcategories.SPECTACLE_REPRESENTATION.id,
-    description: str = None,
-    duration_minutes: int = 60,
-    id_at_providers: str = None,
-    is_national: bool = False,
-    is_duo: bool = False,
-    thumb_count: int = 0,
-) -> Product:
-    product = Product()
-    product.name = event_name
-    product.description = description
-    product.durationMinutes = duration_minutes
-    product.thumbCount = thumb_count
-    product.idAtProviders = id_at_providers
-    product.isNational = is_national
-    product.isDuo = is_duo
-    product.subcategoryId = event_subcategory_id
-    product.description = description
-
-    return product
-
-
 def create_product_with_thing_subcategory(
     thing_name: str = "Test Book",
     thing_subcategory_id: str = subcategories.LIVRE_PAPIER.id,
