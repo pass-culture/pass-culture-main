@@ -1,15 +1,13 @@
-""" local providers test """
-
 from pathlib import Path
 from unittest.mock import patch
 from zipfile import ZipFile
 
 import pytest
 
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Product
 from pcapi.local_providers import TiteLiveThingThumbs
 from pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs import extract_thumb_index
-from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.repository import repository
 import pcapi.sandboxes
 
@@ -43,8 +41,8 @@ class TiteliveThingThumbsTest:
         self, get_thumbs_zip_file_from_ftp, get_ordered_thumbs_zip_files, app
     ):
         # given
-        product1 = create_product_with_thing_subcategory(id_at_providers="9780847858903", thumb_count=0)
-        product2 = create_product_with_thing_subcategory(id_at_providers="9782016261903", thumb_count=0)
+        product1 = offers_factories.ProductFactory(idAtProviders="9780847858903")
+        product2 = offers_factories.ProductFactory(idAtProviders="9782016261903")
         repository.save(product1, product2)
         zip_thumb_file = get_zip_with_2_usable_thumb_files()
         get_ordered_thumbs_zip_files.return_value = [zip_thumb_file]
@@ -76,8 +74,7 @@ class TiteliveThingThumbsTest:
         self, get_thumbs_zip_file_from_ftp, get_ordered_thumbs_zip_files, app
     ):
         # Given
-        product1 = create_product_with_thing_subcategory(id_at_providers="9780847858903", thumb_count=0)
-        repository.save(product1)
+        product = offers_factories.ProductFactory(idAtProviders="9780847858903")
         zip_thumb_file = get_zip_with_1_usable_thumb_file()
         get_ordered_thumbs_zip_files.return_value = [zip_thumb_file]
         get_thumbs_zip_file_from_ftp.side_effect = [get_zip_file_from_sandbox(zip_thumb_file)]
@@ -91,7 +88,7 @@ class TiteliveThingThumbsTest:
 
         # Then
         new_product = Product.query.one()
-        assert new_product.name == "Test Book"
+        assert new_product.name == product.name
         assert new_product.thumbCount == 1
 
 

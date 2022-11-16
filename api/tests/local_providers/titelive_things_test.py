@@ -6,6 +6,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
@@ -14,8 +15,6 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import TiteLiveThings
-from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
-from pcapi.repository import repository
 
 
 BASE_DATA_LINE_PARTS = [
@@ -131,14 +130,12 @@ class TiteliveThingsTest:
 
         titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
 
-        product = create_product_with_thing_subcategory(
-            id_at_providers="9782895026310",
-            thing_name="Toto à la playa",
-            date_modified_at_last_provider=datetime(2001, 1, 1),
-            last_provider_id=titelive_things_provider.id,
+        offers_factories.ProductFactory(
+            name="Old name",
+            idAtProviders="9782895026310",
+            dateModifiedAtLastProvider=datetime(2001, 1, 1),
+            lastProviderId=titelive_things_provider.id,
         )
-        providers_factories.ProviderFactory(localClass="TiteLiveThings")
-        repository.save(product)
         titelive_things = TiteLiveThings()
 
         # When
@@ -255,14 +252,12 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
-        repository.save(titelive_provider)
-        product = create_product_with_thing_subcategory(
-            id_at_providers="9782895026310",
-            thing_name="Toto à la playa",
-            date_modified_at_last_provider=datetime(2001, 1, 1),
-            last_provider_id=titelive_provider.id,
+        offers_factories.ProductFactory(
+            idAtProviders="9782895026310",
+            dateModifiedAtLastProvider=datetime(2001, 1, 1),
+            lastProviderId=titelive_provider.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
-        repository.save(product)
 
         titelive_things = TiteLiveThings()
 
@@ -291,13 +286,12 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
-        product = create_product_with_thing_subcategory(
-            id_at_providers="9782895026310",
-            thing_name="Toto à la playa",
-            date_modified_at_last_provider=datetime(2001, 1, 1),
-            last_provider_id=titelive_provider.id,
+        offers_factories.ProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            idAtProviders="9782895026310",
+            dateModifiedAtLastProvider=datetime(2001, 1, 1),
+            lastProviderId=titelive_provider.id,
         )
-        repository.save(product)
         titelive_things = TiteLiveThings()
 
         # When
@@ -390,14 +384,12 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
-        repository.save(titelive_provider)
-        product = create_product_with_thing_subcategory(
-            id_at_providers="9782895026310",
-            thing_name="Presse papier",
-            date_modified_at_last_provider=datetime(2001, 1, 1),
-            last_provider_id=titelive_provider.id,
+        offers_factories.ProductFactory(
+            idAtProviders="9782895026310",
+            dateModifiedAtLastProvider=datetime(2001, 1, 1),
+            lastProviderId=titelive_provider.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
-        repository.save(product)
 
         titelive_things = TiteLiveThings()
 
@@ -423,7 +415,6 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
-        repository.save(titelive_provider)
 
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -489,7 +480,6 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
-        repository.save(titelive_provider)
         titelive_things = TiteLiveThings()
 
         offerer = offerers_factories.OffererFactory(siren="123456789")

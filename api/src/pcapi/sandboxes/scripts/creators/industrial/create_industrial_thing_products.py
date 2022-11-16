@@ -2,9 +2,9 @@ import logging
 import random
 
 from pcapi.core.categories import subcategories
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.domain.music_types import music_types
-from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_DESCRIPTIONS
@@ -40,14 +40,13 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
             )
             url = "https://ilestencoretemps.fr/" if is_online_only else None
 
-            thing_product = create_product_with_thing_subcategory(
-                author_name=MOCK_AUTHOR_NAMES[mock_index],
+            thing_product = offers_factories.ProductFactory(
+                extraData={"author": MOCK_AUTHOR_NAMES[mock_index]},
                 description=MOCK_DESCRIPTIONS[mock_index],
-                id_at_providers=str(id_at_providers),
-                is_national=is_online_only,
-                thing_name=MOCK_NAMES[mock_index],
-                thing_subcategory_id=thing_subcategory.id,
-                thumb_count=0,
+                idAtProviders=str(id_at_providers),
+                isNational=is_online_only,
+                name=MOCK_NAMES[mock_index],
+                subcategoryId=thing_subcategory.id,
                 url=url,
             )
 
