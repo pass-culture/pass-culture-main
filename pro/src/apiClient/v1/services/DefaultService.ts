@@ -3,6 +3,7 @@
 /* eslint-disable */
 import type { AdageCulturalPartnerResponseModel } from '../models/AdageCulturalPartnerResponseModel';
 import type { AdageCulturalPartnersResponseModel } from '../models/AdageCulturalPartnersResponseModel';
+import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
 import type { BookingExportType } from '../models/BookingExportType';
 import type { BookingStatusFilter } from '../models/BookingStatusFilter';
 import type { BusinessUnitEditionBodyModel } from '../models/BusinessUnitEditionBodyModel';
@@ -439,6 +440,28 @@ export class DefaultService {
   }
 
   /**
+   * attach_offer_template_image <PATCH>
+   * @param offerId
+   * @returns AttachImageResponseModel OK
+   * @throws ApiError
+   */
+  public attachOfferTemplateImage(
+    offerId: string,
+  ): CancelablePromise<AttachImageResponseModel> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/collective/offers-template/{offer_id}/image',
+      path: {
+        'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * patch_collective_offer_template_publication <PATCH>
    * @param offerId
    * @returns GetCollectiveOfferTemplateResponseModel OK
@@ -597,6 +620,28 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * attach_offer_image <PATCH>
+   * @param offerId
+   * @returns AttachImageResponseModel OK
+   * @throws ApiError
+   */
+  public attachOfferImage(
+    offerId: string,
+  ): CancelablePromise<AttachImageResponseModel> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/collective/offers/{offer_id}/image',
+      path: {
+        'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
     });
