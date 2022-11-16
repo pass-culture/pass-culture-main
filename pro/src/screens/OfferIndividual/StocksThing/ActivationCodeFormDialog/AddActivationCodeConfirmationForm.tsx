@@ -20,6 +20,11 @@ const AddActivationCodeConfirmationForm = ({
   today,
   minExpirationDate,
 }: IAddActivationCodeConfirmationForm) => {
+  const getMinimumExpirationDatetime = (date: Date) => {
+    const result = new Date(date)
+    result.setDate(result.getDate() + 7)
+    return result
+  }
   const minDate = minExpirationDate === null ? today : minExpirationDate
   return (
     <div className={styles['activation-codes-form']}>
@@ -41,7 +46,7 @@ const AddActivationCodeConfirmationForm = ({
         <DatePicker
           label={'Date limite de validité'}
           name="activationCodesExpirationDatetime"
-          minDateTime={minDate}
+          minDateTime={getMinimumExpirationDatetime(minDate)}
           isOptional={true}
         />
       </div>
