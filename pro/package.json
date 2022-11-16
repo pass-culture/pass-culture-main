@@ -142,7 +142,7 @@
     "prepend-file": "^2.0.0",
     "prettier": "^2.5.1",
     "source-map-explorer": "^2.5.0",
-    "storybook": "^6.5.4",
+    "storybook": "^6.5.13",
     "storybook-svgr-react-component": "^1.0.1",
     "stylelint": "^13.13.1",
     "stylelint-a11y": "^1.2.3",
