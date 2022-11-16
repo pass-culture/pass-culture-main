@@ -11,7 +11,9 @@ import {
   cancelCollectiveBookingAdapter,
   CollectiveOffer,
   CollectiveOfferTemplate,
+  createOfferFromTemplate,
   EducationalCategories,
+  oldCreateOfferFromTemplate,
   patchIsCollectiveOfferActiveAdapter,
   patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
@@ -19,10 +21,6 @@ import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/compute
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import {
-  createOfferFromTemplate,
-  oldCreateOfferFromTemplate,
-} from 'pages/Offers/Offers/OfferItem/Cells/DuplicateOfferCell/DuplicateOfferCell'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
