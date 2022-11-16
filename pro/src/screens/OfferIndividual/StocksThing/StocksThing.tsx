@@ -3,15 +3,16 @@ import React, { useCallback, useState } from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import { StockFormRow } from 'components/StockFormRow'
 import { IStockFormRowAction } from 'components/StockFormRow/SockFormActions/types'
 import {
   StockThingForm,
   getValidationSchema,
   buildInitialValues,
-  setFormReadOnlyFields,
   IStockThingFormValues,
 } from 'components/StockThingForm'
+import { setFormReadOnlyFields } from 'components/StockThingForm/utils'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import {
@@ -38,13 +39,19 @@ export interface IStocksThingProps {
 
 const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   const mode = useOfferWizardMode()
-  const [afterSubmitUrl, setAfterSubmitUrl] = useState<string | null>(
+  const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
     getOfferIndividualUrl({
       offerId: offer.id,
       step: OFFER_WIZARD_STEP_IDS.SUMMARY,
       mode,
     })
   )
+  const [
+    isSubmittingFromRouteLeavingGuard,
+    setIsSubmittingFromRouteLeavingGuard,
+  ] = useState<boolean>(false)
+  const [isClickingFromActionBar, setIsClickingFromActionBar] =
+    useState<boolean>(false)
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer } = useOfferIndividualContext()
@@ -65,11 +72,14 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }
-      afterSubmitUrl !== null && navigate(afterSubmitUrl)
+      if (!isSubmittingFromRouteLeavingGuard) {
+        navigate(afterSubmitUrl)
+      }
     } else {
       /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors(payload.errors)
     }
+    setIsClickingFromActionBar(false)
   }
 
   let minQuantity = null
@@ -88,6 +98,8 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     initialValues,
     onSubmit,
     validationSchema: getValidationSchema(minQuantity),
+    // enableReinitialize is needed to reset dirty after submit (and not block after saving a draft)
+    enableReinitialize: true,
   })
 
   const handleNextStep =
@@ -95,6 +107,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     () => {
       // tested but coverage don't see it.
       /* istanbul ignore next */
+      setIsClickingFromActionBar(true)
       setAfterSubmitUrl(
         getOfferIndividualUrl({
           offerId: offer.id,
@@ -198,6 +211,17 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
           </form>
         </FormLayout.Section>
       </FormLayout>
+      {formik.dirty && !isClickingFromActionBar && (
+        <RouteLeavingGuardOfferIndividual
+          saveForm={formik.handleSubmit}
+          setIsSubmittingFromRouteLeavingGuard={
+            setIsSubmittingFromRouteLeavingGuard
+          }
+          mode={mode}
+          hasOfferBeenCreated
+          isFormValid={formik.isValid}
+        />
+      )}
     </FormikProvider>
   )
 }
