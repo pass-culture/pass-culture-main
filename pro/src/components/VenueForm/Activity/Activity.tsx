@@ -47,7 +47,7 @@ const Activity = ({ venueTypes, venueLabels }: IActivity) => {
           <TextArea
             name="description"
             label="Description"
-            placeholder="Par exemple : Mon établissement propose des spectacles, de l'improvisation..."
+            placeholder="Par exemple : mon établissement propose des spectacles, de l'improvisation..."
             maxLength={1000}
             countCharacters
             isOptional
