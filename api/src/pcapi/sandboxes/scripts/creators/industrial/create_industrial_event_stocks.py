@@ -2,7 +2,7 @@ from decimal import Decimal
 import logging
 
 from pcapi.core.categories import subcategories
-from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+import pcapi.core.offers.factories as offers_factories
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import EventOccurrence
 from pcapi.sandboxes.scripts.utils.select import remove_every
@@ -45,8 +45,11 @@ def create_industrial_event_stocks(event_occurrences_by_name: dict[str, EventOcc
 
         name = event_occurrence_with_stocks_name + " / " + str(available) + " / " + str(price)
 
-        event_stocks_by_name[name] = create_stock_from_event_occurrence(
-            event_occurrence_with_stocks, price=price, quantity=available
+        event_stocks_by_name[name] = offers_factories.StockFactory(
+            offer=event_occurrence_with_stocks.offer,
+            price=price,
+            quantity=available,
+            beginningDatetime=event_occurrence_with_stocks.beginningDatetime,
         )
 
     repository.save(*event_stocks_by_name.values())
