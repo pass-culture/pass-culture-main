@@ -44,7 +44,6 @@ class PCPhoneNumberField(PCStringField):
 
 class PCCommentField(PCOptStringField):
     validators = [
-        validators.InputRequired("Information obligatoire"),
         validators.Length(min=2, max=1024, message="doit contenir entre %(min)d et %(max)d caractères"),
     ]
 
