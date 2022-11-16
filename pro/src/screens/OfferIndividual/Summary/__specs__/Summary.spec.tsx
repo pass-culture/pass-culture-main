@@ -390,7 +390,6 @@ describe('Summary', () => {
           list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
         },
       }
-      props.formOfferV2 = true
 
       // when
       renderSummary({ props, storeOverride, url: '/creation/summary' })
@@ -421,7 +420,6 @@ describe('Summary', () => {
           list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
         },
       }
-      props.formOfferV2 = true
 
       // when
       renderSummary({ props, storeOverride, url: '/creation/summary' })
