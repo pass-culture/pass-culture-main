@@ -8,10 +8,8 @@ export default {
   component: SubmitButton,
 }
 
-const Template: Story<ISubmitButtonProps> = props => (
-  <div style={{ maxWidth: '316px' }}>
-    <SubmitButton {...props} />
-  </div>
+const Template: Story<ISubmitButtonProps> = args => (
+  <SubmitButton {...args}>{args.children}</SubmitButton>
 )
 
 export const Default = Template.bind({})
