@@ -20,6 +20,7 @@ export const serializeStockThingList = (
   formValues: IStockThingFormValues,
   departementCode: string
 ): StockCreationBodyModel[] | StockEditionBodyModel[] => {
+  const parseQuantity = parseInt(formValues.quantity)
   const apiStock: StockCreationBodyModel = {
     bookingLimitDatetime: formValues.bookingLimitDatetime
       ? serializeThingBookingLimitDatetime(
@@ -28,16 +29,18 @@ export const serializeStockThingList = (
         )
       : null,
     price: parseInt(formValues.price, 10),
-    quantity: parseInt(formValues.quantity, 10) || null,
+    quantity: isNaN(parseQuantity) ? null : parseQuantity,
   }
   if (formValues.activationCodes.length > 0) {
     apiStock.activationCodes = formValues.activationCodes
-    if (formValues.activationCodesExpirationDatetime)
+    /* istanbul ignore next */
+    if (formValues.activationCodesExpirationDatetime) {
       apiStock.activationCodesExpirationDatetime =
         serializeThingBookingLimitDatetime(
           formValues.activationCodesExpirationDatetime,
           departementCode
         )
+    }
   }
   if (formValues.stockId) {
     return [
