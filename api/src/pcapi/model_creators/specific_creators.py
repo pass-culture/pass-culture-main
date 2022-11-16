@@ -255,35 +255,3 @@ def create_stock_from_event_occurrence(
         stock.bookingLimitDatetime = booking_limit_date
 
     return stock
-
-
-def create_stock_with_thing_offer(
-    offerer: Offerer,
-    venue: Venue,
-    offer: Offer = None,
-    price: Decimal = 10,  # type: ignore [assignment]
-    quantity: int = 50,
-    name: str = "Test Book",
-    booking_email: str = "offer.booking.email@example.com",
-    soft_deleted: bool = False,
-    url: str = None,
-    booking_limit_datetime: datetime = None,
-    thing_subcategory_id: str = subcategories.SUPPORT_PHYSIQUE_FILM.id,
-) -> Stock:
-    stock = Stock()
-    stock.offerer = offerer
-    stock.price = price
-
-    if offer:
-        stock.offer = offer
-    else:
-        stock.offer = create_offer_with_thing_product(venue, thing_name=name, thing_subcategory_id=thing_subcategory_id)
-
-    stock.offer.bookingEmail = booking_email
-    stock.bookingLimitDatetime = booking_limit_datetime
-    stock.offer.url = url
-    stock.offer.venue = venue
-    stock.quantity = quantity
-    stock.isSoftDeleted = soft_deleted
-
-    return stock
