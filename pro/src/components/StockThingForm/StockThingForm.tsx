@@ -1,8 +1,10 @@
+import { useFormikContext } from 'formik'
 import React from 'react'
 
 import { DatePicker, TextInput } from 'ui-kit'
 
 import styles from './StockThingForm.module.scss'
+import { IStockThingFormValues } from './types'
 
 export interface IStockThingFormProps {
   today: Date
@@ -14,6 +16,14 @@ const StockThingForm = ({
   showExpirationDate = false,
   readOnlyFields = [],
 }: IStockThingFormProps): JSX.Element => {
+  const getMaximumBookingDatetime = (date: Date | undefined) => {
+    if (date == undefined) return undefined
+    const result = new Date(date)
+    result.setDate(result.getDate() - 7)
+    return result
+  }
+  const values = useFormikContext().values as IStockThingFormValues
+  const maxDateTime = values.activationCodesExpirationDatetime ?? undefined
   return (
     <>
       <TextInput
@@ -30,6 +40,7 @@ const StockThingForm = ({
         label="Date limite de réservation"
         classNameFooter={styles['field-layout-footer']}
         minDateTime={today}
+        maxDateTime={getMaximumBookingDatetime(maxDateTime)}
         openingDateTime={today}
         disabled={readOnlyFields.includes('bookingLimitDatetime')}
       />
