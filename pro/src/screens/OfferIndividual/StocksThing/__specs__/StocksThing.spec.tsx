@@ -16,7 +16,11 @@ import {
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { LIVRE_PAPIER_SUBCATEGORY_ID } from 'core/Offers'
-import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
+import {
+  IOfferIndividual,
+  IOfferIndividualStock,
+  IOfferIndividualVenue,
+} from 'core/Offers/types'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
@@ -353,6 +357,26 @@ describe('screens:StocksThing', () => {
 
       await userEvent.click(screen.getByTitle('Fermer la modale'))
       expect(title).not.toBeInTheDocument()
+    })
+    it('should display an expiration field disabled when activationCodesExpirationDatetime is provided', async () => {
+      props.offer = {
+        ...(offer as IOfferIndividual),
+        isDigital: true,
+        stocks: [
+          {
+            bookingsQuantity: 1,
+            price: 12,
+            hasActivationCode: true,
+            activationCodesExpirationDatetime: new Date('2020-12-15T12:00:00Z'),
+          } as IOfferIndividualStock,
+        ],
+      }
+      renderStockThingScreen({ props, storeOverride, contextValue })
+
+      expect(screen.getByLabelText('Quantité')).toBeDisabled()
+      const expirationInput = screen.getByLabelText("Date d'expiration")
+      expect(expirationInput).toBeDisabled()
+      expect(expirationInput).toHaveValue('15/12/2020')
     })
   })
 })
