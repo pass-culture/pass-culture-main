@@ -1,8 +1,8 @@
 import logging
 
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.repository import repository
 
 
@@ -53,12 +53,11 @@ def create_industrial_thing_offers(
                 is_active = False
             else:
                 is_active = True
-            thing_offers_by_name[name] = create_offer_with_thing_product(
+            thing_offers_by_name[name] = offers_factories.OfferFactory(
                 venue=thing_venue,
                 product=thing_product,
-                thing_subcategory_id=thing_product.subcategoryId,
-                is_active=is_active,
-                id_at_provider=str(id_at_provider),
+                isActive=is_active,
+                idAtProvider=str(id_at_provider),
             )
             offer_index += 1
             id_at_provider += 1

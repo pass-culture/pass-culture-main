@@ -6,7 +6,6 @@ from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users.models import User
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 
 
 logger = logging.getLogger(__name__)
@@ -18,7 +17,10 @@ def create_industrial_activation_offers() -> None:
     activated_user = User.query.filter_by(has_beneficiary_role=True).first()
     offerer = offerers_factories.OffererFactory()
     venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-    offer = create_offer_with_thing_product(venue, thing_subcategory_id=subcategories.ACTIVATION_THING.id)
+    offer = offers_factories.OfferFactory(
+        venue=venue,
+        product__subcategoryId=subcategories.ACTIVATION_THING.id,
+    )
     stock = offers_factories.StockFactory(
         offer=offer,
         price=Decimal(0),
