@@ -1,10 +1,10 @@
 import logging
 
 from pcapi.core.categories import subcategories
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.domain.music_types import music_types
 from pcapi.domain.show_types import show_types
-from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_DESCRIPTION
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_NAME
@@ -43,12 +43,11 @@ def create_industrial_event_products() -> dict[str, offers_models.Product]:
                 description = MOCK_DESCRIPTIONS[mock_index]
 
             name = "{} / {}".format(event_subcategory.id, event_name)
-            event_product = create_product_with_event_subcategory(
+            event_product = offers_factories.ProductFactory(
                 description=description,
-                duration_minutes=60,
-                event_name=event_name,
-                event_subcategory_id=event_subcategory.id,
-                thumb_count=0,
+                durationMinutes=60,
+                name=event_name,
+                subcategoryId=event_subcategory.id,
             )
 
             extraData = {}
