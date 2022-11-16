@@ -156,6 +156,12 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     ]
   }
 
+  if (offer.isDigital) {
+    description += `
+
+    Pour ajouter des codes d’activation, veuillez passer par le menu ··· et choisir l’option correspondante.`
+  }
+
   const submitActivationCodes = useCallback(
     (activationCodes: string[]) => {
       formik.setFieldValue('quantity', activationCodes?.length, true)
