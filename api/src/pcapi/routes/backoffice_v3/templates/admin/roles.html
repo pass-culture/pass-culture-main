@@ -1,0 +1,31 @@
+{% extends "layouts/admin.html" %}
+
+{% block roles_management %}
+  <div class="container">
+    <h2>Gestion des rôles</h2>
+    {% for form in forms %}
+      <div class="card mb-4">
+        <div class="card-header" data-bs-toggle="collapse" href="#{{ form.name }}">
+          {{ form.name }}
+        </div>
+        <div class="collapse card-collapse" id="{{ form.name }}">
+          <form action="{{ url_for(".update_role", role_id=form.id) }}" method="PATCH">
+            <div class="card-body">
+              <div class="row">
+                {% for form_field in forms[form] %}
+                  {{ form_field }}
+                {% endfor %}
+              </div>
+              <div class="row col-2">
+                <button type="submit" class="btn btn-primary">
+                  Sauvegarder les modifications
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+

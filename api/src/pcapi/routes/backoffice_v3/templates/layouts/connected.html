@@ -35,7 +35,7 @@
 {% block content %}
     <div class="container-fluid">
         <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"
-             id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+            id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Menu</h5>
                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
@@ -68,7 +68,18 @@
                     </div>
 
                     <hr>
+
+                    <div class="nav nav-pills flex-column">
+
+                        {% call menu_section("Admin") %}
+                            {{ menu_section_item("Gestion des rôles", "backoffice_v3_web.get_roles") }}
+                        {% endcall %}
+
+                    </div>
+
+                    <hr>
                 </nav>
+
             </div>
         </div>
         <div class="row">
