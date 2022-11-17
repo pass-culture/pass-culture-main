@@ -178,10 +178,8 @@ jobs:
           shell: bash
           options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL
           run: |
-            # Synchronize these globs with `python_files` in `pytest.ini`
-            TEST_FILES=$(ls tests/**/*test.py tests/**/test*.py)
             mkdir -p test-results
-            pytest $TEST_FILES --durations=10 --junitxml=test-results/junit.xml
+            pytest --durations=10 --junitxml=test-results/junit.xml
       - name: Slack Notification
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: rtCamp/action-slack-notify@v2
