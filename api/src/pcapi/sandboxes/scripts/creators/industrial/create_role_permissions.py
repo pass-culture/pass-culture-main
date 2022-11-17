@@ -15,7 +15,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT,
     ],
-    "support-pro": [
+    "support-PRO": [
         perm_models.Permissions.SEARCH_PRO_ACCOUNT,
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.MANAGE_PRO_ENTITY,
