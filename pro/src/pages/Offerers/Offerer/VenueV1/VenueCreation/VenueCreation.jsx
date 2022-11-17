@@ -6,7 +6,6 @@ import { api } from 'apiClient/api'
 import { getError } from 'apiClient/helpers'
 import ConfirmDialog from 'components/ConfirmDialog'
 import GoBackLink from 'components/GoBackLink'
-import PageTitle from 'components/PageTitle/PageTitle'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { unhumanizeSiret } from 'core/Venue/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -275,7 +274,6 @@ const VenueCreation = () => {
       <div className="venue-page-links">
         <GoBackLink to={`/accueil?structure=${offererId}`} title="Accueil" />
       </div>
-      <PageTitle title="Créer un lieu" />
       <Titles title="Lieu" />
       <p className="advice">Ajoutez un lieu où accéder à vos offres.</p>
 

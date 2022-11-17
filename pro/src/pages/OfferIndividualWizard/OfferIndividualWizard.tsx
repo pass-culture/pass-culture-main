@@ -7,6 +7,7 @@ import {
   useRouteMatch,
 } from 'react-router'
 
+import { LogRouteNavigation } from 'app/AppRouter/LogRouteNavigation'
 import { OfferIndividualContextProvider } from 'context/OfferIndividualContext'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { parse } from 'utils/query-string'
@@ -32,34 +33,110 @@ const OfferIndividualWizard = () => {
       <Switch>
         <Route
           exact
-          path={[
-            `${path}/creation/individuelle/informations`,
-            `${path}/brouillon/individuelle/informations`,
-            `${path}/individuelle/informations`,
-          ]}
-        >
-          <Offer />
-        </Route>
+          path={`${path}/creation/individuelle/informations`}
+          render={() => (
+            <LogRouteNavigation
+              route={{ title: "Offre étape par étape - création d'offre" }}
+            >
+              <Offer />
+            </LogRouteNavigation>
+          )}
+        />
         <Route
           exact
-          path={[
-            `${path}/creation/individuelle/stocks`,
-            `${path}/brouillon/individuelle/stocks`,
-            `${path}/individuelle/stocks`,
-          ]}
-        >
-          <Stocks />
-        </Route>
+          path={`${path}/brouillon/individuelle/informations`}
+          render={() => (
+            <LogRouteNavigation
+              route={{ title: "Offre étape par étape - complétion d'offre" }}
+            >
+              <Offer />
+            </LogRouteNavigation>
+          )}
+        />
         <Route
           exact
-          path={[
-            `${path}/creation/individuelle/recapitulatif`,
-            `${path}/brouillon/individuelle/recapitulatif`,
-            `${path}/individuelle/recapitulatif`,
-          ]}
-        >
-          <Summary />
-        </Route>
+          path={`${path}/individuelle/informations`}
+          render={() => (
+            <LogRouteNavigation
+              route={{ title: "Offre étape par étape - édition d'offre" }}
+            >
+              <Offer />
+            </LogRouteNavigation>
+          )}
+        />
+        <Route
+          exact
+          path={`${path}/creation/individuelle/stocks`}
+          render={() => (
+            <LogRouteNavigation
+              route={{ title: 'Offre étape par étape - création de stocks' }}
+            >
+              <Stocks />
+            </LogRouteNavigation>
+          )}
+        />
+        <Route
+          exact
+          path={`${path}/brouillon/individuelle/stocks`}
+          render={() => (
+            <LogRouteNavigation
+              route={{ title: 'Offre étape par étape - complétion de stocks' }}
+            >
+              <Stocks />
+            </LogRouteNavigation>
+          )}
+        />
+        <Route
+          exact
+          path={`${path}/individuelle/stocks`}
+          render={() => (
+            <LogRouteNavigation
+              route={{ title: 'Offre étape par étape - édition de stocks' }}
+            >
+              <Stocks />
+            </LogRouteNavigation>
+          )}
+        />
+        <Route
+          exact
+          path={`${path}/creation/individuelle/recapitulatif`}
+          render={() => (
+            <LogRouteNavigation
+              route={{
+                title:
+                  'Offre étape par étape - récapitulatif de création d’offre',
+              }}
+            >
+              <Summary />
+            </LogRouteNavigation>
+          )}
+        />
+        <Route
+          exact
+          path={`${path}/brouillon/individuelle/recapitulatif`}
+          render={() => (
+            <LogRouteNavigation
+              route={{
+                title:
+                  'Offre étape par étape - récapitulatif de complétion d’offre',
+              }}
+            >
+              <Summary />
+            </LogRouteNavigation>
+          )}
+        />
+        <Route
+          exact
+          path={`${path}/individuelle/recapitulatif`}
+          render={() => (
+            <LogRouteNavigation
+              route={{ title: 'Offre étape par étape - récapitulatif' }}
+            >
+              <Summary />
+            </LogRouteNavigation>
+          )}
+        />
+
         <Route
           exact
           path={[
@@ -67,9 +144,39 @@ const OfferIndividualWizard = () => {
             `${path}/brouillon/individuelle/confirmation`,
             `${path}/individuelle/confirmation`,
           ]}
-        >
-          <Confirmation />
-        </Route>
+          render={() => (
+            <LogRouteNavigation
+              route={{ title: 'Offre étape par étape - confirmation' }}
+            >
+              <Confirmation />
+            </LogRouteNavigation>
+          )}
+        />
+        <Route
+          exact
+          path={`${path}/brouillon/individuelle/confirmation`}
+          render={() => (
+            <LogRouteNavigation
+              route={{
+                title:
+                  'Offre étape par étape - confirmation de publication de votre brouillon',
+              }}
+            >
+              <Confirmation />
+            </LogRouteNavigation>
+          )}
+        />
+        <Route
+          exact
+          path={`${path}/creation/individuelle/confirmation`}
+          render={() => (
+            <LogRouteNavigation
+              route={{ title: 'Offre étape par étape - confirmation' }}
+            >
+              <Confirmation />
+            </LogRouteNavigation>
+          )}
+        />
       </Switch>
     </OfferIndividualContextProvider>
   )

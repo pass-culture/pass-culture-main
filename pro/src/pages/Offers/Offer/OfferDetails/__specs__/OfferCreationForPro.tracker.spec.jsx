@@ -162,6 +162,7 @@ describe('offerDetails - Creation - pro user - tracking', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+    document.title = ''
   })
 
   describe('when submitting form', () => {
@@ -246,9 +247,12 @@ describe('offerDetails - Creation - pro user - tracking', () => {
       await screen.findByText('Créer une offre')
 
       // Then
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+        from: '',
+        title: 'Créer une offre - pass Culture Pro',
+      })
       expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
+        2,
         Events.CLICKED_OFFER_FORM_NAVIGATION,
         {
           from: 'details',
@@ -259,6 +263,10 @@ describe('offerDetails - Creation - pro user - tracking', () => {
           used: 'StickyButtons',
         }
       )
+
+      let nbCalls = 1 // page view
+      nbCalls += 1 // click
+      expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
     })
     it('should save offer on save draft button click', async () => {
       api.getVenue.mockReturnValue(venues[0])
@@ -340,9 +348,12 @@ describe('offerDetails - Creation - pro user - tracking', () => {
       // When
       await userEvent.click(submitButton)
 
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+        from: '',
+        title: 'Créer une offre - pass Culture Pro',
+      })
       expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
+        2,
         Events.CLICKED_OFFER_FORM_NAVIGATION,
         {
           from: 'details',
@@ -353,6 +364,9 @@ describe('offerDetails - Creation - pro user - tracking', () => {
           used: 'DraftButtons',
         }
       )
+      let nbCalls = 1 // page view
+      nbCalls += 1 // click
+      expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
     })
   })
 
@@ -365,9 +379,12 @@ describe('offerDetails - Creation - pro user - tracking', () => {
     await userEvent.click(await screen.findByText('Quitter'))
 
     // Then
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+      from: '',
+      title: 'Créer une offre - pass Culture Pro',
+    })
     expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
+      2,
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
         from: 'details',
@@ -378,6 +395,10 @@ describe('offerDetails - Creation - pro user - tracking', () => {
         used: 'RouteLeavingGuard',
       }
     )
+    let nbCalls = 1 // page view
+    nbCalls += 1 // click
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
   })
 
   it('should track when clicking on annuler et quitter', async () => {
@@ -389,9 +410,13 @@ describe('offerDetails - Creation - pro user - tracking', () => {
     await userEvent.click(await screen.findByText('Quitter'))
 
     // Then
-    expect(mockLogEvent).toHaveBeenCalledTimes(2)
+
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+      from: '',
+      title: 'Créer une offre - pass Culture Pro',
+    })
     expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
+      2,
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
         from: 'details',
@@ -403,7 +428,7 @@ describe('offerDetails - Creation - pro user - tracking', () => {
       }
     )
     expect(mockLogEvent).toHaveBeenNthCalledWith(
-      2,
+      3,
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
         from: 'details',
@@ -414,5 +439,9 @@ describe('offerDetails - Creation - pro user - tracking', () => {
         used: 'RouteLeavingGuard',
       }
     )
+    let nbCalls = 1 // page view
+    nbCalls += 1 // click
+    nbCalls += 1 // click
+    expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
   })
 })

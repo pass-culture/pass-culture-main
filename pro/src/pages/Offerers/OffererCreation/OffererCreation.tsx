@@ -5,7 +5,6 @@ import { useHistory } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { CreateOffererQueryModel } from 'apiClient/v1'
 import GoBackLink from 'components/GoBackLink'
-import PageTitle from 'components/PageTitle/PageTitle'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { addressAndDesignationFromSirenDecorator } from 'ui-kit/form_rff/fields/SirenField'
@@ -54,7 +53,6 @@ const OffererCreation = (): JSX.Element => {
         title="Accueil"
         className="offerer-page-go-back-link"
       />
-      <PageTitle title="Créer une structure" />
       <Titles title="Structure" />
       {isEntrepriseApiDisabled ? (
         <OffererCreationUnavailable />

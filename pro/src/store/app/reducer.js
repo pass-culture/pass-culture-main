@@ -3,6 +3,7 @@ import { SET_DISPLAY_DOMAIN_BANNER, SET_LOG_EVENT } from './actions'
 export const initialState = {
   displayDomainBanner: false,
   logEvent: undefined,
+  fromUrl: '/',
 }
 
 export const appReducer = (state = initialState, action) => {

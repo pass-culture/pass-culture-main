@@ -9,6 +9,7 @@ import { parse } from 'utils/query-string'
 const OfferV2Summary = (): JSX.Element | null => {
   const { currentUser } = useCurrentUser()
   const { offerId } = useParams<{ offerId: string }>()
+
   const { search } = useLocation()
   const { structure: offererId } = parse(search)
 

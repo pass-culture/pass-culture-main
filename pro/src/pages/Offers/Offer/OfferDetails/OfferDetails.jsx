@@ -5,7 +5,6 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
 import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
-import PageTitle from 'components/PageTitle/PageTitle'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -284,18 +283,11 @@ const OfferDetails = ({
   }
 
   if (!isReady) {
-    return (
-      <>
-        <PageTitle title="Détails de l’offre" />
-        <Spinner />
-      </>
-    )
+    return <Spinner />
   }
 
   return (
     <>
-      <PageTitle title="Détails de l’offre" />
-
       <div className="sidebar-container">
         <div className="content">
           {offer ? (

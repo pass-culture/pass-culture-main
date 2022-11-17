@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
-import PageTitle from 'components/PageTitle/PageTitle'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Logo from 'ui-kit/Logo/Logo'
 import { parse } from 'utils/query-string'
@@ -14,7 +13,6 @@ const SetPasswordConfirm = () => {
 
   return (
     <Fragment>
-      <PageTitle title="Définition du mot de passe" />
       <div className="logo-side">
         <Logo noLink signPage />
       </div>

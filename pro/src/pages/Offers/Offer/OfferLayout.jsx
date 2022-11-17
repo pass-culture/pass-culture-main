@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { LogRouteNavigation } from 'app/AppRouter/LogRouteNavigation'
 import OfferBreadcrumb, {
   OfferBreadcrumbStep,
 } from 'components/OfferBreadcrumb'
@@ -159,64 +160,177 @@ const OfferLayout = () => {
         <Switch>
           <Route
             exact
-            path={[
-              '/offre/creation/individuel',
-              '/offre/:offer_id/individuel/creation',
-              '/offre/:offer_id/individuel/brouillon',
-            ]}
-          >
-            {/* FIXME (cgaunet, 2022-01-31) This is a quick win to fix a flaky E2E test */}
-            {/* There is a concurrency run between the RouteLeavingGuardCollectiveOfferCreation and the reloadOffer call */}
-            {/* in OfferDetails as the offer is loaded in the stock edition page */}
-            <OfferDetails
-              isCreatingOffer={isCreatingOffer}
-              isCompletingDraft={isCompletingDraft}
-              offer={offer}
-              reloadOffer={reloadOffer}
-            />
-          </Route>
-          <Route exact path={`${match.url}/edition`}>
-            <OfferDetails offer={offer} reloadOffer={reloadOffer} />
-          </Route>
-          <Route
-            exact
-            path={[
-              `${match.url}/stocks`,
-              `${match.url}/creation/stocks`,
-              `${match.url}/brouillon/stocks`,
-            ]}
-          >
-            <Stocks
-              location={location}
-              offer={offer}
-              reloadOffer={reloadOffer}
-              isCompletingDraft={isCompletingDraft}
-            />
-          </Route>
-          <Route
-            exact
-            path={[
-              `${match.path}/recapitulatif`,
-              `${match.path}/creation/recapitulatif`,
-              `${match.path}/brouillon/recapitulatif`,
-            ]}
-          >
-            <OfferV2SummaryRoute />
-          </Route>
-          <Route
-            exact
-            path={[
-              `${match.url}/creation/confirmation`,
-              `${match.url}/brouillon/confirmation`,
-            ]}
+            path={'/offre/creation/individuel'}
             render={() => (
-              <Confirmation
-                offer={offer}
-                setOffer={setOffer}
-                reloadOffer={reloadOffer}
-              />
+              <LogRouteNavigation route={{ title: 'Créer une offre' }}>
+                {/* FIXME (cgaunet, 2022-01-31) This is a quick win to fix a flaky E2E test */}
+                {/* There is a concurrency run between the RouteLeavingGuardOfferCreation and the reloadOffer call */}
+                {/* in OfferDetails as the offer is loaded in the stock edition page */}
+                <OfferDetails
+                  isCreatingOffer={isCreatingOffer}
+                  isCompletingDraft={isCompletingDraft}
+                  offer={offer}
+                  reloadOffer={reloadOffer}
+                />
+              </LogRouteNavigation>
             )}
-          ></Route>
+          />
+          <Route
+            exact
+            path={'/offre/:offer_id/individuel/creation'}
+            render={() => (
+              <LogRouteNavigation route={{ title: "Éditer l'offre" }}>
+                {/* FIXME (cgaunet, 2022-01-31) This is a quick win to fix a flaky E2E test */}
+                {/* There is a concurrency run between the RouteLeavingGuardOfferCreation and the reloadOffer call */}
+                {/* in OfferDetails as the offer is loaded in the stock edition page */}
+                <OfferDetails
+                  isCreatingOffer={isCreatingOffer}
+                  isCompletingDraft={isCompletingDraft}
+                  offer={offer}
+                  reloadOffer={reloadOffer}
+                />
+              </LogRouteNavigation>
+            )}
+          />
+          <Route
+            exact
+            path={'/offre/:offer_id/individuel/brouillon'}
+            render={() => (
+              <LogRouteNavigation route={{ title: "Compléter l'offre" }}>
+                {/* FIXME (cgaunet, 2022-01-31) This is a quick win to fix a flaky E2E test */}
+                {/* There is a concurrency run between the RouteLeavingGuardOfferCreation and the reloadOffer call */}
+                {/* in OfferDetails as the offer is loaded in the stock edition page */}
+                <OfferDetails
+                  isCreatingOffer={isCreatingOffer}
+                  isCompletingDraft={isCompletingDraft}
+                  offer={offer}
+                  reloadOffer={reloadOffer}
+                />
+              </LogRouteNavigation>
+            )}
+          />
+          <Route
+            exact
+            path={`${match.path}/edition`}
+            render={() => (
+              <LogRouteNavigation route={{ title: "Éditer l'offre" }}>
+                <OfferDetails offer={offer} reloadOffer={reloadOffer} />
+              </LogRouteNavigation>
+            )}
+          />
+
+          <Route
+            exact
+            path={`${match.path}/stocks`}
+            render={() => (
+              <LogRouteNavigation route={{ title: 'Éditer vos stocks' }}>
+                <Stocks
+                  location={location}
+                  offer={offer}
+                  reloadOffer={reloadOffer}
+                  isCompletingDraft={isCompletingDraft}
+                />
+              </LogRouteNavigation>
+            )}
+          />
+          <Route
+            exact
+            path={`${match.path}/creation/stocks`}
+            render={() => (
+              <LogRouteNavigation route={{ title: 'Créer vos stocks' }}>
+                <Stocks
+                  location={location}
+                  offer={offer}
+                  reloadOffer={reloadOffer}
+                  isCompletingDraft={isCompletingDraft}
+                />
+              </LogRouteNavigation>
+            )}
+          />
+          <Route
+            exact
+            path={`${match.path}/brouillon/stocks`}
+            render={() => (
+              <LogRouteNavigation route={{ title: 'Compléter vos stocks' }}>
+                <Stocks
+                  location={location}
+                  offer={offer}
+                  reloadOffer={reloadOffer}
+                  isCompletingDraft={isCompletingDraft}
+                />
+              </LogRouteNavigation>
+            )}
+          />
+
+          <Route
+            exact
+            path={`${match.path}/recapitulatif`}
+            render={() => (
+              <LogRouteNavigation
+                route={{ title: 'Récapitulatif de votre offre' }}
+              >
+                <OfferV2SummaryRoute />
+              </LogRouteNavigation>
+            )}
+          />
+
+          <Route
+            exact
+            path={`${match.path}/creation/recapitulatif`}
+            render={() => (
+              <LogRouteNavigation
+                route={{ title: 'Récapitulatif de votre création d’offre' }}
+              >
+                <OfferV2SummaryRoute />
+              </LogRouteNavigation>
+            )}
+          />
+
+          <Route
+            exact
+            path={`${match.path}/brouillon/recapitulatif`}
+            render={() => (
+              <LogRouteNavigation
+                route={{ title: 'Récapitulatif de votre brouillon d’offre' }}
+              >
+                <OfferV2SummaryRoute />
+              </LogRouteNavigation>
+            )}
+          />
+          <Route
+            exact
+            path={`${match.path}/creation/confirmation`}
+            render={() => (
+              <LogRouteNavigation
+                route={{
+                  title: 'Confirmation de la publication de votre offre',
+                }}
+              >
+                <Confirmation
+                  offer={offer}
+                  setOffer={setOffer}
+                  reloadOffer={reloadOffer}
+                />
+              </LogRouteNavigation>
+            )}
+          />
+          <Route
+            exact
+            path={`${match.path}/brouillon/confirmation`}
+            render={() => (
+              <LogRouteNavigation
+                route={{
+                  title: 'Confirmation de la publication de votre brouillon',
+                }}
+              >
+                <Confirmation
+                  offer={offer}
+                  setOffer={setOffer}
+                  reloadOffer={reloadOffer}
+                />
+              </LogRouteNavigation>
+            )}
+          />
         </Switch>
       </div>
       <RouteLeavingGuardOfferIndividualV2

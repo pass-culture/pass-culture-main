@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 
 import { UserPhoneBodyModel } from 'apiClient/v1'
 import { BannerRGS } from 'components/Banner'
-import PageTitle from 'components/PageTitle/PageTitle'
 import { IUserIdentityFormValues } from 'components/UserIdentityForm/types'
 
 import { Forms } from './constants'
@@ -26,7 +25,6 @@ const UserProfile = ({
   const [currentForm, setCurrentForm] = useState<Forms | null>(null)
   return (
     <>
-      <PageTitle title="Profil" />
       <h1 className={styles['profil-title']}>Profil</h1>
       <BannerRGS />
       <UserIdentity

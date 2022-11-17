@@ -1,22 +1,17 @@
 import * as firebaseAnalytics from '@firebase/analytics'
 import * as firebase from '@firebase/app'
-import { render, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router'
 
+import { LogRouteNavigation } from 'app/AppRouter/LogRouteNavigation'
 import { firebaseConfig } from 'config/firebase'
 import { AnalyticsContextProvider } from 'context/analyticsContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import useLogNavigation from 'hooks/useLogNavigation'
 
 import { useConfigureFirebase } from '../useAnalytics'
 
 const mockSetLogEvent = jest.fn()
-
-const NavigationLogger = (): null => {
-  useLogNavigation()
-  return null
-}
 
 jest.mock('@firebase/analytics', () => {
   return {
@@ -57,29 +52,28 @@ test('should set logEvent and userId', async () => {
   }))
 
   await renderFakeApp()
+  await screen.findByText('Fake App')
 
-  await waitFor(() => {
-    expect(firebaseAnalytics.initializeAnalytics).toHaveBeenCalledTimes(1)
-    expect(firebaseAnalytics.initializeAnalytics).toHaveBeenNthCalledWith(
-      1,
-      { setup: true },
-      { config: { send_page_view: false } }
-    )
-    expect(firebaseAnalytics.getAnalytics).toHaveBeenCalledTimes(1)
-    expect(firebaseAnalytics.getAnalytics).toHaveBeenNthCalledWith(1, {
-      setup: true,
-    })
-    expect(firebase.initializeApp).toHaveBeenCalledTimes(1)
-    expect(firebase.initializeApp).toHaveBeenNthCalledWith(1, firebaseConfig)
-    expect(firebaseAnalytics.setUserId).toHaveBeenCalledTimes(1)
-    expect(firebaseAnalytics.setUserId).toHaveBeenNthCalledWith(
-      1,
-      'getAnalyticsReturn',
-      'userId'
-    )
-    expect(mockSetLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockSetLogEvent).toHaveBeenNthCalledWith(1, expect.any(Function))
+  expect(firebaseAnalytics.initializeAnalytics).toHaveBeenCalledTimes(1)
+  expect(firebaseAnalytics.initializeAnalytics).toHaveBeenNthCalledWith(
+    1,
+    { setup: true },
+    { config: { send_page_view: false } }
+  )
+  expect(firebaseAnalytics.getAnalytics).toHaveBeenCalledTimes(1)
+  expect(firebaseAnalytics.getAnalytics).toHaveBeenNthCalledWith(1, {
+    setup: true,
   })
+  expect(firebase.initializeApp).toHaveBeenCalledTimes(1)
+  expect(firebase.initializeApp).toHaveBeenNthCalledWith(1, firebaseConfig)
+  expect(firebaseAnalytics.setUserId).toHaveBeenCalledTimes(1)
+  expect(firebaseAnalytics.setUserId).toHaveBeenNthCalledWith(
+    1,
+    'getAnalyticsReturn',
+    'userId'
+  )
+  expect(mockSetLogEvent).toHaveBeenCalledTimes(1)
+  expect(mockSetLogEvent).toHaveBeenNthCalledWith(1, expect.any(Function))
 })
 
 const renderFakeAppWithTrackedLinks = () => {
@@ -90,10 +84,11 @@ const renderFakeAppWithTrackedLinks = () => {
           '/structures?utm_campaign=push_offre_local&utm_medium=batch&utm_source=push',
         ]}
       >
-        <NavigationLogger />
         <FakeAppWithTrackedLinks>
           <Route path="/structures">
-            <h1>Fake Structure</h1>
+            <LogRouteNavigation route={{ title: 'Page title for Structure' }}>
+              <h1>Fake Structure</h1>
+            </LogRouteNavigation>
           </Route>
         </FakeAppWithTrackedLinks>
       </MemoryRouter>
@@ -110,19 +105,21 @@ const FakeAppWithTrackedLinks = ({ children }: IFakeAppProps): JSX.Element => {
 }
 
 test('should trigger a logEvent', async () => {
-  await renderFakeAppWithTrackedLinks()
-  await waitFor(() => {
-    expect(firebaseAnalytics.logEvent).toHaveBeenNthCalledWith(
-      1,
-      'getAnalyticsReturn',
-      Events.PAGE_VIEW,
-      {
-        from: '/structures',
-        traffic_campaign: 'push_offre_local',
-        traffic_medium: 'batch',
-        traffic_source: 'push',
-      }
-    )
-  })
+  renderFakeAppWithTrackedLinks()
+  await screen.findByText('Fake Structure')
+
+  expect(firebaseAnalytics.logEvent).toHaveBeenNthCalledWith(
+    1,
+    'getAnalyticsReturn',
+    Events.PAGE_VIEW,
+    {
+      from: '',
+      title: 'Page title for Structure - pass Culture Pro',
+      traffic_campaign: 'push_offre_local',
+      traffic_medium: 'batch',
+      traffic_source: 'push',
+    }
+  )
+
   expect(firebaseAnalytics.logEvent).toHaveBeenCalledTimes(1)
 })

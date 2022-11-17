@@ -78,6 +78,7 @@ describe('confirmation page', () => {
       venues: [{ id: 'AB', publicName: 'venue', name: 'venue' }],
     })
     api.listOfferersNames.mockResolvedValue({ offerersNames: [] })
+    document.title = ''
   })
 
   it('should track when clicking on offer creation button', async () => {
@@ -90,9 +91,12 @@ describe('confirmation page', () => {
     await userEvent.click(await screen.findByText('Créer une nouvelle offre'))
 
     // Then
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+      from: '',
+      title: 'Confirmation de la publication de votre offre - pass Culture Pro',
+    })
     expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
+      2,
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
         from: 'confirmation',
@@ -101,6 +105,14 @@ describe('confirmation page', () => {
         used: 'ConfirmationButtonNewOffer',
       }
     )
+    expect(mockLogEvent).toHaveBeenNthCalledWith(3, Events.PAGE_VIEW, {
+      from: 'Confirmation de la publication de votre offre - pass Culture Pro',
+      title: 'Créer une offre - pass Culture Pro',
+    })
+    let nbCalls = 1 // page view
+    nbCalls += 1 // click
+    nbCalls += 1 // page view
+    expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
   })
 
   it('should track when clicking on got to offers button', async () => {
@@ -113,9 +125,12 @@ describe('confirmation page', () => {
     await userEvent.click(await screen.findByText('Voir la liste des offres'))
 
     // Then
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+      from: '',
+      title: 'Confirmation de la publication de votre offre - pass Culture Pro',
+    })
     expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
+      2,
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
         from: 'confirmation',
@@ -124,6 +139,9 @@ describe('confirmation page', () => {
         used: 'ConfirmationButtonOfferList',
       }
     )
+    let nbCalls = 1 // page view
+    nbCalls += 1 // click
+    expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
   })
 
   it('should track when clicking on view in app link', async () => {
@@ -138,9 +156,12 @@ describe('confirmation page', () => {
     )
 
     // Then
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+      from: '',
+      title: 'Confirmation de la publication de votre offre - pass Culture Pro',
+    })
     expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
+      2,
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
         from: 'confirmation',
@@ -149,5 +170,8 @@ describe('confirmation page', () => {
         used: 'ConfirmationPreview',
       }
     )
+    let nbCalls = 1 // page view
+    nbCalls += 1 // click
+    expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
   })
 })

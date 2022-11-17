@@ -4,8 +4,8 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { LogRouteNavigation } from 'app/AppRouter/LogRouteNavigation'
 import { BannerReimbursementsInfo } from 'components/Banner'
-import PageTitle from 'components/PageTitle/PageTitle'
 import { ReimbursementsBreadcrumb } from 'components/ReimbursementsBreadcrumb'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -84,7 +84,6 @@ const Reimbursements = () => {
 
   return (
     <>
-      <PageTitle title="Vos remboursements" />
       <Titles title="Remboursements" />
       {isLoading && <Spinner />}
       {hasNoResults && (
@@ -101,17 +100,25 @@ const Reimbursements = () => {
 
           <Switch>
             <Route exact path={`${match.path}/justificatifs`}>
-              <ReimbursementsInvoices
-                reimbursementPointsOptions={reimbursementPointsOptions}
-                isCurrentUserAdmin={currentUser.isAdmin}
-              />
+              <LogRouteNavigation
+                route={{ title: 'Vos justificatifs de remboursements' }}
+              >
+                <ReimbursementsInvoices
+                  reimbursementPointsOptions={reimbursementPointsOptions}
+                  isCurrentUserAdmin={currentUser.isAdmin}
+                />
+              </LogRouteNavigation>
             </Route>
             <Route exact path={`${match.path}/details`}>
-              <ReimbursementsDetails
-                isCurrentUserAdmin={currentUser.isAdmin}
-                loadVenues={loadVenues}
-                venuesOptions={venuesOptions}
-              />
+              <LogRouteNavigation
+                route={{ title: 'Détails de vos remboursements' }}
+              >
+                <ReimbursementsDetails
+                  isCurrentUserAdmin={currentUser.isAdmin}
+                  loadVenues={loadVenues}
+                  venuesOptions={venuesOptions}
+                />
+              </LogRouteNavigation>
             </Route>
           </Switch>
         </>

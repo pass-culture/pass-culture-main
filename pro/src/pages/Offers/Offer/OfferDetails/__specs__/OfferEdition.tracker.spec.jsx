@@ -167,9 +167,12 @@ describe('offerDetails - Edition', () => {
     await userEvent.click(previewLink)
 
     // Then
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+      from: '',
+      title: "Éditer l'offre - pass Culture Pro",
+    })
     expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
+      2,
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
         from: 'details',
@@ -178,6 +181,9 @@ describe('offerDetails - Edition', () => {
         used: 'DetailsPreview',
       }
     )
+    let nbCalls = 1 // page view
+    nbCalls += 1 // click
+    expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
   })
 
   it('should track when clicking on "Enregistrer les modifications" link', async () => {
@@ -189,9 +195,12 @@ describe('offerDetails - Edition', () => {
     await userEvent.click(saveButton)
 
     // Then
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+      from: "Éditer l'offre - pass Culture Pro",
+      title: "Éditer l'offre - pass Culture Pro",
+    })
     expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
+      2,
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
         from: 'details',
@@ -202,5 +211,13 @@ describe('offerDetails - Edition', () => {
         used: 'StickyButtons',
       }
     )
+    expect(mockLogEvent).toHaveBeenNthCalledWith(3, Events.PAGE_VIEW, {
+      from: "Éditer l'offre - pass Culture Pro",
+      title: 'Récapitulatif de votre offre - pass Culture Pro',
+    })
+    let nbCalls = 1 // page view
+    nbCalls += 1 // click
+    nbCalls += 1 // page view
+    expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
   })
 })

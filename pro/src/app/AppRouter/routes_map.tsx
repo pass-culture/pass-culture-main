@@ -50,6 +50,7 @@ export interface IRoute {
   exact?: boolean
   path: string | string[]
   title?: string
+  hasSubRoutes?: boolean
   meta?: IRouteMeta
   featureName?: string
   disabledFeatureName?: string
@@ -70,7 +71,7 @@ export const routesWithoutLayout: IRoute[] = [
     component: Signup,
     exact: true,
     path: '/inscription/(confirmation)?',
-    title: 'Inscription',
+    title: 'S’inscrire',
     meta: {
       public: true,
     },
@@ -88,13 +89,13 @@ export const routesWithoutLayout: IRoute[] = [
     component: CsvTable,
     exact: true,
     path: '/reservations/detail',
-    title: 'Réservations',
+    title: 'Liste de vos réservations',
   },
   {
     component: CsvTable,
     exact: true,
     path: '/remboursements-details',
-    title: 'Remboursements',
+    title: 'Liste de vos remboursements',
   },
   {
     component: Unavailable,
@@ -113,7 +114,7 @@ const routes: IRoute[] = [
     component: Homepage,
     exact: true,
     path: '/accueil',
-    title: 'Accueil',
+    title: 'Espace acteurs culturels',
   },
   {
     component: Desk,
@@ -125,7 +126,7 @@ const routes: IRoute[] = [
     component: Bookings,
     exact: true,
     path: '/reservations',
-    title: 'Réservations',
+    title: 'Vos réservations',
   },
   {
     component: CollectiveBookings,
@@ -137,7 +138,7 @@ const routes: IRoute[] = [
     component: SetPassword,
     exact: true,
     path: ['/creation-de-mot-de-passe/:token?'],
-    title: 'Création de mot de passe',
+    title: 'Définition du mot de passe',
     meta: {
       public: true,
       layoutConfig: {
@@ -163,7 +164,7 @@ const routes: IRoute[] = [
     component: SignIn,
     exact: true,
     path: '/connexion',
-    title: 'Connexion',
+    title: 'Se connecter',
     meta: {
       public: true,
       layoutConfig: {
@@ -188,32 +189,32 @@ const routes: IRoute[] = [
     component: Offerers,
     exact: true,
     path: '/structures',
-    title: 'Structures',
+    title: 'Vos structures juridiques',
   },
   {
     component: OffererCreation,
     exact: true,
     path: '/structures/creation',
-    title: 'Structures',
+    title: 'Créer une structure',
   },
   {
     component: OffererDetails,
     exact: true,
     path: '/structures/:offererId([A-Z0-9]+)',
-    title: 'Structures',
+    title: 'Détails de votre structure',
   },
   {
     component: VenueV1Creation,
     exact: true,
     path: '/structures/:offererId([A-Z0-9]+)/lieux/creation',
-    title: 'Structures',
+    title: 'Créer un lieu',
     disabledFeatureName: 'VENUE_FORM_V2',
   },
   {
     component: VenueV1Edition,
     exact: true,
     path: '/structures/:offererId([A-Z0-9]+)/lieux/:venueId([A-Z0-9]+)',
-    title: 'Structures',
+    title: 'Détails de votre lieu',
     disabledFeatureName: 'VENUE_FORM_V2',
   },
   {
@@ -241,7 +242,7 @@ const routes: IRoute[] = [
     component: BusinessUnitList,
     exact: true,
     path: '/structures/:offererId([A-Z0-9]+)/point-de-remboursement',
-    title: 'Structures',
+    title: 'Points de remboursement',
     featureName: 'ENFORCE_BANK_INFORMATION_WITH_SIRET',
   },
   {
@@ -257,13 +258,14 @@ const routes: IRoute[] = [
       '/offre/creation/individuel',
       '/offre/:offerId([A-Z0-9]+)/individuel',
     ],
-    title: 'Offre',
+    title: 'Créer une offre',
+    hasSubRoutes: true,
   },
   {
     component: OffersRoute,
     exact: true,
     path: '/offres',
-    title: 'Offres',
+    title: 'Vos offres',
   },
   {
     component: CollectiveOffers,
@@ -302,12 +304,14 @@ const routes: IRoute[] = [
     exact: false,
     path: ['/offre/v3', '/offre/:offerId/v3'],
     title: 'Offre étape par étape',
+    hasSubRoutes: true,
     featureName: 'OFFER_FORM_V3',
   },
   {
     component: Reimbursements,
     path: '/remboursements',
-    title: 'Remboursements',
+    title: 'Vos remboursements',
+    hasSubRoutes: true,
     meta: {
       layoutConfig: {
         pageName: 'reimbursements',

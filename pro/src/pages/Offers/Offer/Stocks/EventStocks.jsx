@@ -12,7 +12,6 @@ import { v4 as generateRandomUuid } from 'uuid'
 
 import { api } from 'apiClient/api'
 import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
-import PageTitle from 'components/PageTitle/PageTitle'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -346,7 +345,6 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
 
   return (
     <div className="stocks-page">
-      <PageTitle title="Vos stocks" />
       {(isDisabled || providerName !== null) && (
         <div className="banners">
           {isDisabled && (

@@ -181,6 +181,7 @@ describe('offerDetails - Draft', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+    document.title = ''
   })
   describe('render when completing a draft offer', () => {
     it('should display the right title and redirect to brouillon stock page', async () => {
@@ -201,9 +202,12 @@ describe('offerDetails - Draft', () => {
 
       await userEvent.click(screen.getByText('Étape suivante'))
 
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+        from: '',
+        title: "Compléter l'offre - pass Culture Pro",
+      })
       expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
+        2,
         Events.CLICKED_OFFER_FORM_NAVIGATION,
         {
           from: 'details',
@@ -214,6 +218,14 @@ describe('offerDetails - Draft', () => {
           used: 'StickyButtons',
         }
       )
+      expect(mockLogEvent).toHaveBeenNthCalledWith(3, Events.PAGE_VIEW, {
+        from: "Compléter l'offre - pass Culture Pro",
+        title: 'Compléter vos stocks - pass Culture Pro',
+      })
+      let nbCalls = 1 // page view
+      nbCalls += 1 // click
+      nbCalls += 1 // page view
+      expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
     })
 
     it('should track information when clicking on "Sauvegarder le brouillon"', async () => {
@@ -223,9 +235,12 @@ describe('offerDetails - Draft', () => {
         screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
       )
 
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+        from: '',
+        title: "Compléter l'offre - pass Culture Pro",
+      })
       expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
+        2,
         Events.CLICKED_OFFER_FORM_NAVIGATION,
         {
           from: 'details',
@@ -236,6 +251,10 @@ describe('offerDetails - Draft', () => {
           used: 'DraftButtons',
         }
       )
+
+      let nbCalls = 1 // page view
+      nbCalls += 1 // click
+      expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
     })
   })
 })

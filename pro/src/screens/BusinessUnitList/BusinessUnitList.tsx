@@ -1,6 +1,5 @@
 import React from 'react'
 
-import PageTitle from 'components/PageTitle/PageTitle'
 import { Banner } from 'ui-kit'
 import Titles from 'ui-kit/Titles/Titles'
 
@@ -67,7 +66,6 @@ const BusinessUnitList = ({
 
   return (
     <div className={styles['business-unit-page']}>
-      <PageTitle title="Points de remboursement" />
       <Titles subtitle={offerer.name} title="Points de remboursement" />
 
       <Banner

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import PageTitle from 'components/PageTitle/PageTitle'
 import { Option } from 'core/Offers/types'
 import Select from 'ui-kit/form_raw/Select'
 import Titles from 'ui-kit/Titles/Titles'
@@ -78,7 +77,6 @@ const OffererStatsScreen = ({ offererOptions }: IOffererStatsScreenProps) => {
 
   return (
     <div className={styles['offerer-stats']}>
-      <PageTitle title="Statistiques" />
       <Titles title="Statistiques" />
       <p className={styles['offerer-stats-description']}>
         Vos statistiques sont calculées et mises à jour quotidiennement dans la

@@ -1,7 +1,6 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import React from 'react'
 
-import PageTitle from 'components/PageTitle/PageTitle'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
@@ -51,7 +50,6 @@ const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
       title={title}
       withStepper={!isOfferV2 && mode !== OFFER_WIZARD_MODE.EDITION}
     >
-      <PageTitle title="Récapitulatif" />
       <SummaryScreen
         offerId={offer.id}
         providerName={providerName}

@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import GoBackLink from 'components/GoBackLink'
-import PageTitle from 'components/PageTitle/PageTitle'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Titles from 'ui-kit/Titles/Titles'
@@ -72,7 +71,6 @@ const OffererDetails = () => {
         title="Accueil"
         className="offerer-page-go-back-link"
       />
-      <PageTitle title="Détails de votre structure" />
       <Titles subtitle={offerer.name} title="Structure" />
       <p className="op-teaser">
         Détails de la structure rattachée, des lieux et des fournisseurs de ses

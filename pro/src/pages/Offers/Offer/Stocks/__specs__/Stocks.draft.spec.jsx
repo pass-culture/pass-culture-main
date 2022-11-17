@@ -148,6 +148,7 @@ describe('stocks page - Brouillon', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+    document.title = ''
   })
   describe('Brouillon', () => {
     it('should render a form with the right title', async () => {
@@ -208,9 +209,12 @@ describe('stocks page - Brouillon', () => {
       await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
       // then
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+        from: '',
+        title: 'Compléter vos stocks - pass Culture Pro',
+      })
       expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
+        2,
         Events.CLICKED_OFFER_FORM_NAVIGATION,
         {
           from: 'stocks',
@@ -221,6 +225,9 @@ describe('stocks page - Brouillon', () => {
           used: 'DraftButtons',
         }
       )
+      let nbCalls = 1 // page view
+      nbCalls += 1 // click
+      expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
     })
 
     it('should track when clicking on next step button', async () => {
@@ -243,9 +250,12 @@ describe('stocks page - Brouillon', () => {
       await userEvent.click(screen.getByText('Étape suivante'))
 
       // then
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+        from: '',
+        title: 'Compléter vos stocks - pass Culture Pro',
+      })
       expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
+        2,
         Events.CLICKED_OFFER_FORM_NAVIGATION,
         {
           from: 'stocks',
@@ -256,6 +266,14 @@ describe('stocks page - Brouillon', () => {
           used: 'StickyButtons',
         }
       )
+      expect(mockLogEvent).toHaveBeenNthCalledWith(3, Events.PAGE_VIEW, {
+        from: 'Compléter vos stocks - pass Culture Pro',
+        title: 'Récapitulatif de votre brouillon d’offre - pass Culture Pro',
+      })
+      let nbCalls = 1 // page view
+      nbCalls += 1 // click
+      nbCalls += 1 // page view
+      expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
     })
   })
 })

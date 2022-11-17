@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
 import { BannerRGS } from 'components/Banner'
-import PageTitle from 'components/PageTitle/PageTitle'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -73,7 +72,6 @@ const SignIn = (): JSX.Element => {
 
   return (
     <>
-      <PageTitle title="Se connecter" />
       <div className="logo-side">
         <Logo noLink signPage />
       </div>

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import { UserRole } from 'apiClient/v1'
 import NoOffers from 'components/NoData'
-import PageTitle from 'components/PageTitle/PageTitle'
 import Tabs from 'components/Tabs'
 import {
   Events,
@@ -221,7 +220,6 @@ const Offers = ({
 
   return (
     <div className="offers-page">
-      <PageTitle title="Vos offres" />
       <Titles action={actionLink} title="Offres" />
       <Tabs
         selectedKey={audience}

@@ -146,6 +146,7 @@ describe('stocks page', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+    document.tilte = ''
   })
 
   describe('create', () => {
@@ -160,6 +161,7 @@ describe('stocks page', () => {
           stocks: [],
         }
         jest.spyOn(api, 'getOffer').mockResolvedValue(noStockOffer)
+        document.title = ''
       })
 
       it('should track when clicking on previous step button', async () => {
@@ -170,9 +172,12 @@ describe('stocks page', () => {
         await userEvent.click(await screen.findByText('Étape précédente'))
 
         // then
-        expect(mockLogEvent).toHaveBeenCalledTimes(1)
+        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+          from: '',
+          title: 'Créer vos stocks - pass Culture Pro',
+        })
         expect(mockLogEvent).toHaveBeenNthCalledWith(
-          1,
+          2,
           Events.CLICKED_OFFER_FORM_NAVIGATION,
           {
             from: 'stocks',
@@ -183,6 +188,14 @@ describe('stocks page', () => {
             used: 'StickyButtons',
           }
         )
+        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+          from: '',
+          title: 'Créer vos stocks - pass Culture Pro',
+        })
+        let nbCalls = 1 // page view
+        nbCalls += 1 // click
+        nbCalls += 1 // page view
+        expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
       })
 
       it('should track stocks creation when clicking on validate button', async () => {
@@ -205,9 +218,12 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByText('Étape suivante'))
 
         // then
-        expect(mockLogEvent).toHaveBeenCalledTimes(1)
+        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+          from: '',
+          title: 'Créer vos stocks - pass Culture Pro',
+        })
         expect(mockLogEvent).toHaveBeenNthCalledWith(
-          1,
+          2,
           Events.CLICKED_OFFER_FORM_NAVIGATION,
           {
             from: 'stocks',
@@ -218,6 +234,14 @@ describe('stocks page', () => {
             used: 'StickyButtons',
           }
         )
+        expect(mockLogEvent).toHaveBeenNthCalledWith(3, Events.PAGE_VIEW, {
+          from: 'Créer vos stocks - pass Culture Pro',
+          title: 'Récapitulatif de votre création d’offre - pass Culture Pro',
+        })
+        let nbCalls = 1 // page view
+        nbCalls += 1 // click
+        nbCalls += 1 // page view
+        expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
       })
 
       it('should track stocks creation when clicking on save draft button', async () => {
@@ -241,9 +265,12 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
         // then
-        expect(mockLogEvent).toHaveBeenCalledTimes(1)
+        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+          from: '',
+          title: 'Créer vos stocks - pass Culture Pro',
+        })
         expect(mockLogEvent).toHaveBeenNthCalledWith(
-          1,
+          2,
           Events.CLICKED_OFFER_FORM_NAVIGATION,
           {
             from: 'stocks',
@@ -254,6 +281,9 @@ describe('stocks page', () => {
             used: 'DraftButtons',
           }
         )
+        let nbCalls = 1 // page view
+        nbCalls += 1 // click
+        expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
       })
     })
 
@@ -267,6 +297,7 @@ describe('stocks page', () => {
         }
 
         jest.spyOn(api, 'getOffer').mockResolvedValue(noStockOffer)
+        document.title = ''
       })
 
       it('should track creation after submitting stock', async () => {
@@ -287,9 +318,12 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByText('Étape suivante'))
 
         // Then
-        expect(mockLogEvent).toHaveBeenCalledTimes(1)
+        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+          from: '',
+          title: 'Créer vos stocks - pass Culture Pro',
+        })
         expect(mockLogEvent).toHaveBeenNthCalledWith(
-          1,
+          2,
           Events.CLICKED_OFFER_FORM_NAVIGATION,
           {
             from: 'stocks',
@@ -300,6 +334,14 @@ describe('stocks page', () => {
             used: 'StickyButtons',
           }
         )
+        expect(mockLogEvent).toHaveBeenNthCalledWith(3, Events.PAGE_VIEW, {
+          from: 'Créer vos stocks - pass Culture Pro',
+          title: 'Récapitulatif de votre création d’offre - pass Culture Pro',
+        })
+        let nbCalls = 1 // page view
+        nbCalls += 1 // click
+        nbCalls += 1 // page view
+        expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
       })
     })
   })

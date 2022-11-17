@@ -126,6 +126,7 @@ describe('stocks page', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+    document.title = ''
   })
 
   describe('edit', () => {
@@ -143,9 +144,12 @@ describe('stocks page', () => {
       )
 
       // Then
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+        from: '',
+        title: 'Éditer vos stocks - pass Culture Pro',
+      })
       expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
+        2,
         Events.CLICKED_OFFER_FORM_NAVIGATION,
         {
           from: 'stocks',
@@ -156,6 +160,14 @@ describe('stocks page', () => {
           used: 'StickyButtons',
         }
       )
+      expect(mockLogEvent).toHaveBeenNthCalledWith(3, Events.PAGE_VIEW, {
+        from: 'Éditer vos stocks - pass Culture Pro',
+        title: 'Récapitulatif de votre offre - pass Culture Pro',
+      })
+      let nbCalls = 1 // page view
+      nbCalls += 1 // click
+      nbCalls += 1 // next page click
+      expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
     })
 
     it('should track after cancelling', async () => {
@@ -168,9 +180,12 @@ describe('stocks page', () => {
       await userEvent.click(await screen.findByText('Annuler et quitter'))
 
       // Then
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.PAGE_VIEW, {
+        from: '',
+        title: 'Éditer vos stocks - pass Culture Pro',
+      })
       expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
+        2,
         Events.CLICKED_OFFER_FORM_NAVIGATION,
         {
           from: 'stocks',
@@ -181,6 +196,9 @@ describe('stocks page', () => {
           used: 'StickyButtons',
         }
       )
+      let nbCalls = 1 // page view
+      nbCalls += 1 // click
+      expect(mockLogEvent).toHaveBeenCalledTimes(nbCalls)
     })
   })
 })

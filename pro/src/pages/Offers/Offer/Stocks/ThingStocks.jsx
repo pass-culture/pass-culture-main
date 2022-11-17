@@ -6,7 +6,6 @@ import { v4 as generateRandomUuid } from 'uuid'
 
 import { api } from 'apiClient/api'
 import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
-import PageTitle from 'components/PageTitle/PageTitle'
 import {
   Events,
   OFFER_FORM_NAVIGATION_OUT,
@@ -302,8 +301,6 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
 
   return (
     <div className="stocks-page">
-      <PageTitle title="Vos stocks" />
-
       {
         /* istanbul ignore next: DEBT, TO FIX */
         (isDisabled || providerName !== null) && (

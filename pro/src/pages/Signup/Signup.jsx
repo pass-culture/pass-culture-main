@@ -3,7 +3,6 @@ import React, { useEffect } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
-import PageTitle from 'components/PageTitle/PageTitle'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 import Logo from 'ui-kit/Logo/Logo'
@@ -26,7 +25,6 @@ const Signup = ({ location }) => {
         pageName: 'sign-up',
       }}
     >
-      <PageTitle title="S’inscrire" />
       <div className="logo-side">
         <Logo noLink signPage />
       </div>

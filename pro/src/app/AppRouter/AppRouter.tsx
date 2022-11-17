@@ -9,6 +9,8 @@ import NotFound from 'pages/Errors/NotFound/NotFound'
 import { Logout } from 'pages/Logout'
 import { selectActiveFeatures } from 'store/features/selectors'
 
+import { LogRouteNavigation } from './LogRouteNavigation'
+
 const AppRouter = (): JSX.Element => {
   const activeFeatures = useSelector(selectActiveFeatures)
   const activeRoutes = routes.filter(
@@ -46,20 +48,35 @@ const AppRouter = (): JSX.Element => {
           exact={route.exact}
           key={Array.isArray(route.path) ? route.path.join('|') : route.path}
           path={route.path}
-        >
-          <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
-            <route.component />
-          </AppLayout>
-        </Route>
+          render={() => (
+            <LogRouteNavigation route={route}>
+              <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
+                <route.component />
+              </AppLayout>
+            </LogRouteNavigation>
+          )}
+        />
       ))}
       {activeRoutesWithoutLayout.map(route => (
         <Route
-          {...route}
+          path={route.path}
           exact={route.exact}
           key={Array.isArray(route.path) ? route.path.join('|') : route.path}
+          render={() => (
+            <LogRouteNavigation route={route}>
+              <route.component />
+            </LogRouteNavigation>
+          )}
         />
       ))}
-      <Route component={NotFound} />
+      <Route
+        component={NotFound}
+        render={() => (
+          <LogRouteNavigation route={{ title: 'Page inaccessible' }}>
+            <NotFound />
+          </LogRouteNavigation>
+        )}
+      />
     </Switch>
   )
 }

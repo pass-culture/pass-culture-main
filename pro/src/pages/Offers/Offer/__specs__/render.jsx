@@ -20,7 +20,7 @@ export const renderOffer = (initialEntries, store) => {
   let path = ''
 
   Object.keys(routes).forEach(key => {
-    if (routes[key].title === 'Offre') {
+    if (routes[key].title === 'Créer une offre') {
       path = routes[key].path
     }
   })

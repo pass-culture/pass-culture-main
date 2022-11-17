@@ -476,6 +476,8 @@ const VenueEdition = () => {
     name: initialName,
   } = venue || {}
 
+  // FIXME (rlecellier): page title should be attache to a route path
+  // change this query param 'modification' into a dedicated route.
   const pageTitle = readOnly ? 'Détails de votre lieu' : 'Modifier votre lieu'
 
   const actionLink = !!initialId && (

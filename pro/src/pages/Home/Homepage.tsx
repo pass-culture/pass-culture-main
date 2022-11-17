@@ -2,7 +2,6 @@ import React, { useRef } from 'react'
 
 import JobHighlightsBanner from 'components/JobHighlightsBanner'
 import { Newsletter } from 'components/Newsletter'
-import PageTitle from 'components/PageTitle/PageTitle'
 import useActiveFeature from 'hooks/useActiveFeature'
 
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
@@ -20,7 +19,6 @@ const Homepage = (): JSX.Element => {
 
   return (
     <div className="homepage">
-      <PageTitle title="Espace acteurs culturels" />
       <h1>Bienvenue dans l’espace acteurs culturels</h1>
       {isJobHighlightBannerEnabled && <JobHighlightsBanner />}
       <HomepageBreadcrumb
