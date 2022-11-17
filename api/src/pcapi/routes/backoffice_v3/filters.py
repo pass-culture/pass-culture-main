@@ -74,6 +74,12 @@ def format_bool(data: bool | None) -> str:
     return "Non"
 
 
+def format_string_list(data: list[str] | None) -> str:
+    if data is None:
+        return ""
+    return ", ".join(data)
+
+
 def parse_referrer(url: str) -> str:
     """
     Ensure that a relative path is used, which will be understood.
@@ -94,4 +100,5 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
     app.jinja_env.filters["format_date"] = format_date
     app.jinja_env.filters["format_bool"] = format_bool
+    app.jinja_env.filters["format_string_list"] = format_string_list
     app.jinja_env.filters["parse_referrer"] = parse_referrer
