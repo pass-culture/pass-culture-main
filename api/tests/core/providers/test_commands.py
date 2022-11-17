@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core import testing
 from pcapi.core.providers import commands
 from pcapi.core.providers import factories
 
@@ -23,7 +24,9 @@ class SynchronizeVenueProvidersApisTest:
         parallel_venue_provider_1 = factories.VenueProviderFactory(provider=parallel_provider)
         parallel_venue_provider_2 = factories.VenueProviderFactory(provider=parallel_provider)
 
-        commands._synchronize_venue_providers_apis()
+        with testing.assert_num_queries(6):
+            # FIXME(viconnex): there is N+1 queries because we don't use joinedload
+            commands._synchronize_venue_providers_apis()
 
         assert len(mock_synchronize_venue_providers.call_args_list) == 3
 
