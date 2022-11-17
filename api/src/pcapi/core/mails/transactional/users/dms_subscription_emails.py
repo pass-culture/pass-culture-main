@@ -34,21 +34,6 @@ def send_pre_subscription_from_dms_error_email_to_beneficiary(
     if len(field_errors) == 0:
         return False
     data = models.TransactionalEmailData(template=TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value)
-
-    ### ----- TODO: remove when PROD template is updated to use the new DMS_ERRORS param ------ ###
-    postal_code_error = next(
-        (error for error in field_errors if error.key == fraud_models.DmsFieldErrorKeyEnum.postal_code), None
-    )
-    id_card_number_error = next(
-        (error for error in field_errors if error.key == fraud_models.DmsFieldErrorKeyEnum.id_piece_number),
-        None,
-    )
-    if postal_code_error:
-        data.params["POSTAL_CODE"] = postal_code_error.value
-    if id_card_number_error:
-        data.params["ID_CARD_NUMBER"] = id_card_number_error.value
-    ### --------------------------------------------------------------------------------------- ###
-
     data.params["DMS_ERRORS"] = [
         {"name": FIELD_ERROR_LABELS.get(error.key), "value": error.value} for error in field_errors
     ]
