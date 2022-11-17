@@ -16,6 +16,8 @@ import { IOfferEducationalProps } from '../OfferEducational'
 
 import FormAccessibility from './FormAccessibility'
 import FormContact from './FormContact'
+import FormImageUploader from './FormImageUploader'
+import { IImageUploaderOfferProps } from './FormImageUploader/FormImageUploader'
 import FormNotifications from './FormNotifications'
 import FormOfferType from './FormOfferType'
 import FormParticipants from './FormParticipants'
@@ -33,6 +35,9 @@ type IOfferEducationalFormProps = Omit<
 > & {
   mode: Mode
   domainsOptions: SelectOption[]
+  imageOffer: IImageUploaderOfferProps['imageOffer']
+  onImageUpload: IImageUploaderOfferProps['onImageUpload']
+  onImageDelete: IImageUploaderOfferProps['onImageDelete']
 }
 
 const OfferEducationalForm = ({
@@ -42,6 +47,9 @@ const OfferEducationalForm = ({
   mode,
   domainsOptions,
   isTemplate,
+  imageOffer,
+  onImageUpload,
+  onImageDelete,
 }: IOfferEducationalFormProps): JSX.Element => {
   const notify = useNotification()
 
@@ -126,6 +134,11 @@ const OfferEducationalForm = ({
             subCategories={categories.educationalSubCategories}
             domainsOptions={domainsOptions}
             disableForm={mode === Mode.READ_ONLY}
+          />
+          <FormImageUploader
+            onImageDelete={onImageDelete}
+            onImageUpload={onImageUpload}
+            imageOffer={imageOffer}
           />
           <FormPracticalInformation
             currentOfferer={currentOfferer}

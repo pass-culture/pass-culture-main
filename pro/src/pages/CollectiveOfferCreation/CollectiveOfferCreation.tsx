@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
+import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   CollectiveOffer,
@@ -14,6 +15,7 @@ import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapte
 import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
 import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
+import { IOfferCollectiveImage } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import OfferEducationalScreen from 'screens/OfferEducational'
@@ -46,6 +48,24 @@ const CollectiveOfferCreation = ({
     queryParamsFromOfferer(location)
 
   const notify = useNotification()
+  const [imageOffer, setImageOffer] = useState<IOfferCollectiveImage | null>(
+    offer && offer.imageUrl && offer.imageCredit
+      ? { url: offer.imageUrl, credit: offer.imageCredit }
+      : null
+  )
+  const [imageToUpload, setImageToUpload] = useState<IOnImageUploadArgs | null>(
+    null
+  )
+
+  const onImageUpload = async (image: IOnImageUploadArgs) => {
+    setImageToUpload(image)
+    setImageOffer({ url: image.imageCroppedDataUrl, credit: image.credit })
+  }
+
+  const onImageDelete = async () => {
+    setImageToUpload(null)
+    setImageOffer(null)
+  }
 
   const createOrPatchDraftOffer = async (
     offerValues: IOfferEducationalFormValues
@@ -117,6 +137,9 @@ const CollectiveOfferCreation = ({
         mode={Mode.CREATION}
         onSubmit={createOrPatchDraftOffer}
         isTemplate={false}
+        imageOffer={imageOffer}
+        onImageDelete={onImageDelete}
+        onImageUpload={onImageUpload}
       />
       <RouteLeavingGuardCollectiveOfferCreation />
     </>
