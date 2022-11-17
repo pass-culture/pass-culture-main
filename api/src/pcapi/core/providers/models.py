@@ -21,6 +21,7 @@ from sqlalchemy import exists
 from sqlalchemy import select
 from sqlalchemy import true
 import sqlalchemy.exc as sa_exc
+import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import column_property
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
@@ -93,7 +94,7 @@ class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):
 
     providerId: int = Column(BigInteger, ForeignKey("provider.id"), index=True, nullable=False)
 
-    provider = relationship("Provider", foreign_keys=[providerId])  # type: ignore [misc]
+    provider: sa_orm.Mapped["Provider"] = relationship("Provider", foreign_keys=[providerId], backref="venueProviders")
 
     venueIdAtOfferProvider: str = Column(String(70), nullable=False)
 

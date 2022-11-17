@@ -21,16 +21,14 @@ def synchronize_venue_providers_apis() -> None:
 
 
 def _synchronize_venue_providers_apis() -> None:
+    # FIXME(viconnex): we should joinedload(Provider.venueProviders) to avoir N+1 queries but sqlalchemy is not able to build the request
     providers_apis = models.Provider.query.filter(
         models.Provider.isActive == True, models.Provider.apiUrl != None
     ).all()
 
     for provider in providers_apis:
         venue_provider_ids = [
-            id_
-            for id_, in models.VenueProvider.query.filter_by(providerId=provider.id, isActive=True)
-            .with_entities(models.VenueProvider.id)
-            .all()
+            venue_provider.id for venue_provider in provider.venueProviders if venue_provider.isActive
         ]
 
         if provider.enableParallelSynchronization:
