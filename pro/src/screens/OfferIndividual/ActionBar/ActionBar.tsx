@@ -3,8 +3,14 @@ import { useSelector } from 'react-redux'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+  OFFER_FORM_NAVIGATION_OUT,
+} from 'core/FirebaseEvents/constants'
 import { computeOffersUrl, OFFER_WIZARD_MODE } from 'core/Offers'
 import { useOfferWizardMode } from 'hooks'
+import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as IcoMiniArrowLeft } from 'icons/ico-mini-arrow-left.svg'
 import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.svg'
 import { RootState } from 'store/reducers'
@@ -17,6 +23,7 @@ export interface IActionBarProps {
   onClickSaveDraft?: () => void
   isDisabled: boolean
   step: OFFER_WIZARD_STEP_IDS
+  offerId?: string
 }
 
 const ActionBar = ({
@@ -25,6 +32,7 @@ const ActionBar = ({
   onClickSaveDraft,
   isDisabled,
   step,
+  offerId,
 }: IActionBarProps) => {
   const offersSearchFilters = useSelector(
     (state: RootState) => state.offers.searchFilters
@@ -34,6 +42,18 @@ const ActionBar = ({
   )
   const mode = useOfferWizardMode()
   const backOfferUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
+  const { logEvent } = useAnalytics()
+
+  const onCancelLog = () => {
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: step,
+      to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      offerId: offerId,
+    })
+  }
 
   const Left = (): JSX.Element => {
     if (mode !== OFFER_WIZARD_MODE.EDITION) {
@@ -43,6 +63,7 @@ const ActionBar = ({
             <ButtonLink
               link={{ to: '/offres', isExternal: false }}
               variant={ButtonVariant.SECONDARY}
+              onClick={onCancelLog}
             >
               Annuler et quitter
             </ButtonLink>
@@ -65,6 +86,7 @@ const ActionBar = ({
           <ButtonLink
             link={{ to: backOfferUrl, isExternal: false }}
             variant={ButtonVariant.PRIMARY}
+            onClick={onCancelLog}
           >
             Retour à la liste des offres
           </ButtonLink>
@@ -73,6 +95,7 @@ const ActionBar = ({
             <ButtonLink
               link={{ to: backOfferUrl, isExternal: false }}
               variant={ButtonVariant.SECONDARY}
+              onClick={onCancelLog}
             >
               Annuler et quitter
             </ButtonLink>
@@ -94,6 +117,7 @@ const ActionBar = ({
               <ButtonLink
                 link={{ to: '/offres', isExternal: false }}
                 variant={ButtonVariant.SECONDARY}
+                onClick={onCancelLog}
               >
                 Sauvegarder le brouillon et quitter
               </ButtonLink>

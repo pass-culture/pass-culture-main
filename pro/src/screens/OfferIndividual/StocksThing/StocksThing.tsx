@@ -212,6 +212,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
               onClickSaveDraft={handleNextStep({ saveDraft: true })}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
               isDisabled={formik.isSubmitting}
+              offerId={offer.id}
             />
           </form>
         </FormLayout.Section>

@@ -22,10 +22,12 @@ import {
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
+import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
 import { configureTestStore } from 'store/testUtils'
@@ -33,6 +35,8 @@ import { configureTestStore } from 'store/testUtils'
 import { IInformationsProps, Informations as InformationsScreen } from '..'
 
 window.matchMedia = jest.fn().mockReturnValue({ matches: true })
+const mockLogEvent = jest.fn()
+
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
     filterCategories: jest.fn(),
@@ -253,6 +257,10 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'deleteThumbnail').mockResolvedValue()
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
   })
 
   it('should submit minimal physical offer', async () => {
@@ -298,5 +306,63 @@ describe('screens:OfferIndividual::Informations:draft', () => {
     ).toBeInTheDocument()
     expect(pcapi.postThumbnail).not.toHaveBeenCalled()
     expect(api.postOffer).not.toHaveBeenCalled()
+  })
+
+  it('should track when creating draft offer using Étape suivante', async () => {
+    renderInformationsScreen(props, store, contextOverride)
+    await userEvent.click(await screen.findByText('Étape suivante'))
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'informations',
+        isDraft: true,
+        isEdition: true,
+        offerId: 'AA',
+        to: 'stocks',
+        used: 'StickyButtons',
+      }
+    )
+  })
+
+  it('should track when creating draft offer using Sauvegarder le brouillon', async () => {
+    renderInformationsScreen(props, store, contextOverride)
+    await userEvent.click(await screen.findByText('Sauvegarder le brouillon'))
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'informations',
+        isDraft: true,
+        isEdition: true,
+        offerId: 'AA',
+        to: 'informations',
+        used: 'StickyButtons',
+      }
+    )
+  })
+
+  it('should track when cancelling draft edition', async () => {
+    renderInformationsScreen(props, store, contextOverride)
+
+    await userEvent.click(await screen.findByText('Annuler et quitter'))
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'informations',
+        isDraft: true,
+        isEdition: true,
+        offerId: 'AA',
+        to: 'Offers',
+        used: 'StickyButtons',
+      }
+    )
   })
 })
