@@ -115,7 +115,10 @@ const Summary = (
       to: OfferBreadcrumbStep.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      offerId: offerId,
     })
+
     history.push(
       getOfferIndividualUrl({
         offerId,
@@ -190,7 +193,7 @@ const Summary = (
               onClickPrevious={handlePreviousStep}
               step={OFFER_WIZARD_STEP_IDS.SUMMARY}
               isDisabled={isDisabled}
-              offerId={offer.id}
+              offerId={offerId}
             />
           )}
         </SummaryLayout.Content>

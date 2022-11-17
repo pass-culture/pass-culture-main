@@ -385,11 +385,13 @@ describe('Summary trackers', () => {
             isEdition: false,
             to: 'stocks',
             used: 'StickyButtons',
+            offerId: 'AB',
+            isDraft: true,
           }
         )
       })
 
-      it('should track when clicking on return to next step button', async () => {
+      it('should track when clicking on publish button', async () => {
         // given
         renderSummary({ props })
 
