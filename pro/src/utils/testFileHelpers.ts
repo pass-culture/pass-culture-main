@@ -1,4 +1,4 @@
-export interface ICreateImageArgs {
+interface ICreateImageArgs {
   name?: string
   type?: string
   sizeInMB?: number
@@ -14,7 +14,7 @@ export const createFile = ({
   return file
 }
 
-export interface ICreateImageFileArgs {
+interface ICreateImageFileArgs {
   name?: string
   type?: string
   sizeInMB?: number

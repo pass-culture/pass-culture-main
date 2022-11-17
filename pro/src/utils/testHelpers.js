@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import omit from 'lodash.omit'
 
-export const queryCallbacks = {
+const queryCallbacks = {
   // From the 4th tips of this article: https://www.polvara.me/posts/five-things-you-didnt-know-about-testing-library/
   // This allow to search text including children like "Hello world!" in :
   // <button>Hello: <span>world!</span></button>
