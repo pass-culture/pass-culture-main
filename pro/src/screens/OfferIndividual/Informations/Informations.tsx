@@ -10,6 +10,7 @@ import {
 } from 'components/OfferIndividualForm'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import {
   createIndividualOffer,
   getOfferIndividualAdapter,
@@ -171,6 +172,7 @@ const Informations = ({
       offerId === null
         ? await createIndividualOffer(formValues)
         : await updateIndividualOffer({ offerId, formValues })
+    let nextStep = OFFER_WIZARD_STEP_IDS.INFORMATIONS
 
     if (isOk) {
       // FIXME: find a way to test FileReader
@@ -194,17 +196,23 @@ const Informations = ({
       navigate(
         getOfferIndividualUrl({
           offerId: payload.id,
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          step: nextStep,
           mode,
         }),
         { replace: true }
       )
+
+      if (!isSubmittingDraft) {
+        nextStep =
+          mode === OFFER_WIZARD_MODE.EDITION
+            ? OFFER_WIZARD_STEP_IDS.SUMMARY
+            : OFFER_WIZARD_STEP_IDS.STOCKS
+      }
+
       navigate(
         getOfferIndividualUrl({
           offerId: payload.id,
-          step: isSubmittingDraft
-            ? OFFER_WIZARD_STEP_IDS.INFORMATIONS
-            : OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: nextStep,
           mode,
         })
       )
