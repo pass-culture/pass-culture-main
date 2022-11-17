@@ -10,11 +10,11 @@ import { ReactComponent as TemplateOfferIcon } from 'icons/ico-template-offer.sv
 import { ReactComponent as PhoneIcon } from 'icons/info-phone.svg'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
+import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
 
 import ActionsBar from './ActionsBar/ActionsBar'
 import ActionsBarLegacy from './ActionsBar/ActionsBarLegacy'
 import styles from './OfferType.module.scss'
-import OfferTypeButton from './OfferTypeButton'
 import OldOfferTypeButton from './OldOfferTypeButton'
 
 const OfferType = (): JSX.Element => {
@@ -29,6 +29,7 @@ const OfferType = (): JSX.Element => {
 
   const getNextPageHref = () => {
     if (offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
+      /* istanbul ignore next: condition will be removed when FF active in prod */
       return history.push({
         pathname: isOfferFormV3
           ? '/offre/v3/creation/individuelle/informations'
@@ -72,19 +73,19 @@ const OfferType = (): JSX.Element => {
           <FormLayout.Row inline>
             {isSubtypeChosenAtCreation ? (
               <>
-                <OfferTypeButton
+                <RadioButtonWithImage
                   name="offer-type"
                   Icon={PhoneIcon}
-                  isSelected={offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO}
+                  isChecked={offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO}
                   label="Au grand public"
                   onChange={handleOfferTypeChange}
                   value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
                   className={styles['offer-type-button']}
                 />
-                <OfferTypeButton
+                <RadioButtonWithImage
                   name="offer-type"
                   Icon={CaseIcon}
-                  isSelected={offerType === OFFER_TYPES.EDUCATIONAL}
+                  isChecked={offerType === OFFER_TYPES.EDUCATIONAL}
                   label="À un groupe scolaire"
                   onChange={handleOfferTypeChange}
                   value={OFFER_TYPES.EDUCATIONAL}
@@ -115,10 +116,10 @@ const OfferType = (): JSX.Element => {
         {offerType === OFFER_TYPES.EDUCATIONAL && isSubtypeChosenAtCreation && (
           <FormLayout.Section title="Quel est le type de l'offre ?">
             <FormLayout.Row inline>
-              <OfferTypeButton
+              <RadioButtonWithImage
                 name="offer-subtype"
                 Icon={CalendarCheckIcon}
-                isSelected={offerSubtype === OFFER_SUBTYPES.COLLECTIVE}
+                isChecked={offerSubtype === OFFER_SUBTYPES.COLLECTIVE}
                 label="Une offre réservable"
                 description="Cette offre a une date et un prix. Vous pouvez choisir de la rendre visible par tous les établissements scolaires ou par un seul."
                 onChange={handleOfferSubtypeChange}
@@ -126,10 +127,10 @@ const OfferType = (): JSX.Element => {
               />
             </FormLayout.Row>
             <FormLayout.Row inline>
-              <OfferTypeButton
+              <RadioButtonWithImage
                 name="offer-subtype"
                 Icon={TemplateOfferIcon}
-                isSelected={offerSubtype === OFFER_SUBTYPES.TEMPLATE}
+                isChecked={offerSubtype === OFFER_SUBTYPES.TEMPLATE}
                 label="Une offre vitrine"
                 description="Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée. "
                 onChange={handleOfferSubtypeChange}
