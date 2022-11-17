@@ -70,6 +70,14 @@ pc alembic downgrade post@-1
 
 ```
 
+### 6. Mettre à jour le fichier alembic_version_conflict_detection.txt
+
+Ce fichier contient les numéros des dernières migrations pre et post du code.
+
+Il permet de générer un conflit git lorsqu'un commit ajoutant une migration a été poussé sur la branche visée et n'est pas présent sur la branche courante.
+
+La mise à jour de ce fichier est en principe automatiquement effectuée par un hook de pre-commit.
+
 ## Autres commandes utiles :
 
 - Afficher le sql généré entre 2 migrations sans la jouer
