@@ -2,15 +2,26 @@
 
 {% block accounts_main_content %}
 
-    <form action="{{ dst }}" method="GET" class="row row-cols-lg-auto g-3 align-items-center mb-5">
-        {% for form_field in form %}
-            {{ form_field }}
-        {% endfor %}
-
-        <div class="col-12">
-            <button type="submit" class="btn btn-primary">Chercher</button>
+    <form action="{{ dst }}" method="GET" >
+        <div class="col-8 row my-3">
+            <div class="col-5">
+               <div class="input-group mb-3">
+                    {% for form_field in form %}
+                        {% if form_field.type != 'HiddenField' %}
+                            {{ form_field }}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% for form_field in form %}
+                    {% if form_field.type == 'HiddenField' %}
+                        {{ form_field }}
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="col-7">
+                <button type="submit" class="btn btn-primary">Chercher</button>
+            </div>
         </div>
-
     </form>
 
     {% include "components/search/result.html" %}

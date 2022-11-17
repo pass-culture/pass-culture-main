@@ -6,14 +6,14 @@
         <div class="col-6 mt-5">
             <div class="mt-5 text-center">
                 <p class="text-center fs-1 text-primary">
-                    <i class="bi bi-search"></i>
+                    <i class="bi bi-search display-3"></i>
                 </p>
 
                 <p>
                     {{ caller() }}
                 </p>
 
-                <div class="w-100 my-4">
+                <div class="w-100 my-4 ">
                     {% for form_field in form %}
                         {% for error in form_field.errors %}
                             <p class="text-warning lead">{{ error }}</p>
@@ -22,12 +22,24 @@
                 </div>
 
                 <form action="{{ dst }}" method="GET">
-                    {% for form_field in form %}
-                        {{ form_field }}
-                    {% endfor %}
+                    <div class="row col-10 translate-middle-x position-relative start-50 ">
 
+                        <div class="input-group mb-3">
+                            {% for form_field in form %}
+                                {% if  form_field.type != 'HiddenField' %}
+                                    {{ form_field }}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% for form_field in form %}
+                            {% if form_field.type == 'HiddenField' %}
+                                {{ form_field }}
+                            {% endif %}
+                        {% endfor %}
+
+                    </div>
                     <div class="col-12">
-                        <button type="submit" class="btn btn-primary">Chercher</button>
+                        <button type="submit" class="btn btn-primary btn-lg">Chercher</button>
                     </div>
 
                 </form>
