@@ -14,6 +14,7 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.exceptions import AdageException
+from pcapi.core.educational.models import HasImageMixin
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -539,6 +540,17 @@ def publish_collective_offer_template(
         db.session.commit()
 
     return offer_template
+
+
+def delete_image(obj: HasImageMixin) -> None:
+    try:
+        obj.delete_image()
+    except:
+        db.session.rollback()
+        raise
+    else:
+        db.session.commit()
+    return
 
 
 def attach_image(
