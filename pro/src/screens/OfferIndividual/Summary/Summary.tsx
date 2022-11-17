@@ -190,6 +190,7 @@ const Summary = (
               onClickPrevious={handlePreviousStep}
               step={OFFER_WIZARD_STEP_IDS.SUMMARY}
               isDisabled={isDisabled}
+              offerId={offer.id}
             />
           )}
         </SummaryLayout.Content>

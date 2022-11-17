@@ -322,6 +322,7 @@ const Informations = ({
             onClickSaveDraft={handleNextStep({ saveDraft: true })}
             step={OFFER_WIZARD_STEP_IDS.INFORMATIONS}
             isDisabled={formik.isSubmitting}
+            offerId={offer?.id}
           />
         </form>
       </FormLayout>

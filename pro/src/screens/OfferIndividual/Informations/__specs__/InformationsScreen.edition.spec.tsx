@@ -468,4 +468,24 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       }
     )
   })
+
+  it('should track when cancelling edition', async () => {
+    renderInformationsScreen(props, store, contextOverride)
+
+    await userEvent.click(await screen.findByText('Annuler et quitter'))
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'informations',
+        isDraft: false,
+        isEdition: true,
+        offerId: 'AA',
+        to: 'Offers',
+        used: 'StickyButtons',
+      }
+    )
+  })
 })
