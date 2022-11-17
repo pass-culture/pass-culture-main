@@ -1,15 +1,14 @@
 import cn from 'classnames'
 import React, { FunctionComponent, SVGProps } from 'react'
 
-import { OFFER_SUBTYPES, OFFER_TYPES } from 'core/Offers'
 import { ReactComponent as RadioOffIcon } from 'icons/ico-radio-off.svg'
 import { ReactComponent as RadioOnIcon } from 'icons/ico-radio-on.svg'
 
-import styles from './OfferTypeButton.module.scss'
+import styles from './RadioButtonWithImage.module.scss'
 
-interface IOfferTypeButton {
+export interface IRadioButtonWithImage {
   name: string
-  isSelected: boolean
+  isChecked: boolean
   Icon: FunctionComponent<
     SVGProps<SVGSVGElement> & { title?: string | undefined }
   >
@@ -18,12 +17,12 @@ interface IOfferTypeButton {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   className?: string
   disabled?: boolean
-  value: OFFER_TYPES | OFFER_SUBTYPES
+  value: string
 }
 
-const OfferTypeButton = ({
+const RadioButtonWithImage = ({
   name,
-  isSelected,
+  isChecked,
   Icon,
   label,
   description,
@@ -31,7 +30,7 @@ const OfferTypeButton = ({
   className,
   disabled = false,
   value,
-}: IOfferTypeButton): JSX.Element => (
+}: IRadioButtonWithImage): JSX.Element => (
   <label
     className={cn(
       styles.button,
@@ -39,20 +38,20 @@ const OfferTypeButton = ({
         ? styles['layout-column']
         : styles['layout-row'],
       {
-        [styles['is-selected']]: isSelected,
+        [styles['is-selected']]: isChecked,
         [styles['is-disabled']]: disabled,
       },
       className
     )}
   >
-    {isSelected ? (
+    {isChecked ? (
       <RadioOnIcon className={styles['button-radio-on']} />
     ) : (
       <RadioOffIcon className={styles['button-radio-off']} />
     )}
     <Icon className={styles['button-icon']} />
     <input
-      checked={isSelected}
+      checked={isChecked}
       className={styles['button-radio']}
       disabled={disabled}
       name={name}
@@ -69,4 +68,4 @@ const OfferTypeButton = ({
   </label>
 )
 
-export default OfferTypeButton
+export default RadioButtonWithImage
