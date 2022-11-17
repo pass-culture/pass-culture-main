@@ -33,12 +33,16 @@ class Returns200Test:
 
         expected_serialized_offerer = {
             "statuses": [
+                {"id": 2, "name": "Établissement public"},
                 {"id": 3, "name": "Association"},
                 {"id": 4, "name": "Établissement privé"},
-                {"id": 2, "name": "Établissement public"},
                 {"id": 5, "name": "micro-entreprise, auto-entrepreneur"},
             ]
         }
 
         assert response.status_code == 200
-        assert response.json == expected_serialized_offerer
+
+        found_offerer = response.json
+        found_offerer["statuses"] = sorted(found_offerer["statuses"], key=lambda o: o["id"])
+
+        assert found_offerer == expected_serialized_offerer
