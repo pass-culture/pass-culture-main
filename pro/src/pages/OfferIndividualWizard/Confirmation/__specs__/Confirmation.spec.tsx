@@ -110,7 +110,7 @@ describe('Summary', () => {
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
     ).toHaveAttribute(
       'href',
-      `/offre/creation/individuelle?structure=OFID&lieu=VID physical`
+      `/offre/v3/creation/individuelle?structure=OFID&lieu=VID physical`
     )
     expect(
       screen.getByText('Voir la liste des offres', { selector: 'a' })
@@ -128,7 +128,7 @@ describe('Summary', () => {
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
     ).toHaveAttribute(
       'href',
-      `/offre/creation/individuelle?structure=OFID&lieu=VID physical`
+      `/offre/v3/creation/individuelle?structure=OFID&lieu=VID physical`
     )
   })
 })
