@@ -1,8 +1,5 @@
 import { removeWhitespaces } from 'utils/string'
 
-export const SIRET = 'siret'
-export const SIREN = 'siren'
-
 export function formatSirenOrSiret(string) {
   const value = removeWhitespaces(string)
   if (!value) {
