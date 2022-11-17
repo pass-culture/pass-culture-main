@@ -176,8 +176,8 @@ def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str) -> str:
     return id_at_provider.split("#")[1]
 
 
-def _build_movie_uuid(movie_information_id: int, venue: Venue) -> str:
-    return f"{movie_information_id}%{venue.id}"
+def _build_movie_uuid(film_id: int, venue: Venue) -> str:
+    return f"{film_id}%{venue.id}"
 
 
 def _build_stock_uuid(film_id: int, venue: Venue, showtime_id: int) -> str:

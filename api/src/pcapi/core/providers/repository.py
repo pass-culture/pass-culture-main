@@ -99,7 +99,6 @@ def get_cds_cinema_details(cinema_id: str) -> models.CDSCinemaDetails:
 def get_cinema_venue_provider_query(venue_id: int) -> BaseQuery:
     return models.VenueProvider.query.filter(
         models.VenueProvider.venueId == venue_id,
-        models.VenueProvider.isActive,
         models.VenueProvider.isFromCinemaProvider,
     )
 

@@ -68,7 +68,7 @@ from pcapi.repository import transaction
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.utils import image_conversion
-from pcapi.utils.cds import get_cds_show_id_from_uuid
+from pcapi.utils.cinema_providers import get_cds_show_id_from_uuid
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.workers import push_notification_job
 
@@ -1129,21 +1129,20 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_place(
 ) -> None:
     sentry_sdk.set_tag("cinema-venue-provider", venue_provider.provider.localClass)
 
-    shows_id = [
-        int(get_cds_show_id_from_uuid(stock.idAtProviders)) for stock in offer.activeStocks if stock.idAtProviders
-    ]
-
-    if not shows_id:
+    show_ids = [get_cds_show_id_from_uuid(stock.idAtProviders) for stock in offer.activeStocks if stock.idAtProviders]
+    cleaned_show_ids = [s for s in show_ids if s is not None]
+    if not cleaned_show_ids:
         return
 
     logger.info(
         "Getting up-to-date show stock from booking provider on offer view",
         extra={"offer": offer.id, "venue_provider": venue_provider.id},
     )
-    shows_remaining_places = get_shows_stock(offer.venueId, shows_id)
+
+    shows_remaining_places = get_shows_stock(offer.venueId, cleaned_show_ids)
 
     for show_id, remaining_places in shows_remaining_places.items():
-        stock = next((s for s in offer.activeStocks if get_cds_show_id_from_uuid(s.idAtProviders) == str(show_id)))
+        stock = next((s for s in offer.activeStocks if get_cds_show_id_from_uuid(s.idAtProviders) == show_id))
         if stock and remaining_places <= 0:
             update_stock_quantity_to_dn_booked_quantity(stock.id)
 

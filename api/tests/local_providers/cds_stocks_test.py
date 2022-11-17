@@ -18,7 +18,6 @@ from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.models import Provider
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.repository import repository
-from pcapi.utils.cds import get_cds_show_id_from_uuid
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -605,19 +604,3 @@ class CDSStocksQuantityTest:
         assert len(created_stocks) == 1
         assert first_stock.quantity == 11
         assert first_stock.dnBookedQuantity == 1
-
-
-class GetShowIdFromUuidTest:
-    def test_get_cds_show_id_from_uuid(self):
-        # Given
-        uuid = "movie_id%%siret#show_id/showtime"
-        uuid2 = "123%12345678912345#111/2022-12-12 11:00:00"
-        uuid3 = None
-        # When
-        result = get_cds_show_id_from_uuid(uuid=uuid)
-        result2 = get_cds_show_id_from_uuid(uuid=uuid2)
-        result3 = get_cds_show_id_from_uuid(uuid=uuid3)
-        # Then
-        assert result == "show_id"
-        assert result2 == "111"
-        assert result3 == ""
