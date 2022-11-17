@@ -23,6 +23,9 @@ class Returns200Test:
             "name": "Celeste",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "mentalDisabilityCompliant": True,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
         offer_id = dehumanize(response.json["id"])
@@ -125,6 +128,10 @@ class Returns200Test:
             "withdrawalDetails": "Veuillez récuperer vos billets à l'accueil :)",
             "withdrawalType": "no_ticket",
             "extraData": {"musicType": 300},
+            "mentalDisabilityCompliant": False,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
@@ -171,6 +178,10 @@ class Returns400Test:
             "name": "too long" * 30,
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "withdrawalType": "no_ticket",
+            "mentalDisabilityCompliant": False,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
@@ -189,6 +200,10 @@ class Returns400Test:
             "venueId": humanize(venue.id),
             "name": "An unacceptable name",
             "subcategoryId": "TOTO",
+            "mentalDisabilityCompliant": False,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
@@ -207,6 +222,10 @@ class Returns400Test:
             "venueId": humanize(venue.id),
             "name": "A cool offer name",
             "subcategoryId": "OEUVRE_ART",
+            "mentalDisabilityCompliant": False,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
@@ -251,6 +270,10 @@ class Returns400Test:
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "url": "missing.something",
+            "mentalDisabilityCompliant": False,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
@@ -270,6 +293,10 @@ class Returns400Test:
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "externalTicketOfficeUrl": "missing.something",
+            "mentalDisabilityCompliant": False,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
@@ -289,6 +316,10 @@ class Returns400Test:
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "url": "https://missing",
+            "mentalDisabilityCompliant": False,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
@@ -308,6 +339,10 @@ class Returns400Test:
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "externalTicketOfficeUrl": "https://missing",
+            "mentalDisabilityCompliant": False,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
@@ -327,6 +362,10 @@ class Returns400Test:
             "name": "Dofus",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "withdrawalType": "no_ticket",
+            "mentalDisabilityCompliant": False,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 

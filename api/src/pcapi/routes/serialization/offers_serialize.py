@@ -62,9 +62,7 @@ class CategoryResponseModel(BaseModel):
 
 
 class PostOfferBodyModel(BaseModel):
-    # TODO (viconnex, 2022-11-14): remove the default value for the 4 following accessibility fields
-    #  once we are sure external partners (like pims) do send them or once they stop using the route
-    audio_disability_compliant: bool = False
+    audio_disability_compliant: bool
     booking_email: EmailStr | None
     description: str | None
     duration_minutes: int | None
@@ -72,13 +70,13 @@ class PostOfferBodyModel(BaseModel):
     extra_data: Any
     is_duo: bool | None
     is_national: bool | None
-    mental_disability_compliant: bool = False
-    motor_disability_compliant: bool = False
+    mental_disability_compliant: bool
+    motor_disability_compliant: bool
     name: str
     subcategory_id: str
     url: HttpUrl | None
     venue_humanized_id: str = Field(..., alias="venueId")
-    visual_disability_compliant: bool = False
+    visual_disability_compliant: bool
     withdrawal_delay: int | None
     withdrawal_details: str | None
     withdrawal_type: offers_models.WithdrawalTypeEnum | None
