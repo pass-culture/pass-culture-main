@@ -163,11 +163,16 @@ describe('screens:StocksThing', () => {
       stockIds: [{ id: 'CREATED_STOCK_ID' }],
     })
     renderStockThingScreen({ props, storeOverride, contextValue })
-
+    const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
+    const draftButton = screen.getByRole('button', {
+      name: 'Sauvegarder le brouillon',
+    })
     await userEvent.type(screen.getByLabelText('Prix'), '20')
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
-    )
+    expect(nextButton).not.toBeDisabled()
+    expect(draftButton).not.toBeDisabled()
+    await userEvent.click(draftButton)
+    expect(nextButton).toBeDisabled()
+    expect(draftButton).toBeDisabled()
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
@@ -181,11 +186,14 @@ describe('screens:StocksThing', () => {
       stockIds: [{ id: 'CREATED_STOCK_ID' }],
     })
     renderStockThingScreen({ props, storeOverride, contextValue })
-
+    const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
+    const draftButton = screen.getByRole('button', {
+      name: 'Sauvegarder le brouillon',
+    })
     await userEvent.type(screen.getByLabelText('Prix'), '20')
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
+    await userEvent.click(nextButton)
+    expect(nextButton).toBeDisabled()
+    expect(draftButton).toBeDisabled()
     expect(api.upsertStocks).toHaveBeenCalledWith({
       humanizedOfferId: 'OFFER_ID',
       stocks: [

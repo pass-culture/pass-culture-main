@@ -50,6 +50,7 @@ describe('OfferIndividual::ActionBar', () => {
       onClickNext: onClickNextMock,
       onClickSaveDraft: onClickSaveDraftMock,
       step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+      isDisabled: false,
     }
   })
 

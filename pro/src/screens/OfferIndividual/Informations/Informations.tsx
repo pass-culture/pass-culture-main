@@ -247,6 +247,7 @@ const Informations = ({
             onClickNext={handleNextStep()}
             onClickSaveDraft={handleNextStep({ saveDraft: true })}
             step={OFFER_WIZARD_STEP_IDS.INFORMATIONS}
+            isDisabled={formik.isSubmitting}
           />
         </form>
       </FormLayout>
