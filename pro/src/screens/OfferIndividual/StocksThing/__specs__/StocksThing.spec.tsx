@@ -130,6 +130,7 @@ describe('screens:StocksThing', () => {
     ).toBeInTheDocument()
     expect(screen.getByLabelText('Quantité')).toBeInTheDocument()
   })
+
   it('should render digital stock thing', async () => {
     props.offer = {
       ...(offer as IOfferIndividual),
@@ -139,7 +140,7 @@ describe('screens:StocksThing', () => {
     renderStockThingScreen({ props, storeOverride, contextValue })
     expect(
       screen.getByText(
-        'Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée.'
+        /Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée. Pour ajouter des codes d’activation, veuillez passer par le menu ··· et choisir l’option correspondante./
       )
     ).toBeInTheDocument()
   })
