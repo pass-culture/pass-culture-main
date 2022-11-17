@@ -390,13 +390,10 @@ class BookOfferTest:
                 "noActivationCodeAvailable": ["Ce stock ne contient plus de code d'activation disponible."]
             }
 
-    class WhenBookingIsExternalBookingTest:
+    class WithExternalBookingApiTest:
         @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
-        def test_book_offer_with_solo_external_booking(
-            self,
-            mocked_book_ticket,
-        ):
+        def test_solo_external_booking(self, mocked_book_ticket):
             mocked_book_ticket.return_value = [Ticket(barcode="testbarcode", seat_number="A_1")]
 
             # Given
@@ -423,7 +420,7 @@ class BookOfferTest:
 
         @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
-        def test_book_offer_with_duo_external_booking(self, mocked_book_ticket):
+        def test_duo_external_booking(self, mocked_book_ticket):
             mocked_book_ticket.return_value = [
                 Ticket(barcode="barcode1", seat_number="B_1"),
                 Ticket(barcode="barcode2", seat_number="B_2"),
@@ -451,15 +448,8 @@ class BookOfferTest:
             assert booking.externalBookings[1].barcode == "barcode2"
             assert booking.externalBookings[1].seat == "B_2"
 
-        @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
-        def should_not_create_external_booking_when_cinema_venue_provider_is_not_active(
-            self,
-            mocked_book_ticket,
-        ):
-            mocked_book_ticket.return_value = [Ticket(barcode="testbarcode", seat_number="A_1")]
-
-            # Given
+        def test_error_if_offer_from_inactive_cinema_venue_provider(self):
             cds_provider = get_provider_by_local_class("CDSStocks")
             venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
             providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue, provider=cds_provider)
@@ -472,13 +462,39 @@ class BookOfferTest:
                 lastProviderId=cds_provider.id,
             )
             stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111%4444#111/datetime")
+            with pytest.raises(Exception) as exc:
+                api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
+
+            assert Booking.query.count() == 0
+            assert str(exc.value) == f"No active cinema venue provider found for venue #{venue_provider.venue.id}"
+
+        @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
+        @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+        def test_no_booking_if_external_booking_fails(
+            self,
+            mocked_book_ticket,
+        ):
+            # Given
+            mocked_book_ticket.side_effect = Exception("Something wrong happened")
+            cds_provider = get_provider_by_local_class("CDSStocks")
+            venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+            providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue, provider=cds_provider)
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+
+            offer_solo = offers_factories.EventOfferFactory(
+                name="Séance ciné solo",
+                venue=venue_provider.venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProviderId=cds_provider.id,
+            )
+            stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111%4444#111/datetime")
 
             # When
-            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
+            with pytest.raises(Exception) as exc:
+                api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
 
-            # Then
-            assert len(booking.externalBookings) == 0
-            mocked_book_ticket.assert_not_called()
+            assert Booking.query.count() == 0
+            assert str(exc.value) == "Something wrong happened"
 
 
 @pytest.mark.usefixtures("db_session")
