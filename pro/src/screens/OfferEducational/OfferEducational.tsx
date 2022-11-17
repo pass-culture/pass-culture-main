@@ -14,6 +14,7 @@ import { SelectOption } from 'custom_types/form'
 
 import styles from './OfferEducational.module.scss'
 import OfferEducationalForm from './OfferEducationalForm'
+import { IImageUploaderOfferProps } from './OfferEducationalForm/FormImageUploader/FormImageUploader'
 import { validationSchema } from './validationSchema'
 
 export interface IOfferEducationalProps {
@@ -30,6 +31,9 @@ export interface IOfferEducationalProps {
   isOfferCancellable?: boolean
   domainsOptions: SelectOption[]
   isTemplate: boolean
+  imageOffer: IImageUploaderOfferProps['imageOffer']
+  onImageUpload: IImageUploaderOfferProps['onImageUpload']
+  onImageDelete: IImageUploaderOfferProps['onImageDelete']
 }
 
 const OfferEducational = ({
@@ -46,6 +50,9 @@ const OfferEducational = ({
   isOfferActive = false,
   domainsOptions,
   isTemplate,
+  imageOffer,
+  onImageUpload,
+  onImageDelete,
 }: IOfferEducationalProps): JSX.Element => {
   const { resetForm, ...formik } = useFormik({
     initialValues,
@@ -122,6 +129,9 @@ const OfferEducational = ({
             userOfferers={userOfferers}
             domainsOptions={domainsOptions}
             isTemplate={isTemplate}
+            imageOffer={imageOffer}
+            onImageDelete={onImageDelete}
+            onImageUpload={onImageUpload}
           />
         </form>
       </FormikProvider>

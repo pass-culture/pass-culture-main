@@ -144,6 +144,11 @@ export interface IOfferIndividualVenueProvider {
   name: string
 }
 
+export interface IOfferCollectiveImage {
+  url?: string
+  credit?: string
+}
+
 export interface IOfferIndividualImage {
   originalUrl: string
   url: string
