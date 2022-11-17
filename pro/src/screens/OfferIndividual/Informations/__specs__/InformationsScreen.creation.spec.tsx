@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -245,14 +245,25 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         ''
       )
     )
-    await userEvent.click(await screen.findByText('Étape suivante'))
+    const nextButton = screen.getByText('Étape suivante')
+    const draftButton = screen.getByText('Sauvegarder le brouillon')
 
+    userEvent.click(screen.getByText('Étape suivante'))
+    await waitFor(() => {
+      expect(nextButton).toBeDisabled()
+      expect(draftButton).toBeDisabled()
+    })
+
+    await waitFor(() => {
+      expect(api.postOffer).toHaveBeenCalledTimes(1)
+      expect(api.getOffer).not.toHaveBeenCalled()
+    })
+
+    expect(pcapi.postThumbnail).not.toHaveBeenCalled()
     expect(screen.getByText('api wrong name')).toBeInTheDocument()
     expect(screen.getByText('api wrong venue')).toBeInTheDocument()
-
-    expect(api.postOffer).toHaveBeenCalledTimes(1)
-    expect(api.getOffer).not.toHaveBeenCalled()
-    expect(pcapi.postThumbnail).not.toHaveBeenCalled()
+    expect(nextButton).not.toBeDisabled()
+    expect(draftButton).not.toBeDisabled()
   })
 
   it('should submit minimal virtual offer', async () => {

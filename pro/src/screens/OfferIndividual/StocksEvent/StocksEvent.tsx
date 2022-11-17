@@ -133,6 +133,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
           <form onSubmit={formik.handleSubmit}>
             <StockFormList offer={offer} onDeleteStock={onDeleteStock} />
             <ActionBar
+              isDisabled={formik.isSubmitting}
               onClickNext={handleNextStep}
               onClickPrevious={handlePreviousStep}
               onClickSaveDraft={handleSaveDraft}

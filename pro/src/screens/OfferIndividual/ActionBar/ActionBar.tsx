@@ -15,6 +15,7 @@ export interface IActionBarProps {
   onClickNext?: () => void
   onClickPrevious?: () => void
   onClickSaveDraft?: () => void
+  isDisabled: boolean
   step: OFFER_WIZARD_STEP_IDS
 }
 
@@ -22,6 +23,7 @@ const ActionBar = ({
   onClickNext,
   onClickPrevious,
   onClickSaveDraft,
+  isDisabled,
   step,
 }: IActionBarProps) => {
   const offersSearchFilters = useSelector(
@@ -49,6 +51,7 @@ const ActionBar = ({
               Icon={IcoMiniArrowLeft}
               onClick={onClickPrevious}
               variant={ButtonVariant.SECONDARY}
+              disabled={isDisabled}
             >
               Étape précédente
             </Button>
@@ -72,7 +75,9 @@ const ActionBar = ({
             >
               Annuler et quitter
             </ButtonLink>
-            <Button onClick={onClickNext}>Enregistrer les modifications</Button>
+            <Button onClick={onClickNext} disabled={isDisabled}>
+              Enregistrer les modifications
+            </Button>
           </>
         )}
       </>
@@ -91,12 +96,15 @@ const ActionBar = ({
               >
                 Sauvegarder le brouillon et quitter
               </ButtonLink>
-              <Button onClick={onClickNext}>Publier l'offre</Button>
+              <Button onClick={onClickNext} disabled={isDisabled}>
+                Publier l'offre
+              </Button>
             </>
           ) : (
             <>
               <Button
                 onClick={onClickSaveDraft}
+                disabled={isDisabled}
                 variant={ButtonVariant.SECONDARY}
               >
                 Sauvegarder le brouillon
@@ -105,6 +113,7 @@ const ActionBar = ({
                 Icon={IcoMiniArrowRight}
                 iconPosition={IconPositionEnum.RIGHT}
                 onClick={onClickNext}
+                disabled={isDisabled}
               >
                 Étape suivante
               </Button>
