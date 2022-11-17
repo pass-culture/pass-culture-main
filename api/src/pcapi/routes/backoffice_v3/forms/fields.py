@@ -71,3 +71,8 @@ class PCSelectWithPlaceholderValueField(wtforms.SelectField):
 class PCSearchField(wtforms.StringField):
     widget = partial(widget, template="components/forms/search_field.html")
     validators = [validators.InputRequired("Information obligatoire")]
+
+
+class PCSwitchBooleanField(wtforms.BooleanField):
+    widget = partial(widget, template="components/forms/switch_boolean_field.html")
+    false_values = (False, "False", "false", "")
