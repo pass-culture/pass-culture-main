@@ -37,10 +37,9 @@ const CollectiveOfferStockCreation = ({
   ) => {
     let isOk: boolean
     let message: string | null
-    let payload: { id: string } | null
+    let createdOfferTemplateId: string | null = null
     const isTemplate =
       values.educationalOfferType === EducationalOfferType.SHOWCASE
-
     if (isTemplate) {
       const response = await postCollectiveOfferTemplateAdapter({
         offerId: offer.id,
@@ -48,7 +47,7 @@ const CollectiveOfferStockCreation = ({
       })
       isOk = response.isOk
       message = response.message
-      payload = response.payload
+      createdOfferTemplateId = response.payload ? response.payload.id : null
     } else {
       const response = offer.collectiveStock
         ? await patchCollectiveStockAdapter({
@@ -63,14 +62,15 @@ const CollectiveOfferStockCreation = ({
           })
       isOk = response.isOk
       message = response.message
-      payload = response.payload
 
-      if (offer.collectiveStock && payload !== null) {
+      if (offer && response.payload !== null) {
         setOffer({
           ...offer,
           collectiveStock: {
             ...offer.collectiveStock,
-            ...payload,
+            ...response.payload,
+            isBooked: false,
+            isCancellable: offer.isCancellable,
           },
         })
       }
@@ -81,7 +81,9 @@ const CollectiveOfferStockCreation = ({
     }
 
     let url = `/offre/${computeURLCollectiveOfferId(
-      isTemplate && payload ? payload.id : offer.id,
+      isTemplate && createdOfferTemplateId != null
+        ? createdOfferTemplateId
+        : offer.id,
       isTemplate
     )}/collectif`
 

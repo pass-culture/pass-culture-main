@@ -46,12 +46,12 @@ def get_collective_stock(offer_id: str) -> collective_stock_serialize.Collective
 @login_required
 @spectree_serialize(
     on_success_status=201,
-    response_model=collective_stock_serialize.CollectiveStockIdResponseModel,
+    response_model=collective_stock_serialize.CollectiveStockResponseModel,
     api=blueprint.pro_private_schema,
 )
 def create_collective_stock(
     body: collective_stock_serialize.CollectiveStockCreationBodyModel,
-) -> collective_stock_serialize.CollectiveStockIdResponseModel:
+) -> collective_stock_serialize.CollectiveStockResponseModel:
     try:
         offerer = offerers_repository.get_by_collective_offer_id(body.offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
@@ -63,7 +63,7 @@ def create_collective_stock(
     except educational_exceptions.CollectiveStockAlreadyExists:
         raise ApiErrors({"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}, status_code=409)
 
-    return collective_stock_serialize.CollectiveStockIdResponseModel.from_orm(collective_stock)
+    return collective_stock_serialize.CollectiveStockResponseModel.from_orm(collective_stock)
 
 
 @private_api.route("/collective/stocks/<collective_stock_id>", methods=["PATCH"])
