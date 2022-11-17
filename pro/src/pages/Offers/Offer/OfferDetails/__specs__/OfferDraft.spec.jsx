@@ -224,7 +224,7 @@ describe('offerDetails - Draft', () => {
       )
     })
 
-    it('should track information when clicking on "Enregistrer le brouillon"', async () => {
+    it('should track information when clicking on "Sauvegarder le brouillon"', async () => {
       await renderOffers(props, store)
 
       await userEvent.click(

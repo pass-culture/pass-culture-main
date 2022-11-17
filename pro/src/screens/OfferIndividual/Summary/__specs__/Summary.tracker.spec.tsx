@@ -406,7 +406,7 @@ describe('Summary trackers', () => {
             isEdition: false,
             to: 'confirmation',
             used: 'StickyButtons',
-            isDraft: 'true',
+            isDraft: true,
             offerId: 'AB',
           }
         )
