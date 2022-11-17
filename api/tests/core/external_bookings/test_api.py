@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core.external_bookings.api import _get_external_bookings_client_api
-from pcapi.core.external_bookings.api import get_cinema_venue_provider
+from pcapi.core.external_bookings.api import get_active_cinema_venue_provider
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -18,7 +18,7 @@ class GetCinemaVenueProviderTest:
         venue_id = venue_provider.venueId
 
         # When
-        assert get_cinema_venue_provider(venue_id) == venue_provider
+        assert get_active_cinema_venue_provider(venue_id) == venue_provider
 
     def test_should_raise_exception_if_no_cinema_venue_provider(self) -> None:
         # Given
@@ -26,9 +26,20 @@ class GetCinemaVenueProviderTest:
 
         # When
         with pytest.raises(Exception) as e:
-            get_cinema_venue_provider(venue_id)
+            get_active_cinema_venue_provider(venue_id)
 
         # Then
+        assert str(e.value) == f"No active cinema venue provider found for venue #{venue_id}"
+
+    def test_should_raise_exception_if_inactive_cinema_venue_provider(self) -> None:
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
+        providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+
+        venue_id = venue_provider.venueId
+        with pytest.raises(Exception) as e:
+            get_active_cinema_venue_provider(venue_id)
+
         assert str(e.value) == f"No active cinema venue provider found for venue #{venue_id}"
 
 

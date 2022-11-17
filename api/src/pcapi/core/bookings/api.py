@@ -27,17 +27,18 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offers import repository as offers_repository
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Stock
-from pcapi.core.offers.validation import check_offer_is_from_current_cinema_provider
+import pcapi.core.offers.validation as offers_validation
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_and_lock_user
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository import transaction
-from pcapi.utils.cds import get_cds_show_id_from_uuid
+import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.workers import push_notification_job
 from pcapi.workers import user_emails_job
 
@@ -120,7 +121,18 @@ def book_offer(
             userId=beneficiary.id,
         )
         stock.dnBookedQuantity += booking.quantity
-        _book_external_offer(booking, stock)
+
+        is_external_ticket_applicable = (
+            stock.offer.subcategory.id == subcategories.SEANCE_CINE.id
+            and stock.idAtProviders
+            and db.session.query(
+                providers_repository.get_cinema_venue_provider_query(stock.offer.venueId).exists()
+            ).scalar()
+        )
+        if is_external_ticket_applicable:
+            if not offers_validation.check_offer_is_from_current_cinema_provider(stock.offer):
+                raise Exception("This offer is from the wrong cinema provider")
+            _book_external_ticket(booking, stock)
 
         repository.save(individual_booking, stock)
 
@@ -151,36 +163,33 @@ def book_offer(
     return individual_booking.booking
 
 
-def _book_external_offer(booking: Booking, stock: Stock) -> None:
-    is_active_cinema_venue_provider = db.session.query(
-        providers_repository.get_cinema_venue_provider_query(stock.offer.venueId).exists()
-    ).scalar()
+def _book_external_ticket(booking: Booking, stock: Stock) -> None:
+    venue_provider_name = external_bookings_api.get_active_cinema_venue_provider(
+        stock.offer.venueId
+    ).provider.localClass
+    sentry_sdk.set_tag("cinema-venue-provider", venue_provider_name)
 
-    if (
-        FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active()
-        and stock.offer.subcategory.id == subcategories.SEANCE_CINE.id
-        and is_active_cinema_venue_provider
-        and check_offer_is_from_current_cinema_provider(stock.offer)
-    ):
-        venue_provider_name = external_bookings_api.get_cinema_venue_provider(stock.offer.venueId).provider.localClass
-        sentry_sdk.set_tag("cinema-venue-provider", venue_provider_name)
+    match venue_provider_name:
+        case "CDSStocks":
+            if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_CDS_IMPLEMENTATION is inactive")
+            show_id = cinema_providers_utils.get_cds_show_id_from_uuid(stock.idAtProviders)
+        case "BoostStocks":
+            if not FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
+            show_id = cinema_providers_utils.get_boost_showtime_id_from_uuid(stock.idAtProviders)
+        case _:
+            raise Exception(f"Unknown Provider: {venue_provider_name}")
 
-        if stock.idAtProviders and get_cds_show_id_from_uuid(stock.idAtProviders).isdigit():
-            show_id = int(get_cds_show_id_from_uuid(stock.idAtProviders))
-        else:
-            logger.error(
-                'Stock %d has invalid (non-digit) show_id in idAtProviders "%s"', stock.id, stock.idAtProviders
-            )
-            raise TypeError("Only digit is allowed for show_id in stock.idAtProviders ")
+    if not show_id:
+        raise Exception("Could not retrieve show_id")
 
-        tickets = external_bookings_api.book_ticket(
-            venue_id=stock.offer.venueId,
-            show_id=show_id,
-            quantity=booking.quantity,
-        )
-        booking.externalBookings = [
-            ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets
-        ]
+    tickets = external_bookings_api.book_ticket(
+        venue_id=stock.offer.venueId,
+        show_id=show_id,
+        quantity=booking.quantity,
+    )
+    booking.externalBookings = [ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets]
 
 
 def _cancel_booking(
