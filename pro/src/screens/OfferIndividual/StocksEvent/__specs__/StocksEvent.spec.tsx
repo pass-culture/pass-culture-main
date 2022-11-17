@@ -73,8 +73,6 @@ const renderStockEventScreen = ({
 }
 
 const today = getToday()
-// const tomorow = getToday()
-// tomorow.setDate(tomorow.getDate() + 1)
 
 describe('screens:StocksEvent', () => {
   let props: IStocksEventProps
@@ -185,26 +183,6 @@ describe('screens:StocksEvent', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Next page')).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
-  })
-
-  it('should not submit stock form when click on "Étape précédente"', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
-    })
-
-    renderStockEventScreen({ props, storeOverride, contextValue })
-
-    await userEvent.click(screen.getByLabelText('Date', { exact: true }))
-    await userEvent.click(await screen.getByText(today.getDate()))
-    await userEvent.click(screen.getByLabelText('Horaire'))
-    await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape précédente' })
-    )
-    expect(await screen.findByText('Previous page')).toBeInTheDocument()
-    expect(api.upsertStocks).not.toHaveBeenCalled()
-    expect(api.getOffer).not.toHaveBeenCalled()
   })
 
   it('should display api errors', async () => {
