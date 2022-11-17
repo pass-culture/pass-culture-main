@@ -560,3 +560,47 @@ def attach_offer_template_image(
     )
 
     return collective_offers_serialize.AttachImageResponseModel.from_orm(offer)
+
+
+@private_api.route("/collective/offers/<offer_id>/image", methods=["DELETE"])
+@login_required
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.pro_private_schema,
+)
+def delete_offer_image(
+    offer_id: str,
+) -> None:
+    dehumanized_id = dehumanize_or_raise(offer_id)
+    try:
+        offer = educational_api_offer.get_collective_offer_by_id(dehumanized_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
+    else:
+        check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    educational_api_offer.delete_image(
+        obj=offer,
+    )
+
+
+@private_api.route("/collective/offers-template/<offer_id>/image", methods=["DELETE"])
+@login_required
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.pro_private_schema,
+)
+def delete_offer_template_image(
+    offer_id: str,
+) -> None:
+    dehumanized_id = dehumanize_or_raise(offer_id)
+    try:
+        offer = educational_api_offer.get_collective_offer_template_by_id(dehumanized_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
+    else:
+        check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    educational_api_offer.delete_image(
+        obj=offer,
+    )
