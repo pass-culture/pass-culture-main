@@ -82,7 +82,7 @@
                             </p>
                             <p class="d-flex justify-content-between">
                                 <span class="fs-6">Codes d'erreur</span>
-                                <span class="fs-6">{{ ", ".join(idCheckItem.reasonCodes) | empty_string_if_null }}</span>
+                                <span class="fs-6">{{ idCheckItem.reasonCodes | format_string_list }}</span>
                             </p>
                             <p class="d-flex justify-content-between">
                                 <button class="btn btn-primary fs-6" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-details">
