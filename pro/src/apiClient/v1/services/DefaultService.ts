@@ -19,7 +19,6 @@ import type { CollectiveOfferTemplateResponseIdModel } from '../models/Collectiv
 import type { CollectiveOfferType } from '../models/CollectiveOfferType';
 import type { CollectiveStockCreationBodyModel } from '../models/CollectiveStockCreationBodyModel';
 import type { CollectiveStockEditionBodyModel } from '../models/CollectiveStockEditionBodyModel';
-import type { CollectiveStockIdResponseModel } from '../models/CollectiveStockIdResponseModel';
 import type { CollectiveStockResponseModel } from '../models/CollectiveStockResponseModel';
 import type { CreateOffererQueryModel } from '../models/CreateOffererQueryModel';
 import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResponseModel';
@@ -695,12 +694,12 @@ export class DefaultService {
   /**
    * create_collective_stock <POST>
    * @param requestBody
-   * @returns CollectiveStockIdResponseModel Created
+   * @returns CollectiveStockResponseModel Created
    * @throws ApiError
    */
   public createCollectiveStock(
     requestBody?: CollectiveStockCreationBodyModel,
-  ): CancelablePromise<CollectiveStockIdResponseModel> {
+  ): CancelablePromise<CollectiveStockResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/collective/stocks',
