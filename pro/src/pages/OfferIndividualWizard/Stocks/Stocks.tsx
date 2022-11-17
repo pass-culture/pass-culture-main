@@ -3,7 +3,6 @@ import React from 'react'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate } from 'hooks'
 import {
@@ -28,13 +27,12 @@ const Stocks = (): JSX.Element | null => {
     return null
   }
 
-  // FIXME : we should not need  as IOfferIndividual cause parent route would redirect on offer loading error
   return (
     <WizardTemplate>
       {offer.isEvent ? (
-        <StocksEventScreen offer={offer as IOfferIndividual} />
+        <StocksEventScreen offer={offer} />
       ) : (
-        <StocksThingScreen offer={offer as IOfferIndividual} />
+        <StocksThingScreen offer={offer} />
       )}
     </WizardTemplate>
   )

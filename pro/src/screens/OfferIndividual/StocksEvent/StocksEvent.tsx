@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import {
   getValidationSchema,
   buildInitialValues,
@@ -34,6 +35,12 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       mode,
     })
   )
+  const [
+    isSubmittingFromRouteLeavingGuard,
+    setIsSubmittingFromRouteLeavingGuard,
+  ] = useState<boolean>(false)
+  const [isClickingFromActionBar, setIsClickingFromActionBar] =
+    useState<boolean>(false)
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer } = useOfferIndividualContext()
@@ -52,11 +59,14 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }
-      navigate(afterSubmitUrl)
+      if (!isSubmittingFromRouteLeavingGuard) {
+        navigate(afterSubmitUrl)
+      }
     } else {
       /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors({ stocks: payload.errors })
     }
+    setIsClickingFromActionBar(false)
   }
 
   const onDeleteStock = async (stockValues: IStockEventFormValues) => {
@@ -90,6 +100,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   })
 
   const handleNextStep = () => {
+    setIsClickingFromActionBar(true)
     getOfferIndividualUrl({
       offerId: offer.id,
       step: OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -109,6 +120,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   }
 
   const handleSaveDraft = () => {
+    setIsClickingFromActionBar(true)
     /* istanbul ignore next: DEBT, TO FIX */
     formik.handleSubmit()
     /* istanbul ignore next: DEBT, TO FIX */
@@ -142,6 +154,17 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
           </form>
         </FormLayout.Section>
       </FormLayout>
+      {formik.dirty && !isClickingFromActionBar && (
+        <RouteLeavingGuardOfferIndividual
+          saveForm={formik.handleSubmit}
+          setIsSubmittingFromRouteLeavingGuard={
+            setIsSubmittingFromRouteLeavingGuard
+          }
+          mode={mode}
+          hasOfferBeenCreated
+          isFormValid={formik.isValid}
+        />
+      )}
     </FormikProvider>
   )
 }
