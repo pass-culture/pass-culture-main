@@ -3,7 +3,7 @@
 {% block pro_extra_header %}
     {% if request.referrer is not none %}
         <div class="d-flex justify-content-between align-items-center">
-            <a href="{{ request.referrer | parse_referrer }}">
+            <a href="{{ request.referrer | parse_referrer }}" class="btn btn-sm btn-outline-primary py-1 px-2">
                 <i class="bi bi-chevron-left"></i>
                 Retour
             </a>
@@ -16,21 +16,21 @@
     <div class="col">
         <div class="card">
             <div class="card-body">
-                <h3 class="card-title mb-3">
+                <h2 class="card-title mb-3">
                     {{ offerer.name }}
 
                     <span class="fs-5 ps-4 mb-3 align-middle">
                         {% include "components/offerer/badges.html" %}
                     </span>
-                </h3>
+                </h2>
 
-                <h4 class="card-subtitle text-muted mb-3 h4">
+                <p class="card-subtitle text-muted mb-3 h5">
                     User ID : {{ offerer.id }}
-                </h4>
+                </p>
 
-                <h4 class="card-subtitle text-muted mb-3 h4">
+                <p class="card-subtitle text-muted mb-3 h5">
                     SIREN : {{ offerer.siren | empty_string_if_null }}
-                </h4>
+                </p>
 
                 <div class="row pt-3">
 

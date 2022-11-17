@@ -1,5 +1,5 @@
 #pc-header-top {
-    background: linear-gradient(to right, rgb(235, 0, 85), rgb(50, 0, 150));
+    background: linear-gradient(to right, rgb(var(--bs-primary-rgb)), rgb(var(--bs-secondary-rgb)));
 }
 
 :root {
@@ -8,4 +8,9 @@
 
 .nav-pills {
     --bs-nav-pills-link-active-bg: rgb(219 218 218);
+}
+
+pre:has(code) {
+    padding: 0.5rem;
+    font-family: Consolas, "courier new", serif !important;
 }

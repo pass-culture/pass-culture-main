@@ -1,11 +1,9 @@
-<div class="form-floating my-3">
-    <select class="form-select" id="{{ field.name }}" name="{{ field.name }}" aria-label="{{ field.name }}">
+
+    <select class="form-select form-control" id="{{ field.name }}" name="{{ field.name }}"
+            aria-label="{{ field.name }}" style="flex-grow: 1!important;">
         {% for choice_value, choice_label in field.choices %}
             <option value="{{ choice_value }}" {{ 'selected' if field.data==choice_value else '' }}>
                 {{ choice_label | i18n_public_account }}
             </option>
         {% endfor %}
     </select>
-
-    <label for="{{ field.name }}">{{ field.label }}</label>
-</div>

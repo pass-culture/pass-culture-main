@@ -2,13 +2,26 @@
 
 {% block pro_main_content %}
 
-    <form action="{{ dst }}" method="GET" class="row row-cols-lg-auto g-3 align-items-center mb-5">
-        {% for form_field in form %}
-            {{ form_field }}
-        {% endfor %}
+    <form action="{{ dst }}" method="GET">
+        <div class="col-8 row">
+            <div class="col-8">
+                <div class="input-group mb-3">
+                    {% for form_field in form %}
+                        {% if form_field.type != 'HiddenField' %}
+                            {{ form_field }}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% for form_field in form %}
+                    {% if form_field.type == 'HiddenField' %}
+                        {{ form_field }}
+                    {% endif %}
+                {% endfor %}
 
-        <div class="col-12">
-            <button type="submit" class="btn btn-primary">Chercher</button>
+            </div>
+            <div class="col-4">
+                <button type="submit" class="btn btn-primary">Chercher</button>
+            </div>
         </div>
 
     </form>
