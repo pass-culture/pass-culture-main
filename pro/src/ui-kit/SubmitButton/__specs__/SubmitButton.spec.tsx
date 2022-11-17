@@ -2,9 +2,9 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import SubmitButton from '../SubmitButton'
+import SubmitButton, { ISubmitButtonProps } from '../SubmitButton'
 
-const renderSubmitButton = props => {
+const renderSubmitButton = (props: ISubmitButtonProps) => {
   return render(<SubmitButton {...props} />)
 }
 
