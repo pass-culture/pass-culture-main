@@ -68,4 +68,28 @@ describe('screens::StockThing::serializers:serializeStockThingList', () => {
     )
     expect(serializedData).toStrictEqual([expectedApiStockThing])
   })
+
+  it('should not set null when quantity value is 0', async () => {
+    const serializedData = serializeStockThingList(
+      {
+        stockId: 'STOCK_ID',
+        ...formValues,
+        quantity: '0',
+      },
+      departementCode
+    )
+    expect(serializedData[0].quantity).toStrictEqual(0)
+  })
+
+  it('should set null when quantity field is empty', async () => {
+    const serializedData = serializeStockThingList(
+      {
+        stockId: 'STOCK_ID',
+        ...formValues,
+        quantity: '',
+      },
+      departementCode
+    )
+    expect(serializedData[0].quantity).toStrictEqual(null)
+  })
 })
