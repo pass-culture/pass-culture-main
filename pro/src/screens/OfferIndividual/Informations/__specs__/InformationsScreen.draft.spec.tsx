@@ -341,7 +341,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
         isEdition: true,
         offerId: 'AA',
         to: 'informations',
-        used: 'StickyButtons',
+        used: 'DraftButtons',
       }
     )
   })
