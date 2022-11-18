@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import { getProviderInfo } from 'core/Providers/utils'
+import Banner from 'ui-kit/Banners/Banner'
 import Icon from 'ui-kit/Icon/Icon'
 
 export interface ISynchronizedProviderInformation {
@@ -22,8 +23,10 @@ const SynchronizedProviderInformation = ({
       className="provider-information"
       data-testid="synchronized-provider-information"
     >
-      <Icon alt={providerInfo.name} svg={providerInfo.icon} />
-      {providerInfo.synchronizedOfferMessage}
+      <Banner type="notification-info" showTitle={false}>
+        <Icon alt={providerInfo.name} svg={providerInfo.icon} />
+        {providerInfo.synchronizedOfferMessage}
+      </Banner>
     </div>
   )
 }

@@ -26,8 +26,14 @@ const ImageTemplate: Story<IBannerProps> = props => (
 export const Attention = Template.bind({})
 Attention.args = { type: 'attention', closable: true }
 
+export const AttentionWithoutTitle = Template.bind({})
+AttentionWithoutTitle.args = { type: 'attention', showTitle: false }
+
 export const Info = Template.bind({})
 Info.args = { type: 'notification-info', closable: true }
+
+export const InfoWithoutTitle = Template.bind({})
+InfoWithoutTitle.args = { type: 'notification-info', showTitle: false }
 
 export const Light = Template.bind({})
 Light.args = { type: 'light', closable: true }

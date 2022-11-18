@@ -18,6 +18,7 @@ export interface IBannerLayoutProps {
   minimalStyle?: boolean
   handleOnClick?: () => void
   className?: string
+  showTitle?: boolean
 }
 
 const BannerLayout = ({
@@ -28,6 +29,7 @@ const BannerLayout = ({
   handleOnClick,
   className,
   linkNode,
+  showTitle = true,
 }: IBannerLayoutProps): JSX.Element => {
   const isNewStyles = true
   /* istanbul ignore next: graphic variation */
@@ -38,11 +40,16 @@ const BannerLayout = ({
         styles[`bi-banner`],
         styles[type],
         minimalStyle && styles['is-minimal'],
+        showTitle && [styles['title']],
         className
       )}
     >
-      {type === 'notification-info' && <BulbIcon className={styles['icon']} />}
-      {type === 'attention' && <AttentionIcon className={styles['icon']} />}
+      {type === 'notification-info' && showTitle && (
+        <BulbIcon className={styles['icon']} />
+      )}
+      {type === 'attention' && showTitle && (
+        <AttentionIcon className={styles['icon']} />
+      )}
       <span className={styles['border-cut']}>
         {closable && (
           <button onClick={handleOnClick} type="button">
