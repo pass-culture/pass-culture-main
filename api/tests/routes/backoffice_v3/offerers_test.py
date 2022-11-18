@@ -27,7 +27,10 @@ from .helpers import html_parser
 from .helpers import unauthorized as unauthorized_helpers
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+    pytest.mark.backoffice_v3,
+]
 
 
 @pytest.fixture(scope="function", name="venue")
@@ -388,9 +391,9 @@ class CommentOffererTest:
         needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-    def test_add_comment(self, client, legit_user, offerer):
+    def test_add_comment(self, authenticated_client, offerer):
         comment = "some comment"
-        response = self.send_comment_offerer_request(client, legit_user, offerer, comment)
+        response = self.send_comment_offerer_request(authenticated_client, offerer, comment)
 
         assert response.status_code == 303
 
@@ -401,15 +404,13 @@ class CommentOffererTest:
         assert offerer.action_history[0].comment == comment
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-    def test_add_invalid_comment(self, client, legit_user, offerer):
-        response = self.send_comment_offerer_request(client, legit_user, offerer, "")
+    def test_add_invalid_comment(self, authenticated_client, offerer):
+        response = self.send_comment_offerer_request(authenticated_client, offerer, "")
 
         assert response.status_code == 400
         assert not offerer.action_history
 
-    def send_comment_offerer_request(self, client, legit_user, offerer, comment):
-        authenticated_client = client.with_session_auth(legit_user.email)
-
+    def send_comment_offerer_request(self, authenticated_client, offerer, comment):
         # generate and fetch (inside g) csrf token
         offerer_detail_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id)
         authenticated_client.get(offerer_detail_url)
@@ -772,7 +773,7 @@ class ListOfferersToValidateTest:
             assert "1 structure rejetée" in cards
 
 
-class ValidateOffererUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+class ValidateOffererUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
     endpoint = "backoffice_v3_web.offerer.validate"
     endpoint_kwargs = {"offerer_id": 1}
@@ -786,9 +787,8 @@ class ValidateOffererTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
 
         # when
-        response = authenticated_client.post(
-            url_for("backoffice_v3_web.offerer.validate", offerer_id=user_offerer.offerer.id)
-        )
+        url = url_for("backoffice_v3_web.offerer.validate", offerer_id=user_offerer.offerer.id)
+        response = send_request(authenticated_client, user_offerer.offererId, url)
 
         # then
         assert response.status_code == 303
@@ -807,10 +807,9 @@ class ValidateOffererTest:
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_validate_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
-        # given
-
         # when
-        response = authenticated_client.post(url_for("backoffice_v3_web.offerer.validate", offerer_id=1))
+        url = url_for("backoffice_v3_web.offerer.validate", offerer_id=1)
+        response = send_request(authenticated_client, 1, url)
 
         # then
         assert response.status_code == 404
@@ -821,9 +820,8 @@ class ValidateOffererTest:
         user_offerer = offerers_factories.UserOffererFactory()
 
         # when
-        response = authenticated_client.post(
-            url_for("backoffice_v3_web.offerer.validate", offerer_id=user_offerer.offerer.id)
-        )
+        url = url_for("backoffice_v3_web.offerer.validate", offerer_id=user_offerer.offerer.id)
+        response = send_request(authenticated_client, user_offerer.offererId, url)
 
         # then
         assert response.status_code == 400
@@ -832,7 +830,7 @@ class ValidateOffererTest:
         assert "est déjà validée" in redirected_response.data.decode("utf8")
 
 
-class RejectOffererUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+class RejectOffererUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
     endpoint = "backoffice_v3_web.offerer.reject"
     endpoint_kwargs = {"offerer_id": 1}
@@ -848,7 +846,8 @@ class RejectOffererTest:
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # deleted when rejected
 
         # when
-        response = authenticated_client.post(url_for("backoffice_v3_web.offerer.reject", offerer_id=offerer.id))
+        url = url_for("backoffice_v3_web.offerer.reject", offerer_id=offerer.id)
+        response = send_request(authenticated_client, offerer.id, url)
 
         # then
         assert response.status_code == 303
@@ -869,10 +868,9 @@ class RejectOffererTest:
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_reject_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
-        # given
-
         # when
-        response = authenticated_client.post(url_for("backoffice_v3_web.offerer.reject", offerer_id=1))
+        url = url_for("backoffice_v3_web.offerer.reject", offerer_id=1)
+        response = send_request(authenticated_client, 1, url)
 
         # then
         assert response.status_code == 404
@@ -883,7 +881,8 @@ class RejectOffererTest:
         offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.REJECTED)
 
         # when
-        response = authenticated_client.post(url_for("backoffice_v3_web.offerer.reject", offerer_id=offerer.id))
+        url = url_for("backoffice_v3_web.offerer.reject", offerer_id=offerer.id)
+        response = send_request(authenticated_client, offerer.id, url)
 
         # then
         assert response.status_code == 400
@@ -892,7 +891,7 @@ class RejectOffererTest:
         assert "est déjà rejetée" in redirected_response.data.decode("utf8")
 
 
-class SetOffererPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+class SetOffererPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
     endpoint = "backoffice_v3_web.offerer.set_pending"
     endpoint_kwargs = {"offerer_id": 1}
@@ -906,10 +905,8 @@ class SetOffererPendingTest:
         offerer = offerers_factories.NotValidatedOffererFactory()
 
         # when
-        response = authenticated_client.post(
-            url_for("backoffice_v3_web.offerer.set_pending", offerer_id=offerer.id),
-            form={"comment": "En attente de documents"},
-        )
+        url = url_for("backoffice_v3_web.offerer.set_pending", offerer_id=offerer.id)
+        response = send_request(authenticated_client, offerer.id, url, {"comment": "En attente de documents"})
 
         # then
         assert response.status_code == 303
@@ -929,18 +926,14 @@ class SetOffererPendingTest:
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_set_offerer_pending_returns_404_if_offerer_is_not_found(self, authenticated_client):
-        # given
-
         # when
-        response = authenticated_client.post(
-            url_for("backoffice_v3_web.offerer.set_pending", offerer_id=1),
-            form={"comment": "Questionnaire"},
-        )
+        url = url_for("backoffice_v3_web.offerer.set_pending", offerer_id=1)
+        response = send_request(authenticated_client, 1, url, {"comment": "Questionnaire"})
         # then
         assert response.status_code == 404
 
 
-class ToggleTopActorUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+class ToggleTopActorUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
     endpoint = "backoffice_v3_web.offerer.toggle_top_actor"
     endpoint_kwargs = {"offerer_id": 1}
@@ -954,9 +947,8 @@ class ToggleTopActorTest:
         offerer = offerers_factories.UserNotValidatedOffererFactory().offerer
 
         # when
-        response = authenticated_client.post(
-            url_for("backoffice_v3_web.offerer.toggle_top_actor", offerer_id=offerer.id), form={"is_top_actor": "on"}
-        )
+        url = url_for("backoffice_v3_web.offerer.toggle_top_actor", offerer_id=offerer.id)
+        response = send_request(authenticated_client, offerer.id, url, {"is_top_actor": "on"})
 
         # then
         assert response.status_code == 303
@@ -966,9 +958,8 @@ class ToggleTopActorTest:
         assert offerer_mappings[0].offererId == offerer.id
 
         # when
-        response = authenticated_client.post(
-            url_for("backoffice_v3_web.offerer.toggle_top_actor", offerer_id=offerer.id), form={}
-        )
+        url = url_for("backoffice_v3_web.offerer.toggle_top_actor", offerer_id=offerer.id)
+        response = send_request(authenticated_client, offerer.id, url)
 
         # then
         assert response.status_code == 303
@@ -981,10 +972,8 @@ class ToggleTopActorTest:
 
         # when
         for _ in range(2):
-            response = authenticated_client.post(
-                url_for("backoffice_v3_web.offerer.toggle_top_actor", offerer_id=offerer.id),
-                form={"is_top_actor": "on"},
-            )
+            url = url_for("backoffice_v3_web.offerer.toggle_top_actor", offerer_id=offerer.id)
+            response = send_request(authenticated_client, offerer.id, url, {"is_top_actor": "on"})
 
             # then
             assert response.status_code == 303
@@ -1000,9 +989,8 @@ class ToggleTopActorTest:
         # given
 
         # when
-        response = authenticated_client.post(
-            url_for("backoffice_v3_web.offerer.toggle_top_actor", offerer_id=1), form={"is_top_actor": "on"}
-        )
+        url = url_for("backoffice_v3_web.offerer.toggle_top_actor", offerer_id=1)
+        response = send_request(authenticated_client, 1, url, {"is_top_actor": "on"})
         # then
         assert response.status_code == 404
 
@@ -1288,7 +1276,7 @@ class ListUserOffererToValidateTest:
         assert [int(row["ID Compte pro"]) for row in rows] == [uo.user.id for uo in (user_offerer_3, user_offerer_2)]
 
 
-class ValidateOffererAttachmentUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+class ValidateOffererAttachmentUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
     endpoint = "backoffice_v3_web.user_offerer.user_offerer_validate"
     endpoint_kwargs = {"user_offerer_id": 1}
@@ -1302,9 +1290,8 @@ class ValidateOffererAttachmentTest:
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # when
-        response = authenticated_client.post(
-            url_for("backoffice_v3_web.user_offerer.user_offerer_validate", user_offerer_id=user_offerer.id)
-        )
+        url = url_for("backoffice_v3_web.user_offerer.user_offerer_validate", user_offerer_id=user_offerer.id)
+        response = send_request(authenticated_client, user_offerer.offererId, url)
 
         # then
         assert response.status_code == 303
@@ -1322,11 +1309,10 @@ class ValidateOffererAttachmentTest:
         assert action.venueId is None
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-    def test_validate_offerer_attachment_returns_404_if_offerer_is_not_found(self, authenticated_client):
+    def test_validate_offerer_attachment_returns_404_if_offerer_is_not_found(self, authenticated_client, offerer):
         # when
-        response = authenticated_client.post(
-            url_for("backoffice_v3_web.user_offerer.user_offerer_validate", user_offerer_id=42)
-        )
+        url = url_for("backoffice_v3_web.user_offerer.user_offerer_validate", user_offerer_id=42)
+        response = send_request(authenticated_client, offerer.id, url)
 
         # then
         assert response.status_code == 404
@@ -1337,9 +1323,8 @@ class ValidateOffererAttachmentTest:
         user_offerer = offerers_factories.UserOffererFactory()
 
         # when
-        response = authenticated_client.post(
-            url_for("backoffice_v3_web.user_offerer.user_offerer_validate", user_offerer_id=user_offerer.id)
-        )
+        url = url_for("backoffice_v3_web.user_offerer.user_offerer_validate", user_offerer_id=user_offerer.id)
+        response = send_request(authenticated_client, user_offerer.offererId, url)
 
         # then
         assert response.status_code == 303
@@ -1348,7 +1333,7 @@ class ValidateOffererAttachmentTest:
         assert "est déjà validé" in redirected_response.data.decode("utf8")
 
 
-class RejectOffererAttachmentUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+class RejectOffererAttachmentUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
     endpoint = "backoffice_v3_web.user_offerer.user_offerer_reject"
     endpoint_kwargs = {"user_offerer_id": 1}
@@ -1362,9 +1347,8 @@ class RejectOffererAttachmentTest:
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # when
-        response = authenticated_client.post(
-            url_for("backoffice_v3_web.user_offerer.user_offerer_reject", user_offerer_id=user_offerer.id)
-        )
+        url = url_for("backoffice_v3_web.user_offerer.user_offerer_reject", user_offerer_id=user_offerer.id)
+        response = send_request(authenticated_client, user_offerer.offererId, url)
 
         # then
         assert response.status_code == 303
@@ -1381,17 +1365,16 @@ class RejectOffererAttachmentTest:
         assert action.venueId is None
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-    def test_reject_offerer_returns_404_if_offerer_attachment_is_not_found(self, authenticated_client):
+    def test_reject_offerer_returns_404_if_offerer_attachment_is_not_found(self, authenticated_client, offerer):
         # when
-        response = authenticated_client.post(
-            url_for("backoffice_v3_web.user_offerer.user_offerer_reject", user_offerer_id=42)
-        )
+        url = url_for("backoffice_v3_web.user_offerer.user_offerer_reject", user_offerer_id=42)
+        response = send_request(authenticated_client, offerer.id, url)
 
         # then
         assert response.status_code == 404
 
 
-class SetOffererAttachmentPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+class SetOffererAttachmentPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
     endpoint = "backoffice_v3_web.user_offerer.user_offerer_set_pending"
     endpoint_kwargs = {"user_offerer_id": 1}
@@ -1405,9 +1388,9 @@ class SetOffererAttachmentPendingTest:
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # when
-        response = authenticated_client.post(
-            url_for("backoffice_v3_web.user_offerer.user_offerer_set_pending", user_offerer_id=user_offerer.id),
-            form={"comment": "En attente de documents"},
+        url = url_for("backoffice_v3_web.user_offerer.user_offerer_set_pending", user_offerer_id=user_offerer.id)
+        response = send_request(
+            authenticated_client, user_offerer.offererId, url, {"comment": "En attente de documents"}
         )
 
         # then
@@ -1424,3 +1407,14 @@ class SetOffererAttachmentPendingTest:
         assert action.offererId == user_offerer.offerer.id
         assert action.venueId is None
         assert action.comment == "En attente de documents"
+
+
+def send_request(authenticated_client, offerer_id, url, form_data=None):
+    # generate and fetch (inside g) csrf token
+    offerer_detail_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_id)
+    authenticated_client.get(offerer_detail_url)
+
+    form_data = form_data if form_data else {}
+    form = {"csrf_token": g.get("csrf_token", ""), **form_data}
+
+    return authenticated_client.post(url, form=form)

@@ -13,7 +13,10 @@ import pcapi.core.users.models as users_models
 from . import base
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+    pytest.mark.backoffice_v3,
+]
 
 
 class UnauthorizedHelperBase(base.BaseHelper, metaclass=abc.ABCMeta):
@@ -54,8 +57,8 @@ class UnauthorizedHelper(UnauthorizedHelperBase):
     def test_missing_permission(self, client):  # type: ignore
         user = self.setup_user()
 
-        authenticated_client = client.with_session_auth(user.email)
-        response = getattr(authenticated_client, self.http_method)(self.path)
+        authenticated_client = client.with_bo_session_auth(user)
+        response = authenticated_client.get(self.path)
 
         assert response.status_code == 403
 
@@ -63,8 +66,8 @@ class UnauthorizedHelper(UnauthorizedHelperBase):
     def test_no_backoffice_profile(self, client):  # type: ignore
         user = users_factories.UserFactory(isActive=True)
 
-        authenticated_client = client.with_session_auth(user.email)
-        response = getattr(authenticated_client, self.http_method)(self.path)
+        authenticated_client = client.with_bo_session_auth(user)
+        response = authenticated_client.get(self.path)
 
         assert response.status_code == 403
 
@@ -75,11 +78,14 @@ class UnauthorizedHelper(UnauthorizedHelperBase):
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=False)
     def test_ff_disabled(self, client):  # type: ignore
-        response = getattr(client, self.http_method)(self.path)
+        user = self.setup_user()
+
+        authenticated_client = client.with_bo_session_auth(user)
+        response = authenticated_client.get(self.path)
+
         assert response.status_code == 400
 
 
-@pytest.mark.skip(reason="csrf temporarily deactivated")
 class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
     @property
     def method(self) -> str:
@@ -95,7 +101,7 @@ class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
 
         self.fetch_csrf_token(client)
 
-        authenticated_client = client.with_session_auth(user.email)
+        authenticated_client = client.with_bo_session_auth(user)
         client_method = getattr(authenticated_client, self.method)
 
         response = client_method(self.path, form=self.form)
@@ -108,7 +114,7 @@ class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
 
         self.fetch_csrf_token(client)
 
-        authenticated_client = client.with_session_auth(user.email)
+        authenticated_client = client.with_bo_session_auth(user)
         client_method = getattr(authenticated_client, self.method)
 
         response = client_method(self.path, form=self.form)
@@ -136,7 +142,6 @@ class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
         client.get(url_for("backoffice_v3_web.home"))
 
 
-@pytest.mark.skip(reason="csrf temporarily deactivated")
 class MissingCSRFHelper(base.BaseHelper):
     @property
     def method(self) -> str:
@@ -150,7 +155,7 @@ class MissingCSRFHelper(base.BaseHelper):
     def test_missing_csrf_token(self, client):  # type: ignore
         user = users_factories.UserFactory(isActive=True)
 
-        authenticated_client = client.with_session_auth(user.email)
+        authenticated_client = client.with_bo_session_auth(user)
         client_method = getattr(authenticated_client, self.method)
 
         response = client_method(self.path, form=self.form)

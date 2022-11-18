@@ -1,9 +1,9 @@
 import typing
 
+from flask import current_app as app
 from flask import g
 
 from pcapi.core.users import models as users_models
-from pcapi.flask_app import app
 
 
 CURRENT_USER_GLOBAL_NAME = "current_account"
