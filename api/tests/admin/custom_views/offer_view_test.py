@@ -389,7 +389,7 @@ class OfferValidationViewTest:
         assert response.status_code == 302
         assert url_for("admin.index") in response.location
 
-    @freeze_time("2020-11-17 15:00:00")
+    @freeze_time("2032-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_approve_offer_and_send_mail_to_administration(
@@ -428,10 +428,10 @@ class OfferValidationViewTest:
         mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
             OfferValidationStatus.APPROVED, offer
         )
-        assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
+        assert offer.lastValidationDate == datetime.datetime(2032, 11, 17, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
-    @freeze_time("2020-11-17 15:00:00")
+    @freeze_time("2032-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_offer_and_send_mail_to_administration(
@@ -472,7 +472,7 @@ class OfferValidationViewTest:
         assert url_for("validation.index_view") in response.location
         assert offer.validation == OfferValidationStatus.REJECTED
         assert offer.isActive is False
-        assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
+        assert offer.lastValidationDate == datetime.datetime(2032, 11, 17, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
@@ -623,7 +623,7 @@ class OfferValidationViewTest:
             in get_response.data.decode("utf8")
         )
 
-    @freeze_time("2020-11-17 15:00:00")
+    @freeze_time("2032-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_approve_collective_offer_template_and_send_mail_to_administration(
@@ -664,10 +664,10 @@ class OfferValidationViewTest:
         mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
             OfferValidationStatus.APPROVED, offer
         )
-        assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
+        assert offer.lastValidationDate == datetime.datetime(2032, 11, 17, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
-    @freeze_time("2020-11-17 15:00:00")
+    @freeze_time("2032-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_collective_offer_template_and_send_mail_to_administration(
@@ -708,7 +708,7 @@ class OfferValidationViewTest:
         assert url_for("validation-collective-offer-template.index_view") in response.location
         assert offer.validation == OfferValidationStatus.REJECTED
         assert offer.isActive is False
-        assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
+        assert offer.lastValidationDate == datetime.datetime(2032, 11, 17, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
@@ -833,7 +833,7 @@ class OfferValidationViewTest:
             in get_response.data.decode("utf8")
         )
 
-    @freeze_time("2020-11-17 15:00:00")
+    @freeze_time("2032-11-17 15:00:00")
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
@@ -878,14 +878,14 @@ class OfferValidationViewTest:
         mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
             OfferValidationStatus.APPROVED, offer
         )
-        assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
+        assert offer.lastValidationDate == datetime.datetime(2032, 11, 17, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
         expected_payload = serialize_collective_offer(offer)
         assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/offre-assoc"
 
-    @freeze_time("2020-11-17 15:00:00")
+    @freeze_time("2032-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_collective_offer_and_send_mail_to_administration(
@@ -926,7 +926,7 @@ class OfferValidationViewTest:
         assert url_for("validation-collective-offer.index_view") in response.location
         assert offer.validation == OfferValidationStatus.REJECTED
         assert offer.isActive is False
-        assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
+        assert offer.lastValidationDate == datetime.datetime(2032, 11, 17, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
@@ -1103,11 +1103,11 @@ class OfferViewTest:
         app,
     ):
         users_factories.AdminFactory(email="admin@example.com")
-        with freeze_time("2020-11-17 15:00:00") as frozen_time:
+        with freeze_time("2032-11-17 15:00:00") as frozen_time:
             offer = offers_factories.OfferFactory(
                 validation=OfferValidationStatus.APPROVED, isActive=True, venue__bookingEmail="offerer@example.com"
             )
-            frozen_time.move_to("2020-12-20 15:00:00")
+            frozen_time.move_to("2032-12-20 15:00:00")
             data = dict(validation=OfferValidationStatus.REJECTED.value)
             client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
@@ -1115,7 +1115,7 @@ class OfferViewTest:
 
         assert response.status_code == 302
         assert offer.validation == OfferValidationStatus.REJECTED
-        assert offer.lastValidationDate == datetime.datetime(2020, 12, 20, 15)
+        assert offer.lastValidationDate == datetime.datetime(2032, 12, 20, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
         mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
@@ -1137,9 +1137,9 @@ class OfferViewTest:
         app,
     ):
         users_factories.AdminFactory(email="admin@example.com")
-        with freeze_time("2020-11-17 15:00:00") as frozen_time:
+        with freeze_time("2032-11-17 15:00:00") as frozen_time:
             offer = offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED, isActive=True)
-            frozen_time.move_to("2020-12-20 15:00:00")
+            frozen_time.move_to("2032-12-20 15:00:00")
             data = dict(validation=OfferValidationStatus.APPROVED.value)
             client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
@@ -1147,7 +1147,7 @@ class OfferViewTest:
 
         assert response.status_code == 302
         assert offer.validation == OfferValidationStatus.APPROVED
-        assert offer.lastValidationDate == datetime.datetime(2020, 12, 20, 15)
+        assert offer.lastValidationDate == datetime.datetime(2032, 12, 20, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
         mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
@@ -1169,12 +1169,12 @@ class OfferViewTest:
         app,
     ):
         users_factories.AdminFactory(email="admin@example.com")
-        with freeze_time("2020-11-17 15:00:00") as frozen_time:
+        with freeze_time("2032-11-17 15:00:00") as frozen_time:
             offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True)
             stock = offers_factories.StockFactory(offer=offer, price=10)
             unused_booking = booking_factories.IndividualBookingFactory(stock=stock)
             used_booking = booking_factories.UsedBookingFactory(stock=stock)
-            frozen_time.move_to("2020-12-20 15:00:00")
+            frozen_time.move_to("2032-12-20 15:00:00")
             data = dict(validation=OfferValidationStatus.REJECTED.value)
             client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
@@ -1182,7 +1182,7 @@ class OfferViewTest:
 
         assert response.status_code == 302
         assert offer.validation == OfferValidationStatus.REJECTED
-        assert offer.lastValidationDate == datetime.datetime(2020, 12, 20, 15)
+        assert offer.lastValidationDate == datetime.datetime(2032, 12, 20, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
         assert unused_booking.status is BookingStatus.CANCELLED
         assert used_booking.status is not BookingStatus.CANCELLED
