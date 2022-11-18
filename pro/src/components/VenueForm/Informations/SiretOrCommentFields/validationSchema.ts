@@ -3,6 +3,12 @@ import * as yup from 'yup'
 import { unhumanizeSiret } from 'core/Venue'
 import siretApiValidate from 'ui-kit/form_rff/fields/SiretField/validators/siretApiValidate'
 
+export const valideSiretLength = (siret: string) =>
+  unhumanizeSiret(siret).length === 14
+
+export const isSiretStartingWithSiren = (siret: string, siren: string) =>
+  unhumanizeSiret(siret).startsWith(siren)
+
 const generateSiretValidationSchema = (
   siren: string,
   isSiretValued: boolean
@@ -14,12 +20,12 @@ const generateSiretValidationSchema = (
       .test(
         'len',
         'Le SIRET doit comporter 14 caractères',
-        siret => !!siret && unhumanizeSiret(siret).length === 14
+        siret => !!siret && valideSiretLength(siret)
       )
       .test(
         'correspondingToSiren',
         'Le code SIRET doit correspondre à un établissement de votre structure',
-        siret => siret && unhumanizeSiret(siret).startsWith(siren)
+        siret => siret && isSiretStartingWithSiren(siret, siren)
       )
       .test(
         'apiSiretValid',

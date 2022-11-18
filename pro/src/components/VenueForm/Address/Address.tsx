@@ -8,7 +8,6 @@ import { IAutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type
 import { IVenueFormValues } from '../types'
 
 import { getAdressDataAdapter } from './adapter'
-
 const Address = () => {
   const { setFieldValue } = useFormikContext<IVenueFormValues>()
   const [options, setOptions] = useState<SelectOption[]>([])
@@ -27,7 +26,7 @@ const Address = () => {
         setAddressesMap(
           response.reduce<Record<string, IAutocompleteItemProps>>(
             (acc, add: IAutocompleteItemProps) => {
-              acc[add.label.toUpperCase()] = add
+              acc[add.label] = add
               return acc
             },
             {}
@@ -44,13 +43,17 @@ const Address = () => {
       })
     } else if (searchField.value.length === 0) {
       setOptions([])
-      handleSelect('', null)
+      handleAddressSelect(setFieldValue, undefined, searchField)
     }
   }, [searchField.value])
 
   useEffect(() => {
     if (addressesMap[searchField.value] != undefined) {
-      handleSelect(searchField.value, addressesMap[searchField.value])
+      handleAddressSelect(
+        setFieldValue,
+        addressesMap[searchField.value],
+        searchField
+      )
     }
   }, [selectedField.value])
 
@@ -63,18 +66,6 @@ const Address = () => {
       }
     }
     return []
-  }
-
-  const handleSelect = (
-    address: string,
-    selectedItem: IAutocompleteItemProps | null
-  ) => {
-    setFieldValue('addressAutocomplete', searchField.value)
-    setFieldValue('address', selectedItem?.extraData.address)
-    setFieldValue('postalCode', selectedItem?.extraData.postalCode)
-    setFieldValue('city', selectedItem?.extraData.city)
-    setFieldValue('latitude', selectedItem?.extraData.latitude)
-    setFieldValue('longitude', selectedItem?.extraData.longitude)
   }
 
   return (
@@ -91,11 +82,25 @@ const Address = () => {
             options={options}
             hideArrow={true}
             resetOnOpen={false}
-          ></SelectAutocomplete>
+          />
         </FormLayout.Row>
       </FormLayout.Section>
     </>
   )
+}
+export const handleAddressSelect = (
+  setFieldValue: any,
+  selectedItem?: IAutocompleteItemProps,
+  searchField?: any
+) => {
+  setFieldValue('address', selectedItem?.extraData.address)
+  if (searchField) {
+    setFieldValue('addressAutocomplete', searchField?.value)
+  }
+  setFieldValue('postalCode', selectedItem?.extraData.postalCode)
+  setFieldValue('city', selectedItem?.extraData.city)
+  setFieldValue('latitude', selectedItem?.extraData.latitude)
+  setFieldValue('longitude', selectedItem?.extraData.longitude)
 }
 
 export default Address
