@@ -217,7 +217,7 @@ def run_initialization(dry: bool = True, min_offerer_id: int = 0) -> None:
 
 
 if __name__ == "__main__":
-    from pcapi.flask_app import app
+    from flask import current_app as app
 
     parser = argparse.ArgumentParser(description="""Sync Zendesk Sell with PC production database""")
     parser.add_argument(

@@ -1,0 +1,11 @@
+{% extends "layouts/error.html" %}
+
+{% block error %}
+<h1 class="display-1 fw-bold">Erreur</h1>
+
+<!-- this frame wrap errors in case the error call was made inside a turbo frame -->
+<turbo-frame id="{{ turbo_frame_id }}">
+    <p class="fs-3"> <span class="text-danger">Woops !</span> Token CSRF absent</p>
+</turbo-frame>
+
+{% endblock %}

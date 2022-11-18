@@ -20,7 +20,10 @@ from .helpers import html_parser
 from .helpers import unauthorized as unauthorized_helpers
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+    pytest.mark.backoffice_v3,
+]
 
 
 @pytest.fixture(scope="function", name="venue")

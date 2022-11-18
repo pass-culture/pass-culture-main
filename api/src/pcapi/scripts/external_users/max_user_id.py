@@ -1,5 +1,6 @@
+from flask import current_app as app
+
 from pcapi.core.users.models import User
-from pcapi.flask_app import app
 
 
 with app.app_context():

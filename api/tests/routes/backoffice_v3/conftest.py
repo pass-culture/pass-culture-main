@@ -19,7 +19,10 @@ from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+    pytest.mark.backoffice_v3,
+]
 
 
 ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
@@ -59,7 +62,7 @@ def roles_with_permissions_fixture() -> None:
     perms_in_db = {perm.name: perm for perm in perm_models.Permission.query.all()}
 
     for name, perms in ROLE_PERMISSIONS.items():
-        role = perm_models.Role(name=name, permissions=[perms_in_db[perm.name] for perm in perms])
+        role = perm_models.Role(name=name, permissions=[perms_in_db[perm.name] for perm in perms])  # type: ignore
         db.session.add(role)
 
     db.session.commit()
@@ -79,7 +82,7 @@ def legit_user_fixture(roles_with_permissions: None) -> users_models.User:
 
 @pytest.fixture(scope="function", name="authenticated_client")
 def authenticated_client_fixture(client, legit_user):  # type: ignore
-    return client.with_session_auth(legit_user.email)
+    return client.with_bo_session_auth(legit_user)
 
 
 @pytest.fixture(name="offerer")

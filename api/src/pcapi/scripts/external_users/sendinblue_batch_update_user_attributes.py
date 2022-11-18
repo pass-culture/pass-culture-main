@@ -67,7 +67,7 @@ def run(
 
 
 if __name__ == "__main__":
-    from pcapi.flask_app import app
+    from flask import current_app as app
 
     app.app_context().push()
 

@@ -203,6 +203,12 @@ class JsonFormatter(logging.Formatter):
 
 
 def install_logging() -> None:
+    global _internal_logger  # pylint: disable=global-statement
+
+    # Avoid side effects of calling this function more than once.
+    if _internal_logger is not None:
+        return
+
     monkey_patch_logger_makeRecord()
     monkey_patch_logger_log()
     if settings.IS_DEV and not settings.IS_RUNNING_TESTS:
@@ -210,12 +216,6 @@ def install_logging() -> None:
         logging.basicConfig(level=settings.LOG_LEVEL)
         _silence_noisy_loggers()
 
-        return
-
-    global _internal_logger  # pylint: disable=global-statement
-
-    # Avoid side effects of calling this function more than once.
-    if _internal_logger is not None:
         return
 
     handler = logging.StreamHandler(stream=sys.stdout)

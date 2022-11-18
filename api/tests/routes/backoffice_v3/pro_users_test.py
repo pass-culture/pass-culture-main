@@ -13,7 +13,10 @@ from pcapi.routes.backoffice_v3.filters import format_date
 from .helpers import unauthorized as unauthorized_helpers
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+    pytest.mark.backoffice_v3,
+]
 
 
 class GetProUserTest:
@@ -116,7 +119,7 @@ class CommentProUserTest:
         assert not pro_user.action_history
 
     def send_comment_pro_user_request(self, client, legit_user, pro_user, comment):
-        authenticated_client = client.with_session_auth(legit_user.email)
+        authenticated_client = client.with_bo_session_auth(legit_user)
 
         # generate and fetch (inside g) csrf token
         pro_user_detail_url = url_for("backoffice_v3_web.pro_user.get", user_id=pro_user.id)

@@ -1,6 +1,13 @@
 from flask import url_for
+import pytest
 
 from pcapi.core.testing import override_features
+
+
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+    pytest.mark.backoffice_v3,
+]
 
 
 class HomePageTest:

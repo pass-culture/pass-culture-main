@@ -89,10 +89,11 @@ if __name__ == "__main__":
         os.environ["CORS_ALLOWED_ORIGINS_ADAGE_IFRAME"] = ""
         os.environ["DATABASE_URL"] = "postgresql://pass_culture:pass_culture@localhost:5434/pass_culture"
 
+    from flask import current_app as app
+
     from pcapi.core.offers.models import Offer
     from pcapi.core.offers.models import Product
-    from pcapi.flask_app import app
-    from pcapi.flask_app import db
+    from pcapi.models import db
     from pcapi.models.offer_mixin import OfferValidationStatus
     from pcapi.models.offer_mixin import OfferValidationType
 

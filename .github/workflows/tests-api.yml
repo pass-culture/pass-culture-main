@@ -172,7 +172,7 @@ jobs:
             alembic downgrade pre@f460dc2c9f93
             alembic upgrade pre@head
             alembic upgrade post@head
-      - name: Running tests
+      - name: Running tests (without backoffice v3)
         uses: addnab/docker-run-action@v3
         with:
           image: ${{ env.tests_docker_image }}
@@ -180,7 +180,7 @@ jobs:
           options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL
           run: |
             mkdir -p test-results
-            pytest --durations=10 --junitxml=test-results/junit.xml
+            pytest --durations=10 --junitxml=test-results/junit.xml -m 'not backoffice_v3'
       - name: Slack Notification
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: rtCamp/action-slack-notify@v2

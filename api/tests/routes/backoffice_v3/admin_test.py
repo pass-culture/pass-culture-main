@@ -9,7 +9,10 @@ from pcapi.core.testing import override_features
 from .helpers import unauthorized as unauthorized_helpers
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+    pytest.mark.backoffice_v3,
+]
 
 
 class GetRolesAuthorizedTest:
@@ -53,9 +56,9 @@ class UpdateRoleTest:
     def update_role(self, client, legit_user, role_to_edit, form):
         # generate csrf token
         edit_url = url_for("backoffice_v3_web.get_roles")
-        client.with_session_auth(legit_user.email).get(edit_url)
+        client.with_bo_session_auth(legit_user).get(edit_url)
 
         url = url_for("backoffice_v3_web.update_role", role_id=role_to_edit.id)
 
         form["csrf_token"] = g.get("csrf_token", "")
-        return client.with_session_auth(legit_user.email).post(url, form=form)
+        return client.with_bo_session_auth(legit_user).post(url, form=form)

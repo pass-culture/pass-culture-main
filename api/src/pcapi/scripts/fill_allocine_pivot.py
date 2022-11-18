@@ -3,10 +3,10 @@
 import argparse
 import csv
 
+from flask import current_app as app
 import sqlalchemy.exc
 
 from pcapi.core.providers.models import AllocinePivot
-from pcapi.flask_app import app
 from pcapi.models import db
 
 

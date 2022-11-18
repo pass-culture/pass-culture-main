@@ -1,8 +1,9 @@
 from pathlib import Path
 
+from flask import current_app as app
+
 from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.users.models import User
-from pcapi.flask_app import app
 from pcapi.repository import repository
 from pcapi.scripts.external_users.batch_update_users_attributes import format_sendinblue_users
 
