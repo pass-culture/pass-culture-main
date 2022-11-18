@@ -8,6 +8,11 @@ import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
 import { InfoBox, TextArea, TextInput } from 'ui-kit'
 import Toggle from 'ui-kit/Toggle'
 
+import { getAdressDataAdapter } from '../../Address/adapter'
+import { handleAddressSelect } from '../../Address/Address'
+
+import { isSiretStartingWithSiren, valideSiretLength } from './validationSchema'
+
 export interface SiretOrCommentInterface {
   isCreatedEntity: boolean
   initialSiret?: string
@@ -16,6 +21,7 @@ export interface SiretOrCommentInterface {
   setIsFieldNameFrozen: (isNameFrozen: boolean) => void
   updateIsSiretValued: (isSiretValued: boolean) => void
   setIsSiretValued: (isSiretValued: boolean) => void
+  siren: string
 }
 
 const SiretOrCommentFields = ({
@@ -26,13 +32,12 @@ const SiretOrCommentFields = ({
   readOnly,
   updateIsSiretValued,
   setIsSiretValued,
+  siren,
 }: SiretOrCommentInterface): JSX.Element => {
   const [isSiretSelected, setIsSiretSelected] = useState(
     !isToggleDisabled || initialSiret.length > 0
   )
-
-  const { setFieldValue, values, errors, touched } =
-    useFormikContext<IVenueFormValues>()
+  const { setFieldValue } = useFormikContext<IVenueFormValues>()
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handleToggleClick = () => {
@@ -52,39 +57,40 @@ const SiretOrCommentFields = ({
     }
   }
 
-  useEffect(() => {
-    const getSiretDataFromApi = async () => {
-      if (!errors.siret && isSiretSelected && !readOnly) {
-        return await getSiretData(values.siret)
-      }
+  const onSiretChange = async (siret: string) => {
+    await formatSiret(siret)
+    if (
+      !valideSiretLength(siret) ||
+      !isSiretStartingWithSiren(siret, siren) ||
+      !isSiretSelected ||
+      readOnly
+    ) {
       setIsFieldNameFrozen(false)
-      return null
+      return
     }
-    touched.siret &&
-      getSiretDataFromApi().then(response => {
-        if (response?.isOk) {
-          setIsFieldNameFrozen(
-            response != null &&
-              response.payload.values != null &&
-              response.payload.values.siret.length > 0
-          )
-          setFieldValue('name', response.payload.values?.name)
-          setFieldValue(
-            'search-addressAutocomplete',
-            `${response.payload.values?.address} ${response.payload.values?.postalCode} ${response.payload.values?.city}`.toUpperCase()
-          )
-          setTimeout(
-            () =>
-              setFieldValue(
-                'addressAutocomplete',
-                `${response.payload.values?.address} ${response.payload.values?.postalCode} ${response.payload.values?.city}`.toUpperCase()
-              ),
-            500
-          )
-        }
-      })
-  }, [touched.siret, errors.siret, isSiretSelected])
 
+    const response = await getSiretData(siret)
+
+    if (!response?.isOk) {
+      return
+    }
+    const address = `${response.payload.values?.address} ${response.payload.values?.postalCode} ${response.payload.values?.city}`
+    setIsFieldNameFrozen(
+      response != null &&
+        response.payload.values != null &&
+        response.payload.values.siret.length > 0
+    )
+    setFieldValue('name', response.payload.values?.name)
+    // getSuggestions pour récupérer les adresses
+    const responseAdressDataAdapter = await getAdressDataAdapter(address)
+    if (!responseAdressDataAdapter.isOk) {
+      return
+    }
+    setFieldValue('search-addressAutocomplete', address)
+    setFieldValue('addressAutocomplete', address)
+
+    handleAddressSelect(setFieldValue, responseAdressDataAdapter.payload[0])
+  }
   const [sideComponent, setSideComponent] = useState(<></>)
   useEffect(() => {
     setSideComponent(
@@ -117,7 +123,7 @@ const SiretOrCommentFields = ({
           label="SIRET du lieu"
           disabled={readOnly}
           type="text"
-          onChange={e => formatSiret(e.target.value)}
+          onChange={e => onSiretChange(e.target.value)}
         />
       ) : (
         <TextArea

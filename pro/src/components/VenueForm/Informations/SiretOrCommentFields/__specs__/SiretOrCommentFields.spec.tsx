@@ -77,6 +77,7 @@ describe('components | SiretOrCommentFields', () => {
       readOnly: false,
       updateIsSiretValued: updateIsSiretValued,
       setIsSiretValued: setIsSiretValued,
+      siren: '123456789',
     }
   })
 
