@@ -14,6 +14,10 @@ import {
 } from 'components/StockThingForm'
 import { setFormReadOnlyFields } from 'components/StockThingForm/utils'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import {
   LIVRE_PAPIER_SUBCATEGORY_ID,
@@ -22,6 +26,7 @@ import {
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate, useOfferWizardMode } from 'hooks'
+import useAnalytics from 'hooks/useAnalytics'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as AddActivationCodeIcon } from 'icons/add-activation-code-light.svg'
@@ -52,6 +57,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   ] = useState<boolean>(false)
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
+  const { logEvent } = useAnalytics()
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer } = useOfferIndividualContext()
@@ -122,9 +128,29 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       } else {
         formik.handleSubmit()
       }
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.STOCKS,
+        to: saveDraft
+          ? OFFER_WIZARD_STEP_IDS.STOCKS
+          : OFFER_WIZARD_STEP_IDS.SUMMARY,
+        used: saveDraft
+          ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
+          : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        offerId: offer.id,
+      })
     }
 
   const handlePreviousStep = () => {
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OFFER_WIZARD_STEP_IDS.STOCKS,
+      to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      offerId: offer.id,
+    })
     /* istanbul ignore next: DEBT, TO FIX */
     navigate(
       getOfferIndividualUrl({
