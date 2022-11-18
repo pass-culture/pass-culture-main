@@ -63,6 +63,7 @@ const Informations = ({
     () => {
       setIsSubmittingDraft(saveDraft)
       if (Object.keys(formik.errors).length !== 0) {
+        /* istanbul ignore next: DEBT, TO FIX */
         if (saveDraft)
           notify.error(
             'Des informations sont nécessaires pour sauvegarder le brouillon'
