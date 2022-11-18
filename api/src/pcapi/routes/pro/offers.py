@@ -7,6 +7,7 @@ from flask_login import login_required
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions
 import pcapi.core.offers.api as offers_api
@@ -103,6 +104,15 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
     venue_id = human_ids.dehumanize(body.venue_humanized_id)
     if not venue_id:
         raise ApiErrors(errors={"venueId": ["L'id n'est pas au bon format"]}, status_code=404)
+    venue: offerers_models.Venue | None = offerers_models.Venue.query.get(venue_id)
+    if not venue:
+        raise ApiErrors(
+            errors={
+                "global": ["Aucun lieu ne correspond à cet identifiant dans notre base de données"],
+            },
+            status_code=404,
+        )
+    rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
         offer = offers_api.create_offer(
             audio_disability_compliant=body.audio_disability_compliant,
@@ -118,19 +128,11 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
             name=body.name,
             subcategory_id=body.subcategory_id,
             url=body.url,
-            user=current_user,
-            venue_id=venue_id,
+            venue=venue,
             visual_disability_compliant=body.visual_disability_compliant,
             withdrawal_delay=body.withdrawal_delay,
             withdrawal_details=body.withdrawal_details,
             withdrawal_type=body.withdrawal_type,
-        )
-    except exceptions.VenueNotFound:
-        raise ApiErrors(
-            errors={
-                "global": ["Aucun lieu ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
         )
 
     except exceptions.OfferCreationBaseException as error:
