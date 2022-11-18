@@ -1,4 +1,3 @@
-import * as PropTypes from 'prop-types'
 import React, { Fragment, useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
@@ -8,6 +7,7 @@ import {
   OFFER_FORM_HOMEPAGE,
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
+  VenueEvents,
 } from 'core/FirebaseEvents/constants'
 import { venueCreateOfferLink } from 'core/Venue/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -22,15 +22,25 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 import VenueStat from './VenueStat'
 
+export interface IVenueProps {
+  hasBusinessUnit?: boolean
+  hasMissingReimbursementPoint?: boolean
+  id: string
+  isVirtual?: boolean
+  name: string
+  offererId: string
+  publicName?: string
+}
+
 const Venue = ({
-  hasBusinessUnit,
-  hasMissingReimbursementPoint,
+  hasBusinessUnit = false,
+  hasMissingReimbursementPoint = false,
   id,
-  isVirtual,
+  isVirtual = false,
   name,
   offererId,
   publicName,
-}) => {
+}: IVenueProps) => {
   const [isStatOpen, setIsStatOpen] = useState(false)
   const [isStatLoaded, setIsStatLoaded] = useState(false)
   const [stats, setStats] = useState({
@@ -41,11 +51,23 @@ const Venue = ({
   })
   const { logEvent } = useAnalytics()
 
+  const venueIdTrackParam = {
+    venue_id: id,
+  }
+
   const venueStatData = [
     {
       count: stats.activeOffersCount,
       label: 'Offres publiées',
-      link: `/offres?lieu=${id}&statut=active`,
+      link: {
+        pathname: `/offres?lieu=${id}&statut=active`,
+      },
+      onClick: () => {
+        logEvent?.(
+          VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK,
+          venueIdTrackParam
+        )
+      },
     },
     {
       count: stats.activeBookingsQuantity,
@@ -62,6 +84,12 @@ const Venue = ({
           ],
         },
       },
+      onClick: () => {
+        logEvent?.(
+          VenueEvents.CLICKED_VENUE_ACTIVE_BOOKINGS_LINK,
+          venueIdTrackParam
+        )
+      },
     },
     {
       count: stats.validatedBookingsQuantity,
@@ -73,11 +101,25 @@ const Venue = ({
           statuses: [BOOKING_STATUS.BOOKED, BOOKING_STATUS.CANCELLED],
         },
       },
+      onClick: () => {
+        logEvent?.(
+          VenueEvents.CLICKED_VENUE_VALIDATED_RESERVATIONS_LINK,
+          venueIdTrackParam
+        )
+      },
     },
     {
       count: stats.soldOutOffersCount,
       label: 'Offres stocks épuisés',
-      link: `/offres?lieu=${id}&statut=epuisee`,
+      link: {
+        pathname: `/offres?lieu=${id}&statut=epuisee`,
+      },
+      onClick: () => {
+        logEvent?.(
+          VenueEvents.CLICKED_VENUE_EMPTY_STOCK_LINK,
+          venueIdTrackParam
+        )
+      },
     },
   ]
 
@@ -115,8 +157,8 @@ const Venue = ({
     })
   }, [offererId])
 
-  let editVenueLink = `/structures/${offererId}/lieux/${id}?modification`
-  let reimbursementSectionLink = `/structures/${offererId}/lieux/${id}?modification#remboursement`
+  const editVenueLink = `/structures/${offererId}/lieux/${id}?modification`
+  const reimbursementSectionLink = `/structures/${offererId}/lieux/${id}?modification#remboursement`
 
   return (
     <div
@@ -137,7 +179,13 @@ const Venue = ({
                 Icon={isStatOpen ? DownIcon : RightIcon}
                 type="button"
                 title={isStatOpen ? 'Masquer' : 'Afficher'}
-                onClick={() => setIsStatOpen(prev => !prev)}
+                onClick={() => {
+                  setIsStatOpen(prev => !prev)
+                  logEvent?.(
+                    VenueEvents.CLICKED_VENUE_ACCORDION_BUTTON,
+                    venueIdTrackParam
+                  )
+                }}
               />
               <a
                 className="title-text"
@@ -173,6 +221,12 @@ const Venue = ({
                   isExternal: false,
                 }}
                 Icon={PenIcon}
+                onClick={() =>
+                  logEvent?.(
+                    VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK,
+                    venueIdTrackParam
+                  )
+                }
               >
                 Modifier
               </ButtonLink>
@@ -183,7 +237,7 @@ const Venue = ({
               <div className="venue-stats">
                 {venueStatData.map(stat => (
                   <Fragment key={stat.label}>
-                    <VenueStat stat={stat} />
+                    <VenueStat {...stat} />
                   </Fragment>
                 ))}
                 <div className="h-card-col v-add-offer-link">
@@ -220,23 +274,6 @@ const Venue = ({
       </div>
     </div>
   )
-}
-
-Venue.defaultProps = {
-  hasBusinessUnit: false,
-  id: '',
-  isVirtual: false,
-  offererId: '',
-  publicName: '',
-}
-
-Venue.propTypes = {
-  hasBusinessUnit: PropTypes.bool,
-  id: PropTypes.string,
-  isVirtual: PropTypes.bool,
-  name: PropTypes.string.isRequired,
-  offererId: PropTypes.string,
-  publicName: PropTypes.string,
 }
 
 export default Venue
