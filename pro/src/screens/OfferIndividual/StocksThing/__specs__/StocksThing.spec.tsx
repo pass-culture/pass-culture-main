@@ -370,5 +370,15 @@ describe('screens:StocksThing', () => {
       expect(expirationInput).toBeDisabled()
       expect(expirationInput).toHaveValue('15/12/2020')
     })
+    it('should show a success notification if nothing has been touched', async () => {
+      renderStockThingScreen({ props, storeOverride, contextValue })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
+      )
+      expect(
+        screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      ).toBeInTheDocument()
+    })
   })
 })

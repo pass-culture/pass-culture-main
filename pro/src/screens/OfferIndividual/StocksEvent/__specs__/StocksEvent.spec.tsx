@@ -245,4 +245,14 @@ describe('screens:StocksEvent', () => {
     //   screen.getByText('API bookingLimitDatetime ERROR')
     // ).toBeInTheDocument()
   })
+  it('should show a success notification if nothing has been touched', async () => {
+    renderStockEventScreen({ props, storeOverride, contextValue })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
+    )
+    expect(
+      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+    ).toBeInTheDocument()
+  })
 })

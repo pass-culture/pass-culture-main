@@ -110,7 +110,9 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
 
   const handleSaveDraft = () => {
     /* istanbul ignore next: DEBT, TO FIX */
-    formik.handleSubmit()
+    if (!Object.keys(formik.touched).length)
+      notify.success('Brouillon sauvegardé dans la liste des offres')
+    else formik.handleSubmit()
     /* istanbul ignore next: DEBT, TO FIX */
     setAfterSubmitUrl(
       getOfferIndividualUrl({

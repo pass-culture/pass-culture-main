@@ -105,6 +105,7 @@ const ActionBar = ({
                 Icon={IcoMiniArrowRight}
                 iconPosition={IconPositionEnum.RIGHT}
                 onClick={onClickNext}
+                type="submit"
               >
                 Étape suivante
               </Button>
