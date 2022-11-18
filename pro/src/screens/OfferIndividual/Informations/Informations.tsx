@@ -11,7 +11,7 @@ import {
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import {
   createIndividualOffer,
   getOfferIndividualAdapter,
@@ -249,7 +249,11 @@ const Informations = ({
   const [filteredCategories, filteredSubCategories] = filterCategories(
     categories,
     subCategories,
-    initialVenue
+    initialVenue === undefined
+      ? CATEGORY_STATUS.ONLINE_OR_OFFLINE
+      : initialVenue.isVirtual
+      ? CATEGORY_STATUS.ONLINE
+      : CATEGORY_STATUS.OFFLINE
   )
 
   return (

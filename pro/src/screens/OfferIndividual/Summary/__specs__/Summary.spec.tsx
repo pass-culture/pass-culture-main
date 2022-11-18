@@ -401,7 +401,7 @@ describe('Summary', () => {
       const mockResponse = new CancelablePromise<void>(async resolve =>
         setTimeout(() => {
           resolve(undefined)
-        }, 100)
+        }, 200)
       )
       jest.spyOn(api, 'patchPublishOffer').mockResolvedValue(mockResponse)
       await userEvent.click(buttonPublish)

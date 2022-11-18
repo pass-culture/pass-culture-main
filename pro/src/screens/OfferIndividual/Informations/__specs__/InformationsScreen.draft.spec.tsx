@@ -13,7 +13,10 @@ import {
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
-import { setInitialFormValues } from 'components/OfferIndividualForm'
+import {
+  setFormReadOnlyFields,
+  setInitialFormValues,
+} from 'components/OfferIndividualForm'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
@@ -29,6 +32,7 @@ import { configureTestStore } from 'store/testUtils'
 
 import { IInformationsProps, Informations as InformationsScreen } from '..'
 
+window.matchMedia = jest.fn().mockReturnValue({ matches: true })
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
     filterCategories: jest.fn(),
@@ -236,6 +240,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
 
     props = {
       initialValues: setInitialFormValues(offer, subCategories),
+      readOnlyFields: setFormReadOnlyFields(offer, false),
     }
 
     jest
@@ -277,6 +282,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
     }
     props = {
       initialValues: setInitialFormValues(contextOverride.offer, subCategories),
+      readOnlyFields: setFormReadOnlyFields(contextOverride.offer, false),
     }
 
     renderInformationsScreen(props, store, contextOverride)

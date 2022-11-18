@@ -1,30 +1,14 @@
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
-import { TOfferIndividualVenue } from 'core/Venue/types'
 
 import { filterCategories } from '..'
 
 describe('filterCategories', () => {
-  let venue: TOfferIndividualVenue | undefined
   let categories: IOfferCategory[]
   let subCategories: IOfferSubCategory[]
 
   beforeEach(() => {
-    venue = {
-      id: 'A-A',
-      managingOffererId: 'A',
-      name: 'Lieu A de la structure A',
-      isVirtual: true,
-      withdrawalDetails: '',
-      accessibility: {
-        visual: false,
-        mental: false,
-        audio: false,
-        motor: false,
-        none: true,
-      },
-    }
     categories = [
       {
         id: 'A',
@@ -139,7 +123,7 @@ describe('filterCategories', () => {
     const [filteredCategories, filteredSubCategories] = filterCategories(
       categories,
       subCategories,
-      venue
+      CATEGORY_STATUS.ONLINE
     )
 
     expect(
@@ -150,12 +134,11 @@ describe('filterCategories', () => {
     ).toBeUndefined()
   })
 
-  it('should return selectable categories and subCategories when venue is undefined', () => {
-    venue = undefined
+  it('should return selectable categories and subCategories for CATEGORY_STATUS.ONLINE_OR_OFFLINE', () => {
     const [filteredCategories, filteredSubCategories] = filterCategories(
       categories,
       subCategories,
-      venue
+      CATEGORY_STATUS.ONLINE_OR_OFFLINE
     )
 
     expect(
@@ -166,15 +149,11 @@ describe('filterCategories', () => {
     ).toBeUndefined()
   })
 
-  it('should return ONLINE categories and subCategories when venue is virtual', () => {
-    if (venue) {
-      venue.isVirtual = true
-    }
-
+  it('should return ONLINE categories and subCategories for CATEGORY_STATUS.ONLINE', () => {
     const [filteredCategories, filteredSubCategories] = filterCategories(
       categories,
       subCategories,
-      venue
+      CATEGORY_STATUS.ONLINE
     )
 
     expect(filteredCategories.map((c: IOfferCategory) => c.id)).toEqual([
@@ -188,15 +167,11 @@ describe('filterCategories', () => {
     ])
   })
 
-  it('should return OFFLINE categories and subCategories when venue is physical', () => {
-    if (venue) {
-      venue.isVirtual = false
-    }
-
+  it('should return OFFLINE categories and subCategories CATEGORY_STATUS.OFFLINE', () => {
     const [filteredCategories, filteredSubCategories] = filterCategories(
       categories,
       subCategories,
-      venue
+      CATEGORY_STATUS.OFFLINE
     )
 
     expect(filteredCategories.map((c: IOfferCategory) => c.id)).toEqual([
