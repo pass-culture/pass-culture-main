@@ -834,7 +834,7 @@ class ComputeCancellationDateTest:
         ) == event_date_four_days_from_now - timedelta(days=2)
 
 
-@freeze_time("2020-11-17 15:00:00")
+@freeze_time("2032-11-17 15:00:00")
 @pytest.mark.usefixtures("db_session")
 class UpdateCancellationLimitDatesTest:
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_tomorrow(self):
@@ -852,7 +852,7 @@ class UpdateCancellationLimitDatesTest:
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
-        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == datetime(2020, 11, 17, 15)
+        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == datetime(2032, 11, 17, 15)
 
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_in_three_days(self):
         #  Given
@@ -869,7 +869,7 @@ class UpdateCancellationLimitDatesTest:
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
-        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == datetime(2020, 11, 18, 15)
+        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == datetime(2032, 11, 18, 15)
 
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_in_a_week(self):
         #  Given
@@ -886,7 +886,7 @@ class UpdateCancellationLimitDatesTest:
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
-        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == datetime(2020, 11, 19, 15)
+        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == datetime(2032, 11, 19, 15)
 
 
 @pytest.mark.usefixtures("db_session")
