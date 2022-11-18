@@ -32,6 +32,7 @@ describe('SynchronizedProviderInformation', () => {
     expect(
       screen.getByText('Offre synchronisée avec Leslibraires.fr')
     ).toBeInTheDocument()
+    expect(screen.findByText('À SAVOIR')).not.toBeInTheDocument()
   })
 
   it('should render for provider "allociné"', () => {
@@ -41,5 +42,6 @@ describe('SynchronizedProviderInformation', () => {
     expect(
       screen.getByText('Offre synchronisée avec Allociné')
     ).toBeInTheDocument()
+    expect(screen.findByText('À SAVOIR')).not.toBeInTheDocument()
   })
 })
