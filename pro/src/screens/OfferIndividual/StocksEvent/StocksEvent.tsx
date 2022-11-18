@@ -11,11 +11,16 @@ import {
   IStockEventFormValues,
 } from 'components/StockEventForm'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate, useOfferWizardMode } from 'hooks'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
@@ -42,6 +47,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   ] = useState<boolean>(false)
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
+  const { logEvent } = useAnalytics()
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer } = useOfferIndividualContext()
@@ -120,9 +126,26 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       })
     )
     formik.handleSubmit()
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OFFER_WIZARD_STEP_IDS.STOCKS,
+      to: OFFER_WIZARD_STEP_IDS.SUMMARY,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      offerId: offer.id,
+    })
   }
 
   const handlePreviousStep = () => {
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OFFER_WIZARD_STEP_IDS.STOCKS,
+      to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      offerId: offer.id,
+    })
+    /* istanbul ignore next: DEBT, TO FIX */
     navigate(
       getOfferIndividualUrl({
         offerId: offer.id,
@@ -148,6 +171,14 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     } else {
       formik.handleSubmit()
     }
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OFFER_WIZARD_STEP_IDS.STOCKS,
+      to: OFFER_WIZARD_STEP_IDS.STOCKS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS,
+      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+      isDraft: true,
+      offerId: offer.id,
+    })
   }
 
   return (
@@ -167,6 +198,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
               onClickPrevious={handlePreviousStep}
               onClickSaveDraft={handleSaveDraft}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
+              offerId={offer.id}
             />
           </form>
         </FormLayout.Section>
