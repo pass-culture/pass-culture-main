@@ -144,7 +144,7 @@ describe('setFormReadOnlyFields', () => {
 
   it("should throw error if sub category don't exist", () => {
     expect(() => setInitialFormValues(offer, [])).toThrow(
-      "La categorie de l'offre est introuvable"
+      'La categorie de l’offre est introuvable'
     )
   })
 })

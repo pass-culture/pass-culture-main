@@ -62,7 +62,7 @@ const OfferBreadcrumb = ({
     steps = [
       {
         id: OfferBreadcrumbStep.DETAILS,
-        label: "Détails de l'offre",
+        label: 'Détails de l’offre',
         url: isOfferEducational
           ? `/offre/${offerId}/collectif/edition`
           : `/offre/${offerId}/individuel/edition`,
@@ -86,7 +86,7 @@ const OfferBreadcrumb = ({
     const stepList: { [key: string]: Step } = {
       [OfferBreadcrumbStep.DETAILS]: {
         id: OfferBreadcrumbStep.DETAILS,
-        label: "Détails de l'offre",
+        label: 'Détails de l’offre',
       },
       [OfferBreadcrumbStep.STOCKS]: {
         id: OfferBreadcrumbStep.STOCKS,

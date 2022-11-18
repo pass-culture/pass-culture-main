@@ -202,7 +202,7 @@ describe('Summary', () => {
 
       // then
       expect(screen.getAllByText('Modifier')).toHaveLength(2)
-      expect(screen.getByText("Détails de l'offre")).toBeInTheDocument()
+      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(screen.getByText("Type d'offre")).toBeInTheDocument()
       expect(screen.getByText('Informations artistiques')).toBeInTheDocument()
       expect(screen.getByText('Informations pratiques')).toBeInTheDocument()
@@ -251,7 +251,7 @@ describe('Summary', () => {
 
       // then
       expect(screen.getAllByText('Modifier')).toHaveLength(2)
-      expect(screen.getByText("Détails de l'offre")).toBeInTheDocument()
+      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(screen.getByText("Type d'offre")).toBeInTheDocument()
       expect(screen.getByText('Informations artistiques')).toBeInTheDocument()
       expect(screen.getByText('Informations pratiques')).toBeInTheDocument()
@@ -300,7 +300,7 @@ describe('Summary', () => {
         )
         expect(saveDraftButton).toBeInTheDocument()
         expect(saveDraftButton).toHaveAttribute('href', '/offres')
-        expect(screen.getByText("Publier l'offre")).toBeInTheDocument()
+        expect(screen.getByText('Publier l’offre')).toBeInTheDocument()
       })
 
       it('should link to creation confirmation page', async () => {
@@ -314,7 +314,7 @@ describe('Summary', () => {
         renderSummary({ props, url: '/creation/summary' })
 
         await userEvent.click(
-          screen.getByRole('button', { name: /Publier l'offre/ })
+          screen.getByRole('button', { name: /Publier l’offre/ })
         )
 
         expect(
@@ -333,7 +333,7 @@ describe('Summary', () => {
         renderSummary({ props, url: '/brouillon/summary' })
 
         await userEvent.click(
-          screen.getByRole('button', { name: /Publier l'offre/ })
+          screen.getByRole('button', { name: /Publier l’offre/ })
         )
 
         expect(screen.getByText(/Confirmation page: draft/)).toBeInTheDocument()
@@ -358,7 +358,7 @@ describe('Summary', () => {
         expect(
           screen.getByText('Sauvegarder le brouillon et quitter')
         ).toBeInTheDocument()
-        expect(screen.getByText("Publier l'offre")).toBeInTheDocument()
+        expect(screen.getByText('Publier l’offre')).toBeInTheDocument()
       })
 
       it('should link to creation confirmation page', async () => {
@@ -374,7 +374,7 @@ describe('Summary', () => {
         renderSummary({ props, storeOverride, url: '/creation/summary' })
 
         await userEvent.click(
-          screen.getByRole('button', { name: /Publier l'offre/ })
+          screen.getByRole('button', { name: /Publier l’offre/ })
         )
 
         expect(
@@ -394,7 +394,7 @@ describe('Summary', () => {
       // when
       renderSummary({ props, storeOverride, url: '/creation/summary' })
       const buttonPublish = screen.getByRole('button', {
-        name: /Publier l'offre/,
+        name: /Publier l’offre/,
       })
       expect(buttonPublish).not.toBeDisabled()
 
@@ -436,7 +436,7 @@ describe('Summary', () => {
 
       await userEvent.click(
         screen.getByRole('button', {
-          name: /Publier l'offre/,
+          name: /Publier l’offre/,
         })
       )
       const notificationError = screen.getByTestId('global-notification-error')

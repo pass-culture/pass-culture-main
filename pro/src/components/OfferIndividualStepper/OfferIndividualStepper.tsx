@@ -24,7 +24,7 @@ const OfferIndividualStepper = () => {
   const stepPatternList: IStepPattern[] = [
     {
       id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-      label: "Détails de l'offre",
+      label: 'Détails de l’offre',
       path: {
         [OFFER_WIZARD_MODE.CREATION]:
           '/offre/:offerId/v3/creation/individuelle/informations',

@@ -23,7 +23,7 @@ export const fieldLabels = {
   visualDisabilityCompliant: { label: 'Visuel', exact: true },
   noDisabilityCompliant: { label: 'Non accessible', exact: true },
   isNational: { label: 'Rayonnement national', exact: true },
-  name: { label: "Titre de l'offre", exact: false },
+  name: { label: 'Titre de l’offre', exact: false },
   musicType: { label: 'Genre musical', exact: false },
   musicSubType: { label: 'Sous genre', exact: false },
   offererId: { label: 'Structure', exact: true },

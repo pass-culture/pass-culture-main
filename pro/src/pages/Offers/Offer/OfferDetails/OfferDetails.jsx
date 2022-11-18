@@ -293,7 +293,7 @@ const OfferDetails = ({
   if (!isReady) {
     return (
       <>
-        <PageTitle title="Détails de l'offre" />
+        <PageTitle title="Détails de l’offre" />
         <Spinner />
       </>
     )
@@ -301,7 +301,7 @@ const OfferDetails = ({
 
   return (
     <>
-      <PageTitle title="Détails de l'offre" />
+      <PageTitle title="Détails de l’offre" />
 
       <div className="sidebar-container">
         <div className="content">

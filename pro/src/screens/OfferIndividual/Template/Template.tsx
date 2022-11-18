@@ -42,8 +42,8 @@ const Template = ({
 
   const defaultTitle = {
     [OFFER_WIZARD_MODE.CREATION]: 'Créer une offre',
-    [OFFER_WIZARD_MODE.DRAFT]: "Compléter l'offre",
-    [OFFER_WIZARD_MODE.EDITION]: "Modifier l'offre",
+    [OFFER_WIZARD_MODE.DRAFT]: 'Compléter l’offre',
+    [OFFER_WIZARD_MODE.EDITION]: 'Modifier l’offre',
   }[mode]
 
   const actions = mode !== OFFER_WIZARD_MODE.CREATION &&

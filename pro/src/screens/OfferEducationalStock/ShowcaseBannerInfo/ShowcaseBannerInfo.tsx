@@ -17,7 +17,7 @@ const ShowcaseBannerInfo = (): JSX.Element => (
     1) À sa création, votre offre vitrine sera visible sur ADAGE, la plateforme
     des enseignants
     <br />
-    2) L’enseignant vous contactera pour discuter des détails de l'offre
+    2) L’enseignant vous contactera pour discuter des détails de l’offre
     <br />
     3) Vous créerez une offre réservable en complétant la date, le prix et
     l’établissement vus avec l’enseignant

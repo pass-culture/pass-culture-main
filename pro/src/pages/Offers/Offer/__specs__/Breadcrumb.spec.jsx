@@ -35,7 +35,7 @@ describe('individual offer step', () => {
       await waitFor(() => {
         expect(screen.getByTestId('stepper')).toBeInTheDocument()
       })
-      const detailTab = await screen.findByText("Détails de l'offre")
+      const detailTab = await screen.findByText('Détails de l’offre')
       expect(detailTab).toBeInTheDocument()
       expect(detailTab).not.toHaveAttribute('href')
       expect(detailTab.closest('li')).toHaveClass('active')
@@ -64,7 +64,7 @@ describe('individual offer step', () => {
       await waitFor(() => {
         expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
       })
-      const detailTab = await screen.findByText("Détails de l'offre", {
+      const detailTab = await screen.findByText('Détails de l’offre', {
         selector: 'a',
       })
       expect(detailTab).toBeInTheDocument()
@@ -98,7 +98,7 @@ describe('stocks step', () => {
         expect(screen.getByTestId('stepper')).toBeInTheDocument()
       })
       const detailTab = await screen
-        .getByText("Détails de l'offre")
+        .getByText('Détails de l’offre')
         .closest('a')
       expect(detailTab).toBeInTheDocument()
       expect(detailTab).toHaveAttribute('href')
@@ -132,7 +132,7 @@ describe('stocks step', () => {
       await waitFor(() => {
         expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
       })
-      const detailTab = await screen.findByText("Détails de l'offre", {
+      const detailTab = await screen.findByText('Détails de l’offre', {
         selector: 'a',
       })
       expect(detailTab).toBeInTheDocument()
@@ -162,7 +162,7 @@ describe('confirmation step', () => {
 
       // Then
       await waitFor(() => {
-        expect(screen.queryByText("Détails de l'offre")).not.toBeInTheDocument()
+        expect(screen.queryByText('Détails de l’offre')).not.toBeInTheDocument()
       })
     })
   })

@@ -39,12 +39,12 @@ const ThumbCell = ({
     <td className={styles['thumb-column']}>
       <Link
         className={styles['name']}
-        title={`${offer.name} - éditer l'offre`}
+        title={`${offer.name} - éditer l’offre`}
         onClick={onThumbClick}
         to={editionOfferLink}
       >
         <Thumb
-          alt={`${offer.name} - éditer l'offre`}
+          alt={`${offer.name} - éditer l’offre`}
           url={offer.thumbUrl}
           className={styles['offer-thumb']}
         />

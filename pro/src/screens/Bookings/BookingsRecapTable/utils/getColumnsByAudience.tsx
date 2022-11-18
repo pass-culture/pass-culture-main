@@ -48,7 +48,7 @@ export const getColumnsByAudience = <
   const offerColumn: IndividualColumnType = {
     id: 'stock',
     accessor: 'stock',
-    Header: "Nom de l'offre",
+    Header: 'Nom de l’offre',
     Cell: ({ value }) => <BookingOfferCell offer={value} />,
     defaultCanSort: true,
     sortType: sortByOfferName,

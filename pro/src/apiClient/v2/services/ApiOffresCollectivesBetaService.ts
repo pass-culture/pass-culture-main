@@ -91,7 +91,7 @@ export class ApiOffresCollectivesBetaService {
   }
 
   /**
-   * Récuperation de l'offre collective avec l'identifiant offer_id. Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées.
+   * Récuperation de l’offre collective avec l'identifiant offer_id. Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées.
    * @param status
    * @param venueId
    * @param periodBeginningDate
@@ -141,14 +141,14 @@ export class ApiOffresCollectivesBetaService {
         400: `Requête malformée`,
         401: `Authentification nécessaire`,
         403: `Non éligible pour les offres collectives`,
-        404: `L'une des resources pour la création de l'offre n'a pas été trouvée`,
+        404: `L'une des resources pour la création de l’offre n'a pas été trouvée`,
         422: `Unprocessable Entity`,
       },
     });
   }
 
   /**
-   * Récuperation de l'offre collective avec l'identifiant offer_id.
+   * Récuperation de l’offre collective avec l'identifiant offer_id.
    * @param offerId
    * @returns GetPublicCollectiveOfferResponseModel L'offre collective existe
    * @throws ApiError
@@ -194,8 +194,8 @@ export class ApiOffresCollectivesBetaService {
         400: `Requête malformée`,
         401: `Authentification nécessaire`,
         403: `Vous n'avez pas les droits nécessaires pour éditer cette offre collective`,
-        404: `L'une des resources pour la création de l'offre n'a pas été trouvée`,
-        422: `Cetains champs ne peuvent pas être édités selon l'état de l'offre`,
+        404: `L'une des resources pour la création de l’offre n'a pas été trouvée`,
+        422: `Cetains champs ne peuvent pas être édités selon l'état de l’offre`,
       },
     });
   }

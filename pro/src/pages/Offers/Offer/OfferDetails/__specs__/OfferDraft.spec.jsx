@@ -194,14 +194,14 @@ describe('offerDetails - Draft', () => {
     it('should display the right title and redirect to brouillon stock page', async () => {
       await renderOffers(props, store)
 
-      expect(screen.getByText("Compléter l'offre")).toBeInTheDocument()
+      expect(screen.getByText('Compléter l’offre')).toBeInTheDocument()
 
       await userEvent.click(screen.getByText('Étape suivante'))
 
       expect(
         await screen.findByRole('heading', { name: 'Stocks et prix', level: 3 })
       ).toBeInTheDocument()
-      expect(screen.getByText("Compléter l'offre")).toBeInTheDocument()
+      expect(screen.getByText('Compléter l’offre')).toBeInTheDocument()
     })
 
     it('should track information when clicking on "Étape suivante"', async () => {

@@ -462,7 +462,7 @@ describe('offerDetails - Creation - pro user', () => {
           )
 
           // when
-          const titleInput = await screen.findByLabelText("Titre de l'offre", {
+          const titleInput = await screen.findByLabelText('Titre de l’offre', {
             exact: false,
           })
           await userEvent.type(titleInput, 'Mon joli titre')
@@ -879,7 +879,7 @@ describe('offerDetails - Creation - pro user', () => {
           await screen.findByLabelText(/Sous-catégorie/),
           'MATERIEL_ART_CREATIF'
         )
-        await userEvent.click(screen.getByLabelText(/Titre de l'offre/))
+        await userEvent.click(screen.getByLabelText(/Titre de l’offre/))
         await userEvent.paste('Titre')
         await userEvent.click(
           screen.getByLabelText(/Être notifié par email des réservations/)
@@ -1856,7 +1856,7 @@ describe('offerDetails - Creation - pro user', () => {
         await screen.findByLabelText(/Évènement sans billet/)
       )
       await userEvent.type(
-        await screen.findByLabelText(/Titre de l'offre/),
+        await screen.findByLabelText(/Titre de l’offre/),
         'Ma petite offre'
       )
       await userEvent.type(
@@ -1939,7 +1939,7 @@ describe('offerDetails - Creation - pro user', () => {
         await screen.findByLabelText(/Évènement sans billet/)
       )
       await userEvent.type(
-        await screen.findByLabelText(/Titre de l'offre/),
+        await screen.findByLabelText(/Titre de l’offre/),
         'Ma petite offre'
       )
       await userEvent.type(

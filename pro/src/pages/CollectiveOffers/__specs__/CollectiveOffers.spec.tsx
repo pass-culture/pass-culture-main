@@ -524,7 +524,7 @@ describe('route CollectiveOffers', () => {
         it('should load offers with selected offer type', async () => {
           // Given
           await renderOffers(store)
-          const offerTypeSelect = screen.getByLabelText("Type de l'offre")
+          const offerTypeSelect = screen.getByLabelText('Type de l’offre')
           await userEvent.selectOptions(offerTypeSelect, 'template')
           // When
           await userEvent.click(screen.getByText('Lancer la recherche'))

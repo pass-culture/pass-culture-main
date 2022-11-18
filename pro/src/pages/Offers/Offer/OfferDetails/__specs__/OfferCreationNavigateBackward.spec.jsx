@@ -317,7 +317,7 @@ describe('offerCreation - navigate backward', () => {
       name: 'Stocks et prix',
     })
 
-    await userEvent.click(screen.getByText("Détails de l'offre"))
+    await userEvent.click(screen.getByText('Détails de l’offre'))
 
     expect(
       await screen.findByRole('heading', { name: 'Type d’offre' })

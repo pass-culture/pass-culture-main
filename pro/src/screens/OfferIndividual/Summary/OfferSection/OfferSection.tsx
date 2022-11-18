@@ -89,7 +89,7 @@ const OfferSummary = ({
 
   return (
     <SummaryLayout.Section
-      title="Détails de l'offre"
+      title="Détails de l’offre"
       editLink={editLink}
       onLinkClick={logEditEvent}
     >
@@ -139,7 +139,7 @@ const OfferSummary = ({
       </SummaryLayout.SubSection>
 
       <SummaryLayout.SubSection title="Informations artistiques">
-        <SummaryLayout.Row title="Titre de l'offre" description={offer.name} />
+        <SummaryLayout.Row title="Titre de l’offre" description={offer.name} />
         <SummaryLayout.Row
           title="Description"
           description={

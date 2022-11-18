@@ -80,7 +80,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       initialValues,
       onSubmit,
     })
-    const nameInput = screen.getByLabelText("Titre de l'offre", {
+    const nameInput = screen.getByLabelText('Titre de l’offre', {
       exact: false,
     })
     await userEvent.type(nameInput, 'Mon super titre')
@@ -118,7 +118,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       initialValues,
       onSubmit,
     })
-    const nameInput = screen.getByLabelText("Titre de l'offre", {
+    const nameInput = screen.getByLabelText('Titre de l’offre', {
       exact: false,
     })
     await userEvent.click(nameInput)

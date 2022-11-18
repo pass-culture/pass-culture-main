@@ -97,7 +97,7 @@ const ActionBar = ({
                 Sauvegarder le brouillon et quitter
               </ButtonLink>
               <Button onClick={onClickNext} disabled={isDisabled}>
-                Publier l'offre
+                Publier l’offre
               </Button>
             </>
           ) : (

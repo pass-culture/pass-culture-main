@@ -190,7 +190,7 @@ describe('offerDetails - Creation - pro user - tracking', () => {
         await screen.findByLabelText(/Évènement sans billet/)
       )
       await userEvent.type(
-        await screen.findByLabelText(/Titre de l'offre/),
+        await screen.findByLabelText(/Titre de l’offre/),
         'Ma petite offre'
       )
       await userEvent.type(
@@ -285,7 +285,7 @@ describe('offerDetails - Creation - pro user - tracking', () => {
         await screen.findByLabelText(/Évènement sans billet/)
       )
       await userEvent.type(
-        await screen.findByLabelText(/Titre de l'offre/),
+        await screen.findByLabelText(/Titre de l’offre/),
         'Ma petite offre'
       )
       await userEvent.type(
