@@ -50,15 +50,15 @@ const ImageUploaderVenue = () => {
     cropParams,
   }: IOnImageUploadArgs) => {
     try {
-      const editedVenue = await postImageToVenue({
+      const editedVenue = await postImageToVenue(
         venueId,
-        banner: imageFile,
-        xCropPercent: cropParams?.x,
-        yCropPercent: cropParams?.y,
-        heightCropPercent: cropParams?.height,
-        widthCropPercent: cropParams?.width,
-        imageCredit: credit,
-      })
+        imageFile,
+        credit,
+        cropParams?.x,
+        cropParams?.y,
+        cropParams?.height,
+        cropParams?.width
+      )
 
       setFieldValue('bannerUrl', editedVenue.bannerUrl)
       setFieldValue('bannerMeta', editedVenue.bannerMeta)

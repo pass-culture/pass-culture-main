@@ -127,8 +127,8 @@ const OfferDetails = ({
         await pcapi
           .postThumbnail(
             offerId,
-            credit,
             thumbnail,
+            credit,
             thumbUrl,
             croppingRect?.x,
             croppingRect?.y,
