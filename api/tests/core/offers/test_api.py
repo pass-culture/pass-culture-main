@@ -881,12 +881,9 @@ class CreateOfferTest:
     def test_create_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
 
         offer = api.create_offer(
-            user=user,
-            venue_id=venue.id,
+            venue=venue,
             name="A pretty good offer",
             subcategory_id=subcategories.SEANCE_CINE.id,
             external_ticket_office_url="http://example.net",
@@ -919,12 +916,9 @@ class CreateOfferTest:
             isGcuCompatible=True,
         )
         venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
 
         offer = api.create_offer(
-            venue_id=venue.id,
+            venue=venue,
             name="FONDATION T.1",
             subcategory_id=subcategories.LIVRE_PAPIER.id,
             extra_data={"isbn": "9782207300893", "author": "Isaac Asimov"},
@@ -932,7 +926,6 @@ class CreateOfferTest:
             mental_disability_compliant=True,
             motor_disability_compliant=True,
             visual_disability_compliant=False,
-            user=user,
         )
 
         assert offer.name == "FONDATION T.1"
@@ -955,13 +948,10 @@ class CreateOfferTest:
         )
 
         venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(
-                venue_id=venue.id,
+                venue=venue,
                 name="FONDATION T.1",
                 subcategory_id=subcategories.LIVRE_PAPIER.id,
                 extra_data={"isbn": "9782207300893"},
@@ -969,7 +959,6 @@ class CreateOfferTest:
                 mental_disability_compliant=True,
                 motor_disability_compliant=True,
                 visual_disability_compliant=False,
-                user=user,
             )
 
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
@@ -977,13 +966,10 @@ class CreateOfferTest:
     @override_features(ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION=True)
     def test_create_offer_livre_edition_from_isbn_with_product_not_exists_should_fail(self):
         venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(
-                venue_id=venue.id,
+                venue=venue,
                 name="FONDATION T.1",
                 subcategory_id=subcategories.LIVRE_PAPIER.id,
                 extra_data={"isbn": "9782207300893"},
@@ -991,25 +977,22 @@ class CreateOfferTest:
                 mental_disability_compliant=True,
                 motor_disability_compliant=True,
                 visual_disability_compliant=False,
-                user=user,
             )
 
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
 
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
-        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
         with pytest.raises(exceptions.SubCategoryIsInactive) as error:
 
             api.create_offer(
-                venue_id=venue.id,
+                venue=venue,
                 name="An offer he can't refuse",
                 subcategory_id=subcategories.ACTIVATION_EVENT.id,
                 audio_disability_compliant=True,
                 mental_disability_compliant=True,
                 motor_disability_compliant=True,
                 visual_disability_compliant=True,
-                user=user_offerer.user,
             )
 
         assert error.value.errors["subcategory"] == [
@@ -1018,65 +1001,27 @@ class CreateOfferTest:
 
     def test_cannot_create_offer_when_invalid_subcategory(self):
         venue = offerers_factories.VenueFactory()
-        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
         with pytest.raises(exceptions.UnknownOfferSubCategory) as error:
             api.create_offer(
-                venue_id=venue.id,
+                venue=venue,
                 name="An offer he can't refuse",
                 subcategory_id="TOTO",
                 audio_disability_compliant=True,
                 mental_disability_compliant=True,
                 motor_disability_compliant=True,
                 visual_disability_compliant=True,
-                user=user_offerer.user,
             )
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
-    def test_fail_if_unknown_venue(self):
-        user = users_factories.ProFactory()
-        with pytest.raises(exceptions.VenueNotFound) as error:
-            api.create_offer(
-                venue_id=1,
-                name="An awful offer",
-                subcategory_id=subcategories.CONCERT.id,
-                audio_disability_compliant=True,
-                mental_disability_compliant=True,
-                motor_disability_compliant=True,
-                visual_disability_compliant=True,
-                user=user,
-            )
-        assert error.value.errors == {"venue": ["not found"]}
-
-    def test_fail_if_user_not_related_to_offerer(self):
-        venue = offerers_factories.VenueFactory()
-        user = users_factories.ProFactory()
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.create_offer(
-                venue_id=venue.id,
-                subcategory_id=subcategories.CONCERT.id,
-                audio_disability_compliant=True,
-                mental_disability_compliant=True,
-                motor_disability_compliant=True,
-                visual_disability_compliant=True,
-                name="Les users sans structure",
-                user=user,
-            )
-        err = "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
-        assert error.value.errors["global"] == [err]
-
     def test_raise_error_if_extra_data_mandatory_fields_not_provided(self):
         venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(
-                venue_id=venue.id,
+                venue=venue,
                 name="A pretty good offer",
                 subcategory_id=subcategories.CONCERT.id,
-                user=user,
                 audio_disability_compliant=True,
                 mental_disability_compliant=True,
                 motor_disability_compliant=True,
