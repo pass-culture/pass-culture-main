@@ -11,6 +11,7 @@ import {
   IStockEventFormValues,
 } from 'components/StockEventForm'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
@@ -46,7 +47,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const { setOffer } = useOfferIndividualContext()
 
   const onSubmit = async (formValues: { stocks: IStockEventFormValues[] }) => {
-    const { isOk, payload, message } = await upsertStocksEventAdapter({
+    const { isOk, payload } = await upsertStocksEventAdapter({
       offerId: offer.id,
       formValues: formValues.stocks,
       departementCode: offer.venue.departmentCode,
@@ -54,7 +55,16 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
 
     /* istanbul ignore next: DEBT, TO FIX */
     if (isOk) {
-      notify.success(message)
+      notify.success(
+        {
+          [OFFER_WIZARD_MODE.CREATION]:
+            'Brouillon sauvegardé dans la liste des offres',
+          [OFFER_WIZARD_MODE.DRAFT]:
+            'Brouillon sauvegardé dans la liste des offres',
+          [OFFER_WIZARD_MODE.EDITION]:
+            'Vos modifications ont bien été enregistrées',
+        }[mode]
+      )
       const response = await getOfferIndividualAdapter(offer.id)
       if (response.isOk) {
         setOffer && setOffer(response.payload)
