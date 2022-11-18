@@ -68,6 +68,9 @@ const renderInformationsScreen = (
         <Route path="/offre/AA/v3/individuelle/stocks">
           <div>There is the stock route content</div>
         </Route>
+        <Route path="/offre/AA/v3/individuelle/recapitulatif">
+          <div>There is the summary route content</div>
+        </Route>
       </MemoryRouter>
       <Notification />
     </Provider>
@@ -252,7 +255,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     jest.spyOn(api, 'deleteThumbnail').mockResolvedValue()
   })
 
-  it('should submit minimal physical offer', async () => {
+  it('should submit minimal physical offer and redirect to summary', async () => {
     renderInformationsScreen(props, store, contextOverride)
     const nameField = screen.getByLabelText("Titre de l'offre")
     await userEvent.clear(nameField)
@@ -295,13 +298,13 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     })
     expect(api.getOffer).toHaveBeenCalledTimes(1)
     expect(
-      await screen.findByText('There is the stock route content')
+      await screen.findByText('There is the summary route content')
     ).toBeInTheDocument()
     expect(pcapi.postThumbnail).not.toHaveBeenCalled()
     expect(api.postOffer).not.toHaveBeenCalled()
   })
 
-  it('should submit minimal virtual offer', async () => {
+  it('should submit minimal virtual offer and redirect to summary', async () => {
     contextOverride.offer = {
       ...offer,
       venueId: 'VID virtual',
@@ -356,7 +359,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     })
     expect(api.getOffer).toHaveBeenCalledTimes(1)
     expect(
-      await screen.findByText('There is the stock route content')
+      await screen.findByText('There is the summary route content')
     ).toBeInTheDocument()
     expect(pcapi.postThumbnail).not.toHaveBeenCalled()
     expect(api.postOffer).not.toHaveBeenCalled()

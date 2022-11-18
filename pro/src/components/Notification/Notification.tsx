@@ -57,6 +57,7 @@ const Notification = (): JSX.Element | null => {
     /* istanbul ignore next: DEBT, TO FIX */
     iconComponent = <PendingIcon />
   } else if (type === 'information') {
+    /* istanbul ignore next: DEBT, TO FIX */
     iconComponent = <InfoIcon />
   }
   if (isInDom) {
