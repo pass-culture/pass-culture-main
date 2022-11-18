@@ -198,9 +198,9 @@ const Informations = ({
         setOffer && setOffer(response.payload)
       }
       notify.success(
-        isSubmittingDraft
-          ? 'Brouillon sauvegardé dans la liste des offres'
-          : 'Vos modifications ont bien été enregistrées'
+        mode === OFFER_WIZARD_MODE.EDITION
+          ? 'Vos modifications ont bien été enregistrées'
+          : 'Brouillon sauvegardé dans la liste des offres'
       )
       if (!isSubmittingFromRouteLeavingGuard) {
         navigate(
