@@ -4,7 +4,7 @@ import {
 } from 'components/OfferIndividualForm'
 import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
 
-import setSubCategoryFields from './setSubCategoryFields'
+import buildSubCategoryFields from './buildSubCategoryFields'
 
 const serializeDurationHour = (durationMinute: number): string => {
   const hours = Math.floor(durationMinute / 60)
@@ -24,7 +24,7 @@ const setInitialFormValues = (
     throw Error('La categorie de l’offre est introuvable')
   }
 
-  const { subCategoryFields } = setSubCategoryFields(
+  const { subCategoryFields } = buildSubCategoryFields(
     offer.subcategoryId,
     subCategoryList
   )
