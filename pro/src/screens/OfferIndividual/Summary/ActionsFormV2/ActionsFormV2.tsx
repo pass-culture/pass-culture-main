@@ -100,7 +100,7 @@ const ActionsFormV2 = ({
           onClick={publishOffer}
           disabled={disablePublish}
         >
-          Publier l'offre
+          Publier l’offre
         </Button>
       </div>
     </div>

@@ -114,7 +114,7 @@ const OfferType = (): JSX.Element => {
         </FormLayout.Section>
 
         {offerType === OFFER_TYPES.EDUCATIONAL && isSubtypeChosenAtCreation && (
-          <FormLayout.Section title="Quel est le type de l'offre ?">
+          <FormLayout.Section title="Quel est le type de l’offre ?">
             <FormLayout.Row inline>
               <RadioButtonWithImage
                 name="offer-subtype"

@@ -328,7 +328,7 @@ describe('test OfferIndividualWisard', () => {
       `/offre/${offerId}/v3/individuelle/informations?structure=CU`
     )
     expect(
-      await screen.findByRole('heading', { name: "Modifier l'offre" })
+      await screen.findByRole('heading', { name: 'Modifier l’offre' })
     ).toBeInTheDocument()
     expect(api.listOfferersNames).toHaveBeenCalledWith(
       null, // validated
@@ -356,7 +356,7 @@ describe('test OfferIndividualWisard', () => {
         await screen.findByRole('heading', { name: 'Créer une offre' })
       ).toBeInTheDocument()
 
-      const tabInformations = screen.getByText("Détails de l'offre", {
+      const tabInformations = screen.getByText('Détails de l’offre', {
         selector: 'span',
       })
       const tabStocks = screen.getByText('Stock & Prix', {
@@ -383,10 +383,10 @@ describe('test OfferIndividualWisard', () => {
       )
 
       expect(
-        await screen.findByRole('heading', { name: "Modifier l'offre" })
+        await screen.findByRole('heading', { name: 'Modifier l’offre' })
       ).toBeInTheDocument()
 
-      const tabInformations = screen.queryByText("Détails de l'offre", {
+      const tabInformations = screen.queryByText('Détails de l’offre', {
         selector: 'span',
       })
       const tabStocks = screen.queryByText('Stock & Prix', {
@@ -414,7 +414,7 @@ describe('test OfferIndividualWisard', () => {
         await screen.findByRole('heading', { name: 'Récapitulatif' })
       ).toBeInTheDocument()
 
-      const tabInformations = screen.getByText("Détails de l'offre", {
+      const tabInformations = screen.getByText('Détails de l’offre', {
         selector: 'span',
       })
       const tabStocks = screen.getByText('Stock & Prix', {

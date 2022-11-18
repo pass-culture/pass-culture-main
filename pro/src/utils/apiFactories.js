@@ -18,7 +18,7 @@ export const collectiveOfferFactory = (
 
   return {
     id: `OFFER${currentOfferId}`,
-    name: `Le nom de l'offre ${currentOfferId}`,
+    name: `Le nom de l’offre ${currentOfferId}`,
     isActive: true,
     isEditable: true,
     isEvent: true,
@@ -58,7 +58,7 @@ export const offerFactory = (
 
   return {
     id: `OFFER${currentOfferId}`,
-    name: `Le nom de l'offre ${currentOfferId}`,
+    name: `Le nom de l’offre ${currentOfferId}`,
     isActive: true,
     isEditable: true,
     isEvent: false,

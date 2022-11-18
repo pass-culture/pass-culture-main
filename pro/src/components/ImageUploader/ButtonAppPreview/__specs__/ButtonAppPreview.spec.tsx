@@ -35,7 +35,7 @@ describe('ButtonAppPreview', () => {
     ).toBeInTheDocument()
 
     expect(
-      screen.queryByRole('heading', { name: "Image de l'offre" })
+      screen.queryByRole('heading', { name: 'Image de l’offre' })
     ).not.toBeInTheDocument()
   })
 
@@ -48,7 +48,7 @@ describe('ButtonAppPreview', () => {
     )
 
     const modalPreview = await screen.findByRole('heading', {
-      name: "Image de l'offre",
+      name: 'Image de l’offre',
     })
     expect(modalPreview).toBeInTheDocument()
 

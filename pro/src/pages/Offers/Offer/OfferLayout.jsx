@@ -100,13 +100,13 @@ const OfferLayout = () => {
     return null
   }
 
-  if (isCompletingDraft) pageTitle = "Compléter l'offre"
+  if (isCompletingDraft) pageTitle = 'Compléter l’offre'
   else if (!isCreatingOffer) {
     /* istanbul ignore next: DEBT, TO FIX */
     if (activeStep in editPageTitleByStep) {
       pageTitle = editPageTitleByStep[activeStep]
     } else {
-      pageTitle = "Éditer l'offre"
+      pageTitle = 'Éditer l’offre'
     }
   }
 

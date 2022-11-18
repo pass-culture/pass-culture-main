@@ -257,7 +257,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
 
   it('should submit minimal physical offer and redirect to summary', async () => {
     renderInformationsScreen(props, store, contextOverride)
-    const nameField = screen.getByLabelText("Titre de l'offre")
+    const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.clear(nameField)
     await userEvent.type(nameField, 'Le nom de mon offre édité')
 
@@ -318,7 +318,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     }
 
     renderInformationsScreen(props, store, contextOverride)
-    const nameField = screen.getByLabelText("Titre de l'offre")
+    const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.clear(nameField)
     await userEvent.type(nameField, 'Le nom de mon offre édité')
 

@@ -32,7 +32,7 @@ const Informations = ({
       <FormLayout.Row>
         <TextInput
           countCharacters
-          label="Titre de l'offre"
+          label="Titre de l’offre"
           maxLength={90}
           name="name"
           disabled={readOnlyFields.includes('name')}

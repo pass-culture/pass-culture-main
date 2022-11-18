@@ -152,7 +152,7 @@ describe('stocks page - Brouillon', () => {
   describe('Brouillon', () => {
     it('should render a form with the right title', async () => {
       renderOffers(props, store)
-      expect(await screen.findByText("Compléter l'offre")).toBeInTheDocument()
+      expect(await screen.findByText('Compléter l’offre')).toBeInTheDocument()
     })
 
     it('should save stocks when clicking on save draft button', async () => {

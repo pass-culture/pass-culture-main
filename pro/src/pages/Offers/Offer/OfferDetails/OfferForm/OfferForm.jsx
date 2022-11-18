@@ -803,7 +803,7 @@ const OfferForm = ({
                   countCharacters
                   disabled={readOnlyFields.includes('name')}
                   error={getErrorMessage('name')}
-                  label="Titre de l'offre"
+                  label="Titre de l’offre"
                   maxLength={90}
                   name="name"
                   onChange={handleSingleFormUpdate}

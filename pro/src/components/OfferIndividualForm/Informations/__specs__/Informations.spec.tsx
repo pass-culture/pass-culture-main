@@ -54,7 +54,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
 
   it('should render non sub categories fields', async () => {
     renderInformations({ props, initialValues, onSubmit })
-    expect(screen.getByLabelText("Titre de l'offre")).toBeInTheDocument()
+    expect(screen.getByLabelText('Titre de l’offre')).toBeInTheDocument()
     expect(
       screen.getByLabelText('Description', { exact: false })
     ).toBeInTheDocument()
@@ -93,8 +93,8 @@ describe('OfferIndividual section: UsefulInformations', () => {
       'durationMinutes',
     ]
     renderInformations({ props, initialValues, onSubmit })
-    expect(screen.getByLabelText(/Titre de l'offre/)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Titre de l'offre/)).not.toBeDisabled()
+    expect(screen.getByLabelText(/Titre de l’offre/)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Titre de l’offre/)).not.toBeDisabled()
     expect(screen.getByLabelText(/Description/)).toBeInTheDocument()
     expect(screen.getByLabelText(/Description/)).not.toBeDisabled()
     expect(screen.getByLabelText(/Auteur/)).toBeInTheDocument()
@@ -136,7 +136,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       'durationMinutes',
     ]
     renderInformations({ props, initialValues, onSubmit })
-    expect(screen.getByLabelText(/Titre de l'offre/)).toBeDisabled()
+    expect(screen.getByLabelText(/Titre de l’offre/)).toBeDisabled()
     expect(screen.getByLabelText(/Description/)).toBeDisabled()
 
     // only name and description can be disabled on edition.

@@ -60,7 +60,7 @@ const ModalImageCrop = ({
       minWidth
   )
   const title: string = {
-    [UploaderModeEnum.OFFER]: "Image de l'offre",
+    [UploaderModeEnum.OFFER]: 'Image de l’offre',
     [UploaderModeEnum.VENUE]: 'Image du lieu',
   }[mode]
   const canvasHeight: number = {

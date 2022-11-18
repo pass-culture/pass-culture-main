@@ -40,7 +40,7 @@ const CollectiveOfferBreadcrumb = ({
   if (isEditingExistingOffer) {
     stepList[CollectiveOfferBreadcrumbStep.DETAILS] = {
       id: CollectiveOfferBreadcrumbStep.DETAILS,
-      label: "Détails de l'offre",
+      label: 'Détails de l’offre',
       url: `/offre/${offerId}/collectif/edition`,
     }
     if (!isTemplate) {
@@ -58,7 +58,7 @@ const CollectiveOfferBreadcrumb = ({
   } else {
     stepList[CollectiveOfferBreadcrumbStep.DETAILS] = {
       id: CollectiveOfferBreadcrumbStep.DETAILS,
-      label: "Détails de l'offre",
+      label: 'Détails de l’offre',
     }
     if (!isTemplate) {
       stepList[CollectiveOfferBreadcrumbStep.STOCKS] = {
