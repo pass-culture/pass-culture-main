@@ -2,7 +2,7 @@ import { useFormikContext } from 'formik'
 import { useEffect } from 'react'
 
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm/types'
-import { setSubCategoryFields } from 'components/OfferIndividualForm/utils'
+import { buildSubCategoryFields } from 'components/OfferIndividualForm/utils'
 import { IOfferSubCategory } from 'core/Offers/types'
 
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from '../../constants'
@@ -20,16 +20,21 @@ const useSubCategoryUpdates = ({
     setFieldValue,
   } = useFormikContext<IOfferIndividualFormValues>()
 
-  const resetSubCategoryFieldValues = (): void => {
-    Object.entries(SUBCATEGORIES_FIELDS_DEFAULT_VALUES).forEach(
-      ([field, value]: [string, string | undefined]) => {
-        setFieldValue(field, value)
+  const resetSubCategoryFieldValues = (fieldsToReset: string[]): void => {
+    fieldsToReset.forEach((field: string) => {
+      if (field in SUBCATEGORIES_FIELDS_DEFAULT_VALUES) {
+        setFieldValue(
+          field,
+          SUBCATEGORIES_FIELDS_DEFAULT_VALUES[
+            field as keyof typeof SUBCATEGORIES_FIELDS_DEFAULT_VALUES
+          ]
+        )
       }
-    )
+    })
   }
 
-  const setFormSubCategoryFields = (): void => {
-    const { subCategoryFields, isEvent } = setSubCategoryFields(
+  const setSubCategoryFields = (): string[] => {
+    const { subCategoryFields, isEvent } = buildSubCategoryFields(
       subcategoryId,
       subCategories
     )
@@ -39,16 +44,19 @@ const useSubCategoryUpdates = ({
       'isDuo',
       !!subCategories.find(s => s.id == subcategoryId)?.canBeDuo
     )
+    return subCategoryFields
   }
 
   useEffect(
     function onSubCategoryChange() {
       if (dirty) {
-        const previousSubCategoryFields = subCategoryFields
-        setFormSubCategoryFields()
-
-        if (previousSubCategoryFields !== subCategoryFields) {
-          resetSubCategoryFieldValues()
+        const newSubCategoryFields = setSubCategoryFields()
+        if (newSubCategoryFields !== subCategoryFields) {
+          resetSubCategoryFieldValues(
+            subCategoryFields.filter(
+              (field: string) => !newSubCategoryFields.includes(field)
+            )
+          )
         }
       }
     },

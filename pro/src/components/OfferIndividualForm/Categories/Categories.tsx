@@ -1,6 +1,8 @@
+import cn from 'classnames'
 import { useFormikContext } from 'formik'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
+import BannerAddVenue from 'components/Banner/BannerAddVenue'
 import FormLayout from 'components/FormLayout'
 import {
   FORM_DEFAULT_VALUES,
@@ -11,53 +13,70 @@ import { InfoBox, Select } from 'ui-kit'
 
 import styles from '../OfferIndividualForm.module.scss'
 
+import { useSubcategoryOptions } from './hooks/useSubcategoryOptions'
+import useSubCategoryUpdates from './hooks/useSubCategoryUpdates/useSubCategoryUpdates'
 import { MusicTypes } from './MusicTypes'
-import { SelectSubCategory } from './SelectSubCategory'
 import { ShowTypes } from './ShowTypes'
 
 export interface ICategoriesProps {
   categories: IOfferCategory[]
   subCategories: IOfferSubCategory[]
   readOnlyFields?: string[]
-  Banner?: React.ReactNode
+  showAddVenueBanner?: boolean
+}
+
+const buildCategoryOptions = (categories: IOfferCategory[]) => {
+  return categories
+    .map((c: IOfferCategory) => ({
+      value: c.id,
+      label: c.proLabel,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 }
 
 const Categories = ({
   categories,
   subCategories,
   readOnlyFields = [],
-  Banner,
+  showAddVenueBanner = false,
 }: ICategoriesProps): JSX.Element => {
   const {
-    values: formValues,
+    values: { categoryId, subCategoryFields, offererId },
     setFieldValue,
+    setTouched,
     touched,
   } = useFormikContext<IOfferIndividualFormValues>()
+  const subcategoryOptions = useSubcategoryOptions(subCategories, categoryId)
+  const [categoryOptions, setCategoryOptions] = useState<SelectOptions>(
+    buildCategoryOptions(categories)
+  )
   useEffect(() => {
-    if (touched.subcategoryId) {
-      setFieldValue('subcategoryId', FORM_DEFAULT_VALUES.subcategoryId)
-      setFieldValue('subCategoryFields', FORM_DEFAULT_VALUES.subCategoryFields)
+    setCategoryOptions(buildCategoryOptions(categories))
+  }, [categories])
+
+  useEffect(() => {
+    if (touched.categoryId && !readOnlyFields.includes('subcategoryId')) {
+      if (subcategoryOptions.length === 1) {
+        setFieldValue('subcategoryId', subcategoryOptions[0].value, false)
+      } else {
+        setFieldValue('subcategoryId', FORM_DEFAULT_VALUES.subcategoryId, false)
+        setTouched({ categoryId: true })
+      }
     }
-  }, [formValues.categoryId])
+  }, [subcategoryOptions])
 
-  const categoryOptions: SelectOptions = categories
-    .map((c: IOfferCategory) => ({
-      value: c.id,
-      label: c.proLabel,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
+  useSubCategoryUpdates({ subCategories })
 
-  const hasSubCategory =
-    formValues.categoryId !== FORM_DEFAULT_VALUES.categoryId
-  const hasMusicType = formValues.subCategoryFields.includes('musicType')
-  const hasShowType = formValues.subCategoryFields.includes('showType')
+  const hasSubCategory = categoryId !== FORM_DEFAULT_VALUES.categoryId
+  const hasMusicType = subCategoryFields.includes('musicType')
+  const hasShowType = subCategoryFields.includes('showType')
 
   return (
     <FormLayout.Section title="Type d’offre">
       <FormLayout.Row
-        className={
-          hasSubCategory || !!Banner ? undefined : styles['category-row']
-        }
+        className={cn({
+          [styles['category-row']]: !(hasSubCategory || showAddVenueBanner),
+        })}
         sideComponent={
           <InfoBox
             type="info"
@@ -86,9 +105,18 @@ const Categories = ({
 
       {hasSubCategory && (
         <FormLayout.Row>
-          <SelectSubCategory
-            subCategories={subCategories}
-            readOnly={readOnlyFields.includes('subcategoryId')}
+          <Select
+            label="Sous-catégorie"
+            name="subcategoryId"
+            options={subcategoryOptions}
+            defaultOption={{
+              label: 'Choisir une sous-catégorie',
+              value: FORM_DEFAULT_VALUES.subcategoryId,
+            }}
+            disabled={
+              readOnlyFields.includes('subcategoryId') ||
+              subcategoryOptions.length === 1
+            }
           />
         </FormLayout.Row>
       )}
@@ -100,7 +128,11 @@ const Categories = ({
       {hasShowType && (
         <ShowTypes readOnly={readOnlyFields.includes('showType')} />
       )}
-      {!!Banner && <FormLayout.Row>{Banner}</FormLayout.Row>}
+      {showAddVenueBanner && (
+        <FormLayout.Row>
+          <BannerAddVenue offererId={offererId} />
+        </FormLayout.Row>
+      )}
     </FormLayout.Section>
   )
 }

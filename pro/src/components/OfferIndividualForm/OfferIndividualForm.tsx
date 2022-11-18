@@ -1,7 +1,6 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import BannerAddVenue from 'components/Banner/BannerAddVenue'
 import FormLayout from 'components/FormLayout'
 import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
@@ -19,7 +18,7 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import { Accessibility } from './Accessibility'
 import { Categories } from './Categories'
 import { ExternalLink } from './ExternalLink'
-import { useFilteredVenueList } from './hooks'
+import { useFilteredVenueList, useShowFullForm } from './hooks'
 import { ImageUploaderOffer } from './ImageUploaderOffer'
 import { Informations } from './Informations'
 import { Notifications } from './Notifications'
@@ -62,6 +61,8 @@ const OfferIndividualForm = ({
     venueList,
   })
 
+  const showFullForm = useShowFullForm(subcategoryId, filteredVenueList)
+
   const offerSubCategory = subCategories.find(s => s.id === subcategoryId)
 
   const isVenueVirtual =
@@ -71,7 +72,7 @@ const OfferIndividualForm = ({
     .filter(v => v.managingOffererId == offererId)
     .every(v => v.isVirtual)
 
-  const displayVenueBanner =
+  const showAddVenueBanner =
     offerSubCategory &&
     offerSubCategory.onlineOfflinePlatform === CATEGORY_STATUS.OFFLINE &&
     areAllVenuesVirtual
@@ -83,9 +84,9 @@ const OfferIndividualForm = ({
         categories={categories}
         subCategories={subCategories}
         readOnlyFields={readOnlyFields}
-        Banner={displayVenueBanner && <BannerAddVenue offererId={offererId} />}
+        showAddVenueBanner={showAddVenueBanner}
       />
-      {subcategoryId.length > 0 && filteredVenueList.length > 0 && (
+      {showFullForm && (
         <>
           <Informations readOnlyFields={readOnlyFields} />
           <ImageUploaderOffer

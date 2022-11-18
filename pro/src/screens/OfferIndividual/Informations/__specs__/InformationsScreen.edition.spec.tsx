@@ -13,7 +13,10 @@ import {
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
-import { setInitialFormValues } from 'components/OfferIndividualForm'
+import {
+  setFormReadOnlyFields,
+  setInitialFormValues,
+} from 'components/OfferIndividualForm'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
@@ -241,6 +244,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
 
     props = {
       initialValues: setInitialFormValues(offer, subCategories),
+      readOnlyFields: setFormReadOnlyFields(offer, false),
     }
 
     jest
@@ -315,6 +319,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     }
     props = {
       initialValues: setInitialFormValues(contextOverride.offer, subCategories),
+      readOnlyFields: setFormReadOnlyFields(contextOverride.offer, false),
     }
 
     renderInformationsScreen(props, store, contextOverride)
@@ -376,6 +381,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     }
     props = {
       initialValues: setInitialFormValues(contextOverride.offer, subCategories),
+      readOnlyFields: setFormReadOnlyFields(contextOverride.offer, false),
     }
     renderInformationsScreen(props, store, contextOverride)
     await screen.findByRole('heading', { name: /Type d’offre/ })
@@ -402,6 +408,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     }
     props = {
       initialValues: setInitialFormValues(contextOverride.offer, subCategories),
+      readOnlyFields: setFormReadOnlyFields(contextOverride.offer, false),
     }
 
     renderInformationsScreen(props, store, contextOverride)

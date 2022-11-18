@@ -1,7 +1,7 @@
 import { WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE } from 'core/Offers'
 import { IOfferSubCategory } from 'core/Offers/types'
 
-const setSubCategoryFields = (
+const buildSubCategoryFields = (
   subCategoryId: string,
   subCategories: IOfferSubCategory[]
 ): {
@@ -11,7 +11,14 @@ const setSubCategoryFields = (
   const subCategory = subCategories.find(
     (subcategory: IOfferSubCategory) => subCategoryId === subcategory.id
   )
-  const subCategoryFields = subCategory?.conditionalFields || []
+  let subCategoryFields: string[] = [...(subCategory?.conditionalFields || [])]
+  if (subCategoryFields.includes('showType')) {
+    subCategoryFields.push('showSubType')
+  }
+  if (subCategoryFields.includes('musicType')) {
+    subCategoryFields.push('musicSubType')
+  }
+  subCategoryFields = [...new Set(subCategoryFields)]
   const isEvent = subCategory?.isEvent || false
 
   isEvent && subCategoryFields.push('durationMinutes')
@@ -24,4 +31,4 @@ const setSubCategoryFields = (
   return { subCategoryFields, isEvent }
 }
 
-export default setSubCategoryFields
+export default buildSubCategoryFields
