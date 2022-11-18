@@ -13,6 +13,7 @@ from alembic import command
 from alembic.config import Config
 from flask import Flask
 from flask import g
+from flask import url_for
 from flask.testing import FlaskClient
 from flask_jwt_extended.utils import create_access_token
 import pytest
@@ -28,6 +29,7 @@ import pcapi.core.object_storage.testing as object_storage_testing
 import pcapi.core.search.testing as search_testing
 import pcapi.core.testing
 from pcapi.core.users import testing as users_testing
+import pcapi.core.users.models as users_models
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import db
@@ -36,7 +38,7 @@ from pcapi.notifications.internal import testing as internal_notifications_testi
 from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.notifications.sms import testing as sms_notifications_testing
 from pcapi.repository.clean_database import clean_all_database
-from pcapi.routes import install_all_routes
+from pcapi.routes.backoffice_v3 import install_routes
 from pcapi.utils.module_loading import import_string
 
 from tests.serialization.serialization_decorator_test import test_blueprint
@@ -54,17 +56,62 @@ def pytest_configure(config):
         TestClient.WITH_DOC = True
 
 
-@pytest.fixture(scope="session", name="app")
-def app_fixture():
-    from pcapi import flask_app
+def build_backoffice_app():
+    from flask_login import FlaskLoginClient
 
-    app = flask_app.app
+    from pcapi.backoffice_app import app
+    from pcapi.backoffice_app import csrf
+    from pcapi.flask_app import remove_db_session
 
     # FIXME: some tests fail without this, for example:
     #   - pytest tests/admin/custom_views/offer_view_test.py
     #   - pytest tests/core/fraud/test_api.py
     # Leave an XXX note about why we need that.
-    app.teardown_request_funcs[None].remove(flask_app.remove_db_session)
+    app.teardown_request_funcs[None].remove(remove_db_session)
+
+    # Since sqla1.4, in tests teardown, all nested transactions (the way to handle 'savepoints') are closed recursively.
+    # But in some tests, there are more recursions than the default accepted number (1000)
+    sys.setrecursionlimit(3000)
+
+    with app.app_context():
+        from pcapi.utils import login_manager
+
+        app.test_client_class = FlaskLoginClient
+        app.config["TESTING"] = True
+
+        @app.route("/signin/<int:user_id>", methods=["POST"])
+        @csrf.exempt
+        def signin(user_id: int):
+            from flask_login import login_user
+
+            from pcapi.core.users.models import User
+
+            user = User.query.get(user_id)
+
+            login_user(user, remember=True)
+            login_manager.stamp_session(user)
+
+            return ""
+
+        install_database_extensions()
+        run_migrations()
+        install_feature_flags()
+        install_local_providers()
+
+        install_routes(app)
+
+        yield app
+
+
+def build_main_app():
+    from pcapi.app import app
+    from pcapi.flask_app import remove_db_session
+
+    # FIXME: some tests fail without this, for example:
+    #   - pytest tests/admin/custom_views/offer_view_test.py
+    #   - pytest tests/core/fraud/test_api.py
+    # Leave an XXX note about why we need that.
+    app.teardown_request_funcs[None].remove(remove_db_session)
 
     # Since sqla1.4, in tests teardown, all nested transactions (the way to handle 'savepoints') are closed recursively.
     # But in some tests, there are more recursions than the default accepted number (1000)
@@ -80,9 +127,15 @@ def app_fixture():
         install_feature_flags()
         install_local_providers()
 
-        install_all_routes(app)
-
         yield app
+
+
+@pytest.fixture(scope="session", name="app")
+def app_fixture(pytestconfig):
+    if pytestconfig.option.markexpr == "backoffice_v3":
+        yield from build_backoffice_app()
+    else:
+        yield from build_main_app()
 
 
 @pytest.fixture(autouse=True)
@@ -343,6 +396,13 @@ class TestClient:
     def with_session_auth(self, email: str) -> "TestClient":
         response = self.post("/users/signin", {"identifier": email, "password": settings.TEST_DEFAULT_PASSWORD})
         assert response.status_code == 200
+
+        return self
+
+    def with_bo_session_auth(self, user: users_models.User) -> "TestClient":
+        response = self.post(url_for(".signin", user_id=user.id))
+        assert response.status_code == 200
+
         return self
 
     def with_basic_auth(self, email: str) -> "TestClient":

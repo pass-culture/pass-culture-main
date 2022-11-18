@@ -1,4 +1,9 @@
+import pytest
+
 from .helpers import html_parser
+
+
+pytestmark = pytest.mark.backoffice_v3
 
 
 HTML_TABLE_CONTENT = """

@@ -8,7 +8,6 @@ from flask import g
 from flask import request
 from flask.logging import default_handler
 import flask.wrappers
-from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
 from flask_login import current_user
 import redis
@@ -39,7 +38,9 @@ install_logging()
 sentry_sdk.utils.MAX_STRING_LENGTH = 8192
 init_sentry_sdk()
 
+
 app = Flask(__name__, static_url_path="/static")
+
 
 # These `before_request()` and `after_request()` callbacks must be
 # registered first, so that:
@@ -123,46 +124,15 @@ if not settings.JWT_SECRET_KEY:
 
 app.secret_key = settings.FLASK_SECRET
 app.json_encoder = EnumJSONEncoder
+
 app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = settings.SQLALCHEMY_ECHO
-app.config["SESSION_COOKIE_HTTPONLY"] = True
-app.config["SESSION_COOKIE_SECURE"] = not settings.IS_DEV
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-app.config["REMEMBER_COOKIE_HTTPONLY"] = True
-app.config["REMEMBER_COOKIE_SECURE"] = not settings.IS_DEV
-app.config["REMEMBER_COOKIE_DURATION"] = 90 * 24 * 3600
-app.config["PERMANENT_SESSION_LIFETIME"] = 90 * 24 * 3600
-app.config["FLASK_ADMIN_SWATCH"] = "flatly"
-app.config["FLASK_ADMIN_FLUID_LAYOUT"] = True
-app.config["JWT_SECRET_KEY"] = settings.JWT_SECRET_KEY
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = settings.JWT_ACCESS_TOKEN_EXPIRES
 app.config["RATELIMIT_STORAGE_URL"] = settings.REDIS_URL
 app.config["GOOGLE_CLIENT_ID"] = settings.GOOGLE_CLIENT_ID
 app.config["GOOGLE_CLIENT_SECRET"] = settings.GOOGLE_CLIENT_SECRET
-app.config["WTF_CSRF_ENABLED"] = False
-
-oauth = OAuth(app)
-oauth.register(
-    name="google",
-    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
-    client_kwargs={"scope": "openid email profile"},
-)
-
-jwt = JWTManager(app)
 
 rate_limiter.init_app(app)
-
-
-@app.teardown_request  # type: ignore [arg-type]
-def remove_db_session(
-    exc: Exception | None = None,  # pylint: disable=unused-argument
-) -> None:
-    try:
-        db.session.remove()
-    except AttributeError:
-        pass
-
 
 install_models()
 db.init_app(app)
@@ -170,6 +140,13 @@ orm.configure_mappers()
 login_manager.init_app(app)
 install_commands(app)
 finance_utils.install_template_filters(app)
+
+oauth = OAuth(app)
+oauth.register(
+    name="google",
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={"scope": "openid email profile"},
+)
 
 app.url_map.strict_slashes = False
 
@@ -183,6 +160,16 @@ def get_shell_extra_context():  # type: ignore [no-untyped-def]
     # `flask shell` is run.
     _set_python_prompt()
     return {}
+
+
+@app.teardown_request  # type: ignore [arg-type]
+def remove_db_session(
+    exc: Exception | None = None,  # pylint: disable=unused-argument
+) -> None:
+    try:
+        db.session.remove()
+    except AttributeError:
+        pass
 
 
 def _non_printable(seq):  # type: ignore [no-untyped-def]

@@ -7,7 +7,6 @@ import pytest
 
 from pcapi.core.auth.api import generate_token
 from pcapi.core.permissions.factories import PermissionFactory
-from pcapi.core.permissions.utils import permission_required
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users.factories import UserFactory
@@ -17,6 +16,9 @@ from pcapi.repository import repository
 
 @override_features(ENABLE_BACKOFFICE_API=True)
 def test_access_granted_with_right_permission(db_session, client):
+    # avoid "working outside of application context" error
+    from pcapi.core.permissions.utils import permission_required
+
     # given
     permission = PermissionFactory()
     repository.save(permission)
@@ -38,6 +40,9 @@ def test_access_granted_with_right_permission(db_session, client):
 
 @override_features(ENABLE_BACKOFFICE_API=True)
 def test_access_denied_without_right_permission(db_session, client):
+    # avoid "working outside of application context" error
+    from pcapi.core.permissions.utils import permission_required
+
     # given
     permission = PermissionFactory()
     repository.save(permission)
@@ -63,6 +68,9 @@ def test_access_denied_without_right_permission(db_session, client):
 
 @override_features(ENABLE_BACKOFFICE_API=True)
 def test_access_denied_with_expired_token(db_session, client):
+    # avoid "working outside of application context" error
+    from pcapi.core.permissions.utils import permission_required
+
     # given
     permission = PermissionFactory()
     repository.save(permission)
@@ -90,6 +98,9 @@ def test_access_denied_with_expired_token(db_session, client):
 
 @override_features(ENABLE_BACKOFFICE_API=True)
 def test_access_denied_as_anonymous(db_session, client):
+    # avoid "working outside of application context" error
+    from pcapi.core.permissions.utils import permission_required
+
     # given
     permission = PermissionFactory()
     repository.save(permission)
@@ -112,6 +123,9 @@ def test_access_denied_as_anonymous(db_session, client):
 @override_features(ENABLE_BACKOFFICE_API=True)
 @override_settings(IS_TESTING=True)
 def test_no_need_for_permissions_on_testing_environment(db_session, client):
+    # avoid "working outside of application context" error
+    from pcapi.core.permissions.utils import permission_required
+
     # given
     permission = PermissionFactory()
     repository.save(permission)
@@ -133,6 +147,9 @@ def test_no_need_for_permissions_on_testing_environment(db_session, client):
 
 @override_features(ENABLE_BACKOFFICE_API=False)
 def test_access_denied_when_backoffice_api_disabled(db_session, client):
+    # avoid "working outside of application context" error
+    from pcapi.core.permissions.utils import permission_required
+
     # given
     permission = PermissionFactory()
     repository.save(permission)

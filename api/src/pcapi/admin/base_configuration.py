@@ -20,7 +20,6 @@ from pcapi import settings
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 import pcapi.core.users.api as users_api
-from pcapi.flask_app import oauth
 
 
 logger = logging.getLogger(__name__)
@@ -124,6 +123,8 @@ class AdminIndexView(AdminIndexBaseView):
 
     @expose("/login/", methods=("GET", "POST"))
     def login_view(self) -> werkzeug.Response:
+        from pcapi.flask_app import oauth  # avoid circular imports
+
         if settings.IS_DEV:
             from pcapi.utils import login_manager
 
@@ -150,6 +151,7 @@ class AdminIndexView(AdminIndexBaseView):
 
     @expose("/authorize/")
     def authorize(self):  # type: ignore [no-untyped-def]
+        from pcapi.flask_app import oauth  # avoid circular imports
         from pcapi.utils import login_manager
 
         token = oauth.google.authorize_access_token()

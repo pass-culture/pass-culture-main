@@ -77,7 +77,8 @@ def authorize():  # type: ignore
             session["google_email"] = google_email
             return redirect(url_for(".user_not_found"))
 
-        user.backoffice_permissions = fetch_user_permissions_from_google_workspace(user)
+        roles = fetch_user_roles_from_google_workspace(user)
+        backoffice_api.upsert_roles(user, roles)
         db.session.commit()
 
     login_user(user, remember=True)
@@ -97,10 +98,10 @@ def user_not_found():  # type: ignore
     return render_template("auth/user_not_found.html")
 
 
-def fetch_user_permissions_from_google_workspace(user: users_models.User) -> list[perm_models.Permission]:
+def fetch_user_roles_from_google_workspace(user: users_models.User) -> list[perm_models.Roles]:
     groups = auth_api.get_groups_from_google_workspace(user.email)
-    backoffice_roles = auth_api.extract_roles_from_google_workspace_groups(groups)
-    return auth_api.get_permissions_from_roles(backoffice_roles)
+    role_names = auth_api.extract_roles_from_google_workspace_groups(groups)
+    return [perm_models.Roles(name) for name in role_names]
 
 
 def create_local_admin_user(
