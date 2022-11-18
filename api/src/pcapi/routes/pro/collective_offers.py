@@ -579,9 +579,7 @@ def delete_offer_image(
     else:
         check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    educational_api_offer.delete_image(
-        obj=offer,
-    )
+    educational_api_offer.delete_image(obj=offer)
 
 
 @private_api.route("/collective/offers-template/<offer_id>/image", methods=["DELETE"])
@@ -601,6 +599,4 @@ def delete_offer_template_image(
     else:
         check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    educational_api_offer.delete_image(
-        obj=offer,
-    )
+    educational_api_offer.delete_image(obj=offer)
