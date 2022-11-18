@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Venue from 'pages/Home/Venues/Venue'
+import Venue from './Venue'
 
 interface IVenueListProps {
   physicalVenues: {
@@ -18,7 +18,7 @@ interface IVenueListProps {
   } | null
 }
 
-export const VenueList = ({
+const VenueList = ({
   physicalVenues,
   selectedOffererId,
   virtualVenue,
@@ -52,3 +52,5 @@ export const VenueList = ({
     </div>
   )
 }
+
+export default VenueList

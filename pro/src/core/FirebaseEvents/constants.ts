@@ -46,6 +46,13 @@ export enum Events {
   TUTO_PAGE_VIEW = 'tutoPageView',
   DELETE_DRAFT_OFFER = 'DeleteDraftOffer',
 }
+export enum VenueEvents {
+  CLICKED_VENUE_ACCORDION_BUTTON = 'hasClickedVenueAccordionButton',
+  CLICKED_VENUE_PUBLISHED_OFFERS_LINK = 'hasClickedVenuePublishedOffersLink',
+  CLICKED_VENUE_ACTIVE_BOOKINGS_LINK = 'hasClickedVenueActiveBookingsLink',
+  CLICKED_VENUE_VALIDATED_RESERVATIONS_LINK = 'hasClickedVenueValidatedReservationsLink',
+  CLICKED_VENUE_EMPTY_STOCK_LINK = 'hasClickedVenueEmptyStockLink',
+}
 
 export enum OFFER_FORM_NAVIGATION_MEDIUM {
   RECAP_LINK = 'RecapLink',
