@@ -5,11 +5,13 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
+import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
-import Venue from 'pages/Home/Venues/Venue'
 import { configureTestStore } from 'store/testUtils'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
+
+import Venue, { IVenueProps } from '../Venue'
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -17,7 +19,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderVenue = (props, store) => {
+const renderVenue = (props: IVenueProps, store: Store) => {
   render(
     <Provider store={store}>
       <MemoryRouter>
@@ -28,8 +30,8 @@ const renderVenue = (props, store) => {
 }
 
 describe('venues', () => {
-  let props
-  let store
+  let props: IVenueProps
+  let store: Store
 
   beforeEach(() => {
     store = configureTestStore()
@@ -174,8 +176,9 @@ describe('venues', () => {
       expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
 
       // Then
-      expect(screen.getByRole('link', { name: 'Modifier' }).href).toBe(
-        'http://localhost/structures/OFFERER01/lieux/VENUE01?modification'
+      expect(screen.getByRole('link', { name: 'Modifier' })).toHaveAttribute(
+        'href',
+        '/structures/OFFERER01/lieux/VENUE01?modification'
       )
     })
 
@@ -194,8 +197,11 @@ describe('venues', () => {
       renderVenue(props, storeOverrides)
 
       // Then
-      expect(screen.getByRole('link', { name: 'Ajouter un RIB' }).href).toBe(
-        'http://localhost/structures/OFFERER01/lieux/VENUE01?modification#remboursement'
+      expect(
+        screen.getByRole('link', { name: 'Ajouter un RIB' })
+      ).toHaveAttribute(
+        'href',
+        '/structures/OFFERER01/lieux/VENUE01?modification#remboursement'
       )
     })
 
@@ -217,8 +223,11 @@ describe('venues', () => {
       renderVenue(props, storeOverrides)
 
       // Then
-      expect(screen.getByRole('link', { name: 'Ajouter un RIB' }).href).toBe(
-        'http://localhost/structures/OFFERER01/lieux/VENUE01?modification#remboursement'
+      expect(
+        screen.getByRole('link', { name: 'Ajouter un RIB' })
+      ).toHaveAttribute(
+        'href',
+        '/structures/OFFERER01/lieux/VENUE01?modification#remboursement'
       )
     })
   })

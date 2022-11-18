@@ -7,7 +7,7 @@ import {
   INITIAL_PHYSICAL_VENUES,
   INITIAL_VIRTUAL_VENUE,
 } from 'pages/Home/Offerers/_constants'
-import { VenueList } from 'pages/Home/Venues/VenueList'
+import { VenueList } from 'pages/Home/Venues'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByDisplayName } from 'utils/strings'
@@ -85,6 +85,7 @@ const Offerers = () => {
         const receivedBusinessUnitList = await api.getBusinessUnits(offererId)
         setBusinessUnitList(receivedBusinessUnitList)
       } catch (error) {
+        /* istanbul ignore next: DEBT, TO FIX */
         if (error.status === HTTP_STATUS.FORBIDDEN) {
           setSelectedOfferer({ id: offererId, managedVenues: [] })
           setBusinessUnitList([])
@@ -152,7 +153,11 @@ const Offerers = () => {
         </>
       )}
 
-      {isOffererSoftDeleted && <SoftDeletedOffererWarning />}
+      {
+        /* istanbul ignore next: DEBT, TO FIX */ isOffererSoftDeleted && (
+          <SoftDeletedOffererWarning />
+        )
+      }
 
       {!userHasOfferers && <OffererCreationLinks />}
 
@@ -164,7 +169,11 @@ const Offerers = () => {
             hasVirtualOffers={
               !!virtualVenue && !!selectedOfferer.hasDigitalVenueAtLeastOneOffer
             }
-            offererId={selectedOfferer ? selectedOfferer.id : null}
+            offererId={
+              /* istanbul ignore next: DEBT, TO FIX */ selectedOfferer
+                ? selectedOfferer.id
+                : null
+            }
           />
         )}
     </>
