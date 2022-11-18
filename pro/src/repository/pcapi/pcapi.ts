@@ -1,6 +1,5 @@
 // This file will be replace by apiClient
 /* istanbul ignore file */
-
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
@@ -13,22 +12,15 @@ import { stringify } from 'utils/query-string'
 // venues
 //
 
-export const postImageToVenue = async ({
-  // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'venueId' implicitly has an 'any' ... Remove this comment to see the full error message
-  venueId,
-  // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'banner' implicitly has an 'any' t... Remove this comment to see the full error message
-  banner,
-  // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'xCropPercent' implicitly has an '... Remove this comment to see the full error message
-  xCropPercent,
-  // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'yCropPercent' implicitly has an '... Remove this comment to see the full error message
-  yCropPercent,
-  // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'heightCropPercent' implicitly has... Remove this comment to see the full error message
-  heightCropPercent,
-  // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'widthCropPercent' implicitly has... Remove this comment to see the full error message
-  widthCropPercent,
-  // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'imageCredit' implicitly has an 'a... Remove this comment to see the full error message
-  imageCredit,
-}) => {
+export const postImageToVenue = async (
+  venueId: string,
+  banner: File,
+  imageCredit?: string,
+  xCropPercent?: number,
+  yCropPercent?: number,
+  heightCropPercent?: number,
+  widthCropPercent?: number
+) => {
   const body = new FormData()
   body.append('banner', banner)
 
@@ -57,32 +49,24 @@ export const postImageToVenue = async ({
 //
 
 export const postThumbnail = (
-  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
-  offerId,
-  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'credit' implicitly has an 'any' type.
-  credit,
-  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'thumb' implicitly has an 'any' type.
-  thumb,
-  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'thumbUrl' implicitly has an 'any' type.
-  thumbUrl,
-  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'x' implicitly has an 'any' type.
-  x,
-  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'y' implicitly has an 'any' type.
-  y,
-  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'height' implicitly has an 'any' type.
-  height,
-  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'width' implicitly has an 'any' type.
-  width
+  offerId: string,
+  thumb: File,
+  credit?: string,
+  thumbUrl?: string,
+  x?: number,
+  y?: number,
+  height?: number,
+  width?: number
 ) => {
   const body = new FormData()
   body.append('offerId', offerId)
-  body.append('credit', credit)
-  body.append('croppingRectX', x)
-  body.append('croppingRectY', y)
-  body.append('croppingRectHeight', height)
-  body.append('croppingRectWidth', width)
   body.append('thumb', thumb)
-  body.append('thumbUrl', thumbUrl)
+  body.append('credit', credit ?? '')
+  body.append('croppingRectX', x ? String(x) : '')
+  body.append('croppingRectY', y ? String(y) : '')
+  body.append('croppingRectHeight', height ? String(height) : '')
+  body.append('croppingRectWidth', width ? String(width) : '')
+  body.append('thumbUrl', thumbUrl ?? '')
 
   return client.postWithFormData('/offers/thumbnails', body)
 }

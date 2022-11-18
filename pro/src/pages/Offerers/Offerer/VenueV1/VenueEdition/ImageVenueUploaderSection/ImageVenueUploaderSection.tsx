@@ -67,15 +67,15 @@ export const ImageVenueUploaderSection = ({
     cropParams,
   }: IOnImageUploadArgs) => {
     try {
-      const { bannerUrl, bannerMeta } = await postImageToVenue({
+      const { bannerUrl, bannerMeta } = await postImageToVenue(
         venueId,
-        banner: imageFile,
-        xCropPercent: cropParams?.x,
-        yCropPercent: cropParams?.y,
-        heightCropPercent: cropParams?.height,
-        widthCropPercent: cropParams?.width,
-        imageCredit: credit,
-      })
+        imageFile,
+        credit,
+        cropParams?.x,
+        cropParams?.y,
+        cropParams?.height,
+        cropParams?.width
+      )
       onImageUpload({ bannerUrl, bannerMeta })
       return Promise.resolve()
     } catch {

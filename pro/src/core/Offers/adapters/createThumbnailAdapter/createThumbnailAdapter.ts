@@ -27,8 +27,8 @@ const createThumbnailAdapter: TCreateThumbnailAdapter = async ({
   try {
     const response = await pcapi.postThumbnail(
       offerId,
-      credit,
       imageFile,
+      credit,
       undefined, // api don't use thumbUrl
       cropParams?.x,
       cropParams?.y,

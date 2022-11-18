@@ -26,16 +26,16 @@ describe('pcapi', () => {
       const file = new File([''], 'myThumb.png')
       const body = new FormData()
       body.append('offerId', 'AA')
+      body.append('thumb', file)
       body.append('credit', 'Mon crédit')
       body.append('croppingRectX', '12')
       body.append('croppingRectY', '32')
       body.append('croppingRectHeight', '350')
       body.append('croppingRectWidth', '220')
-      body.append('thumb', file)
       body.append('thumbUrl', '')
 
       // when
-      postThumbnail('AA', 'Mon crédit', file, '', '12', '32', '350', '220')
+      postThumbnail('AA', file, 'Mon crédit', '', 12, 32, 350, 220)
 
       // then
       expect(client.postWithFormData).toHaveBeenCalledWith(
