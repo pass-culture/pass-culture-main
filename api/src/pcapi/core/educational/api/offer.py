@@ -543,13 +543,8 @@ def publish_collective_offer_template(
 
 
 def delete_image(obj: HasImageMixin) -> None:
-    try:
-        obj.delete_image()
-    except:
-        db.session.rollback()
-        raise
-    else:
-        db.session.commit()
+    obj.delete_image()
+    db.session.commit()
     return
 
 

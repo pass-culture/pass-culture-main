@@ -19,13 +19,7 @@ UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / CollectiveOffer.FOLDER
 @pytest.mark.usefixtures("db_session")
 class DeleteImageFromFileTest:
     def test_delete_from_file(self, client):
-        offer = CollectiveOfferFactory(
-            mentalDisabilityCompliant=False,
-            contactEmail="johndoe@yopmail.com",
-            contactPhone="0600000000",
-            subcategoryId="CINE_PLEIN_AIR",
-            domains=[],
-        )
+        offer = CollectiveOfferFactory()
 
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -60,21 +54,9 @@ class DeleteImageFromFileTest:
 
     def test_forbidden_offer(self, client):
         # given
-        offer = CollectiveOfferFactory(
-            mentalDisabilityCompliant=False,
-            contactEmail="johndoe@yopmail.com",
-            contactPhone="0600000000",
-            subcategoryId="CINE_PLEIN_AIR",
-            domains=[],
-        )
+        offer = CollectiveOfferFactory()
 
-        offer2 = CollectiveOfferFactory(
-            mentalDisabilityCompliant=False,
-            contactEmail="johndoe@yopmail.com",
-            contactPhone="0600000000",
-            subcategoryId="CINE_PLEIN_AIR",
-            domains=[],
-        )
+        offer2 = CollectiveOfferFactory()
 
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -91,10 +73,9 @@ class DeleteImageFromFileTest:
 
     def test_not_authentified(self, client):
         # given
-        thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         data = {
             "credit": "John Do",
-            "thumb": (BytesIO(thumb), "image.jpg"),
+            "thumb": b"dummy",
             "croppingRectX": 0.0,
             "croppingRectY": 0.0,
             "croppingRectHeight": 0.9,
