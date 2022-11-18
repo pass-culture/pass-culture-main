@@ -15,6 +15,7 @@ import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapte
 import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
 import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
+import postCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferImageAdapter'
 import { IOfferCollectiveImage } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
@@ -49,7 +50,7 @@ const CollectiveOfferCreation = ({
 
   const notify = useNotification()
   const [imageOffer, setImageOffer] = useState<IOfferCollectiveImage | null>(
-    offer && offer.imageUrl && offer.imageCredit
+    offer !== undefined
       ? { url: offer.imageUrl, credit: offer.imageCredit }
       : null
   )
@@ -70,7 +71,8 @@ const CollectiveOfferCreation = ({
   const createOrPatchDraftOffer = async (
     offerValues: IOfferEducationalFormValues
   ) => {
-    const adapter = offer
+    const isCreatingOffer = offer !== undefined
+    const adapter = isCreatingOffer
       ? () =>
           patchCollectiveOfferAdapter({
             offer: offerValues,
@@ -87,6 +89,27 @@ const CollectiveOfferCreation = ({
 
     if (offer && isCollectiveOffer(payload)) {
       setOffer(payload)
+    }
+    const offerId = offer?.id ?? payload.id
+
+    if (imageToUpload !== null) {
+      const imageResponse = await postCollectiveOfferImageAdapter({
+        offerId,
+        imageFile: imageToUpload?.imageFile,
+        credit: imageToUpload?.credit,
+        cropParams: imageToUpload?.cropParams,
+      })
+      if (!imageResponse.isOk) {
+        return notify.error(message)
+      }
+      setImageOffer({
+        url: imageResponse.payload.imageUrl,
+        credit: imageToUpload?.credit,
+      })
+    } else {
+      if (!isCreatingOffer) {
+        // TODO delete image
+      }
     }
 
     history.push(`/offre/${payload.id}/collectif/stocks`)
