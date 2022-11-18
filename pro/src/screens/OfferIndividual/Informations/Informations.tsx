@@ -270,7 +270,9 @@ const Informations = ({
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         to: nextStep,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        used: isSubmittingDraft
+          ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
+          : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
         offerId: receivedOfferId,
