@@ -9,7 +9,10 @@ from .helpers import search as search_helpers
 from .helpers import unauthorized as unauthorized_helpers
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+    pytest.mark.backoffice_v3,
+]
 
 
 def build_pro_user():
@@ -41,10 +44,10 @@ class SearchProTest(search_helpers.SearchHelper):
         ],
     )
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-    def test_search_result_page(self, client, legit_user, pro_builder, pro_type):
+    def test_search_result_page(self, authenticated_client, pro_builder, pro_type):
         pro_object = pro_builder()
 
         url = url_for(self.endpoint, terms=pro_object.id, pro_type=pro_type)
-        response = client.with_session_auth(legit_user.email).get(url)
+        response = authenticated_client.get(url)
 
         assert response.status_code == 200, f"[{response.status_code}] {response.location}"

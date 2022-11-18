@@ -11,12 +11,15 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+    pytest.mark.backoffice_v3,
+]
 
 
 class LoginPageTest:
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-    def test_view_login_page(self, client):  # type: ignore
+    def test_view_login_page(self, client, app):  # type: ignore
         response = client.get(url_for("backoffice_v3_web.login"))
 
         assert response.status_code == 302
@@ -50,14 +53,19 @@ class AuthorizePageTest:
     @override_settings(IS_DEV=False)
     @override_settings(GOOGLE_CLIENT_ID="some client id")
     @override_settings(GOOGLE_CLIENT_SECRET="some client secret")
-    @patch("pcapi.routes.backoffice_v3.auth.fetch_user_permissions_from_google_workspace")
+    @patch("pcapi.routes.backoffice_v3.auth.fetch_user_roles_from_google_workspace")
     @patch("pcapi.routes.backoffice_v3.auth.oauth.google.parse_id_token")
     @patch("pcapi.routes.backoffice_v3.auth.oauth.google.authorize_access_token")
     def test_authorize_with_google_credentials(  # type: ignore
-        self, mock_authorize_access_token, mock_parse_id_token, mock_fetch_user_permissions, client
+        self,
+        mock_authorize_access_token,
+        mock_parse_id_token,
+        mock_fetch_user_roles,
+        client,
+        roles_with_permissions,
     ):
         user = users_factories.UserFactory()
-        expected_permissions = [perm_models.Permissions.MANAGE_PERMISSIONS]
+        expected_roles = [perm_models.Roles.ADMIN]
 
         mock_parse_id_token.return_value = {
             "email": user.email,
@@ -66,7 +74,7 @@ class AuthorizePageTest:
             "given_name": "GivenName",
         }
 
-        mock_fetch_user_permissions.return_value = expected_permissions
+        mock_fetch_user_roles.return_value = expected_roles
 
         response = client.get(url_for("backoffice_v3_web.authorize"))
 
@@ -74,7 +82,10 @@ class AuthorizePageTest:
         assert response.location == url_for("backoffice_v3_web.home", _external=True)
 
         user = users_models.User.query.get(user.id)
-        assert user.backoffice_permissions == expected_permissions
+        user_role_names = {role.name for role in user.backoffice_profile.roles}
+        expected_role_names = {role.value for role in expected_roles}
+
+        assert user_role_names == expected_role_names
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     @override_settings(IS_TESTING=False)
@@ -111,15 +122,15 @@ class LogoutTest:
         user = users_factories.UserFactory()
 
         # fetch home page to get the logout csrf token
-        client.get(url_for("backoffice_v3_web.home"))
+        response = client.get(url_for("backoffice_v3_web.home"))
+        assert response.status_code == 200
 
         url = url_for("backoffice_v3_web.logout")
-        response = client.with_session_auth(user.email).post(url, form={"csrf_token": g.get("csrf_token", "")})
+        response = client.with_bo_session_auth(user).post(url, form={"csrf_token": g.get("csrf_token", "")})
 
         assert response.status_code == 302
         assert response.location == url_for("backoffice_v3_web.home", _external=True)
 
-    @pytest.mark.skip(reason="csrf temporarily deactivated")
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_no_csrf_token(self, client):  # type: ignore
         response = client.post(url_for("backoffice_v3_web.logout"))

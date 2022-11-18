@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-from flask_jwt_extended import JWTManager
+from flask import render_template
+from flask_wtf.csrf import CSRFError
+from flask_wtf.csrf import CSRFProtect
 from sentry_sdk import set_tag
 
 from pcapi import settings
@@ -9,29 +11,36 @@ from pcapi.local_providers.install import install_local_providers
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SECURE"] = not settings.IS_DEV
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SAMESITE"] = "Strict"
+app.config["SESSION_COOKIE_NAME"] = "bo_session"
 app.config["REMEMBER_COOKIE_HTTPONLY"] = True
 app.config["REMEMBER_COOKIE_SECURE"] = not settings.IS_DEV
-app.config["REMEMBER_COOKIE_DURATION"] = 90 * 24 * 3600
-app.config["PERMANENT_SESSION_LIFETIME"] = 90 * 24 * 3600
-app.config["FLASK_ADMIN_SWATCH"] = "flatly"
-app.config["FLASK_ADMIN_FLUID_LAYOUT"] = True
-app.config["JWT_SECRET_KEY"] = settings.JWT_SECRET_KEY
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = settings.JWT_ACCESS_TOKEN_EXPIRES
-app.config["WTF_CSRF_ENABLED"] = False
+app.config["REMEMBER_COOKIE_DURATION"] = 30 * 60
+app.config["REMEMBER_COOKIE_NAME"] = "bo_remember_me"
+app.config["PERMANENT_SESSION_LIFETIME"] = 30 * 60
 
-jwt = JWTManager(app)
+
+csrf = CSRFProtect()
+csrf.init_app(app)
+
+
+@app.errorhandler(CSRFError)
+def handle_csrf_error(error):  # type: ignore
+    return render_template("errors/csrf.html"), 400
 
 
 with app.app_context():
     # pylint: disable=unused-import
-    from pcapi.routes import install_all_routes
+    from pcapi.routes import error_handlers  # pylint: disable=unused-import
+    from pcapi.routes.backoffice_v3 import install_routes
+    from pcapi.routes.backoffice_v3.blueprint import backoffice_v3_web
     import pcapi.utils.login_manager
 
     if settings.IS_DEV:
         install_local_providers()
 
-    install_all_routes(app)
+    install_routes(app)
+    app.register_blueprint(backoffice_v3_web, url_prefix="/backofficev3")
 
 
 if __name__ == "__main__":

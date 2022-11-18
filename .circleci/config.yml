@@ -407,12 +407,73 @@ jobs:
             alembic upgrade post@head
           working_directory: /usr/src/app
       - run:
-          name: Running tests
+          name: Running tests (without backoffice)
           command: |
             # Synchronize these globs with `python_files` in `pytest.ini`
             TEST_FILES=$(circleci tests glob "tests/**/*test.py" "tests/**/test*.py" | circleci tests split)
             mkdir -p test-results
-            pytest $TEST_FILES --durations=10 --junitxml=test-results/junit.xml
+            pytest $TEST_FILES --durations=10 --junitxml=test-results/junit.xml -m "not backoffice_v3"
+          working_directory: /usr/src/app
+      - store_test_results:
+          path: /usr/src/app/test-results
+      - store_artifacts:
+          path: /usr/src/app/test-results
+      - when:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - notify-slack:
+                channel: shérif
+
+  tests-backoffice-v3:
+    parameters:
+      is_nightly_build:
+        type: boolean
+        default: false
+      pytest_extra_args:
+        description: "directories to include and ignore"
+        default: "tests"
+        type: string
+    working_directory: ~/pass-culture
+    docker:
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-tests:${CIRCLE_SHA1}
+        auth:
+          username: _json_key # default username when using a JSON key file to authenticate
+          password: $GCP_INFRA_KEY
+        environment:
+          RUN_ENV: tests
+          DATABASE_URL_TEST: postgresql://pytest:pytest@localhost:5432/pass_culture
+          REDIS_URL: redis://localhost:6379
+      - image: cimg/postgres:12.9-postgis
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          POSTGRES_USER: pytest
+          POSTGRES_PASSWORD: pytest
+          POSTGRES_DB: pass_culture
+      - image: redis
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - skip_unchanged:
+          paths: api
+      - run:
+          name: Show installed Python packages
+          command: pip freeze
+      - run:
+          name: Running backoffice tests
+          command: |
+            flask install_postgres_extensions
+            alembic upgrade pre@head
+            alembic upgrade post@head
+            flask install_data
+            # Synchronize these globs with `python_files` in `pytest.ini`
+            TEST_FILES=$(circleci tests glob "tests/routes/backoffice_v3/**/*test.py" )
+            mkdir -p test-results
+            pytest $TEST_FILES --durations=10 --junitxml=test-results/junit.xml -m backoffice_v3
           working_directory: /usr/src/app
       - store_test_results:
           path: /usr/src/app/test-results
@@ -1233,6 +1294,20 @@ workflows:
          requires:
            - build-and-push-image
       - tests-api:
+         filters:
+           branches:
+             ignore:
+               - production
+               - staging
+               - integration
+               - docs
+         context:
+          - Slack
+          - GCP
+          - GCP_EHP
+         requires:
+           - build-and-push-image
+      - tests-backoffice-v3:
          filters:
            branches:
              ignore:

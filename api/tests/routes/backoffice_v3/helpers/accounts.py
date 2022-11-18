@@ -6,7 +6,10 @@ from pcapi.core.users import factories as users_factories
 from . import base
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+    pytest.mark.backoffice_v3,
+]
 
 
 class PageRendersHelper(base.BaseHelper):
@@ -20,5 +23,5 @@ class PageRendersHelper(base.BaseHelper):
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_page_renders(self, client, legit_user):
-        response = client.with_session_auth(legit_user.email).get(self.path)
+        response = client.with_bo_session_auth(legit_user).get(self.path)
         assert response.status_code == 200
