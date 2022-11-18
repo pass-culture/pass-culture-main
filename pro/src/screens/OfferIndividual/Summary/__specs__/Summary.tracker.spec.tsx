@@ -344,7 +344,7 @@ describe('Summary trackers', () => {
         renderSummary({ props })
 
         // when
-        await userEvent.click(await screen.findByText("Publier l'offre"))
+        await userEvent.click(await screen.findByText('Publier l’offre'))
 
         // then
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -394,7 +394,7 @@ describe('Summary trackers', () => {
         renderSummary({ props })
 
         // when
-        await userEvent.click(await screen.findByText("Publier l'offre"))
+        await userEvent.click(await screen.findByText('Publier l’offre'))
 
         // then
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -507,7 +507,7 @@ describe('Summary trackers', () => {
       renderSummary({ props, overrideStore })
 
       // when
-      await userEvent.click(await screen.findByText("Publier l'offre"))
+      await userEvent.click(await screen.findByText('Publier l’offre'))
 
       // then
       expect(mockLogEvent).toHaveBeenCalledTimes(1)

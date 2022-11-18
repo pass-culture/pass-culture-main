@@ -104,7 +104,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     renderOfferTypes(store)
 
     expect(
-      screen.queryByRole('heading', { name: "Quel est le type de l'offre ?" })
+      screen.queryByRole('heading', { name: 'Quel est le type de l’offre ?' })
     ).not.toBeInTheDocument()
 
     await userEvent.click(
@@ -131,7 +131,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     renderOfferTypes(store)
 
     expect(
-      screen.queryByRole('heading', { name: "Quel est le type de l'offre ?" })
+      screen.queryByRole('heading', { name: 'Quel est le type de l’offre ?' })
     ).not.toBeInTheDocument()
 
     await userEvent.click(

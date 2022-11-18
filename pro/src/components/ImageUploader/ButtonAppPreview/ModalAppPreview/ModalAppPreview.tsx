@@ -21,7 +21,7 @@ const ModalAppPreview = ({
 }: IModalAppPreviewProps): JSX.Element => {
   const title = {
     [UploaderModeEnum.VENUE]: 'Image du lieu',
-    [UploaderModeEnum.OFFER]: "Image de l'offre",
+    [UploaderModeEnum.OFFER]: 'Image de l’offre',
   }[mode]
 
   const AppPreview = {

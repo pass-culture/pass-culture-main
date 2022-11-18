@@ -38,7 +38,7 @@ describe('test ImageUploaderOffer', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /Image de l'offre/,
+        name: /Image de l’offre/,
       })
     ).toBeInTheDocument()
     const infoBox = screen.getByText(
@@ -59,7 +59,7 @@ describe('test ImageUploaderOffer', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /Image de l'offre/,
+        name: /Image de l’offre/,
       })
     ).toBeInTheDocument()
     expect(imageUploaderOfferUtils.buildInitialValues).toHaveBeenCalledWith(

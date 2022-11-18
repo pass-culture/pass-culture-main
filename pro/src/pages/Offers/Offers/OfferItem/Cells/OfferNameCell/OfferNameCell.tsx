@@ -74,7 +74,7 @@ const OfferNameCell = ({ offer, editionOfferLink }: OfferNameCellProps) => {
       )}
       <Link
         className={styles['name']}
-        title={`${offer.name} - éditer l'offre`}
+        title={`${offer.name} - éditer l’offre`}
         onClick={onOfferNameClick}
         to={editionOfferLink}
       >

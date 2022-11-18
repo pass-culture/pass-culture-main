@@ -518,7 +518,7 @@ describe('offerDetails - Edition', () => {
     it('should change title with typed value', async () => {
       // Given
       await renderOffers(props, store)
-      const titleInput = await screen.findByLabelText("Titre de l'offre", {
+      const titleInput = await screen.findByLabelText('Titre de l’offre', {
         exact: false,
       })
       await userEvent.clear(titleInput)
@@ -1578,7 +1578,7 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
       //
       await userEvent.type(
-        await screen.findByLabelText(/Titre de l'offre/),
+        await screen.findByLabelText(/Titre de l’offre/),
         'Ce nom serait-il invalide ?'
       )
 

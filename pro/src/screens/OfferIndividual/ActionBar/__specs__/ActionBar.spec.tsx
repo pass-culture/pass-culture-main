@@ -98,7 +98,7 @@ describe('OfferIndividual::ActionBar', () => {
         'Sauvegarder le brouillon et quitter'
       )
       expect(buttonSaveDraft).toHaveAttribute('href', '/offres')
-      const buttonPublishOffer = screen.getByText("Publier l'offre")
+      const buttonPublishOffer = screen.getByText('Publier l’offre')
       await userEvent.click(buttonPublishOffer)
       expect(onClickNextMock).toHaveBeenCalled()
     })

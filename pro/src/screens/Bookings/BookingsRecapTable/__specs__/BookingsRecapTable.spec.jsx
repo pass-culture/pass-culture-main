@@ -73,7 +73,7 @@ describe('components | BookingsRecapTable', () => {
     // Then
     const headers = screen.getAllByRole('columnheader')
     expect(headers).toHaveLength(6)
-    expect(headers[0]).toHaveTextContent("Nom de l'offre")
+    expect(headers[0]).toHaveTextContent('Nom de l’offre')
     expect(headers[1]).toHaveTextContent('')
     expect(headers[2]).toHaveTextContent('Bénéficiaire')
     expect(headers[3]).toHaveTextContent('Réservation')

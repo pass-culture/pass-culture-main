@@ -216,7 +216,7 @@ test("je suis redirigé sur la liste des offres si je clique sur retour à parti
 
   const addThingStockButton = Selector('button').withText('Ajouter un stock')
   const priceInput = Selector('input[name="price"]')
-  const publishOffer = Selector('button').withText("Publier l'offre")
+  const publishOffer = Selector('button').withText('Publier l’offre')
   const nextStep = Selector('button').withText('Étape suivante')
 
   await t

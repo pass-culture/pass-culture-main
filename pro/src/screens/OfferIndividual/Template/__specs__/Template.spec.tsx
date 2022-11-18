@@ -54,7 +54,7 @@ describe('test OfferIndividualTemplate', () => {
     renderTemplate({})
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
-    expect(screen.getByText("Détails de l'offre")).toBeInTheDocument()
+    expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
     expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
     expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
     expect(screen.getByText('Confirmation')).toBeInTheDocument()
@@ -66,7 +66,7 @@ describe('test OfferIndividualTemplate', () => {
   it('should render when offer is given', () => {
     const offer: Partial<IOfferIndividual> = {
       id: 'AA',
-      name: "Titre de l'offre",
+      name: 'Titre de l’offre',
       stocks: [],
     }
     const contextOverride = {
@@ -75,7 +75,7 @@ describe('test OfferIndividualTemplate', () => {
     renderTemplate({ contextOverride })
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
-    expect(screen.getByText("Détails de l'offre")).toBeInTheDocument()
+    expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
     expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
     expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
 
@@ -83,13 +83,13 @@ describe('test OfferIndividualTemplate', () => {
       screen.getByRole('heading', { name: 'Créer une offre' })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('heading', { name: "Titre de l'offre" })
+      screen.getByRole('heading', { name: 'Titre de l’offre' })
     ).toBeInTheDocument()
   })
   it('should render when no offer is given on edition mode', () => {
     const offer: Partial<IOfferIndividual> = {
       id: 'AA',
-      name: "Titre de l'offre",
+      name: 'Titre de l’offre',
       stocks: [],
     }
     const contextOverride = {
@@ -101,16 +101,16 @@ describe('test OfferIndividualTemplate', () => {
     })
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
-    expect(screen.getByText("Détails de l'offre")).toBeInTheDocument()
+    expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
     expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
     expect(screen.queryByText('Récapitulatif')).not.toBeInTheDocument()
     expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
 
     expect(
-      screen.getByRole('heading', { name: "Modifier l'offre" })
+      screen.getByRole('heading', { name: 'Modifier l’offre' })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('heading', { name: "Titre de l'offre" })
+      screen.getByRole('heading', { name: 'Titre de l’offre' })
     ).toBeInTheDocument()
   })
 
@@ -126,7 +126,7 @@ describe('test OfferIndividualTemplate', () => {
     it('should display status and button in edition', () => {
       const offer: Partial<IOfferIndividual> = {
         id: 'AA',
-        name: "Titre de l'offre",
+        name: 'Titre de l’offre',
         isActive: true,
         status: OfferStatus.ACTIVE,
         stocks: [],
@@ -149,7 +149,7 @@ describe('test OfferIndividualTemplate', () => {
     it('should display draft status in draft', () => {
       const offer: Partial<IOfferIndividual> = {
         id: 'AA',
-        name: "Titre de l'offre",
+        name: 'Titre de l’offre',
         isActive: false,
         status: OfferStatus.DRAFT,
         stocks: [],
@@ -170,7 +170,7 @@ describe('test OfferIndividualTemplate', () => {
     it('should display nothing in creation', () => {
       const offer: Partial<IOfferIndividual> = {
         id: 'AA',
-        name: "Titre de l'offre",
+        name: 'Titre de l’offre',
         isActive: false,
         status: OfferStatus.DRAFT,
         stocks: [],

@@ -184,7 +184,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.selectOptions(categorySelect, 'A')
     const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText("Titre de l'offre")
+    const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     await userEvent.click(await screen.findByText('Étape suivante'))
@@ -229,7 +229,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.selectOptions(categorySelect, 'A')
     const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText("Titre de l'offre")
+    const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     jest.spyOn(api, 'postOffer').mockRejectedValue(
@@ -273,7 +273,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.selectOptions(categorySelect, 'A')
     const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'virtual')
-    const nameField = screen.getByLabelText("Titre de l'offre")
+    const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     const urlField = await screen.findByLabelText('URL d’accès à l’offre')
@@ -321,7 +321,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.selectOptions(categorySelect, 'A')
     const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText("Titre de l'offre")
+    const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     await userEvent.click(await screen.findByText('Sauvegarder le brouillon'))

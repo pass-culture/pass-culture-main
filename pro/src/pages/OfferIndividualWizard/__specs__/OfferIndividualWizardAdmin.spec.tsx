@@ -266,7 +266,7 @@ describe('test OfferIndividualWisard', () => {
       `/offre/${offerId}/v3/individuelle/informations?structure=CU`
     )
     expect(
-      await screen.findByRole('heading', { name: "Modifier l'offre" })
+      await screen.findByRole('heading', { name: 'Modifier l’offre' })
     ).toBeInTheDocument()
     expect(api.getVenues).toHaveBeenCalledWith(
       null, // validatedForUser

@@ -21,7 +21,7 @@ const setInitialFormValues = (
   )
 
   if (subCategory === undefined) {
-    throw Error("La categorie de l'offre est introuvable")
+    throw Error('La categorie de l’offre est introuvable')
   }
 
   const { subCategoryFields } = setSubCategoryFields(

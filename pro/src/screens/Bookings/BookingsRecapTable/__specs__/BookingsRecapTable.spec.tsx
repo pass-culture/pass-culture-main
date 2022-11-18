@@ -231,7 +231,7 @@ describe('components | BookingsRecapTable', () => {
     // 1 line = 6 cells
     const cells = screen.getAllByRole('columnheader')
     expect(cells).toHaveLength(6)
-    expect(cells[0]).toHaveTextContent("Nom de l'offre")
+    expect(cells[0]).toHaveTextContent('Nom de l’offre')
     expect(cells[1]).toHaveTextContent('')
     expect(cells[2]).toHaveTextContent('Bénéficiaire')
     expect(cells[3]).toHaveTextContent('Réservation')
@@ -265,7 +265,7 @@ describe('components | BookingsRecapTable', () => {
     // 1 line = 6 cells
     const cells = screen.getAllByRole('columnheader')
     expect(cells).toHaveLength(5)
-    expect(cells[0]).toHaveTextContent("Nom de l'offre")
+    expect(cells[0]).toHaveTextContent('Nom de l’offre')
     expect(cells[1]).toHaveTextContent('Établissement')
     expect(cells[2]).toHaveTextContent('Places et prix')
     expect(cells[3]).toHaveTextContent('Statut')
