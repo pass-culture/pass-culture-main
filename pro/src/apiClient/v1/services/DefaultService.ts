@@ -439,6 +439,28 @@ export class DefaultService {
   }
 
   /**
+   * delete_offer_template_image <DELETE>
+   * @param offerId
+   * @returns void
+   * @throws ApiError
+   */
+  public deleteOfferTemplateImage(
+    offerId: string,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'DELETE',
+      url: '/collective/offers-template/{offer_id}/image',
+      path: {
+        'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * attach_offer_template_image <PATCH>
    * @param offerId
    * @returns AttachImageResponseModel OK
@@ -619,6 +641,28 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * delete_offer_image <DELETE>
+   * @param offerId
+   * @returns void
+   * @throws ApiError
+   */
+  public deleteOfferImage(
+    offerId: string,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'DELETE',
+      url: '/collective/offers/{offer_id}/image',
+      path: {
+        'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
     });
