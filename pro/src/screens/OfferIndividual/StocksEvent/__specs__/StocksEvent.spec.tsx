@@ -147,7 +147,7 @@ describe('screens:StocksEvent', () => {
     )
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
     expect(
-      screen.getByText('Vos modifications ont bien été prises en compte')
+      screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
     expect(screen.getByText('Save draft page')).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
@@ -179,7 +179,7 @@ describe('screens:StocksEvent', () => {
       ],
     })
     expect(
-      screen.getByText('Vos modifications ont bien été prises en compte')
+      screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
     expect(screen.getByText('Next page')).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
