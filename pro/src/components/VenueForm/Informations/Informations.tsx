@@ -14,6 +14,7 @@ export interface IInformations {
   updateIsSiretValued: (value: boolean) => void
   setIsSiretValued: (value: boolean) => void
   venueIsVirtual: boolean
+  siren: string
 }
 
 const Informations = ({
@@ -22,6 +23,7 @@ const Informations = ({
   updateIsSiretValued,
   venueIsVirtual,
   setIsSiretValued,
+  siren,
 }: IInformations) => {
   const { initialValues } = useFormikContext<IVenueFormValues>()
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
@@ -39,6 +41,7 @@ const Informations = ({
               setIsFieldNameFrozen={setIsFieldNameFrozen}
               setIsSiretValued={setIsSiretValued}
               updateIsSiretValued={updateIsSiretValued}
+              siren={siren}
             />
           )}
         </FormLayout.Row>

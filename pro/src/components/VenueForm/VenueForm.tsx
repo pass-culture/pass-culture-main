@@ -100,6 +100,7 @@ const VenueForm = ({
           updateIsSiretValued={updateIsSiretValued}
           venueIsVirtual={false}
           setIsSiretValued={setIsSiretValued}
+          siren={offerer.siren}
         />
         {
           /* istanbul ignore next: DEBT, TO FIX */
