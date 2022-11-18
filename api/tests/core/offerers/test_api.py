@@ -1073,7 +1073,9 @@ class RejectOffererTest:
         user = users_factories.UserFactory()
         offerer = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # removed in reject_offerer()
-        offerers_factories.UserOffererFactory(offerer=offerer)  # another applicant
+        offerers_factories.UserOffererFactory(
+            offerer=offerer, validationStatus=offerers_models.ValidationStatus.NEW
+        )  # another applicant
 
         # When
         offerers_api.reject_offerer(offerer.id, admin)
