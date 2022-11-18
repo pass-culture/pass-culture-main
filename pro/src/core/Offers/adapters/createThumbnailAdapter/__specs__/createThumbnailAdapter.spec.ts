@@ -17,9 +17,11 @@ describe('test createThumbnailAdapter', () => {
     cropParams = { x: 1, y: 1, width: 1, height: 1 }
   })
   it('should return success on api call success', async () => {
-    jest
-      .spyOn(pcapi, 'postThumbnail')
-      .mockResolvedValue({ url: 'http://backend.image.url', credit: 'John Do' })
+    jest.spyOn(pcapi, 'postThumbnail').mockResolvedValue({
+      id: 'abcd',
+      url: 'http://backend.image.url',
+      credit: 'John Do',
+    })
     const response = await createThumbnailAdapter({
       offerId,
       imageFile,

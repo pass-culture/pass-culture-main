@@ -37,7 +37,7 @@ class DeleteImageFromFileTest:
             "croppingRectWidth": 0.6,
         }
 
-        response = client.with_session_auth(email="user@example.com").patch(
+        response = client.with_session_auth(email="user@example.com").post(
             f"/collective/offers/{humanize(offer.id)}/image", form=data
         )
 
@@ -72,18 +72,8 @@ class DeleteImageFromFileTest:
         assert response.status_code == 403
 
     def test_not_authentified(self, client):
-        # given
-        data = {
-            "credit": "John Do",
-            "thumb": b"dummy",
-            "croppingRectX": 0.0,
-            "croppingRectY": 0.0,
-            "croppingRectHeight": 0.9,
-            "croppingRectWidth": 0.6,
-        }
-
         # when
-        response = client.patch("/collective/offers/0/image", form=data)
+        response = client.delete("/collective/offers/0/image")
 
         # then
         assert response.status_code == 401

@@ -504,7 +504,7 @@ def create_collective_offer_template(
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
 
 
-@private_api.route("/collective/offers/<offer_id>/image", methods=["PATCH"])
+@private_api.route("/collective/offers/<offer_id>/image", methods=["POST"])
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -533,7 +533,7 @@ def attach_offer_image(
     return collective_offers_serialize.AttachImageResponseModel.from_orm(offer)
 
 
-@private_api.route("/collective/offers-template/<offer_id>/image", methods=["PATCH"])
+@private_api.route("/collective/offers-template/<offer_id>/image", methods=["POST"])
 @login_required
 @spectree_serialize(
     on_success_status=200,

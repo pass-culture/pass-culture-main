@@ -1,5 +1,9 @@
 // This file will be replace by apiClient
 /* istanbul ignore file */
+import {
+  AttachImageResponseModel,
+  CreateThumbnailResponseModel,
+} from 'apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
@@ -48,7 +52,19 @@ export const postImageToVenue = async (
 // thumbnail
 //
 
-export const postThumbnail = (
+type PostImageMethodType<T> = (
+  offerId: string,
+  thumb: File,
+  credit?: string,
+  thumbUrl?: string,
+  x?: number,
+  y?: number,
+  height?: number,
+  width?: number
+) => Promise<T>
+
+export const postImage = (
+  url: string,
   offerId: string,
   thumb: File,
   credit?: string,
@@ -62,14 +78,28 @@ export const postThumbnail = (
   body.append('offerId', offerId)
   body.append('thumb', thumb)
   body.append('credit', credit ?? '')
-  body.append('croppingRectX', x ? String(x) : '')
-  body.append('croppingRectY', y ? String(y) : '')
-  body.append('croppingRectHeight', height ? String(height) : '')
-  body.append('croppingRectWidth', width ? String(width) : '')
+  body.append('croppingRectX', x !== undefined ? String(x) : '')
+  body.append('croppingRectY', y !== undefined ? String(y) : '')
+  body.append('croppingRectHeight', height !== undefined ? String(height) : '')
+  body.append('croppingRectWidth', width !== undefined ? String(width) : '')
   body.append('thumbUrl', thumbUrl ?? '')
 
-  return client.postWithFormData('/offers/thumbnails', body)
+  return client.postWithFormData(url, body)
 }
+
+export const postThumbnail: PostImageMethodType<
+  CreateThumbnailResponseModel
+> = (...args) => postImage('/offers/thumbnails', ...args)
+
+export const postCollectiveOfferImage: PostImageMethodType<
+  AttachImageResponseModel
+> = (offerId, ...args) =>
+  postImage(`/collective/offers/${offerId}/image`, offerId, ...args)
+
+export const postCollectiveOfferTemplateImage: PostImageMethodType<
+  AttachImageResponseModel
+> = (offerId, ...args) =>
+  postImage(`/collective/offers-template/${offerId}/image`, offerId, ...args)
 
 //
 // Providers

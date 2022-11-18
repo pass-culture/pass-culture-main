@@ -145,8 +145,8 @@ export interface IOfferIndividualVenueProvider {
 }
 
 export interface IOfferCollectiveImage {
-  url?: string
-  credit?: string
+  url?: string | null
+  credit?: string | null
 }
 
 export interface IOfferIndividualImage {
