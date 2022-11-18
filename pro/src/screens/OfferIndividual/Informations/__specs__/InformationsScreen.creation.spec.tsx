@@ -407,7 +407,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         isEdition: false,
         offerId: 'AA',
         to: 'informations',
-        used: 'StickyButtons',
+        used: 'DraftButtons',
       }
     )
   })
