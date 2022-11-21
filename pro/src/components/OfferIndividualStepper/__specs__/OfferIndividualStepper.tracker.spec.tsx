@@ -73,7 +73,7 @@ const renderOfferIndividualStepper = (
     </OfferIndividualContext.Provider>
   )
 
-  const tabInformations = screen.queryByText('Informations')
+  const tabInformations = screen.queryByText('Détails de l’offre')
   const tabStocks = screen.queryByText('Stock & Prix')
   const tabSummary = screen.queryByText('Récapitulatif')
 
