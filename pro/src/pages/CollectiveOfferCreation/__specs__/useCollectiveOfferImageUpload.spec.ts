@@ -3,6 +3,8 @@ import { renderHook } from '@testing-library/react-hooks'
 
 import { AttachImageResponseModel } from 'apiClient/v1'
 import { imageUploadArgsFactory } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/__tests-utils__/imageUploadArgsFactory'
+import * as deleteCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferImageAdapter'
+import * as deleteCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferTemplateImageAdapter'
 import * as postCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferImageAdapter'
 import * as postCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferTemplateImageAdapter'
 import * as useNotification from 'hooks/useNotification'
@@ -57,7 +59,7 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit('someId', false)
+      await result.current.handleImageOnSubmit('someId')
     })
 
     expect(postCollectiveOfferImageAdapter.default).toHaveBeenCalled()
@@ -85,9 +87,53 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit('someId', false)
+      await result.current.handleImageOnSubmit('someId')
     })
 
     expect(postCollectiveOfferTemplateImageAdapter.default).toHaveBeenCalled()
+  })
+
+  it('should delete image in case of normal offer', async () => {
+    const offer = collectiveOfferTemplateFactory()
+    jest.spyOn(deleteCollectiveOfferImageAdapter, 'default').mockResolvedValue({
+      isOk: true,
+      payload: null,
+      message: 'ok',
+    })
+
+    const { result } = renderHook(() => useCollectiveOfferImageUpload(offer))
+    act(() => {
+      result.current.onImageDelete()
+    })
+
+    await act(async () => {
+      await result.current.handleImageOnSubmit('someId')
+    })
+
+    expect(deleteCollectiveOfferImageAdapter.default).toHaveBeenCalled()
+  })
+
+  it('should delete image in case of template offer', async () => {
+    const offer = collectiveOfferTemplateFactory()
+    jest
+      .spyOn(deleteCollectiveOfferTemplateImageAdapter, 'default')
+      .mockResolvedValue({
+        isOk: true,
+        payload: null,
+        message: 'ok',
+      })
+
+    const { result } = renderHook(() =>
+      useCollectiveOfferImageUpload(offer, true)
+    )
+    act(() => {
+      result.current.onImageDelete()
+    })
+
+    await act(async () => {
+      await result.current.handleImageOnSubmit('someId')
+    })
+
+    expect(deleteCollectiveOfferTemplateImageAdapter.default).toHaveBeenCalled()
   })
 })
