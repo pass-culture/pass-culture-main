@@ -40,7 +40,7 @@ const BannerLayout = ({
         styles[`bi-banner`],
         styles[type],
         minimalStyle && styles['is-minimal'],
-        showTitle && [styles['title']],
+        showTitle && styles['title'],
         className
       )}
     >

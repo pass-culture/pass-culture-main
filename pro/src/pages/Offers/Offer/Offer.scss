@@ -72,11 +72,9 @@
   }
 
   .provider-information {
-    align-items: center;
-    background-color: colors.$notification-info;
-    border-radius: rem.torem(6px);
     display: flex;
-    height: rem.torem(50px);
+    align-items: center;
+    border-radius: rem.torem(6px);
 
     img {
       height: rem.torem(40px);

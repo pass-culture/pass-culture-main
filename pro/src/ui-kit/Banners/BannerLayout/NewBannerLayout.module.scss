@@ -32,6 +32,8 @@
     }
     .bi-banner-text {
       color: colors.$black;
+      display: flex;
+      align-items: center;
     }
     .bi-link {
       display: flex;
@@ -153,7 +155,7 @@
   }
 
   border-radius: rem.torem(6px);
-  margin: rem.torem(16px) 0;
+  margin: rem.torem(16px) 0;  
   padding: rem.torem(20px) rem.torem(16px) rem.torem(16px) rem.torem(16px);
 
   &-text {
