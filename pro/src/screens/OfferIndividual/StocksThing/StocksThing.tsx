@@ -24,6 +24,7 @@ import { useNavigate, useOfferWizardMode } from 'hooks'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as AddActivationCodeIcon } from 'icons/add-activation-code-light.svg'
+import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
@@ -79,7 +80,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     minQuantity = offer.stocks[0].bookingsQuantity
   }
   const today = getLocalDepartementDateTimeFromUtc(
-    new Date(),
+    getToday(),
     offer.venue.departmentCode
   )
   const initialValues = buildInitialValues(offer)
