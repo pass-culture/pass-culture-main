@@ -27,6 +27,7 @@ class GetSirenTest:
                 "postalCode": "75001",
                 "city": "Paris",
             },
+            "ape_code": "90.03A",
         }
 
     @mock.patch("pcapi.connectors.sirene.get_siren", get_siren_raises)
