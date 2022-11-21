@@ -54,9 +54,10 @@ jobs:
         with:
           path: ./${{ env.folder }}/.jest_cache
           key: node-${{ needs.read-node-version.outputs.node_version }}-jest-cache
-      - if: ${{ github.ref != 'refs/heads/master' }}
+      - if: ${{ github.ref == 'refs/heads/master' }}
         run: yarn test:unit:ci
-      - run: yarn test:unit:ci --changedSince=master
+      - if: ${{ github.ref != 'refs/heads/master' }}
+        run: yarn test:unit:ci --changedSince=master
       - if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: rtCamp/action-slack-notify@v2
         env:
