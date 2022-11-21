@@ -311,7 +311,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.selectOptions(categorySelect, 'A')
     const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText("Titre de l'offre")
+    const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     await userEvent.click(screen.getByText('Go outside !'))
@@ -341,7 +341,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       '/offre/AA/v3/brouillon/individuelle/informations'
     )
 
-    const nameField = screen.getByLabelText("Titre de l'offre")
+    const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'New name')
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -375,7 +375,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       '/offre/AA/v3/individuelle/informations'
     )
 
-    const nameField = screen.getByLabelText("Titre de l'offre")
+    const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'New name')
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -398,7 +398,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.selectOptions(categorySelect, 'A')
     const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText("Titre de l'offre")
+    const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     await userEvent.click(screen.getByText('Go outside !'))
@@ -419,7 +419,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.selectOptions(categorySelect, 'A')
     const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText("Titre de l'offre")
+    const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     await userEvent.click(screen.getByText('Go outside !'))
@@ -438,7 +438,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.selectOptions(categorySelect, 'A')
     const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText("Titre de l'offre")
+    const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     await userEvent.click(screen.getByText('Étape suivante'))
@@ -458,7 +458,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.selectOptions(categorySelect, 'A')
     const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText("Titre de l'offre")
+    const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
