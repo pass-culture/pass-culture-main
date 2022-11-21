@@ -78,6 +78,9 @@ class BoostPivotView(BaseAdminView):
         boost_cinema_details.cinemaUrl = (
             form.cinema_url.data + "/" if not form.cinema_url.data.endswith("/") else form.cinema_url.data
         )
+        # clear token in case an existing wrong one is still non-expired
+        boost_cinema_details.token = None
+        boost_cinema_details.tokenExpirationDate = None
 
         db.session.add(boost_cinema_details)
         db.session.commit()
