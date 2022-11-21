@@ -1,3 +1,6 @@
+import logging
+import traceback
+
 from pydantic import parse_obj_as
 
 from pcapi import settings
@@ -10,6 +13,7 @@ from pcapi.routes.serialization import venues_serialize
 from pcapi.utils import requests
 
 
+logger = logging.getLogger(__name__)
 STATUS_CODE_FOR_INSTITUTION_WITHOUT_EMAIL = 404
 ERROR_CODE_FOR_INSTITUTION_WITHOUT_EMAIL = "EMAIL_ADDRESS_DOES_NOT_EXIST"
 
@@ -36,10 +40,11 @@ class AdageHttpClient(AdageClient):
                 data=data.json(),
             )
         except ConnectionError as exp:
+            logger.info("could not connect to adage, error: %s", traceback.format_exc())
             raise exceptions.AdageException(
-                status_code=404,
+                status_code=502,
                 response_text="Connection Error",
-                message="HTTPSConnectionPool Failed to establish a new connection",
+                message="Cannot establish connection to omogen api",
             ) from exp
 
         if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
@@ -56,10 +61,11 @@ class AdageHttpClient(AdageClient):
                 data=data.json(),
             )
         except ConnectionError as exp:
+            logger.info("could not connect to adage, error: %s", traceback.format_exc())
             raise exceptions.AdageException(
-                status_code=404,
+                status_code=502,
                 response_text="Connection Error",
-                message="HTTPSConnectionPool Failed to establish a new connection",
+                message="Cannot establish connection to omogen api",
             ) from exp
 
         if api_response.status_code != 201:
@@ -78,10 +84,11 @@ class AdageHttpClient(AdageClient):
                 headers={self.header_key: self.api_key},
             )
         except ConnectionError as exp:
+            logger.info("could not connect to adage, error: %s", traceback.format_exc())
             raise exceptions.AdageException(
-                status_code=404,
+                status_code=502,
                 response_text="Connection Error",
-                message="HTTPSConnectionPool Failed to establish a new connection",
+                message="Cannot establish connection to omogen api",
             ) from exp
 
         if api_response.status_code == 404:
@@ -102,10 +109,11 @@ class AdageHttpClient(AdageClient):
                 data=data.json(),
             )
         except ConnectionError as exp:
+            logger.info("could not connect to adage, error: %s", traceback.format_exc())
             raise exceptions.AdageException(
-                status_code=404,
+                status_code=502,
                 response_text="Connection Error",
-                message="HTTPSConnectionPool Failed to establish a new connection",
+                message="Cannot establish connection to omogen api",
             ) from exp
 
         if api_response.status_code != 201:
@@ -123,10 +131,11 @@ class AdageHttpClient(AdageClient):
                 headers={self.header_key: self.api_key},
             )
         except ConnectionError as exp:
+            logger.info("could not connect to adage, error: %s", traceback.format_exc())
             raise exceptions.AdageException(
-                status_code=404,
+                status_code=502,
                 response_text="Connection Error",
-                message="HTTPSConnectionPool Failed to establish a new connection",
+                message="Cannot establish connection to omogen api",
             ) from exp
 
         if api_response.status_code == 404:
@@ -143,10 +152,11 @@ class AdageHttpClient(AdageClient):
                 api_url, headers={self.header_key: self.api_key, "Content-Type": "application/json"}, data=data.json()
             )
         except ConnectionError as exp:
+            logger.info("could not connect to adage, error: %s", traceback.format_exc())
             raise exceptions.AdageException(
-                status_code=404,
+                status_code=502,
                 response_text="Connection Error",
-                message="HTTPSConnectionPool Failed to establish a new connection",
+                message="Cannot establish connection to omogen api",
             ) from exp
 
         if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
@@ -160,10 +170,11 @@ class AdageHttpClient(AdageClient):
                 headers={self.header_key: self.api_key},
             )
         except ConnectionError as exp:
+            logger.info("could not connect to adage, error: %s", traceback.format_exc())
             raise exceptions.AdageException(
-                status_code=404,
+                status_code=502,
                 response_text="Connection Error",
-                message="HTTPSConnectionPool Failed to establish a new connection",
+                message="Cannot establish connection to omogen api",
             ) from exp
 
         if api_response.status_code == 404:
