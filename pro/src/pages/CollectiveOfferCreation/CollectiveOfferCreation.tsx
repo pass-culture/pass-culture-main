@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   CollectiveOffer,
@@ -15,13 +14,13 @@ import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapte
 import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
 import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
-import postCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferImageAdapter'
-import { IOfferCollectiveImage } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 import Spinner from 'ui-kit/Spinner/Spinner'
+
+import { useImageUpload } from './useImageUpload'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
@@ -49,24 +48,8 @@ const CollectiveOfferCreation = ({
     queryParamsFromOfferer(location)
 
   const notify = useNotification()
-  const [imageOffer, setImageOffer] = useState<IOfferCollectiveImage | null>(
-    offer !== undefined
-      ? { url: offer.imageUrl, credit: offer.imageCredit }
-      : null
-  )
-  const [imageToUpload, setImageToUpload] = useState<IOnImageUploadArgs | null>(
-    null
-  )
-
-  const onImageUpload = async (image: IOnImageUploadArgs) => {
-    setImageToUpload(image)
-    setImageOffer({ url: image.imageCroppedDataUrl, credit: image.credit })
-  }
-
-  const onImageDelete = async () => {
-    setImageToUpload(null)
-    setImageOffer(null)
-  }
+  const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
+    useImageUpload(offer)
 
   const createOrPatchDraftOffer = async (
     offerValues: IOfferEducationalFormValues
@@ -87,29 +70,14 @@ const CollectiveOfferCreation = ({
       return notify.error(message)
     }
 
-    if (offer && isCollectiveOffer(payload)) {
-      setOffer(payload)
-    }
     const offerId = offer?.id ?? payload.id
-
-    if (imageToUpload !== null) {
-      const imageResponse = await postCollectiveOfferImageAdapter({
-        offerId,
-        imageFile: imageToUpload?.imageFile,
-        credit: imageToUpload?.credit,
-        cropParams: imageToUpload?.cropParams,
+    await handleImageOnSubmit(offerId, isCreatingOffer)
+    if (offer && isCollectiveOffer(payload)) {
+      setOffer({
+        ...payload,
+        imageUrl: imageOffer?.url,
+        imageCredit: imageOffer?.credit,
       })
-      if (!imageResponse.isOk) {
-        return notify.error(message)
-      }
-      setImageOffer({
-        url: imageResponse.payload.imageUrl,
-        credit: imageToUpload?.credit,
-      })
-    } else {
-      if (!isCreatingOffer) {
-        // TODO delete image
-      }
     }
 
     history.push(`/offre/${payload.id}/collectif/stocks`)
