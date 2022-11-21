@@ -3,7 +3,7 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
-import { CheckboxGroup } from 'ui-kit'
+import { CheckboxGroup, InfoBox } from 'ui-kit'
 
 import { participantsOptions } from './participantsOptions'
 import useParicipantUpdates from './useParticipantUpdates'
@@ -24,7 +24,14 @@ const FormParticipants = ({
 
   return (
     <FormLayout.Section title="Participants">
-      <FormLayout.Row>
+      <FormLayout.Row
+        sideComponent={
+          <InfoBox
+            type="info"
+            text="Le Pass Culture à destination du public scolaire s’adresse aux élèves de la quatrième à la terminale des établissements publics et privés sous contrat."
+          />
+        }
+      >
         <CheckboxGroup
           group={participantsOptions}
           groupName="participants"
