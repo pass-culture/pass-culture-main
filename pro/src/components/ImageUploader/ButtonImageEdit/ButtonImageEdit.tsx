@@ -17,12 +17,14 @@ export interface IButtonImageEditProps {
   onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
   initialValues?: IUploadImageValues
   mode: UploaderModeEnum
+  showPreviewInModal?: boolean
 }
 
 const ButtonImageEdit = ({
   mode,
   initialValues = {},
   onImageUpload,
+  showPreviewInModal,
 }: IButtonImageEditProps): JSX.Element => {
   const { visible, showModal, hideModal } = useModal()
   const { imageUrl, originalImageUrl } = initialValues
@@ -47,6 +49,7 @@ const ButtonImageEdit = ({
           onDismiss={hideModal}
           onImageUpload={onImageUpload}
           initialValues={initialValues}
+          showPreviewInModal={showPreviewInModal}
         />
       )}
     </>

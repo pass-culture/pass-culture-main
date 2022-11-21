@@ -77,7 +77,7 @@ const CollectiveOfferEdition = ({
         )}/collectif/recapitulatif`
       )
     },
-    [offer]
+    [offer, handleImageOnSubmit]
   )
 
   const setIsOfferActive = async (isActive: boolean) => {

@@ -28,6 +28,7 @@ interface IModalImageEditProps {
   onDismiss: () => void
   onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
   initialValues?: IUploadImageValues
+  showPreviewInModal?: boolean
 }
 // FIXME: find a way to test FileReader
 /* istanbul ignore next: DEBT, TO FIX */
@@ -36,6 +37,7 @@ const ModalImageEdit = ({
   onDismiss,
   onImageUpload,
   initialValues = {},
+  showPreviewInModal = true,
 }: IModalImageEditProps): JSX.Element | null => {
   const [isReady, setIsReady] = useState<boolean>(false)
 
@@ -87,14 +89,6 @@ const ModalImageEdit = ({
         : 0.5,
   })
 
-  const onEditedImageSave = useCallback(
-    (dataUrl: string, croppedRect: CroppedRect) => {
-      setCroppingRect(croppedRect)
-      setEditedImageDataUrl(dataUrl)
-    },
-    [setEditedImageDataUrl, setCroppingRect]
-  )
-
   const navigateFromPreviewToEdit = useCallback(() => {
     setEditedImageDataUrl('')
   }, [])
@@ -107,20 +101,41 @@ const ModalImageEdit = ({
     setImage(undefined)
   }, [setImage])
 
-  const handleOnUpload = async () => {
-    if (croppingRect === undefined) return
-    if (image === undefined) return
+  const handleOnUpload = async (
+    croppedRect?: CroppedRect,
+    imageToUpload?: File,
+    imageDataUrl?: string
+  ) => {
+    if (croppedRect === undefined) return
+    if (imageToUpload === undefined) return
 
     await onImageUpload({
-      imageFile: image,
-      imageCroppedDataUrl: editedImageDataUrl,
-      cropParams: croppingRect,
+      imageFile: imageToUpload,
+      imageCroppedDataUrl: imageDataUrl,
+      cropParams: croppedRect,
       credit,
-    }).then(() => {
-      onDismiss()
     })
+    onDismiss()
     setIsUploading(false)
   }
+
+  const onEditedImageSave = useCallback(
+    (dataUrl: string, croppedRect: CroppedRect) => {
+      setCroppingRect(croppedRect)
+      setEditedImageDataUrl(dataUrl)
+
+      if (!showPreviewInModal) {
+        handleOnUpload(croppedRect, image, dataUrl)
+      }
+    },
+    [
+      setEditedImageDataUrl,
+      setCroppingRect,
+      showPreviewInModal,
+      handleOnUpload,
+      image,
+    ]
+  )
 
   if (!isReady) {
     return null
@@ -149,12 +164,15 @@ const ModalImageEdit = ({
           saveInitialPosition={setEditorInitialPosition}
           saveInitialScale={setEditorInitialScale}
           mode={mode}
+          submitButtonText={showPreviewInModal ? 'Suivant' : 'Enregistrer'}
         />
       ) : (
         <ModalImageUploadConfirm
           isUploading={isUploading}
           onGoBack={navigateFromPreviewToEdit}
-          onUploadImage={handleOnUpload}
+          onUploadImage={() =>
+            handleOnUpload(croppingRect, image, editedImageDataUrl)
+          }
           imageUrl={editedImageDataUrl}
           mode={mode}
         />

@@ -32,6 +32,7 @@ const FormImageUploader = ({
         onImageDelete={onImageDelete}
         initialValues={buildInitialValues(imageOffer)}
         mode={UploaderModeEnum.OFFER}
+        showPreviewInModal={false}
       />
     </FormLayout.Row>
   </FormLayout.Section>
