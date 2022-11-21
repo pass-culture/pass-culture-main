@@ -1,5 +1,3 @@
-import datetime
-
 import pytest
 
 from pcapi.core.categories import subcategories
@@ -101,7 +99,7 @@ class BoostStocksTest:
         assert created_stocks[0].quantity == 122
         assert created_stocks[0].price == 6.0
         assert created_stocks[0].dateCreated is not None
-        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2022, 10, 18, 22, 00)
+        assert created_stocks[0].bookingLimitDatetime is None
         assert created_stocks[0].offer == created_offers[0]
 
         assert created_offers[1].name == "Avatar : La Voie De L'eau"
@@ -119,7 +117,7 @@ class BoostStocksTest:
         assert created_stocks[1].quantity == 96
         assert created_stocks[1].price == 6.0
         assert created_stocks[1].dateCreated is not None
-        assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2022, 10, 25, 22, 00)
+        assert created_stocks[1].bookingLimitDatetime is None
         assert created_stocks[1].offer == created_offers[1]
 
     def should_not_create_stock_when_showtime_does_not_have_pass_culture_pricing(self, requests_mock):

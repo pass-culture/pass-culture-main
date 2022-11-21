@@ -413,7 +413,7 @@ class CDSStocksTest:
         assert created_stocks[0].quantity == 77
         assert created_stocks[0].price == 5.0
         assert created_stocks[0].dateCreated is not None
-        assert created_stocks[0].bookingLimitDatetime == datetime(2022, 6, 19, 22, 0)
+        assert created_stocks[0].bookingLimitDatetime is None
         assert created_stocks[0].offer == created_offers[0]
 
         assert created_offers[1].name == "Top Gun"
@@ -432,7 +432,7 @@ class CDSStocksTest:
         assert created_stocks[1].quantity == 78
         assert created_stocks[1].price == 6.5
         assert created_stocks[1].dateCreated is not None
-        assert created_stocks[1].bookingLimitDatetime == datetime(2022, 6, 30, 22, 0)
+        assert created_stocks[1].bookingLimitDatetime is None
         assert created_stocks[1].offer == created_offers[1]
 
     @patch(
