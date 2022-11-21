@@ -2,7 +2,7 @@
 @use 'styles/variables/_colors.scss' as colors;
 
 .offer-thumb {
-  border-radius: rem.torem(3px);
+  border-radius: rem.torem(4px);
   height: rem.torem(100px);
   object-fit: cover;
   width: rem.torem(75px);
@@ -10,8 +10,8 @@
 
 .default-thumb {
   align-items: center;
-  background-color: colors.$grey-medium;
-  border-radius: rem.torem(3px);
+  background-color: colors.$grey-light;
+  border-radius: rem.torem(4px);
   display: flex;
   height: rem.torem(100px);
   justify-content: center;
@@ -20,5 +20,6 @@
   svg {
     height: 75%;
     width: 75%;
+    fill: colors.$grey-semi-dark;
   }
 }
