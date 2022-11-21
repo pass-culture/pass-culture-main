@@ -442,7 +442,6 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     await userEvent.click(screen.getByText('Étape suivante'))
-    screen.debug(undefined, 20000)
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
