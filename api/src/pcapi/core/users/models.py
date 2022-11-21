@@ -399,14 +399,6 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return _get_latest_birthday(self.birth_date)
 
     @property
-    def real_wallet_balance(self):  # type: ignore [no-untyped-def]
-        balance = db.session.query(sa.func.get_wallet_balance(self.id, True)).scalar()
-        # Balance can be negative if the user has booked in the past
-        # but their deposit has expired. We don't want to expose a
-        # negative number.
-        return max(0, balance)
-
-    @property
     def wallet_balance(self):  # type: ignore [no-untyped-def]
         balance = db.session.query(sa.func.get_wallet_balance(self.id, False)).scalar()
         return max(0, balance)
