@@ -36,15 +36,6 @@ const renderSummary = ({
   url?: string
 }) => {
   const store = configureTestStore({
-    features: {
-      list: [
-        {
-          isActive: true,
-          name: 'OFFER_DRAFT_ENABLED',
-          nameKey: 'OFFER_DRAFT_ENABLED',
-        },
-      ],
-    },
     user: {
       initialized: true,
       currentUser: {

@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useRef } from 'react'
 import { OfferStatus } from 'apiClient/v1'
 import { ALL_STATUS } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { RadioInput } from 'ui-kit/form_raw/RadioInput/RadioInput'
 
 export const OffersStatusFiltersModal = ({
@@ -16,7 +15,6 @@ export const OffersStatusFiltersModal = ({
   audience,
 }) => {
   const modalRef = useRef(null)
-  const isDraftOfferEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
 
   const handleStatusFilterChange = useCallback(
     event => {
@@ -65,7 +63,7 @@ export const OffersStatusFiltersModal = ({
         onChange={handleStatusFilterChange}
         value={ALL_STATUS}
       />
-      {isDraftOfferEnabled && audience === Audience.INDIVIDUAL && (
+      {audience === Audience.INDIVIDUAL && (
         <RadioInput
           checked={status === OfferStatus.DRAFT}
           label="Brouillon"

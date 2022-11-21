@@ -159,18 +159,7 @@ describe('stocks page - Brouillon', () => {
       // given
       api.upsertStocks.mockResolvedValue({})
       api.getStocks.mockResolvedValueOnce({ stocks: [] })
-      store = {
-        ...store,
-        features: {
-          list: [
-            {
-              isActive: true,
-              name: 'OFFER_DRAFT_ENABLED',
-              nameKey: 'OFFER_DRAFT_ENABLED',
-            },
-          ],
-        },
-      }
+
       renderOffers(props, store)
 
       await userEvent.click(await screen.findByText('Ajouter un stock'))
@@ -203,18 +192,7 @@ describe('stocks page - Brouillon', () => {
       // given
       api.upsertStocks.mockResolvedValue({})
       api.getStocks.mockResolvedValueOnce({ stocks: [] })
-      store = {
-        ...store,
-        features: {
-          list: [
-            {
-              isActive: true,
-              name: 'OFFER_DRAFT_ENABLED',
-              nameKey: 'OFFER_DRAFT_ENABLED',
-            },
-          ],
-        },
-      }
+
       renderOffers(props, store)
 
       await userEvent.click(await screen.findByText('Ajouter un stock'))
@@ -249,18 +227,7 @@ describe('stocks page - Brouillon', () => {
       // given
       api.upsertStocks.mockResolvedValue({})
       api.getStocks.mockResolvedValueOnce({ stocks: [] })
-      store = {
-        ...store,
-        features: {
-          list: [
-            {
-              isActive: true,
-              name: 'OFFER_DRAFT_ENABLED',
-              nameKey: 'OFFER_DRAFT_ENABLED',
-            },
-          ],
-        },
-      }
+
       renderOffers(props, store)
 
       await userEvent.click(await screen.findByText('Ajouter un stock'))

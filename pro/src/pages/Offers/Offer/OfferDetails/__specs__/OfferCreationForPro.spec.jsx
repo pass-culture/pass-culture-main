@@ -56,11 +56,6 @@ const store = configureTestStore({
         name: 'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION',
         nameKey: 'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION',
       },
-      {
-        isActive: true,
-        name: 'OFFER_DRAFT_ENABLED',
-        nameKey: 'OFFER_DRAFT_ENABLED',
-      },
     ],
   },
   user: {

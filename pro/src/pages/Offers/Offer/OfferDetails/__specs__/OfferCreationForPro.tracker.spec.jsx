@@ -41,15 +41,6 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const store = configureTestStore({
-  features: {
-    initialized: true,
-    list: [
-      {
-        isActive: true,
-        nameKey: 'OFFER_DRAFT_ENABLED',
-      },
-    ],
-  },
   user: {
     currentUser: {
       publicName: 'François',

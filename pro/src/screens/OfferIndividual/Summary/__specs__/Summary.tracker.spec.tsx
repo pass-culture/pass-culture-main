@@ -415,17 +415,7 @@ describe('Summary trackers', () => {
   })
 
   describe('For Draft offers', () => {
-    const overrideStore: Partial<RootState> = {
-      features: {
-        initialized: true,
-        list: [
-          {
-            isActive: true,
-            nameKey: 'OFFER_DRAFT_ENABLED',
-          },
-        ],
-      },
-    }
+    const overrideStore: Partial<RootState> = {}
     beforeEach(() => {
       props.offer.status = OfferStatus.DRAFT
       jest
