@@ -7,6 +7,7 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.api as users_api
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
+import pcapi.core.subscription.ubble.api as ubble_subscription
 import pcapi.core.users.models as users_models
 
 
@@ -36,3 +37,28 @@ def find_users_that_failed_ubble_check(days_ago: int = 7) -> list[users_models.U
         and subscription_api.get_identity_check_subscription_status(user, user.eligibility)
         == subscription_models.SubscriptionItemStatus.TODO
     ]
+
+
+def sort_users_by_reason_codes(users: list[users_models.User]) -> dict[str, list[users_models.User]]:
+    users_by_reason_codes = {}
+    for user in users:
+        latest_failed_ubble_check = next(
+            (
+                fraud_check
+                for fraud_check in user.beneficiaryFraudChecks
+                if fraud_check.type == fraud_models.FraudCheckType.UBBLE
+                and (
+                    fraud_check.status == fraud_models.FraudCheckStatus.KO
+                    or fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+                )
+            ),
+            None,
+        )
+        if latest_failed_ubble_check is None:
+            users_by_reason_codes.setdefault(fraud_models.FraudReasonCode.NO_REASON_CODE, []).append(user)
+            continue
+
+        reason_code = ubble_subscription.get_most_relevant_ubble_error(latest_failed_ubble_check)
+
+        users_by_reason_codes.setdefault(reason_code, []).append(user)
+    return users_by_reason_codes

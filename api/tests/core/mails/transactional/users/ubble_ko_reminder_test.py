@@ -144,3 +144,24 @@ class FindUsersThatFailedUbbleTest:
 
         # Then
         assert users == []
+
+    def should_sort_users_by_reason_codes(self):
+        # Given
+        user1 = build_user_with_ko_retryable_ubble_fraud_check()
+        user2 = build_user_with_ko_retryable_ubble_fraud_check(reasonCodes=[fraud_models.FraudReasonCode.ERROR_IN_DATA])
+
+        # When
+        users = sort_users_by_reason_codes([user1, user2])
+
+        # Then
+        assert users == {
+            fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC.value: [user1],
+            fraud_models.FraudReasonCode.ERROR_IN_DATA.value: [user2],
+        }
+
+    def should_not_raise_when_no_user_to_sort(self):
+        # When
+        users = sort_users_by_reason_codes([])
+
+        # Then
+        assert not users
