@@ -7,7 +7,7 @@ import postCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapt
 import { IOfferCollectiveImage } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 
-export const useImageUpload = (
+export const useCollectiveOfferImageUpload = (
   offer?: CollectiveOffer | CollectiveOfferTemplate,
   isTemplate?: boolean
 ) => {

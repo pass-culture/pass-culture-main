@@ -12,6 +12,7 @@ import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/ge
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
 import useNotification from 'hooks/useNotification'
+import { useCollectiveOfferImageUpload } from 'pages/CollectiveOfferCreation/useCollectiveOfferImageUpload'
 import OfferEducational from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -29,6 +30,8 @@ const CollectiveOfferCreationFromTemplate = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [initialValues, setInitialValues] = useState(DEFAULT_EAC_FORM_VALUES)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
+  const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
+    useCollectiveOfferImageUpload()
 
   const handleSubmit = async (offer: IOfferEducationalFormValues) => {
     const { isOk, message, payload } = await postCollectiveOfferAdapter({
@@ -39,6 +42,7 @@ const CollectiveOfferCreationFromTemplate = () => {
     if (!isOk) {
       return notify.error(message)
     }
+    await handleImageOnSubmit(payload.id)
     history.push(`/offre/duplication/collectif/${payload.id}/stocks`)
   }
 
@@ -99,6 +103,9 @@ const CollectiveOfferCreationFromTemplate = () => {
         onSubmit={handleSubmit}
         mode={Mode.CREATION}
         isTemplate={false}
+        imageOffer={imageOffer}
+        onImageDelete={onImageDelete}
+        onImageUpload={onImageUpload}
       />
       <RouteLeavingGuardCollectiveOfferCreation />
     </>

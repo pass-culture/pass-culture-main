@@ -17,6 +17,7 @@ import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/ge
 import patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useNotification from 'hooks/useNotification'
+import { useCollectiveOfferImageUpload } from 'pages/CollectiveOfferCreation/useCollectiveOfferImageUpload'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -43,32 +44,38 @@ const CollectiveOfferEdition = ({
     useState<IOfferEducationalFormValues>(DEFAULT_EAC_FORM_VALUES)
 
   const notify = useNotification()
+  const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
+    useCollectiveOfferImageUpload(offer, offer.isTemplate)
 
   const editOffer = useCallback(
     async (offerFormValues: IOfferEducationalFormValues) => {
-      if (offer) {
-        const patchAdapter = offer.isTemplate
-          ? patchCollectiveOfferTemplateAdapter
-          : patchCollectiveOfferAdapter
-        const offerResponse = await patchAdapter({
-          offerId: offer.id,
-          offer: offerFormValues,
-          initialValues,
-        })
-
-        if (!offerResponse.isOk) {
-          return notify.error(offerResponse.message)
-        }
-
-        notify.success(offerResponse.message)
-        reloadCollectiveOffer()
-        history.push(
-          `/offre/${computeURLCollectiveOfferId(
-            offer.id,
-            offer.isTemplate
-          )}/collectif/recapitulatif`
-        )
+      if (!offer) {
+        return
       }
+
+      const patchAdapter = offer.isTemplate
+        ? patchCollectiveOfferTemplateAdapter
+        : patchCollectiveOfferAdapter
+
+      const offerResponse = await patchAdapter({
+        offerId: offer.id,
+        offer: offerFormValues,
+        initialValues,
+      })
+
+      if (!offerResponse.isOk) {
+        return notify.error(offerResponse.message)
+      }
+      await handleImageOnSubmit(offer.id, offer.isTemplate)
+
+      notify.success(offerResponse.message)
+      reloadCollectiveOffer()
+      history.push(
+        `/offre/${computeURLCollectiveOfferId(
+          offer.id,
+          offer.isTemplate
+        )}/collectif/recapitulatif`
+      )
     },
     [offer]
   )
@@ -167,6 +174,9 @@ const CollectiveOfferEdition = ({
       onSubmit={editOffer}
       setIsOfferActive={setIsOfferActive}
       isTemplate={offer.isTemplate}
+      imageOffer={imageOffer}
+      onImageDelete={onImageDelete}
+      onImageUpload={onImageUpload}
     />
   )
 }
