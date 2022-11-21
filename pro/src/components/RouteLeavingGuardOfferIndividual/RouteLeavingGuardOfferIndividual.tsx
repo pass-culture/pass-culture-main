@@ -11,6 +11,26 @@ export enum ROUTE_LEAVING_GUARD_TYPE {
   DRAFT = 'DRAFT',
   EDITION = 'EDITION',
 }
+
+const computeType = (
+  mode: OFFER_WIZARD_MODE,
+  isFormValid: boolean,
+  hasOfferBeenCreated: boolean
+): ROUTE_LEAVING_GUARD_TYPE => {
+  if (mode === OFFER_WIZARD_MODE.EDITION && isFormValid) {
+    return ROUTE_LEAVING_GUARD_TYPE.EDITION
+  } else if (mode === OFFER_WIZARD_MODE.DRAFT && isFormValid) {
+    return ROUTE_LEAVING_GUARD_TYPE.DRAFT
+  } else if (
+    mode === OFFER_WIZARD_MODE.CREATION &&
+    !hasOfferBeenCreated &&
+    isFormValid
+  ) {
+    return ROUTE_LEAVING_GUARD_TYPE.CAN_CREATE_DRAFT
+  }
+  return ROUTE_LEAVING_GUARD_TYPE.DEFAULT
+}
+
 export interface IRouteLeavingGuardOfferIndividual {
   mode: OFFER_WIZARD_MODE
   saveForm: () => void
@@ -27,7 +47,7 @@ const RouteLeavingGuardOfferIndividual = ({
   setIsSubmittingFromRouteLeavingGuard,
 }: IRouteLeavingGuardOfferIndividual): JSX.Element => {
   const routeLeavingGuardTypes = {
-    // mode creation + mandatory fields not ok, form dirty
+    // form dirty and mandatory fields not ok
     [ROUTE_LEAVING_GUARD_TYPE.DEFAULT]: {
       dialogTitle: 'Souhaitez-vous quitter la création d’offre ?',
       description:
@@ -95,16 +115,7 @@ const RouteLeavingGuardOfferIndividual = ({
     },
   }
 
-  const type =
-    mode === OFFER_WIZARD_MODE.EDITION && isFormValid
-      ? ROUTE_LEAVING_GUARD_TYPE.EDITION
-      : mode === OFFER_WIZARD_MODE.DRAFT && isFormValid
-      ? ROUTE_LEAVING_GUARD_TYPE.DRAFT
-      : mode === OFFER_WIZARD_MODE.CREATION &&
-        !hasOfferBeenCreated &&
-        isFormValid
-      ? ROUTE_LEAVING_GUARD_TYPE.CAN_CREATE_DRAFT
-      : ROUTE_LEAVING_GUARD_TYPE.DEFAULT
+  const type = computeType(mode, isFormValid, hasOfferBeenCreated)
 
   const shouldBlockNavigation = (location: Location) => ({
     shouldBlock: true,
