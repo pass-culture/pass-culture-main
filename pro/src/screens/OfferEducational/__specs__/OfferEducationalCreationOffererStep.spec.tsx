@@ -215,11 +215,13 @@ describe('screens | OfferEducational : creation offerer step', () => {
             managedVenues: managedVenuesFactory([
               { id: 'VENUE_1', name: 'Venue 1' },
               { id: 'VENUE_2', name: 'Venue 2' },
+              { id: 'VENUE_3', name: 'A - Venue 3' },
             ]),
           },
         ]),
       }
     })
+
     it('should require a venue selection from the user', async () => {
       renderEACOfferForm(props)
       const venueSelect = await screen.findByLabelText(
@@ -228,7 +230,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
       expect(venueSelect).toHaveValue('')
       expect(venueSelect).toHaveDisplayValue('Sélectionner un lieu')
-      expect(venueSelect.children).toHaveLength(3)
+      expect(venueSelect.children).toHaveLength(4)
       expect(venueSelect).toBeEnabled()
       expect(screen.queryByTestId('error-venueId')).not.toBeInTheDocument()
 
@@ -258,6 +260,18 @@ describe('screens | OfferEducational : creation offerer step', () => {
           name: 'Type d’offre',
         })
       ).toBeInTheDocument()
+    })
+
+    it('should display venues by alphabeticall order', async () => {
+      renderEACOfferForm(props)
+      const venueSelect = await screen.findByLabelText(
+        'Lieu qui percevra le remboursement'
+      )
+      const venuesOptions = venueSelect.children
+      expect(venuesOptions[0].textContent).toEqual('Sélectionner un lieu')
+      expect(venuesOptions[1].textContent).toEqual('A - Venue 3')
+      expect(venuesOptions[2].textContent).toEqual('Venue 1')
+      expect(venuesOptions[3].textContent).toEqual('Venue 2')
     })
   })
 })
