@@ -2,6 +2,8 @@ import { useCallback, useState } from 'react'
 
 import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
+import deleteCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferImageAdapter'
+import deleteCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferTemplateImageAdapter'
 import postCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferImageAdapter'
 import postCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferTemplateImageAdapter'
 import { IOfferCollectiveImage } from 'core/Offers/types'
@@ -32,31 +34,44 @@ export const useCollectiveOfferImageUpload = (
   }, [])
 
   const handleImageOnSubmit = useCallback(
-    async (offerId: string, isCreatingOffer = false) => {
-      if (imageToUpload !== null) {
+    async (offerId: string) => {
+      // Image field is empty
+      if (imageToUpload === null) {
+        // Delete image if one was present before
+        if (offer?.imageUrl === undefined || offer?.imageUrl === null) {
+          return
+        }
+
         const adapter = isTemplate
-          ? postCollectiveOfferTemplateImageAdapter
-          : postCollectiveOfferImageAdapter
+          ? deleteCollectiveOfferTemplateImageAdapter
+          : deleteCollectiveOfferImageAdapter
 
-        const { isOk, message, payload } = await adapter({
-          offerId,
-          imageFile: imageToUpload?.imageFile,
-          credit: imageToUpload?.credit,
-          cropParams: imageToUpload?.cropParams,
-        })
-
+        const { isOk, message } = await adapter(offerId)
         if (!isOk) {
-          return notify.error(message)
+          notify.error(message)
         }
-        setImageOffer({
-          url: payload.imageUrl,
-          credit: imageToUpload?.credit,
-        })
-      } else {
-        if (!isCreatingOffer) {
-          // TODO delete image
-        }
+
+        return
       }
+
+      const adapter = isTemplate
+        ? postCollectiveOfferTemplateImageAdapter
+        : postCollectiveOfferImageAdapter
+
+      const { isOk, message, payload } = await adapter({
+        offerId,
+        imageFile: imageToUpload?.imageFile,
+        credit: imageToUpload?.credit,
+        cropParams: imageToUpload?.cropParams,
+      })
+
+      if (!isOk) {
+        return notify.error(message)
+      }
+      setImageOffer({
+        url: payload.imageUrl,
+        credit: imageToUpload?.credit,
+      })
     },
     [imageToUpload]
   )

@@ -54,15 +54,15 @@ const CollectiveOfferCreation = ({
   const createOrPatchDraftOffer = async (
     offerValues: IOfferEducationalFormValues
   ) => {
-    const isCreatingOffer = offer === undefined
-    const adapter = isCreatingOffer
-      ? () => postCollectiveOfferAdapter({ offer: offerValues })
-      : () =>
-          patchCollectiveOfferAdapter({
-            offer: offerValues,
-            initialValues,
-            offerId: offer.id,
-          })
+    const adapter =
+      offer === undefined
+        ? () => postCollectiveOfferAdapter({ offer: offerValues })
+        : () =>
+            patchCollectiveOfferAdapter({
+              offer: offerValues,
+              initialValues,
+              offerId: offer.id,
+            })
 
     const { payload, isOk, message } = await adapter()
 
@@ -71,7 +71,7 @@ const CollectiveOfferCreation = ({
     }
 
     const offerId = offer?.id ?? payload.id
-    await handleImageOnSubmit(offerId, isCreatingOffer)
+    await handleImageOnSubmit(offerId)
     if (offer && isCollectiveOffer(payload)) {
       setOffer({
         ...payload,
