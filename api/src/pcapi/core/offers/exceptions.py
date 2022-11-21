@@ -76,6 +76,11 @@ class OfferCreationBaseException(ClientError):
     pass
 
 
+class OfferCannotBeDuo(OfferCreationBaseException):
+    def __init__(self) -> None:
+        super().__init__("acceptDoubleBookings", "the category chosen does not allow double bookings")
+
+
 class SubcategoryNotEligibleForEducationalOffer(OfferCreationBaseException):
     def __init__(self):  # type: ignore [no-untyped-def]
         super().__init__(
