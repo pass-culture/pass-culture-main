@@ -9,7 +9,7 @@ interface Closeable {
   closeLabel?: string
   disabled?: boolean
 }
-interface ITagProps {
+export interface ITagProps {
   className?: string
   closeable?: Closeable
   label: string

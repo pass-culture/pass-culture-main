@@ -1,13 +1,9 @@
+import type { Story } from '@storybook/react'
 import React from 'react'
 
-import Tag from './Tag'
+import Tag, { ITagProps } from './Tag'
 
-export default {
-  title: 'ui-kit/Tag',
-  component: Tag,
-}
-
-const Template = args => <Tag {...args}>{args.children}</Tag>
+const Template: Story<ITagProps> = args => <Tag {...args}></Tag>
 
 export const Default = Template.bind({})
 
