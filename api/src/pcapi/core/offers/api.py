@@ -131,8 +131,9 @@ def create_offer(
     validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id)
     validation.check_offer_subcategory_is_valid(subcategory_id)
     validation.check_offer_extra_data(None, subcategory_id, extra_data)
-
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
+    validation.check_is_duo_compliance(is_duo, subcategory)
+
     if _is_able_to_create_book_offer_from_isbn(subcategory):
         offer = _initialize_book_offer_from_template(description, extra_data, is_national, name, url)
     else:
@@ -235,7 +236,7 @@ def _initialize_offer_with_new_data(
         durationMinutes=duration_minutes,
         extraData=extra_data,
         isDuo=bool(is_duo),
-        isNational=is_national,
+        isNational=bool(is_national),
         name=name,
         product=product,
         subcategoryId=subcategory_id,

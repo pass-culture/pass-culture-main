@@ -401,3 +401,8 @@ def check_offer_extra_data(offer: Offer | None, subcategory_id: str, extra_data:
 def check_offer_is_from_current_cinema_provider(offer: Offer) -> bool:
     venue_cinema_pivot = CinemaProviderPivot.query.filter(CinemaProviderPivot.venueId == offer.venueId).one_or_none()
     return venue_cinema_pivot and offer.lastProviderId == venue_cinema_pivot.providerId
+
+
+def check_is_duo_compliance(is_duo: bool | None, subcategory: subcategories.Subcategory) -> None:
+    if is_duo and not subcategory.can_be_duo:
+        raise exceptions.OfferCannotBeDuo()
