@@ -66,7 +66,7 @@ const CollectiveOfferEdition = ({
       if (!offerResponse.isOk) {
         return notify.error(offerResponse.message)
       }
-      await handleImageOnSubmit(offer.id, offer.isTemplate)
+      await handleImageOnSubmit(offer.id)
 
       notify.success(offerResponse.message)
       reloadCollectiveOffer()
