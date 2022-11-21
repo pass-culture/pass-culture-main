@@ -22,7 +22,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_collective_offers
-from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -283,8 +282,6 @@ def _send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
 @log_cron_with_transaction
 def clean_past_draft_offers() -> None:
     """Deletes past offers and past collective offers that are in draft status"""
-    if not FeatureToggle.OFFER_DRAFT_ENABLED.is_active():
-        delete_past_draft_offers()
     delete_past_draft_collective_offers()
 
 
