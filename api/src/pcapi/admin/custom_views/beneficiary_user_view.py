@@ -25,7 +25,7 @@ import pcapi.core.users.api as users_api
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
-from pcapi.models import db
+from pcapi.repository import repository
 from pcapi.utils.email import sanitize_email
 
 
@@ -154,7 +154,7 @@ def _update_underage_beneficiary_deposit_expiration_date(user: User) -> None:
         # Else, reduce to now and not to the theoretical new date in case there are bookings made between these dates
         user.deposit.expirationDate = datetime.datetime.utcnow()
 
-    db.session.add(user.deposit)
+    repository.save(user.deposit)
 
 
 class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView):
