@@ -2,7 +2,6 @@ import React from 'react'
 
 import useIsCompletingDraft from 'components/OfferIndividualStepper/hooks/useIsCompletingDraft'
 import useIsCreation from 'components/OfferIndividualStepper/hooks/useIsCreation'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { SubmitButton } from 'ui-kit'
 import { Button, ButtonLink } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -28,7 +27,6 @@ const FormActions = ({
 }: IFormActionsProps): JSX.Element => {
   const isCreation = useIsCreation()
   const isCompletingDraft = useIsCompletingDraft()
-  const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
 
   return (
     <>
@@ -43,7 +41,7 @@ const FormActions = ({
       )}
 
       <div>
-        {(isCreation || isCompletingDraft) && isDraftEnabled && (
+        {(isCreation || isCompletingDraft) && (
           <Button
             disabled={!canSubmit || isSubmiting}
             onClick={onSubmitDraft}

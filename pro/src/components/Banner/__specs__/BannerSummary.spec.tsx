@@ -9,33 +9,9 @@ import { configureTestStore } from 'store/testUtils'
 import { BannerSummary } from '../'
 
 describe('components:BannerSummary', () => {
-  it('renders component successfully', async () => {
-    const store = {
-      features: {
-        list: [{ isActive: false, nameKey: 'OFFER_DRAFT_ENABLED' }],
-      },
-    }
-
-    render(
-      <Provider store={configureTestStore(store)}>
-        <BannerSummary />
-      </Provider>
-    )
-
-    expect(
-      screen.getByText(
-        'Vérifiez les informations ci-dessous avant de publier votre offre.'
-      )
-    ).toBeInTheDocument()
-  })
   it('renders component successfully when draft offers are enabled', async () => {
-    const store = {
-      features: {
-        list: [{ isActive: true, nameKey: 'OFFER_DRAFT_ENABLED' }],
-      },
-    }
     render(
-      <Provider store={configureTestStore(store)}>
+      <Provider store={configureTestStore()}>
         <BannerSummary />
       </Provider>
     )

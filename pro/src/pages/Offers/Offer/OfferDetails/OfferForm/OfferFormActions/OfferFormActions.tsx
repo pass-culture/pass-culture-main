@@ -9,7 +9,6 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer } from 'custom_types/offer'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { Button, ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -38,7 +37,6 @@ const OfferFormActions = ({
   offer,
 }: IOfferFormActionsProps) => {
   const { logEvent } = useAnalytics()
-  const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
   const onCancelClick = () => {
     if (isEdition) {
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
@@ -76,7 +74,7 @@ const OfferFormActions = ({
         </ButtonLink>
       </div>
       <div className={styles['right-actions']}>
-        {canSaveDraft && isDraftEnabled && (
+        {canSaveDraft && (
           <Button
             className={styles['action']}
             disabled={isDisabled || isSubmitLoading}

@@ -11,7 +11,6 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { computeOffersUrl, OFFER_WIZARD_MODE } from 'core/Offers'
 import { useOfferWizardMode } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import {
@@ -42,7 +41,6 @@ const ActionsFormV2 = ({
   const offersPageNumber = useSelector(searchPageNumberSelector)
   const quitUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
   const notification = useNotification()
-  const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
   const mode = useOfferWizardMode()
   const backOfferUrl = {
     [OFFER_WIZARD_MODE.CREATION]: `/offre/${offerId}/individuel/creation/stocks`,
@@ -74,7 +72,7 @@ const ActionsFormV2 = ({
         </ButtonLink>
       </div>
       <div className={styles['actions-last']}>
-        {isDraftEnabled && (
+        {
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
             link={{ to: quitUrl, isExternal: false }}
@@ -94,7 +92,7 @@ const ActionsFormV2 = ({
           >
             Sauvegarder le brouillon et quitter
           </ButtonLink>
-        )}
+        }
         <Button
           variant={ButtonVariant.PRIMARY}
           onClick={publishOffer}
