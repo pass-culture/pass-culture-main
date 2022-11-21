@@ -38,6 +38,8 @@ const sharedCollectiveOfferData = {
   students: [StudentLevels.COLL_GE_3E],
   subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
   venueId: 'VENUE_ID',
+  imageUrl: 'https://example.com/image.jpg',
+  imageCredit: 'image credit',
 }
 
 export const collectiveOfferFactory = (
