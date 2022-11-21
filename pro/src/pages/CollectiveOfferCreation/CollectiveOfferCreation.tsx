@@ -20,7 +20,7 @@ import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import { useImageUpload } from './useImageUpload'
+import { useCollectiveOfferImageUpload } from './useCollectiveOfferImageUpload'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
@@ -49,7 +49,7 @@ const CollectiveOfferCreation = ({
 
   const notify = useNotification()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
-    useImageUpload(offer, false)
+    useCollectiveOfferImageUpload(offer, false)
 
   const createOrPatchDraftOffer = async (
     offerValues: IOfferEducationalFormValues
