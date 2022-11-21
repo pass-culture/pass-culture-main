@@ -15,7 +15,6 @@ from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
@@ -65,28 +64,6 @@ class GetCappedOffersForFiltersTest:
         assert offers.offers[0].id > offers.offers[1].id
 
     @pytest.mark.usefixtures("db_session")
-    def should_exclude_draft_offers_when_requesting_all_offers(self, app):
-        # given
-        user_offerer = offerers_factories.UserOffererFactory()
-        non_draft_offer = factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
-        factories.OfferFactory(
-            venue__managingOfferer=user_offerer.offerer,
-            validation=offer_mixin.OfferValidationStatus.DRAFT,
-        )
-
-        # when
-        offers = repository.get_capped_offers_for_filters(
-            user_id=user_offerer.user.id,
-            user_is_admin=user_offerer.user.has_admin_role,
-            offers_limit=10,
-        )
-
-        # then
-        offers_id = [offer.id for offer in offers.offers]
-        assert offers_id == [non_draft_offer.id]
-
-    @pytest.mark.usefixtures("db_session")
-    @override_features(OFFER_DRAFT_ENABLED=True)
     def should_include_draft_offers_when_requesting_all_offers(self, app):
         # given
         user_offerer = offerers_factories.UserOffererFactory()
