@@ -14,6 +14,7 @@ import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/ge
 import postCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/postCollectiveOfferTemplateAdapter'
 import useNotification from 'hooks/useNotification'
 // @debt deprecated "Mathilde: should not import utility from legacy page"
+import { useImageUpload } from 'pages/CollectiveOfferCreation/useImageUpload'
 import { patchCollectiveOfferTemplateAdapter } from 'pages/CollectiveOfferEdition/adapters/patchCollectiveOfferTemplateAdapter'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import OfferEducationalScreen from 'screens/OfferEducational'
@@ -46,18 +47,21 @@ const CollectiveOfferTemplateCreation = ({
     queryParamsFromOfferer(location)
 
   const notify = useNotification()
+  const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
+    useImageUpload(offer, true)
 
   const createTemplateOffer = async (
     offerValues: IOfferEducationalFormValues
   ) => {
-    const adapter = offer
-      ? () =>
+    const isCreatingOffer = offer === undefined
+    const adapter = isCreatingOffer
+      ? () => postCollectiveOfferTemplateAdapter({ offer: offerValues })
+      : () =>
           patchCollectiveOfferTemplateAdapter({
             offer: offerValues,
             initialValues,
             offerId: offer.id,
           })
-      : () => postCollectiveOfferTemplateAdapter({ offer: offerValues })
 
     const { payload, isOk, message } = await adapter()
 
@@ -65,6 +69,7 @@ const CollectiveOfferTemplateCreation = ({
       return notify.error(message)
     }
 
+    await handleImageOnSubmit(offer?.id ?? payload.id, isCreatingOffer)
     if (offer) {
       setOfferTemplate({ ...offer, ...payload })
     }
@@ -119,6 +124,9 @@ const CollectiveOfferTemplateCreation = ({
         mode={Mode.CREATION}
         onSubmit={createTemplateOffer}
         isTemplate={true}
+        imageOffer={imageOffer}
+        onImageDelete={onImageDelete}
+        onImageUpload={onImageUpload}
       />
       <RouteLeavingGuardCollectiveOfferCreation />
     </>

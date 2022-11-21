@@ -49,20 +49,20 @@ const CollectiveOfferCreation = ({
 
   const notify = useNotification()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
-    useImageUpload(offer)
+    useImageUpload(offer, false)
 
   const createOrPatchDraftOffer = async (
     offerValues: IOfferEducationalFormValues
   ) => {
-    const isCreatingOffer = offer !== undefined
+    const isCreatingOffer = offer === undefined
     const adapter = isCreatingOffer
-      ? () =>
+      ? () => postCollectiveOfferAdapter({ offer: offerValues })
+      : () =>
           patchCollectiveOfferAdapter({
             offer: offerValues,
             initialValues,
             offerId: offer.id,
           })
-      : () => postCollectiveOfferAdapter({ offer: offerValues })
 
     const { payload, isOk, message } = await adapter()
 
