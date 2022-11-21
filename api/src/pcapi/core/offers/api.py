@@ -47,11 +47,6 @@ from pcapi.core.offers.offer_validation import parse_offer_validation_config
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.repository import update_stock_quantity_to_dn_booked_quantity
 from pcapi.core.offers.utils import as_utc_without_timezone
-from pcapi.core.offers.validation import KEY_VALIDATION_CONFIG
-from pcapi.core.offers.validation import check_booking_limit_datetime
-from pcapi.core.offers.validation import check_offer_subcategory_is_valid
-from pcapi.core.offers.validation import check_offer_withdrawal
-from pcapi.core.offers.validation import check_validation_config_parameters
 import pcapi.core.providers.models as providers_models
 from pcapi.core.users.external import update_external_pro
 import pcapi.core.users.models as users_models
@@ -133,8 +128,8 @@ def create_offer(
     withdrawal_details: str | None = None,
     withdrawal_type: models.WithdrawalTypeEnum | None = None,
 ) -> Offer:
-    check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id)
-    check_offer_subcategory_is_valid(subcategory_id)
+    validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id)
+    validation.check_offer_subcategory_is_valid(subcategory_id)
     validation.check_offer_extra_data(None, subcategory_id, extra_data)
 
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
@@ -299,7 +294,7 @@ def update_offer(
         try:
             changed_withdrawalType = withdrawalType if withdrawalType != UNCHANGED else offer.withdrawalType
             changed_withdrawalDelay = withdrawalDelay if withdrawalDelay != UNCHANGED else offer.withdrawalDelay
-            check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)
+            validation.check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)
         except offers_exceptions.OfferCreationBaseException as error:
             raise ApiErrors(
                 error.errors,
@@ -592,7 +587,9 @@ def upsert_stocks(
                 )
                 errors.status_code = 403
                 raise errors
-            check_booking_limit_datetime(stock, stock_data.beginning_datetime, stock_data.booking_limit_datetime)
+            validation.check_booking_limit_datetime(
+                stock, stock_data.beginning_datetime, stock_data.booking_limit_datetime
+            )
             edited_stocks_previous_beginnings[stock.id] = stock.beginningDatetime
 
             booking_limit_datetime = stock_data.booking_limit_datetime or stock.bookingLimitDatetime
@@ -610,7 +607,9 @@ def upsert_stocks(
             edited_stocks.append(edited_stock)
             stocks.append(edited_stock)
         else:
-            check_booking_limit_datetime(None, stock_data.beginning_datetime, stock_data.booking_limit_datetime)
+            validation.check_booking_limit_datetime(
+                None, stock_data.beginning_datetime, stock_data.booking_limit_datetime
+            )
 
             activation_codes_exist = stock_data.activation_codes is not None and len(stock_data.activation_codes) > 0
 
@@ -1035,7 +1034,7 @@ def update_pending_offer_validation(offer: Offer, validation_status: OfferValida
 def import_offer_validation_config(config_as_yaml: str, user: User = None) -> OfferValidationConfig:
     try:
         config_as_dict = yaml.safe_load(config_as_yaml)
-        check_validation_config_parameters(config_as_dict, KEY_VALIDATION_CONFIG["init"])
+        validation.check_validation_config_parameters(config_as_dict, validation.KEY_VALIDATION_CONFIG["init"])
     except (KeyError, ValueError, ScannerError) as error:
         logger.exception(
             "Wrong configuration file format: %s",
