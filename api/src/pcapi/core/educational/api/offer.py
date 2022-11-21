@@ -464,11 +464,27 @@ def create_collective_offer_public(
 def edit_collective_offer_public(
     offerer_id: int, new_values: dict, offer: educational_models.CollectiveOffer
 ) -> educational_models.CollectiveOffer:
+    from pcapi.core.educational.api.stock import _update_educational_booking_cancellation_limit_date
+    from pcapi.core.educational.api.stock import _update_educational_booking_educational_year_id
+
     if not (offer.isEditable and offer.collectiveStock.isEditable):
         raise exceptions.CollectiveOfferNotEditable()
 
     offer_fields = {field for field in dir(educational_models.CollectiveOffer) if not field.startswith("_")}
     stock_fields = {field for field in dir(educational_models.CollectiveStock) if not field.startswith("_")}
+
+    collective_stock_unique_booking = (
+        educational_models.CollectiveBooking.query.join(
+            educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
+        )
+        .filter(
+            educational_models.CollectiveStock.collectiveOfferId == offer.id,
+            educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
+        )
+        .one_or_none()
+    )
+    if collective_stock_unique_booking:
+        validation.check_collective_booking_status_pending(collective_stock_unique_booking)
 
     # This variable is meant for Adage mailing
     updated_fields = []
@@ -498,6 +514,17 @@ def edit_collective_offer_public(
             offer.collectiveStock.bookingLimitDatetime = new_values.get(
                 "beginningDatetime", offer.collectiveStock.beginningDatetime
             )
+            if collective_stock_unique_booking:
+                collective_stock_unique_booking.confirmationLimitDate = value
+        elif key == "beginningDatetime":
+            offer.collectiveStock.beginningDatetime = value
+            if collective_stock_unique_booking:
+                _update_educational_booking_cancellation_limit_date(collective_stock_unique_booking, value)
+                _update_educational_booking_educational_year_id(collective_stock_unique_booking, value)
+        elif key == "price":
+            offer.collectiveStock.price = value
+            if collective_stock_unique_booking:
+                collective_stock_unique_booking.amount = value
         elif key in stock_fields:
             setattr(offer.collectiveStock, key, value)
         elif key in offer_fields:
