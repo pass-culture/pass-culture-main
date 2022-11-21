@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Offer, Venue } from 'core/Offers/types'
+import useActiveFeature from 'hooks/useActiveFeature'
 
 import CheckboxCell from './Cells/CheckboxCell'
 import DuplicateOfferCell from './Cells/DuplicateOfferCell'
@@ -9,6 +10,7 @@ import OfferInstitutionCell from './Cells/OfferInstitutionCell'
 import OfferNameCell from './Cells/OfferNameCell'
 import OfferStatusCell from './Cells/OfferStatusCell'
 import OfferVenueCell from './Cells/OfferVenueCell'
+import ThumbCell from './Cells/ThumbCell'
 
 export type CollectiveOfferItemProps = {
   disabled: boolean
@@ -28,32 +30,40 @@ const CollectiveOfferItem = ({
   editionOfferLink,
   venue,
   isOfferEditable,
-}: CollectiveOfferItemProps) => (
-  <>
-    <CheckboxCell
-      offerId={offer.id}
-      status={offer.status}
-      disabled={disabled}
-      isSelected={isSelected}
-      selectOffer={selectOffer}
-      isShowcase={Boolean(offer.isShowcase)}
-    />
-    <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
-    <OfferVenueCell venue={venue} />
-    <OfferInstitutionCell
-      educationalInstitution={offer.educationalInstitution}
-    />
-    <OfferStatusCell status={offer.status} />
-    <DuplicateOfferCell
-      isTemplate={Boolean(offer.isShowcase)}
-      templateOfferId={offer.id}
-    />
-    <EditOfferCell
-      offer={offer}
-      isOfferEditable={isOfferEditable}
-      editionOfferLink={editionOfferLink}
-    />
-  </>
-)
+}: CollectiveOfferItemProps) => {
+  const isImageCollectiveOfferActive = useActiveFeature(
+    'WIP_IMAGE_COLLECTIVE_OFFER'
+  )
+  return (
+    <>
+      <CheckboxCell
+        offerId={offer.id}
+        status={offer.status}
+        disabled={disabled}
+        isSelected={isSelected}
+        selectOffer={selectOffer}
+        isShowcase={Boolean(offer.isShowcase)}
+      />
+      {isImageCollectiveOfferActive && (
+        <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
+      )}
+      <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
+      <OfferVenueCell venue={venue} />
+      <OfferInstitutionCell
+        educationalInstitution={offer.educationalInstitution}
+      />
+      <OfferStatusCell status={offer.status} />
+      <DuplicateOfferCell
+        isTemplate={Boolean(offer.isShowcase)}
+        templateOfferId={offer.id}
+      />
+      <EditOfferCell
+        offer={offer}
+        isOfferEditable={isOfferEditable}
+        editionOfferLink={editionOfferLink}
+      />
+    </>
+  )
+}
 
 export default CollectiveOfferItem

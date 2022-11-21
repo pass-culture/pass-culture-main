@@ -34,7 +34,7 @@ export const serializeOffers = (
     status: offer.status as OfferStatus,
     isActive: offer.isActive,
     hasBookingLimitDatetimesPassed: offer.hasBookingLimitDatetimesPassed,
-    thumbUrl: null,
+    thumbUrl: offer.imageUrl,
     isEducational: true,
     name: offer.name,
     isEvent: true,
