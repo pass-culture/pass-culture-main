@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Iterator
 from typing import cast
 
-import pytz
 from sqlalchemy import Sequence
 
 from pcapi import settings
@@ -127,16 +126,12 @@ class CDSStocks(LocalProvider):
 
         local_tz = utils_date.get_department_timezone(self.venue.departementCode)
         datetime_in_utc = utils_date.local_datetime_to_default_timezone(show.showtime, local_tz)
-        bookingLimitDatetime = utils_date.get_day_start(datetime_in_utc.date(), pytz.timezone(local_tz))
         cds_stock.beginningDatetime = datetime_in_utc
         is_internet_sale_gauge_active = self._get_cds_internet_sale_gauge()
 
         is_new_stock_to_insert = cds_stock.id is None
         if is_new_stock_to_insert:
             cds_stock.fieldsUpdated = []
-
-        if "bookingLimitDatetime" not in cds_stock.fieldsUpdated:
-            cds_stock.bookingLimitDatetime = bookingLimitDatetime
 
         if "quantity" not in cds_stock.fieldsUpdated:
             if is_internet_sale_gauge_active:

@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Iterator
 from typing import cast
 
-import pytz
 from sqlalchemy.sql.schema import Sequence
 
 from pcapi.connectors.serialization import boost_serializers
@@ -110,15 +109,11 @@ class BoostStocks(LocalProvider):
 
         local_tz = utils_date.get_department_timezone(self.venue.departementCode)
         datetime_in_utc = utils_date.local_datetime_to_default_timezone(self.showtime_details.showDate, local_tz)
-        booking_limit_datetime = utils_date.get_day_start(datetime_in_utc.date(), pytz.timezone(local_tz))
         stock.beginningDatetime = datetime_in_utc
 
         is_new_stock_to_insert = stock.id is None
         if is_new_stock_to_insert:
             stock.fieldsUpdated = []
-
-        if "bookingLimitDatetime" not in stock.fieldsUpdated:
-            stock.bookingLimitDatetime = booking_limit_datetime
 
         if "quantity" not in stock.fieldsUpdated:
             stock.quantity = self.showtime_details.numberRemainingSeatsForOnlineSale
