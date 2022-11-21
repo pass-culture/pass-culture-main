@@ -10,6 +10,7 @@ class TransactionalEmail(Enum):
     ACCEPTED_AS_EAC_BENEFICIARY = models.Template(
         id_prod=257, id_not_prod=27, tags=["jeunes_pass_credite_eac"], use_priority_queue=True
     )
+    ACCOUNT_UNSUSPENDED = models.Template(id_prod=644, id_not_prod=87, tags=["reactivation_compte_utilisateur"])
     BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER = models.Template(
         id_prod=78, id_not_prod=32, tags=["anniversaire_18_ans"], send_to_ehp=False
     )
@@ -96,7 +97,6 @@ class TransactionalEmail(Enum):
     USER_REQUEST_DELETE_ACCOUNT_RECEPTION = models.Template(
         id_prod=511, id_not_prod=54, tags=["reception_demande_suppression_compte_jeune"]
     )
-    ACCOUNT_UNSUSPENDED = models.Template(id_prod=644, id_not_prod=87, tags=["reactivation_compte_utilisateur"])
 
     # PRO EMAIL
 
