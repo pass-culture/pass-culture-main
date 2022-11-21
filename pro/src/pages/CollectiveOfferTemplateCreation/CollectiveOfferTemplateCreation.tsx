@@ -14,7 +14,7 @@ import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/ge
 import postCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/postCollectiveOfferTemplateAdapter'
 import useNotification from 'hooks/useNotification'
 // @debt deprecated "Mathilde: should not import utility from legacy page"
-import { useImageUpload } from 'pages/CollectiveOfferCreation/useImageUpload'
+import { useCollectiveOfferImageUpload } from 'pages/CollectiveOfferCreation/useCollectiveOfferImageUpload'
 import { patchCollectiveOfferTemplateAdapter } from 'pages/CollectiveOfferEdition/adapters/patchCollectiveOfferTemplateAdapter'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import OfferEducationalScreen from 'screens/OfferEducational'
@@ -48,7 +48,7 @@ const CollectiveOfferTemplateCreation = ({
 
   const notify = useNotification()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
-    useImageUpload(offer, true)
+    useCollectiveOfferImageUpload(offer, true)
 
   const createTemplateOffer = async (
     offerValues: IOfferEducationalFormValues
