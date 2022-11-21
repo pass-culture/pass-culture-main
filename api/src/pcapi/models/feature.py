@@ -102,7 +102,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_VENUE_STRICT_SEARCH = (
         "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
     )
-    OFFER_DRAFT_ENABLED = "Active la fonctionnalités de création d'offre en brouillon"
     # FIXME (dbaty, 2022-09-14): remove USE_PRICING_POINT_FOR_PRICING flag after v207 is deployed.
     USE_PRICING_POINT_FOR_PRICING = "Utilise le modèle VenuePricingPointLink pour la valorisation"
     # FIXME (dbaty, 2022-09-14): remove USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS flag after v207 is deployed.
@@ -175,7 +174,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENFORCE_BANK_INFORMATION_WITH_SIRET,
     FeatureToggle.GENERATE_CASHFLOWS_BY_CRON,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
-    FeatureToggle.OFFER_DRAFT_ENABLED,
     FeatureToggle.OFFER_FORM_V3,
     FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
