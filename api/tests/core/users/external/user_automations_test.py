@@ -102,7 +102,6 @@ class UserAutomationsTest:
             )
             assert user2.deposit.expirationDate == datetime(2034, 11, 1, 22, 59, 59, 999999)
             bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user2, quantity=1, amount=10)
-            assert user2.real_wallet_balance > 0
 
         with freeze_time("2032-12-01 15:00:00"):
             user3 = users_factories.BeneficiaryGrant18Factory(
@@ -134,10 +133,7 @@ class UserAutomationsTest:
 
         with freeze_time("2033-05-01 17:00:00"):
             # user6 becomes ex-beneficiary
-            bookings_factories.UsedIndividualBookingFactory(
-                individualBooking__user=user6, quantity=1, amount=int(user6.real_wallet_balance)
-            )
-            assert user6.real_wallet_balance == 0
+            bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user6, quantity=1, amount=300)
 
         return [user0, user1, user2, user3, user4, user5, user6]
 

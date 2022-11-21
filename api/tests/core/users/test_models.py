@@ -334,13 +334,11 @@ class UserWalletBalanceTest:
         user = users_factories.UserFactory()
 
         assert user.wallet_balance == 0
-        assert user.real_wallet_balance == 0
 
     def test_balance_ignores_expired_deposits(self):
         user = users_factories.BeneficiaryGrant18Factory(deposit__expirationDate=datetime(2000, 1, 1))
 
         assert user.wallet_balance == 0
-        assert user.real_wallet_balance == 0
 
     def test_balance(self):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -350,14 +348,12 @@ class UserWalletBalanceTest:
         bookings_factories.CancelledIndividualBookingFactory(individualBooking__user=user, quantity=4, amount=40)
 
         assert user.wallet_balance == 300 - (10 + 2 * 20 + 3 * 30)
-        assert user.real_wallet_balance == 300 - (10 + 2 * 20)
 
     def test_real_balance_with_only_used_bookings(self):
         user = users_factories.BeneficiaryGrant18Factory()
         bookings_factories.IndividualBookingFactory(individualBooking__user=user, quantity=1, amount=30)
 
         assert user.wallet_balance == 300 - 30
-        assert user.real_wallet_balance == 300
 
     def test_balance_when_expired(self):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -366,7 +362,6 @@ class UserWalletBalanceTest:
         deposit.expirationDate = datetime(2000, 1, 1)
 
         assert user.wallet_balance == 0
-        assert user.real_wallet_balance == 0
 
 
 class SQLFunctionsTest:
