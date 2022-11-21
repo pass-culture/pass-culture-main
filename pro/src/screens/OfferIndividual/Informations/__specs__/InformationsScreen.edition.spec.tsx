@@ -446,7 +446,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
 
   it('should track when submitting offer', async () => {
     renderInformationsScreen(props, store, contextOverride)
-    const nameField = screen.getByLabelText("Titre de l'offre")
+    const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.clear(nameField)
     await userEvent.type(nameField, 'Le nom de mon offre édité')
 
@@ -463,7 +463,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         isDraft: false,
         isEdition: true,
         offerId: 'AA',
-        to: 'stocks',
+        to: 'recapitulatif',
         used: 'StickyButtons',
       }
     )
