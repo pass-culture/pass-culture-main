@@ -1,12 +1,16 @@
 import { useCallback, useState } from 'react'
 
 import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { CollectiveOffer } from 'core/OfferEducational'
+import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import postCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferImageAdapter'
+import postCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferTemplateImageAdapter'
 import { IOfferCollectiveImage } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 
-export const useImageUpload = (offer?: CollectiveOffer) => {
+export const useImageUpload = (
+  offer?: CollectiveOffer | CollectiveOfferTemplate,
+  isTemplate?: boolean
+) => {
   const notify = useNotification()
   const [imageOffer, setImageOffer] = useState<IOfferCollectiveImage | null>(
     offer !== undefined
@@ -30,13 +34,17 @@ export const useImageUpload = (offer?: CollectiveOffer) => {
   const handleImageOnSubmit = useCallback(
     async (offerId: string, isCreatingOffer = false) => {
       if (imageToUpload !== null) {
-        const { isOk, message, payload } =
-          await postCollectiveOfferImageAdapter({
-            offerId,
-            imageFile: imageToUpload?.imageFile,
-            credit: imageToUpload?.credit,
-            cropParams: imageToUpload?.cropParams,
-          })
+        const adapter = isTemplate
+          ? postCollectiveOfferTemplateImageAdapter
+          : postCollectiveOfferImageAdapter
+
+        const { isOk, message, payload } = await adapter({
+          offerId,
+          imageFile: imageToUpload?.imageFile,
+          credit: imageToUpload?.credit,
+          cropParams: imageToUpload?.cropParams,
+        })
+
         if (!isOk) {
           return notify.error(message)
         }
