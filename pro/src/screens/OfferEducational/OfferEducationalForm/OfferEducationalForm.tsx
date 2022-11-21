@@ -10,6 +10,7 @@ import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import { Banner, SubmitButton } from 'ui-kit'
+import { sortByLabel } from 'utils/strings'
 
 import { IOfferEducationalProps } from '../OfferEducational'
 
@@ -77,6 +78,7 @@ const OfferEducationalForm = ({
         }
 
         if (!isOk) {
+          /* istanbul ignore next: TO FIX -> issue when trying to mock useNotification */
           notify.error(message)
         }
 
@@ -92,7 +94,7 @@ const OfferEducationalForm = ({
       if (venuesOptions.length > 1) {
         venuesOptions = [
           { value: '', label: 'Sélectionner un lieu' },
-          ...venuesOptions,
+          ...sortByLabel(venuesOptions),
         ]
       }
       setCurrentOfferer(selectedOfferer)
