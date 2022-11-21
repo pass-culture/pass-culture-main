@@ -1,7 +1,14 @@
 import React from 'react'
 
+import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_IN,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer, Venue } from 'core/Offers/types'
+import useAnalytics from 'hooks/useAnalytics'
 
 import CheckboxCell from './Cells/CheckboxCell'
 import DeleteDraftCell from './Cells/DeleteDraftCell'
@@ -36,6 +43,18 @@ const IndividualOfferItem = ({
   isOfferEditable,
   refreshOffers,
 }: IndividualOfferItemProps) => {
+  const { logEvent } = useAnalytics()
+  const onThumbClick = () => {
+    const isDraft = offer.status === OFFER_STATUS_DRAFT
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OFFER_FORM_NAVIGATION_IN.OFFERS,
+      to: isDraft ? OfferBreadcrumbStep.DETAILS : OfferBreadcrumbStep.SUMMARY,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_THUMB,
+      isEdition: true,
+      isDraft: isDraft,
+      offerId: offer.id,
+    })
+  }
   return (
     <>
       <CheckboxCell
@@ -46,7 +65,11 @@ const IndividualOfferItem = ({
         selectOffer={selectOffer}
         isShowcase={Boolean(offer.isShowcase)}
       />
-      <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
+      <ThumbCell
+        offer={offer}
+        editionOfferLink={editionOfferLink}
+        onThumbClick={onThumbClick}
+      />
       <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
       <OfferVenueCell venue={venue} />
       <OfferRemainingStockCell stocks={offer.stocks} />

@@ -5,6 +5,7 @@ import { OfferStatus } from 'apiClient/v1'
 import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
 import { TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { searchFiltersSelector } from 'store/offers/selectors'
 
 import StatusFiltersButton from './StatusFiltersButton'
@@ -31,7 +32,9 @@ const OffersTableHead = ({
   audience,
 }: OffersTableHeadProps): JSX.Element => {
   const savedSearchFilters = useSelector(searchFiltersSelector)
-
+  const isImageCollectiveOfferActive = useActiveFeature(
+    'WIP_IMAGE_COLLECTIVE_OFFER'
+  )
   return (
     <thead>
       <tr>
@@ -63,7 +66,9 @@ const OffersTableHead = ({
             {areAllOffersSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
           </label>
         </th>
-        {audience === Audience.INDIVIDUAL && <th />}
+        {(audience === Audience.INDIVIDUAL || isImageCollectiveOfferActive) && (
+          <th />
+        )}
         <th>Lieu</th>
         <th>{audience === Audience.COLLECTIVE ? 'Établissement' : 'Stocks'}</th>
         <th className="th-with-filter">
