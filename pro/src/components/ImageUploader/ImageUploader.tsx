@@ -13,6 +13,7 @@ export interface IImageUploaderProps {
   onImageDelete: () => Promise<void>
   initialValues?: IUploadImageValues
   mode: UploaderModeEnum
+  showPreviewInModal?: boolean
 }
 
 const ImageUploader = ({
@@ -20,6 +21,7 @@ const ImageUploader = ({
   onImageDelete,
   initialValues = {},
   mode,
+  showPreviewInModal,
 }: IImageUploaderProps) => {
   const { imageUrl, originalImageUrl, credit, cropParams } = initialValues
 
@@ -43,6 +45,7 @@ const ImageUploader = ({
                   cropParams,
                 }}
                 onImageUpload={onImageUpload}
+                showPreviewInModal={showPreviewInModal}
               />
               <ButtonAppPreview imageUrl={imageUrl} mode={mode} />
               <ButtonImageDelete onImageDelete={onImageDelete} />
@@ -50,7 +53,11 @@ const ImageUploader = ({
           </div>
         </>
       ) : (
-        <ButtonImageEdit mode={mode} onImageUpload={onImageUpload} />
+        <ButtonImageEdit
+          mode={mode}
+          onImageUpload={onImageUpload}
+          showPreviewInModal={showPreviewInModal}
+        />
       )}
     </div>
   )

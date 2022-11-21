@@ -21,6 +21,7 @@ const defaultProps = {
   saveInitialScale: jest.fn(),
   onSetCredit: jest.fn(),
   mode: UploaderModeEnum.OFFER,
+  submitButtonText: 'Suivant',
 }
 
 describe('venue image edit', () => {

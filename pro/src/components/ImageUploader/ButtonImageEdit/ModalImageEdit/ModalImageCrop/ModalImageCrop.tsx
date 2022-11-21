@@ -29,6 +29,7 @@ interface IModalImageCropProps {
   saveInitialPosition: (position: Position) => void
   onEditedImageSave: (dataUrl: string, croppedRect: CroppedRect) => void
   mode: UploaderModeEnum
+  submitButtonText: string
 }
 
 const ModalImageCrop = ({
@@ -42,6 +43,7 @@ const ModalImageCrop = ({
   initialPosition,
   initialScale,
   mode,
+  submitButtonText,
 }: IModalImageCropProps): JSX.Element => {
   const { width, height } = useGetImageBitmap(image)
   const editorRef = useRef<AvatarEditor>(null)
@@ -148,7 +150,7 @@ const ModalImageCrop = ({
         >
           Remplacer l'image
         </Button>
-        <Button onClick={handleNext}>Suivant</Button>
+        <Button onClick={handleNext}>{submitButtonText}</Button>
       </footer>
     </section>
   )
