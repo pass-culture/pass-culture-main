@@ -29,11 +29,18 @@ class AdageHttpClient(AdageClient):
 
     def notify_prebooking(self, data: prebooking.EducationalBookingResponse) -> None:
         api_url = f"{self.base_url}/v1/prereservation"
-        api_response = requests.post(
-            api_url,
-            headers={self.header_key: self.api_key, "Content-Type": "application/json"},
-            data=data.json(),
-        )
+        try:
+            api_response = requests.post(
+                api_url,
+                headers={self.header_key: self.api_key, "Content-Type": "application/json"},
+                data=data.json(),
+            )
+        except ConnectionError as exp:
+            raise exceptions.AdageException(
+                status_code=404,
+                response_text="Connection Error",
+                message="HTTPSConnectionPool Failed to establish a new connection",
+            ) from exp
 
         if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
             raise exceptions.AdageException(
@@ -42,11 +49,18 @@ class AdageHttpClient(AdageClient):
 
     def notify_offer_or_stock_edition(self, data: prebooking.EducationalBookingEdition) -> None:
         api_url = f"{self.base_url}/v1/prereservation-edit"
-        api_response = requests.post(
-            api_url,
-            headers={self.header_key: self.api_key, "Content-Type": "application/json"},
-            data=data.json(),
-        )
+        try:
+            api_response = requests.post(
+                api_url,
+                headers={self.header_key: self.api_key, "Content-Type": "application/json"},
+                data=data.json(),
+            )
+        except ConnectionError as exp:
+            raise exceptions.AdageException(
+                status_code=404,
+                response_text="Connection Error",
+                message="HTTPSConnectionPool Failed to establish a new connection",
+            ) from exp
 
         if api_response.status_code != 201:
             raise exceptions.AdageException(
@@ -58,10 +72,17 @@ class AdageHttpClient(AdageClient):
     def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
         api_url = f"{self.base_url}/v1/partenaire-culturel/{siren}"
 
-        api_response = requests.get(
-            api_url,
-            headers={self.header_key: self.api_key},
-        )
+        try:
+            api_response = requests.get(
+                api_url,
+                headers={self.header_key: self.api_key},
+            )
+        except ConnectionError as exp:
+            raise exceptions.AdageException(
+                status_code=404,
+                response_text="Connection Error",
+                message="HTTPSConnectionPool Failed to establish a new connection",
+            ) from exp
 
         if api_response.status_code == 404:
             raise exceptions.CulturalPartnerNotFoundException(
@@ -74,11 +95,18 @@ class AdageHttpClient(AdageClient):
 
     def notify_booking_cancellation_by_offerer(self, data: prebooking.EducationalBookingResponse) -> None:
         api_url = f"{self.base_url}/v1/prereservation-annule"
-        api_response = requests.post(
-            api_url,
-            headers={self.header_key: self.api_key, "Content-Type": "application/json"},
-            data=data.json(),
-        )
+        try:
+            api_response = requests.post(
+                api_url,
+                headers={self.header_key: self.api_key, "Content-Type": "application/json"},
+                data=data.json(),
+            )
+        except ConnectionError as exp:
+            raise exceptions.AdageException(
+                status_code=404,
+                response_text="Connection Error",
+                message="HTTPSConnectionPool Failed to establish a new connection",
+            ) from exp
 
         if api_response.status_code != 201:
             raise exceptions.AdageException(
@@ -89,10 +117,17 @@ class AdageHttpClient(AdageClient):
 
     def get_cultural_partners(self) -> list[dict[str, str | int | float | None]]:
         api_url = f"{self.base_url}/v1/partenaire-culturel"
-        api_response = requests.get(
-            api_url,
-            headers={self.header_key: self.api_key},
-        )
+        try:
+            api_response = requests.get(
+                api_url,
+                headers={self.header_key: self.api_key},
+            )
+        except ConnectionError as exp:
+            raise exceptions.AdageException(
+                status_code=404,
+                response_text="Connection Error",
+                message="HTTPSConnectionPool Failed to establish a new connection",
+            ) from exp
 
         if api_response.status_code == 404:
             raise exceptions.CulturalPartnerNotFoundException("Requested cultural partners not found for Adage")
@@ -103,19 +138,33 @@ class AdageHttpClient(AdageClient):
 
     def notify_institution_association(self, data: AdageCollectiveOffer) -> None:
         api_url = f"{self.base_url}/v1/offre-assoc"
-        api_response = requests.post(
-            api_url, headers={self.header_key: self.api_key, "Content-Type": "application/json"}, data=data.json()
-        )
+        try:
+            api_response = requests.post(
+                api_url, headers={self.header_key: self.api_key, "Content-Type": "application/json"}, data=data.json()
+            )
+        except ConnectionError as exp:
+            raise exceptions.AdageException(
+                status_code=404,
+                response_text="Connection Error",
+                message="HTTPSConnectionPool Failed to establish a new connection",
+            ) from exp
 
         if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
             raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
     def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
         api_url = f"{self.base_url}/v1/etablissement-culturel/{siret}"
-        api_response = requests.get(
-            api_url,
-            headers={self.header_key: self.api_key},
-        )
+        try:
+            api_response = requests.get(
+                api_url,
+                headers={self.header_key: self.api_key},
+            )
+        except ConnectionError as exp:
+            raise exceptions.AdageException(
+                status_code=404,
+                response_text="Connection Error",
+                message="HTTPSConnectionPool Failed to establish a new connection",
+            ) from exp
 
         if api_response.status_code == 404:
             raise exceptions.CulturalPartnerNotFoundException("Requested cultural partner not found for Adage")
