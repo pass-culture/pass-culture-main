@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom'
 import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
 } from 'components/RouteLeavingGuard'
-import useActiveFeature from 'hooks/useActiveFeature'
 
 const STEP_OFFER = 'offer'
 const STEP_STOCKS = 'stocks'
@@ -31,7 +30,6 @@ const RouteLeavingGuardOfferIndividualV2 = ({
   tracking,
 }: RouteLeavingGuardOfferIndividualV2Props): JSX.Element => {
   const location = useLocation()
-  const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
   const shouldBlockNavigation = useCallback(
     (nextLocation: Location): IShouldBlockNavigationReturnValue => {
       let redirectPath = null
@@ -98,11 +96,7 @@ const RouteLeavingGuardOfferIndividualV2 = ({
     [location]
   )
 
-  let description =
-    'Votre offre ne sera pas sauvegardée et toutes les informations seront perdues.'
-  if (isDraftEnabled) {
-    description = 'Les informations non enregistrées seront perdues.'
-  }
+  const description = 'Les informations non enregistrées seront perdues.'
   return (
     <RouteLeavingGuard
       shouldBlockNavigation={shouldBlockNavigation}

@@ -107,9 +107,6 @@ describe('screen Offers', () => {
       offers: {
         searchFilters: DEFAULT_SEARCH_FILTERS,
       },
-      features: {
-        list: [{ isActive: true, nameKey: 'OFFER_DRAFT_ENABLED' }],
-      },
     })
     offersRecap = [offerFactory({ venue: proVenues[0] })]
 

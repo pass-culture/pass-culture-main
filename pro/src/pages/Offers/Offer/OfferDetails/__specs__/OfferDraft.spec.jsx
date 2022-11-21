@@ -75,14 +75,6 @@ describe('offerDetails - Draft', () => {
         },
         initialized: true,
       },
-      features: {
-        list: [
-          {
-            isActive: true,
-            nameKey: 'OFFER_DRAFT_ENABLED',
-          },
-        ],
-      },
     })
 
     venueManagingOfferer = {

@@ -67,15 +67,6 @@ describe('src | components | pages | Offers | ActionsBar', () => {
           offererId: 'A4',
         },
       },
-      features: {
-        list: [
-          {
-            isActive: true,
-            name: 'OFFER_DRAFT_ENABLED',
-            nameKey: 'OFFER_DRAFT_ENABLED',
-          },
-        ],
-      },
     })
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,

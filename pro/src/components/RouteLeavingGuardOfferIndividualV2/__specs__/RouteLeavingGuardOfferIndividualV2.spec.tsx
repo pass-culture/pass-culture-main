@@ -71,11 +71,7 @@ describe('components | RouteLeavingGuardOfferIndividual', () => {
     it('should display a confirmation for lost unsaved changes', async () => {
       history.push(stepsUrls['offer'])
       const spyHistory = jest.spyOn(history, 'push')
-      renderRouteLeavingGuard(props, history, {
-        features: {
-          list: [{ isActive: true, nameKey: 'OFFER_DRAFT_ENABLED' }],
-        },
-      })
+      renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('About'))
       expect(
         await screen.findByText(/Voulez-vous quitter la création d’offre ?/)

@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
@@ -95,7 +94,6 @@ const ActionsBar = ({
     showModal: showDeleteDialog,
     hideModal: hideDeleteDialog,
   } = useModal()
-  const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
 
   const handleClose = useCallback(() => {
     clearSelectedOfferIds()
@@ -191,7 +189,7 @@ const ActionsBar = ({
       <Button onClick={() => showConfirmDialog()} Icon={StatusInactiveIcon}>
         Désactiver
       </Button>
-      {audience == Audience.INDIVIDUAL && isDraftEnabled && (
+      {audience == Audience.INDIVIDUAL && (
         <Button onClick={() => handleOpenDeleteDialog()} Icon={TrashFilledIcon}>
           Supprimer
         </Button>

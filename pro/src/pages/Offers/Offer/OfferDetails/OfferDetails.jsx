@@ -12,7 +12,6 @@ import {
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { useGetCategories } from 'core/Offers/adapters'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -41,7 +40,6 @@ const OfferDetails = ({
   const history = useHistory()
   const location = useLocation()
   const { currentUser } = useCurrentUser()
-  const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
 
   const [formInitialValues, setFormInitialValues] = useState({})
   const [isReady, setIsReady] = useState(false)
@@ -192,11 +190,9 @@ const OfferDetails = ({
               isDraft: true,
               offerId: offer?.id,
             })
-            if (isDraftEnabled) {
-              notification.success(
-                'Brouillon sauvegardé dans la liste des offres'
-              )
-            }
+            notification.success(
+              'Brouillon sauvegardé dans la liste des offres'
+            )
             return Promise.resolve(() => goToStockAndPrice(offer.id))
           } else {
             // Click on "Enregistrer les modifications" when on /edition
@@ -217,11 +213,7 @@ const OfferDetails = ({
           const response = await api.postOffer(offerValues)
           const createdOfferId = response.id
           await postThumbnail(createdOfferId, thumbnailInfo)
-          if (isDraftEnabled) {
-            notification.success(
-              'Brouillon sauvegardé dans la liste des offres'
-            )
-          }
+          notification.success('Brouillon sauvegardé dans la liste des offres')
           if (isSavingDraft) {
             // Click sur "Sauvegarder le brouillon" quand sur /creation
             logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
