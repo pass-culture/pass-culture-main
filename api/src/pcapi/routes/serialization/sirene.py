@@ -16,6 +16,7 @@ class SirenInfo(serialization.BaseModel):
     siren: str
     name: str
     address: Address
+    ape_code: str
 
 
 class SiretInfo(serialization.BaseModel):

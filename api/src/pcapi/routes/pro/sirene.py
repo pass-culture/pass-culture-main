@@ -24,6 +24,7 @@ def get_siren_info(siren: str) -> sirene_serializers.SirenInfo:
         siren=siren,
         name=info.name,
         address=sirene_serializers.Address(**info.address.dict()),
+        ape_code=info.ape_code,
     )
 
 
