@@ -77,6 +77,8 @@ class EditBoostPivotTest:
         assert boost_cinema_details.username == "new_username"
         assert boost_cinema_details.password == "new_password"
         assert boost_cinema_details.cinemaUrl == "https://new-url.com/"
+        assert boost_cinema_details.token is None
+        assert boost_cinema_details.tokenExpirationDate is None
 
 
 class DeleteBoostPivotTest:
