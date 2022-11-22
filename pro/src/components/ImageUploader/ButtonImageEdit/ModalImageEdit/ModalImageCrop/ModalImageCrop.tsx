@@ -54,7 +54,7 @@ const ModalImageCrop = ({
   const { width: maxWidth } = getCropMaxDimension({
     originalDimensions: { width, height },
     /* istanbul ignore next */
-    orientation: mode === UploaderModeEnum.OFFER ? 'portrait' : 'landscape',
+    orientation: mode === UploaderModeEnum.VENUE ? 'landscape' : 'portrait',
   })
   const maxScale: number = Math.min(
     4,
@@ -63,14 +63,24 @@ const ModalImageCrop = ({
   )
   const title: string = {
     [UploaderModeEnum.OFFER]: 'Image de l’offre',
+    [UploaderModeEnum.OFFER_COLLECTIVE]: 'Image de l’offre',
     [UploaderModeEnum.VENUE]: 'Image du lieu',
   }[mode]
   const canvasHeight: number = {
     [UploaderModeEnum.OFFER]: 384,
+    [UploaderModeEnum.OFFER_COLLECTIVE]: 384,
     [UploaderModeEnum.VENUE]: 244,
   }[mode]
   const imageEditorConfig: IImageEditorConfig = {
     [UploaderModeEnum.OFFER]: {
+      canvasHeight,
+      canvasWidth: (canvasHeight * 6) / 9,
+      cropBorderColor: '#FFF',
+      cropBorderHeight: 50,
+      cropBorderWidth: 105,
+      maxScale,
+    },
+    [UploaderModeEnum.OFFER_COLLECTIVE]: {
       canvasHeight,
       canvasWidth: (canvasHeight * 6) / 9,
       cropBorderColor: '#FFF',

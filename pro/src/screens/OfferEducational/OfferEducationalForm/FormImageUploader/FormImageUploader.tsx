@@ -31,8 +31,7 @@ const FormImageUploader = ({
         onImageUpload={onImageUpload}
         onImageDelete={onImageDelete}
         initialValues={buildInitialValues(imageOffer)}
-        mode={UploaderModeEnum.OFFER}
-        showPreviewInModal={false}
+        mode={UploaderModeEnum.OFFER_COLLECTIVE}
       />
     </FormLayout.Row>
   </FormLayout.Section>

@@ -28,7 +28,6 @@ interface IModalImageEditProps {
   onDismiss: () => void
   onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
   initialValues?: IUploadImageValues
-  showPreviewInModal?: boolean
 }
 // FIXME: find a way to test FileReader
 /* istanbul ignore next: DEBT, TO FIX */
@@ -37,7 +36,6 @@ const ModalImageEdit = ({
   onDismiss,
   onImageUpload,
   initialValues = {},
-  showPreviewInModal = true,
 }: IModalImageEditProps): JSX.Element | null => {
   const [isReady, setIsReady] = useState<boolean>(false)
 
@@ -118,6 +116,8 @@ const ModalImageEdit = ({
     onDismiss()
     setIsUploading(false)
   }
+
+  const showPreviewInModal = mode !== UploaderModeEnum.OFFER_COLLECTIVE
 
   const onEditedImageSave = useCallback(
     (dataUrl: string, croppedRect: CroppedRect) => {
