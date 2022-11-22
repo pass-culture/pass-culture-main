@@ -343,7 +343,7 @@ class UpsertStocksTest:
             "price300": ["Le prix d’une offre ne peut excéder 300 euros."],
         }
 
-    def test_allow_price_above_300_euros_on_creation_for_individual_event_offers(self):
+    def test_does_not_allow_price_above_300_euros_on_creation_for_individual_event_offers(self):
         # Given
         user = users_factories.ProFactory()
         offer = factories.EventOfferFactory()
@@ -353,13 +353,15 @@ class UpsertStocksTest:
         )
 
         # When
-        api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
 
         # Then
-        created_stock = models.Stock.query.one()
-        assert created_stock.price == 301
+        assert error.value.errors == {
+            "price300": ["Le prix d’une offre ne peut excéder 300 euros."],
+        }
 
-    def test_allow_price_above_300_euros_on_edition_for_individual_event_offers(self):
+    def test_does_not_allow_price_above_300_euros_on_edition_for_individual_event_offers(self):
         # Given
         user = users_factories.ProFactory()
         existing_stock = factories.EventStockFactory(price=10, offer__bookingEmail="test@bookingEmail.fr")
@@ -369,10 +371,13 @@ class UpsertStocksTest:
         )
 
         # When
-        api.upsert_stocks(offer_id=existing_stock.offer.id, stock_data_list=[edited_stock_data], user=user)
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.upsert_stocks(offer_id=existing_stock.offer.id, stock_data_list=[edited_stock_data], user=user)
 
         # Then
-        assert existing_stock.price == 301
+        assert error.value.errors == {
+            "price300": ["Le prix d’une offre ne peut excéder 300 euros."],
+        }
 
     def test_cannot_edit_price_if_reimbursement_rule_exists(self):
         user = users_factories.AdminFactory()
