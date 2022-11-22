@@ -22,11 +22,13 @@ const ModalAppPreview = ({
   const title = {
     [UploaderModeEnum.VENUE]: 'Image du lieu',
     [UploaderModeEnum.OFFER]: 'Image de l’offre',
+    [UploaderModeEnum.OFFER_COLLECTIVE]: 'Image de l’offre',
   }[mode]
 
   const AppPreview = {
     [UploaderModeEnum.VENUE]: AppPreviewVenue,
     [UploaderModeEnum.OFFER]: AppPreviewOffer,
+    [UploaderModeEnum.OFFER_COLLECTIVE]: AppPreviewOffer,
   }[mode]
 
   return (
