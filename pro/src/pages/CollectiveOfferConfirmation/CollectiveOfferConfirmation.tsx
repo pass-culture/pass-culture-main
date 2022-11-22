@@ -12,9 +12,13 @@ const CollectiveOfferConfirmation = ({
   offer,
 }: CollectiveOfferConfirmationProps): JSX.Element => {
   const getInstitutionDisplayName = () => {
-    if (offer.isTemplate) return ''
+    if (offer.isTemplate) {
+      return ''
+    }
 
-    if (!offer.institution) return ''
+    if (!offer.institution) {
+      return ''
+    }
 
     return `${offer.institution.institutionType ?? ''} ${
       offer.institution.name ?? ''

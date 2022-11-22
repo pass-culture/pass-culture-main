@@ -501,7 +501,9 @@ const VenueEdition = () => {
 
   const pageSubtitle = initialIsVirtual ? getVirtualVenueName() : initialName
 
-  if (!venue) return null
+  if (!venue) {
+    return null
+  }
 
   return (
     <div className="venue-page">

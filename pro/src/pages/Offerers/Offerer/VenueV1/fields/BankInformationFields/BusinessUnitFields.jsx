@@ -109,8 +109,10 @@ const BankInformationWithBusinessUnit = ({
     venue.siret,
   ])
 
-  if (isLoading) return <Spinner />
-  if (!venue.isVirtual || !!businessUnitOptions.length)
+  if (isLoading) {
+    return <Spinner />
+  }
+  if (!venue.isVirtual || !!businessUnitOptions.length) {
     return (
       <div className="section vp-content-section bank-information">
         <div className="main-list-title title-actions-container">
@@ -198,6 +200,7 @@ const BankInformationWithBusinessUnit = ({
         </div>
       </div>
     )
+  }
   return null
 }
 

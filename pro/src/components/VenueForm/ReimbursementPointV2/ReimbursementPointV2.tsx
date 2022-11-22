@@ -115,7 +115,9 @@ const ReimbursementPointV2 = ({
     loadReimbursementPoints(offerer.nonHumanizedId)
   }, [isCreatingVenue, offerer.id, readOnly, venue])
   const { logEvent } = useAnalytics()
-  if (isLoading) return <Spinner />
+  if (isLoading) {
+    return <Spinner />
+  }
 
   return (
     <div className="section reimbursement-point-section">

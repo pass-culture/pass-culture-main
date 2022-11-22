@@ -36,7 +36,7 @@ const ActionBar = ({
   const backOfferUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
 
   const Left = (): JSX.Element => {
-    if (mode !== OFFER_WIZARD_MODE.EDITION)
+    if (mode !== OFFER_WIZARD_MODE.EDITION) {
       return (
         <>
           {step === OFFER_WIZARD_STEP_IDS.INFORMATIONS ? (
@@ -58,6 +58,7 @@ const ActionBar = ({
           )}
         </>
       )
+    }
     return (
       <>
         {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
@@ -85,7 +86,7 @@ const ActionBar = ({
   }
 
   const Right = (): JSX.Element | null => {
-    if (mode !== OFFER_WIZARD_MODE.EDITION)
+    if (mode !== OFFER_WIZARD_MODE.EDITION) {
       return (
         <>
           {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
@@ -121,6 +122,7 @@ const ActionBar = ({
           )}
         </>
       )
+    }
     return null
   }
 

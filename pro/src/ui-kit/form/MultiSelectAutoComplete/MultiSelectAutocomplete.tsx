@@ -62,8 +62,9 @@ const MultiSelectAutocomplete = ({
   }, [options])
 
   useEffect(() => {
-    if (!isOpen && searchField.value !== '')
+    if (!isOpen && searchField.value !== '') {
       setFieldValue(`search-${fieldName}`, '', false)
+    }
   }, [isOpen])
 
   useEffect(() => {

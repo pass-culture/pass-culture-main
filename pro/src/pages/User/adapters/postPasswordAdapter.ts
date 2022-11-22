@@ -20,12 +20,13 @@ const postPasswordAdapter: PostPasswordAdapter = async (
       payload: null,
     }
   } catch (error) {
-    if (error instanceof ApiError)
+    if (error instanceof ApiError) {
       return {
         isOk: false,
         message: 'Une erreur est présente dans le formulaire',
         payload: error.body,
       }
+    }
   }
   return {
     isOk: false,

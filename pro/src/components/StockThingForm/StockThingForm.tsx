@@ -17,7 +17,9 @@ const StockThingForm = ({
   readOnlyFields = [],
 }: IStockThingFormProps): JSX.Element => {
   const getMaximumBookingDatetime = (date: Date | undefined) => {
-    if (date == undefined) return undefined
+    if (date == undefined) {
+      return undefined
+    }
     const result = new Date(date)
     result.setDate(result.getDate() - 7)
     return result

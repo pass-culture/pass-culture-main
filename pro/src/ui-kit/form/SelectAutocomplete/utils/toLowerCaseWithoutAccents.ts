@@ -1,5 +1,7 @@
 export const toLowerCaseWithoutAccents = (value?: string): string => {
-  if (!value) return ''
+  if (!value) {
+    return ''
+  }
 
   return value
     .toLowerCase()

@@ -48,15 +48,17 @@ const OfferBreadcrumb = ({
   const isTemplateId = offerId.startsWith('T-')
   let steps: Step[] = []
 
-  if (activeStep == OfferBreadcrumbStep.CONFIRMATION && !isOfferEducational)
+  if (activeStep == OfferBreadcrumbStep.CONFIRMATION && !isOfferEducational) {
     return <></>
+  }
   if (
     !isCreatingOffer &&
     activeStep == OfferBreadcrumbStep.SUMMARY &&
     !isOfferEducational &&
     !isCompletingDraft
-  )
+  ) {
     return <></>
+  }
 
   if (!isCreatingOffer && !isCompletingDraft) {
     steps = [
@@ -111,7 +113,9 @@ const OfferBreadcrumb = ({
       },
     }
     let status = 'creation'
-    if (isCompletingDraft) status = 'brouillon'
+    if (isCompletingDraft) {
+      status = 'brouillon'
+    }
 
     if (offerId) {
       stepList[
@@ -133,7 +137,7 @@ const OfferBreadcrumb = ({
   }
 
   // Add firebase tracking only on individual offers
-  if (!isOfferEducational)
+  if (!isOfferEducational) {
     steps.map((step, index) => {
       steps[index].onClick = () => {
         logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
@@ -144,6 +148,7 @@ const OfferBreadcrumb = ({
         })
       }
     })
+  }
 
   return (
     <Breadcrumb

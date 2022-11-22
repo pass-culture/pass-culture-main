@@ -38,7 +38,9 @@ const CollectiveOfferCreationRoutes = ({
   )
 
   useEffect(() => {
-    if (!offerId) return
+    if (!offerId) {
+      return
+    }
 
     const loadCollectiveOffer = async (offerId: string) => {
       const response = await getCollectiveOfferAdapter(offerId)

@@ -26,7 +26,9 @@ const initializeEmptyValue = fieldName => (_value, allValues) => {
 }
 
 const setNoDisabilityCompliance = fieldName => (value, allValues) => {
-  if (value) return false
+  if (value) {
+    return false
+  }
   return allValues[fieldName]
 }
 
