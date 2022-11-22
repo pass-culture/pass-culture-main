@@ -461,7 +461,7 @@ export class DefaultService {
   }
 
   /**
-   * attach_offer_template_image <PATCH>
+   * attach_offer_template_image <POST>
    * @param offerId
    * @returns AttachImageResponseModel OK
    * @throws ApiError
@@ -470,7 +470,7 @@ export class DefaultService {
     offerId: string,
   ): CancelablePromise<AttachImageResponseModel> {
     return this.httpRequest.request({
-      method: 'PATCH',
+      method: 'POST',
       url: '/collective/offers-template/{offer_id}/image',
       path: {
         'offer_id': offerId,
@@ -669,7 +669,7 @@ export class DefaultService {
   }
 
   /**
-   * attach_offer_image <PATCH>
+   * attach_offer_image <POST>
    * @param offerId
    * @returns AttachImageResponseModel OK
    * @throws ApiError
@@ -678,7 +678,7 @@ export class DefaultService {
     offerId: string,
   ): CancelablePromise<AttachImageResponseModel> {
     return this.httpRequest.request({
-      method: 'PATCH',
+      method: 'POST',
       url: '/collective/offers/{offer_id}/image',
       path: {
         'offer_id': offerId,
