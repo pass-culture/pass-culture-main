@@ -348,11 +348,10 @@ def _cancel_collective_booking(
         db.session.refresh(collective_booking)
 
         try:
-            collective_booking.cancel_booking()
+            collective_booking.cancel_booking(reason)
         except (exceptions.CollectiveBookingAlreadyCancelled):
             return
 
-        collective_booking.cancellationReason = reason
         db.session.commit()
 
     logger.info(

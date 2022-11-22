@@ -744,7 +744,11 @@ class CollectiveBooking(PcObject, Base, Model):
         self.dateUsed = None
         self.status = CollectiveBookingStatus.CONFIRMED
 
-    def cancel_booking(self, cancel_even_if_used: bool = False) -> None:
+    def cancel_booking(
+        self,
+        reason: CollectiveBookingCancellationReasons,
+        cancel_even_if_used: bool = False,
+    ) -> None:
         from pcapi.core.educational import exceptions
 
         if self.status is CollectiveBookingStatus.CANCELLED:
@@ -755,6 +759,7 @@ class CollectiveBooking(PcObject, Base, Model):
             raise exceptions.CollectiveBookingIsAlreadyUsed
         self.status = CollectiveBookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
+        self.cancellationReason = reason
         self.dateUsed = None
 
     def uncancel_booking_set_used(self) -> None:
@@ -802,8 +807,7 @@ class CollectiveBooking(PcObject, Base, Model):
             raise exceptions.EducationalBookingNotRefusable()
 
         try:
-            self.cancel_booking()
-            self.cancellationReason = CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
+            self.cancel_booking(CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE)
         except exceptions.CollectiveBookingIsAlreadyUsed:
             raise exceptions.EducationalBookingNotRefusable()
 
