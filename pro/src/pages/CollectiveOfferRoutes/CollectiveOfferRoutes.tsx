@@ -6,14 +6,13 @@ import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational
 import CollectiveOfferCreationFromTemplateRoutes from './CollectiveOfferCreationFromTemplateRoutes/CollectiveOfferCreationFromTemplateRoutes'
 import CollectiveOfferCreationRoutes from './CollectiveOfferCreationRoutes'
 import CollectiveOfferEditionRoutes from './CollectiveOfferEditionRoutes'
-import CollectiveOfferTemplateEditionRoutes from './CollectiveOfferTemplateEditionRoutes'
 
 const CollectiveOfferRoutes = (): JSX.Element => {
   const { offerId: offerIdFromParams } = useParams<{
     offerId: string
   }>()
 
-  const { offerId, isShowcase } =
+  const { offerId, isTemplate } =
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
 
   const formattedOfferId = offerId !== 'creation' ? offerId : undefined
@@ -38,11 +37,10 @@ const CollectiveOfferRoutes = (): JSX.Element => {
           '/offre/:offerId/collectif/recapitulatif',
         ]}
       >
-        {isShowcase ? (
-          <CollectiveOfferTemplateEditionRoutes offerId={offerId} />
-        ) : (
-          <CollectiveOfferEditionRoutes offerId={offerId} />
-        )}
+        <CollectiveOfferEditionRoutes
+          offerId={offerId}
+          isTemplate={isTemplate}
+        />
       </Route>
       <Route
         path={[
@@ -59,7 +57,7 @@ const CollectiveOfferRoutes = (): JSX.Element => {
       >
         <CollectiveOfferCreationRoutes
           offerId={formattedOfferId}
-          isTemplate={isShowcase}
+          isTemplate={isTemplate}
         />
       </Route>
     </Switch>
