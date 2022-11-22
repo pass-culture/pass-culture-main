@@ -13,9 +13,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface CollectiveOfferSummaryCreationProps {
   offer: CollectiveOffer | CollectiveOfferTemplate
-  setOffer:
-    | ((offer: CollectiveOffer) => void)
-    | ((offer: CollectiveOfferTemplate) => void)
+  setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
 }
 
 const CollectiveOfferSummaryCreation = ({

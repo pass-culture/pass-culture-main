@@ -76,6 +76,7 @@ const CollectiveOfferCreationRoutes = (): JSX.Element => {
           {collectiveOffer ? (
             <CollectiveOfferSummaryCreation
               offer={collectiveOffer}
+              // @ts-ignore this file will be deleted when we will remove the duplication pages code
               setOffer={setCollectiveOffer}
             />
           ) : (
