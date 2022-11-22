@@ -177,7 +177,7 @@ WithoutActions.args = {
 
 export const CreateEvent = TemplateEvent.bind({})
 CreateEvent.args = {
-  Form: <StockEventForm today={today} />,
+  Form: <StockEventForm today={today} stockIndex={0} />,
   actions: [
     {
       callback: actionsCallBack('one'),

@@ -9,7 +9,10 @@ import StockEventForm, { IStockEventFormProps } from '../StockEventForm'
 
 const renderStockEventForm = (props: IStockEventFormProps) => {
   return render(
-    <Formik initialValues={STOCK_EVENT_FORM_DEFAULT_VALUES} onSubmit={() => {}}>
+    <Formik
+      initialValues={{ stocks: [STOCK_EVENT_FORM_DEFAULT_VALUES] }}
+      onSubmit={() => {}}
+    >
       <Form>
         <StockEventForm {...props} />
       </Form>
@@ -23,6 +26,7 @@ describe('StockEventForm', () => {
   beforeEach(() => {
     props = {
       today: new Date(),
+      stockIndex: 0,
     }
   })
 
