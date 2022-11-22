@@ -37,6 +37,7 @@ export interface IRouteLeavingGuardOfferIndividual {
   hasOfferBeenCreated: boolean
   isFormValid: boolean
   setIsSubmittingFromRouteLeavingGuard: (p: boolean) => void
+  tracking?: (p: string) => void
 }
 
 const RouteLeavingGuardOfferIndividual = ({
@@ -45,6 +46,7 @@ const RouteLeavingGuardOfferIndividual = ({
   hasOfferBeenCreated,
   isFormValid,
   setIsSubmittingFromRouteLeavingGuard,
+  tracking,
 }: IRouteLeavingGuardOfferIndividual): JSX.Element => {
   const routeLeavingGuardTypes = {
     // form dirty and mandatory fields not ok
@@ -129,6 +131,7 @@ const RouteLeavingGuardOfferIndividual = ({
       dialogTitle={routeLeavingGuardTypes[type].dialogTitle}
       leftButton={routeLeavingGuardTypes[type].leftButton}
       rightButton={routeLeavingGuardTypes[type].rightButton}
+      tracking={tracking}
     >
       <p>{routeLeavingGuardTypes[type].description}</p>
     </RouteLeavingGuard>
