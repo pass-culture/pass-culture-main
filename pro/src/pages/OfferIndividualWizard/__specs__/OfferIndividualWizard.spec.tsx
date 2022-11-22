@@ -439,7 +439,7 @@ describe('test OfferIndividualWisard', () => {
         `/offre/${offerId}/v3/individuelle/recapitulatif`
       )
       expect(
-        await screen.findByRole('heading', { name: /Modifier l’offre/ })
+        await screen.findByRole('heading', { name: /Récapitulatif/ })
       ).toBeInTheDocument()
 
       const tabInformations = screen.queryByText('Informations', {
