@@ -4,14 +4,15 @@ import {
   getEducationalCategoriesAdapter,
   EducationalCategories,
   CollectiveOffer,
+  CollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import useNotification from 'hooks/useNotification'
 import CollectiveOfferSummaryEditionScreen from 'screens/CollectiveOfferSummaryEdition'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface CollectiveOfferSummaryEditionProps {
-  offer: CollectiveOffer
-  reloadCollectiveOffer: () => void
+  offer: CollectiveOffer | CollectiveOfferTemplate
+  reloadCollectiveOffer?: () => void
 }
 
 const CollectiveOfferSummaryEdition = ({
@@ -38,7 +39,7 @@ const CollectiveOfferSummaryEdition = ({
     loadData()
   }, [])
 
-  const isReady = categories !== null
+  const isReady = offer !== null && categories !== null
 
   return !isReady ? (
     <Spinner />
