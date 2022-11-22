@@ -2,11 +2,19 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useLocation } from 'react-router-dom'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import { CollectiveOffer } from 'core/OfferEducational'
+import {
+  CollectiveOffer,
+  CollectiveOfferTemplate,
+  isCollectiveOffer,
+  isCollectiveOfferTemplate,
+} from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
+import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import CollectiveOfferEdition from 'pages/CollectiveOfferEdition'
 import CollectiveOfferStockEdition from 'pages/CollectiveOfferStockEdition'
 import CollectiveOfferSummaryEdition from 'pages/CollectiveOfferSummaryEdition'
+import CollectiveOfferTemplateStockEdition from 'pages/CollectiveOfferTemplateStockEdition'
 import CollectiveOfferVisibility from 'pages/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -14,16 +22,23 @@ import { getActiveStep } from '../utils/getActiveStep'
 
 interface CollectiveOfferEditionRoutesProps {
   offerId: string
+  isTemplate: boolean
 }
 
 const CollectiveOfferEditionRoutes = ({
   offerId,
+  isTemplate,
 }: CollectiveOfferEditionRoutesProps): JSX.Element => {
   const location = useLocation()
-  const [offer, setOffer] = useState<CollectiveOffer>()
+  const [offer, setOffer] = useState<
+    CollectiveOffer | CollectiveOfferTemplate
+  >()
 
   const loadCollectiveOffer = useCallback(async () => {
-    const response = await getCollectiveOfferAdapter(offerId)
+    const adapter = isTemplate
+      ? getCollectiveOfferTemplateAdapter
+      : getCollectiveOfferAdapter
+    const response = await adapter(offerId)
     if (response.isOk) {
       setOffer(response.payload)
     }
@@ -41,6 +56,7 @@ const CollectiveOfferEditionRoutes = ({
 
   return (
     <CollectiveOfferLayout
+      isTemplate={isTemplate}
       title={isSummaryPage ? 'Récapitulatif' : 'Éditer une offre collective'}
       subTitle={offer.name}
       breadCrumpProps={
@@ -48,7 +64,7 @@ const CollectiveOfferEditionRoutes = ({
           ? undefined
           : {
               activeStep: getActiveStep(location.pathname),
-              offerId,
+              offerId: computeURLCollectiveOfferId(offerId, isTemplate),
               isCreatingOffer: false,
             }
       }
@@ -60,24 +76,37 @@ const CollectiveOfferEditionRoutes = ({
             reloadCollectiveOffer={loadCollectiveOffer}
           />
         </Route>
-        <Route path="/offre/:offerId/collectif/stocks/edition">
-          <CollectiveOfferStockEdition
-            offer={offer}
-            reloadCollectiveOffer={loadCollectiveOffer}
-          />
-        </Route>
-        <Route path="/offre/:offerId/collectif/visibilite/edition">
-          <CollectiveOfferVisibility
-            offer={offer}
-            reloadCollectiveOffer={loadCollectiveOffer}
-          />
-        </Route>
         <Route path="/offre/:offerId/collectif/recapitulatif">
           <CollectiveOfferSummaryEdition
             offer={offer}
             reloadCollectiveOffer={loadCollectiveOffer}
           />
         </Route>
+        {!isTemplate && isCollectiveOffer(offer) && (
+          <>
+            <Route path="/offre/:offerId/collectif/stocks/edition">
+              <CollectiveOfferStockEdition
+                offer={offer}
+                reloadCollectiveOffer={loadCollectiveOffer}
+              />
+            </Route>
+            <Route path="/offre/:offerId/collectif/visibilite/edition">
+              <CollectiveOfferVisibility
+                offer={offer}
+                reloadCollectiveOffer={loadCollectiveOffer}
+              />
+            </Route>
+          </>
+        )}
+        {/* TODO delete this page when WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION feature is in prod */}
+        {isTemplate && isCollectiveOfferTemplate(offer) && (
+          <Route path="/offre/:offerId/collectif/stocks/edition">
+            <CollectiveOfferTemplateStockEdition
+              offer={offer}
+              reloadCollectiveOffer={loadCollectiveOffer}
+            />
+          </Route>
+        )}
       </Switch>
     </CollectiveOfferLayout>
   )
