@@ -3,18 +3,60 @@ import logging
 
 from dateutil.relativedelta import relativedelta
 
+from pcapi.core import mails
 import pcapi.core.fraud.models as fraud_models
-import pcapi.core.users.api as users_api
+import pcapi.core.mails.models as mails_models
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
 import pcapi.core.subscription.ubble.api as ubble_subscription
+import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
+
+from . import constants
 
 
 logger = logging.getLogger(__name__)
 
 
-def find_users_that_failed_ubble_check(days_ago: int = 7) -> list[users_models.User]:
+def send_ubble_ko_reminder_emails() -> None:
+    users = find_users_that_failed_ubble_check_seven_days_ago()
+    users_by_reason_codes = sort_users_by_reason_codes(users)
+
+    result = {}
+
+    for reason_code, users in users_by_reason_codes.items():
+        data = get_ubble_ko_reminder_email_data(reason_code)
+        if not data:
+            if reason_code == fraud_models.FraudReasonCode.NO_REASON_CODE:
+                logger.warning(
+                    "Could not find reason code for users that failed ubble check",
+                    extra={"users": [user.id for user in users]},
+                )
+            else:
+                logger.warning("Could not find email template for reason code %s", reason_code)
+            continue
+
+        result[reason_code] = mails.send(recipients=[user.email for user in users], data=data)
+
+    if all(result.values()):
+        logger.info("Sent all ubble ko reminder emails successfully", extra={"result": result})
+    else:
+        logger.info("Could not send some ubble ko reminder emails", extra={"result": result})
+
+
+def get_ubble_ko_reminder_email_data(code: str) -> mails_models.TransactionalEmailData | None:
+    mapping = constants.ubble_error_to_email_mapping.get(code)
+    if not mapping:
+        return None
+
+    template = mapping.reminder_template
+    if not template:
+        return None
+
+    return mails_models.TransactionalEmailData(template=template.value)
+
+
+def find_users_that_failed_ubble_check_seven_days_ago(days_ago: int = 7) -> list[users_models.User]:
     users = (
         users_models.User.query.join(users_models.User.beneficiaryFraudChecks)
         .filter(
@@ -40,7 +82,7 @@ def find_users_that_failed_ubble_check(days_ago: int = 7) -> list[users_models.U
 
 
 def sort_users_by_reason_codes(users: list[users_models.User]) -> dict[str, list[users_models.User]]:
-    users_by_reason_codes = {}
+    users_by_reason_codes: dict[str, list[users_models.User]] = {}
     for user in users:
         latest_failed_ubble_check = next(
             (
