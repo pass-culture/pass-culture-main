@@ -58,7 +58,10 @@ class CheckPricesForStockTest:
         offer = offers_factories.EventOfferFactory()
         validation.check_stock_price(0, offer)
         validation.check_stock_price(1.5, offer)
-        validation.check_stock_price(310.5, offer)
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_stock_price(310.5, offer)
+        assert error.value.errors["price300"] == ["Le prix d’une offre ne peut excéder 300 euros."]
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_price(-1.5, offer)
