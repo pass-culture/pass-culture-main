@@ -70,7 +70,7 @@ describe('offersSearch component', () => {
       await waitFor(() =>
         expect(
           screen.getByLabelText(
-            'Uniquement les acteurs qui se déplacent dans mon établissement : COLLEGE BELLEVUE - ALES ( 30 )'
+            'Uniquement les acteurs qui se déplacent dans mon établissement : COLLEGE BELLEVUE - ALES (30)'
           )
         ).toBeInTheDocument()
       )

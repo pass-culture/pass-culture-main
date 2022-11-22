@@ -27,7 +27,7 @@ const getCheckboxLabel = (user: AuthenticatedResponse) => {
     user.institutionName &&
     user.institutionCity &&
     user.departmentCode &&
-    `${user.institutionName} - ${user.institutionCity} ( ${user.departmentCode} )`
+    `${user.institutionName} - ${user.institutionCity} (${user.departmentCode})`
 
   if (!userInformation) {
     return ''
