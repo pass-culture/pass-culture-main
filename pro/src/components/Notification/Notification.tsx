@@ -51,13 +51,12 @@ const Notification = (): JSX.Element | null => {
 
   const { text, type } = notification
   let iconComponent = <SuccessIcon />
+  /* istanbul ignore next: DEBT, TO FIX */
   if (type === 'error') {
     iconComponent = <ErrorIcon />
   } else if (type === 'pending') {
-    /* istanbul ignore next: DEBT, TO FIX */
     iconComponent = <PendingIcon />
   } else if (type === 'information') {
-    /* istanbul ignore next: DEBT, TO FIX */
     iconComponent = <InfoIcon />
   }
   if (isInDom) {
@@ -68,9 +67,14 @@ const Notification = (): JSX.Element | null => {
           /* istanbul ignore next */
           cn(
             styles['notification'],
-            styles[`is-${type || 'success'}`],
-            isVisible ? styles['show'] : styles['hide'],
-            isStickyBarOpen && styles['with-sticky-action-bar']
+            /* istanbul ignore next: DEBT, TO FIX */ styles[
+              `is-${type || 'success'}`
+            ],
+            /* istanbul ignore next: DEBT, TO FIX */ isVisible
+              ? styles['show']
+              : styles['hide'],
+            /* istanbul ignore next: DEBT, TO FIX */ isStickyBarOpen &&
+              styles['with-sticky-action-bar']
           )
         }
       >
