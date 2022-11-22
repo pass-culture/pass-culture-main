@@ -35,7 +35,7 @@ const renderStockEventForm = ({
   minQuantity?: number | null
   onSubmit?: () => void
 } = {}) => {
-  const props: IStockEventFormProps = { today, fieldPrefix: 'stocks[0]' }
+  const props: IStockEventFormProps = { today, stockIndex: 0 }
   return render(
     <Formik
       initialValues={{
@@ -117,7 +117,7 @@ describe('StockEventForm:validationSchema', () => {
     },
   ]
   it.each(dataSetPriceErrors)(
-    'should display price error',
+    'should display price error %s',
     async ({ price, error }) => {
       renderStockEventForm()
 

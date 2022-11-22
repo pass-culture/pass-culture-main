@@ -7,7 +7,7 @@ interface IBaseInputProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   className?: string
   hasError?: boolean
-  rightIcon?: () => JSX.Element
+  rightIcon?: () => JSX.Element | null
   rightButton?: () => JSX.Element
 }
 
