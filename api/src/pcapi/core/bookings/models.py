@@ -183,6 +183,7 @@ class Booking(PcObject, Base, Model):
             raise exceptions.BookingIsAlreadyUsed()
         self.status = BookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
+        self.dateUsed = None
 
     def uncancel_booking_set_used(self) -> None:
         if not (self.status is BookingStatus.CANCELLED):
