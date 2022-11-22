@@ -72,7 +72,9 @@ const Summary = (
   const publishOffer = () => {
     // edition mode offers are already publish
     /* istanbul ignore next: DEBT, TO FIX */
-    if (mode === OFFER_WIZARD_MODE.EDITION) return
+    if (mode === OFFER_WIZARD_MODE.EDITION) {
+      return
+    }
     setIsDisabled(true)
     api
       // @ts-expect-error: type string is not assignable to type number

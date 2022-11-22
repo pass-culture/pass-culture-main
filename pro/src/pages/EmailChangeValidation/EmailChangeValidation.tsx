@@ -29,7 +29,9 @@ const EmailChangeValidation = (): JSX.Element => {
       .catch(() => setIsSuccess(false))
   }, [])
 
-  if (isSuccess === undefined) return <></>
+  if (isSuccess === undefined) {
+    return <></>
+  }
   return <EmailChangeValidationScreen isSuccess={isSuccess} />
 }
 

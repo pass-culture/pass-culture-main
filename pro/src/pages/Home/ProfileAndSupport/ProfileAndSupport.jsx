@@ -31,12 +31,16 @@ export const formatPhoneNumber = phoneNumber => {
 
     let isReginalNumber, isInternationalNumber
 
-    if (!parts.length === 3) return phoneNumber
+    if (!parts.length === 3) {
+      return phoneNumber
+    }
 
     const [internationalPrefix, areaPrefix, number] = parts
     isReginalNumber = internationalPrefix === '0'
     isInternationalNumber = /\+[0-9]+/.test(internationalPrefix)
-    if (!(isReginalNumber || isInternationalNumber)) return phoneNumber
+    if (!(isReginalNumber || isInternationalNumber)) {
+      return phoneNumber
+    }
 
     let prefix = internationalPrefix + areaPrefix
     if (isInternationalNumber) {

@@ -36,10 +36,11 @@ const Breadcrumb = ({
   className = isDisabled ? `${className} ${styles['bc-disabled']}` : className
   const lastStepIndex = steps.length - 1
 
-  if (styleType === BreadcrumbStyle.STEPPER)
+  if (styleType === BreadcrumbStyle.STEPPER) {
     return (
       <Stepper activeStep={activeStep} steps={steps} className={className} />
     )
+  }
 
   return (
     <ul

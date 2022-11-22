@@ -62,11 +62,15 @@ const ReimbursementsDetails = ({
 
   useEffect(() => {
     const params: ICsvQueryParams = {}
-    if (periodStart)
+    if (periodStart) {
       params.reimbursementPeriodBeginningDate = dateFilterFormat(periodStart)
-    if (periodEnd)
+    }
+    if (periodEnd) {
       params.reimbursementPeriodEndingDate = dateFilterFormat(periodEnd)
-    if (venue && venue !== ALL_VENUES_OPTION_ID) params.venueId = venue
+    }
+    if (venue && venue !== ALL_VENUES_OPTION_ID) {
+      params.venueId = venue
+    }
     setCsvQueryParams(stringify(params))
   }, [periodEnd, periodStart, venue])
 

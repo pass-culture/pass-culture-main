@@ -112,8 +112,9 @@ const OfferDetails = ({
       queryString += `&lieu=${formInitialValues.venueId}`
     }
     let url = `/offre/${offerId}/individuel/creation/stocks${queryString}`
-    if (isCompletingDraft)
+    if (isCompletingDraft) {
       url = `/offre/${offerId}/individuel/brouillon/stocks${queryString}`
+    }
     history.push(url)
   }
 

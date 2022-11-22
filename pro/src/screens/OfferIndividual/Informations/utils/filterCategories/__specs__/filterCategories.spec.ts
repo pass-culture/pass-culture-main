@@ -167,7 +167,9 @@ describe('filterCategories', () => {
   })
 
   it('should return ONLINE categories and subCategories when venue is virtual', () => {
-    if (venue) venue.isVirtual = true
+    if (venue) {
+      venue.isVirtual = true
+    }
 
     const [filteredCategories, filteredSubCategories] = filterCategories(
       categories,
@@ -187,7 +189,9 @@ describe('filterCategories', () => {
   })
 
   it('should return OFFLINE categories and subCategories when venue is physical', () => {
-    if (venue) venue.isVirtual = false
+    if (venue) {
+      venue.isVirtual = false
+    }
 
     const [filteredCategories, filteredSubCategories] = filterCategories(
       categories,

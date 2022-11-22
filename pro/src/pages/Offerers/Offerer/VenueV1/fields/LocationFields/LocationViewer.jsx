@@ -164,7 +164,9 @@ class LocationViewer extends PureComponent {
   handleOnSuggestionSelect = (address, location) => {
     const { onSuggestionSelect: onSuggestionSelectFromProps, zoom } = this.props
     const { latitude, longitude, placeholder } = location
-    if (placeholder) return
+    if (placeholder) {
+      return
+    }
     this.setState({
       inputValue: address,
       position: {
@@ -285,7 +287,9 @@ class LocationViewer extends PureComponent {
     const { readOnly, withMap } = this.props
     const { marker, position } = this.state
 
-    if (!withMap) return this.renderInput()
+    if (!withMap) {
+      return this.renderInput()
+    }
     const { latitude, longitude, zoom } = position
     return (
       <div className="location-viewer">

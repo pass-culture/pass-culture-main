@@ -75,11 +75,18 @@ const renderOfferCreation = async ({
   venueId = null,
 }) => {
   let queryParams = null
-  if (offererId || venueId) queryParams = {}
-  if (offererId) queryParams.structure = offererId
-  if (venueId) queryParams.lieu = venueId
-  if (queryParams !== null)
+  if (offererId || venueId) {
+    queryParams = {}
+  }
+  if (offererId) {
+    queryParams.structure = offererId
+  }
+  if (venueId) {
+    queryParams.lieu = venueId
+  }
+  if (queryParams !== null) {
     queryParams = new URLSearchParams(queryParams).toString()
+  }
 
   const rtlRenderReturn = await renderOffer(
     props,

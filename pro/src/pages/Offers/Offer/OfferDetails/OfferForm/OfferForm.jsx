@@ -382,7 +382,9 @@ const OfferForm = ({
 
   useEffect(
     function setVenueValues() {
-      if (venue === null) return
+      if (venue === null) {
+        return
+      }
 
       if (
         venue.withdrawalDetails &&
@@ -574,11 +576,13 @@ const OfferForm = ({
         }
       } else {
         redirectToError()
-        if (isSavingDraft)
+        if (isSavingDraft) {
           notification.error(
             'Des informations sont nécessaires pour sauvegarder le brouillon'
           )
-        else showErrorNotification()
+        } else {
+          showErrorNotification()
+        }
       }
       setIsSubmitLoading(false)
     },

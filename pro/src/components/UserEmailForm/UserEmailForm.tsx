@@ -29,8 +29,9 @@ const UserEmailForm = ({
         getPendingEmailRequest()
         closeForm()
       } else {
-        for (const field in response.payload)
+        for (const field in response.payload) {
           formik.setFieldError(field, response.payload[field])
+        }
       }
     })
     formik.setSubmitting(false)

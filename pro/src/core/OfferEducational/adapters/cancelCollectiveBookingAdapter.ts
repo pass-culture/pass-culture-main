@@ -13,8 +13,9 @@ export const cancelCollectiveBookingAdapter: cancelCollectiveBookingAdapter =
   async ({ offerId }) => {
     try {
       // the api returns no understandable error when the id is not valid, so we deal before calling the api
-      if (!offerId || offerId === '')
+      if (!offerId || offerId === '') {
         throw new Error('L’identifiant de l’offre n’est pas valide.')
+      }
       await api.cancelCollectiveOfferBooking(offerId)
       return {
         isOk: true,

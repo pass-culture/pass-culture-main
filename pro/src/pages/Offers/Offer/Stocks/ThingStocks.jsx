@@ -162,14 +162,21 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
 
   const submitDraft = e => {
     const isRowEmpty = stock => {
-      if (!stock) return true
+      if (!stock) {
+        return true
+      }
 
       const { price, quantity, bookingLimitDatetime } = stock
-      if (price === '' && !quantity && !bookingLimitDatetime) return true
+      if (price === '' && !quantity && !bookingLimitDatetime) {
+        return true
+      }
       return false
     }
-    if (!isRowEmpty(stock)) submitStocks(e, true)
-    else notification.success('Brouillon sauvegardé dans la liste des offres')
+    if (!isRowEmpty(stock)) {
+      submitStocks(e, true)
+    } else {
+      notification.success('Brouillon sauvegardé dans la liste des offres')
+    }
   }
 
   const submitStocks = useCallback(
@@ -224,10 +231,11 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
                 isDraft: true,
                 offerId: offer.id,
               })
-              if (isDraftEnabled)
+              if (isDraftEnabled) {
                 notification.success(
                   'Brouillon sauvegardé dans la liste des offres'
                 )
+              }
             } else {
               logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                 from: OfferBreadcrumbStep.STOCKS,
@@ -253,7 +261,9 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
                 )
               }
             }
-            if (!isSavingDraft) history.push(`${summaryStepUrl}${queryString}`)
+            if (!isSavingDraft) {
+              history.push(`${summaryStepUrl}${queryString}`)
+            }
           })
           .catch(() =>
             notification.error(

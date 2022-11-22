@@ -100,8 +100,9 @@ const RouteLeavingGuardOfferIndividualV2 = ({
 
   let description =
     'Votre offre ne sera pas sauvegardée et toutes les informations seront perdues.'
-  if (isDraftEnabled)
+  if (isDraftEnabled) {
     description = 'Les informations non enregistrées seront perdues.'
+  }
   return (
     <RouteLeavingGuard
       shouldBlockNavigation={shouldBlockNavigation}

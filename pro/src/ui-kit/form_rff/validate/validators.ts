@@ -1,7 +1,9 @@
 import { removeWhitespaces } from 'utils/string'
 
 export const parsePostalCode = (value: string | undefined): string | void => {
-  if (!value) return value
+  if (!value) {
+    return value
+  }
   return removeWhitespaces(value)
     .replace(/[^[0-9]/g, '')
     .substring(0, 5)

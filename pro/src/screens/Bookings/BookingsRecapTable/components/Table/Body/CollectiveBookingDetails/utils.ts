@@ -19,7 +19,9 @@ export const getLocalBeginningDatetime = (
   beginningDatetime: string,
   venuePostalCode: string | null | undefined
 ): string => {
-  if (!venuePostalCode) return ''
+  if (!venuePostalCode) {
+    return ''
+  }
 
   const departmentCode = extractDepartmentCode(venuePostalCode)
   const stockBeginningDate = new Date(beginningDatetime)

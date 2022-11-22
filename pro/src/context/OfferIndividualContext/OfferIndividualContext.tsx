@@ -118,7 +118,9 @@ export function OfferIndividualContextProvider({
     ;(!offerId || offer !== null) && loadData()
   }, [offerId, offerOfferer])
 
-  if (isLoading === true) return <Spinner />
+  if (isLoading === true) {
+    return <Spinner />
+  }
 
   return (
     <OfferIndividualContext.Provider

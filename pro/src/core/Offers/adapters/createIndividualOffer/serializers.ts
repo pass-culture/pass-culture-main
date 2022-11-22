@@ -9,17 +9,36 @@ export const serializeExtraData = (
   formValues: IOfferIndividualFormValues
 ): IOfferExtraData => {
   const extraData: IOfferExtraData = {}
-  if (formValues.author) extraData.author = formValues.author
-  if (formValues.isbn) extraData.isbn = formValues.isbn
-  if (formValues.musicType) extraData.musicType = formValues.musicType
-  if (formValues.musicSubType) extraData.musicSubType = formValues.musicSubType
-  if (formValues.performer) extraData.performer = formValues.performer
-  if (formValues.showType) extraData.showType = formValues.showType
-  if (formValues.showSubType) extraData.showSubType = formValues.showSubType
-  if (formValues.speaker) extraData.speaker = formValues.speaker
-  if (formValues.stageDirector)
+  if (formValues.author) {
+    extraData.author = formValues.author
+  }
+  if (formValues.isbn) {
+    extraData.isbn = formValues.isbn
+  }
+  if (formValues.musicType) {
+    extraData.musicType = formValues.musicType
+  }
+  if (formValues.musicSubType) {
+    extraData.musicSubType = formValues.musicSubType
+  }
+  if (formValues.performer) {
+    extraData.performer = formValues.performer
+  }
+  if (formValues.showType) {
+    extraData.showType = formValues.showType
+  }
+  if (formValues.showSubType) {
+    extraData.showSubType = formValues.showSubType
+  }
+  if (formValues.speaker) {
+    extraData.speaker = formValues.speaker
+  }
+  if (formValues.stageDirector) {
     extraData.stageDirector = formValues.stageDirector
-  if (formValues.visa) extraData.visa = formValues.visa
+  }
+  if (formValues.visa) {
+    extraData.visa = formValues.visa
+  }
 
   return extraData
 }

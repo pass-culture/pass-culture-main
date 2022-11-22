@@ -68,8 +68,9 @@ const SelectAutocomplete = ({
   }, [options])
 
   useEffect(() => {
-    if (isOpen && resetOnOpen && searchField.value !== '')
+    if (isOpen && resetOnOpen && searchField.value !== '') {
       setFieldValue(`search-${fieldName}`, '', false)
+    }
   }, [isOpen])
 
   /* hashtable for the options */
@@ -118,7 +119,9 @@ const SelectAutocomplete = ({
             setHoveredOptionIndex(hoveredOptionIndex - 1)
           }
         }
-        if (!isOpen) setIsOpen(true)
+        if (!isOpen) {
+          setIsOpen(true)
+        }
         listRef.current?.focus()
         break
       case 'ArrowDown':
@@ -129,7 +132,9 @@ const SelectAutocomplete = ({
         } else {
           setHoveredOptionIndex(hoveredOptionIndex + 1)
         }
-        if (!isOpen) setIsOpen(true)
+        if (!isOpen) {
+          setIsOpen(true)
+        }
         listRef.current?.focus()
         break
       case 'Space':
@@ -179,7 +184,9 @@ const SelectAutocomplete = ({
 
   const openField = () => {
     /* istanbul ignore next */
-    if (!isOpen) setIsOpen(true)
+    if (!isOpen) {
+      setIsOpen(true)
+    }
     setFieldTouched(fieldName, true)
   }
 

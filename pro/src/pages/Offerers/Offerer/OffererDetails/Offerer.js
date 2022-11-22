@@ -23,7 +23,9 @@ export class Offerer {
 }
 
 const formatSiren = siren => {
-  if (!siren) return ''
+  if (!siren) {
+    return ''
+  }
 
   const blocks = []
   for (let i = 0; i < siren.length; i += 3) {
