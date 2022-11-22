@@ -115,10 +115,11 @@ def get_users_with_validated_attachment_by_offerer(offerer: offerers_models.Offe
     )
 
 
-def get_users_with_attachment_by_offerer(offerer: offerers_models.Offerer) -> list[models.User]:
+def get_users_with_validated_attachment(offerer: offerers_models.Offerer) -> list[models.User]:
     return (
         models.User.query.join(offerers_models.UserOfferer)
-        .filter(offerers_models.UserOfferer.offererId == offerer.id)
+        .filter(offerers_models.UserOfferer.offererId == offerer.id, offerers_models.UserOfferer.isValidated == True)
+        .order_by(offerers_models.UserOfferer.id)
         .all()
     )
 

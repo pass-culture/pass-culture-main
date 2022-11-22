@@ -658,10 +658,8 @@ def reject_offerer(offerer_id: int, author_user: users_models.User, comment: str
     if offerer.isRejected:
         raise exceptions.OffererAlreadyRejectedException()
 
-    # A first applicant created the offerer and attachment is automatically validated.
-    # But another applicant may signup and register the same offerer, this other user attachment must be validated later
-    applicants = users_repository.get_users_with_attachment_by_offerer(offerer)
-    first_applicant = sorted(applicants, key=lambda uo: bool(uo.isValidated), reverse=True)[0] if applicants else None
+    applicants = users_repository.get_users_with_validated_attachment(offerer)
+    first_user_to_register_offerer = applicants[0] if applicants else None
 
     was_validated = offerer.isValidated
     offerer.validationStatus = models.ValidationStatus.REJECTED
@@ -672,7 +670,7 @@ def reject_offerer(offerer_id: int, author_user: users_models.User, comment: str
             history_models.ActionType.OFFERER_REJECTED,
             author_user,
             offerer=offerer,
-            user=first_applicant,
+            user=first_user_to_register_offerer,
             comment=comment,
             save=False,
         )
