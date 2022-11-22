@@ -174,7 +174,11 @@ class Booking(PcObject, Base, Model):
         self.dateUsed = None
         self.status = BookingStatus.CONFIRMED
 
-    def cancel_booking(self, cancel_even_if_used: bool = False) -> None:
+    def cancel_booking(
+        self,
+        reason: BookingCancellationReasons,
+        cancel_even_if_used: bool = False,
+    ) -> None:
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsAlreadyCancelled()
         if self.status is BookingStatus.REIMBURSED:
@@ -183,6 +187,7 @@ class Booking(PcObject, Base, Model):
             raise exceptions.BookingIsAlreadyUsed()
         self.status = BookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
+        self.cancellationReason = reason
         self.dateUsed = None
 
     def uncancel_booking_set_used(self) -> None:

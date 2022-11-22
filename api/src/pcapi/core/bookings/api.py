@@ -204,7 +204,7 @@ def _cancel_booking(
         db.session.refresh(booking)
         old_status = booking.status
         try:
-            booking.cancel_booking(cancel_even_if_used)
+            booking.cancel_booking(reason, cancel_even_if_used)
             _cancel_external_booking(booking, stock)
         except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
             if raise_if_error:
@@ -221,7 +221,6 @@ def _cancel_booking(
             return False
         if old_status is BookingStatus.USED:
             finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
-        booking.cancellationReason = reason
         stock.dnBookedQuantity -= booking.quantity
         repository.save(booking, stock)
 
