@@ -103,10 +103,11 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     minQuantity = offer.stocks[0].bookingsQuantity
   }
   const initialValues = buildInitialValues(offer)
-  const { ...formik } = useFormik<{ stocks: IStockEventFormValues[] }>({
+  const formik = useFormik<{ stocks: IStockEventFormValues[] }>({
     initialValues,
     onSubmit,
     validationSchema: getValidationSchema(minQuantity),
+    enableReinitialize: true,
   })
 
   const handleNextStep = () => {
@@ -132,8 +133,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const handleSaveDraft = () => {
     setIsClickingFromActionBar(true)
     /* istanbul ignore next: DEBT, TO FIX */
-    formik.handleSubmit()
-    /* istanbul ignore next: DEBT, TO FIX */
     setAfterSubmitUrl(
       getOfferIndividualUrl({
         offerId: offer.id,
@@ -141,6 +140,8 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         mode,
       })
     )
+    /* istanbul ignore next: DEBT, TO FIX */
+    formik.handleSubmit()
   }
 
   return (

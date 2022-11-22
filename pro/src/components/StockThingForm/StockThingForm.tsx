@@ -1,6 +1,7 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
+import { IconEuroGrey } from 'icons'
 import { DatePicker, TextInput } from 'ui-kit'
 
 import styles from './StockThingForm.module.scss'
@@ -37,6 +38,7 @@ const StockThingForm = ({
         placeholder="Ex: 20€"
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('price')}
+        rightIcon={values.price.length > 0 ? () => <IconEuroGrey /> : undefined}
       />
       <DatePicker
         smallLabel

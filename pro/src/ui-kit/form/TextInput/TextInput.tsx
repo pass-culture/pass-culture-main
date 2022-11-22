@@ -21,6 +21,7 @@ interface ITextInputProps
   isOptional?: boolean
   smallLabel?: boolean
   rightButton?: () => JSX.Element
+  rightIcon?: () => JSX.Element
   step?: number | string
   inline?: boolean
   refForInput?: ForwardedRef<HTMLInputElement>
@@ -42,6 +43,7 @@ const TextInput = ({
   isOptional = false,
   refForInput,
   rightButton,
+  rightIcon,
   step,
   inline = false,
   ...props
@@ -85,6 +87,7 @@ const TextInput = ({
           type={type}
           rightButton={rightButton}
           ref={refForInput}
+          rightIcon={rightIcon}
           {...field}
           {...props}
         />
