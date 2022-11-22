@@ -17,7 +17,9 @@ const ImagePreview = ({ imageUrl, alt, mode }: IImagePreviewProps) => (
     alt={alt}
     className={cn(style['image-preview'], {
       [style['preview-venue']]: mode === UploaderModeEnum.VENUE,
-      [style['preview-offer']]: mode === UploaderModeEnum.OFFER,
+      [style['preview-offer']]:
+        mode === UploaderModeEnum.OFFER ||
+        mode === UploaderModeEnum.OFFER_COLLECTIVE,
     })}
     src={imageUrl}
   />
