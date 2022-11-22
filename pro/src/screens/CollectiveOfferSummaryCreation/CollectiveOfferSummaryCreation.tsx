@@ -22,9 +22,7 @@ import styles from './CollectiveOfferSummaryCreation.module.scss'
 interface CollectiveOfferSummaryCreationProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
   categories: EducationalCategories
-  setOffer:
-    | ((offer: CollectiveOffer) => void)
-    | ((offer: CollectiveOfferTemplate) => void)
+  setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
 }
 
 const CollectiveOfferSummaryCreation = ({
@@ -52,8 +50,7 @@ const CollectiveOfferSummaryCreation = ({
       if (!response.isOk) {
         return notify.error(response.message)
       }
-      const typedSetOffer = setOffer as (offer: CollectiveOfferTemplate) => void
-      typedSetOffer(response.payload)
+      setOffer(response.payload)
       return history.push(confirmationUrl)
     }
 
@@ -61,8 +58,7 @@ const CollectiveOfferSummaryCreation = ({
     if (!response.isOk) {
       return notify.error(response.message)
     }
-    const typedSetOffer = setOffer as (offer: CollectiveOffer) => void
-    typedSetOffer(response.payload)
+    setOffer(response.payload)
     return history.push(confirmationUrl)
   }
   const backRedirectionUrl = offer.isTemplate
