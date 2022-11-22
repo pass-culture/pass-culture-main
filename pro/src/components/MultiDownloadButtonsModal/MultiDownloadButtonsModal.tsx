@@ -39,7 +39,7 @@ const MultiDownloadButtonsModal = ({
   })
 
   return (
-    <div ref={containerRef}>
+    <div ref={containerRef} className={style['download-button-box']}>
       <div className={style['downloadModalButton']}>
         <button
           className="primary-button"

@@ -22,7 +22,7 @@ import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
 import FilterByEventDate from './FilterByEventDate'
 import FilterByVenue from './FilterByVenue'
-
+import styles from './PreFilters.module.scss'
 export interface IPreFiltersProps {
   appliedPreFilters: TPreFilters
   applyPreFilters: (filters: TPreFilters) => void
@@ -215,8 +215,8 @@ const PreFilters = ({
           </Button>
         </div>
         <div className="button-group">
-          <span className="button-group-separator" />
           <div className="button-group-buttons">
+            <span className="button-group-separator" />
             {isCsvMultiDownloadFiltersActive ? (
               <MultiDownloadButtonsModal
                 downloadFunction={downloadBookingsCSV}
@@ -240,6 +240,7 @@ const PreFilters = ({
               </button>
             )}
             <Button
+              className={styles['show-button']}
               disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
               variant={ButtonVariant.SECONDARY}
               onClick={() => {
