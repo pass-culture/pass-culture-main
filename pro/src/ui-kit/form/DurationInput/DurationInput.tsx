@@ -1,10 +1,8 @@
-import cn from 'classnames'
 import { useField } from 'formik'
 import React from 'react'
 
 import TextInput from '../TextInput'
 
-import styles from './DurationInput.module.scss'
 import { parseMinutesToHours } from './utils/parseMinutesToHours'
 
 export interface IDurationInputProps {
@@ -46,7 +44,7 @@ const DurationInput = ({
       label={label}
       onChange={onDurationChange}
       onBlur={onDurationBlur}
-      className={cn(styles['small'], className)}
+      className={className}
       isOptional={isOptional}
       placeholder="HH:MM"
       {...props}
