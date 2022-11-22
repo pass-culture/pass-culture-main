@@ -150,7 +150,7 @@ const Summary = (
         isDisabledOffer ||
         providerName !== null) && (
         <div className={styles['offer-preview-banners']}>
-          {mode !== OFFER_WIZARD_MODE.EDITION && <BannerSummary />}
+          {mode !== OFFER_WIZARD_MODE.EDITION && <BannerSummary mode={mode} />}
           {
             /* istanbul ignore next: DEBT, TO FIX */
             isDisabledOffer && (
