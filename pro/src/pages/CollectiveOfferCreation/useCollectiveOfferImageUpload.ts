@@ -36,7 +36,7 @@ export const useCollectiveOfferImageUpload = (
   const handleImageOnSubmit = useCallback(
     async (offerId: string) => {
       // Image field is empty
-      if (imageToUpload === null) {
+      if (imageOffer === null) {
         // Delete image if one was present before
         if (offer?.imageUrl === undefined || offer?.imageUrl === null) {
           return
@@ -51,6 +51,12 @@ export const useCollectiveOfferImageUpload = (
           notify.error(message)
         }
 
+        return
+      }
+
+      // If imageOffer is not empty and imageToUpload is null
+      // it means that the image was not changed
+      if (imageToUpload === null) {
         return
       }
 
@@ -73,7 +79,7 @@ export const useCollectiveOfferImageUpload = (
         credit: imageToUpload?.credit,
       })
     },
-    [imageToUpload]
+    [imageOffer, imageToUpload]
   )
 
   return {
