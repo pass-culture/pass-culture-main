@@ -1,20 +1,21 @@
 from pcapi.core import mails
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 
+from .ubble import constants
 
-def send_subscription_document_error_email(email: str, code: str) -> bool:
+
+def send_subscription_document_error_email(email: str, code: fraud_models.FraudReasonCode) -> bool:
     data = get_subscription_document_error_email_data(code)
     return mails.send(recipients=[email], data=data)
 
 
-def get_subscription_document_error_email_data(code: str) -> models.TransactionalEmailData:
-    error_codes_switch = {
-        "information-error": TransactionalEmail.SUBSCRIPTION_INFORMATION_ERROR,
-        "unread-document": TransactionalEmail.SUBSCRIPTION_UNREADABLE_DOCUMENT_ERROR,
-        "invalid-document": TransactionalEmail.SUBSCRIPTION_INVALID_DOCUMENT_ERROR,
-        "unread-mrz-document": TransactionalEmail.SUBSCRIPTION_FOREIGN_DOCUMENT_ERROR,
-        "not-authentic-document": TransactionalEmail.SUBSCRIPTION_NOT_AUTHENTIC_DOCUMENT_ERROR,
-    }
-    template = error_codes_switch.get(code, TransactionalEmail.SUBSCRIPTION_INFORMATION_ERROR)
+def get_subscription_document_error_email_data(code: fraud_models.FraudReasonCode) -> models.TransactionalEmailData:
+    mapping = constants.ubble_error_to_email_mapping.get(code.value)
+    if not mapping:
+        template = TransactionalEmail.SUBSCRIPTION_INFORMATION_ERROR
+    else:
+        template = mapping.template
+
     return models.TransactionalEmailData(template=template.value)
