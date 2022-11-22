@@ -14,6 +14,7 @@ import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
+  OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
@@ -24,6 +25,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
+import { logTo } from '../utils/logTo'
 
 import { upsertStocksEventAdapter } from './adapters'
 import { StockFormList } from './StockFormList'
@@ -137,14 +139,16 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   }
 
   const handlePreviousStep = () => {
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OFFER_WIZARD_STEP_IDS.STOCKS,
-      to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offer.id,
-    })
+    if (!formik.dirty) {
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.STOCKS,
+        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        offerId: offer.id,
+      })
+    }
     /* istanbul ignore next: DEBT, TO FIX */
     navigate(
       getOfferIndividualUrl({
@@ -212,6 +216,16 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
           mode={mode}
           hasOfferBeenCreated
           isFormValid={formik.isValid}
+          tracking={nextLocation =>
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OFFER_WIZARD_STEP_IDS.STOCKS,
+              to: logTo(nextLocation),
+              used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
+              isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+              isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+              offerId: offer?.id,
+            })
+          }
         />
       )}
     </FormikProvider>

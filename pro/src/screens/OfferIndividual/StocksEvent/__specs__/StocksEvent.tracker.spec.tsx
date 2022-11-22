@@ -268,11 +268,6 @@ describe('screens:StocksEvent', () => {
 
     renderStockEventScreen({ props, storeOverride, contextValue })
 
-    await userEvent.click(screen.getByLabelText('Date', { exact: true }))
-    await userEvent.click(await screen.getByText(today.getDate()))
-    await userEvent.click(screen.getByLabelText('Horaire'))
-    await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(screen.getByText('Étape précédente'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
