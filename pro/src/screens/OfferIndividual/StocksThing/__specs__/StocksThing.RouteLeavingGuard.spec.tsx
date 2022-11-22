@@ -12,12 +12,16 @@ import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
+import { Events } from 'core/FirebaseEvents/constants'
 import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 import { ButtonLink } from 'ui-kit'
 
 import StocksThing, { IStocksThingProps } from '../StocksThing'
+
+const mockLogEvent = jest.fn()
 
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
@@ -106,6 +110,10 @@ describe('screens:StocksThing', () => {
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
   })
 
   it('should not block when submitting stock when clicking on "Sauvegarder le brouillon"', async () => {
@@ -165,6 +173,34 @@ describe('screens:StocksThing', () => {
     expect(api.upsertStocks).not.toHaveBeenCalled()
   })
 
+  it('should track when quitting on "Étape précédente"', async () => {
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+    })
+
+    renderStockThingScreen({ props, storeOverride, contextValue })
+
+    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape précédente' })
+    )
+    await userEvent.click(screen.getByText('Quitter'))
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'stocks',
+        isDraft: true,
+        isEdition: false,
+        offerId: 'OFFER_ID',
+        to: 'informations',
+        used: 'RouteLeavingGuard',
+      }
+    )
+  })
+
   it('should be able to stay on stock form after click on "Annuler"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stockIds: [{ id: 'CREATED_STOCK_ID' }],
@@ -194,6 +230,33 @@ describe('screens:StocksThing', () => {
     expect(api.upsertStocks).toHaveBeenCalledTimes(0)
 
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
+  })
+
+  it('should track when quitting without submit from RouteLeavingGuard', async () => {
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+    })
+
+    renderStockThingScreen({ props, storeOverride, contextValue })
+    await userEvent.type(screen.getByLabelText('Prix'), '20')
+
+    await userEvent.click(screen.getByText('Go outside !'))
+
+    await userEvent.click(screen.getByText('Quitter'))
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'stocks',
+        isDraft: true,
+        isEdition: false,
+        offerId: 'OFFER_ID',
+        to: '/outside',
+        used: 'RouteLeavingGuard',
+      }
+    )
   })
 
   it('should be able to submit from RouteLeavingGuard in draft', async () => {

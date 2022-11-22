@@ -1,5 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
+import { useLocation } from 'react-router'
 
 import FormLayout from 'components/FormLayout'
 import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
@@ -14,6 +15,7 @@ import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
+  OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import {
@@ -31,6 +33,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
+import { logTo } from '../utils/logTo'
 
 import { filterCategories } from './utils'
 import { imageFileToDataUrl } from './utils/files'
@@ -46,6 +49,7 @@ const Informations = ({
 }: IInformationsProps): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
+  const location = useLocation()
   const mode = useOfferWizardMode()
   const { logEvent } = useAnalytics()
   const {
@@ -266,17 +270,17 @@ const Informations = ({
             mode,
           })
         )
+        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+          from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          to: isSubmittingFromRouteLeavingGuard ? location.pathname : nextStep,
+          used: isSubmittingDraft
+            ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
+            : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+          isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+          isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+          offerId: receivedOfferId,
+        })
       }
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        to: nextStep,
-        used: isSubmittingDraft
-          ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
-          : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-        offerId: receivedOfferId,
-      })
     } else {
       formik.setErrors(payload.errors)
     }
@@ -337,6 +341,17 @@ const Informations = ({
           mode={mode}
           hasOfferBeenCreated={!!offerId}
           isFormValid={formik.isValid}
+          tracking={nextLocation =>
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+              to: logTo(nextLocation),
+              used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
+              isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+              isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+              // FIX ME: it is always undefined at first creation (not sure it is possible)
+              offerId: offer?.id,
+            })
+          }
         />
       )}
     </FormikProvider>

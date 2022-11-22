@@ -22,15 +22,19 @@ import {
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
+import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import * as useAnalytics from 'hooks/useAnalytics'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
 import { configureTestStore } from 'store/testUtils'
 import { ButtonLink } from 'ui-kit'
 
 import { IInformationsProps, Informations as InformationsScreen } from '..'
+
+const mockLogEvent = jest.fn()
 
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
@@ -279,6 +283,10 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       .spyOn(utils, 'filterCategories')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((c, s, _v) => [c, s])
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
   })
 
   it('should not block when from has not be touched', async () => {
@@ -405,11 +413,40 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.click(
       screen.getByText('Enregistrer un brouillon et quitter')
     )
-    expect(api.postOffer).toHaveBeenCalledTimes(1)
 
+    expect(api.postOffer).toHaveBeenCalledTimes(1)
     expect(
       screen.getByText('This is outside offer creation')
     ).toBeInTheDocument()
+  })
+
+  it('should track when submitting draft in block modal', async () => {
+    renderInformationsScreen(props, store, contextOverride)
+
+    const categorySelect = screen.getByLabelText('Catégorie')
+    await userEvent.selectOptions(categorySelect, 'A')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    await userEvent.selectOptions(subCategorySelect, 'physical')
+    const nameField = screen.getByLabelText('Titre de l’offre')
+    await userEvent.type(nameField, 'Le nom de mon offre')
+
+    await userEvent.click(screen.getByText('Go outside !'))
+    await userEvent.click(
+      screen.getByText('Enregistrer un brouillon et quitter')
+    )
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'informations',
+        isDraft: true,
+        isEdition: false,
+        offerId: undefined,
+        to: '/outside',
+        used: 'RouteLeavingGuard',
+      }
+    )
   })
 
   it('should let quitting without submit in block modal', async () => {
@@ -424,11 +461,63 @@ describe('screens:OfferIndividual::Informations::creation', () => {
 
     await userEvent.click(screen.getByText('Go outside !'))
     await userEvent.click(screen.getByText('Quitter sans enregistrer'))
-    expect(api.postOffer).toHaveBeenCalledTimes(0)
 
+    expect(api.postOffer).toHaveBeenCalledTimes(0)
     expect(
       screen.getByText('This is outside offer creation')
     ).toBeInTheDocument()
+  })
+
+  it('should track when quitting without submit in block modal', async () => {
+    renderInformationsScreen(props, store, contextOverride)
+
+    const categorySelect = screen.getByLabelText('Catégorie')
+    await userEvent.selectOptions(categorySelect, 'A')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    await userEvent.selectOptions(subCategorySelect, 'physical')
+    const nameField = screen.getByLabelText('Titre de l’offre')
+    await userEvent.type(nameField, 'Le nom de mon offre')
+
+    await userEvent.click(screen.getByText('Go outside !'))
+    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'informations',
+        isDraft: true,
+        isEdition: false,
+        offerId: undefined,
+        to: '/outside',
+        used: 'RouteLeavingGuard',
+      }
+    )
+  })
+
+  it('should track when quitting without submit in block modal and not enough info to save draft', async () => {
+    renderInformationsScreen(props, store, contextOverride)
+
+    const categorySelect = screen.getByLabelText('Catégorie')
+    await userEvent.selectOptions(categorySelect, 'A')
+
+    await userEvent.click(screen.getByText('Go outside !'))
+    await userEvent.click(screen.getByText('Quitter'))
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'informations',
+        isDraft: true,
+        isEdition: false,
+        offerId: undefined,
+        to: '/outside',
+        used: 'RouteLeavingGuard',
+      }
+    )
   })
 
   it('should not block when submitting minimal physical offer from action bar', async () => {
@@ -442,6 +531,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     await userEvent.click(screen.getByText('Étape suivante'))
+
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
@@ -468,5 +558,38 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         'Tous les champs sont obligatoires sauf mention contraire.'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should track with offerId when offer has been created', async () => {
+    contextOverride.offer = offer
+    renderInformationsScreen(props, store, contextOverride)
+
+    const categorySelect = screen.getByLabelText('Catégorie')
+    await userEvent.selectOptions(categorySelect, 'A')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    await userEvent.selectOptions(subCategorySelect, 'physical')
+    const nameField = screen.getByLabelText('Titre de l’offre')
+    await userEvent.type(nameField, 'Le nom de mon offre')
+
+    await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
+    await userEvent.type(nameField, 'new name')
+
+    await userEvent.click(screen.getByText('Go outside !'))
+    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
+
+    // first log is with 'Sauvegarder le brouillon'
+    expect(mockLogEvent).toHaveBeenCalledTimes(2)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      2,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'informations',
+        isDraft: true,
+        isEdition: false,
+        offerId: 'AA',
+        to: '/outside',
+        used: 'RouteLeavingGuard',
+      }
+    )
   })
 })

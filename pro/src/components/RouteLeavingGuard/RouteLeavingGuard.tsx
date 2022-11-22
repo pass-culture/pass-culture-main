@@ -81,25 +81,29 @@ const RouteLeavingGuard = ({
     setIsConfirmedNavigation(true)
   }, [])
 
-  if (isConfirmedNavigation && nextLocation) {
+  const trackWhenQuit = useCallback(() => {
     tracking &&
       tracking(
         Object.keys(nextLocation).includes('pathname')
           ? nextLocation.pathname
           : nextLocation
       )
-  }
+  }, [isConfirmedNavigation, nextLocation])
 
   const rightButtonAction = () => {
     if (typeof rightButton.action === 'function') {
       return () => {
         rightButton.action && rightButton.action()
         handleConfirmNavigationClick()
+        trackWhenQuit()
       }
     } else if (rightButton.actionType === BUTTON_ACTION.CANCEL) {
       return closeModal
     }
-    return handleConfirmNavigationClick
+    return () => {
+      handleConfirmNavigationClick()
+      trackWhenQuit()
+    }
   }
 
   const leftButtonAction = () => {
@@ -107,9 +111,13 @@ const RouteLeavingGuard = ({
       return () => {
         leftButton.action && leftButton.action()
         handleConfirmNavigationClick()
+        trackWhenQuit()
       }
     } else if (leftButton.actionType === BUTTON_ACTION.QUIT_WITHOUT_SAVING) {
-      return handleConfirmNavigationClick
+      return () => {
+        handleConfirmNavigationClick()
+        trackWhenQuit()
+      }
     }
     return closeModal
   }
