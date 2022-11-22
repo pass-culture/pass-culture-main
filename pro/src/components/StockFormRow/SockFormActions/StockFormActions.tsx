@@ -44,7 +44,7 @@ const StockFormActions = ({
             >
               {action.Icon && (
                 <action.Icon
-                  title="Supprimer le stock"
+                  title={action.label}
                   aria-hidden
                   className={styles['menu-item-icon']}
                 />
