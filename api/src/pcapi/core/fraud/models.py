@@ -353,39 +353,54 @@ FRAUD_CONTENT_MAPPING = {type: cls for cls, type in FRAUD_CHECK_MAPPING.items()}
 
 
 class FraudReasonCode(enum.Enum):
-    AGE_NOT_VALID = "age_is_not_valid"
-    AGE_TOO_OLD = "age_too_old"
-    AGE_TOO_YOUNG = "age_too_young"
-    ALREADY_BENEFICIARY = "already_beneficiary"  # Deprecated but kept because of old data
-    ALREADY_HAS_ACTIVE_DEPOSIT = "already_has_active_deposit"  # Deprecated but kept because of old data
-    BLACKLISTED_PHONE_NUMBER = "blacklisted_phone_number"
-    DUPLICATE_ID_PIECE_NUMBER = "duplicate_id_piece_number"
-    DUPLICATE_INE = "duplicate_ine"
+    # Common to all fraud checks
     DUPLICATE_USER = "duplicate_user"
-    ELIGIBILITY_CHANGED = "eligibility_changed"
     EMAIL_NOT_VALIDATED = "email_not_validated"
+    MISSING_REQUIRED_DATA = "missing_required_data"
+    NAME_INCORRECT = "name_incorrect"  # The user's name contains unaccepted characters
+    NOT_ELIGIBLE = "not_eligible"
+    AGE_NOT_VALID = "age_is_not_valid"
+
+    # Specific to DMS
     EMPTY_ID_PIECE_NUMBER = "empty_id_piece_number"
-    ERROR_IN_DATA = "error_in_data"
-    ID_CHECK_BLOCKED_OTHER = "id_check_bocked_other"
-    ID_CHECK_DATA_MATCH = "id_check_data_match"
+    ERROR_IN_DATA = "error_in_data"  # The user's data has not passed our API validation
+    REFUSED_BY_OPERATOR = "refused_by_operator"
+
+    # Specific to Ubble
+    # Ubble native errors
+    ID_CHECK_BLOCKED_OTHER = (
+        "id_check_bocked_other"  # Default reason code when the user's ID check is blocked for an unhandled reason
+    )
+    ID_CHECK_DATA_MATCH = "id_check_data_match"  # Ubble check did not match the data declared in the app (profile step)
     ID_CHECK_EXPIRED = "id_check_expired"
-    ID_CHECK_INVALID = "id_check_invalid"
     ID_CHECK_NOT_AUTHENTIC = "id_check_not_authentic"
     ID_CHECK_NOT_SUPPORTED = "id_check_not_supported"
     ID_CHECK_UNPROCESSABLE = "id_check_unprocessable"
-    INE_NOT_WHITELISTED = "ine_not_whitelisted"  # the value is kept because it still exists in the database
     INVALID_ID_PIECE_NUMBER = "invalid_id_piece_number"
+    # Our API errors
+    AGE_TOO_OLD = "age_too_old"
+    AGE_TOO_YOUNG = "age_too_young"
+    DUPLICATE_ID_PIECE_NUMBER = "duplicate_id_piece_number"
+    ELIGIBILITY_CHANGED = "eligibility_changed"  # The user's eligibility detected by ubble is different from the eligibility declared by the user
+
+    # Specific to Educonnect
+    DUPLICATE_INE = "duplicate_ine"
+
+    # Specific to Phone Validation
+    BLACKLISTED_PHONE_NUMBER = "blacklisted_phone_number"
     INVALID_PHONE_COUNTRY_CODE = "invalid_phone_country_code"
-    MISSING_REQUIRED_DATA = "missing_required_data"
-    NAME_INCORRECT = "name_incorrect"
-    NOT_ELIGIBLE = "not_eligible"
     PHONE_ALREADY_EXISTS = "phone_already_exists"
-    PHONE_NOT_VALIDATED = "phone_not_validated"
     PHONE_UNVALIDATED_BY_PEER = "phone_unvalidated_by_peer"
     PHONE_UNVALIDATION_FOR_PEER = "phone_unvalidation_for_peer"
     PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED = "phone_validation_attempts_limit_reached"
-    REFUSED_BY_OPERATOR = "refused_by_operator"
     SMS_SENDING_LIMIT_REACHED = "sms_sending_limit_reached"
+
+    # Deprecated, kept for backward compatibility
+    ALREADY_BENEFICIARY = "already_beneficiary"
+    ALREADY_HAS_ACTIVE_DEPOSIT = "already_has_active_deposit"
+    ID_CHECK_INVALID = "id_check_invalid"
+    INE_NOT_WHITELISTED = "ine_not_whitelisted"
+    PHONE_NOT_VALIDATED = "phone_not_validated"
 
 
 # FIXME: ce status fait un peu doublon avec FraudStatus
@@ -429,7 +444,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=sa.func.now()
     )
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-    user = sa.orm.relationship("User", foreign_keys=[userId], backref="beneficiaryFraudChecks")  # type: ignore [misc]
+    user = sa.orm.relationship("User", foreign_keys=[userId], backref="beneficiaryFraudChecks", order_by=dateCreated)  # type: ignore [misc]
 
     def get_detailed_source(self) -> str:
         if self.type == FraudCheckType.DMS.value:
