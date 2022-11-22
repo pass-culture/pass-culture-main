@@ -39,9 +39,16 @@ const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
     subCategories
   )
 
+  // FIX ME: when OFFER_FORM_V3 is removed, it will be only string | undefined
+  let title: string | undefined | null = undefined
+  if (isOfferV2) {
+    title = null
+  } else if (mode === OFFER_WIZARD_MODE.EDITION) {
+    title = 'Récapitulatif'
+  }
   return (
     <WizardTemplate
-      title={isOfferV2 ? null : undefined}
+      title={title}
       withStepper={!isOfferV2 && mode !== OFFER_WIZARD_MODE.EDITION}
     >
       <PageTitle title="Récapitulatif" />
