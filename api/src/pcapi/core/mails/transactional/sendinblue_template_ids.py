@@ -98,6 +98,19 @@ class TransactionalEmail(Enum):
         id_prod=511, id_not_prod=54, tags=["reception_demande_suppression_compte_jeune"]
     )
 
+    UBBLE_KO_REMINDER_ID_CHECK_DATA_MATCH = models.Template(
+        id_prod=824, id_not_prod=116, tags=["jeunes_relance_ubble_ko_infos_incorrectes"], use_priority_queue=False
+    )
+    UBBLE_KO_REMINDER_ID_CHECK_NOT_AUTHENTIC = models.Template(
+        id_prod=821,
+        id_not_prod=117,
+        tags=["jeunes_relance_ubble_ko_document_non_authentique"],
+        use_priority_queue=False,
+    )
+    UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE = models.Template(
+        id_prod=823, id_not_prod=115, tags=["jeunes_relance_ubble_ko_video_illisible"], use_priority_queue=False
+    )
+
     # PRO EMAIL
 
     BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO = models.TemplatePro(
