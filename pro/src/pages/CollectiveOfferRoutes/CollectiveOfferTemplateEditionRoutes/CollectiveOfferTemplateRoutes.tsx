@@ -6,8 +6,8 @@ import { CollectiveOfferTemplate } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import CollectiveOfferEdition from 'pages/CollectiveOfferEdition'
+import CollectiveOfferSummaryEdition from 'pages/CollectiveOfferSummaryEdition'
 import CollectiveOfferTemplateStockEdition from 'pages/CollectiveOfferTemplateStockEdition'
-import CollectiveOfferTemplateSummaryEdition from 'pages/CollectiveOfferTemplateSummaryEdition'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { getActiveStep } from '../utils/getActiveStep'
@@ -69,7 +69,7 @@ const CollectiveOfferTemplateEditionRoutes = ({
           />
         </Route>
         <Route path="/offre/:offerId(T-[A-Z0-9]+)/collectif/recapitulatif">
-          <CollectiveOfferTemplateSummaryEdition offer={offer} />
+          <CollectiveOfferSummaryEdition offer={offer} />
         </Route>
       </Switch>
     </CollectiveOfferLayout>
