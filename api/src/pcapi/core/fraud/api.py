@@ -673,7 +673,7 @@ def handle_dms_redirection_review(
     else:
         review.reason += " ; Redirigé vers DMS"
 
-    transaction_mails.send_subscription_document_error_email(user.email, "unread-document")
+    transaction_mails.send_subscription_document_error_email(user.email, models.FraudReasonCode.ID_CHECK_UNPROCESSABLE)
 
 
 REVIEW_HANDLERS = {
