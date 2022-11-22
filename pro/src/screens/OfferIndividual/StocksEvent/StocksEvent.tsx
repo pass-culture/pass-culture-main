@@ -103,19 +103,22 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     minQuantity = offer.stocks[0].bookingsQuantity
   }
   const initialValues = buildInitialValues(offer)
-  const { ...formik } = useFormik<{ stocks: IStockEventFormValues[] }>({
+  const formik = useFormik<{ stocks: IStockEventFormValues[] }>({
     initialValues,
     onSubmit,
     validationSchema: getValidationSchema(minQuantity),
+    enableReinitialize: true,
   })
 
   const handleNextStep = () => {
     setIsClickingFromActionBar(true)
-    getOfferIndividualUrl({
-      offerId: offer.id,
-      step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-      mode,
-    })
+    setAfterSubmitUrl(
+      getOfferIndividualUrl({
+        offerId: offer.id,
+        step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+        mode,
+      })
+    )
     formik.handleSubmit()
   }
 
@@ -132,12 +135,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const handleSaveDraft = () => {
     setIsClickingFromActionBar(true)
     /* istanbul ignore next: DEBT, TO FIX */
-    if (!Object.keys(formik.touched).length) {
-      notify.success('Brouillon sauvegardé dans la liste des offres')
-    } else {
-      formik.handleSubmit()
-    }
-    /* istanbul ignore next: DEBT, TO FIX */
     setAfterSubmitUrl(
       getOfferIndividualUrl({
         offerId: offer.id,
@@ -145,6 +142,12 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         mode,
       })
     )
+    /* istanbul ignore next: DEBT, TO FIX */
+    if (!Object.keys(formik.touched).length) {
+      notify.success('Brouillon sauvegardé dans la liste des offres')
+    } else {
+      formik.handleSubmit()
+    }
   }
 
   return (

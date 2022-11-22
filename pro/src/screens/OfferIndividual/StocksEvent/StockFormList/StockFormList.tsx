@@ -67,7 +67,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
                       stockValues.beginningDate || null,
                       today
                     )}
-                    fieldPrefix={`stocks[${index}].`}
+                    stockIndex={index}
                   />
                 }
                 actions={
