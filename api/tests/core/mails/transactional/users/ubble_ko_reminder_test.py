@@ -5,7 +5,9 @@ import pytest
 
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
-from pcapi.core.mails.transactional.users.ubble_ko_reminder import find_users_that_failed_ubble_check_seven_days_ago
+from pcapi.core.mails.transactional.users.ubble.ubble_ko_reminder import (
+    find_users_that_failed_ubble_check_seven_days_ago,
+)
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 
