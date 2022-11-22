@@ -136,4 +136,27 @@ describe('useCollectiveOfferImageUpload', () => {
 
     expect(deleteCollectiveOfferTemplateImageAdapter.default).toHaveBeenCalled()
   })
+
+  it('should not delete image if offer initially had one and onImageDelete was not called', async () => {
+    const offer = collectiveOfferTemplateFactory()
+    jest
+      .spyOn(deleteCollectiveOfferTemplateImageAdapter, 'default')
+      .mockResolvedValue({
+        isOk: true,
+        payload: null,
+        message: 'ok',
+      })
+
+    const { result } = renderHook(() =>
+      useCollectiveOfferImageUpload(offer, true)
+    )
+
+    await act(async () => {
+      await result.current.handleImageOnSubmit('someId')
+    })
+
+    expect(
+      deleteCollectiveOfferTemplateImageAdapter.default
+    ).not.toHaveBeenCalled()
+  })
 })
