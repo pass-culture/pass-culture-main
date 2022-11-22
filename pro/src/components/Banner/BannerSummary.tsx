@@ -1,17 +1,26 @@
 import React from 'react'
 
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import Banner from 'ui-kit/Banners/Banner'
 
-const BannerSummary = (): JSX.Element => {
+interface IBannerSummaryProps {
+  mode: OFFER_WIZARD_MODE
+}
+
+const BannerSummary = ({ mode }: IBannerSummaryProps): JSX.Element => {
   return (
     <>
       <Banner type="notification-info">
         <strong>Vous y êtes presque !</strong>
         <br />
         Vérifiez les informations ci-dessous avant de publier votre offre.
-        <br />
-        Si vous souhaitez la publier plus tard, vous pouvez retrouver votre
-        brouillon dans la liste de vos offres.
+        {mode === OFFER_WIZARD_MODE.CREATION && (
+          <>
+            <br />
+            Si vous souhaitez la publier plus tard, vous pouvez retrouver votre
+            brouillon dans la liste de vos offres.
+          </>
+        )}
       </Banner>
     </>
   )
