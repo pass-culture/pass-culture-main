@@ -3,7 +3,7 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 
-from .ubble import constants
+from . import constants
 
 
 def send_subscription_document_error_email(email: str, code: fraud_models.FraudReasonCode) -> bool:

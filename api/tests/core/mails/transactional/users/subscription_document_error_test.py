@@ -3,7 +3,9 @@ import pytest
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.mails.transactional.users.subscription_document_error import send_subscription_document_error_email
+from pcapi.core.mails.transactional.users.ubble.subscription_document_error import (
+    send_subscription_document_error_email,
+)
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
