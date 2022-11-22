@@ -5,9 +5,13 @@ import pytest
 
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.mails.testing as mails_testing
+import pcapi.core.mails.transactional.sendinblue_template_ids as sendinblue_template
 from pcapi.core.mails.transactional.users.ubble.ubble_ko_reminder import (
     find_users_that_failed_ubble_check_seven_days_ago,
 )
+from pcapi.core.mails.transactional.users.ubble.ubble_ko_reminder import send_ubble_ko_reminder_emails
+from pcapi.core.mails.transactional.users.ubble.ubble_ko_reminder import sort_users_by_reason_codes
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 
@@ -148,7 +152,9 @@ class FindUsersThatFailedUbbleTest:
     def should_sort_users_by_reason_codes(self):
         # Given
         user1 = build_user_with_ko_retryable_ubble_fraud_check()
-        user2 = build_user_with_ko_retryable_ubble_fraud_check(reasonCodes=[fraud_models.FraudReasonCode.ERROR_IN_DATA])
+        user2 = build_user_with_ko_retryable_ubble_fraud_check(
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED]
+        )
 
         # When
         users = sort_users_by_reason_codes([user1, user2])
@@ -156,7 +162,7 @@ class FindUsersThatFailedUbbleTest:
         # Then
         assert users == {
             fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC.value: [user1],
-            fraud_models.FraudReasonCode.ERROR_IN_DATA.value: [user2],
+            fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED.value: [user2],
         }
 
     def should_not_raise_when_no_user_to_sort(self):
@@ -165,3 +171,29 @@ class FindUsersThatFailedUbbleTest:
 
         # Then
         assert not users
+
+
+@pytest.mark.usefixtures("db_session")
+class SendUbbleKoReminderEmailTest:
+    def should_send_email_to_users(self):
+        # Given
+        user1 = build_user_with_ko_retryable_ubble_fraud_check()
+        user2 = build_user_with_ko_retryable_ubble_fraud_check(
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE]
+        )
+
+        # When
+        send_ubble_ko_reminder_emails()
+
+        # Then
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0].sent_data["To"] == user1.email
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_NOT_AUTHENTIC.value.__dict__
+        )
+        assert mails_testing.outbox[1].sent_data["To"] == user2.email
+        assert (
+            mails_testing.outbox[1].sent_data["template"]
+            == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE.value.__dict__
+        )
