@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Route, Switch, useLocation } from 'react-router-dom'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
+import {
+  CollectiveOffer,
+  CollectiveOfferTemplate,
+  isCollectiveOffer,
+} from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -10,7 +14,6 @@ import CollectiveOfferConfirmation from 'pages/CollectiveOfferConfirmation'
 import CollectiveOfferCreation from 'pages/CollectiveOfferCreation'
 import CollectiveOfferStockCreation from 'pages/CollectiveOfferStockCreation'
 import CollectiveOfferSummaryCreation from 'pages/CollectiveOfferSummaryCreation'
-import CollectiveOfferTemplateCreation from 'pages/CollectiveOfferTemplateCreation'
 import CollectiveOfferVisibilityCreation from 'pages/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -29,9 +32,9 @@ const CollectiveOfferCreationRoutes = ({
   const shouldRenderTemplateOffer =
     isTemplate || location.pathname.includes('vitrine')
 
-  const [collectiveOffer, setCollectiveOffer] = useState<CollectiveOffer>()
-  const [collectiveOfferTemplate, setCollectiveOfferTemplate] =
-    useState<CollectiveOfferTemplate>()
+  const [offer, setOffer] = useState<
+    CollectiveOffer | CollectiveOfferTemplate
+  >()
 
   const isSubtypeChosenAtCreation = useActiveFeature(
     'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
@@ -43,29 +46,19 @@ const CollectiveOfferCreationRoutes = ({
     }
 
     const loadCollectiveOffer = async (offerId: string) => {
-      const response = await getCollectiveOfferAdapter(offerId)
+      const adapter = shouldRenderTemplateOffer
+        ? getCollectiveOfferTemplateAdapter
+        : getCollectiveOfferAdapter
+
+      const response = await adapter(offerId)
       if (response.isOk) {
-        setCollectiveOffer(response.payload)
+        setOffer(response.payload)
       }
     }
 
-    const loadCollectiveOfferTemplate = async (offerId: string) => {
-      const response = await getCollectiveOfferTemplateAdapter(offerId)
-      if (response.isOk) {
-        setCollectiveOfferTemplate(response.payload)
-      }
-    }
-
-    if (shouldRenderTemplateOffer) {
-      loadCollectiveOfferTemplate(offerId)
-    } else {
-      loadCollectiveOffer(offerId)
-    }
+    loadCollectiveOffer(offerId)
   }, [offerId])
 
-  const offer = shouldRenderTemplateOffer
-    ? collectiveOfferTemplate
-    : collectiveOffer
   const activeStep = getActiveStep(location.pathname)
 
   return (
@@ -90,11 +83,11 @@ const CollectiveOfferCreationRoutes = ({
       >
         <CollectiveOfferLayout
           title={
-            collectiveOffer?.templateId
+            isCollectiveOffer(offer) && offer?.templateId
               ? 'Créer une offre pour un établissement scolaire'
               : 'Créer une nouvelle offre collective'
           }
-          subTitle={collectiveOffer?.name}
+          subTitle={offer?.name}
           breadCrumpProps={{
             activeStep: activeStep,
             isCreatingOffer: true,
@@ -104,24 +97,19 @@ const CollectiveOfferCreationRoutes = ({
         >
           <Switch>
             <Route path="/offre/creation/collectif/vitrine">
-              <CollectiveOfferTemplateCreation
-                offer={collectiveOfferTemplate}
-                setOfferTemplate={setCollectiveOfferTemplate}
+              <CollectiveOfferCreation
+                offer={offer}
+                setOffer={setOffer}
+                isTemplate
               />
             </Route>
             <Route path="/offre/creation/collectif">
-              <CollectiveOfferCreation
-                offer={collectiveOffer}
-                setOffer={setCollectiveOffer}
-              />
+              <CollectiveOfferCreation offer={offer} setOffer={setOffer} />
             </Route>
             {isSubtypeChosenAtCreation && (
               <Route path="/offre/collectif/:offerId/creation">
-                {collectiveOffer ? (
-                  <CollectiveOfferCreation
-                    offer={collectiveOffer}
-                    setOffer={setCollectiveOffer}
-                  />
+                {offer ? (
+                  <CollectiveOfferCreation offer={offer} setOffer={setOffer} />
                 ) : (
                   <Spinner />
                 )}
@@ -129,10 +117,11 @@ const CollectiveOfferCreationRoutes = ({
             )}
             {isSubtypeChosenAtCreation && (
               <Route path="/offre/collectif/vitrine/:offerId/creation">
-                {collectiveOfferTemplate ? (
-                  <CollectiveOfferTemplateCreation
-                    offer={collectiveOfferTemplate}
-                    setOfferTemplate={setCollectiveOfferTemplate}
+                {offer ? (
+                  <CollectiveOfferCreation
+                    offer={offer}
+                    setOffer={setOffer}
+                    isTemplate
                   />
                 ) : (
                   <Spinner />
@@ -140,20 +129,20 @@ const CollectiveOfferCreationRoutes = ({
               </Route>
             )}
             <Route path="/offre/:offerId/collectif/stocks">
-              {collectiveOffer ? (
+              {offer && isCollectiveOffer(offer) ? (
                 <CollectiveOfferStockCreation
-                  offer={collectiveOffer}
-                  setOffer={setCollectiveOffer}
+                  offer={offer}
+                  setOffer={setOffer}
                 />
               ) : (
                 <Spinner />
               )}
             </Route>
             <Route path="/offre/:offerId/collectif/visibilite">
-              {collectiveOffer ? (
+              {offer && isCollectiveOffer(offer) ? (
                 <CollectiveOfferVisibilityCreation
-                  offer={collectiveOffer}
-                  setOffer={setCollectiveOffer}
+                  offer={offer}
+                  setOffer={setOffer}
                 />
               ) : (
                 <Spinner />
@@ -168,11 +157,7 @@ const CollectiveOfferCreationRoutes = ({
               {offer ? (
                 <CollectiveOfferSummaryCreation
                   offer={offer}
-                  setOffer={
-                    offer.isTemplate
-                      ? setCollectiveOfferTemplate
-                      : setCollectiveOffer
-                  }
+                  setOffer={setOffer}
                 />
               ) : (
                 <Spinner />
