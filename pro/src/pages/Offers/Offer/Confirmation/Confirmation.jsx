@@ -34,7 +34,9 @@ const Confirmation = ({ offer, setOffer, reloadOffer }) => {
     setIsLoading(false)
   }, [])
 
-  if (isLoading) return <Spinner />
+  if (isLoading) {
+    return <Spinner />
+  }
 
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
 

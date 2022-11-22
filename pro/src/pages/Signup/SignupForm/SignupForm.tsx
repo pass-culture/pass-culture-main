@@ -65,8 +65,9 @@ const SignupForm = (): JSX.Element => {
   }
 
   const onHandleFail = (errors: ISignupApiErrorResponse) => {
-    for (const field in errors)
+    for (const field in errors) {
       formik.setFieldError(field, (errors as any)[field])
+    }
 
     notification.error(
       'Une ou plusieurs erreurs sont présentes dans le formulaire.'
@@ -84,15 +85,16 @@ const SignupForm = (): JSX.Element => {
   const getSirenAPIData = async (siren: string) => {
     setShowAnonymousBanner(false)
     const response = await getSirenDataAdapter(siren)
-    if (response.isOk)
+    if (response.isOk) {
       formik.setFieldValue('legalUnitValues', response.payload.values)
-    else {
+    } else {
       formik.setFieldError('siren', response.message)
       if (
         response.message ==
         'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.'
-      )
+      ) {
         setShowAnonymousBanner(true)
+      }
     }
   }
 
@@ -107,7 +109,9 @@ const SignupForm = (): JSX.Element => {
 
   const logFormAbort = (): void | undefined => {
     const filledFields = Object.keys(touchedRef.current)
-    if (filledFields.length === 0) return
+    if (filledFields.length === 0) {
+      return
+    }
     // formik.errors contains every fields with errors even if they have not been touched.
     // We filter theses errors by touched fields to only have fields filled by the user with errors
     const filledWithErrors = Object.keys(
@@ -129,7 +133,9 @@ const SignupForm = (): JSX.Element => {
   // Track the form state on component unmount
   useEffect(() => {
     return () => {
-      if (Object.entries(errorsRef.current).length === 0) return
+      if (Object.entries(errorsRef.current).length === 0) {
+        return
+      }
       logFormAbort()
     }
   }, [])

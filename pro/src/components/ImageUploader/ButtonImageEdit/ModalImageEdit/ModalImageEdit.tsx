@@ -104,8 +104,9 @@ const ModalImageEdit = ({
     imageToUpload?: File,
     imageDataUrl?: string
   ) => {
-    if (croppedRect === undefined) return
-    if (imageToUpload === undefined) return
+    if (croppedRect === undefined || imageToUpload === undefined) {
+      return
+    }
 
     await onImageUpload({
       imageFile: imageToUpload,

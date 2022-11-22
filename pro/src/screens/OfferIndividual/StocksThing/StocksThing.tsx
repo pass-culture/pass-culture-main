@@ -153,8 +153,9 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     description =
       'Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée.'
     let isDisabled = false
-    if (offer.stocks.length > 0 && offer.stocks[0].hasActivationCode)
+    if (offer.stocks.length > 0 && offer.stocks[0].hasActivationCode) {
       isDisabled = true
+    }
 
     actions = [
       {

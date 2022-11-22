@@ -11,7 +11,9 @@ const getSuggestionsFromAddressAndMaxSuggestions = createCachedSelector(
   (address, maxSuggestions) => maxSuggestions,
   async (address, maxSuggestions) => {
     const wordsCount = address.split(/\s/).filter(v => v).length
-    if (wordsCount < 2) return { data: [] }
+    if (wordsCount < 2) {
+      return { data: [] }
+    }
     const addressUrl = `https://api-adresse.data.gouv.fr/search/?limit=${maxSuggestions}&q=${address}`
     try {
       const data = await fetchAddressData(addressUrl)

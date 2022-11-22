@@ -23,7 +23,9 @@ const BusinessUnitCard = ({
 }: IBusinessUnitCardProps): JSX.Element => {
   const nbVenues = venues.length
   const computeVenueIcon = (venue: IBusinessUnitVenue) => {
-    if (venue.isVirtual) return ''
+    if (venue.isVirtual) {
+      return ''
+    }
     if (businessUnit.siret) {
       return venue.isBusinessUnitMainVenue ? 'ico-validate-purple' : ''
     }

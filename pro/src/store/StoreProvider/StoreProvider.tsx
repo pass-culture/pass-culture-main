@@ -50,12 +50,13 @@ const StoreProvider = ({ children, isDev = false }: IStoreProvider) => {
     }
   }, [currentUser, features])
 
-  if (initialState === null)
+  if (initialState === null) {
     return (
       <main className="spinner-container">
         <Spinner />
       </main>
     )
+  }
 
   const { store } = createStore(initialState)
   return <Provider store={store}>{children}</Provider>

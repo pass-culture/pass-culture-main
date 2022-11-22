@@ -123,8 +123,9 @@ class Offerers extends PureComponent {
 
     this.forceRenderKey++ // See variable declaration for more information
 
-    if (queryParams[mapApiToBrowser.keywords] !== keywords)
+    if (queryParams[mapApiToBrowser.keywords] !== keywords) {
       this.setState({ offerers: [] })
+    }
   }
 
   renderForm = ({ handleSubmit }) => {

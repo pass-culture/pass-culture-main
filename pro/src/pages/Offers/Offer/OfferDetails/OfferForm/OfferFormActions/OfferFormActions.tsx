@@ -40,7 +40,7 @@ const OfferFormActions = ({
   const { logEvent } = useAnalytics()
   const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
   const onCancelClick = () => {
-    if (isEdition)
+    if (isEdition) {
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OfferBreadcrumbStep.DETAILS,
         to: OfferBreadcrumbStep.SUMMARY,
@@ -49,7 +49,7 @@ const OfferFormActions = ({
         isDraft: offer?.status === OFFER_STATUS_DRAFT,
         offerId: offer?.id,
       })
-    else
+    } else {
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OfferBreadcrumbStep.DETAILS,
         to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
@@ -57,6 +57,7 @@ const OfferFormActions = ({
         isEdition: false,
         isDraft: true,
       })
+    }
   }
 
   return (

@@ -28,8 +28,9 @@ const setFormReadOnlyFields = (
   if (
     currentStock.activationCodes?.length != 0 ||
     (offer.stocks?.length > 0 && offer.stocks[0].hasActivationCode)
-  )
+  ) {
     return ['quantity']
+  }
   return []
 }
 export default setFormReadOnlyFields

@@ -12,7 +12,9 @@ export const composeValidators =
       }
 
       const error: TComposeValidatorsReturn = validator(value)
-      if (error !== undefined) return error
+      if (error !== undefined) {
+        return error
+      }
     }
     return undefined
   }
@@ -44,8 +46,12 @@ export const createParseNumberValue =
 
 export const createValidateRequiredField =
   (error: string, type?: 'text' | 'number') => (value: string) => {
-    if (type === 'number' && value !== '') return undefined
-    if (typeof value === 'string' && value !== '') return undefined
+    if (type === 'number' && value !== '') {
+      return undefined
+    }
+    if (typeof value === 'string' && value !== '') {
+      return undefined
+    }
     return error
   }
 

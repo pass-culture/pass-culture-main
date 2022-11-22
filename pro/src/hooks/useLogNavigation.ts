@@ -11,7 +11,9 @@ const useLogNavigation = (): LocationListener | void => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
   useEffect(() => {
-    if (logEvent) logEvent?.(Events.PAGE_VIEW, { from: location.pathname })
+    if (logEvent) {
+      logEvent?.(Events.PAGE_VIEW, { from: location.pathname })
+    }
   }, [logEvent])
 
   useEffect(() => {

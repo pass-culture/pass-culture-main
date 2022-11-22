@@ -16,7 +16,9 @@ const Spinner = ({
   const [timer, setTimer] = useState<number | null>(null)
 
   useEffect(() => {
-    if (timer) window.clearInterval(timer)
+    if (timer) {
+      window.clearInterval(timer)
+    }
     const newTimer = window.setInterval(() => {
       setNbDots(oldVal => (oldVal % 3) + 1)
     }, 500)

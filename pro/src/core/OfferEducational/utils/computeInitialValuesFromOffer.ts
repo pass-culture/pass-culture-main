@@ -12,7 +12,9 @@ import { buildStudentLevelsMapWithDefaultValue } from './buildStudentLevelsMapWi
 const computeDurationString = (
   durationMinutes: number | undefined | null
 ): string => {
-  if (!durationMinutes) return DEFAULT_EAC_FORM_VALUES.duration
+  if (!durationMinutes) {
+    return DEFAULT_EAC_FORM_VALUES.duration
+  }
   const hours = Math.floor(durationMinutes / 60)
   const minutes = durationMinutes % 60
 

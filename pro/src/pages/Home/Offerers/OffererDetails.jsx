@@ -59,21 +59,31 @@ const OffererDetails = ({
   const { logEvent } = useAnalytics()
 
   const hasRejectedOrDraftOffererBankInformations = useMemo(() => {
-    if (!selectedOfferer) return false
+    if (!selectedOfferer) {
+      return false
+    }
     return hasRejectedOrDraftBankInformation(selectedOfferer)
   }, [selectedOfferer])
 
   const hasInvalidBusinessUnits = useMemo(() => {
-    if (!isBankInformationWithSiretActive) return false
-    if (!selectedOfferer) return false
+    if (!isBankInformationWithSiretActive) {
+      return false
+    }
+    if (!selectedOfferer) {
+      return false
+    }
     return (
       businessUnitList.filter(businessUnit => !businessUnit.siret).length > 0
     )
   }, [selectedOfferer, businessUnitList, isBankInformationWithSiretActive])
 
   const hasMissingBusinessUnits = useMemo(() => {
-    if (!isBankInformationWithSiretActive) return false
-    if (!selectedOfferer) return false
+    if (!isBankInformationWithSiretActive) {
+      return false
+    }
+    if (!selectedOfferer) {
+      return false
+    }
     return selectedOfferer.managedVenues
       .filter(venue => !venue.isVirtual)
       .map(venue => !venue.businessUnitId)
@@ -91,8 +101,12 @@ const OffererDetails = ({
     .some(Boolean)
 
   const hasMissingReimbursementPoints = useMemo(() => {
-    if (!isNewBankInformationActive) return false
-    if (!selectedOfferer) return false
+    if (!isNewBankInformationActive) {
+      return false
+    }
+    if (!selectedOfferer) {
+      return false
+    }
     return selectedOfferer.managedVenues
       .filter(venue => !venue.isVirtual)
       .map(venue => venue.hasMissingReimbursementPoint)

@@ -17,12 +17,13 @@ const getOfferIndividualUrl = ({
   isV2 = false,
 }: IGetOfferIndividualUrlArgs) => {
   // remove me when deleting OFFER_FORM_V3
-  if (isV2)
+  if (isV2) {
     return getOfferIndividualUrlV2({
       offerId,
       mode,
       step,
     })
+  }
 
   if (!offerId && step === OFFER_WIZARD_STEP_IDS.INFORMATIONS) {
     return `/offre/v3/creation/individuelle/informations`

@@ -6,7 +6,7 @@ import { getSirenDataAdapter } from 'core/Offerers/adapters'
 
 export const sirenUpdate = async (humanSiren: string) => {
   const response = await getSirenDataAdapter(humanSiren)
-  if (!response.isOk)
+  if (!response.isOk) {
     return {
       address: '',
       city: '',
@@ -14,6 +14,7 @@ export const sirenUpdate = async (humanSiren: string) => {
       postalCode: '',
       siren: humanSiren,
     }
+  }
   return response.payload.values
 }
 

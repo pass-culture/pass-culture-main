@@ -4,8 +4,9 @@ import ReactDOM from 'react-dom'
 // https://fr.reactjs.org/docs/portals.html
 const PortalContainer = ({ children }) => {
   const containerRef = useRef(null)
-  if (containerRef.current === null)
+  if (containerRef.current === null) {
     containerRef.current = document.createElement('div')
+  }
 
   useEffect(() => {
     const portalsRoot =

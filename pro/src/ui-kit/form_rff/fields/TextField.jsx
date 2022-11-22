@@ -28,10 +28,14 @@ function TextField(props) {
 
   const handleOnBlur = formOnBlur => e => {
     formOnBlur(e)
-    if (props.onBlur) props.onBlur(e)
+    if (props.onBlur) {
+      props.onBlur(e)
+    }
   }
   const handleOnKeyPress = e => {
-    if (props.onKeyPress) props.onKeyPress(e)
+    if (props.onKeyPress) {
+      props.onKeyPress(e)
+    }
   }
 
   return (

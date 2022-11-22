@@ -88,8 +88,9 @@ const PreFilters = ({
           selectedPreFilters[key].getTime() !==
           // @ts-ignore
           DEFAULT_PRE_FILTERS[key].getTime()
-        )
+        ) {
           hasFilters = true
+        }
       } else if (selectedPreFilters[key] !== DEFAULT_PRE_FILTERS[key]) {
         hasFilters = true
       }

@@ -221,9 +221,11 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
     }
 
     const updatedStocks = existingStocks.filter(stock => stock.updated)
-    if (updatedStocks.length === 0 && isEmptyStocks(stocksInCreation))
+    if (updatedStocks.length === 0 && isEmptyStocks(stocksInCreation)) {
       notification.success('Brouillon sauvegardé dans la liste des offres')
-    else submitStocks(e, true)
+    } else {
+      submitStocks(e, true)
+    }
   }
 
   const submitStocks = useCallback(
@@ -283,10 +285,11 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
                 isDraft: true,
                 offerId: offer.id,
               })
-              if (isDraftEnabled)
+              if (isDraftEnabled) {
                 notification.success(
                   'Brouillon sauvegardé dans la liste des offres'
                 )
+              }
             } else {
               logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                 from: OfferBreadcrumbStep.STOCKS,
@@ -302,7 +305,9 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
                 'Vos modifications ont bien été enregistrées'
               )
             }
-            if (!isSavingDraft) history.push(`${summaryStepUrl}${queryString}`)
+            if (!isSavingDraft) {
+              history.push(`${summaryStepUrl}${queryString}`)
+            }
           })
           .catch(() => {
             notification.error(

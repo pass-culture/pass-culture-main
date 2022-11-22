@@ -36,8 +36,12 @@ const ReimbursementsTable = ({
       const newSortedInvoices = invoices.sort((columnA, columnB) => {
         const stringA = columnA[fieldToSort as keyof InvoiceResponseModel] || ''
         const stringB = columnB[fieldToSort as keyof InvoiceResponseModel] || ''
-        if (stringA < stringB) return sortDirection === IS_ASCENDENT ? -1 : 1
-        if (stringA > stringB) return sortDirection === IS_ASCENDENT ? 1 : -1
+        if (stringA < stringB) {
+          return sortDirection === IS_ASCENDENT ? -1 : 1
+        }
+        if (stringA > stringB) {
+          return sortDirection === IS_ASCENDENT ? 1 : -1
+        }
         return 0
       })
       setSortedInvoices(newSortedInvoices)

@@ -23,7 +23,9 @@ export const useCheckAndSetImage: UseCheckAndSetImage = ({
       const files = event.target.files
 
       /* istanbul ignore next: DEBT, TO FIX */
-      if (files?.length !== 1) return
+      if (files?.length !== 1) {
+        return
+      }
 
       const currentFile = files[0]
       const validatorErrors = await getValidatorErrors(constraints, currentFile)

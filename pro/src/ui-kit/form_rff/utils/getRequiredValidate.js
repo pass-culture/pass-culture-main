@@ -2,7 +2,9 @@ import { createValidateRequiredField } from 'utils/react-final-form'
 
 const createValidateRequiredBooleanField = errorMessage => {
   return value => {
-    if (value === true || value === false) return undefined
+    if (value === true || value === false) {
+      return undefined
+    }
     return errorMessage
   }
 }
