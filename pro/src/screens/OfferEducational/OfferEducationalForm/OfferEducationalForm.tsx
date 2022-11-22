@@ -8,6 +8,7 @@ import { IOfferEducationalFormValues, Mode } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { Banner, SubmitButton } from 'ui-kit'
 import { sortByLabel } from 'utils/strings'
@@ -60,6 +61,9 @@ const OfferEducationalForm = ({
   const [isEligible, setIsEligible] = useState<boolean>()
 
   const { values } = useFormikContext<IOfferEducationalFormValues>()
+  const isCollectiveImageEnabled = useActiveFeature(
+    'WIP_IMAGE_COLLECTIVE_OFFER'
+  )
 
   useScrollToFirstErrorAfterSubmit()
 
@@ -135,11 +139,13 @@ const OfferEducationalForm = ({
             domainsOptions={domainsOptions}
             disableForm={mode === Mode.READ_ONLY}
           />
-          <FormImageUploader
-            onImageDelete={onImageDelete}
-            onImageUpload={onImageUpload}
-            imageOffer={imageOffer}
-          />
+          {isCollectiveImageEnabled && (
+            <FormImageUploader
+              onImageDelete={onImageDelete}
+              onImageUpload={onImageUpload}
+              imageOffer={imageOffer}
+            />
+          )}
           <FormPracticalInformation
             currentOfferer={currentOfferer}
             venuesOptions={venuesOptions}
