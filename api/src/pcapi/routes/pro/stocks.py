@@ -54,7 +54,7 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        stocks = offers_api.upsert_stocks(body.offer_id, body.stocks, current_user)
+        stocks = offers_api.upsert_stocks(body.offer_id, body.stocks)
     except offers_exceptions.BookingLimitDatetimeTooLate:
         raise ApiErrors(
             {"stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]},
