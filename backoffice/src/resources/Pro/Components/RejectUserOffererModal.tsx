@@ -104,6 +104,9 @@ export const RejectUserOffererModal = ({
                 multiline
                 rows={4}
                 required={false}
+                onKeyDown={e => {
+                  e.stopPropagation()
+                }}
               />
             </Stack>
             <Stack direction={'row-reverse'} spacing={3} sx={{ mt: 5 }}>

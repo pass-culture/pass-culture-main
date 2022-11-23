@@ -101,6 +101,7 @@ export const RejectOffererModal = ({
                 fullWidth
                 multiline
                 rows={4}
+                required={false}
                 onKeyDown={e => {
                   e.stopPropagation()
                 }}
