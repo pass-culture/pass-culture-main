@@ -1,3 +1,5 @@
+{% from "components/badges.html" import build_offerer_badges %}
+
 {% extends "layouts/pro.html" %}
 
 {% block pro_extra_header %}
@@ -20,7 +22,7 @@
                     {{ offerer.name }}
 
                     <span class="fs-5 ps-4 mb-3 align-middle">
-                        {% include "components/offerer/badges.html" %}
+                        {{ build_offerer_badges(offerer) }}
                     </span>
                 </h2>
 
