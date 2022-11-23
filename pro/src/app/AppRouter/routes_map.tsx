@@ -276,6 +276,7 @@ const routes: IRoute[] = [
   {
     component: CollectiveOfferRoutes,
     exact: false,
+    hasSubRoutes: true,
     path: [
       '/offre/:offerId/collectif',
       '/offre/duplication/collectif',

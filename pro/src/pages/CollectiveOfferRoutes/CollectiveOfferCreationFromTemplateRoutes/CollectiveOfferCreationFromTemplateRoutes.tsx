@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Route, Switch, useParams } from 'react-router-dom'
 
+import { LogRouteNavigation } from 'app/AppRouter/LogRouteNavigation'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import { CollectiveOffer } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
@@ -36,11 +37,15 @@ const CollectiveOfferCreationRoutes = (): JSX.Element => {
   return (
     <Switch>
       <Route path="/offre/duplication/collectif/:offerId/confirmation">
-        {collectiveOffer ? (
-          <CollectiveOfferConfirmation offer={collectiveOffer} />
-        ) : (
-          <Spinner />
-        )}
+        <LogRouteNavigation
+          route={{ title: 'Offre collective - duplication - confirmation' }}
+        >
+          {collectiveOffer ? (
+            <CollectiveOfferConfirmation offer={collectiveOffer} />
+          ) : (
+            <Spinner />
+          )}
+        </LogRouteNavigation>
       </Route>
       <CollectiveOfferLayout
         title="Créer une offre pour un établissement scolaire"
@@ -52,7 +57,11 @@ const CollectiveOfferCreationRoutes = (): JSX.Element => {
         }}
       >
         <Route path="/offre/duplication/collectif/:templateId" exact>
-          <CollectiveOfferCreationFromTemplate />
+          <LogRouteNavigation
+            route={{ title: 'Offre collective - duplication - création' }}
+          >
+            <CollectiveOfferCreationFromTemplate />
+          </LogRouteNavigation>
         </Route>
         <Route path="/offre/duplication/collectif/:offerId/stocks">
           {collectiveOffer ? (
@@ -62,26 +71,34 @@ const CollectiveOfferCreationRoutes = (): JSX.Element => {
           )}
         </Route>
         <Route path="/offre/duplication/collectif/:offerId/visibilite">
-          {collectiveOffer ? (
-            <CollectiveOfferCreationVisibility
-              setOffer={setCollectiveOffer}
-              offer={collectiveOffer}
-              isDuplicatingOffer
-            />
-          ) : (
-            <Spinner />
-          )}
+          <LogRouteNavigation
+            route={{ title: 'Offre collective - duplication - visibilité' }}
+          >
+            {collectiveOffer ? (
+              <CollectiveOfferCreationVisibility
+                setOffer={setCollectiveOffer}
+                offer={collectiveOffer}
+                isDuplicatingOffer
+              />
+            ) : (
+              <Spinner />
+            )}
+          </LogRouteNavigation>
         </Route>
         <Route path="/offre/duplication/collectif/:offerId/recapitulatif">
-          {collectiveOffer ? (
-            <CollectiveOfferSummaryCreation
-              offer={collectiveOffer}
-              // @ts-ignore this file will be deleted when we will remove the duplication pages code
-              setOffer={setCollectiveOffer}
-            />
-          ) : (
-            <Spinner />
-          )}
+          <LogRouteNavigation
+            route={{ title: 'Offre collective - duplication - récapitulatif' }}
+          >
+            {collectiveOffer ? (
+              <CollectiveOfferSummaryCreation
+                offer={collectiveOffer}
+                // @ts-ignore this file will be deleted when we will remove the duplication pages code
+                setOffer={setCollectiveOffer}
+              />
+            ) : (
+              <Spinner />
+            )}
+          </LogRouteNavigation>
         </Route>
       </CollectiveOfferLayout>
     </Switch>

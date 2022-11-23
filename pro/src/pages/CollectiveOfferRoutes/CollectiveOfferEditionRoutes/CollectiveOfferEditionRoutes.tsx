@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useLocation } from 'react-router-dom'
 
+import { LogRouteNavigation } from 'app/AppRouter/LogRouteNavigation'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import {
   CollectiveOffer,
@@ -71,40 +72,59 @@ const CollectiveOfferEditionRoutes = ({
     >
       <Switch>
         <Route path="/offre/:offerId/collectif/edition">
-          <CollectiveOfferEdition
-            offer={offer}
-            reloadCollectiveOffer={loadCollectiveOffer}
-          />
+          <LogRouteNavigation route={{ title: 'Offre collective - edition' }}>
+            <CollectiveOfferEdition
+              offer={offer}
+              reloadCollectiveOffer={loadCollectiveOffer}
+            />
+          </LogRouteNavigation>
         </Route>
         <Route path="/offre/:offerId/collectif/recapitulatif">
-          <CollectiveOfferSummaryEdition
-            offer={offer}
-            reloadCollectiveOffer={loadCollectiveOffer}
-          />
+          <LogRouteNavigation
+            route={{ title: 'Offre collective - récapitulatif' }}
+          >
+            <CollectiveOfferSummaryEdition
+              offer={offer}
+              reloadCollectiveOffer={loadCollectiveOffer}
+            />
+          </LogRouteNavigation>
         </Route>
+
         {!isTemplate && isCollectiveOffer(offer) && (
           <>
             <Route path="/offre/:offerId/collectif/stocks/edition">
-              <CollectiveOfferStockEdition
-                offer={offer}
-                reloadCollectiveOffer={loadCollectiveOffer}
-              />
+              <LogRouteNavigation
+                route={{ title: 'Offre collective - edition de stocks' }}
+              >
+                <CollectiveOfferStockEdition
+                  offer={offer}
+                  reloadCollectiveOffer={loadCollectiveOffer}
+                />
+              </LogRouteNavigation>
             </Route>
             <Route path="/offre/:offerId/collectif/visibilite/edition">
-              <CollectiveOfferVisibility
-                offer={offer}
-                reloadCollectiveOffer={loadCollectiveOffer}
-              />
+              <LogRouteNavigation
+                route={{ title: 'Offre collective - édition de la visibilité' }}
+              >
+                <CollectiveOfferVisibility
+                  offer={offer}
+                  reloadCollectiveOffer={loadCollectiveOffer}
+                />
+              </LogRouteNavigation>
             </Route>
           </>
         )}
         {/* TODO delete this page when WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION feature is in prod */}
         {isTemplate && isCollectiveOfferTemplate(offer) && (
           <Route path="/offre/:offerId/collectif/stocks/edition">
-            <CollectiveOfferTemplateStockEdition
-              offer={offer}
-              reloadCollectiveOffer={loadCollectiveOffer}
-            />
+            <LogRouteNavigation
+              route={{ title: 'Offre collective - edition de stocks' }}
+            >
+              <CollectiveOfferTemplateStockEdition
+                offer={offer}
+                reloadCollectiveOffer={loadCollectiveOffer}
+              />
+            </LogRouteNavigation>
           </Route>
         )}
       </Switch>

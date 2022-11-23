@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Route, Switch, useLocation } from 'react-router-dom'
 
+import { LogRouteNavigation } from 'app/AppRouter/LogRouteNavigation'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import {
   CollectiveOffer,
@@ -63,14 +64,21 @@ const CollectiveOfferCreationRoutes = ({
 
   return (
     <Switch>
-      <Route
-        path={[
-          '/offre/:offerId/collectif/confirmation',
-          '/offre/:offerId/collectif/vitrine/confirmation',
-        ]}
-      >
-        {offer ? <CollectiveOfferConfirmation offer={offer} /> : <Spinner />}
+      <Route path={'/offre/:offerId/collectif/confirmation'}>
+        <LogRouteNavigation
+          route={{ title: 'Offre collective - confirmation' }}
+        >
+          {offer ? <CollectiveOfferConfirmation offer={offer} /> : <Spinner />}
+        </LogRouteNavigation>
       </Route>
+      <Route path={'/offre/:offerId/collectif/vitrine/confirmation'}>
+        <LogRouteNavigation
+          route={{ title: 'Offre vitrine collective - confirmation' }}
+        >
+          {offer ? <CollectiveOfferConfirmation offer={offer} /> : <Spinner />}
+        </LogRouteNavigation>
+      </Route>
+
       <Route
         path={[
           '/offre/:offerId/collectif',
@@ -97,71 +105,119 @@ const CollectiveOfferCreationRoutes = ({
         >
           <Switch>
             <Route path="/offre/creation/collectif/vitrine">
-              <CollectiveOfferCreation
-                offer={offer}
-                setOffer={setOffer}
-                isTemplate
-              />
+              <LogRouteNavigation
+                route={{ title: 'Offre vitrine collective - création' }}
+              >
+                <CollectiveOfferCreation
+                  offer={offer}
+                  setOffer={setOffer}
+                  isTemplate
+                />
+              </LogRouteNavigation>
             </Route>
             <Route path="/offre/creation/collectif">
-              <CollectiveOfferCreation offer={offer} setOffer={setOffer} />
+              <LogRouteNavigation
+                route={{ title: 'Offre collective - création' }}
+              >
+                <CollectiveOfferCreation offer={offer} setOffer={setOffer} />
+              </LogRouteNavigation>
             </Route>
             {isSubtypeChosenAtCreation && (
               <Route path="/offre/collectif/:offerId/creation">
-                {offer ? (
-                  <CollectiveOfferCreation offer={offer} setOffer={setOffer} />
-                ) : (
-                  <Spinner />
-                )}
+                <LogRouteNavigation
+                  route={{ title: 'Offre collective - création' }}
+                >
+                  {offer ? (
+                    <CollectiveOfferCreation
+                      offer={offer}
+                      setOffer={setOffer}
+                    />
+                  ) : (
+                    <Spinner />
+                  )}
+                </LogRouteNavigation>
               </Route>
             )}
             {isSubtypeChosenAtCreation && (
               <Route path="/offre/collectif/vitrine/:offerId/creation">
-                {offer ? (
-                  <CollectiveOfferCreation
+                <LogRouteNavigation
+                  route={{ title: 'Offre vitrine collective - création' }}
+                >
+                  {offer ? (
+                    <CollectiveOfferCreation
+                      offer={offer}
+                      setOffer={setOffer}
+                      isTemplate
+                    />
+                  ) : (
+                    <Spinner />
+                  )}
+                </LogRouteNavigation>
+              </Route>
+            )}
+            <Route path="/offre/:offerId/collectif/stocks">
+              <LogRouteNavigation
+                route={{ title: 'Offre collective - création de stocks' }}
+              >
+                {offer && isCollectiveOffer(offer) ? (
+                  <CollectiveOfferStockCreation
                     offer={offer}
                     setOffer={setOffer}
-                    isTemplate
                   />
                 ) : (
                   <Spinner />
                 )}
-              </Route>
-            )}
-            <Route path="/offre/:offerId/collectif/stocks">
-              {offer && isCollectiveOffer(offer) ? (
-                <CollectiveOfferStockCreation
-                  offer={offer}
-                  setOffer={setOffer}
-                />
-              ) : (
-                <Spinner />
-              )}
+              </LogRouteNavigation>
             </Route>
             <Route path="/offre/:offerId/collectif/visibilite">
-              {offer && isCollectiveOffer(offer) ? (
-                <CollectiveOfferVisibilityCreation
-                  offer={offer}
-                  setOffer={setOffer}
-                />
-              ) : (
-                <Spinner />
-              )}
+              <LogRouteNavigation
+                route={{ title: 'Offre collective - visibilité' }}
+              >
+                {offer && isCollectiveOffer(offer) ? (
+                  <CollectiveOfferVisibilityCreation
+                    offer={offer}
+                    setOffer={setOffer}
+                  />
+                ) : (
+                  <Spinner />
+                )}
+              </LogRouteNavigation>
+            </Route>
+            <Route path={'/offre/:offerId/collectif/creation/recapitulatif'}>
+              <LogRouteNavigation
+                route={{
+                  title:
+                    'Offre collective - récapitulation de création d’offre',
+                }}
+              >
+                {offer ? (
+                  <CollectiveOfferSummaryCreation
+                    offer={offer}
+                    setOffer={setOffer}
+                  />
+                ) : (
+                  <Spinner />
+                )}
+              </LogRouteNavigation>
             </Route>
             <Route
-              path={[
-                '/offre/:offerId/collectif/creation/recapitulatif',
-                '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
-              ]}
+              path={'/offre/:offerId/collectif/vitrine/creation/recapitulatif'}
             >
-              {offer ? (
-                <CollectiveOfferSummaryCreation
-                  offer={offer}
-                  setOffer={setOffer}
-                />
-              ) : (
-                <Spinner />
-              )}
+              <LogRouteNavigation
+                route={{
+                  title:
+                    'Offre vitrine collective - récapitulation de création d’offre',
+                }}
+              >
+                {offer ? (
+                  <CollectiveOfferSummaryCreation
+                    offer={offer}
+                    setOffer={setOffer}
+                  />
+                ) : (
+                  <Spinner />
+                )}
+              </LogRouteNavigation>
             </Route>
           </Switch>
         </CollectiveOfferLayout>
