@@ -117,9 +117,11 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
           mode,
         })
       )
-      if (saveDraft && !Object.keys(formik.touched).length)
+      if (saveDraft && !Object.keys(formik.touched).length) {
         notify.success('Brouillon sauvegardé dans la liste des offres')
-      else formik.handleSubmit()
+      } else {
+        formik.handleSubmit()
+      }
     }
 
   const handlePreviousStep = () => {
