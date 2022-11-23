@@ -7,7 +7,6 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
-import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
@@ -1209,28 +1208,6 @@ class GetExpiredOffersTest:
 
 @pytest.mark.usefixtures("db_session")
 class DeletePastDraftOfferTest:
-    @freeze_time("2020-10-15 09:00:00")
-    def test_delete_past_draft_offers(self):
-        two_days_ago = datetime.utcnow() - timedelta(days=2)
-        criterion = criteria_factories.CriterionFactory()
-        offer = factories.OfferFactory(
-            dateCreated=two_days_ago, validation=offer_mixin.OfferValidationStatus.DRAFT, criteria=[criterion]
-        )
-        factories.MediationFactory(offer=offer)
-        stock = factories.StockFactory(offer=offer)
-        factories.ActivationCodeFactory(stock=stock)
-        past_offer = factories.OfferFactory(
-            dateCreated=two_days_ago, validation=offer_mixin.OfferValidationStatus.PENDING
-        )
-        today_offer = factories.OfferFactory(
-            dateCreated=datetime.utcnow(), validation=offer_mixin.OfferValidationStatus.DRAFT
-        )
-
-        repository.delete_past_draft_offers()
-
-        offers = models.Offer.query.all()
-        assert set(offers) == {today_offer, past_offer}
-
     @freeze_time("2020-10-15 09:00:00")
     def test_delete_past_draft_collective_offers(self):
         two_days_ago = datetime.utcnow() - timedelta(days=2)
