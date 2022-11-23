@@ -1,9 +1,9 @@
+{% from "components/badges.html" import build_offerer_badges %}
+
 <div class="card shadow">
     <div class="card-body">
         <h5 class="card-title mb-3">
-            {% with offerer=row %}
-                {% include "components/offerer/badges.html" %}
-            {% endwith %}
+            {{ build_offerer_badges(row) }}
         </h5>
 
         <h5 class="card-title">
