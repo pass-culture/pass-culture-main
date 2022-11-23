@@ -151,6 +151,7 @@ const CollectiveOfferCreation = ({
         imageOffer={imageOffer}
         onImageDelete={onImageDelete}
         onImageUpload={onImageUpload}
+        useOfferForFormValues={offer !== undefined}
       />
       <RouteLeavingGuardCollectiveOfferCreation />
     </>
