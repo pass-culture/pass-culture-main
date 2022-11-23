@@ -1,0 +1,53 @@
+<turbo-frame id="venue_total_revenue_frame">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="fs-3 card-title">
+                        {{ total_revenue | format_amount }}
+                    </h6>
+                    <p class="card-text fw-light small">
+                        de CA
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body row">
+                    <div class="col-6">
+                        <h6 class="fs-2 card-title">
+                            {{ stats.active.individual + stats.active.collective }}
+                        </h6>
+                        <p class="card-text fw-light small mb-0">
+                            offres actives
+                        </p>
+                        <p class="card-text fw-light small">
+                            ({{ stats.active.individual }} IND
+                            / {{ stats.active.collective }} EAC)
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="fs-2 card-title">
+                            {{ stats.inactive.individual + stats.inactive.collective }}
+                        </h6>
+                        <p class="card-text fw-light small mb-0">
+                            offres inactives
+                        </p>
+                        <p class="card-text fw-light small">
+                            ({{ stats.inactive.individual }} IND
+                            / {{ stats.inactive.collective }} EAC)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                </div>
+            </div>
+        </div>
+    </div>
+</turbo-frame>
+
