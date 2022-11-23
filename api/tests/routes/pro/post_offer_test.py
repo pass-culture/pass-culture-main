@@ -21,7 +21,7 @@ class Returns200Test:
         data = {
             "venueId": humanize(venue.id),
             "name": "Celeste",
-            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "mentalDisabilityCompliant": True,
             "audioDisabilityCompliant": False,
             "visualDisabilityCompliant": False,

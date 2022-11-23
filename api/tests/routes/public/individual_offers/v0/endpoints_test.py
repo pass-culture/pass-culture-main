@@ -55,10 +55,10 @@ class PostProductTest:
                 "bookingEmail": "spam@example.com",
                 "categoryRelatedFields": {
                     "author": "Maurice",
-                    "category": "SPECTACLE_ENREGISTRE",
+                    "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "musicType": "100",
                     "performer": "Pink Pâtisserie",
-                    "stageDirector": "Alfred",
-                    "showType": "100",
+                    "stageDirector": "Alfred",  # field not applicable
                 },
                 "description": "Enregistrement pour la nuit des temps",
                 "disabilityCompliance": {
@@ -77,7 +77,7 @@ class PostProductTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.name == "Le champ des possibles"
         assert created_offer.venue == venue
-        assert created_offer.subcategoryId == "SPECTACLE_ENREGISTRE"
+        assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE"
         assert created_offer.audioDisabilityCompliant is True
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is False
@@ -85,9 +85,8 @@ class PostProductTest:
         assert created_offer.isDuo is False
         assert created_offer.extraData == {
             "author": "Maurice",
+            "musicType": "100",
             "performer": "Pink Pâtisserie",
-            "stageDirector": "Alfred",
-            "showType": "100",
         }
         assert created_offer.bookingEmail == "spam@example.com"
         assert created_offer.description == "Enregistrement pour la nuit des temps"
@@ -187,7 +186,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "CINE_VENTE_DISTANCE"},
+                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_MUSIQUE", "musicType": "100"},
                 "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -196,6 +195,26 @@ class PostProductTest:
 
         assert response.status_code == 400
         assert response.json == {"venue": ['Une offre physique ne peut être associée au lieu "Offre numérique"']}
+        assert offers_models.Offer.query.first() is None
+
+    def test_physical_product_with_digital_category(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products",
+            json={
+                "categoryRelatedFields": {"category": "CINE_VENTE_DISTANCE"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "subcategory": ['Une offre de catégorie CINE_VENTE_DISTANCE doit contenir un champ "url"']
+        }
         assert offers_models.Offer.query.first() is None
 
     def test_right_isbn_format(self, client):

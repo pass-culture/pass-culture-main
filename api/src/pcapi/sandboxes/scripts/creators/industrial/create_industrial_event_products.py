@@ -25,7 +25,7 @@ def create_industrial_event_products() -> dict[str, offers_models.Product]:
 
     event_products_by_name = {}
 
-    event_subcategories = [s for s in subcategories.ALL_SUBCATEGORIES if s.is_event]
+    event_subcategories = [s for s in subcategories.ALL_SUBCATEGORIES if s.is_event and s.is_offline_only]
 
     activation_index = 0
 
