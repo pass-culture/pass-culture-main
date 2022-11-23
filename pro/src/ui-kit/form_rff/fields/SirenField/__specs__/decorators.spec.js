@@ -7,6 +7,7 @@ describe('sirenUpdate', () => {
     jest.spyOn(api, 'getSirenInfo').mockResolvedValue({
       name: 'nom du lieu',
       siren: '841166096',
+      ape_code: '90.03A',
       address: {
         street: '3 rue de la gare',
         city: 'paris',
@@ -41,6 +42,7 @@ describe('sirenUpdate', () => {
         name: '',
         postalCode: '',
         siren: '418 71',
+        apeCode: '',
       })
     })
   })

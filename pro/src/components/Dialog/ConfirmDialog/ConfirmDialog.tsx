@@ -1,24 +1,18 @@
 import React from 'react'
 
-import DialogBox from 'components/DialogBox/DialogBox'
 import { ReactComponent as AlertSvg } from 'icons/ico-alert-grey.svg'
 import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
+import Dialog, { IDialogProps } from '../Dialog'
+
 import styles from './ConfirmDialog.module.scss'
 
-interface IConfirmDialogProps {
+type IConfirmDialogProps = IDialogProps & {
   onConfirm: () => void
-  onCancel: () => void
-  title: string
-  secondTitle?: string
   confirmText: string
   cancelText: string
   isLoading?: boolean
-  children?: React.ReactNode | React.ReactNode[]
-  icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
-  hideIcon?: boolean
-  extraClassNames?: string
   leftButtonAction?: () => void
 }
 
@@ -39,20 +33,15 @@ const ConfirmDialog = ({
   const Icon = icon ?? AlertSvg
 
   return (
-    <DialogBox
-      extraClassNames={`${styles['confirm-dialog']} ${extraClassNames}`}
-      hasCloseButton
-      labelledBy={title}
-      onDismiss={onCancel}
+    <Dialog
+      onCancel={onCancel}
+      title={title}
+      secondTitle={secondTitle}
+      icon={Icon}
+      hideIcon={hideIcon}
+      explanation={children}
+      extraClassNames={`${extraClassNames} ${styles['confirm-dialog-explanation']}`}
     >
-      {!hideIcon && <Icon className={styles['confirm-dialog-icon']} />}
-      <div className={styles['confirm-dialog-title']}>
-        {title}
-        <span>{secondTitle}</span>
-      </div>
-      {children && (
-        <div className={styles['confirm-dialog-explanation']}>{children}</div>
-      )}
       <div className={styles['confirm-dialog-actions']}>
         <Button
           onClick={leftButtonAction}
@@ -70,7 +59,7 @@ const ConfirmDialog = ({
           {confirmText}
         </SubmitButton>
       </div>
-    </DialogBox>
+    </Dialog>
   )
 }
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import ConfirmDialog from 'components/ConfirmDialog'
+import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 
 import style from './DeleteVenueProviderDialog.module.scss'
 

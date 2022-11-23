@@ -1,0 +1,20 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+
+.redirect-dialog {
+
+  &-actions {
+    display: flex;
+    flex-direction: column;
+    margin-top: rem.torem(32px);
+    gap: rem.torem(30px);
+  }
+
+  &-cancel-button {
+    color: colors.$primary;
+
+    svg, svg > path {
+      fill: colors.$primary;
+    }
+  }
+}
