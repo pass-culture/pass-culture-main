@@ -8,6 +8,7 @@ import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   isCollectiveOffer,
+  isCollectiveOfferTemplate,
   Mode,
   setInitialFormValues,
 } from 'core/OfferEducational'
@@ -88,7 +89,10 @@ const CollectiveOfferCreation = ({
 
     const offerId = offer?.id ?? payload.id
     await handleImageOnSubmit(offerId)
-    if (offer && isCollectiveOffer(payload)) {
+    if (
+      offer &&
+      (isCollectiveOffer(payload) || isCollectiveOfferTemplate(payload))
+    ) {
       setOffer({
         ...payload,
         imageUrl: imageOffer?.url,
