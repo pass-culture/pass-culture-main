@@ -131,6 +131,9 @@ const SiretOrCommentFields = ({
           name="comment"
           placeholder="Par exemple : le lieu est un équipement culturel qui n’appartient pas à ma structure."
           isOptional={isSiretSelected}
+          maxLength={500}
+          countCharacters
+          rows={6}
         />
       )}
     </>
