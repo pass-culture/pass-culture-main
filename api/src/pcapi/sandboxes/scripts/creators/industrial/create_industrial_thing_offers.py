@@ -39,9 +39,9 @@ def create_industrial_thing_offers(
             while thing_venue is None:
                 rest_thing_index = (venue_thing_index + thing_index) % len(thing_items)
                 (thing_name, thing_product) = thing_items[rest_thing_index]
-                if thing_product.is_offline_only:
+                if thing_product.subcategory.is_offline_only:
                     thing_venue = physical_venue
-                elif thing_product.is_online_only:
+                elif thing_product.subcategory.is_online_only:
                     thing_venue = virtual_venue
                 else:
                     thing_venue = physical_venue

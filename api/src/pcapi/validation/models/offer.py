@@ -12,7 +12,7 @@ def validate(offer: Offer, api_errors: ApiErrors) -> ApiErrors:
                 "venue", 'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"'
             )
 
-        if offer.is_offline_only:
+        if offer.subcategory.is_offline_only:
             api_errors.add_error(
                 "url", f"Une offre de sous-catégorie {offer.subcategory.pro_label} ne peut pas être numérique"
             )

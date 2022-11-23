@@ -86,14 +86,6 @@ class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMi
     def isDigital(self) -> bool:
         return self.url is not None and self.url != ""
 
-    @property
-    def is_offline_only(self) -> bool:
-        return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.OFFLINE.value
-
-    @property
-    def is_online_only(self) -> bool:
-        return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.ONLINE.value
-
     @sa.ext.hybrid.hybrid_property
     def can_be_synchronized(self) -> bool:
         return (
@@ -608,10 +600,6 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
     def thumbUrl(self) -> str:
         image = self.image
         return image.url if image else None  # type: ignore [return-value]
-
-    @property
-    def is_offline_only(self) -> bool:
-        return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.OFFLINE.value
 
     @property
     def max_price(self) -> float:  # used in validation rule, do not remove

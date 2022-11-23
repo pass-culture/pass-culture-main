@@ -95,6 +95,14 @@ class Subcategory:
     def category_id(self) -> str:
         return self.category.id
 
+    @property
+    def is_offline_only(self) -> bool:
+        return self.online_offline_platform == OnlineOfflinePlatformChoices.OFFLINE.value
+
+    @property
+    def is_online_only(self) -> bool:
+        return self.online_offline_platform == OnlineOfflinePlatformChoices.ONLINE.value
+
 
 # region Subcategories declarations
 # region FILM
