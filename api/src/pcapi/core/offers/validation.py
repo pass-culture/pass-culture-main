@@ -216,6 +216,8 @@ def check_image(
     accepted_types: tuple = ACCEPTED_THUMBNAIL_FORMATS,
     min_width: int = MIN_THUMBNAIL_WIDTH,
     min_height: int = MIN_THUMBNAIL_HEIGHT,
+    max_width: int | None = None,
+    max_height: int | None = None,
 ) -> None:
     try:
         image = Image.open(BytesIO(image_as_bytes))
@@ -227,6 +229,12 @@ def check_image(
 
     if image.width < min_width or image.height < min_height:
         raise exceptions.ImageTooSmall(min_width, min_height)
+
+    if max_width is not None and image.width > max_width:
+        raise exceptions.ImageTooLarge(max_width, max_height)
+
+    if max_height is not None and image.height > max_height:
+        raise exceptions.ImageTooLarge(max_width, max_height)
 
 
 def check_validation_status(offer: Offer | CollectiveOffer | CollectiveOfferTemplate) -> None:
