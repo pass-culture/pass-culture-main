@@ -25,7 +25,7 @@ const FormImageUploader = ({
   onImageDelete,
   imageOffer,
 }: IImageUploaderOfferProps) => (
-  <FormLayout.Section title="Image de l'offre">
+  <FormLayout.Section title="Image de l’offre">
     <FormLayout.Row>
       <ImageUploader
         onImageUpload={onImageUpload}

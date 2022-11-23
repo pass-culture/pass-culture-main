@@ -22,7 +22,7 @@ const ModalImageDelete = ({
       isLoading={isLoading}
       onCancel={onDismiss}
       onConfirm={onConfirm}
-      title="Supprimer l'image"
+      title="Supprimer l’image"
     >
       Souhaitez-vous vraiment supprimer cette image ?
     </ConfirmDialog>

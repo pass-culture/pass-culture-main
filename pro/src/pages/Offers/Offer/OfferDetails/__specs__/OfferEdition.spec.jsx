@@ -1573,7 +1573,7 @@ describe('offerDetails - Edition', () => {
       jest
         .spyOn(api, 'patchOffer')
         .mockRejectedValue(
-          new ApiError({}, { body: { name: "Ce nom n'est pas valide" } }, '')
+          new ApiError({}, { body: { name: 'Ce nom n’est pas valide' } }, '')
         )
       await renderOffers(props, store)
       //
@@ -1587,7 +1587,7 @@ describe('offerDetails - Edition', () => {
 
       // Then
       expect(
-        await screen.findByText("Ce nom n'est pas valide")
+        await screen.findByText('Ce nom n’est pas valide')
       ).toBeInTheDocument()
       expect(
         await screen.findByText(

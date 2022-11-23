@@ -158,7 +158,7 @@ const ModalImageCrop = ({
           onClick={onReplaceImage}
           variant={ButtonVariant.TERNARY}
         >
-          Remplacer l'image
+          Remplacer l’image
         </Button>
         <Button onClick={handleNext}>{submitButtonText}</Button>
       </footer>

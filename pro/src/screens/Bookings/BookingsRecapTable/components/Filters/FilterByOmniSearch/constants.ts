@@ -9,7 +9,7 @@ type OmnisearchFilter = {
 
 const offerOmnisearchFilter: OmnisearchFilter = {
   id: 'offre',
-  placeholderText: "Rechercher par nom d'offre",
+  placeholderText: 'Rechercher par nom d’offre',
   stateKey: 'offerName',
   selectOptionText: 'Offre',
 }

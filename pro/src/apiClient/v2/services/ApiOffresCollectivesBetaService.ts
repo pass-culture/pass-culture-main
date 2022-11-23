@@ -91,7 +91,7 @@ export class ApiOffresCollectivesBetaService {
   }
 
   /**
-   * Récuperation de l'offre collective avec l'identifiant offer_id. Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées.
+   * Récuperation de l'offre collective avec l’identifiant offer_id. Cette api ignore les offre vitrines et les offres commencées sur l’interface web et non finalisées.
    * @param status
    * @param venueId
    * @param periodBeginningDate
@@ -148,7 +148,7 @@ export class ApiOffresCollectivesBetaService {
   }
 
   /**
-   * Récuperation de l'offre collective avec l'identifiant offer_id.
+   * Récuperation de l'offre collective avec l’identifiant offer_id.
    * @param offerId
    * @returns GetPublicCollectiveOfferResponseModel L'offre collective existe
    * @throws ApiError

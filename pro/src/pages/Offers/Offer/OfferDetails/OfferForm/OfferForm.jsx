@@ -500,7 +500,7 @@ const OfferForm = ({
     ) {
       newFormErrors[
         'withdrawalType'
-      ] = `Vous devez cocher l'une des options ci-dessus`
+      ] = `Vous devez cocher l’une des options ci-dessus`
     }
 
     if (!(await isEmailValid(formValues.bookingEmail))) {

@@ -32,7 +32,7 @@ const ButtonImageEdit = ({
       {imageUrl || originalImageUrl ? (
         <Button onClick={showModal} variant={ButtonVariant.TERNARY}>
           <Icon
-            alt="Modifier l'image"
+            alt="Modifier l’image"
             className={styles['icon-modify-image']}
             svg="ico-pen-black"
           />
