@@ -7,11 +7,10 @@ import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.mails.transactional.sendinblue_template_ids as sendinblue_template
-from pcapi.core.mails.transactional.users.ubble.ubble_ko_reminder import (
-    find_users_that_failed_ubble_check_seven_days_ago,
-)
+from pcapi.core.mails.transactional.users.ubble.ubble_ko_reminder import find_users_that_failed_ubble_check
 from pcapi.core.mails.transactional.users.ubble.ubble_ko_reminder import send_ubble_ko_reminder_emails
 from pcapi.core.mails.transactional.users.ubble.ubble_ko_reminder import sort_users_by_reason_codes
+from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 
@@ -49,12 +48,12 @@ class FindUsersThatFailedUbbleTest:
     def setup_method(self):
         self.eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18)
 
-    def should_find_users_that_failed_ubble_check_seven_days_ago(self):
+    def should_find_users_that_failed_ubble_check(self):
         # Given
         user = build_user_with_ko_retryable_ubble_fraud_check()
 
         # When
-        users = find_users_that_failed_ubble_check_seven_days_ago()
+        users = find_users_that_failed_ubble_check(days_ago=7)
 
         # Then
         assert users == [user]
@@ -66,7 +65,7 @@ class FindUsersThatFailedUbbleTest:
         )
 
         # When
-        users = find_users_that_failed_ubble_check_seven_days_ago()
+        users = find_users_that_failed_ubble_check(days_ago=7)
 
         # Then
         assert users == []
@@ -77,7 +76,7 @@ class FindUsersThatFailedUbbleTest:
         build_user_with_ko_retryable_ubble_fraud_check(user=user)
 
         # When
-        users = find_users_that_failed_ubble_check_seven_days_ago()
+        users = find_users_that_failed_ubble_check(days_ago=7)
 
         # Then
         assert users == []
@@ -93,7 +92,7 @@ class FindUsersThatFailedUbbleTest:
         )
 
         # When
-        users = find_users_that_failed_ubble_check_seven_days_ago()
+        users = find_users_that_failed_ubble_check(days_ago=7)
 
         # Then
         assert users == []
@@ -109,7 +108,7 @@ class FindUsersThatFailedUbbleTest:
         )
 
         # When
-        users = find_users_that_failed_ubble_check_seven_days_ago()
+        users = find_users_that_failed_ubble_check(days_ago=7)
 
         # Then
         assert users == [user]
@@ -129,7 +128,7 @@ class FindUsersThatFailedUbbleTest:
         )
 
         # When
-        users = find_users_that_failed_ubble_check_seven_days_ago()
+        users = find_users_that_failed_ubble_check(days_ago=7)
 
         # Then
         assert users == []
@@ -144,7 +143,7 @@ class FindUsersThatFailedUbbleTest:
         )
 
         # When
-        users = find_users_that_failed_ubble_check_seven_days_ago()
+        users = find_users_that_failed_ubble_check(days_ago=7)
 
         # Then
         assert users == []
@@ -175,6 +174,7 @@ class FindUsersThatFailedUbbleTest:
 
 @pytest.mark.usefixtures("db_session")
 class SendUbbleKoReminderEmailTest:
+    @override_settings(UBBLE_KO_REMINDER_DELAY=7)
     def should_send_email_to_users(self):
         # Given
         user1 = build_user_with_ko_retryable_ubble_fraud_check()

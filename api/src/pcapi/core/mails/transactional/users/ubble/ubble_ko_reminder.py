@@ -3,6 +3,7 @@ import logging
 
 from dateutil.relativedelta import relativedelta
 
+from pcapi import settings
 from pcapi.core import mails
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.models as mails_models
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 def send_ubble_ko_reminder_emails() -> None:
-    users = find_users_that_failed_ubble_check_seven_days_ago()
+    users = find_users_that_failed_ubble_check(days_ago=settings.UBBLE_KO_REMINDER_DELAY)
     users_by_reason_codes = sort_users_by_reason_codes(users)
 
     result = {}
@@ -56,7 +57,7 @@ def get_ubble_ko_reminder_email_data(code: str) -> mails_models.TransactionalEma
     return mails_models.TransactionalEmailData(template=template.value)
 
 
-def find_users_that_failed_ubble_check_seven_days_ago(days_ago: int = 7) -> list[users_models.User]:
+def find_users_that_failed_ubble_check(days_ago: int = 7) -> list[users_models.User]:
     users = (
         users_models.User.query.join(users_models.User.beneficiaryFraudChecks)
         .filter(
