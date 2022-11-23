@@ -1023,7 +1023,6 @@ def test_generate_payment_files(mocked_gdrive_create_file):
     assert gdrive_file_names == {
         "reimbursement_points.csv",
         "payment_details.csv",
-        "soldes_des_utilisateurs.csv.zip",
     }
 
 
@@ -1215,35 +1214,6 @@ def test_generate_payments_file():
         "Ministère": Ministry.EDUCATION_NATIONALE.name,
         "Prix de la réservation": 10,
         "Montant remboursé à l'offreur": 10,
-    }
-
-
-def test_generate_wallets_file():
-    user1 = users_factories.BeneficiaryGrant18Factory(deposit__version=1, deposit__amount=500)
-    bookings_factories.IndividualBookingFactory(individualBooking__user=user1, amount=10)
-    bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user1, amount=20)
-    bookings_factories.CancelledIndividualBookingFactory(individualBooking__user=user1, amount=30)
-    user2 = users_factories.BeneficiaryGrant18Factory(deposit__version=2)
-    bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user2, amount=10)
-    users_factories.ProFactory()  # no wallet for this one
-
-    path = api._generate_wallets_file()
-
-    with zipfile.ZipFile(path) as zfile:
-        with zfile.open("soldes_des_utilisateurs.csv") as csv_bytefile:
-            csv_textfile = io.TextIOWrapper(csv_bytefile)
-            reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
-            rows = list(reader)
-    assert len(rows) == 2
-    assert rows[0] == {
-        "ID de l'utilisateur": user1.id,
-        "Solde théorique": 500 - 10 - 20,
-        "Solde réel": 500 - 20,
-    }
-    assert rows[1] == {
-        "ID de l'utilisateur": user2.id,
-        "Solde théorique": 300 - 10,
-        "Solde réel": 300 - 10,
     }
 
 

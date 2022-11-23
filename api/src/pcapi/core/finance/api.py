@@ -942,8 +942,6 @@ def generate_payment_files(batch_id: int) -> None:
     file_paths["reimbursement_points"] = _generate_reimbursement_points_file()
     logger.info("Generating payments file")
     file_paths["payments"] = _generate_payments_file(batch_id)
-    logger.info("Generating wallets file")
-    file_paths["wallets"] = _generate_wallets_file()
     logger.info(
         "Finance files have been generated",
         extra={"paths": [str(path) for path in file_paths.values()]},
@@ -1201,67 +1199,6 @@ def _payment_details_row_formatter(sql_row: typing.Any) -> tuple:
         ministry,
         booking_total_amount,
         reimbursed_amount,
-    )
-
-
-def _generate_wallets_file() -> pathlib.Path:
-    header = ["ID de l'utilisateur", "Solde théorique", "Solde réel"]
-    query = """
-        WITH user_with_latest_deposit AS (
-          SELECT
-            DISTINCT ON ("user".id)
-            "user".id AS user_id,
-            deposit.id AS deposit_id,
-            deposit."expirationDate" AS deposit_expiration_date,
-            deposit.amount AS deposit_amount
-          FROM "user"
-          JOIN deposit ON deposit."userId" = "user".id
-          ORDER BY "user".id, deposit."expirationDate" DESC
-        )
-        SELECT
-          user_id,
-          CASE
-            WHEN deposit_expiration_date > now()
-            THEN deposit_amount - coalesce(
-              SUM(booking.amount * booking.quantity) FILTER (WHERE booking.status != 'CANCELLED'),
-              0
-            )
-            ELSE 0
-          END AS current_balance,
-          CASE
-            WHEN deposit_expiration_date > now()
-            THEN deposit_amount - coalesce(
-              SUM(booking.amount * booking.quantity) FILTER (WHERE booking.status in ('USED', 'REIMBURSED')),
-              0
-            )
-            ELSE 0
-          END AS real_balance
-        FROM user_with_latest_deposit
-        LEFT OUTER JOIN individual_booking ON individual_booking."depositId" = user_with_latest_deposit.deposit_id
-        LEFT OUTER JOIN booking ON booking."individualBookingId" = individual_booking.id
-        GROUP BY
-          user_with_latest_deposit.user_id,
-          user_with_latest_deposit.deposit_expiration_date,
-          user_with_latest_deposit.deposit_amount
-        ORDER BY user_with_latest_deposit.user_id
-    """
-    result = db.session.execute(query)
-
-    # Avoid loading all rows in memory.
-    def get_rows() -> typing.Generator[typing.Iterator, None, None]:
-        while 1:
-            rows = result.fetchmany(100_000)
-            if not rows:
-                break
-            yield rows
-
-    row_formatter = lambda row: (row.user_id, row.current_balance, row.real_balance)
-    return _write_csv(
-        "soldes_des_utilisateurs",
-        header,
-        rows=itertools.chain.from_iterable(get_rows()),
-        row_formatter=row_formatter,
-        compress=True,
     )
 
 
