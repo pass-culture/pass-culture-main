@@ -34,6 +34,7 @@ export interface IOfferEducationalProps {
   imageOffer: IImageUploaderOfferProps['imageOffer']
   onImageUpload: IImageUploaderOfferProps['onImageUpload']
   onImageDelete: IImageUploaderOfferProps['onImageDelete']
+  useOfferForFormValues?: boolean
 }
 
 const OfferEducational = ({
@@ -53,6 +54,7 @@ const OfferEducational = ({
   imageOffer,
   onImageUpload,
   onImageDelete,
+  useOfferForFormValues = false,
 }: IOfferEducationalProps): JSX.Element => {
   const { resetForm, ...formik } = useFormik({
     initialValues,
@@ -81,12 +83,24 @@ const OfferEducational = ({
       const venue = userOfferers
         .find(({ id }) => id === formik.values.offererId)
         ?.managedVenues?.find(({ id }) => id === formik.values.venueId)
+      const visualAccessibility = useOfferForFormValues
+        ? initialValues.accessibility.visual
+        : venue?.visualDisabilityCompliant
+      const mentalAccessibility = useOfferForFormValues
+        ? initialValues.accessibility.mental
+        : venue?.mentalDisabilityCompliant
+      const motorAccessibility = useOfferForFormValues
+        ? initialValues.accessibility.motor
+        : venue?.motorDisabilityCompliant
+      const audioAccessibility = useOfferForFormValues
+        ? initialValues.accessibility.audio
+        : venue?.audioDisabilityCompliant
 
       const noDisabilityCompliant =
-        !venue?.visualDisabilityCompliant &&
-        !venue?.mentalDisabilityCompliant &&
-        !venue?.motorDisabilityCompliant &&
-        !venue?.audioDisabilityCompliant
+        !visualAccessibility &&
+        !mentalAccessibility &&
+        !motorAccessibility &&
+        !audioAccessibility
 
       formik.setValues({
         ...formik.values,
@@ -94,10 +108,10 @@ const OfferEducational = ({
           venue?.collectiveInterventionArea ??
           DEFAULT_EAC_FORM_VALUES.interventionArea,
         accessibility: {
-          visual: Boolean(venue?.visualDisabilityCompliant),
-          mental: Boolean(venue?.mentalDisabilityCompliant),
-          motor: Boolean(venue?.motorDisabilityCompliant),
-          audio: Boolean(venue?.audioDisabilityCompliant),
+          visual: Boolean(visualAccessibility),
+          mental: Boolean(mentalAccessibility),
+          motor: Boolean(motorAccessibility),
+          audio: Boolean(audioAccessibility),
           none: noDisabilityCompliant,
         },
         eventAddress: {
