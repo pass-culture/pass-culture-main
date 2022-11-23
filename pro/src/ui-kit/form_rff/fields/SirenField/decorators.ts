@@ -13,9 +13,16 @@ export const sirenUpdate = async (humanSiren: string) => {
       name: '',
       postalCode: '',
       siren: humanSiren,
+      apeCode: '',
     }
   }
-  return response.payload.values
+  let values = undefined
+  if (response.payload.values != null) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { apeCode, ...rest } = response.payload.values
+    values = rest
+  }
+  return values
 }
 
 export const addressAndDesignationFromSirenDecorator = createDecorator({

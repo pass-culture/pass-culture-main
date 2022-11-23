@@ -4,7 +4,7 @@ import { useHistory, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { getError } from 'apiClient/helpers'
-import ConfirmDialog from 'components/ConfirmDialog'
+import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import GoBackLink from 'components/GoBackLink'
 import PageTitle from 'components/PageTitle/PageTitle'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'

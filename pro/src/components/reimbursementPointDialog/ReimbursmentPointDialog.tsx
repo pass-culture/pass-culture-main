@@ -1,8 +1,8 @@
 import React from 'react'
 
+import { ExternalLinkIcon } from 'icons'
 import { Button } from 'ui-kit/Button'
 import CopyLink from 'ui-kit/CopyLink'
-import Icon from 'ui-kit/Icon/Icon'
 import { REACT_APP_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4 } from 'utils/config'
 
 import DialogBox from '../DialogBox'
@@ -49,11 +49,11 @@ const ReimbursmentPointDialog = ({
           Cliquez sur le bouton “Continuer sur Démarches Simplifiées”. <br />
           Vous allez être redirigé sur la plateforme Démarches Simplifiées.
         </p>
-        <Button className={styles['link-button']} onClick={openDmsProcedure}>
-          <Icon
-            className={styles['icon-button']}
-            svg="ico-fill-external-link"
-          />
+        <Button
+          className={styles['link-button']}
+          onClick={openDmsProcedure}
+          Icon={ExternalLinkIcon}
+        >
           Continuer sur Démarches Simplifées
         </Button>
       </div>

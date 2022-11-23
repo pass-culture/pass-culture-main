@@ -23,6 +23,7 @@ describe('getSirenDataAdapter', () => {
           name: '',
           postalCode: '',
           siren: siren,
+          apeCode: '',
         },
       })
     })
@@ -65,6 +66,7 @@ describe('getSirenDataAdapter', () => {
       jest.spyOn(api, 'getSirenInfo').mockResolvedValue({
         name: 'nom du lieu',
         siren: siren,
+        ape_code: '90.03A',
         address: {
           street: '3 rue de la gare',
           city: 'paris',
@@ -91,6 +93,7 @@ describe('getSirenDataAdapter', () => {
           name: 'nom du lieu',
           postalCode: '75000',
           siren: siren,
+          apeCode: '90.03A',
         },
       })
     })

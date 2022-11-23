@@ -11,6 +11,7 @@ import { ReactComponent as DropdownDisclosureDownBDisabledIcon } from 'icons/dro
 import { ReactComponent as DropdownDisclosureDownBIcon } from 'icons/dropdown-disclosure-down-b.svg'
 import { ReactComponent as DropdownDisclosureDownSWIcon } from 'icons/dropdown-disclosure-down-s-w.svg'
 import { ReactComponent as ErrorIcon } from 'icons/error.svg'
+import { ReactComponent as FraudIcon } from 'icons/fraud.svg'
 import { ReactComponent as IcoAlertGrey } from 'icons/ico-alert-grey.svg'
 import { ReactComponent as IcoAttention } from 'icons/ico-attention.svg'
 import { ReactComponent as IcoBreadcrumbArrowRight } from 'icons/ico-breadcrumb-arrow-right.svg'
@@ -35,6 +36,7 @@ import { ReactComponent as IcoExternalSiteRedFilled } from 'icons/ico-external-s
 import { ReactComponent as IcoEyeClose } from 'icons/ico-eye-close.svg'
 import { ReactComponent as IcoEyeHidden } from 'icons/ico-eye-hidden.svg'
 import { ReactComponent as IcoEyeOpen } from 'icons/ico-eye-open.svg'
+import { ReactComponent as ExternalLinkIcon } from 'icons/ico-fill-external-link.svg'
 import { ReactComponent as GuichetFullIcon } from 'icons/ico-guichet-full.svg'
 import { ReactComponent as HomeIcon } from 'icons/ico-home.svg'
 import { ReactComponent as ListOffersIcon } from 'icons/ico-list-offers.svg'
@@ -651,6 +653,18 @@ export const Icons = () => (
           <TemplateOfferIcon />
         </td>
         <td>TemplateOfferIcon</td>
+      </tr>
+      <tr>
+        <td>
+          <FraudIcon />
+        </td>
+        <td>FraudIcon</td>
+      </tr>
+      <tr>
+        <td>
+          <ExternalLinkIcon />
+        </td>
+        <td>ExternalLinkIcon</td>
       </tr>
     </body>
   </table>

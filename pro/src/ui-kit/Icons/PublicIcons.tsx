@@ -201,12 +201,6 @@ export const PublicIcons = () => (
         <td>public/icons/ico-eye-open</td>
       </tr>
       <tr>
-        <td className={styles['with-background']}>
-          <Icon svg="ico-fill-external-link" />
-        </td>
-        <td>public/icons/ico-fill-external-link</td>
-      </tr>
-      <tr>
         <td>
           <Icon svg="ico-filter-status-active" />
         </td>

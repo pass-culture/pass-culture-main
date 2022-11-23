@@ -40,6 +40,7 @@ const ButtonLink = ({
   const classNames = cn(
     styles['button'],
     styles[`button-${variant}`],
+    styles[`button-${iconPosition}`],
     { [styles[`button-disabled`]]: isDisabled },
     className
   )

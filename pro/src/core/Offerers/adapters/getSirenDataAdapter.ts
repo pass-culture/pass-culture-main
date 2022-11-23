@@ -14,6 +14,7 @@ type IPayload = {
     name: string
     postalCode: string
     siren: string
+    apeCode: string
   }
 }
 
@@ -32,6 +33,7 @@ const getSirenDataAdapter: GetSirenDataAdapter = async (humanSiren: string) => {
           name: '',
           postalCode: '',
           siren: '',
+          apeCode: '',
         },
       },
     }
@@ -56,6 +58,7 @@ const getSirenDataAdapter: GetSirenDataAdapter = async (humanSiren: string) => {
           name: response.name,
           postalCode: response.address.postalCode,
           siren: response.siren,
+          apeCode: response.ape_code,
         },
       },
     }

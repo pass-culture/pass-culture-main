@@ -14,3 +14,8 @@ export const SIGNUP_FORM_DEFAULT_VALUES = {
     siren: '',
   },
 }
+
+// APE/NAF codes for :
+//   - Enseignement secondaire général (85.31Z)
+//   - Enseignement secondaire technique ou professionnel (85.32Z)
+export const MAYBE_APP_USER_APE_CODE = ['85.31Z', '85.32Z']
