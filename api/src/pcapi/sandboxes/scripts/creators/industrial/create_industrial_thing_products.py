@@ -35,9 +35,7 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
             mock_index = (product_creation_counter + thing_subcategories_list_index) % len(MOCK_NAMES)
 
             name = "{} / {}".format(thing_subcategory.id, MOCK_NAMES[mock_index])
-            is_online_only = (
-                thing_subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.ONLINE.value
-            )
+            is_online_only = thing_subcategory.is_online_only
             url = "https://ilestencoretemps.fr/" if is_online_only else None
 
             thing_product = offers_factories.ProductFactory(
