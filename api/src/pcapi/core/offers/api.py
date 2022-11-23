@@ -563,9 +563,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: Stock, bookings: typing.List[Bo
             )
 
 
-def upsert_stocks(
-    offer_id: int, stock_data_list: list[StockCreationBodyModel | StockEditionBodyModel], user: User
-) -> list[Stock]:
+def upsert_stocks(offer_id: int, stock_data_list: list[StockCreationBodyModel | StockEditionBodyModel]) -> list[Stock]:
     activation_codes = []
     stocks = []
     edited_stocks = []
