@@ -13,6 +13,7 @@ interface ITextAreaProps {
   disabled?: boolean
   placeholder?: string
   label: string
+  rows?: number
   maxLength?: number
   countCharacters?: boolean
   isOptional?: boolean
@@ -29,6 +30,7 @@ const TextArea = ({
   countCharacters,
   isOptional,
   smallLabel,
+  rows = 7,
 }: ITextAreaProps): JSX.Element => {
   const [field, meta] = useField({ name })
 
@@ -51,6 +53,7 @@ const TextArea = ({
         })}
         disabled={disabled}
         id={name}
+        rows={rows}
         maxLength={maxLength}
         placeholder={placeholder}
         {...field}
