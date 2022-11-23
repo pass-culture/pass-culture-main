@@ -93,7 +93,7 @@ const OfferSummary = ({
       editLink={editLink}
       onLinkClick={logEditEvent}
     >
-      <SummaryLayout.SubSection title="Type d'offre">
+      <SummaryLayout.SubSection title="Type d’offre">
         <SummaryLayout.Row title="Catégorie" description={offer.categoryName} />
         <SummaryLayout.Row
           title="Sous-catégorie"
@@ -235,7 +235,7 @@ const OfferSummary = ({
               title="Heure de retrait"
               description={`${humanizeDelay(
                 offer.withdrawalDelay
-              )} avant le début de l'évènement`}
+              )} avant le début de l’évènement`}
             />
           )
         }

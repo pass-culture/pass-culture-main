@@ -63,7 +63,7 @@ TextTooLong.args = {
     La question est posé, l'avenir nous le dira.`,
     description: `Même si on se ment, après il faut s'intégrer tout ça dans les environnements et il faut se recréer... pour recréer... a better you et cela même si les gens ne le savent pas ! Mais ça, c'est uniquement lié au spirit.
 
-    Même si on se ment, ce n'est pas un simple sport car c'est un très, très gros travail et c'est une sensation réelle qui se produit si on veut ! Et j'ai toujours grandi parmi les chiens.
+    Même si on se ment, ce n’est pas un simple sport car c'est un très, très gros travail et c'est une sensation réelle qui se produit si on veut ! Et j'ai toujours grandi parmi les chiens.
 
     Oui alors écoute moi, même si on frime comme on appelle ça en France... il faut se recréer... pour recréer... a better you et c'est une sensation réelle qui se produit si on veut ! C'est pour ça que j'ai fait des films avec des replicants.`,
   },
@@ -71,7 +71,7 @@ TextTooLong.args = {
     ...venueData,
     withdrawalDetails: `Même si on se ment, après il faut s'intégrer tout ça dans les environnements et il faut se recréer... pour recréer... a better you et cela même si les gens ne le savent pas ! Mais ça, c'est uniquement lié au spirit.
 
-    Même si on se ment, ce n'est pas un simple sport car c'est un très, très gros travail et c'est une sensation réelle qui se produit si on veut ! Et j'ai toujours grandi parmi les chiens.
+    Même si on se ment, ce n’est pas un simple sport car c'est un très, très gros travail et c'est une sensation réelle qui se produit si on veut ! Et j'ai toujours grandi parmi les chiens.
 
     Oui alors écoute moi, même si on frime comme on appelle ça en France... il faut se recréer... pour recréer... a better you et c'est une sensation réelle qui se produit si on veut ! C'est pour ça que j'ai fait des films avec des replicants.`,
   },

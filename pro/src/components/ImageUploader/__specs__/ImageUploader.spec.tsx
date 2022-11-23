@@ -54,7 +54,7 @@ describe('ImageUploader', () => {
       props,
     })
     expect(
-      screen.getByAltText("Prévisualisation de l'image")
+      screen.getByAltText('Prévisualisation de l’image')
     ).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: /Modifier/i })
@@ -81,7 +81,7 @@ describe('ImageUploader', () => {
       props,
     })
     expect(
-      screen.queryByAltText("Prévisualisation de l'image")
+      screen.queryByAltText('Prévisualisation de l’image')
     ).not.toBeInTheDocument()
     expect(
       screen.queryByRole('button', { name: /Modifier/i })

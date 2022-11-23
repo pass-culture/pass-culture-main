@@ -41,7 +41,7 @@ describe('ButtonImageDelete', () => {
       screen.getByRole('button', { name: /Supprimer/i })
     ).toBeInTheDocument()
 
-    expect(screen.queryByText("Supprimer l'image")).not.toBeInTheDocument()
+    expect(screen.queryByText('Supprimer l’image')).not.toBeInTheDocument()
   })
 
   it('should open/close ModalImageDelete on click', async () => {
@@ -50,7 +50,7 @@ describe('ButtonImageDelete', () => {
     })
     await userEvent.click(screen.getByRole('button', { name: /Supprimer/i }))
 
-    const modalPreview = await screen.findByText("Supprimer l'image")
+    const modalPreview = await screen.findByText('Supprimer l’image')
     expect(modalPreview).toBeInTheDocument()
 
     await userEvent.click(

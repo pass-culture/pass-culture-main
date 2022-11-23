@@ -2290,7 +2290,7 @@ describe('offerDetails - Creation - pro user', () => {
       }
 
       api.postOffer.mockRejectedValue(
-        new ApiError({}, { body: { name: "Ce nom n'est pas valide" } }, '')
+        new ApiError({}, { body: { name: 'Ce nom n’est pas valide' } }, '')
       )
       await renderOffers(props)
 

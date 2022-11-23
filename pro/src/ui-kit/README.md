@@ -3,7 +3,7 @@
 ## Description
 
 Liste tous les composants ultra standards et réutilisables. 
-Les composants de l'ui-kit doivent être bêtes et ne pas interagir avec le monde exterieur (calls api, redux, contextes) autrement que via des fontions passés en props. Ils doivent aussi ne posséder qu'une intelligence limitée (pas de state interne complexe)
+Les composants de l’ui-kit doivent être bêtes et ne pas interagir avec le monde exterieur (calls api, redux, contextes) autrement que via des fontions passés en props. Ils doivent aussi ne posséder qu'une intelligence limitée (pas de state interne complexe)
 
 On y trouvera notament : 
 
@@ -54,20 +54,20 @@ import { Heading1, Heading2, Grid, InputText } from '@ui-kit'
 
 ## DO
 
-- toujours prévoir une prop pour l'ajout d'une classe sur le wrapper de l'élément
-- nommer l'élément d'`ui-kit` principal comme le dossier
-- exporter par defaut le l'élément d'`ui-kit` principal depuis l'index
-- créer une story pour l'élément d'`ui-kit`
+- toujours prévoir une prop pour l'ajout d'une classe sur le wrapper de l’élément
+- nommer l’élément d'`ui-kit` principal comme le dossier
+- exporter par defaut le l’élément d'`ui-kit` principal depuis l’index
+- créer une story pour l’élément d'`ui-kit`
 - nommer les sous-composant en utilisant le nom principal comme préfixe
-- exporter aussi l'élément depuis l'index du dossier principal (il y aura généralement beaucoup d'imports depuis l'`ui-kit`)
+- exporter aussi l’élément depuis l’index du dossier principal (il y aura généralement beaucoup d'imports depuis l'`ui-kit`)
 
 
 ## DON'T
 
 - ne pas définir de marges extèrieures sur le wrapper
-- ne pas surcharger les styles de l'élément depuis un composant de plus haut niveau
+- ne pas surcharger les styles de l’élément depuis un composant de plus haut niveau
 - ne pas faire appel à des styles globaux (autre que mixins, variables et fonctions)
-- l'élément ne peut avoir que 3 types de tailles: 
+- l’élément ne peut avoir que 3 types de tailles: 
     - fixes ex: une icône (32px)
     - naturelle ex: un boutton (en fonction de la longueur du texte)
     - flexible (100% / block / flex)

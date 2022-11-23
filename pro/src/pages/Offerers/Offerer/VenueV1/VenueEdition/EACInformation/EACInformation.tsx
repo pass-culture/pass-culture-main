@@ -31,7 +31,7 @@ const EACInformation = ({
           informations à destination du public scolaire. Les informations
           renseignées seront visibles par les enseignants et chefs
           d'établissement sur Adage (Application dédiée à la généralisation de
-          l'éducation artistique et culturelle).
+          l’éducation artistique et culturelle).
         </p>
       )}
 

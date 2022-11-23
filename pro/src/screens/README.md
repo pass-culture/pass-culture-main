@@ -55,7 +55,7 @@ import {
 
 ## DO
 - nommer le screen principal comme le dossier
-- exporter par defaut le screen principal depuis l'index
+- exporter par defaut le screen principal depuis l’index
 - créer une story pour le screen
 - nommer les sous-composants en utilisant le nom principal comme préfixe
 

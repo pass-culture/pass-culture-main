@@ -35,7 +35,7 @@ const getSingleValidationSchema = (minQuantity: number | null = null) => {
       .typeError('Veuillez renseigner une date')
       .test({
         name: 'bookingLimitDatetime-before-beginningDate',
-        message: "Veuillez rentrer une date antérieur à la date de l'évènement",
+        message: 'Veuillez rentrer une date antérieur à la date de l’évènement',
         test: isBeforeBeginningDate,
       }),
 
