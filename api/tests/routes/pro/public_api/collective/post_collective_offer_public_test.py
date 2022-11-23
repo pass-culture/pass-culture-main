@@ -1,18 +1,37 @@
+from pathlib import Path
 from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
 
+from pcapi import settings
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.utils.human_ids import humanize
 
+import tests
+
+from . import image_data
+
+
+IMAGES_DIR = Path(tests.__path__[0]) / "files"
+UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / educational_models.CollectiveOffer.FOLDER
+
 
 @pytest.mark.usefixtures("db_session")
 @freeze_time("2022-05-01 15:00:00")
 class CollectiveOffersPublicPostOfferTest:
+    def teardown_method(self, *args):
+        """clear images after each tests"""
+        storage_folder = UPLOAD_FOLDER / educational_models.CollectiveOffer.__name__.lower()
+        if storage_folder.exists():
+            for child in storage_folder.iterdir():
+                if not child.is_file():
+                    continue
+                child.unlink()
+
     def test_post_offers(self, client):
         # Given
         offerer = offerers_factories.OffererFactory()
@@ -52,6 +71,8 @@ class CollectiveOffersPublicPostOfferTest:
             "educationalPriceDetail": "Justification du prix",
             # link to educational institution
             "educationalInstitutionId": educational_institution.id,
+            "imageCredit": "pouet",
+            "imageFile": image_data.GOOD_IMAGE,
         }
 
         # When
@@ -76,6 +97,8 @@ class CollectiveOffersPublicPostOfferTest:
             "otherAddress": "",
         }
         assert offer.isPublicApi == True
+        assert offer.hasImage == True
+        assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
     def test_invalid_api_key(self, client):
         # Given
@@ -326,3 +349,107 @@ class CollectiveOffersPublicPostOfferTest:
 
         # Then
         assert response.status_code == 404
+
+    def test_invalid_image_size(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        domain = educational_factories.EducationalDomainFactory()
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+
+        payload = {
+            "venueId": venue.id,
+            "name": "Un nom en français ævœc des diàcrtîtïqués",
+            "description": "une description d'offre",
+            "subcategoryId": "EVENEMENT_CINE",
+            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
+            "contactEmail": "offerer-contact@example.com",
+            "contactPhone": "+33100992798",
+            "domains": [domain.id],
+            "durationMinutes": 183,
+            "students": [educational_models.StudentLevels.COLLEGE4.name],
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "offerVenue": {
+                "venueId": venue.id,
+                "addressType": "offererVenue",
+                "otherAddress": "",
+            },
+            "interventionArea": ["44"],
+            "isActive": True,
+            # stock part
+            "beginningDatetime": "2022-09-25T11:00",
+            "bookingLimitDatetime": "2022-09-15T11:00",
+            "totalPrice": 35621,
+            "numberOfTickets": 30,
+            "educationalPriceDetail": "Justification du prix",
+            # link to educational institution
+            "educationalInstitutionId": educational_institution.id,
+            "imageCredit": "pouet",
+            "imageFile": image_data.WRONG_IMAGE_SIZE,
+        }
+
+        # When
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+                "/v2/collective/offers/", json=payload
+            )
+
+        # Then
+        assert response.status_code == 400
+
+    def test_invalid_image_type(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        domain = educational_factories.EducationalDomainFactory()
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+
+        payload = {
+            "venueId": venue.id,
+            "name": "Un nom en français ævœc des diàcrtîtïqués",
+            "description": "une description d'offre",
+            "subcategoryId": "EVENEMENT_CINE",
+            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
+            "contactEmail": "offerer-contact@example.com",
+            "contactPhone": "+33100992798",
+            "domains": [domain.id],
+            "durationMinutes": 183,
+            "students": [educational_models.StudentLevels.COLLEGE4.name],
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "offerVenue": {
+                "venueId": venue.id,
+                "addressType": "offererVenue",
+                "otherAddress": "",
+            },
+            "interventionArea": ["44"],
+            "isActive": True,
+            # stock part
+            "beginningDatetime": "2022-09-25T11:00",
+            "bookingLimitDatetime": "2022-09-15T11:00",
+            "totalPrice": 35621,
+            "numberOfTickets": 30,
+            "educationalPriceDetail": "Justification du prix",
+            # link to educational institution
+            "educationalInstitutionId": educational_institution.id,
+            "imageCredit": "pouet",
+            "imageFile": image_data.WRONG_IMAGE_TYPE,
+        }
+
+        # When
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+                "/v2/collective/offers/", json=payload
+            )
+
+        # Then
+        assert response.status_code == 400

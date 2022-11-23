@@ -236,6 +236,8 @@ def test_public_api(client, app):
                             "type": "boolean",
                         },
                         "id": {"title": "Id", "type": "integer"},
+                        "imageCredit": {"nullable": True, "title": "Imagecredit", "type": "string"},
+                        "imageUrl": {"nullable": True, "title": "Imageurl", "type": "string"},
                         "interventionArea": {"items": {"type": "string"}, "title": "Interventionarea", "type": "array"},
                         "isActive": {"nullable": True, "title": "Isactive", "type": "boolean"},
                         "isSoldOut": {"title": "Issoldout", "type": "boolean"},
@@ -364,6 +366,8 @@ def test_public_api(client, app):
                             "title": "Educationalpricedetail",
                             "type": "string",
                         },
+                        "imageCredit": {"nullable": True, "title": "Imagecredit", "type": "string"},
+                        "imageFile": {"nullable": True, "title": "Imagefile", "type": "string"},
                         "interventionArea": {
                             "items": {"type": "string"},
                             "nullable": True,
@@ -436,6 +440,8 @@ def test_public_api(client, app):
                             "title": "Educationalpricedetail",
                             "type": "string",
                         },
+                        "imageCredit": {"nullable": True, "title": "Imagecredit", "type": "string"},
+                        "imageFile": {"nullable": True, "title": "Imagefile", "type": "string"},
                         "interventionArea": {"items": {"type": "string"}, "title": "Interventionarea", "type": "array"},
                         "isActive": {"title": "Isactive", "type": "boolean"},
                         "mentalDisabilityCompliant": {
