@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from freezegun import freeze_time
 import pytest
 
@@ -18,6 +16,8 @@ class CollectiveOffersPublicGetOfferTest:
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__domains=[domain],
             collectiveOffer__venue__managingOfferer=offerer,
+            collectiveOffer__imageCredit="Pouet",
+            collectiveOffer__imageCrop={"data": 2},
         )
         offer = stock.collectiveOffer
         # When
@@ -54,12 +54,14 @@ class CollectiveOffersPublicGetOfferTest:
             "status": "ACTIVE",
             "students": ["GENERAL2"],
             "subcategoryId": offer.subcategoryId,
-            "totalPrice": Decimal(100.00),
+            "totalPrice": float(offer.collectiveStock.price),
             "hasBookingLimitDatetimesPassed": False,
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": None},
+            "imageCredit": offer.imageCredit,
+            "imageUrl": offer.imageUrl,
         }
 
     def test_offer_does_not_exists(self, client):
