@@ -65,6 +65,7 @@ from pcapi.utils.human_ids import humanize
 import pcapi.utils.postal_code as postal_code_utils
 
 from . import constants
+from . import tag_categories
 
 
 if typing.TYPE_CHECKING:
@@ -888,9 +889,18 @@ class OffererTag(PcObject, Base, Model):
     name: str = Column(String(140), nullable=False, unique=True)
     label: str = Column(String(140))
     description: str = Column(Text)
+    categoryId: str = sa.Column(sa.Text, nullable=True, index=True)
 
     def __repr__(self) -> str:
         return self.name
+
+    @property
+    def category(self) -> tag_categories.OffererTagCategory | None:
+        if not self.categoryId:
+            return None
+        if self.categoryId not in tag_categories.ALL_OFFERER_TAG_CATEGORIES_DICT:
+            raise ValueError(f"Unexpected categoryId '{self.categoryId}' for offerer tag {self.id}")
+        return tag_categories.ALL_OFFERER_TAG_CATEGORIES_DICT[self.categoryId]
 
 
 class OffererTagMapping(PcObject, Base, Model):
