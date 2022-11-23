@@ -10,6 +10,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import useAnalytics from 'hooks/useAnalytics'
 import useLogEventOnUnload from 'hooks/useLogEventOnUnload'
+import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import { Button, SubmitButton, TextInput, Checkbox } from 'ui-kit'
@@ -17,7 +18,11 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { PasswordInput, SirenInput } from 'ui-kit/form'
 import { removeWhitespaces } from 'utils/string'
 
-import { SIGNUP_FORM_DEFAULT_VALUES } from './constants'
+import {
+  MAYBE_APP_USER_APE_CODE,
+  SIGNUP_FORM_DEFAULT_VALUES,
+} from './constants'
+import MaybeAppUserDialog from './MaybeAppUserDialog'
 import OperatingProcedures from './OperationProcedures'
 import { ISignupApiErrorResponse, ISignupFormValues } from './types'
 import { validationSchema } from './validationSchema'
@@ -26,6 +31,7 @@ const SignupForm = (): JSX.Element => {
   const history = useHistory()
   const notification = useNotification()
   const [showAnonymousBanner, setShowAnonymousBanner] = useState(false)
+  const { visible, showModal, hideModal } = useModal()
   const { logEvent } = useAnalytics()
   useRedirectLoggedUser()
 
@@ -86,7 +92,16 @@ const SignupForm = (): JSX.Element => {
     setShowAnonymousBanner(false)
     const response = await getSirenDataAdapter(siren)
     if (response.isOk) {
-      formik.setFieldValue('legalUnitValues', response.payload.values)
+      let values = undefined
+      if (response.payload.values != null) {
+        const { apeCode, ...rest } = response.payload.values
+        values = rest
+        if (MAYBE_APP_USER_APE_CODE.includes(apeCode)) {
+          showModal()
+        }
+      }
+
+      formik.setFieldValue('legalUnitValues', values)
     } else {
       formik.setFieldError('siren', response.message)
       if (
@@ -141,6 +156,7 @@ const SignupForm = (): JSX.Element => {
   }, [])
   return (
     <section className="sign-up-form-page">
+      {visible && <MaybeAppUserDialog onCancel={hideModal} />}
       <div className="content">
         <h1>Créer votre compte professionnel</h1>
         <h2>Merci de compléter les champs suivants pour créer votre compte.</h2>

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import ConfirmDialog from 'components/ConfirmDialog'
+import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
 import { Banner } from 'ui-kit'

@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react'
 
-import ConfirmDialog from 'components/ConfirmDialog'
+import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,

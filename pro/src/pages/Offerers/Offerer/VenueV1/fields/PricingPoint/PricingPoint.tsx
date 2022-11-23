@@ -3,7 +3,7 @@ import { Field, useField } from 'react-final-form'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
-import ConfirmDialog from 'components/ConfirmDialog'
+import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as ValidIcon } from 'icons/ico-valide-cercle.svg'
 import Button from 'ui-kit/Button/Button'
