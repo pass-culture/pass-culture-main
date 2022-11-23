@@ -33,6 +33,7 @@ type IOfferEducationalFormProps = Omit<
   | 'isEdition'
   | 'getEducationalDomainsAdapter'
   | 'isOfferCancellable'
+  | 'useOfferForFormValues'
 > & {
   mode: Mode
   domainsOptions: SelectOption[]
