@@ -4,6 +4,7 @@ import pytest
 
 from pcapi.core.categories import categories
 from pcapi.core.categories.subcategories import Subcategory
+from pcapi.core.categories.subcategories_v2 import NativeCategory
 import pcapi.core.users.factories as users_factories
 
 
@@ -13,6 +14,7 @@ import pcapi.core.users.factories as users_factories
         Subcategory(
             id="ABO_BIBLIOTHEQUE",
             category=categories.LIVRE,
+            native_category=NativeCategory.BIBLIOTHEQUE,
             pro_label="Abonnement (bibliothèques, médiathèques...)",
             app_label="Abonnement (bibliothèques, médiathèques...)",
             search_group_name="LIVRE",
@@ -30,6 +32,7 @@ import pcapi.core.users.factories as users_factories
         Subcategory(
             id="CINE_PLEIN_AIR",
             category=categories.CINEMA,
+            native_category=NativeCategory.SEANCES_DE_CINEMA,
             pro_label="Cinéma plein air",
             app_label="Cinéma plein air",
             search_group_name="CINEMA",
