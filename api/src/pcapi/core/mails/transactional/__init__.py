@@ -25,6 +25,7 @@ from .educational.eac_one_day_before_event import send_eac_alert_one_day_before_
 from .educational.eac_pending_booking_confirmation_limit_date_in_3_days import (
     send_eac_pending_booking_confirmation_limit_date_in_3_days,
 )
+from .educational.eac_sending_offerer_activation import send_eac_offerer_activation_email
 from .pro.email_validation import send_email_validation_to_admin_email
 from .pro.email_validation import send_email_validation_to_pro_email
 from .pro.event_offer_postponed_confirmation_to_pro import send_event_offer_postponement_confirmation_email_to_pro
