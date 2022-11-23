@@ -4,6 +4,7 @@ import React from 'react'
 import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './Tag.module.scss'
+
 interface Closeable {
   onClose?: (event: React.MouseEvent<HTMLButtonElement>) => void
   closeLabel?: string
