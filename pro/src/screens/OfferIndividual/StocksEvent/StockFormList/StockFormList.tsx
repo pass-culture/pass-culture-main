@@ -11,6 +11,8 @@ import { StockFormRow } from 'components/StockFormRow'
 import { IOfferIndividual } from 'core/Offers/types'
 import { useModal } from 'hooks/useModal'
 import { IconPlusCircle } from 'icons'
+import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
+import { isOfferDisabled } from 'screens/OfferEducationalStock/utils'
 import { DialogStockDeleteConfirm } from 'screens/OfferIndividual/DialogStockDeleteConfirm'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -41,7 +43,8 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
     getToday(),
     offer.venue.departmentCode
   )
-
+  const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
+  const isSynchronized = offer.lastProvider !== null
   return (
     <FieldArray
       name="stocks"
@@ -70,24 +73,28 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
                     stockIndex={index}
                   />
                 }
-                actions={
-                  values.stocks.length > 1 && stockValues.isDeletable
-                    ? [
-                        {
-                          callback: async () => {
-                            setDeletingStockDate({
-                              deletingStock: stockValues,
-                              deletingIndex: index,
-                            })
-                            stockValues.stockId
-                              ? deleteConfirmShow()
-                              : arrayHelpers.remove(index)
-                          },
-                          label: 'Supprimer',
-                        },
-                      ]
-                    : []
-                }
+                actions={[
+                  {
+                    callback: async () => {
+                      setDeletingStockDate({
+                        deletingStock: stockValues,
+                        deletingIndex: index,
+                      })
+                      if (stockValues.stockId) {
+                        deleteConfirmShow()
+                      } else {
+                        arrayHelpers.remove(index)
+                        if (values.stocks.length === 1) {
+                          arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)
+                        }
+                      }
+                    },
+                    label: 'Supprimer le stock',
+                    disabled:
+                      !stockValues.isDeletable || isDisabled || isSynchronized,
+                    Icon: TrashFilledIcon,
+                  },
+                ]}
                 actionDisabled={false}
               />
             ))}
@@ -100,6 +107,9 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
                   const { deletingStock, deletingIndex } = deletingStockData
                   deletingStock.stockId && onDeleteStock(deletingStock)
                   arrayHelpers.remove(deletingIndex)
+                }
+                if (values.stocks.length === 1) {
+                  arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)
                 }
                 deleteConfirmHide()
               }}
