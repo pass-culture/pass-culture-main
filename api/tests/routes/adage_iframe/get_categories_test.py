@@ -4,6 +4,7 @@ import pytest
 
 from pcapi.core.categories import categories
 from pcapi.core.categories.subcategories import Subcategory
+from pcapi.core.categories.subcategories_v2 import NativeCategory
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
@@ -17,6 +18,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
         Subcategory(
             id="ABO_BIBLIOTHEQUE",
             category=categories.LIVRE,
+            native_category=NativeCategory.BIBLIOTHEQUE,
             pro_label="Abonnement (bibliothèques, médiathèques...)",
             app_label="Abonnement (bibliothèques, médiathèques...)",
             search_group_name="LIVRE",
@@ -34,6 +36,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
         Subcategory(
             id="CINE_PLEIN_AIR",
             category=categories.CINEMA,
+            native_category=NativeCategory.SEANCES_DE_CINEMA,
             pro_label="Cinéma plein air",
             app_label="Cinéma plein air",
             search_group_name="CINEMA",
