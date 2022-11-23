@@ -9,6 +9,7 @@ from pcapi.serialization.utils import to_camel
 class SubcategoryResponseModelv2(BaseModel):
     id: subcategories_v2.SubcategoryIdEnumv2
     category_id: categories.CategoryIdEnum
+    native_category: subcategories_v2.NativeCategory
     app_label: str
     search_group_name: subcategories_v2.SearchGroupNameEnumv2
     homepage_label_name: subcategories_v2.HomepageLabelNameEnumv2
