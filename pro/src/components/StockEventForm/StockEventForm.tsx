@@ -3,7 +3,6 @@ import { isAfter } from 'date-fns'
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import { IconEuroGrey } from 'icons'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
 
 import styles from './StockEventForm.module.scss'
@@ -15,7 +14,7 @@ export interface IStockEventFormProps {
   fieldPrefix?: string
 }
 
-const stockIndexRegex = (name: string): number => {
+const phoneNumberRegex = (name: string): number => {
   const rx = /\[(.*)\]/g
   const match = rx.exec(name)
   if (match === null) {
@@ -32,8 +31,8 @@ const StockEventForm = ({
   const { values, setFieldValue, setTouched } = useFormikContext<{
     stocks: IStockEventFormValues[]
   }>()
-  const stockIndex = stockIndexRegex(fieldPrefix)
-  const onChangeBeginningDate = (_name: string, date: Date | null) => {
+  const onChangeBeginningDate = (name: string, date: Date | null) => {
+    const stockIndex = phoneNumberRegex(name)
     const stockBookingLimitDatetime =
       values.stocks[stockIndex].bookingLimitDatetime
     if (
@@ -80,9 +79,6 @@ const StockEventForm = ({
         placeholder="Ex: 20€"
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('price')}
-        rightIcon={
-          values.stocks[stockIndex].price ? () => <IconEuroGrey /> : undefined
-        }
       />
       <DatePicker
         smallLabel
