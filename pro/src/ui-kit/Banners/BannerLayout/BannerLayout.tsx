@@ -19,6 +19,7 @@ export interface IBannerLayoutProps {
   handleOnClick?: () => void
   className?: string
   showTitle?: boolean
+  isProvider?: boolean
 }
 
 const BannerLayout = ({
@@ -30,6 +31,7 @@ const BannerLayout = ({
   className,
   linkNode,
   showTitle = true,
+  isProvider = false,
 }: IBannerLayoutProps): JSX.Element => {
   const isNewStyles = true
   /* istanbul ignore next: graphic variation */
@@ -83,9 +85,15 @@ const BannerLayout = ({
           <div>
             {children && (
               <div
-                className={cn(styles['bi-banner-text'], {
-                  [styles['with-margin']]: !!linkNode,
-                })}
+                className={cn(
+                  styles['bi-banner-text'],
+                  {
+                    [styles['with-margin']]: !!linkNode,
+                  },
+                  {
+                    [styles['provider']]: !!isProvider,
+                  }
+                )}
               >
                 {children}
               </div>
