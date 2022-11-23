@@ -203,7 +203,7 @@ describe('Summary', () => {
       // then
       expect(screen.getAllByText('Modifier')).toHaveLength(2)
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-      expect(screen.getByText("Type d'offre")).toBeInTheDocument()
+      expect(screen.getByText('Type d’offre')).toBeInTheDocument()
       expect(screen.getByText('Informations artistiques')).toBeInTheDocument()
       expect(screen.getByText('Informations pratiques')).toBeInTheDocument()
       expect(screen.getByText('Accessibilité')).toBeInTheDocument()
@@ -252,7 +252,7 @@ describe('Summary', () => {
       // then
       expect(screen.getAllByText('Modifier')).toHaveLength(2)
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-      expect(screen.getByText("Type d'offre")).toBeInTheDocument()
+      expect(screen.getByText('Type d’offre')).toBeInTheDocument()
       expect(screen.getByText('Informations artistiques')).toBeInTheDocument()
       expect(screen.getByText('Informations pratiques')).toBeInTheDocument()
       expect(screen.getByText('Accessibilité')).toBeInTheDocument()

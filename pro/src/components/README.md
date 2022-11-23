@@ -80,12 +80,12 @@ const MonComposant(props: IMonComposantProps): JSX.Element => {}
 ## DO
 
 - nommer le composant principal comme le dossier
-- exporter par defaut le composant principal depuis l'index
+- exporter par defaut le composant principal depuis l’index
 - si le composant est réutilisé dans plusieurs contextes : créer une story
-- exporter depuis l'index tous les éléments publiques
+- exporter depuis l’index tous les éléments publiques
 - nommer les sous-composant en utilisant le nom principal comme préfixe
-- ne jamais exporter un sous-composant depuis l'index (préférer extraire le sous-composant dans ce cas)
-- pour regrouper des composants liés, préférer en général l'usage d'un prefix à la création d'un dossier
+- ne jamais exporter un sous-composant depuis l’index (préférer extraire le sous-composant dans ce cas)
+- pour regrouper des composants liés, préférer en général l’usage d'un prefix à la création d'un dossier
 - regrouper les Screens liés entre eux alphabétiquement en utilisant un préfixe
   - `OfferCreation`
   - `OfferEdition`

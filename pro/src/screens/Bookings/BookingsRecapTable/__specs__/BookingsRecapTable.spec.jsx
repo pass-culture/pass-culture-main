@@ -384,7 +384,7 @@ describe('components | BookingsRecapTable', () => {
 
     renderBookingRecap(props)
 
-    const input = screen.getByPlaceholderText("Rechercher par nom d'offre")
+    const input = screen.getByPlaceholderText('Rechercher par nom d’offre')
 
     // When
     await userEvent.type(input, 'not findable')
@@ -435,7 +435,7 @@ describe('components | BookingsRecapTable', () => {
     filterBookingsRecap.mockReturnValue([])
     renderBookingRecap(props)
 
-    const input = screen.getByPlaceholderText("Rechercher par nom d'offre")
+    const input = screen.getByPlaceholderText('Rechercher par nom d’offre')
 
     await userEvent.type(input, 'not findable')
 
@@ -447,7 +447,7 @@ describe('components | BookingsRecapTable', () => {
     await userEvent.click(displayAllBookingsButton)
 
     // Then
-    const offerName = screen.getByPlaceholderText("Rechercher par nom d'offre")
+    const offerName = screen.getByPlaceholderText('Rechercher par nom d’offre')
     expect(offerName).toHaveValue('')
   })
 
@@ -524,7 +524,7 @@ describe('components | BookingsRecapTable', () => {
     await userEvent.click(screen.getAllByRole('button')[1])
 
     // when
-    const input = screen.getByPlaceholderText("Rechercher par nom d'offre")
+    const input = screen.getByPlaceholderText('Rechercher par nom d’offre')
 
     await userEvent.type(input, 'not findable')
 

@@ -52,7 +52,7 @@ const TicketWithdrawal = ({
         <FormLayout.Row>
           <Select
             label="Date d’envoi"
-            description="avant le début de l'évènement"
+            description="avant le début de l’évènement"
             name="withdrawalDelay"
             options={ticketSentDateOptions}
             disabled={readOnlyFields.includes('withdrawalType')}
@@ -64,7 +64,7 @@ const TicketWithdrawal = ({
         <FormLayout.Row>
           <Select
             label="Heure de retrait"
-            description="avant le début de l'évènement"
+            description="avant le début de l’évènement"
             name="withdrawalDelay"
             options={ticketWithdrawalHourOptions}
             disabled={readOnlyFields.includes('withdrawalType')}

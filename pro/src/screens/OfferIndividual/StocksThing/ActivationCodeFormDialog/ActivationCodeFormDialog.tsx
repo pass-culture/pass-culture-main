@@ -56,7 +56,7 @@ const ActivationCodeFormDialog = ({
       } else {
         if (!activationCodes) {
           setErrorMessage(
-            "Aucune code d'activation n'est présent dans le fichier fourni"
+            "Aucune code d'activation n’est présent dans le fichier fourni"
           )
           return
         }

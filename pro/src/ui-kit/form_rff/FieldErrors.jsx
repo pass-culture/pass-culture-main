@@ -5,7 +5,7 @@ import Icon from 'ui-kit/Icon/Icon'
 
 // NOTE: les index d'array ne doit pas servir de clé unique
 // pour les éléments d'une liste d'éléménts
-// ici on considére que l'élément à afficher n'est pas sensible aux updates
+// ici on considére que l’élément à afficher n’est pas sensible aux updates
 // car il s'agit de simple message d'erreur de formulaire
 // Documentation: https://reactjs.org/docs/lists-and-keys.html#keys
 const setDangerousArrayKeyIndex = index => `field_error_${index}`

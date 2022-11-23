@@ -24,7 +24,7 @@ const ModalImageUploadBrowser = ({
   const advicesDescription = {
     [UploaderModeEnum.OFFER]: `Pour maximiser vos chances de réservations, choisissez avec soin l’image qui accompagne votre offre. Les ressources suivantes sont à votre disposition${NBSP}:`,
     [UploaderModeEnum.OFFER_COLLECTIVE]: `Pour maximiser vos chances de réservations, choisissez avec soin l’image qui accompagne votre offre. Les ressources suivantes sont à votre disposition${NBSP}:`,
-    [UploaderModeEnum.VENUE]: `Pour maximiser vos chances de réservations, choisissez avec soin l’image qui représente votre lieu. Si vous n'avez pas d'image de votre lieu ou si vous cherchez de bons exemples, les banques d'images suivantes sont à votre disposition${NBSP}:`,
+    [UploaderModeEnum.VENUE]: `Pour maximiser vos chances de réservations, choisissez avec soin l’image qui représente votre lieu. Si vous n’avez pas d'image de votre lieu ou si vous cherchez de bons exemples, les banques d'images suivantes sont à votre disposition${NBSP}:`,
   }[mode]
 
   const orientation = {

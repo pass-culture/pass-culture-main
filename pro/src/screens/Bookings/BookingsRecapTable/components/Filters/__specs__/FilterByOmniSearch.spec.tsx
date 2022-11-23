@@ -60,7 +60,7 @@ describe('components | FilterByOmniSearch', () => {
 
     // Then
     expect(
-      screen.getByPlaceholderText("Rechercher par nom d'offre")
+      screen.getByPlaceholderText('Rechercher par nom d’offre')
     ).toBeInTheDocument()
   })
 

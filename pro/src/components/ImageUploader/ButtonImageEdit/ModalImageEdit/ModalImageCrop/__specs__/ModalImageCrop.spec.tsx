@@ -32,7 +32,7 @@ describe('venue image edit', () => {
         <ModalImageCrop {...defaultProps} />
       </Provider>
     )
-    await userEvent.click(getByText("Remplacer l'image"))
+    await userEvent.click(getByText('Remplacer l’image'))
     expect(mockReplaceImage).toHaveBeenCalledTimes(1)
   })
 })

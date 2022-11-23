@@ -150,7 +150,7 @@ const OfferEducationalStock = <
                     type="notification-info"
                   >
                     Vous pourrez modifier ces informations en fonction de vos
-                    échanges avec l'établissement scolaire.
+                    échanges avec l’établissement scolaire.
                   </Banner>
                   <p className={styles['description-text']}>
                     Indiquez le prix global TTC de l’évènement et le nombre de

@@ -349,7 +349,7 @@ describe('screens:StocksThing', () => {
 
       await expect(
         screen.findByText(
-          "Une erreur s'est produite lors de l'import de votre fichier."
+          "Une erreur s'est produite lors de l’import de votre fichier."
         )
       ).resolves.toBeInTheDocument()
 

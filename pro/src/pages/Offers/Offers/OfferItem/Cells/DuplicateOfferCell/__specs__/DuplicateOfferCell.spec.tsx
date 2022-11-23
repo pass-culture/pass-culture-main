@@ -38,7 +38,7 @@ const renderDuplicateOfferCell = (isTemplate = true) => {
           </table>
         </Route>
         <Route path="/offre/duplication/collectif/AE">
-          <div>Parcours de duplication d'offre</div>
+          <div>Parcours de duplication d’offre</div>
         </Route>
       </MemoryRouter>
     </Provider>
@@ -75,7 +75,7 @@ describe('DuplicateOfferCell', () => {
       )
     ).not.toBeInTheDocument()
     expect(
-      screen.queryByText("Parcours de duplication d'offre")
+      screen.queryByText('Parcours de duplication d’offre')
     ).not.toBeInTheDocument()
   })
 
@@ -98,7 +98,7 @@ describe('DuplicateOfferCell', () => {
     })
     await userEvent.click(modalConfirmButton)
     expect(
-      screen.getByText("Parcours de duplication d'offre")
+      screen.getByText('Parcours de duplication d’offre')
     ).toBeInTheDocument()
     expect(localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY)).toEqual(
       'true'
@@ -118,7 +118,7 @@ describe('DuplicateOfferCell', () => {
     })
     await userEvent.click(modalConfirmButton)
     expect(
-      screen.getByText("Parcours de duplication d'offre")
+      screen.getByText('Parcours de duplication d’offre')
     ).toBeInTheDocument()
     expect(localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY)).toEqual(
       'false'
@@ -135,7 +135,7 @@ describe('DuplicateOfferCell', () => {
     await userEvent.click(button)
 
     expect(
-      screen.getByText("Parcours de duplication d'offre")
+      screen.getByText('Parcours de duplication d’offre')
     ).toBeInTheDocument()
   })
 })

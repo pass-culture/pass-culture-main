@@ -33,7 +33,7 @@ export const validationSchema = yup.object().shape({
     .required('Champ requis')
     .min(
       todayAtMidnight(),
-      "La date de l'évènement doit être supérieure à aujourd'hui"
+      "La date de l’évènement doit être supérieure à aujourd'hui"
     ),
   eventTime: yup.string().nullable().required('Champ requis'),
   numberOfPlaces: yup
