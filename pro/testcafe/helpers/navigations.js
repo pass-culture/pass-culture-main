@@ -92,7 +92,6 @@ export const navigateToNewOfferAs =
 
       await navigateToOffererAs(user, offerer, userRole)(t)
       await t.click(displayVenueStats)
-
       await t.click(newOfferAnchor)
       await t.click(nextStepAnchor)
       return
@@ -147,12 +146,4 @@ export const navigateToStocksAs = (user, offer, userRole) => async t => {
     .typeText(searchInput, offer.name, { paste: true })
     .click(submitButton)
     .click(stocksAnchor)
-}
-
-export const navigateToNewMediationAs = (user, offer, userRole) => async t => {
-  const addMediationAnchor = Selector('a').withText('Ajouter une accroche')
-
-  await navigateToOfferAs(user, offer, userRole)(t)
-
-  await t.click(addMediationAnchor)
 }
