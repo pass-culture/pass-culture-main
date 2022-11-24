@@ -105,3 +105,41 @@ op.add_column('venue_provider', sa.Column('syncWorkerId', sa.VARCHAR(24), nullab
 ### Typing
 
 Pour un meilleur typage des colonnes de type "ARRAY", utiliser `sqlalchemy.dialects.postgresql.ARRAY` plutôt que `sqlalchemy.typing`.
+
+# Squasher les migrations
+
+## Objectif
+
+Cela permet de diminuer le temps de démarrage du back et de nettoyer le code mort.
+Cela consiste à regrouper toutes ces migrations dans le fichier d'initialisation de la base de donnée : `schema_init.sql`
+
+## Comment
+
+- Créer une nouvelle branche à partir de `production`
+- Supprimer toutes les données locales, par exemple en supprimant les volumes: `docker rm -f pc-postgres && docker volume rm pass-culture-main_postgres_data`
+- Lancer le backend pour initialiser la base de donnée dans l'état visé (avec toutes les migrations, et sans les données): `pc start-backend`
+- Effectuer un dump la base de donnée: `docker exec pc-postgres pg_dump --inserts pass_culture -U pass_culture > /tmp/pass_culture.sql`
+- Copier le fichier généré à la place de `shema_init.sql` : `cp /tmp/pass_culture.sql api/src/pcapi/alembic/versions/sql/schema_init.sql`
+- Modifier le nouveau fichier `shema_init.sql`:
+  - supprimer toute référence à la table `alembic_version`: alembic va s'occuper de créer cette table
+  - supprimer les `ALTER TEXT SEARCH CONFIGURATION public.french_unaccent`: cette configuration est effectuée dans `install_database_extensions`, qu'on pourra supprimer dans une amélioration future
+    - supprimer toutes les lignes contenant `OWNER TO pass_culture`
+- Supprimer tous les fichiers de migration jusqu'au fichiers `pre` et `post` qui été exécutés en derniers en production.
+  - On peut les déterminer en se plaçant sur la branche production, dans `alembic_version_conflict_detection.txt`
+- Conserver aussi `xxx_init_db.py`
+- Remplacer le contenu des méthodes downgrade et upgrade des dernières migrations (pre et post) par `pass`.
+- Préciser branch_labels = ("post",) ou branch_labels = ("pre",)
+- Changer la down revision des deux HEAD pour pointer vers init_db
+- Rebase la branche sur master
+
+## Tester le bon fonctionnement
+
+### Vérifier le bon fonctionnement de la base de donnée
+
+- Supprimer la db : `docker rm -f pc-postgres && docker volume rm pass-culture-main_postgres_data`
+- Lancer le backend : `pc start-backend` et s'assurer que la base de donnée s'initialise bien sans erreurs
+
+### Vérifier le bon fonctionnement de la base de donnée de tests
+
+- Lancer un test : `pc test-backend <nom du fichier> `
+- S'assurer que la base de donnée de test s'initialise sans erreurs et que le test passe
