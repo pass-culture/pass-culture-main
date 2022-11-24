@@ -41,6 +41,8 @@ class Returns200Test:
                     "label": None,
                     "siren": venue1.managingOfferer.siren,
                     "isPermanent": venue1.isPermanent,
+                    "isAdmin": False,
+                    "offerer": {"id": venue1.managingOfferer.id, "name": venue1.managingOfferer.name},
                 }
             ]
         }
