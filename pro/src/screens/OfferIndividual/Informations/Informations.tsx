@@ -339,7 +339,6 @@ const Informations = ({
             setIsSubmittingFromRouteLeavingGuard
           }
           mode={mode}
-          hasOfferBeenCreated={!!offerId}
           isFormValid={formik.isValid}
           tracking={nextLocation =>
             logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
@@ -352,6 +351,7 @@ const Informations = ({
               offerId: offer?.id,
             })
           }
+          hasOfferBeenCreated={!!offer?.id}
         />
       )}
     </FormikProvider>

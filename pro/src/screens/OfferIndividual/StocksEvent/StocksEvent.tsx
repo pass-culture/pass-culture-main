@@ -196,7 +196,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
             setIsSubmittingFromRouteLeavingGuard
           }
           mode={mode}
-          hasOfferBeenCreated
           isFormValid={formik.isValid}
           tracking={nextLocation =>
             logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
@@ -208,6 +207,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
               offerId: offer?.id,
             })
           }
+          hasOfferBeenCreated
         />
       )}
     </FormikProvider>
