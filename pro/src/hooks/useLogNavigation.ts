@@ -1,13 +1,13 @@
-import type { Location, LocationListener } from 'history'
+import type { LocationListener } from 'history'
 import { useEffect } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { matchPath, useLocation } from 'react-router-dom'
 
+import routes, { IRoute, routesWithoutLayout } from 'app/AppRouter/routes_map'
 import { Events } from 'core/FirebaseEvents/constants'
 
 import useAnalytics from './useAnalytics'
 
 const useLogNavigation = (): LocationListener | void => {
-  const history = useHistory()
   const location = useLocation()
   const { logEvent } = useAnalytics()
   useEffect(() => {
@@ -17,14 +17,15 @@ const useLogNavigation = (): LocationListener | void => {
   }, [logEvent])
 
   useEffect(() => {
-    if (logEvent) {
-      const unlisten = history.listen((nextLocation: Location) => {
-        logEvent?.(Events.PAGE_VIEW, { from: nextLocation.pathname })
-      })
-      return unlisten
+    const currentRoute = [...routes, ...routesWithoutLayout].find(
+      (route: IRoute) => matchPath(location.pathname, route)
+    )
+    if (currentRoute) {
+      const fromTitle = document.title
+      document.title = currentRoute.title || 'pass Culture Pro'
+      logEvent?.(Events.PAGE_VIEW, { from: fromTitle, title: document.title })
     }
-    return
-  }, [location, history, logEvent])
+  }, [location.pathname])
 }
 
 export default useLogNavigation
