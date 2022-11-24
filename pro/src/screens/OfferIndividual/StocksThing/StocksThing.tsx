@@ -1,6 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
@@ -11,6 +12,7 @@ import {
   getValidationSchema,
   buildInitialValues,
   IStockThingFormValues,
+  STOCK_THING_FORM_DEFAULT_VALUES,
 } from 'components/StockThingForm'
 import { setFormReadOnlyFields } from 'components/StockThingForm/utils'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
@@ -26,15 +28,18 @@ import {
 } from 'core/Offers/constants'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
+import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { useNavigate, useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as AddActivationCodeIcon } from 'icons/add-activation-code-light.svg'
+import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
+import { DialogStockDeleteConfirm } from '../DialogStockDeleteConfirm'
 import { logTo } from '../utils/logTo'
 
 import { ActivationCodeFormDialog } from './ActivationCodeFormDialog'
@@ -68,6 +73,13 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     showModal: activationCodeFormShow,
     hideModal: activationCodeFormHide,
   } = useModal()
+  const {
+    visible: deleteConfirmVisible,
+    showModal: deleteConfirmShow,
+    hideModal: deleteConfirmHide,
+  } = useModal()
+  const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
+  const isSynchronized = offer.lastProvider !== null
 
   const onSubmit = async (formValues: IStockThingFormValues) => {
     const { isOk, payload, message } = await upsertStocksThingAdapter({
@@ -203,6 +215,14 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       },
     ]
   }
+  if (formik.values.stockId) {
+    actions.push({
+      callback: deleteConfirmShow,
+      label: 'Supprimer le stock',
+      disabled: isDisabled || isSynchronized,
+      Icon: TrashFilledIcon,
+    })
+  }
 
   if (offer.isDigital) {
     description += `
@@ -219,8 +239,35 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     [activationCodeFormHide]
   )
 
+  const onDeleteStock = async () => {
+    formik.values.stockId &&
+      api
+        .deleteStock(formik.values.stockId)
+        .then(() => {
+          notify.success('Le stock a été supprimé.')
+          formik.setValues(STOCK_THING_FORM_DEFAULT_VALUES)
+        })
+        .catch(() =>
+          notify.error(
+            'Une erreur est survenue lors de la suppression du stock.'
+          )
+        )
+  }
+
+  const onConfirmDeleteStock = () => {
+    onDeleteStock()
+    deleteConfirmHide()
+  }
+
   return (
     <FormikProvider value={formik}>
+      {deleteConfirmVisible && (
+        <DialogStockDeleteConfirm
+          onConfirm={onConfirmDeleteStock}
+          onCancel={deleteConfirmHide}
+          isEvent={true}
+        />
+      )}
       {activationCodeFormVisible && (
         <ActivationCodeFormDialog
           onSubmit={submitActivationCodes}
@@ -236,7 +283,9 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
               Form={renderStockForm()}
               actions={actions}
               actionDisabled={false}
-              showStockInfo={mode === OFFER_WIZARD_MODE.EDITION}
+              showStockInfo={
+                mode === OFFER_WIZARD_MODE.EDITION && offer.stocks.length > 0
+              }
             />
 
             <ActionBar
