@@ -17,6 +17,14 @@ def i18n_public_account(term: str) -> str:
             return "Lieu"
         case "user":  # pro
             return "Compte pro"
+        case "new":  # pro
+            return "Nouveau"
+        case "pending":  # pro
+            return "En attente"
+        case "validated":  # pro
+            return "Validé"
+        case "rejected":  # pro
+            return "Rejeté"
         case _:
             return term.replace("_", " ").capitalize()
 

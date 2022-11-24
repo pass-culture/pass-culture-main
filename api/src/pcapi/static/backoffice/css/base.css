@@ -14,3 +14,8 @@ pre:has(code) {
     padding: 0.5rem;
     font-family: Consolas, "courier new", serif !important;
 }
+
+select.dropdown-menu option.dropdown-item:checked {
+    background-color: rgb(var(--bs-primary-rgb));
+    color: white;
+}

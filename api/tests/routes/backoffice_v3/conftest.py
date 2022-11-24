@@ -9,6 +9,7 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import tag_categories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
@@ -348,7 +349,7 @@ def collective_venue_booking_fixture(venue_with_accepted_bank_info):
 @pytest.fixture(name="offerer_tags")
 def offerer_tags_fixture():
     tags = tuple(
-        offerers_factories.OffererTagFactory(label=label)
+        offerers_factories.OffererTagFactory(label=label, categoryId=tag_categories.HOMOLOGATION.id)
         for label in ("Top acteur", "Collectivité", "Établissement public")
     )
     return tags

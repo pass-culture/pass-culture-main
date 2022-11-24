@@ -1,19 +1,27 @@
+from dataclasses import dataclass
+from functools import partial
 import typing
 
 from flask import flash
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 from flask_login import current_user
+import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
+from pcapi.core.history import models as history_models
 from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.utils.date import format_into_utc_date
+from pcapi.core.users import models as users_models
+from pcapi.models import db
 import pcapi.utils.regions as regions_utils
 
+from . import search_utils
 from . import utils
 from .forms import offerer as offerer_forms
 from .serialization import offerers as serialization
@@ -86,7 +94,7 @@ def get_offerer_history_data(offerer_id: int) -> typing.Sequence[serialization.H
     return [
         serialization.HistoryItem(
             type=action.actionType.value,
-            date=format_into_utc_date(action.actionDate) if action.actionDate else None,
+            date=action.actionDate,
             authorId=action.authorUserId,
             authorName=action.authorUser.publicName if action.authorUser else None,
             comment=action.comment,
@@ -131,7 +139,169 @@ def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
         flash("Les données envoyées comportent des erreurs", "warning")
         return render_template("offerer/comment.html", form=form, offerer=offerer), 400
 
-    offerers_api.add_comment_to_offerer(offerer_id, current_user, comment=form.comment.data)
+    offerers_api.add_comment_to_offerer(offerer, current_user, comment=form.comment.data)
     flash("Commentaire enregistré", "success")
 
     return redirect(url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_id), code=303)
+
+
+validate_offerer_blueprint = utils.child_backoffice_blueprint(
+    "validate_offerer",
+    __name__,
+    url_prefix="/pro/offerer/validation",
+    permission=perm_models.Permissions.VALIDATE_OFFERER,
+)
+
+
+def _get_serialized_offerer_last_comment(offerer: offerers_models.Offerer, user_id: int | None = None) -> str | None:
+    last = max(
+        (
+            action
+            for action in offerer.action_history
+            if bool(action.comment)
+            and (user_id is None or action.userId == user_id)
+            and action.actionType
+            in (
+                history_models.ActionType.OFFERER_NEW,
+                history_models.ActionType.OFFERER_PENDING,
+                history_models.ActionType.OFFERER_VALIDATED,
+                history_models.ActionType.OFFERER_REJECTED,
+                history_models.ActionType.COMMENT,
+            )
+        ),
+        key=lambda action: action.actionDate,
+        default=None,
+    )
+    if last is not None:
+        return last.comment
+
+    return None
+
+
+def _redirect_after_validation_action(code: int = 303) -> utils.BackofficeResponse:
+    if request.referrer:
+        return redirect(request.referrer, code)
+
+    return redirect(url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate"), code)
+
+
+@dataclass
+class OffererToBeValidatedRow:
+    offerer: offerers_models.Offerer
+    is_top_actor: bool
+    last_comment: str | None
+    owner: users_models.User
+
+
+@validate_offerer_blueprint.route("", methods=["GET"])
+def list_offerers_to_validate() -> utils.BackofficeResponse:
+    form = offerer_forms.OffererValidationListForm(request.args)
+    if not form.validate():
+        return render_template("offerer/validation.html", rows=[], form=form), 400
+
+    offerers = offerers_api.list_offerers_to_be_validated(**form.data)
+
+    sorted_offerers = offerers.order_by(offerers_models.Offerer.dateCreated.desc())
+
+    paginated_offerers = sorted_offerers.paginate(  # type: ignore [attr-defined]
+        page=int(form.data["page"]),
+        per_page=int(form.data["per_page"]),
+    )
+
+    next_page = partial(url_for, ".list_offerers_to_validate", **form.data)
+    next_pages_urls = search_utils.pagination_links(next_page, int(form.data["page"]), paginated_offerers.pages)
+
+    return render_template(
+        "offerer/validation.html",
+        rows=paginated_offerers,
+        form=form,
+        next_pages_urls=next_pages_urls,
+        is_top_actor_func=offerers_api.is_top_actor,
+        get_last_comment_func=_get_serialized_offerer_last_comment,
+    )
+
+
+@offerer_blueprint.route("/validate", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def validate(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    try:
+        offerers_api.validate_offerer(offerer, current_user)
+    except offerers_exceptions.OffererAlreadyValidatedException:
+        flash(f"La structure {offerer.name} est déjà validée", "warning")
+        return _redirect_after_validation_action(code=400)
+
+    flash(f"La structure {offerer.name} a été validée", "success")
+    return _redirect_after_validation_action()
+
+
+@offerer_blueprint.route("/reject", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def reject(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    form = offerer_forms.OptionalCommentForm()
+    if not form.validate():
+        flash("Les données envoyées comportent des erreurs", "warning")
+        return _redirect_after_validation_action(code=400)
+
+    try:
+        offerers_api.reject_offerer(offerer, current_user, comment=form.comment.data)
+    except offerers_exceptions.OffererAlreadyRejectedException:
+        flash(f"La structure {offerer.name} est déjà rejetée", "warning")
+        return _redirect_after_validation_action(code=400)
+
+    flash(f"La structure {offerer.name} a été rejetée", "success")
+    return _redirect_after_validation_action()
+
+
+@offerer_blueprint.route("/pending", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def set_pending(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    form = offerer_forms.OptionalCommentForm()
+    if not form.validate():
+        flash("Les données envoyées comportent des erreurs", "warning")
+        return _redirect_after_validation_action(code=400)
+
+    offerers_api.set_offerer_pending(offerer, current_user, comment=form.comment.data)
+
+    flash(f"La structure {offerer.name} a été mise en attente", "success")
+    return _redirect_after_validation_action()
+
+
+@offerer_blueprint.route("/top-actor", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    try:
+        tag = offerers_models.OffererTag.query.filter(offerers_models.OffererTag.name == "top-acteur").one()
+    except sa.exc.NoResultFound:
+        flash("Le tag top-acteur n'existe pas", "warning")
+        return _redirect_after_validation_action(code=400)
+
+    form = offerer_forms.TopActorForm()
+    if not form.validate():
+        flash("Les données envoyées comportent des erreurs", "warning")
+        return _redirect_after_validation_action(code=400)
+
+    if form.is_top_actor.data and form.is_top_actor.data == "on":
+        # Associate the tag with offerer
+        try:
+            db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
+            db.session.commit()
+        except sa.exc.IntegrityError:
+            # Already in database
+            db.session.rollback()
+    else:
+        # Remove the tag from offerer
+        offerers_models.OffererTagMapping.query.filter(
+            offerers_models.OffererTagMapping.offererId == offerer.id,
+            offerers_models.OffererTagMapping.tagId == tag.id,
+        ).delete()
+        db.session.commit()
+
+    return _redirect_after_validation_action()

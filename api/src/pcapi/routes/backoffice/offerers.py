@@ -10,6 +10,7 @@ from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.permissions import utils as perm_utils
 from pcapi.models import api_errors
@@ -199,10 +200,13 @@ def comment_offerer_attachment(user_offerer_id: int, body: serialization.Comment
 @perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def validate_offerer(offerer_id: int) -> None:
     author_user = get_current_user()
-    try:
-        offerers_api.validate_offerer_by_id(offerer_id, author_user)
-    except offerers_exceptions.OffererNotFoundException:
+
+    offerer = offerers_repository.find_offerer_by_id(offerer_id)
+    if offerer is None:
         raise api_errors.ResourceNotFoundError(errors={"offerer_id": "La structure n'existe pas"})
+
+    try:
+        offerers_api.validate_offerer(offerer, author_user)
     except offerers_exceptions.OffererAlreadyValidatedException:
         raise api_errors.ApiErrors(errors={"offerer_id": "La structure est déjà validée"})
 
@@ -212,10 +216,13 @@ def validate_offerer(offerer_id: int) -> None:
 @perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def reject_offerer(offerer_id: int, body: serialization.OptionalCommentRequest) -> None:
     author_user = get_current_user()
-    try:
-        offerers_api.reject_offerer(offerer_id, author_user, comment=body.comment)
-    except offerers_exceptions.OffererNotFoundException:
+
+    offerer = offerers_repository.find_offerer_by_id(offerer_id)
+    if offerer is None:
         raise api_errors.ResourceNotFoundError(errors={"offerer_id": "La structure n'existe pas"})
+
+    try:
+        offerers_api.reject_offerer(offerer, author_user, comment=body.comment)
     except offerers_exceptions.OffererAlreadyRejectedException:
         raise api_errors.ApiErrors(errors={"offerer_id": "La structure est déjà rejetée"})
 
@@ -225,10 +232,12 @@ def reject_offerer(offerer_id: int, body: serialization.OptionalCommentRequest) 
 @perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def set_offerer_pending(offerer_id: int, body: serialization.OptionalCommentRequest) -> None:
     author_user = get_current_user()
-    try:
-        offerers_api.set_offerer_pending(offerer_id, author_user, comment=body.comment)
-    except offerers_exceptions.OffererNotFoundException:
+
+    offerer = offerers_repository.find_offerer_by_id(offerer_id)
+    if offerer is None:
         raise api_errors.ResourceNotFoundError(errors={"offerer_id": "La structure n'existe pas"})
+
+    offerers_api.set_offerer_pending(offerer, author_user, comment=body.comment)
 
 
 @blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/comment", methods=["POST"])
@@ -236,10 +245,12 @@ def set_offerer_pending(offerer_id: int, body: serialization.OptionalCommentRequ
 @perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def comment_offerer(offerer_id: int, body: serialization.CommentRequest) -> None:
     author_user = get_current_user()
-    try:
-        offerers_api.add_comment_to_offerer(offerer_id, author_user, comment=body.comment)
-    except offerers_exceptions.OffererNotFoundException:
+
+    offerer = offerers_repository.find_offerer_by_id(offerer_id)
+    if offerer is None:
         raise api_errors.ResourceNotFoundError(errors={"offerer_id": "La structure n'existe pas"})
+
+    offerers_api.add_comment_to_offerer(offerer, author_user, comment=body.comment)
 
 
 @blueprint.backoffice_blueprint.route("offerers/tags", methods=["GET"])
@@ -335,7 +346,7 @@ def list_offerers_to_be_validated(
         filters = json.loads(urllib.parse.unquote_plus(query.filter))
 
     try:
-        offerers = offerers_api.list_offerers_to_be_validated(query.q, filters)
+        offerers = offerers_api.list_offerers_to_be_validated_legacy(query.q, filters)
     except offerers_exceptions.InvalidSiren as err:
         raise api_errors.ApiErrors(errors={"q": str(err)})
 

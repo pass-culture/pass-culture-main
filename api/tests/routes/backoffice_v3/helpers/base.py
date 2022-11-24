@@ -16,3 +16,7 @@ class BaseHelper(abc.ABC):
     @property
     def path(self):
         return url_for(self.endpoint, **self.endpoint_kwargs)
+
+    @property
+    def http_method(self):
+        return getattr(self, "method", "get")
