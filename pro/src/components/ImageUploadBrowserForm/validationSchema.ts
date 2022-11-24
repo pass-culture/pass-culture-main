@@ -2,21 +2,31 @@ import * as yup from 'yup'
 
 import { getImageBitmap } from 'utils/image'
 
+import { OrientationEnum } from './types'
+
 export interface IGetValidationSchemaArgs {
   types?: string[]
   minWidth?: number
   maxSize?: number
+  minRatio?: number
+  minHeight?: number
+  orientation: OrientationEnum
 }
 
 const getValidationSchema = ({
   maxSize,
   minWidth,
   types,
+  minRatio,
+  minHeight,
+  orientation,
 }: IGetValidationSchemaArgs) => {
   const validationSchema: {
     size?: yup.AnySchema
     format?: yup.AnySchema
     width?: yup.AnySchema
+    height?: yup.AnySchema
+    minRatio?: yup.AnySchema
   } = {}
 
   /* istanbul ignore next: DEBT, TO FIX */
@@ -54,6 +64,41 @@ const getValidationSchema = ({
       },
     })
   }
+
+  if (minHeight) {
+    validationSchema.height = yup.mixed().test({
+      message: `La hauteur minimale de l’image : ${minHeight} px`,
+      test: async (_height, context: yup.TestContext) => {
+        const imageBitmap = await getImageBitmap(context.parent.image)
+        return imageBitmap !== null && imageBitmap.height >= minHeight
+      },
+    })
+  }
+
+  if (minRatio) {
+    validationSchema.minRatio = yup.mixed().test({
+      test: async (_width, context: yup.TestContext) => {
+        const imageBitmap = await getImageBitmap(context.parent.image)
+        if (imageBitmap === null) {
+          return true
+        }
+
+        // if the ratio is +- 0.4, then the image needs to be higher
+        // If it's -= 0.4 the image is too small, so we only check ratio + tooClose value
+        const tooCloseNumber = 0.4
+        const totalMinRatio = minRatio + tooCloseNumber
+        const imageRatio = {
+          [OrientationEnum.LANDSCAPE]:
+            (imageBitmap.height / imageBitmap.width) * 100,
+          [OrientationEnum.PORTRAIT]:
+            (imageBitmap.width / imageBitmap.height) * 100,
+        }[orientation]
+
+        return imageRatio >= totalMinRatio
+      },
+    })
+  }
+
   return yup.object().shape(validationSchema)
 }
 
