@@ -1,0 +1,171 @@
+{% from "offerer/edit_status_modal.html" import build_edit_status_modal with context %}
+
+{% extends "layouts/connected.html" %}
+
+{% block page %}
+<div class="pt-3 px-5">
+    <div class="d-flex justify-content-between">
+        <h2 class="fw-light">Structures à valider</h2>
+    </div>
+    <form action="{{ dst }}" method="GET" class="mb-4 mt-3">
+        <div class="row">
+            <div class="col-10">
+                <div class="input-group mb-3">
+                    {% for form_field in form %}
+                        {% if form_field.type != "HiddenField" %}
+                            {{ form_field }}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% for form_field in form %}
+                    {% if form_field.type == "HiddenField" %}
+                        {{ form_field }}
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="col-2">
+                <div class="py-2">
+                    <button type="submit" class="btn btn-primary">Appliquer</button>
+                </div>
+            </div>
+        </div>
+        <div class="w-100 my-4">
+            {% for form_field in form %}
+                {% for error in form_field.errors %}
+                    <p class="text-warning lead">{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </form>
+    <div>
+        {% if rows and rows.total > 0 %}
+            <p class="lead num-results">{{ rows.total }} résultat{{ "s" if rows.total > 1 else "" }}</p>
+            <table class="table mb-4">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nom de la structure</th>
+                        <th scope="col">État</th>
+                        <th scope="col">Top Acteur</th>
+                        <th scope="col">Date de la demande</th>
+                        <th scope="col">Dernier commentaire</th>
+                        <th scope="col">SIREN</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Responsable Structure</th>
+                        <th scope="col">Ville</th>
+                        <th scope="col">Téléphone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for offerer in rows.items %}
+                        {% set owner = offerer.UserOfferers[0].user if offerer.UserOfferers else none %}
+                        <tr>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn p-0"><i
+                                            class="bi bi-three-dots-vertical"></i></button>
+                                    <ul class="dropdown-menu">
+                                        <li class="dropdown-item">
+                                            <form
+                                                    action="{{ url_for(
+                                                    "backoffice_v3_web.offerer.validate",
+                                                    offerer_id=offerer.id
+                                                ) }}"
+                                                    method="POST">
+                                                <button type="submit" class="btn btn-sm">
+                                                    Valider
+                                                </button>
+                                            </form>
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <button type="button"
+                                                    class="btn btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#reject-modal-{{ offerer.id }}">
+                                                Rejeter
+                                            </button>
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <button type="button"
+                                                    class="btn btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#pending-modal-{{ offerer.id }}">
+                                                Mettre en attente
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                            <td>{{ offerer.id }}</td>
+                            <td>
+                                <a href="{{ url_for('backoffice_v3_web.offerer.get', offerer_id=offerer.id) }}">
+                                    {{ offerer.name | upper | escape }}
+                                </a>
+                            </td>
+                            <td>{% include "components/offerer/status_badge.html" %}</td>
+                            <td>
+                                {% set top_actor_checked = is_top_actor_func(offerer) %}
+                                <div class="form-check form-switch">
+                                    <form
+                                            action="{{ url_for(
+                                                "backoffice_v3_web.offerer.toggle_top_actor",
+                                                offerer_id=offerer.id
+                                            ) }}"
+                                            method="POST">
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                                name="is_top_actor"
+                                                id="top-switch-{{ offerer.id }}"
+                                                aria-label="{{ top_actor_checked | format_bool }}"
+                                                onChange="this.form.submit()"
+                                                {{ "checked" if top_actor_checked else "" }}>
+                                    </form>
+                                </div>
+                            </td>
+                            <td>{{ offerer.requestDate | format_date("%d/%m/%Y") }}</td>
+                            <td>{{ get_last_comment_func(offerer) | empty_string_if_null }}</td>
+                            <td>
+                                {% if offerer.siren %}
+                                    <a href="https://www.societe.com/cgi-bin/fiche?rncs={{ offerer.siren }}"
+                                            target="_blank"
+                                            title="Visualiser sur societe.com">
+                                        {{ offerer.siren | empty_string_if_null }}
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td>{{ (owner and owner.email) | empty_string_if_null }}</td>
+                            <td>
+                                {% if owner %}
+                                    <a href="{{ url_for('backoffice_v3_web.pro_user.get', user_id=owner.id) }}">
+                                        {{ owner.firstName | empty_string_if_null | escape }}
+                                        {{ owner.lastName | empty_string_if_null | escape }}
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td>{{ offerer.city | empty_string_if_null }}</td>
+                            <td>{{ (owner and owner.phoneNumber) | format_phone_number }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% include 'components/search/pagination.html' %}
+
+            {% for offerer in rows.items %}
+                {% call build_edit_status_modal(
+                    url_for("backoffice_v3_web.offerer.reject", offerer_id=offerer.id),
+                    "reject-modal-" + offerer.id|string, "Rejeter la structure") %}
+                    Rejeter la structure {{ offerer.name | upper }}
+                {% endcall %}
+                {% call build_edit_status_modal(
+                    url_for("backoffice_v3_web.offerer.set_pending", offerer_id=offerer.id),
+                    "pending-modal-" + offerer.id|string, "Mettre en attente la structure") %}
+                    Mettre en attente la structure {{ offerer.name | upper }}
+                {% endcall %}
+            {% endfor %}
+        {% else %}
+            Aucune structure ne correspond à la requête
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

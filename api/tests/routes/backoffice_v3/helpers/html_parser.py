@@ -1,0 +1,77 @@
+import re
+
+from bs4 import BeautifulSoup
+
+
+def extract_table_rows(html_content: str) -> list[dict[str, str]]:
+    """
+    Extract data from html table (thead + tbody), so that we can compare with expected data when testing routes.
+    Every row is a dictionary, in which keys are column headers.
+    Note that all data is returned as a string.
+    """
+    soup = BeautifulSoup(html_content, features="html5lib", from_encoding="utf-8")
+
+    thead = soup.find("thead")
+    tbody = soup.find("tbody")
+    if thead is None or tbody is None:
+        return []
+
+    headers = []
+    rows = []
+
+    thead_tr_list = thead.find_all("tr")
+    assert len(thead_tr_list) == 1
+
+    for th in thead_tr_list[0].find_all("th"):
+        th_text = re.sub(r"\s+", " ", th.text.strip())
+        headers.append(th_text)
+
+    tbody_tr_list = tbody.find_all("tr")
+
+    for tr in tbody_tr_list:
+        row_data = {}
+        td_list = tr.find_all("td")
+        assert len(td_list) == len(headers)
+        for idx, td in enumerate(td_list):
+            if headers[idx]:
+                td_text = re.sub(r"\s+", " ", td.text.strip())
+                row_data[headers[idx]] = td_text
+        rows.append(row_data)
+
+    return rows
+
+
+def count_table_rows(html_content: str) -> int:
+    soup = BeautifulSoup(html_content, features="html5lib", from_encoding="utf-8")
+
+    tbody = soup.find("tbody")
+    if tbody is None:
+        return 0
+
+    return len(tbody.find_all("tr"))
+
+
+def extract_pagination_info(html_content: str) -> tuple[int, int, int]:
+    """
+    Returns current and total pages in pagination block, and total number of results on all pages
+    """
+    soup = BeautifulSoup(html_content, features="html5lib", from_encoding="utf-8")
+
+    num_results = soup.find("p", class_="num-results")
+    if num_results is None:
+        total_results = 0
+    else:
+        m = re.match(r"(\d+) résultat", num_results.text)
+        assert m
+        total_results = int(m.group(1))
+
+    ul = soup.find("ul", class_="pagination")
+    if ul is None:
+        return 1, 1, total_results
+
+    page_links = ul.find_all("a", class_="page-link")
+    assert page_links
+    active_page_link = ul.find("a", class_="page-link active")
+    assert active_page_link
+
+    return int(active_page_link.text), len(page_links), total_results

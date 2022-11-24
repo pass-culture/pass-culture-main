@@ -2,23 +2,7 @@
     Structure
 </span>
 
-{% if offerer.isNew %}
-    <span class="me-1 pb-1 badge rounded-pill text-bg-info">
-        Nouvelle
-    </span>
-{% elif offerer.isPending %}
-    <span class="me-1 pb-1 badge rounded-pill text-bg-warning">
-        En attente
-    </span>
-{% elif offerer.isValidated %}
-    <span class="me-1 pb-1 badge rounded-pill text-bg-success">
-        Validée
-    </span>
-{% elif offerer.isRejected %}
-    <span class="me-1 pb-1 badge rounded-pill text-bg-danger">
-        Rejetée
-    </span>
-{% endif %}
+{% include "components/offerer/status_badge.html" %}
 
 {% if not offerer.isActive %}
     <span class="me-1 pb-1 badge rounded-pill text-bg-dark">

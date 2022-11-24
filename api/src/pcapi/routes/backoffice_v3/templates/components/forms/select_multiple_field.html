@@ -1,0 +1,8 @@
+<select multiple class="form-select" id="{{ field.name }}" name="{{ field.name }}" size="2">
+    {% for value, label, selected in field.iter_choices() %}
+        <option value="{{ value }}" {{ "selected" if selected else "" }}>
+            {{ label | i18n_public_account }}
+        </option>
+    {% endfor %}
+    <label for="{{ field.name }}">{{ field.label }}</label>
+</select>

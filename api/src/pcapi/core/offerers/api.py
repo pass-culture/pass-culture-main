@@ -598,7 +598,10 @@ def reject_offerer_attachment(user_offerer_id: int, author_user: users_models.Us
 
 
 # TODO (prouzet): author_user should not be None, remove None option when validation by token is no longer used
-def _validate_offerer(offerer: models.Offerer, author_user: users_models.User | None) -> None:
+def validate_offerer(offerer: models.Offerer, author_user: users_models.User | None) -> None:
+    if offerer.isValidated:
+        raise exceptions.OffererAlreadyValidatedException()
+
     applicants = users_repository.get_users_with_validated_attachment_by_offerer(offerer)
     offerer.validationStatus = models.ValidationStatus.VALIDATED
     offerer.validationToken = None
@@ -636,25 +639,15 @@ def validate_offerer_by_token(token: str) -> None:
     if offerer is None:
         raise exceptions.ValidationTokenNotFoundError()
 
-    _validate_offerer(offerer, None)
+    try:
+        validate_offerer(offerer, author_user=None)
+    except exceptions.OffererAlreadyValidatedException:
+        pass
 
 
-def validate_offerer_by_id(offerer_id: int, author_user: users_models.User) -> None:
-    offerer = offerers_repository.find_offerer_by_id(offerer_id)
-    if offerer is None:
-        raise exceptions.OffererNotFoundException()
-
-    if offerer.isValidated:
-        raise exceptions.OffererAlreadyValidatedException()
-
-    _validate_offerer(offerer, author_user)
-
-
-def reject_offerer(offerer_id: int, author_user: users_models.User, comment: str | None = None) -> None:
-    offerer = offerers_repository.find_offerer_by_id(offerer_id)
-    if offerer is None:
-        raise exceptions.OffererNotFoundException()
-
+def reject_offerer(
+    offerer: offerers_models.Offerer, author_user: users_models.User, comment: str | None = None
+) -> None:
     if offerer.isRejected:
         raise exceptions.OffererAlreadyRejectedException()
 
@@ -684,10 +677,10 @@ def reject_offerer(offerer_id: int, author_user: users_models.User, comment: str
             )
 
     # Detach user from offerer after sending transactional email to applicant
-    models.UserOfferer.query.filter_by(offererId=offerer_id).delete()
+    models.UserOfferer.query.filter_by(offererId=offerer.id).delete()
 
     # Remove any API key which could have been created when user was waiting for validation
-    models.ApiKey.query.filter(models.ApiKey.offererId == offerer_id).delete()
+    models.ApiKey.query.filter(models.ApiKey.offererId == offerer.id).delete()
 
     db.session.commit()
 
@@ -696,11 +689,9 @@ def reject_offerer(offerer_id: int, author_user: users_models.User, comment: str
             users_external.update_external_pro(applicant.email)
 
 
-def set_offerer_pending(offerer_id: int, author_user: users_models.User, comment: str | None = None) -> None:
-    offerer = offerers_repository.find_offerer_by_id(offerer_id)
-    if offerer is None:
-        raise exceptions.OffererNotFoundException()
-
+def set_offerer_pending(
+    offerer: offerers_models.Offerer, author_user: users_models.User, comment: str | None = None
+) -> None:
     offerer.validationStatus = models.ValidationStatus.PENDING
     action = history_api.log_action(
         history_models.ActionType.OFFERER_PENDING, author_user, offerer=offerer, comment=comment, save=False
@@ -708,11 +699,7 @@ def set_offerer_pending(offerer_id: int, author_user: users_models.User, comment
     repository.save(offerer, action)
 
 
-def add_comment_to_offerer(offerer_id: int, author_user: users_models.User, comment: str) -> None:
-    offerer = offerers_repository.find_offerer_by_id(offerer_id)
-    if offerer is None:
-        raise exceptions.OffererNotFoundException()
-
+def add_comment_to_offerer(offerer: offerers_models.Offerer, author_user: users_models.User, comment: str) -> None:
     history_api.log_action(history_models.ActionType.COMMENT, author_user, offerer=offerer, comment=comment)
 
 
@@ -1348,7 +1335,10 @@ def _filter_on_validation_status(
     return query
 
 
-def list_offerers_to_be_validated(search_query: str | None, filter_: list[dict[str, typing.Any]]) -> sa.orm.Query:
+def list_offerers_to_be_validated_legacy(
+    search_query: str | None, filter_: list[dict[str, typing.Any]]
+) -> sa.orm.Query:
+    # This function becomes deprecated when backoffice v2 is stopped
     query = offerers_models.Offerer.query.options(
         sa.orm.joinedload(offerers_models.Offerer.UserOfferers).joinedload(offerers_models.UserOfferer.user),
         sa.orm.joinedload(offerers_models.Offerer.tags),
@@ -1405,6 +1395,67 @@ def list_offerers_to_be_validated(search_query: str | None, filter_: list[dict[s
             max_datetime = datetime.combine(date.fromisoformat(to_date), datetime.max.time())
         except ValueError:
             raise ApiErrors({"filter": "Le format de date est invalide"})
+        query = query.filter(offerers_models.Offerer.requestDate <= max_datetime)  # type: ignore [operator]
+
+    return query
+
+
+def list_offerers_to_be_validated(
+    q: str | None,  # search query
+    tags: list[offerers_models.OffererTag] | None = None,
+    status: list[offerers_models.ValidationStatus] | None = None,
+    from_date: datetime | None = None,
+    to_date: datetime | None = None,
+    **_: typing.Any,
+) -> sa.orm.Query:
+    query = offerers_models.Offerer.query.options(
+        sa.orm.joinedload(offerers_models.Offerer.UserOfferers).joinedload(offerers_models.UserOfferer.user),
+        sa.orm.joinedload(offerers_models.Offerer.tags),
+        sa.orm.joinedload(offerers_models.Offerer.action_history).joinedload(history_models.ActionHistory.authorUser),
+    )
+
+    if q:
+        if q.isnumeric():
+            if len(q) != 9:
+                raise exceptions.InvalidSiren("Le SIREN doit faire 9 caractères")
+            query = query.filter(offerers_models.Offerer.siren == q)
+        else:
+            name = q.replace(" ", "%").replace("-", "%")
+            name = clean_accents(name)
+            query = query.filter(sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{name}%"))
+
+    if status:
+        query = query.filter(offerers_models.Offerer.validationStatus.in_(status))
+    else:
+        query = query.filter(offerers_models.Offerer.isWaitingForValidation)
+
+    if tags:
+        tagged_offerers = (
+            sa.select(offerers_models.Offerer.id, sa.func.array_agg(offerers_models.OffererTag.id).label("tags"))
+            .join(
+                offerers_models.OffererTagMapping,
+                offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
+            )
+            .join(
+                offerers_models.OffererTag,
+                offerers_models.OffererTag.id == offerers_models.OffererTagMapping.tagId,
+            )
+            .group_by(
+                offerers_models.Offerer.id,
+            )
+            .cte()
+        )
+
+        query = query.join(tagged_offerers, tagged_offerers.c.id == offerers_models.Offerer.id).filter(
+            sa.and_(*(tagged_offerers.c.tags.any(tag.id) for tag in tags))
+        )
+
+    if from_date:
+        min_datetime = datetime.combine(from_date, datetime.min.time())
+        query = query.filter(offerers_models.Offerer.requestDate >= min_datetime)  # type: ignore [operator]
+
+    if to_date:
+        max_datetime = datetime.combine(to_date, datetime.max.time())
         query = query.filter(offerers_models.Offerer.requestDate <= max_datetime)  # type: ignore [operator]
 
     return query

@@ -893,7 +893,7 @@ class ValidateOffererByTokenTest:
 
 
 @freeze_time("2020-10-15 00:00:00")
-class ValidateOffererByIdTest:
+class ValidateOffererTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_offerer_is_validated(self, mocked_async_index_offers_of_venue_ids):
         # Given
@@ -901,7 +901,7 @@ class ValidateOffererByIdTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
 
         # When
-        offerers_api.validate_offerer_by_id(user_offerer.offerer.id, admin)
+        offerers_api.validate_offerer(user_offerer.offerer, admin)
 
         # Then
         assert user_offerer.offerer.isValidated
@@ -917,7 +917,7 @@ class ValidateOffererByIdTest:
         another_user_on_same_offerer = offerers_factories.NotValidatedUserOffererFactory(user=another_applicant)
 
         # When
-        offerers_api.validate_offerer_by_id(user_offerer.offerer.id, admin)
+        offerers_api.validate_offerer(user_offerer.offerer, admin)
 
         # Then
         assert user_offerer.user.has_pro_role
@@ -933,7 +933,7 @@ class ValidateOffererByIdTest:
         venue_2 = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         # When
-        offerers_api.validate_offerer_by_id(user_offerer.offerer.id, admin)
+        offerers_api.validate_offerer(user_offerer.offerer, admin)
 
         # Then
         mocked_async_index_offers_of_venue_ids.assert_called_once()
@@ -950,7 +950,7 @@ class ValidateOffererByIdTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
 
         # When
-        offerers_api.validate_offerer_by_id(user_offerer.offerer.id, admin)
+        offerers_api.validate_offerer(user_offerer.offerer, admin)
 
         # Then
         mocked_send_new_offerer_validation_email_to_pro.assert_called_once_with(user_offerer.offerer)
@@ -962,7 +962,7 @@ class ValidateOffererByIdTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
 
         # When
-        offerers_api.validate_offerer_by_id(user_offerer.offerer.id, admin)
+        offerers_api.validate_offerer(user_offerer.offerer, admin)
 
         # Then
         action = history_models.ActionHistory.query.one()
@@ -972,22 +972,6 @@ class ValidateOffererByIdTest:
         assert action.userId == user_offerer.user.id
         assert action.offererId == user_offerer.offerer.id
         assert action.venueId is None
-
-    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def test_do_not_validate_attachment_if_id_not_found(self, mocked_async_index_offers_of_venue_ids):
-        # Given
-        admin = users_factories.AdminFactory()
-        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
-
-        # When
-        with pytest.raises(offerers_exceptions.OffererNotFoundException):
-            offerers_api.validate_offerer_by_id(user_offerer.offerer.id + 100, admin)
-
-        # Then
-        assert not user_offerer.user.has_pro_role
-        assert not user_offerer.offerer.isValidated
-        assert user_offerer.offerer.validationStatus == offerers_models.ValidationStatus.NEW
-        assert history_models.ActionHistory.query.count() == 0
 
 
 @freeze_time("2020-10-15 00:00:00")
@@ -999,7 +983,7 @@ class RejectOffererTest:
         offerers_factories.UserOffererFactory(offerer=offerer)  # removed in reject_offerer()
 
         # When
-        offerers_api.reject_offerer(offerer.id, admin)
+        offerers_api.reject_offerer(offerer, admin)
 
         # Then
         assert not offerer.isValidated
@@ -1013,7 +997,7 @@ class RejectOffererTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=user)
 
         # When
-        offerers_api.reject_offerer(user_offerer.offerer.id, admin)
+        offerers_api.reject_offerer(user_offerer.offerer, admin)
 
         # Then
         assert not user.has_pro_role
@@ -1025,7 +1009,7 @@ class RejectOffererTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=validated_user_offerer.user)
 
         # When
-        offerers_api.reject_offerer(user_offerer.offerer.id, admin)
+        offerers_api.reject_offerer(user_offerer.offerer, admin)
 
         # Then
         assert validated_user_offerer.user.has_pro_role
@@ -1036,7 +1020,7 @@ class RejectOffererTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
 
         # When
-        offerers_api.reject_offerer(user_offerer.offerer.id, admin)
+        offerers_api.reject_offerer(user_offerer.offerer, admin)
 
         # Then
         assert offerers_models.UserOfferer.query.count() == 0
@@ -1048,7 +1032,7 @@ class RejectOffererTest:
         offerers_factories.ApiKeyFactory(offerer=user_offerer.offerer)
 
         # When
-        offerers_api.reject_offerer(user_offerer.offerer.id, admin)
+        offerers_api.reject_offerer(user_offerer.offerer, admin)
 
         # Then
         assert offerers_models.UserOfferer.query.count() == 0
@@ -1062,7 +1046,7 @@ class RejectOffererTest:
         offerers_factories.UserOffererFactory(offerer=offerer)  # removed in reject_offerer()
 
         # When
-        offerers_api.reject_offerer(offerer.id, admin)
+        offerers_api.reject_offerer(offerer, admin)
 
         # Then
         send_new_offerer_rejection_email_to_pro.assert_called_once_with(offerer)
@@ -1078,7 +1062,7 @@ class RejectOffererTest:
         )  # another applicant
 
         # When
-        offerers_api.reject_offerer(offerer.id, admin)
+        offerers_api.reject_offerer(offerer, admin)
 
         # Then
         action = history_models.ActionHistory.query.one()
@@ -1088,19 +1072,6 @@ class RejectOffererTest:
         assert action.userId == user.id
         assert action.offererId == offerer.id
         assert action.venueId is None
-
-    def test_do_not_reject_if_id_not_found(self):
-        # Given
-        admin = users_factories.AdminFactory()
-        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
-
-        # When
-        with pytest.raises(offerers_exceptions.OffererNotFoundException):
-            offerers_api.reject_offerer(user_offerer.offerer.id + 100, admin)
-
-        # Then
-        assert user_offerer.offerer.validationStatus == offerers_models.ValidationStatus.NEW
-        assert history_models.ActionHistory.query.count() == 0
 
 
 def test_grant_user_offerer_access():

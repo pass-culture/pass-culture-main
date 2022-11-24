@@ -35,6 +35,6 @@ class ManualReviewForm(FlaskForm):
         "Statut", choices=utils.choices_from_enum(fraud_models.FraudReviewStatus)
     )
     eligibility = fields.PCSelectWithPlaceholderValueField(
-        "Eligibilité", choices=utils.choices_from_enum(users_models.EligibilityType)
+        "Éligibilité", choices=utils.choices_from_enum(users_models.EligibilityType)
     )
     reason = fields.PCOptStringField("Raison du changement")
