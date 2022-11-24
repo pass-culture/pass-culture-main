@@ -236,6 +236,10 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       withdrawalType: null,
     })
     expect(api.getOffer).toHaveBeenCalledTimes(1)
+    // FIX ME: this button "Quitter" come from RouteLeavingGuard
+    // in reality it is not here (and this is expected)
+    // so it would be great if we could remove this line
+    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
@@ -330,6 +334,10 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     expect(
       await screen.findByTestId('global-notification-success')
     ).toBeInTheDocument()
+    // FIX ME: this button "Quitter" come from RouteLeavingGuard
+    // in reality it is not here (and this is expected)
+    // so it would be great if we could remove this line
+    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()

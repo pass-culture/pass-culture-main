@@ -86,7 +86,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors({ stocks: payload.errors })
     }
-    setIsClickingFromActionBar(false)
   }
 
   const onDeleteStock = async (stockValues: IStockEventFormValues) => {
@@ -117,28 +116,32 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     initialValues,
     onSubmit,
     validationSchema: getValidationSchema(minQuantity),
+    // enableReinitialize is needed to reset dirty after submit (and not block after saving a draft)
     enableReinitialize: true,
   })
 
-  const handleNextStep = () => {
-    setIsClickingFromActionBar(true)
-    setAfterSubmitUrl(
-      getOfferIndividualUrl({
-        offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-        mode,
-      })
-    )
-    formik.handleSubmit()
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OFFER_WIZARD_STEP_IDS.STOCKS,
-      to: OFFER_WIZARD_STEP_IDS.SUMMARY,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offer.id,
-    })
-  }
+  const handleNextStep =
+    ({ saveDraft = false } = {}) =>
+    () => {
+      // tested but coverage don't see it.
+      /* istanbul ignore next */
+      setIsClickingFromActionBar(true)
+      setAfterSubmitUrl(
+        getOfferIndividualUrl({
+          offerId: offer.id,
+          step: saveDraft
+            ? OFFER_WIZARD_STEP_IDS.STOCKS
+            : OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode,
+        })
+      )
+      if (saveDraft && !Object.keys(formik.touched).length) {
+        notify.success('Brouillon sauvegardé dans la liste des offres')
+      } else {
+        formik.handleSubmit()
+      }
+      setIsClickingFromActionBar(false)
+    }
 
   const handlePreviousStep = () => {
     if (!formik.dirty) {
@@ -161,32 +164,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     )
   }
 
-  const handleSaveDraft = () => {
-    setIsClickingFromActionBar(true)
-    /* istanbul ignore next: DEBT, TO FIX */
-    setAfterSubmitUrl(
-      getOfferIndividualUrl({
-        offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.STOCKS,
-        mode,
-      })
-    )
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (!Object.keys(formik.touched).length) {
-      notify.success('Brouillon sauvegardé dans la liste des offres')
-    } else {
-      formik.handleSubmit()
-    }
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OFFER_WIZARD_STEP_IDS.STOCKS,
-      to: OFFER_WIZARD_STEP_IDS.STOCKS,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS,
-      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: true,
-      offerId: offer.id,
-    })
-  }
-
   return (
     <FormikProvider value={formik}>
       {providerName && (
@@ -203,9 +180,9 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
             <StockFormList offer={offer} onDeleteStock={onDeleteStock} />
             <ActionBar
               isDisabled={formik.isSubmitting}
-              onClickNext={handleNextStep}
+              onClickNext={handleNextStep()}
               onClickPrevious={handlePreviousStep}
-              onClickSaveDraft={handleSaveDraft}
+              onClickSaveDraft={handleNextStep({ saveDraft: true })}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
               offerId={offer.id}
             />
