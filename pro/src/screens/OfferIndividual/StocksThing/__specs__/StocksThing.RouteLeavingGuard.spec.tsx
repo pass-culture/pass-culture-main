@@ -196,7 +196,7 @@ describe('screens:StocksThing', () => {
 
     renderStockThingScreen({ props, storeOverride, contextValue })
 
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Quantité'), '20')
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape précédente' })
     )
@@ -240,7 +240,7 @@ describe('screens:StocksThing', () => {
     })
 
     renderStockThingScreen({ props, storeOverride, contextValue })
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Quantité'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -255,7 +255,7 @@ describe('screens:StocksThing', () => {
     })
 
     renderStockThingScreen({ props, storeOverride, contextValue })
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Quantité'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -269,9 +269,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stockIds: [{ id: 'CREATED_STOCK_ID' }],
     })
-
     renderStockThingScreen({ props, storeOverride, contextValue })
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -290,6 +288,36 @@ describe('screens:StocksThing', () => {
         used: 'RouteLeavingGuard',
       }
     )
+    expect(
+      screen.getByText(
+        'Si vous quittez, les informations saisies ne seront pas sauvegardées dans votre brouillon.'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should be able to submit from RouteLeavingGuard in creation', async () => {
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+    })
+
+    renderStockThingScreen({
+      props,
+      storeOverride,
+      contextValue,
+    })
+    await userEvent.type(screen.getByLabelText('Prix'), '20')
+
+    await userEvent.click(screen.getByText('Go outside !'))
+
+    expect(
+      screen.getByText(
+        'Si vous quittez, les informations saisies ne seront pas sauvegardées dans votre brouillon.'
+      )
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+
+    expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
   })
 
   it('should be able to submit from RouteLeavingGuard in draft', async () => {

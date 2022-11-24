@@ -181,7 +181,7 @@ describe('screens:StocksEvent', () => {
     // FIX ME: this button "Quitter" come from RouteLeavingGuard
     // in reality it is not here (and this is expected)
     // so it would be great if we could remove this line
-    await userEvent.click(screen.getByText('Quitter'))
+    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
     expect(screen.getByText('Save draft page')).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })
@@ -217,7 +217,7 @@ describe('screens:StocksEvent', () => {
     // FIX ME: this button "Quitter" come from RouteLeavingGuard
     // in reality he is not here (and this is expected)
     // so it would be great if we could remove this line
-    await userEvent.click(screen.getByText('Quitter'))
+    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
     expect(screen.getByText('Next page')).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })

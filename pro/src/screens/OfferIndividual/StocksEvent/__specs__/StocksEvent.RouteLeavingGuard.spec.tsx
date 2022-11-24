@@ -216,7 +216,7 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape précédente' })
     )
-    await userEvent.click(screen.getByText('Quitter'))
+    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
 
     expect(await screen.findByText('Previous page')).toBeInTheDocument()
     expect(api.upsertStocks).not.toHaveBeenCalled()
@@ -259,6 +259,11 @@ describe('screens:StocksEvent', () => {
     })
 
     renderStockEventScreen({ props, storeOverride, contextValue })
+
+    await userEvent.click(screen.getByLabelText('Date', { exact: true }))
+    await userEvent.click(await screen.getByText(today.getDate()))
+    await userEvent.click(screen.getByLabelText('Horaire'))
+    await userEvent.click(await screen.getByText('12:00'))
     await userEvent.type(screen.getByLabelText('Prix'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
@@ -278,6 +283,35 @@ describe('screens:StocksEvent', () => {
         used: 'RouteLeavingGuard',
       }
     )
+  })
+
+  it('should be able to submit from RouteLeavingGuard in creation', async () => {
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+    })
+
+    renderStockEventScreen({
+      props,
+      storeOverride,
+      contextValue,
+    })
+    await userEvent.click(screen.getByLabelText('Date', { exact: true }))
+    await userEvent.click(await screen.getByText(today.getDate()))
+    await userEvent.click(screen.getByLabelText('Horaire'))
+    await userEvent.click(await screen.getByText('12:00'))
+    await userEvent.type(screen.getByLabelText('Prix'), '20')
+
+    await userEvent.click(screen.getByText('Go outside !'))
+
+    expect(
+      screen.getByText(
+        'Si vous quittez, les informations saisies ne seront pas sauvegardées dans votre brouillon.'
+      )
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+
+    expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
   })
 
   it('should be able to submit from RouteLeavingGuard in draft', async () => {

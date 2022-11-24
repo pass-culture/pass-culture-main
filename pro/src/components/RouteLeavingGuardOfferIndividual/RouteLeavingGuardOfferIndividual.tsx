@@ -19,14 +19,14 @@ const computeType = (
 ): ROUTE_LEAVING_GUARD_TYPE => {
   if (mode === OFFER_WIZARD_MODE.EDITION && isFormValid) {
     return ROUTE_LEAVING_GUARD_TYPE.EDITION
-  } else if (mode === OFFER_WIZARD_MODE.DRAFT && isFormValid) {
-    return ROUTE_LEAVING_GUARD_TYPE.DRAFT
   } else if (
     mode === OFFER_WIZARD_MODE.CREATION &&
-    !hasOfferBeenCreated &&
-    isFormValid
+    isFormValid &&
+    !hasOfferBeenCreated
   ) {
     return ROUTE_LEAVING_GUARD_TYPE.CAN_CREATE_DRAFT
+  } else if (isFormValid) {
+    return ROUTE_LEAVING_GUARD_TYPE.DRAFT
   }
   return ROUTE_LEAVING_GUARD_TYPE.DEFAULT
 }
@@ -34,19 +34,19 @@ const computeType = (
 export interface IRouteLeavingGuardOfferIndividual {
   mode: OFFER_WIZARD_MODE
   saveForm: () => void
-  hasOfferBeenCreated: boolean
   isFormValid: boolean
   setIsSubmittingFromRouteLeavingGuard: (p: boolean) => void
   tracking?: (p: string) => void
+  hasOfferBeenCreated: boolean
 }
 
 const RouteLeavingGuardOfferIndividual = ({
   mode,
   saveForm,
-  hasOfferBeenCreated,
   isFormValid,
   setIsSubmittingFromRouteLeavingGuard,
   tracking,
+  hasOfferBeenCreated,
 }: IRouteLeavingGuardOfferIndividual): JSX.Element => {
   const routeLeavingGuardTypes = {
     // form dirty and mandatory fields not ok
@@ -61,7 +61,7 @@ const RouteLeavingGuardOfferIndividual = ({
         text: 'Quitter',
       },
     },
-    // mode creation + mandatory fields ok
+    // mode creation + mandatory fields ok + offer did not exist
     [ROUTE_LEAVING_GUARD_TYPE.CAN_CREATE_DRAFT]: {
       dialogTitle:
         'Souhaitez-vous enregistrer cette offre en brouillon avant de quitter ?',
@@ -79,7 +79,7 @@ const RouteLeavingGuardOfferIndividual = ({
         },
       },
     },
-    // mode draft, form dirty
+    // mode draft or creation, form dirty & valid + offer did exist
     [ROUTE_LEAVING_GUARD_TYPE.DRAFT]: {
       dialogTitle:
         'Souhaitez-vous enregistrer vos modifications avant de quitter ?',
@@ -97,7 +97,7 @@ const RouteLeavingGuardOfferIndividual = ({
         },
       },
     },
-    // mode edition, form dirty
+    // mode edition, form dirty & valid
     [ROUTE_LEAVING_GUARD_TYPE.EDITION]: {
       dialogTitle:
         'Souhaitez-vous enregistrer vos modifications avant de quitter ?',
