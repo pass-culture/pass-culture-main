@@ -63,7 +63,11 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer } = useOfferIndividualContext()
-  const { visible, showModal, hideModal } = useModal()
+  const {
+    visible: activationCodeFormVisible,
+    showModal: activationCodeFormShow,
+    hideModal: activationCodeFormHide,
+  } = useModal()
 
   const onSubmit = async (formValues: IStockThingFormValues) => {
     const { isOk, payload, message } = await upsertStocksThingAdapter({
@@ -192,7 +196,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
     actions = [
       {
-        callback: showModal,
+        callback: activationCodeFormShow,
         label: "Ajouter des codes d'activation",
         disabled: isDisabled,
         Icon: AddActivationCodeIcon,
@@ -210,17 +214,17 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     (activationCodes: string[]) => {
       formik.setFieldValue('quantity', activationCodes?.length, true)
       formik.setFieldValue('activationCodes', activationCodes)
-      hideModal()
+      activationCodeFormHide()
     },
-    [hideModal]
+    [activationCodeFormHide]
   )
 
   return (
     <FormikProvider value={formik}>
-      {visible && (
+      {activationCodeFormVisible && (
         <ActivationCodeFormDialog
           onSubmit={submitActivationCodes}
-          onCancel={hideModal}
+          onCancel={activationCodeFormHide}
           today={today}
           minExpirationDate={formik.values.bookingLimitDatetime}
         />
