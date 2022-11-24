@@ -15,7 +15,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferSubCategory } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
@@ -23,7 +23,6 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
-import { isOfferDisabled } from 'pages/Offers/domain/isOfferDisabled'
 import { DisplayOfferInAppLink } from 'pages/Offers/Offer/DisplayOfferInAppLink'
 import OfferStatusBanner from 'pages/Offers/Offer/OfferDetails/OfferStatusBanner'
 import { ButtonVariant } from 'ui-kit/Button/types'

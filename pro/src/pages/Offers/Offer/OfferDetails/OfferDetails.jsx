@@ -11,11 +11,11 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
+import { isOfferDisabled } from 'core/Offers'
 import { useGetCategories } from 'core/Offers/adapters'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import { isOfferDisabled } from 'pages/Offers/domain/isOfferDisabled'
 import { DisplayOfferInAppLink } from 'pages/Offers/Offer/DisplayOfferInAppLink'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { ButtonVariant } from 'ui-kit/Button/types'

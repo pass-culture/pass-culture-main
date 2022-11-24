@@ -8,11 +8,11 @@ import {
   STOCK_EVENT_FORM_DEFAULT_VALUES,
 } from 'components/StockEventForm'
 import { StockFormRow } from 'components/StockFormRow'
+import { isOfferDisabled } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
 import { useModal } from 'hooks/useModal'
 import { IconPlusCircle } from 'icons'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
-import { isOfferDisabled } from 'screens/OfferEducationalStock/utils'
 import { DialogStockDeleteConfirm } from 'screens/OfferIndividual/DialogStockDeleteConfirm'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'

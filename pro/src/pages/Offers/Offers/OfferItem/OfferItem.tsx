@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { OFFER_STATUS_DRAFT } from 'core/Offers'
+import { isOfferDisabled, OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -9,7 +9,6 @@ import {
   useOfferEditionURL,
   useOfferStockEditionURL,
 } from 'hooks/useOfferEditionURL'
-import { isOfferDisabled } from 'pages/Offers/domain/isOfferDisabled'
 
 import CollectiveOfferItem from './CollectiveOfferItem'
 import IndividualOfferItem from './IndividualOfferItem'

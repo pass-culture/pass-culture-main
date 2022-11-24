@@ -1,11 +1,12 @@
 import React from 'react'
 
-import { isOfferDisabled } from 'pages/Offers/domain/isOfferDisabled'
+import { OfferStatus } from 'apiClient/v1'
+import { isOfferDisabled } from 'core/Offers'
 
 interface CheckboxCellProps {
   isSelected: boolean
   offerId: string
-  status: string
+  status: OfferStatus
   disabled: boolean
   isShowcase: boolean
   selectOffer: (offerId: string, selected: boolean, isTemplate: boolean) => void
