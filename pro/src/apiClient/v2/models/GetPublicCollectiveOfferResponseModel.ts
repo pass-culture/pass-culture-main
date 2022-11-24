@@ -19,6 +19,8 @@ export type GetPublicCollectiveOfferResponseModel = {
   educationalPriceDetail?: string | null;
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
+  imageCredit?: string | null;
+  imageUrl?: string | null;
   interventionArea: Array<string>;
   isActive?: boolean | null;
   isSoldOut: boolean;
