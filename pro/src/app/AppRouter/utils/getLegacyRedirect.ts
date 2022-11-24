@@ -1,3 +1,7 @@
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
+
 export interface ILegacyRedirect {
   redirectFrom: string
   redirectTo: string
@@ -12,9 +16,11 @@ const getLegacyRedirect = ({
 }: IGetLegacyRedirectArgs): ILegacyRedirect[] => [
   {
     redirectFrom: '/offres/:offerId([A-Z0-9]+)/edition',
-    redirectTo: isV2
-      ? '/offre/:offerId([A-Z0-9]+)/individuel/recapitulatif'
-      : '/offre/:offerId([A-Z0-9]+)/v3/individuelle/recapitulatif',
+    redirectTo: getOfferIndividualPath({
+      step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+      mode: OFFER_WIZARD_MODE.EDITION,
+      isV2,
+    }),
   },
   {
     redirectFrom: '/offre/:offerId([A-Z0-9]+)/scolaire/edition',
