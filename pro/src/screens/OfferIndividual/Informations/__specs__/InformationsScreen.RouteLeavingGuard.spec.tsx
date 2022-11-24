@@ -345,6 +345,35 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     ).toBeInTheDocument()
   })
 
+  it('should block with draft block type when form has just been touched in creation', async () => {
+    contextOverride = {
+      ...contextOverride,
+      offerId: offer.id,
+      offer: offer,
+    }
+
+    props.initialValues = setInitialFormValues(
+      offer,
+      contextOverride.subCategories as IOfferSubCategory[]
+    )
+    renderInformationsScreen(props, store, contextOverride)
+
+    const nameField = screen.getByLabelText('Titre de l’offre')
+    await userEvent.type(nameField, 'New name')
+    await userEvent.click(screen.getByText('Go outside !'))
+
+    expect(
+      screen.getByText(
+        'Souhaitez-vous enregistrer vos modifications avant de quitter ?'
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Si vous quittez, les informations saisies ne seront pas sauvegardées dans votre brouillon.'
+      )
+    ).toBeInTheDocument()
+  })
+
   it('should block with draft block type when form has just been touched in draft', async () => {
     contextOverride = {
       ...contextOverride,
