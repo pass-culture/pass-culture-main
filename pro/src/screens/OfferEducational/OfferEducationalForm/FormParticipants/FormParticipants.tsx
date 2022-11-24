@@ -28,7 +28,7 @@ const FormParticipants = ({
         sideComponent={
           <InfoBox
             type="info"
-            text="Le Pass Culture à destination du public scolaire s’adresse aux élèves de la quatrième à la terminale des établissements publics et privés sous contrat."
+            text="Le pass Culture à destination du public scolaire s’adresse aux élèves de la quatrième à la terminale des établissements publics et privés sous contrat."
           />
         }
       >

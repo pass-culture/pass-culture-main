@@ -158,6 +158,7 @@ const OfferEducationalForm = ({
           <FormNotifications disableForm={mode === Mode.READ_ONLY} />
         </>
       ) : null}
+
       <FormLayout.Actions>
         <Link className="secondary-link" to={computeOffersUrl({})}>
           Annuler et quitter

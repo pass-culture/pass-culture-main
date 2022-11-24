@@ -70,7 +70,9 @@ describe('screens:OfferIndividual::OfferType', () => {
     expect(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
     ).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Retour' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Annuler et quitter' })
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Étape suivante' })
     ).toBeInTheDocument()

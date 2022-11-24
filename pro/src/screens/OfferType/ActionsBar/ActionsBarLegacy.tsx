@@ -18,7 +18,7 @@ const ActionsBarLegacy = ({
         link={{ to: computeOffersUrl({}), isExternal: false }}
         variant={ButtonVariant.SECONDARY}
       >
-        Retour
+        Annuler et quitter
       </ButtonLink>
       <Button onClick={getNextPageHref}>Étape suivante</Button>
     </FormLayout.Actions>
