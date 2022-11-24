@@ -19,11 +19,10 @@ import {
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
-import { computeOffersUrl } from 'core/Offers/utils'
+import { computeOffersUrl, isOfferDisabled } from 'core/Offers/utils'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
-import { isOfferDisabled } from 'pages/Offers/domain/isOfferDisabled'
 import OfferStatusBanner from 'pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
 import {
   createEventStockPayload,

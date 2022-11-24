@@ -14,7 +14,7 @@ import {
   Mode,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
-import { computeOffersUrl } from 'core/Offers/utils'
+import { computeOffersUrl, isOfferDisabled } from 'core/Offers/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { Banner, ButtonLink, RadioGroup, SubmitButton, TextArea } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -23,7 +23,6 @@ import { DETAILS_PRICE_LABEL } from './constants/labels'
 import FormStock from './FormStock'
 import styles from './OfferEducationalStock.module.scss'
 import ShowcaseBannerInfo from './ShowcaseBannerInfo'
-import { isOfferDisabled } from './utils'
 import {
   showcaseOfferValidationSchema,
   validationSchema,
