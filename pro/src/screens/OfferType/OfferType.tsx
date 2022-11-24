@@ -2,7 +2,9 @@ import React, { useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import FormLayout from 'components/FormLayout'
-import { OFFER_SUBTYPES, OFFER_TYPES } from 'core/Offers'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_SUBTYPES, OFFER_TYPES, OFFER_WIZARD_MODE } from 'core/Offers'
+import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.svg'
 import { ReactComponent as CaseIcon } from 'icons/ico-case.svg'
@@ -31,9 +33,11 @@ const OfferType = (): JSX.Element => {
     if (offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
       /* istanbul ignore next: condition will be removed when FF active in prod */
       return history.push({
-        pathname: isOfferFormV3
-          ? '/offre/v3/creation/individuelle/informations'
-          : '/offre/creation/individuel',
+        pathname: getOfferIndividualUrl({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          isV2: isOfferFormV3,
+        }),
         search: location.search,
       })
     }
