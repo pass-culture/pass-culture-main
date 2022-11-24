@@ -1,9 +1,12 @@
 <div class="card shadow">
     <div class="card-body">
         <h5 class="card-title mb-3">
-            <span class="badge rounded-pill text-bg-primary">
-                {{ row.isActive | format_state }}
-            </span>
+            {% if not row.isActive %}
+                <span class="badge rounded-pill text-bg-primary">
+                    {{ row.isActive | format_state }}
+                </span>
+            {% endif %}
+
             {% for role in row.roles %}
                 <span class="badge rounded-pill text-bg-secondary">
                     {{ role | format_role }}
