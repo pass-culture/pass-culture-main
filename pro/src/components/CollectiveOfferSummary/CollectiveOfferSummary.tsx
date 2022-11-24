@@ -9,6 +9,7 @@ import {
 
 import CollectiveOfferAccessibilitySection from './components/CollectiveOfferAccessibilitySection'
 import CollectiveOfferContactSection from './components/CollectiveOfferContactSection'
+import CollectiveOfferImagePreview from './components/CollectiveOfferImagePreview'
 import CollectiveOfferNotificationSection from './components/CollectiveOfferNotificationSection'
 import CollectiveOfferParticipantSection from './components/CollectiveOfferParticipantSection'
 import CollectiveOfferPracticalInformation from './components/CollectiveOfferPracticalInformation'
@@ -42,6 +43,7 @@ const CollectiveOfferSummary = ({
           >
             <CollectiveOfferVenueSection venue={offer.venue} />
             <CollectiveOfferTypeSection offer={offer} categories={categories} />
+            <CollectiveOfferImagePreview offer={offer} />
             <CollectiveOfferPracticalInformation offer={offer} />
             <CollectiveOfferParticipantSection students={offer.students} />
             <CollectiveOfferAccessibilitySection offer={offer} />
