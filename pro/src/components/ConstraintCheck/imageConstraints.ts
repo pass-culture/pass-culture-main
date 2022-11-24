@@ -1,3 +1,4 @@
+import { OrientationEnum } from 'components/ImageUploadBrowserForm/types'
 import { getImageBitmap } from 'utils/image'
 
 type FileChecker = (file: File) => Promise<boolean>
@@ -6,6 +7,7 @@ export type Constraint = {
   id: string
   description: string
   asyncValidator: FileChecker
+  hideDescription?: boolean
 }
 
 export const imageConstraints = {
@@ -38,6 +40,50 @@ export const imageConstraints = {
       id: 'width',
       description: `Largeur minimale de l’image : ${minWidth} px`,
       asyncValidator: isOfPoorQuality,
+    }
+  },
+  height: (minHeight?: number): Constraint => {
+    const isOfPoorQuality: FileChecker = async file => {
+      if (!minHeight) {
+        return false
+      }
+      const imageBitmap = await getImageBitmap(file)
+      return imageBitmap !== null && imageBitmap.height >= minHeight
+    }
+
+    return {
+      id: 'height',
+      description: `La hauteur minimale de l’image : ${minHeight} px`,
+      asyncValidator: isOfPoorQuality,
+      hideDescription: !minHeight || minHeight <= 0,
+    }
+  },
+  minRatio: (minRatio: number, orientation: OrientationEnum): Constraint => {
+    const isRatioTooClose: FileChecker = async file => {
+      const imageBitmap = await getImageBitmap(file)
+      if (imageBitmap === null) {
+        return true
+      }
+
+      // if the ratio is +- 0.4, then the image needs to be higher
+      // If it's -= 0.4 the image is too small, so we only check ratio + tooClose value
+      const tooCloseNumber = 0.4
+      const totalMinRatio = minRatio + tooCloseNumber
+      const imageRatio = {
+        [OrientationEnum.LANDSCAPE]:
+          (imageBitmap.width / imageBitmap.height) * 100,
+        [OrientationEnum.PORTRAIT]:
+          (imageBitmap.width / imageBitmap.height) * 100,
+      }[orientation]
+
+      return imageRatio >= totalMinRatio || true
+    }
+
+    return {
+      id: 'minRatio',
+      description: `La hauteur de l'image n'est pas assez grande.`,
+      asyncValidator: isRatioTooClose,
+      hideDescription: true,
     }
   },
 }

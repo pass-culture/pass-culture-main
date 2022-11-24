@@ -10,7 +10,7 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { BaseFileInput } from 'ui-kit/form/shared'
 
 import { modeValidationConstraints } from './constants'
-import type { IImageUploadBrowserFormValues } from './types'
+import { IImageUploadBrowserFormValues, OrientationEnum } from './types'
 import getValidationSchema from './validationSchema'
 
 interface IImageUploadBrowserFormProps {
@@ -25,10 +25,21 @@ const ImageUploadBrowserForm = ({
 }: IImageUploadBrowserFormProps): JSX.Element => {
   const [errors, setErrors] = useState<string[]>([])
   const validationConstraints = modeValidationConstraints[mode]
+  const validationMinHeight =
+    'minHeight' in validationConstraints
+      ? validationConstraints.minHeight
+      : undefined
+  const orientation: OrientationEnum =
+    mode === UploaderModeEnum.VENUE
+      ? OrientationEnum.LANDSCAPE
+      : OrientationEnum.PORTRAIT
+
   const constraints: Constraint[] = [
     imageConstraints.formats(validationConstraints.types),
     imageConstraints.size(validationConstraints.maxSize),
     imageConstraints.width(validationConstraints.minWidth),
+    imageConstraints.height(validationMinHeight),
+    imageConstraints.minRatio(validationConstraints.minRatio, orientation),
   ]
 
   const validationSchema = getValidationSchema(validationConstraints)
