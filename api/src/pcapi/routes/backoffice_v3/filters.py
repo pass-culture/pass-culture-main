@@ -62,7 +62,7 @@ def format_amount(amount: float | None) -> str:
     if amount is None:
         amount = 0.0
 
-    return f"{amount:,.2f} €".replace(",", "&#8239;").replace(".", ",")
+    return f"{amount:,.2f} €".replace(",", "\u202f").replace(".", ",")
 
 
 def format_bool(data: bool | None) -> str:

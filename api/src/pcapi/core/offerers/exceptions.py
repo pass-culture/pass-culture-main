@@ -49,10 +49,6 @@ class VenueNotFoundException(Exception):
     pass
 
 
-class OffererNotFoundException(Exception):
-    pass
-
-
 class OffererAlreadyValidatedException(Exception):
     pass
 

@@ -55,7 +55,7 @@ class UnauthorizedHelper(UnauthorizedHelperBase):
         user = self.setup_user()
 
         authenticated_client = client.with_session_auth(user.email)
-        response = authenticated_client.get(self.path)
+        response = getattr(authenticated_client, self.http_method)(self.path)
 
         assert response.status_code == 403
 
@@ -64,18 +64,18 @@ class UnauthorizedHelper(UnauthorizedHelperBase):
         user = users_factories.UserFactory(isActive=True)
 
         authenticated_client = client.with_session_auth(user.email)
-        response = authenticated_client.get(self.path)
+        response = getattr(authenticated_client, self.http_method)(self.path)
 
         assert response.status_code == 403
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_not_logged_in(self, client):  # type: ignore
-        response = client.get(self.path)
+        response = getattr(client, self.http_method)(self.path)
         assert response.status_code == 403
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=False)
     def test_ff_disabled(self, client):  # type: ignore
-        response = client.get(self.path)
+        response = getattr(client, self.http_method)(self.path)
         assert response.status_code == 400
 
 

@@ -1,0 +1,22 @@
+{% macro build_edit_status_modal(dst, div_id, validate_btn_msg) %}
+<div class="modal fade" id="{{ div_id }}" tabindex="-1" aria-labelledby="{{ div_id }}-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="{{ dst }}" method="POST" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ caller() }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-floating my-3">
+                    <textarea name="comment" class="form-control" id="{{ div_id }}-textarea" rows="3"></textarea>
+                    <label for={{ div_id }}-textarea"><label for="comment">Raison</label></label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-primary">{{ validate_btn_msg }}</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endmacro %}
