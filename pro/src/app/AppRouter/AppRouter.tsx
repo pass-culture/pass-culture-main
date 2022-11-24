@@ -29,8 +29,13 @@ const AppRouter = (): JSX.Element => {
   return (
     <Switch>
       {getLegacyRedirect({ isV2: !isOfferFormV3 }).map(
-        ({ redirectFrom, redirectTo }: ILegacyRedirect) => (
-          <Redirect exact from={redirectFrom} to={redirectTo} />
+        ({ redirectFrom, redirectTo }: ILegacyRedirect, index: number) => (
+          <Redirect
+            exact
+            key={`legacy-redirect-${index}`}
+            from={redirectFrom}
+            to={redirectTo}
+          />
         )
       )}
 

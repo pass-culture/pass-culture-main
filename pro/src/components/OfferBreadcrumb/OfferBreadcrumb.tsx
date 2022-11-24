@@ -39,12 +39,6 @@ const OfferBreadcrumb = ({
   const { logEvent } = useAnalytics()
   // it is never OfferFormV3 in this breadcrumb
   const isOfferFormV3 = false
-  const stockEditionUrl = useOfferStockEditionURL(
-    isOfferEducational,
-    offerId,
-    isOfferFormV3
-  )
-
   const isTemplateId = offerId.startsWith('T-')
   let steps: Step[] = []
 
@@ -72,7 +66,11 @@ const OfferBreadcrumb = ({
       {
         id: OfferBreadcrumbStep.STOCKS,
         label: isOfferEducational ? 'Date et prix' : 'Stocks et prix',
-        url: stockEditionUrl,
+        url: useOfferStockEditionURL(
+          isOfferEducational,
+          offerId,
+          isOfferFormV3
+        ),
       },
       ...(isOfferEducational && !isTemplateId
         ? [
