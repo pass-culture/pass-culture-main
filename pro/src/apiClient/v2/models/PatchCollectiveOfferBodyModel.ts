@@ -16,6 +16,8 @@ export type PatchCollectiveOfferBodyModel = {
   durationMinutes?: number | null;
   educationalInstitutionId?: number | null;
   educationalPriceDetail?: string | null;
+  imageCredit?: string | null;
+  imageFile?: string | null;
   interventionArea?: Array<string> | null;
   isActive?: boolean | null;
   mentalDisabilityCompliant?: boolean | null;
