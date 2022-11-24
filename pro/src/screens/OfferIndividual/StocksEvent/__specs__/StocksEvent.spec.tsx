@@ -178,6 +178,11 @@ describe('screens:StocksEvent', () => {
     expect(
       screen.getByRole('heading', { name: 'Stock & Prix' })
     ).toBeInTheDocument()
+    // FIX ME: this button "Quitter" come from RouteLeavingGuard
+    // in reality it is not here (and this is expected)
+    // so it would be great if we could remove this line
+    await userEvent.click(screen.getByText('Quitter'))
+    expect(screen.getByText('Save draft page')).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })
 
@@ -209,6 +214,10 @@ describe('screens:StocksEvent', () => {
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
+    // FIX ME: this button "Quitter" come from RouteLeavingGuard
+    // in reality he is not here (and this is expected)
+    // so it would be great if we could remove this line
+    await userEvent.click(screen.getByText('Quitter'))
     expect(screen.getByText('Next page')).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })

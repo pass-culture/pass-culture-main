@@ -93,6 +93,7 @@ const Informations = ({
         }
       }
       formik.handleSubmit()
+      setIsClickingFromActionBar(false)
     }
 
   // FIXME: find a way to test FileReader
@@ -284,7 +285,6 @@ const Informations = ({
     } else {
       formik.setErrors(payload.errors)
     }
-    setIsClickingFromActionBar(false)
   }
 
   const formik = useFormik({
