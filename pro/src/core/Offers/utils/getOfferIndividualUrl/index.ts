@@ -1,1 +1,4 @@
-export { default as getOfferIndividualUrl } from './getOfferIndividualUrl'
+export {
+  default as getOfferIndividualUrl,
+  getOfferIndividualPath,
+} from './getOfferIndividualUrl'

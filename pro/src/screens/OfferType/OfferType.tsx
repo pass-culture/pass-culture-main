@@ -36,7 +36,7 @@ const OfferType = (): JSX.Element => {
         pathname: getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           mode: OFFER_WIZARD_MODE.CREATION,
-          isV2: isOfferFormV3,
+          isV2: !isOfferFormV3,
         }),
         search: location.search,
       })

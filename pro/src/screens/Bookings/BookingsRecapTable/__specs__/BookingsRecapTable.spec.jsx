@@ -36,6 +36,7 @@ describe('components | BookingsRecapTable', () => {
           stock: {
             offer_name: 'Avez-vous déjà vu',
             type: 'thing',
+            offer_identifier: 'OFFER_ID',
           },
           beneficiary: {
             lastname: 'Klepi',
@@ -90,6 +91,7 @@ describe('components | BookingsRecapTable', () => {
           stock: {
             offer_name: 'Avez-vous déjà vu',
             type: 'thing',
+            offer_identifier: 'OFFER_ID',
           },
           beneficiary: {
             lastname: 'Klepi',
@@ -139,6 +141,7 @@ describe('components | BookingsRecapTable', () => {
         stock: {
           offer_name: 'Avez-vous déjà vu',
           type: 'thing',
+          offer_identifier: 'OFFER_ID',
         },
         beneficiary: {
           lastname: 'Klepi',
@@ -198,6 +201,7 @@ describe('components | BookingsRecapTable', () => {
         stock: {
           offer_name: 'Avez-vous déjà vu',
           type: 'thing',
+          offer_identifier: 'OFFER_ID',
         },
         beneficiary: {
           lastname: 'Klepi',
@@ -260,6 +264,7 @@ describe('components | BookingsRecapTable', () => {
         stock: {
           offer_name: 'Avez-vous déjà vu',
           type: 'thing',
+          offer_identifier: 'OFFER_ID',
         },
         beneficiary: {
           lastname: 'Klepi',
@@ -290,6 +295,7 @@ describe('components | BookingsRecapTable', () => {
         stock: {
           offer_name: 'Avez-vous déjà vu',
           type: 'thing',
+          offer_identifier: 'OFFER_ID',
         },
         beneficiary: {
           lastname: 'Klepi',
@@ -350,6 +356,7 @@ describe('components | BookingsRecapTable', () => {
       stock: {
         offer_name: 'Avez-vous déjà vu',
         type: 'thing',
+        offer_identifier: 'OFFER_ID',
       },
       beneficiary: {
         lastname: 'Klepi',
@@ -403,6 +410,7 @@ describe('components | BookingsRecapTable', () => {
           stock: {
             offer_name: 'Avez-vous déjà vu',
             type: 'thing',
+            offer_identifier: 'OFFER_ID',
           },
           beneficiary: {
             lastname: 'Klepi',
@@ -457,6 +465,7 @@ describe('components | BookingsRecapTable', () => {
       stock: {
         offer_name: 'Avez-vous déjà vu',
         type: 'thing',
+        offer_identifier: 'OFFER_ID',
       },
       beneficiary: {
         lastname: 'Klepi',
@@ -487,6 +496,7 @@ describe('components | BookingsRecapTable', () => {
       stock: {
         offer_name: 'Jurassic Park',
         type: 'thing',
+        offer_identifier: 'OFFER_ID',
       },
       beneficiary: {
         lastname: 'Klepi',
