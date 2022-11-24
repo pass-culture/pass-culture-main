@@ -9,8 +9,11 @@ import NotFound from 'pages/Errors/NotFound/NotFound'
 import { Logout } from 'pages/Logout'
 import { selectActiveFeatures } from 'store/features/selectors'
 
+import getLegacyRedirect, { ILegacyRedirect } from './utils/getLegacyRedirect'
+
 const AppRouter = (): JSX.Element => {
   const activeFeatures = useSelector(selectActiveFeatures)
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const activeRoutes = routes.filter(
     route =>
       (!route.featureName && !route.disabledFeatureName) ||
@@ -22,25 +25,19 @@ const AppRouter = (): JSX.Element => {
   const activeRoutesWithoutLayout = routesWithoutLayout.filter(
     route => !route.featureName || activeFeatures.includes(route.featureName)
   )
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   return (
     <Switch>
+      {getLegacyRedirect({ isV2: !isOfferFormV3 }).map(
+        ({ redirectFrom, redirectTo }: ILegacyRedirect) => (
+          <Redirect exact from={redirectFrom} to={redirectTo} />
+        )
+      )}
+
       <Route exact key="logout" path="/logout">
         <Logout />
       </Route>
-      <Redirect
-        from="/offres/:offerId([A-Z0-9]+)/edition"
-        to={
-          isOfferFormV3
-            ? '/offre/:offerId([A-Z0-9]+)/v3/individuelle/recapitulatif'
-            : '/offre/:offerId([A-Z0-9]+)/individuel/recapitulatif'
-        }
-      />
-      <Redirect
-        from="/offre/:offerId([A-Z0-9]+)/scolaire/edition"
-        to="/offre/:offerId([A-Z0-9]+)/collectif/edition"
-      />
+
       {activeRoutes.map(route => (
         <Route
           exact={route.exact}
