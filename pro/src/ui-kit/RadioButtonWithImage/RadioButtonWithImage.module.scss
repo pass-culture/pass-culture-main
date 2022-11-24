@@ -5,7 +5,7 @@
 
 .button {
   background-color: transparent;
-  border: rem.torem(1px) solid colors.$black;
+  border: rem.torem(1px) solid colors.$grey-dark;
   border-radius: rem.torem(8px);
   position: relative;
   font-size: rem.torem(15px);
@@ -26,22 +26,25 @@
 
   &-icon {
     flex-shrink: 0;
-    fill: colors.$black;
-    width: rem.torem(40px);
-    height: rem.torem(40px);
+    fill: colors.$tertiary;
+    width: rem.torem(44px);
+    height: rem.torem(44px);
+  }
+
+  &:hover {
+    box-shadow: 0px 3px 4px 0px #67686b29;
+    cursor: pointer;
   }
 
   &.is-selected {
     border-color: colors.$tertiary;
+    outline: 1px solid colors.$tertiary;
     font-weight: 700;
     background-color: rgba(colors.$tertiary, 0.05);
 
     &:focus-within {
-      outline: 1px solid colors.$tertiary;
-    }
-
-    .button-icon {
-      fill: colors.$tertiary;
+      border-color: colors.$black;
+      outline-color: colors.$black;
     }
   }
 
@@ -67,11 +70,12 @@
   &-description {
     @include fonts.caption();
     color: colors.$grey-dark;
+    margin-top: rem.torem(4px);
   }
 }
 
 .layout-column {
-  padding: rem.torem(32px) rem.torem(16px);
+  padding: rem.torem(40px) rem.torem(16px) rem.torem(32px);
   display: flex;
   flex-direction: column;
   justify-content: center;
