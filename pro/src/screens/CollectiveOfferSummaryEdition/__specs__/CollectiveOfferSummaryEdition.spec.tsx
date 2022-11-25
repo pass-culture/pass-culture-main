@@ -5,6 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
@@ -121,5 +122,55 @@ describe('CollectiveOfferSummary', () => {
         from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
       }
     )
+  })
+
+  it('should display desactive offer when clicking on activate offer', async () => {
+    offer = collectiveOfferTemplateFactory({
+      isTemplate: true,
+      isActive: false,
+    })
+    renderCollectiveOfferSummaryEdition(offer, categories)
+    const toggle = jest
+      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
+      .mockResolvedValue()
+
+    const activateOffer = screen.getByRole('button', {
+      name: 'Activer l’offre',
+    })
+
+    await userEvent.click(activateOffer)
+
+    expect(toggle).toHaveBeenCalledTimes(1)
+
+    const desactivateOffer = screen.getByRole('button', {
+      name: 'Désactiver l’offre',
+    })
+
+    expect(desactivateOffer).toBeInTheDocument()
+  })
+
+  it('should display activate offer when clicking on desactive offer', async () => {
+    offer = collectiveOfferTemplateFactory({
+      isTemplate: true,
+      isActive: true,
+    })
+    renderCollectiveOfferSummaryEdition(offer, categories)
+    const toggle = jest
+      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
+      .mockResolvedValue()
+
+    const activateOffer = screen.getByRole('button', {
+      name: 'Désactiver l’offre',
+    })
+
+    await userEvent.click(activateOffer)
+
+    expect(toggle).toHaveBeenCalledTimes(1)
+
+    const desactivateOffer = screen.getByRole('button', {
+      name: 'Activer l’offre',
+    })
+
+    expect(desactivateOffer).toBeInTheDocument()
   })
 })
