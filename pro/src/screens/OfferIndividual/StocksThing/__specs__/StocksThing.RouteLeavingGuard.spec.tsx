@@ -217,7 +217,7 @@ describe('screens:StocksThing', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape précédente' })
     )
-    await userEvent.click(screen.getByText('Quitter'))
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
@@ -258,6 +258,9 @@ describe('screens:StocksThing', () => {
     await userEvent.type(screen.getByLabelText('Quantité'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
+    expect(
+      screen.getByText('Souhaitez-vous quitter la création d’offre ?')
+    ).toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Quitter'))
     expect(api.upsertStocks).toHaveBeenCalledTimes(0)
@@ -271,9 +274,10 @@ describe('screens:StocksThing', () => {
     })
     renderStockThingScreen({ props, storeOverride, contextValue })
 
+    await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(screen.getByText('Go outside !'))
 
-    await userEvent.click(screen.getByText('Quitter'))
+    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
@@ -288,11 +292,6 @@ describe('screens:StocksThing', () => {
         used: 'RouteLeavingGuard',
       }
     )
-    expect(
-      screen.getByText(
-        'Si vous quittez, les informations saisies ne seront pas sauvegardées dans votre brouillon.'
-      )
-    ).toBeInTheDocument()
   })
 
   it('should be able to submit from RouteLeavingGuard in creation', async () => {
