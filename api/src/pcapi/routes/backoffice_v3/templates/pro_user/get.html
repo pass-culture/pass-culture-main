@@ -1,7 +1,101 @@
 {% extends "layouts/pro.html" %}
 
 {% block pro_main_content %}
+<div class="row row-cols-1 g-4 py-3">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{ user.firstName }} {{ user.lastName | upper }}
 
-    {% include "pro_user/get/general.html" %}
+                    {% for role in user.roles %}
+                        <span class="ms-5 me-2 badge rounded-pill text-bg-secondary align-middle">
+                            {{ role | format_role }}
+                        </span>
+                    {% endfor %}
+                    {% if not user.isActive %}
+                        <span class="badge rounded-pill text-bg-danger align-middle">
+                            {{ user.isActive | format_state }}
+                        </span>
+                    {% endif %}
+                </h5>
 
+                <h6 class="card-subtitle text-muted">
+                    User ID : {{ user.id }}
+                </h6>
+                <div class="row pt-3">
+
+                    <div class="col-4">
+                        <div class="fs-6">
+                            <p class="mb-1"><span class="fw-bold">E-mail :</span> {{ user.email }} </p>
+                            <p class="mb-1"><span
+                                    class="fw-bold">Tél :</span> {{ user.phoneNumber | format_phone_number }} </p>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="fs-6">
+                            <p class="mb-1"><span
+                                    class="fw-bold">Code postal :</span> {{ user.postalCode | empty_string_if_null }}
+                            </p>
+                            <p class="mb-1"><span
+                                    class="fw-bold">Département :</span> {{ user.departementCode | empty_string_if_null }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        {% if can_edit_user %}
+                            <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
+                                    data-bs-target="#editProUserModal" type="button">
+                                Modifier les informations
+                            </button>
+                            <div class="modal modal-lg fade " id="editProUserModal" tabindex="-1"
+                                 aria-describedby="editProUserModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header fs-5" id="editProUserModalLabel">
+                                            Éditer les informations
+                                            de {{ user.firstName }} {{ user.lastName | upper }}</div>
+                                        <form action="{{ dst }}" method="POST">
+                                            <div class="modal-body">
+                                                <div class="form-group">
+                                                    {% for form_field in form %}
+                                                        <div class="w-100 my-4">
+                                                            {% for error in form_field.errors %}
+                                                                <p class="text-warning lead">{{ error }}</p>
+                                                            {% endfor %}
+                                                        </div>
+                                                        {{ form_field }}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-primary"
+                                                        data-bs-dismiss="modal">
+                                                    Annuler
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">Valider</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <turbo-frame id="pro_user_history_frame" src="{{ url_for("backoffice_v3_web.pro_user.get_user_history", user_id=user.id) }}">
+                <p class="text-center">
+                    <span class="spinner-grow spinner-grow-sm" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </span>
+                    Chargement...
+                </p>
+            </turbo-frame>
+        </div>
+    </div>
+</div>
 {% endblock %}
