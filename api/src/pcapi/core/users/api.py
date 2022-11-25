@@ -519,6 +519,7 @@ def update_user_info(  # type: ignore [no-untyped-def]
     needs_to_fill_cultural_survey=UNCHANGED,
     phone_number=UNCHANGED,
     public_name=UNCHANGED,
+    postal_code=UNCHANGED,
 ):
     old_email = None
 
@@ -539,6 +540,10 @@ def update_user_info(  # type: ignore [no-untyped-def]
         user.phoneNumber = phone_number
     if public_name is not UNCHANGED:
         user.publicName = public_name
+    if postal_code is not UNCHANGED:
+        user.postalCode = postal_code
+        user.departementCode = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
+
     repository.save(user)
 
     # TODO(prouzet) even for young users, we should probably remove contact with former email from sendinblue lists
