@@ -19,7 +19,7 @@ import { SubmitButton } from 'ui-kit'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
-import StockFormRow from './StockFormRow'
+import StockFormRow from './StockThingFormRow'
 
 export default {
   title: 'components/stocks/StockFormRow',

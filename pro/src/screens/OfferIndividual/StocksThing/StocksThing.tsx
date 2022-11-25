@@ -5,8 +5,7 @@ import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
-import { StockFormRow } from 'components/StockFormRow'
-import { IStockFormRowAction } from 'components/StockFormRow/SockFormActions/types'
+import { IStockFormRowAction } from 'components/StockFormActions/types'
 import {
   StockThingForm,
   getValidationSchema,
@@ -15,6 +14,7 @@ import {
   STOCK_THING_FORM_DEFAULT_VALUES,
 } from 'components/StockThingForm'
 import { setFormReadOnlyFields } from 'components/StockThingForm/utils'
+import { StockThingFormRow } from 'components/StockThingFormRow'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
@@ -288,7 +288,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       <FormLayout>
         <FormLayout.Section title="Stock & Prix" description={description}>
           <form onSubmit={formik.handleSubmit}>
-            <StockFormRow
+            <StockThingFormRow
               Form={renderStockForm()}
               actions={actions}
               actionDisabled={false}

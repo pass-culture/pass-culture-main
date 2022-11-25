@@ -2,23 +2,24 @@ import React from 'react'
 
 import { StockFormInfo } from 'components/StockFormInfo'
 
-import { StockFormActions } from './SockFormActions'
-import { IStockFormRowAction } from './SockFormActions/types'
-import styles from './StockFormRow.module.scss'
+import { StockFormActions } from '../StockFormActions'
+import { IStockFormRowAction } from '../StockFormActions/types'
 
-export interface IStockFormRowProps {
+import styles from './StockThingFormRow.module.scss'
+
+export interface IStockThingFormRowProps {
   Form: React.ReactNode
   actions?: IStockFormRowAction[]
   actionDisabled: boolean
   showStockInfo?: boolean
 }
 
-const StockFormRow = ({
+const StockThingFormRow = ({
   Form,
   actions,
   actionDisabled,
   showStockInfo = false,
-}: IStockFormRowProps): JSX.Element => {
+}: IStockThingFormRowProps): JSX.Element => {
   return (
     <div className={styles['stock-form-row']}>
       <div className={styles['stock-form']}>{Form}</div>
@@ -34,4 +35,4 @@ const StockFormRow = ({
   )
 }
 
-export default StockFormRow
+export default StockThingFormRow
