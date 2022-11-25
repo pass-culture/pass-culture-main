@@ -37,4 +37,4 @@ jobs:
           service_account: ${{ secrets.service_account }}
       - name: 'Deploy the image-resizing service to the ehp app engine'
         working-directory: ./app-engine/image-resizing
-        run:  gcloud app deploy --user-output-enabled=false --quiet --service-account=${{ secrets.service_account }} --project ${{ inputs.google_project }}
+        run:  gcloud app deploy --user-output-enabled=false --quiet --service-account=${{ secrets.service_account }} --project ${{ inputs.google_project }} --version=$(echo ${{ inputs.base_ref }}| tr '.' '-')
