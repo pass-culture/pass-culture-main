@@ -15,7 +15,6 @@ const SynchronizedProviderInformation = ({
   providerName,
 }: ISynchronizedProviderInformation): JSX.Element | null => {
   const providerInfo = getProviderInfo(providerName)
-
   if (providerInfo === undefined) {
     return null
   }

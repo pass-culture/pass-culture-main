@@ -37,6 +37,10 @@
       &.provider {
         display: flex;
         align-items: center;
+        & > img {
+          max-width: rem.torem(102px);
+          margin: 0 rem.torem(16px);
+        }
       }
     }
     .bi-link {
