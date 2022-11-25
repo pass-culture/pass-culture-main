@@ -171,6 +171,9 @@ const Summary = (
           }
         </div>
       )}
+      {providerName && (
+        <SynchronizedProviderInformation providerName={providerName} />
+      )}
       <SummaryLayout>
         <SummaryLayout.Content>
           <OfferSection conditionalFields={conditionalFields} offer={offer} />

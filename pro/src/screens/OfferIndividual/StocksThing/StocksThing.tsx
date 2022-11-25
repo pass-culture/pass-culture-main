@@ -40,6 +40,7 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
 import { DialogStockDeleteConfirm } from '../DialogStockDeleteConfirm'
+import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 import { logTo } from '../utils/logTo'
 
 import { ActivationCodeFormDialog } from './ActivationCodeFormDialog'
@@ -80,6 +81,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   } = useModal()
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
   const isSynchronized = offer.lastProvider !== null
+  const providerName = offer?.lastProviderName
 
   const onSubmit = async (formValues: IStockThingFormValues) => {
     const { isOk, payload, message } = await upsertStocksThingAdapter({
@@ -275,6 +277,10 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
           today={today}
           minExpirationDate={formik.values.bookingLimitDatetime}
         />
+      )}
+
+      {providerName && (
+        <SynchronizedProviderInformation providerName={providerName} />
       )}
       <FormLayout>
         <FormLayout.Section title="Stock & Prix" description={description}>

@@ -4,6 +4,7 @@ import React from 'react'
 import FormLayout from 'components/FormLayout'
 import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { TOffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
 import {
@@ -14,6 +15,7 @@ import {
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
+import { SynchronizedProviderInformation } from 'screens/OfferIndividual/SynchronisedProviderInfos'
 
 import { Accessibility } from './Accessibility'
 import { Categories } from './Categories'
@@ -77,8 +79,13 @@ const OfferIndividualForm = ({
     offerSubCategory.onlineOfflinePlatform === CATEGORY_STATUS.OFFLINE &&
     areAllVenuesVirtual
 
+  const { offer } = useOfferIndividualContext()
+  const providerName = offer?.lastProviderName
   return (
     <>
+      {providerName && (
+        <SynchronizedProviderInformation providerName={providerName} />
+      )}
       <FormLayout.MandatoryInfo />
       <Categories
         categories={categories}
