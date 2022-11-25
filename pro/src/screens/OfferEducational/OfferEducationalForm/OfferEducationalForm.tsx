@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
+import ActionsBarSticky from 'components/ActionsBarSticky'
 import FormLayout from 'components/FormLayout'
 import { IOfferEducationalFormValues, Mode } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
@@ -65,6 +66,7 @@ const OfferEducationalForm = ({
   const isCollectiveImageEnabled = useActiveFeature(
     'WIP_IMAGE_COLLECTIVE_OFFER'
   )
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   useScrollToFirstErrorAfterSubmit()
 
@@ -159,19 +161,37 @@ const OfferEducationalForm = ({
           <FormNotifications disableForm={mode === Mode.READ_ONLY} />
         </>
       ) : null}
-
-      <FormLayout.Actions>
-        <Link className="secondary-link" to={computeOffersUrl({})}>
-          Annuler et quitter
-        </Link>
-        <SubmitButton
-          className="primary-button"
-          disabled={!isEligible || mode === Mode.READ_ONLY}
-          isLoading={isLoading}
-        >
-          {mode === Mode.CREATION ? 'Étape suivante' : 'Enregistrer'}
-        </SubmitButton>
-      </FormLayout.Actions>
+      {isOfferFormV3 ? (
+        <ActionsBarSticky>
+          <ActionsBarSticky.Left>
+            <Link className="secondary-link" to={computeOffersUrl({})}>
+              Annuler et quitter
+            </Link>
+          </ActionsBarSticky.Left>
+          <ActionsBarSticky.Right>
+            <SubmitButton
+              className="primary-button"
+              disabled={!isEligible || mode === Mode.READ_ONLY}
+              isLoading={isLoading}
+            >
+              {mode === Mode.CREATION ? 'Étape suivante' : 'Enregistrer'}
+            </SubmitButton>
+          </ActionsBarSticky.Right>
+        </ActionsBarSticky>
+      ) : (
+        <FormLayout.Actions>
+          <Link className="secondary-link" to={computeOffersUrl({})}>
+            Annuler et quitter
+          </Link>
+          <SubmitButton
+            className="primary-button"
+            disabled={!isEligible || mode === Mode.READ_ONLY}
+            isLoading={isLoading}
+          >
+            {mode === Mode.CREATION ? 'Étape suivante' : 'Enregistrer'}
+          </SubmitButton>
+        </FormLayout.Actions>
+      )}
     </FormLayout>
   )
 }

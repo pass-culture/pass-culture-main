@@ -1,6 +1,7 @@
 import React from 'react'
 import { useHistory } from 'react-router'
 
+import ActionsBarSticky from 'components/ActionsBarSticky'
 import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
 import OfferEducationalActions from 'components/OfferEducationalActions'
 import {
@@ -18,6 +19,7 @@ import {
   patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { computeCollectiveOffersUrl } from 'core/Offers'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
@@ -91,6 +93,8 @@ const CollectiveOfferSummaryEdition = ({
     notify.error(response.message)
   }
 
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
+
   return (
     <>
       <OfferEducationalActions
@@ -137,12 +141,25 @@ const CollectiveOfferSummaryEdition = ({
         stockEditLink={stockEditLink}
         visibilityEditLink={visibilityEditLink}
       />
-      <ButtonLink
-        variant={ButtonVariant.PRIMARY}
-        link={{ isExternal: false, to: '/offres/collectives' }}
-      >
-        Retour à la liste des offres
-      </ButtonLink>
+      {isOfferFormV3 ? (
+        <ActionsBarSticky>
+          <ActionsBarSticky.Left>
+            <ButtonLink
+              variant={ButtonVariant.PRIMARY}
+              link={{ isExternal: false, to: computeCollectiveOffersUrl({}) }}
+            >
+              Retour à la liste des offres
+            </ButtonLink>
+          </ActionsBarSticky.Left>
+        </ActionsBarSticky>
+      ) : (
+        <ButtonLink
+          variant={ButtonVariant.PRIMARY}
+          link={{ isExternal: false, to: computeCollectiveOffersUrl({}) }}
+        >
+          Retour à la liste des offres
+        </ButtonLink>
+      )}
     </>
   )
 }
