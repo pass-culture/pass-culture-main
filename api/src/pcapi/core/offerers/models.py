@@ -862,6 +862,17 @@ class UserOfferer(PcObject, Base, Model, NeedsValidationMixin, ValidationStatusM
             cls.validationStatus == ValidationStatus.PENDING,
         ).is_(True)
 
+    @property
+    def requestDate(self) -> datetime | None:
+        # Added here for PC-18390 but will be removed soon in upcoming PC-18820
+        action_dates = [
+            action.actionDate
+            for action in self.offerer.action_history
+            if action.actionType in (history_models.ActionType.OFFERER_NEW, history_models.ActionType.USER_OFFERER_NEW)
+            and action.userId == self.userId
+        ]
+        return max(action_dates) if action_dates else None
+
 
 class ApiKey(PcObject, Base, Model):
     offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
