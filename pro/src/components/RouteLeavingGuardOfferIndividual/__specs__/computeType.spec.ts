@@ -38,7 +38,7 @@ describe('computeType', () => {
     },
   ]
 
-  it.each(edition)('should return right type in edition', async param => {
+  it.each(edition)('should return right type in edition', param => {
     // Given
     const mode = param.mode
     const isFormValid = param.isFormValid
@@ -88,7 +88,7 @@ describe('computeType', () => {
       expected: ROUTE_LEAVING_GUARD_TYPE.DRAFT,
     },
   ]
-  it.each(draft)('should return right type in draft', async param => {
+  it.each(draft)('should return right type in draft', param => {
     // Given
     const mode = param.mode
     const isFormValid = param.isFormValid
@@ -140,7 +140,7 @@ describe('computeType', () => {
   ]
   it.each(creationBeforeOffer)(
     'should return right type in creation before offer exist',
-    async param => {
+    param => {
       // Given
       const mode = param.mode
       const isFormValid = param.isFormValid
@@ -193,7 +193,7 @@ describe('computeType', () => {
   ]
   it.each(creationAftereOffer)(
     'should return right type in creation after offer exist',
-    async param => {
+    param => {
       // Given
       const mode = param.mode
       const isFormValid = param.isFormValid
