@@ -8,31 +8,31 @@ import {
   getOfferIndividualPathV2,
 } from './getOfferIndividualUrlV2'
 
-interface IGetOfferIndividualUrlArgs {
-  offerId?: string
+interface IGetOfferIndividualPathArgs {
+  isCreation?: boolean
   mode: OFFER_WIZARD_MODE
   step: OFFER_WIZARD_STEP_IDS
   isV2?: boolean
 }
-
 export const getOfferIndividualPath = ({
-  offerId,
+  isCreation = false,
   mode,
   step,
   isV2 = false,
-}: IGetOfferIndividualUrlArgs) => {
+}: IGetOfferIndividualPathArgs) => {
   // remove me when deleting OFFER_FORM_V3
   if (isV2) {
     return getOfferIndividualPathV2({
-      offerId,
+      isCreation,
       mode,
       step,
     })
   }
 
-  if (!offerId && step === OFFER_WIZARD_STEP_IDS.INFORMATIONS) {
+  if (isCreation) {
     return `/offre/v3/creation/individuelle/informations`
   }
+
   return {
     [OFFER_WIZARD_STEP_IDS.INFORMATIONS]: {
       [OFFER_WIZARD_MODE.CREATION]: `/offre/:offerId/v3/creation/individuelle/informations`,
@@ -57,6 +57,13 @@ export const getOfferIndividualPath = ({
     },
   }[step][mode]
 }
+
+interface IGetOfferIndividualUrlArgs {
+  offerId?: string
+  mode: OFFER_WIZARD_MODE
+  step: OFFER_WIZARD_STEP_IDS
+  isV2?: boolean
+}
 const getOfferIndividualUrl = ({
   offerId,
   mode,
@@ -72,13 +79,9 @@ const getOfferIndividualUrl = ({
     })
   }
 
-  if (!offerId && step === OFFER_WIZARD_STEP_IDS.INFORMATIONS) {
-    return `/offre/v3/creation/individuelle/informations`
-  }
-
   return generatePath(
     getOfferIndividualPath({
-      offerId,
+      isCreation: offerId === undefined,
       mode,
       step,
     }),
