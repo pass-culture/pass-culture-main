@@ -12,6 +12,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 
@@ -26,18 +27,23 @@ const OfferIndividualStepper = () => {
   const mode = useOfferWizardMode()
   const hasOffer = offer !== null
   const hasStock = offer !== null && offer.stocks.length > 0
-
   const stepPatternList: IStepPattern[] = [
     {
       id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
       label: 'Détails de l’offre',
       path: {
-        [OFFER_WIZARD_MODE.CREATION]:
-          '/offre/:offerId/v3/creation/individuelle/informations',
-        [OFFER_WIZARD_MODE.DRAFT]:
-          '/offre/:offerId/v3/brouillon/individuelle/informations',
-        [OFFER_WIZARD_MODE.EDITION]:
-          '/offre/:offerId/v3/individuelle/informations',
+        [OFFER_WIZARD_MODE.CREATION]: getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        }),
+        [OFFER_WIZARD_MODE.DRAFT]: getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        }),
+        [OFFER_WIZARD_MODE.EDITION]: getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        }),
       }[mode],
       isActive: true,
     },
@@ -45,11 +51,18 @@ const OfferIndividualStepper = () => {
       id: OFFER_WIZARD_STEP_IDS.STOCKS,
       label: 'Stock & Prix',
       path: {
-        [OFFER_WIZARD_MODE.CREATION]:
-          '/offre/:offerId/v3/creation/individuelle/stocks',
-        [OFFER_WIZARD_MODE.DRAFT]:
-          '/offre/:offerId/v3/brouillon/individuelle/stocks',
-        [OFFER_WIZARD_MODE.EDITION]: '/offre/:offerId/v3/individuelle/stocks',
+        [OFFER_WIZARD_MODE.CREATION]: getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        }),
+        [OFFER_WIZARD_MODE.DRAFT]: getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        }),
+        [OFFER_WIZARD_MODE.EDITION]: getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        }),
       }[mode],
       isActive: hasOffer,
     },
@@ -61,10 +74,14 @@ const OfferIndividualStepper = () => {
         id: OFFER_WIZARD_STEP_IDS.SUMMARY,
         label: 'Récapitulatif',
         path: {
-          [OFFER_WIZARD_MODE.CREATION]:
-            '/offre/:offerId/v3/creation/individuelle/recapitulatif',
-          [OFFER_WIZARD_MODE.DRAFT]:
-            '/offre/:offerId/v3/brouillon/individuelle/recapitulatif',
+          [OFFER_WIZARD_MODE.CREATION]: getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          [OFFER_WIZARD_MODE.DRAFT]: getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.DRAFT,
+          }),
         }[mode],
         isActive: hasStock,
       },

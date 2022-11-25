@@ -3,23 +3,29 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { MemoryRouter, Route, Switch } from 'react-router'
+import { generatePath, MemoryRouter, Route, Switch } from 'react-router'
 
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { Events } from 'core/FirebaseEvents/constants'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 
+import { OFFER_WIZARD_STEP_IDS } from '../constants'
 import OfferIndividualStepper from '../OfferIndividualStepper'
 
 const mockLogEvent = jest.fn()
 
 const renderOfferIndividualStepper = (
   contextOverride: Partial<IOfferIndividualContext> = {},
-  url = '/offre/AA/v3/creation/individuelle/informations'
+  url = getOfferIndividualPath({
+    step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+    mode: OFFER_WIZARD_MODE.CREATION,
+  })
 ) => {
   const contextValues: IOfferIndividualContext = {
     offerId: null,
@@ -31,40 +37,47 @@ const renderOfferIndividualStepper = (
     setOffer: () => {},
     ...contextOverride,
   }
+
   const rtlReturns = render(
     <OfferIndividualContext.Provider value={contextValues}>
       <MemoryRouter initialEntries={[url]}>
         <OfferIndividualStepper />
         <Switch>
           <Route
-            path={[
-              '/offre/:offerId/v3/brouillon/individuelle/informations',
-              '/offre/:offerId/v3/creation/individuelle/informations',
-              '/offre/:offerId/v3/individuelle/informations',
-            ]}
+            path={Object.values(OFFER_WIZARD_MODE).map(mode =>
+              getOfferIndividualPath({
+                step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+                mode,
+              })
+            )}
           >
             <div>Informations screen</div>
           </Route>
           <Route
-            path={[
-              '/offre/:offerId/v3/brouillon/individuelle/stocks',
-              '/offre/:offerId/v3/creation/individuelle/stocks',
-              '/offre/:offerId/v3/individuelle/stocks',
-            ]}
+            path={Object.values(OFFER_WIZARD_MODE).map(mode =>
+              getOfferIndividualPath({
+                step: OFFER_WIZARD_STEP_IDS.STOCKS,
+                mode,
+              })
+            )}
           >
             <div>Stocks screen</div>
           </Route>
           <Route
-            path={[
-              '/offre/:offerId/v3/brouillon/individuelle/recapitulatif',
-              '/offre/:offerId/v3/creation/individuelle/recapitulatif',
-              '/offre/:offerId/v3/individuelle/recapitulatif',
-            ]}
+            path={Object.values(OFFER_WIZARD_MODE).map(mode =>
+              getOfferIndividualPath({
+                step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+                mode,
+              })
+            )}
           >
             <div>Summary screen</div>
           </Route>
           <Route
-            path={['/offre/:offerId/v3/creation/individuelle/confirmation']}
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            })}
           >
             <div>Confirmation screen</div>
           </Route>
@@ -125,7 +138,13 @@ describe('test tracker OfferIndividualStepper', () => {
     it('should track when clicking on steps on Stocks', async () => {
       const { tabSummary } = renderOfferIndividualStepper(
         contextOverride,
-        '/offre/AA/v3/creation/individuelle/stocks'
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        )
       )
 
       tabSummary && (await userEvent.click(tabSummary))
@@ -147,7 +166,13 @@ describe('test tracker OfferIndividualStepper', () => {
     it('should track when clicking on steps on Summary', async () => {
       const { tabInformations } = renderOfferIndividualStepper(
         contextOverride,
-        '/offre/AA/v3/creation/individuelle/recapitulatif'
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        )
       )
 
       tabInformations && (await userEvent.click(tabInformations))
@@ -171,7 +196,13 @@ describe('test tracker OfferIndividualStepper', () => {
     it('should track when clicking on steps on Information', async () => {
       const { tabStocks } = renderOfferIndividualStepper(
         contextOverride,
-        '/offre/AA/v3/individuelle/informations'
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          }),
+          { offerId: 'AA' }
+        )
       )
 
       tabStocks && (await userEvent.click(tabStocks))
@@ -193,7 +224,13 @@ describe('test tracker OfferIndividualStepper', () => {
     it('should track when clicking on steps on Stocks', async () => {
       const { tabInformations } = renderOfferIndividualStepper(
         contextOverride,
-        '/offre/AA/v3/individuelle/stocks'
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          }),
+          { offerId: 'AA' }
+        )
       )
 
       tabInformations && (await userEvent.click(tabInformations))
@@ -217,7 +254,13 @@ describe('test tracker OfferIndividualStepper', () => {
     it('should track when clicking on steps on Information', async () => {
       const { tabSummary } = renderOfferIndividualStepper(
         contextOverride,
-        '/offre/AA/v3/brouillon/individuelle/informations'
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.DRAFT,
+          }),
+          { offerId: 'AA' }
+        )
       )
 
       tabSummary && (await userEvent.click(tabSummary))
@@ -239,7 +282,13 @@ describe('test tracker OfferIndividualStepper', () => {
     it('should track when clicking on steps on Stocks', async () => {
       const { tabSummary } = renderOfferIndividualStepper(
         contextOverride,
-        '/offre/AA/v3/brouillon/individuelle/stocks'
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.DRAFT,
+          }),
+          { offerId: 'AA' }
+        )
       )
 
       tabSummary && (await userEvent.click(tabSummary))
@@ -261,7 +310,13 @@ describe('test tracker OfferIndividualStepper', () => {
     it('should track when clicking on steps on Summary', async () => {
       const { tabStocks } = renderOfferIndividualStepper(
         contextOverride,
-        '/offre/AA/v3/brouillon/individuelle/recapitulatif'
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.DRAFT,
+          }),
+          { offerId: 'AA' }
+        )
       )
 
       tabStocks && (await userEvent.click(tabStocks))

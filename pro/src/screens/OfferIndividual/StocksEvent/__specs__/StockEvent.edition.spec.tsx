@@ -11,15 +11,18 @@ import { ApiError, GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import {
   IOfferIndividual,
   IOfferIndividualStock,
   IOfferIndividualVenue,
 } from 'core/Offers/types'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
@@ -37,19 +40,38 @@ const renderStockEventScreen = ({
   const store = configureTestStore(storeOverride)
   return render(
     <Provider store={store}>
-      <MemoryRouter initialEntries={['/creation/stocks']}>
-        <Route path="/creation/stocks">
+      <MemoryRouter
+        initialEntries={[
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+        ]}
+      >
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <OfferIndividualContext.Provider value={contextValue}>
             <StocksEvent {...props} />
           </OfferIndividualContext.Provider>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/recapitulatif">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <div>Next page</div>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/stocks">
-          <div>Save draft page</div>
-        </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/informations">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <div>Previous page</div>
         </Route>
         <Notification />

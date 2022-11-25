@@ -4,17 +4,20 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { generatePath, MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { Events } from 'core/FirebaseEvents/constants'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
@@ -46,7 +49,10 @@ const renderStockEventScreen = ({
   props,
   storeOverride = {},
   contextValue,
-  url = '/creation/stocks',
+  url = getOfferIndividualPath({
+    step: OFFER_WIZARD_STEP_IDS.STOCKS,
+    mode: OFFER_WIZARD_MODE.CREATION,
+  }),
 }: {
   props: IStocksEventProps
   storeOverride: Partial<RootState>
@@ -57,7 +63,14 @@ const renderStockEventScreen = ({
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[url]}>
-        <Route path={['/creation/stocks', '/brouillon/stocks', '/stocks']}>
+        <Route
+          path={Object.values(OFFER_WIZARD_MODE).map(mode =>
+            getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.STOCKS,
+              mode,
+            })
+          )}
+        >
           <OfferIndividualContext.Provider value={contextValue}>
             <StocksEvent {...props} />
             <ButtonLink link={{ to: '/outside', isExternal: false }}>
@@ -65,13 +78,28 @@ const renderStockEventScreen = ({
             </ButtonLink>
           </OfferIndividualContext.Provider>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/recapitulatif">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <div>Next page</div>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/stocks">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <div>Save draft page</div>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/informations">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <div>Previous page</div>
         </Route>
         <Route path="/outside">
@@ -260,7 +288,13 @@ describe('screens:StocksEvent', () => {
       props,
       storeOverride,
       contextValue,
-      url: '/brouillon/stocks',
+      url: generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        }),
+        { offerId: 'AA' }
+      ),
     })
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
@@ -290,7 +324,13 @@ describe('screens:StocksEvent', () => {
       props,
       storeOverride,
       contextValue,
-      url: '/brouillon/stocks',
+      url: generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        }),
+        { offerId: 'AA' }
+      ),
     })
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
@@ -326,7 +366,13 @@ describe('screens:StocksEvent', () => {
       props,
       storeOverride,
       contextValue,
-      url: '/stocks',
+      url: generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        }),
+        { offerId: 'AA' }
+      ),
     })
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))

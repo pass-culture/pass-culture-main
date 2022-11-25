@@ -13,7 +13,7 @@ describe('getOfferIndividualUrl', () => {
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         isV2: false,
       },
-      expectedUrl: '/offre/v3/creation/individuelle/informations',
+      expectedUrl: '/offre/individuelle/creation/informations',
     },
     // when creation mode
     {
@@ -23,7 +23,7 @@ describe('getOfferIndividualUrl', () => {
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         isV2: false,
       },
-      expectedUrl: '/offre/42/v3/creation/individuelle/informations',
+      expectedUrl: '/offre/individuelle/42/creation/informations',
     },
     {
       props: {
@@ -32,7 +32,7 @@ describe('getOfferIndividualUrl', () => {
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         isV2: false,
       },
-      expectedUrl: '/offre/42/v3/creation/individuelle/stocks',
+      expectedUrl: '/offre/individuelle/42/creation/stocks',
     },
     {
       props: {
@@ -41,7 +41,7 @@ describe('getOfferIndividualUrl', () => {
         step: OFFER_WIZARD_STEP_IDS.SUMMARY,
         isV2: false,
       },
-      expectedUrl: '/offre/42/v3/creation/individuelle/recapitulatif',
+      expectedUrl: '/offre/individuelle/42/creation/recapitulatif',
     },
     {
       props: {
@@ -50,7 +50,7 @@ describe('getOfferIndividualUrl', () => {
         step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
         isV2: false,
       },
-      expectedUrl: '/offre/42/v3/creation/individuelle/confirmation',
+      expectedUrl: '/offre/individuelle/42/creation/confirmation',
     },
     // when brouillon mode
     {
@@ -60,7 +60,7 @@ describe('getOfferIndividualUrl', () => {
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         isV2: false,
       },
-      expectedUrl: '/offre/42/v3/brouillon/individuelle/informations',
+      expectedUrl: '/offre/individuelle/42/brouillon/informations',
     },
     {
       props: {
@@ -69,7 +69,7 @@ describe('getOfferIndividualUrl', () => {
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         isV2: false,
       },
-      expectedUrl: '/offre/42/v3/brouillon/individuelle/stocks',
+      expectedUrl: '/offre/individuelle/42/brouillon/stocks',
     },
     {
       props: {
@@ -78,7 +78,7 @@ describe('getOfferIndividualUrl', () => {
         step: OFFER_WIZARD_STEP_IDS.SUMMARY,
         isV2: false,
       },
-      expectedUrl: '/offre/42/v3/brouillon/individuelle/recapitulatif',
+      expectedUrl: '/offre/individuelle/42/brouillon/recapitulatif',
     },
     {
       props: {
@@ -87,7 +87,7 @@ describe('getOfferIndividualUrl', () => {
         step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
         isV2: false,
       },
-      expectedUrl: '/offre/42/v3/brouillon/individuelle/confirmation',
+      expectedUrl: '/offre/individuelle/42/brouillon/confirmation',
     },
     // when edition mode
     {
@@ -97,7 +97,7 @@ describe('getOfferIndividualUrl', () => {
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         isV2: false,
       },
-      expectedUrl: '/offre/42/v3/individuelle/informations',
+      expectedUrl: '/offre/individuelle/42/informations',
     },
     {
       props: {
@@ -106,7 +106,7 @@ describe('getOfferIndividualUrl', () => {
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         isV2: false,
       },
-      expectedUrl: '/offre/42/v3/individuelle/stocks',
+      expectedUrl: '/offre/individuelle/42/stocks',
     },
     {
       props: {
@@ -115,7 +115,7 @@ describe('getOfferIndividualUrl', () => {
         step: OFFER_WIZARD_STEP_IDS.SUMMARY,
         isV2: false,
       },
-      expectedUrl: '/offre/42/v3/individuelle/recapitulatif',
+      expectedUrl: '/offre/individuelle/42/recapitulatif',
     },
     {
       props: {

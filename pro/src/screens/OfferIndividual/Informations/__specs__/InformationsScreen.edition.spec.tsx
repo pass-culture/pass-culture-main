@@ -17,14 +17,16 @@ import {
   setFormReadOnlyFields,
   setInitialFormValues,
 } from 'components/OfferIndividualForm'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { Events } from 'core/FirebaseEvents/constants'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -66,16 +68,38 @@ const renderInformationsScreen = (
   }
   return render(
     <Provider store={store}>
-      <MemoryRouter initialEntries={['/offre/AA/v3/individuelle/informations']}>
-        <Route path="/offre/AA/v3/individuelle/informations">
+      <MemoryRouter
+        initialEntries={[
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          }),
+        ]}
+      >
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          })}
+        >
           <OfferIndividualContext.Provider value={contextValue}>
             <InformationsScreen {...props} />
           </OfferIndividualContext.Provider>
         </Route>
-        <Route path="/offre/AA/v3/individuelle/stocks">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          })}
+        >
           <div>There is the stock route content</div>
         </Route>
-        <Route path="/offre/AA/v3/individuelle/recapitulatif">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          })}
+        >
           <div>There is the summary route content</div>
         </Route>
       </MemoryRouter>

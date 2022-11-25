@@ -4,15 +4,17 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { generatePath, MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { CancelablePromise, OfferStatus, ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
@@ -29,7 +31,10 @@ jest.mock('core/Notification/constants', () => ({
 const renderSummary = ({
   props,
   storeOverride = {},
-  url = '/summary',
+  url = getOfferIndividualPath({
+    step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+    mode: OFFER_WIZARD_MODE.EDITION,
+  }),
 }: {
   props: ISummaryProps
   storeOverride?: Partial<RootState>
@@ -49,25 +54,62 @@ const renderSummary = ({
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[url]}>
-        <Route path="/summary">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          })}
+        >
           <Summary {...props} />
         </Route>
-        <Route path="/creation/summary">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <Summary {...props} />
         </Route>
-        <Route path="/brouillon/summary">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.DRAFT,
+          })}
+        >
           <Summary {...props} />
         </Route>
-        <Route path="/offre/:offerId/v3/brouillon/individuelle/confirmation">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+            mode: OFFER_WIZARD_MODE.DRAFT,
+          })}
+        >
           <div>Confirmation page: draft</div>
         </Route>
-        <Route path="/offre/:offerId/v3/creation/individuelle/confirmation">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <div>Confirmation page: creation</div>
         </Route>
-        <Route path="/offre/:offerId/individuel/brouillon/confirmation">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+            mode: OFFER_WIZARD_MODE.DRAFT,
+            isV2: true,
+          })}
+        >
           <div>Confirmation page: draft V2</div>
         </Route>
-        <Route path="/offre/:offerId/individuel/creation/confirmation">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+            mode: OFFER_WIZARD_MODE.CREATION,
+            isV2: true,
+          })}
+        >
           <div>Confirmation page: creation V2</div>
         </Route>
       </MemoryRouter>
@@ -238,7 +280,16 @@ describe('Summary', () => {
     })
     it('should render component with informations', async () => {
       // given / when
-      renderSummary({ props, url: '/creation/summary' })
+      renderSummary({
+        props,
+        url: generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+      })
 
       // then
       expect(screen.getAllByText('Modifier')).toHaveLength(2)
@@ -282,7 +333,16 @@ describe('Summary', () => {
     describe('When it is form v2', () => {
       it('should render component with right buttons', async () => {
         // given / when
-        renderSummary({ props, url: '/creation/summary' })
+        renderSummary({
+          props,
+          url: generatePath(
+            getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            }),
+            { offerId: 'AA' }
+          ),
+        })
 
         // then
         expect(screen.getByText('Étape précédente')).toBeInTheDocument()
@@ -302,7 +362,16 @@ describe('Summary', () => {
         }
 
         // when
-        renderSummary({ props, url: '/creation/summary' })
+        renderSummary({
+          props,
+          url: generatePath(
+            getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            }),
+            { offerId: 'AA' }
+          ),
+        })
 
         await userEvent.click(
           screen.getByRole('button', { name: /Publier l’offre/ })
@@ -321,7 +390,16 @@ describe('Summary', () => {
         }
 
         // when
-        renderSummary({ props, url: '/brouillon/summary' })
+        renderSummary({
+          props,
+          url: generatePath(
+            getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode: OFFER_WIZARD_MODE.DRAFT,
+            }),
+            { offerId: 'AA' }
+          ),
+        })
 
         await userEvent.click(
           screen.getByRole('button', { name: /Publier l’offre/ })
@@ -342,7 +420,17 @@ describe('Summary', () => {
         }
 
         // when
-        renderSummary({ props, storeOverride, url: '/creation/summary' })
+        renderSummary({
+          props,
+          storeOverride,
+          url: generatePath(
+            getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            }),
+            { offerId: 'AA' }
+          ),
+        })
 
         // then
         expect(screen.getByText('Étape précédente')).toBeInTheDocument()
@@ -362,7 +450,17 @@ describe('Summary', () => {
         }
 
         // when
-        renderSummary({ props, storeOverride, url: '/creation/summary' })
+        renderSummary({
+          props,
+          storeOverride,
+          url: generatePath(
+            getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            }),
+            { offerId: 'AA' }
+          ),
+        })
 
         await userEvent.click(
           screen.getByRole('button', { name: /Publier l’offre/ })
@@ -383,7 +481,17 @@ describe('Summary', () => {
       }
 
       // when
-      renderSummary({ props, storeOverride, url: '/creation/summary' })
+      renderSummary({
+        props,
+        storeOverride,
+        url: generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+      })
       const buttonPublish = screen.getByRole('button', {
         name: /Publier l’offre/,
       })
@@ -413,7 +521,17 @@ describe('Summary', () => {
       }
 
       // when
-      renderSummary({ props, storeOverride, url: '/creation/summary' })
+      renderSummary({
+        props,
+        storeOverride,
+        url: generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+      })
       jest.spyOn(api, 'patchPublishOffer').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
@@ -439,7 +557,22 @@ describe('Summary', () => {
   })
 
   describe('banners', () => {
-    const urlList = ['/creation/summary', '/brouillon/summary']
+    const urlList = [
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        }),
+        { offerId: 'AA' }
+      ),
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        }),
+        { offerId: 'AA' }
+      ),
+    ]
     it.each(urlList)(
       'should display pre publishing banner in creation',
       url => {
@@ -452,7 +585,16 @@ describe('Summary', () => {
 
     it('should not display pre publishing banner in edition mode', () => {
       // when
-      renderSummary({ props, url: '/summary' })
+      renderSummary({
+        props,
+        url: generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          }),
+          { offerId: 'AA' }
+        ),
+      })
 
       // then
       expect(
