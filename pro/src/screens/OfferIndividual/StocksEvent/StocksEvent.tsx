@@ -25,6 +25,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
+import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 import { logTo } from '../utils/logTo'
 
 import { upsertStocksEventAdapter } from './adapters'
@@ -53,6 +54,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer } = useOfferIndividualContext()
+  const providerName = offer?.lastProviderName
 
   const onSubmit = async (formValues: { stocks: IStockEventFormValues[] }) => {
     const { isOk, payload } = await upsertStocksEventAdapter({
@@ -187,6 +189,9 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
 
   return (
     <FormikProvider value={formik}>
+      {providerName && (
+        <SynchronizedProviderInformation providerName={providerName} />
+      )}
       <FormLayout>
         <FormLayout.Section
           title="Stock & Prix"
