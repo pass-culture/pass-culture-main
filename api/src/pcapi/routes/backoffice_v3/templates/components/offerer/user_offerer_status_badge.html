@@ -1,0 +1,17 @@
+{% if user_offerer.isNew %}
+    <span class="me-1 pb-1 badge rounded-pill text-bg-info">
+        Nouveau
+    </span>
+{% elif user_offerer.isPending %}
+    <span class="me-1 pb-1 badge rounded-pill text-bg-warning">
+        En attente
+    </span>
+{% elif user_offerer.isValidated %}
+    <span class="me-1 pb-1 badge rounded-pill text-bg-success">
+        Validé
+    </span>
+{% elif user_offerer.isRejected %}
+    <span class="me-1 pb-1 badge rounded-pill text-bg-danger">
+        Rejeté
+    </span>
+{% endif %}

@@ -41,6 +41,21 @@ class OffererValidationListForm(FlaskForm):
         return q
 
 
+class UserOffererValidationListForm(FlaskForm):
+    class Meta:
+        csrf = False
+
+    status = fields.PCSelectMultipleField("États", choices=utils.choices_from_enum(offerers_models.ValidationStatus))
+
+    page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
+    per_page = fields.PCSelectField(
+        "Par page",
+        choices=(("10", "10"), ("25", "25"), ("50", "50"), ("100", "100")),
+        default="10",
+        validators=(wtforms.validators.Optional(),),
+    )
+
+
 class CommentForm(FlaskForm):
     comment = fields.PCCommentField("Commentaire interne pour la structure")
 
