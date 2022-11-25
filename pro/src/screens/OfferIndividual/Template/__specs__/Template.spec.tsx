@@ -3,14 +3,17 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
+import { generatePath, MemoryRouter } from 'react-router'
 
 import { OfferStatus } from 'apiClient/v1'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { configureTestStore } from 'store/testUtils'
 
 import Template, { ITemplateProps } from '../Template'
@@ -23,7 +26,10 @@ interface IRenderTemplateProps {
 
 const renderTemplate = ({
   contextOverride = {},
-  url = '/offre/AA/v3/creation/individuelle/informations',
+  url = getOfferIndividualPath({
+    step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+    mode: OFFER_WIZARD_MODE.CREATION,
+  }),
   props = {},
 }: IRenderTemplateProps) => {
   const contextValues: IOfferIndividualContext = {
@@ -97,7 +103,13 @@ describe('test OfferIndividualTemplate', () => {
     }
     renderTemplate({
       contextOverride,
-      url: '/offre/AA/v3/individuelle/informations',
+      url: generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        }),
+        { offerId: 'AA' }
+      ),
     })
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
@@ -136,7 +148,13 @@ describe('test OfferIndividualTemplate', () => {
       }
       renderTemplate({
         contextOverride,
-        url: '/offre/AA/v3/individuelle/informations',
+        url: generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          }),
+          { offerId: 'AA' }
+        ),
       })
 
       expect(screen.getByTestId('status')).toBeInTheDocument()
@@ -159,7 +177,13 @@ describe('test OfferIndividualTemplate', () => {
       }
       renderTemplate({
         contextOverride,
-        url: '/offre/AA/v3/brouillon/individuelle/informations',
+        url: generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.DRAFT,
+          }),
+          { offerId: 'AA' }
+        ),
       })
 
       expect(screen.getByTestId('status')).toBeInTheDocument()

@@ -46,9 +46,7 @@ describe('useOfferEditionURL', () => {
       isShowcase
     )
 
-    expect(urlResutl).toStrictEqual(
-      '/offre/offerID/v3/individuelle/recapitulatif'
-    )
+    expect(urlResutl).toStrictEqual('/offre/individuelle/offerID/recapitulatif')
   })
 
   test('It should retrun right url when offer is individual and offerFormV3 is not activated (v2)', () => {
@@ -99,7 +97,7 @@ describe('useOfferEditionURL', () => {
     )
 
     expect(urlResutl).toStrictEqual(
-      '/offre/offerID/v3/brouillon/individuelle/informations'
+      '/offre/individuelle/offerID/brouillon/informations'
     )
   })
 })
