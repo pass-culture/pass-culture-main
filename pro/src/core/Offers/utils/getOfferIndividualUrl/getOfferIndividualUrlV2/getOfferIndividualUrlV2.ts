@@ -3,18 +3,18 @@ import { generatePath } from 'react-router'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 
-interface IGetOfferIndividualUrlArgs {
-  offerId?: string
+interface IGetOfferIndividualPathArgs {
+  isCreation?: boolean
   mode: OFFER_WIZARD_MODE
   step: OFFER_WIZARD_STEP_IDS
 }
 
 export const getOfferIndividualPathV2 = ({
-  offerId,
+  isCreation = false,
   mode,
   step,
-}: IGetOfferIndividualUrlArgs) => {
-  if (!offerId && step === OFFER_WIZARD_STEP_IDS.INFORMATIONS) {
+}: IGetOfferIndividualPathArgs) => {
+  if (isCreation) {
     return `/offre/creation/individuel`
   }
 
@@ -43,18 +43,19 @@ export const getOfferIndividualPathV2 = ({
   }[step][mode]
 }
 
+interface IGetOfferIndividualUrlArgs {
+  offerId?: string
+  mode: OFFER_WIZARD_MODE
+  step: OFFER_WIZARD_STEP_IDS
+}
 const getOfferIndividualUrlV2 = ({
   offerId,
   mode,
   step,
 }: IGetOfferIndividualUrlArgs) => {
-  if (!offerId && step === OFFER_WIZARD_STEP_IDS.INFORMATIONS) {
-    return `/offre/creation/individuel`
-  }
-
   return generatePath(
     getOfferIndividualPathV2({
-      offerId,
+      isCreation: offerId === undefined,
       mode,
       step,
     }),
