@@ -200,7 +200,7 @@ describe('screens:StocksThing', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape précédente' })
     )
-    await userEvent.click(screen.getByText('Quitter'))
+    await userEvent.click(screen.getByText('Quitter la page'))
 
     expect(await screen.findByText('Previous page')).toBeInTheDocument()
     expect(api.upsertStocks).not.toHaveBeenCalled()

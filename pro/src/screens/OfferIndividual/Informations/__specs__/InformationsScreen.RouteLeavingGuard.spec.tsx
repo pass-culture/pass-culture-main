@@ -87,6 +87,9 @@ const renderInformationsScreen = (
             <ButtonLink link={{ to: '/outside', isExternal: false }}>
               Go outside !
             </ButtonLink>
+            <ButtonLink link={{ to: '/stocks', isExternal: false }}>
+              Go to stocks !
+            </ButtonLink>
           </OfferIndividualContext.Provider>
         </Route>
         <Route
@@ -323,6 +326,38 @@ describe('screens:OfferIndividual::Informations::creation', () => {
 
     expect(
       screen.getByText('Souhaitez-vous quitter la création d’offre ?')
+    ).toBeInTheDocument()
+  })
+
+  it('should block with internal not valid block type when form has just been touched and nav is internal', async () => {
+    renderInformationsScreen(props, store, contextOverride)
+
+    const categorySelect = screen.getByLabelText('Catégorie')
+    await userEvent.selectOptions(categorySelect, 'A')
+
+    await userEvent.click(screen.getByText('Go to stocks !'))
+
+    expect(
+      screen.getByText(
+        'Si vous changez de page vos informations seront perdues'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should block with internal valid block type when form has been filled with mandatory data and nav is internal', async () => {
+    renderInformationsScreen(props, store, contextOverride)
+
+    const categorySelect = screen.getByLabelText('Catégorie')
+    await userEvent.selectOptions(categorySelect, 'A')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    await userEvent.selectOptions(subCategorySelect, 'physical')
+    const nameField = screen.getByLabelText('Titre de l’offre')
+    await userEvent.type(nameField, 'Le nom de mon offre')
+
+    await userEvent.click(screen.getByText('Go to stocks !'))
+
+    expect(
+      screen.getByText('Souhaitez-vous enregistrer vos modifications ?')
     ).toBeInTheDocument()
   })
 

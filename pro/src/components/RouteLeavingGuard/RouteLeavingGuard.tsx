@@ -24,7 +24,7 @@ interface IButtonWithCustomAction {
   actionType?: never
 }
 export interface IRouteLeavingGuardProps {
-  children: ReactNode | ReactNode[]
+  children?: ReactNode | ReactNode[]
   extraClassNames?: string
   shouldBlockNavigation: (
     location: Location
