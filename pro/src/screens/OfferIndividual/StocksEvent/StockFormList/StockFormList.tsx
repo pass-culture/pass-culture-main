@@ -7,7 +7,7 @@ import {
   IStockEventFormValues,
   STOCK_EVENT_FORM_DEFAULT_VALUES,
 } from 'components/StockEventForm'
-import { StockFormRow } from 'components/StockFormRow'
+import { StockThingFormRow } from 'components/StockThingFormRow'
 import { isOfferDisabled } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
 import { useModal } from 'hooks/useModal'
@@ -60,7 +60,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
 
           <div className={styles['form-list']}>
             {values.stocks.map((stockValues: IStockEventFormValues, index) => (
-              <StockFormRow
+              <StockThingFormRow
                 key={index}
                 Form={
                   <StockEventForm
