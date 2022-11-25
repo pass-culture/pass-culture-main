@@ -2,14 +2,16 @@ from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import url_for
+from flask_login import current_user
 
-import pcapi.core.offerers.models as offerers_models
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.history import repository as history_repository
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import external as users_external
+from pcapi.core.users import models as users_models
 import pcapi.core.users.email.update as email_update
-import pcapi.core.users.models as users_models
 import pcapi.utils.email as email_utils
 
 from . import utils
@@ -26,7 +28,7 @@ pro_user_blueprint = utils.child_backoffice_blueprint(
 
 @pro_user_blueprint.route("", methods=["GET"])
 def get(user_id: int) -> utils.BackofficeResponse:
-    # TODO (vroullier) 24-11-2022 : use User.roles once it is updated
+    # TODO (vroullier) 24-11-2022 : check user role with User.roles once it is updated
     # Make sure user is pro
     user = (
         users_models.User.query.join(offerers_models.UserOfferer).filter(users_models.User.id == user_id).one_or_none()
@@ -86,3 +88,33 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
 
     flash("Informations mises à jour", "success")
     return redirect(url_for(".get", user_id=user_id), code=303)
+
+
+@pro_user_blueprint.route("/history", methods=["GET"])
+def get_user_history(user_id: int) -> utils.BackofficeResponse:
+    user = users_models.User.query.get_or_404(user_id)
+    actions = history_repository.find_all_actions_by_user(user_id)
+    can_add_comment = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+
+    form = pro_user_forms.CommentForm()
+    dst = url_for("backoffice_v3_web.pro_user.comment_pro_user", user_id=user.id)
+
+    return render_template(
+        "pro_user/get/details.html", user=user, form=form, dst=dst, actions=actions, can_add_comment=can_add_comment
+    )
+
+
+@pro_user_blueprint.route("/comment", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
+    user = users_models.User.query.get_or_404(user_id)
+
+    form = pro_user_forms.CommentForm()
+    if not form.validate():
+        flash("Les données envoyées comportent des erreurs", "warning")
+        return redirect(url_for("backoffice_v3_web.pro_user.get", user_id=user_id), code=302)
+
+    users_api.add_comment_to_user(user=user, author_user=current_user, comment=form.comment.data)
+    flash("Commentaire enregistré", "success")
+
+    return redirect(url_for("backoffice_v3_web.pro_user.get", user_id=user_id), code=303)

@@ -552,6 +552,10 @@ def update_user_info(  # type: ignore [no-untyped-def]
     users_external.update_external_user(user)
 
 
+def add_comment_to_user(user: models.User, author_user: models.User, comment: str) -> None:
+    history_api.log_action(history_models.ActionType.COMMENT, author_user, user=user, comment=comment)
+
+
 def get_domains_credit(
     user: models.User, user_bookings: list[bookings_models.Booking] = None
 ) -> models.DomainsCredit | None:

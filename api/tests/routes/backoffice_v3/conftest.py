@@ -91,6 +91,12 @@ def offerer_fixture():
     return offerer
 
 
+@pytest.fixture(name="pro_user")
+def pro_user_fixture():
+    user = offerers_factories.UserOffererFactory().user
+    return user
+
+
 @pytest.fixture(name="venue_with_accepted_bank_info")
 def venue_with_accepted_bank_info_fixture(offerer):
     venue = offerers_factories.VenueFactory(managingOfferer=offerer)
