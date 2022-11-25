@@ -10,10 +10,10 @@ import {
   STOCK_THING_FORM_DEFAULT_VALUES,
 } from 'components/StockThingForm'
 
-import StockFormRow, { IStockFormRowProps } from '../StockFormRow'
+import StockFormRow, { IStockThingFormRowProps } from '../StockThingFormRow'
 
 interface IRenderStockFormRowArgs {
-  props: IStockFormRowProps
+  props: IStockThingFormRowProps
   initialValues: IStockThingFormValues
 }
 const renderStockFormRow = ({
@@ -30,7 +30,7 @@ const renderStockFormRow = ({
 }
 
 describe('StockFormRow', () => {
-  let props: IStockFormRowProps
+  let props: IStockThingFormRowProps
   let initialValues: IStockThingFormValues
 
   beforeEach(() => {
