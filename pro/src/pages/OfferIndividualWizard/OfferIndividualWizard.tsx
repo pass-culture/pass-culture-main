@@ -22,20 +22,22 @@ const OfferIndividualWizard = () => {
   const { offerId } = useParams<{ offerId: string }>()
   const { search } = useLocation()
   const { structure: offererId } = parse(search)
-
   return (
     <OfferIndividualContextProvider
       isUserAdmin={currentUser.isAdmin}
-      offerId={offerId}
+      offerId={offerId === 'creation' ? undefined : offerId}
       queryOffererId={offererId}
     >
       <Switch>
+        <Route exact path={`/offre/individuelle/creation/informations`}>
+          <Offer />
+        </Route>
         <Route
           exact
           path={[
-            `${path}/creation/individuelle/informations`,
-            `${path}/brouillon/individuelle/informations`,
-            `${path}/individuelle/informations`,
+            `${path}/creation/informations`,
+            `${path}/brouillon/informations`,
+            `${path}/informations`,
           ]}
         >
           <Offer />
@@ -43,9 +45,9 @@ const OfferIndividualWizard = () => {
         <Route
           exact
           path={[
-            `${path}/creation/individuelle/stocks`,
-            `${path}/brouillon/individuelle/stocks`,
-            `${path}/individuelle/stocks`,
+            `${path}/creation/stocks`,
+            `${path}/brouillon/stocks`,
+            `${path}/stocks`,
           ]}
         >
           <Stocks />
@@ -53,9 +55,9 @@ const OfferIndividualWizard = () => {
         <Route
           exact
           path={[
-            `${path}/creation/individuelle/recapitulatif`,
-            `${path}/brouillon/individuelle/recapitulatif`,
-            `${path}/individuelle/recapitulatif`,
+            `${path}/creation/recapitulatif`,
+            `${path}/brouillon/recapitulatif`,
+            `${path}/recapitulatif`,
           ]}
         >
           <Summary />
@@ -63,9 +65,9 @@ const OfferIndividualWizard = () => {
         <Route
           exact
           path={[
-            `${path}/creation/individuelle/confirmation`,
-            `${path}/brouillon/individuelle/confirmation`,
-            `${path}/individuelle/confirmation`,
+            `${path}/creation/confirmation`,
+            `${path}/brouillon/confirmation`,
+            `${path}/confirmation`,
           ]}
         >
           <Confirmation />

@@ -3,17 +3,20 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { generatePath, MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OfferStatus } from 'apiClient/v2'
 import Notification from 'components/Notification/Notification'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
@@ -110,7 +113,13 @@ describe('Summary', () => {
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
     ).toHaveAttribute(
       'href',
-      `/offre/v3/creation/individuelle/informations?structure=OFID&lieu=VID physical`
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          isCreation: true,
+        }) + '?structure=OFID&lieu=VID physical'
+      )
     )
     expect(
       screen.getByText('Voir la liste des offres', { selector: 'a' })
@@ -128,7 +137,13 @@ describe('Summary', () => {
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
     ).toHaveAttribute(
       'href',
-      `/offre/v3/creation/individuelle/informations?structure=OFID&lieu=VID physical`
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          isCreation: true,
+        }) + '?structure=OFID&lieu=VID physical'
+      )
     )
   })
 })

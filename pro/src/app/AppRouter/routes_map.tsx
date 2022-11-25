@@ -296,11 +296,10 @@ const routes: IRoute[] = [
       },
     },
   },
-
   {
     component: OfferIndividualWizard,
     exact: false,
-    path: ['/offre/v3', '/offre/:offerId/v3'],
+    path: ['/offre/individuelle/:offerId'],
     title: 'Offre étape par étape',
     featureName: 'OFFER_FORM_V3',
   },

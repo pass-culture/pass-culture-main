@@ -3,7 +3,7 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { generatePath, MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -11,7 +11,9 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { configureTestStore } from 'store/testUtils'
 
 import { OfferIndividualWizard } from '..'
@@ -156,7 +158,7 @@ const renderOfferIndividualWizardRoute = (
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[url]}>
-        <Route path={['/offre/v3', '/offre/:offerId/v3']}>
+        <Route path={['/offre/individuelle/:offerId']}>
           <OfferIndividualWizard />
         </Route>
       </MemoryRouter>
@@ -190,7 +192,13 @@ describe('test OfferIndividualWisard', () => {
   it('should initialize context with api with offererId on query', async () => {
     await renderOfferIndividualWizardRoute(
       store,
-      '/offre/v3/creation/individuelle/informations?structure=CU'
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          isCreation: true,
+        })
+      ) + '?structure=CU'
     )
     expect(
       await screen.findByRole('heading', { name: 'Créer une offre' })
@@ -215,7 +223,13 @@ describe('test OfferIndividualWisard', () => {
   it('should display admin creation banner when no offererId is given', async () => {
     await renderOfferIndividualWizardRoute(
       store,
-      '/offre/v3/creation/individuelle/informations'
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          isCreation: true,
+        })
+      )
     )
     expect(
       await screen.findByText(
@@ -263,7 +277,13 @@ describe('test OfferIndividualWisard', () => {
     const offerId = 'YA'
     await renderOfferIndividualWizardRoute(
       store,
-      `/offre/${offerId}/v3/individuelle/informations?structure=CU`
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        }),
+        { offerId }
+      ) + '?structure=CU'
     )
     expect(
       await screen.findByRole('heading', { name: 'Modifier l’offre' })

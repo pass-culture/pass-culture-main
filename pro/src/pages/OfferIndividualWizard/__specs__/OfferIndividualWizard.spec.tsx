@@ -7,7 +7,7 @@ import {
 } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { generatePath, MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -19,7 +19,9 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { ApiError } from 'apiClient/v2'
 import Notification from 'components/Notification/Notification'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { configureTestStore } from 'store/testUtils'
 
@@ -170,7 +172,7 @@ const renderOfferIndividualWizardRoute = (
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[url]}>
-        <Route path={['/offre/v3', '/offre/:offerId/v3']}>
+        <Route path={['/offre/individuelle/:offerId']}>
           <OfferIndividualWizard />
         </Route>
         <Route path={['/structures', '/accueil']}>Home Page</Route>
@@ -215,7 +217,16 @@ describe('test OfferIndividualWisard', () => {
         ''
       )
     )
-    renderOfferIndividualWizardRoute(store, '/offre/OFFER_ID/v3/creation')
+    renderOfferIndividualWizardRoute(
+      store,
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        }),
+        { offerId: 'OFFER_ID' }
+      )
+    )
     await waitForElementToBeRemoved(() =>
       screen.getByText(/Chargement en cours/)
     )
@@ -240,7 +251,13 @@ describe('test OfferIndividualWisard', () => {
     )
     renderOfferIndividualWizardRoute(
       store,
-      '/offre/v3/creation/individuelle/informations/'
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          isCreation: true,
+        })
+      )
     )
     await waitForElementToBeRemoved(() =>
       screen.getByText(/Chargement en cours/)
@@ -251,7 +268,13 @@ describe('test OfferIndividualWisard', () => {
   it('should initialize context with api', async () => {
     renderOfferIndividualWizardRoute(
       store,
-      '/offre/v3/creation/individuelle/informations'
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          isCreation: true,
+        })
+      )
     )
     expect(
       await screen.findByRole('heading', { name: 'Créer une offre' })
@@ -274,7 +297,13 @@ describe('test OfferIndividualWisard', () => {
   it('should initialize context with api when offererId is given in query', async () => {
     renderOfferIndividualWizardRoute(
       store,
-      '/offre/v3/creation/individuelle/informations/?structure=CU'
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          isCreation: true,
+        })
+      ) + '?structure=CU'
     )
     expect(
       await screen.findByRole('heading', { name: 'Créer une offre' })
@@ -325,7 +354,13 @@ describe('test OfferIndividualWisard', () => {
     const offerId = 'YA'
     renderOfferIndividualWizardRoute(
       store,
-      `/offre/${offerId}/v3/individuelle/informations?structure=CU`
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        }),
+        { offerId }
+      ) + '?structure=CU'
     )
     expect(
       await screen.findByRole('heading', { name: 'Modifier l’offre' })
@@ -349,7 +384,13 @@ describe('test OfferIndividualWisard', () => {
     it('should not render stepper on information page', async () => {
       renderOfferIndividualWizardRoute(
         store,
-        `/offre/v3/creation/individuelle/informations`
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+            isCreation: true,
+          })
+        )
       )
 
       expect(
@@ -379,7 +420,7 @@ describe('test OfferIndividualWisard', () => {
       const offerId = 'YA'
       renderOfferIndividualWizardRoute(
         store,
-        `/offre/${offerId}/v3/individuelle/confirmation`
+        `/offre/individuelle/${offerId}/confirmation`
       )
 
       expect(
@@ -408,7 +449,13 @@ describe('test OfferIndividualWisard', () => {
     it('should render stepper on summary page in creation', async () => {
       renderOfferIndividualWizardRoute(
         store,
-        `/offre/creation/v3/individuelle/recapitulatif`
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'YA' }
+        )
       )
       expect(
         await screen.findByRole('heading', { name: /Créer une offre/ })
@@ -433,10 +480,15 @@ describe('test OfferIndividualWisard', () => {
     })
 
     it('should not render stepper on summary page in edition', async () => {
-      const offerId = 'YA'
       renderOfferIndividualWizardRoute(
         store,
-        `/offre/${offerId}/v3/individuelle/recapitulatif`
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          }),
+          { offerId: 'YA' }
+        )
       )
       expect(
         await screen.findByRole('heading', { name: /Récapitulatif/ })

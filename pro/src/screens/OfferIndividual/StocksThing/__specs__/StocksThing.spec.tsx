@@ -11,16 +11,18 @@ import { ApiError, GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
-import { LIVRE_PAPIER_SUBCATEGORY_ID } from 'core/Offers'
+import { LIVRE_PAPIER_SUBCATEGORY_ID, OFFER_WIZARD_MODE } from 'core/Offers'
 import {
   IOfferIndividual,
   IOfferIndividualStock,
   IOfferIndividualVenue,
 } from 'core/Offers/types'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
@@ -61,13 +63,28 @@ const renderStockThingScreen = ({
             <StocksThing {...props} />
           </OfferIndividualContext.Provider>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/recapitulatif">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <div>Next page</div>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/stocks">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <div>Save draft page</div>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/informations">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <div>Previous page</div>
         </Route>
         <Notification />

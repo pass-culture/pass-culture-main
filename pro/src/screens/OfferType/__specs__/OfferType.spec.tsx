@@ -6,6 +6,9 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { configureTestStore } from 'store/testUtils'
 
 import OfferType from '../OfferType'
@@ -95,7 +98,11 @@ describe('screens:OfferIndividual::OfferType', () => {
     )
 
     expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/v3/creation/individuelle/informations',
+      pathname: getOfferIndividualPath({
+        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        mode: OFFER_WIZARD_MODE.CREATION,
+        isCreation: true,
+      }),
       search: '',
     })
   })
