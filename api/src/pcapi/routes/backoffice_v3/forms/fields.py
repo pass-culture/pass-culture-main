@@ -6,6 +6,8 @@ import wtforms
 from wtforms import validators
 import wtforms_sqlalchemy.fields
 
+from pcapi.admin.validators import PhoneNumberValidator
+
 
 def widget(field: wtforms.Field, template: str, *args: typing.Any, **kwargs: typing.Any) -> str:
     return render_template(template, field=field)
@@ -30,6 +32,13 @@ class PCPostalCodeField(PCStringField):
     validators = [
         validators.Optional(""),
         validators.Length(min=5, max=5, message="Le code postal doit contenir %(max)d caractères"),
+    ]
+
+
+class PCPhoneNumberField(PCStringField):
+    validators = [
+        validators.Optional(""),
+        PhoneNumberValidator(),
     ]
 
 
