@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useHistory } from 'react-router'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
@@ -39,6 +39,7 @@ const CollectiveOfferSummaryEdition = ({
   categories,
   reloadCollectiveOffer,
 }: CollectiveOfferSummaryEditionProps) => {
+  const [isActive, setIsActive] = useState(offer.isActive)
   const notify = useNotification()
   const history = useHistory()
   const isSubtypeChosenAtCreation = useActiveFeature(
@@ -83,10 +84,11 @@ const CollectiveOfferSummaryEdition = ({
 
     const response = await adapter({
       offerId: offer.id,
-      isActive: !offer.isActive,
+      isActive: !isActive,
     })
 
     if (response.isOk) {
+      setIsActive(!isActive)
       return notify.success(response.message)
     }
 
@@ -104,7 +106,7 @@ const CollectiveOfferSummaryEdition = ({
           offer.isTemplate ? false : Boolean(offer.collectiveStock?.isBooked)
         }
         isCancellable={offer.isCancellable}
-        isOfferActive={offer.isActive}
+        isOfferActive={isActive}
         setIsOfferActive={setIsOfferActive}
       />
       {offer.isTemplate && (
