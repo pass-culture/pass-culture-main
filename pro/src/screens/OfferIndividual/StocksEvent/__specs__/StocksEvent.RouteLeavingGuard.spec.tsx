@@ -268,7 +268,7 @@ describe('screens:StocksEvent', () => {
 
     await userEvent.click(screen.getByText('Go outside !'))
 
-    await userEvent.click(screen.getByText('Quitter'))
+    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
