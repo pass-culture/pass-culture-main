@@ -22,9 +22,11 @@ import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate, useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
+import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
+import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 import { logTo } from '../utils/logTo'
 
@@ -55,6 +57,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const notify = useNotification()
   const { setOffer } = useOfferIndividualContext()
   const providerName = offer?.lastProviderName
+  const { visible, showModal, hideModal } = useModal()
 
   const onSubmit = async (formValues: { stocks: IStockEventFormValues[] }) => {
     const { isOk, payload } = await upsertStocksEventAdapter({
@@ -126,6 +129,17 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     () => {
+      if (mode === OFFER_WIZARD_MODE.EDITION) {
+        const offerHasBookings = formik.values.stocks.some(
+          stock => stock.bookingsQuantity !== '0'
+        )
+        if (!visible && offerHasBookings && formik.dirty) {
+          showModal()
+          return
+        } else {
+          hideModal()
+        }
+      }
       // tested but coverage don't see it.
       /* istanbul ignore next */
       setIsClickingFromActionBar(true)
@@ -183,6 +197,12 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     <FormikProvider value={formik}>
       {providerName && (
         <SynchronizedProviderInformation providerName={providerName} />
+      )}
+      {visible && (
+        <DialogStocksEventEditConfirm
+          onConfirm={handleNextStep()}
+          onCancel={hideModal}
+        />
       )}
       <FormLayout>
         <FormLayout.Section
