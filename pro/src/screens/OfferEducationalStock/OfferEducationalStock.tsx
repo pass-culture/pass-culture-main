@@ -4,6 +4,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import * as yup from 'yup'
 
+import ActionsBarSticky from 'components/ActionsBarSticky'
 import FormLayout from 'components/FormLayout'
 import OfferEducationalActions from 'components/OfferEducationalActions'
 import {
@@ -68,6 +69,7 @@ const OfferEducationalStock = <
   const isSubtypeChosenAtCreation = useActiveFeature(
     'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
   )
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   const submitForm = async (values: OfferEducationalStockFormValues) => {
     setIsLoading(true)
@@ -176,28 +178,57 @@ const OfferEducationalStock = <
                 />
               </FormLayout.Row>
             </FormLayout.Section>
-            <FormLayout.Actions>
-              <ButtonLink
-                variant={ButtonVariant.SECONDARY}
-                link={{
-                  to: isSubtypeChosenAtCreation
-                    ? `/offre/collectif/${offer.id}/creation`
-                    : computeOffersUrl({}),
-                  isExternal: false,
-                }}
-              >
-                {isSubtypeChosenAtCreation
-                  ? 'Étape précédente'
-                  : 'Annuler et quitter'}
-              </ButtonLink>
-              <SubmitButton
-                className=""
-                disabled={offerIsDisabled || mode === Mode.READ_ONLY}
-                isLoading={isLoading}
-              >
-                {mode === Mode.EDITION ? 'Enregistrer' : 'Étape suivante'}
-              </SubmitButton>
-            </FormLayout.Actions>
+            {isOfferFormV3 ? (
+              <ActionsBarSticky>
+                <ActionsBarSticky.Left>
+                  <ButtonLink
+                    variant={ButtonVariant.SECONDARY}
+                    link={{
+                      to: isSubtypeChosenAtCreation
+                        ? `/offre/collectif/${offer.id}/creation`
+                        : computeOffersUrl({}),
+                      isExternal: false,
+                    }}
+                  >
+                    {isSubtypeChosenAtCreation
+                      ? 'Étape précédente'
+                      : 'Annuler et quitter'}
+                  </ButtonLink>
+                </ActionsBarSticky.Left>
+                <ActionsBarSticky.Right>
+                  <SubmitButton
+                    className=""
+                    disabled={offerIsDisabled || mode === Mode.READ_ONLY}
+                    isLoading={isLoading}
+                  >
+                    {mode === Mode.EDITION ? 'Enregistrer' : 'Étape suivante'}
+                  </SubmitButton>
+                </ActionsBarSticky.Right>
+              </ActionsBarSticky>
+            ) : (
+              <FormLayout.Actions>
+                <ButtonLink
+                  variant={ButtonVariant.SECONDARY}
+                  link={{
+                    to: isSubtypeChosenAtCreation
+                      ? `/offre/collectif/${offer.id}/creation`
+                      : computeOffersUrl({}),
+                    isExternal: false,
+                  }}
+                >
+                  {isSubtypeChosenAtCreation
+                    ? 'Étape précédente'
+                    : 'Annuler et quitter'}
+                </ButtonLink>
+                <SubmitButton
+                  className=""
+                  disabled={offerIsDisabled || mode === Mode.READ_ONLY}
+                  isLoading={isLoading}
+                >
+                  {mode === Mode.EDITION ? 'Enregistrer' : 'Étape suivante'}
+                </SubmitButton>
+              </FormLayout.Actions>
+            )}
           </FormLayout>
         </form>
       </FormikProvider>
