@@ -3,7 +3,7 @@ import * as yup from 'yup'
 import { getToday, removeTime } from 'utils/date'
 
 const isBeforeBeginningDate = (
-  bookingLimitDatetime: Date | undefined,
+  bookingLimitDatetime: Date | undefined | null,
   context: yup.TestContext
 ) => {
   if (!context.parent.beginningDate || !bookingLimitDatetime) {
@@ -29,15 +29,11 @@ const getSingleValidationSchema = (minQuantity: number | null = null) => {
       .moreThan(-1, 'Le prix ne peut pas être inferieur à 0€')
       .max(300, 'Veuillez renseigner un prix inférieur à 300€')
       .required('Veuillez renseigner un prix'),
-    bookingLimitDatetime: yup
-      .date()
-      .notRequired()
-      .typeError('Veuillez renseigner une date')
-      .test({
-        name: 'bookingLimitDatetime-before-beginningDate',
-        message: 'Veuillez rentrer une date antérieur à la date de l’évènement',
-        test: isBeforeBeginningDate,
-      }),
+    bookingLimitDatetime: yup.date().nullable().test({
+      name: 'bookingLimitDatetime-before-beginningDate',
+      message: 'Veuillez rentrer une date antérieure à la date de l’évènement',
+      test: isBeforeBeginningDate,
+    }),
 
     quantity: yup
       .number()

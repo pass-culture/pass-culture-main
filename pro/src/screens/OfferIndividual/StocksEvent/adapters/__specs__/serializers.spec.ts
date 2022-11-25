@@ -41,10 +41,10 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
     expect(serializedData).toStrictEqual([expectedApiStockEvent])
   })
 
-  it('should serialize data for stock event without "bookingLimitDatetime"', async () => {
+  it('should serialize data for stock event with "bookingLimitDatetime" even if not provided', async () => {
     const expectedApiStockEvent: StockCreationBodyModel = {
       beginningDatetime: '2022-10-26T13:00:00Z',
-      bookingLimitDatetime: null,
+      bookingLimitDatetime: '2022-10-26T13:00:00Z',
       price: 10,
       quantity: 12,
     }

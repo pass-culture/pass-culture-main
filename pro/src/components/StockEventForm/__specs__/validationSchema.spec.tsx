@@ -2,7 +2,6 @@ import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { format as formatDate } from 'date-fns'
 import { Formik } from 'formik'
 import React from 'react'
 
@@ -69,9 +68,6 @@ describe('StockEventForm:validationSchema', () => {
     expect(errorBeginningDate).toBeInTheDocument()
     expect(errorBeginningTime).toBeInTheDocument()
     expect(errorPrice).toBeInTheDocument()
-    expect(
-      screen.queryByTestId('error-stocks[0]bookingLimitDatetime')
-    ).toBeInTheDocument()
     expect(
       screen.queryByTestId('error-stocks[0]quantity')
     ).not.toBeInTheDocument()
@@ -186,38 +182,6 @@ describe('StockEventForm:validationSchema', () => {
       expect(
         screen.queryByTestId('error-stocks[0]quantity')
       ).not.toBeInTheDocument()
-    }
-  )
-
-  const dataSetBookingLimitDatetimeError = [
-    {
-      beginningDate: tomorrow,
-      bookingLimitDatetime: tomorrow,
-    },
-    {
-      beginningDate: oneWeekLater,
-      bookingLimitDatetime: oneWeekLater,
-    },
-  ]
-  it.each(dataSetBookingLimitDatetimeError)(
-    'should not display bookingLimitDatetime error',
-    async ({ beginningDate, bookingLimitDatetime }) => {
-      renderStockEventForm()
-
-      await userEvent.click(screen.getByLabelText('Date', { exact: true }))
-      await userEvent.click(await screen.getByText(beginningDate.getDate()))
-      expect(
-        screen.queryByTestId('error-stocks[0]beginningDate')
-      ).not.toBeInTheDocument()
-      expect(screen.getByLabelText('Date limite de réservation')).toHaveValue(
-        // DatePicker force local to fr
-        formatDate(bookingLimitDatetime, 'dd/MM/yyyy')
-      )
-
-      const errorBookingLimitDatetime = screen.queryByTestId(
-        'error-stocks[0]bookingLimitDatetime'
-      )
-      expect(errorBookingLimitDatetime).not.toBeInTheDocument()
     }
   )
 })

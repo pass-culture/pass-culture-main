@@ -34,7 +34,7 @@ describe('screens::StockThing::serializers:serializeStockThingList', () => {
     expect(serializedData).toStrictEqual([expectedApiStockThing])
   })
 
-  it('should serialize data for stock thing without "bookingLimitDatetime"', async () => {
+  it('should fill bookingLimitDatetime with beginningDatetime when not provided', async () => {
     const expectedApiStockThing: StockCreationBodyModel = {
       bookingLimitDatetime: null,
       price: 10,

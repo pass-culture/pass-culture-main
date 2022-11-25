@@ -47,18 +47,19 @@ export const serializeStockEvent = (
     throw Error("L'heure de début d'évenement est invalide")
   }
   const serializedQuantity = parseInt(formValues.quantity, 10)
+  const serializedbeginningDatetime = serializeBeginningDateTime(
+    formValues.beginningDate,
+    formValues.beginningTime,
+    departementCode
+  )
   const apiStock: StockCreationBodyModel = {
-    beginningDatetime: serializeBeginningDateTime(
-      formValues.beginningDate,
-      formValues.beginningTime,
-      departementCode
-    ),
+    beginningDatetime: serializedbeginningDatetime,
     bookingLimitDatetime: formValues.bookingLimitDatetime
       ? serializeBookingLimitDatetime(
           formValues.bookingLimitDatetime,
           departementCode
         )
-      : null,
+      : serializedbeginningDatetime,
     price: parseInt(formValues.price, 10),
     quantity: isNaN(serializedQuantity) ? null : serializedQuantity,
   }
