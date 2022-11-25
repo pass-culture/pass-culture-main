@@ -1,6 +1,7 @@
 name: Deploy a specific version of image resizing on production
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       base_ref:
