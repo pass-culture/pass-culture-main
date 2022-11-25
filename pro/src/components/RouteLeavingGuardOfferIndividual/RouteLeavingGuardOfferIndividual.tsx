@@ -86,7 +86,7 @@ const RouteLeavingGuardOfferIndividual = ({
         actionType: BUTTON_ACTION.QUIT_WITHOUT_SAVING,
       },
       rightButton: {
-        text: 'Enregistrer un brouillon et quitter',
+        text: 'Sauvegarder le brouillon et quitter',
         action: () => {
           setIsSubmittingFromRouteLeavingGuard(true)
           return saveForm()
@@ -134,7 +134,7 @@ const RouteLeavingGuardOfferIndividual = ({
       dialogTitle: 'Souhaitez-vous enregistrer vos modifications ?',
       description: undefined,
       leftButton: {
-        text: 'Quitter sans enregistrer',
+        text: 'Ne pas enregistrer',
         actionType: BUTTON_ACTION.QUIT_WITHOUT_SAVING,
       },
       rightButton: {
@@ -147,14 +147,16 @@ const RouteLeavingGuardOfferIndividual = ({
     },
     // internal navigation, form dirty & not valid
     [ROUTE_LEAVING_GUARD_TYPE.INTERNAL_NOT_VALID]: {
-      dialogTitle: 'Si vous changez de page vos informations seront perdues',
+      dialogTitle: 'Des erreurs sont présentes sur cette page',
       description:
-        'Votre offre ne sera pas sauvegardée et toutes les informations seront perdues.',
+        'En poursuivant la navigation, vos modifications ne seront pas sauvegardées.',
       leftButton: {
-        text: 'Annuler',
+        text: 'Poursuivre la navigation',
+        actionType: BUTTON_ACTION.QUIT_WITHOUT_SAVING,
       },
       rightButton: {
-        text: 'Quitter la page',
+        text: 'Rester sur cette page',
+        actionType: BUTTON_ACTION.CANCEL,
       },
     },
   }

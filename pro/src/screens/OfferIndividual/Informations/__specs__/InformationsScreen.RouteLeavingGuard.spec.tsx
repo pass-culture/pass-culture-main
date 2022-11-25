@@ -338,9 +338,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.click(screen.getByText('Go to stocks !'))
 
     expect(
-      screen.getByText(
-        'Si vous changez de page vos informations seront perdues'
-      )
+      screen.getByText('Des erreurs sont présentes sur cette page')
     ).toBeInTheDocument()
   })
 
@@ -501,7 +499,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
 
     await userEvent.click(screen.getByText('Go outside !'))
     await userEvent.click(
-      screen.getByText('Enregistrer un brouillon et quitter')
+      screen.getByText('Sauvegarder le brouillon et quitter')
     )
 
     expect(api.postOffer).toHaveBeenCalledTimes(1)
@@ -522,7 +520,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
 
     await userEvent.click(screen.getByText('Go outside !'))
     await userEvent.click(
-      screen.getByText('Enregistrer un brouillon et quitter')
+      screen.getByText('Sauvegarder le brouillon et quitter')
     )
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(

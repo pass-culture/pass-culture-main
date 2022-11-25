@@ -216,7 +216,7 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape précédente' })
     )
-    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
+    await userEvent.click(screen.getByText('Ne pas enregistrer'))
 
     expect(await screen.findByText('Previous page')).toBeInTheDocument()
     expect(api.upsertStocks).not.toHaveBeenCalled()
