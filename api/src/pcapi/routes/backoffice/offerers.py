@@ -5,7 +5,6 @@ import urllib
 import sqlalchemy as sa
 
 from pcapi.core.auth.utils import get_current_user
-from pcapi.core.history import models as history_models
 from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -154,10 +153,13 @@ def get_offerer_history(offerer_id: int) -> serialization.HistoryResponseModel:
 @perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def validate_offerer_attachment(user_offerer_id: int) -> None:
     author_user = get_current_user()
-    try:
-        offerers_api.validate_offerer_attachment_by_id(user_offerer_id, author_user)
-    except offerers_exceptions.UserOffererNotFoundException:
+
+    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
+    if user_offerer is None:
         raise api_errors.ResourceNotFoundError(errors={"user_offerer_id": "Le rattachement n'existe pas"})
+
+    try:
+        offerers_api.validate_offerer_attachment(user_offerer, author_user)
     except offerers_exceptions.UserOffererAlreadyValidatedException:
         raise api_errors.ApiErrors(errors={"user_offerer_id": "Le rattachement est déjà validé"})
 
@@ -167,10 +169,12 @@ def validate_offerer_attachment(user_offerer_id: int) -> None:
 @perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def set_offerer_attachment_pending(user_offerer_id: int, body: serialization.OptionalCommentRequest) -> None:
     author_user = get_current_user()
-    try:
-        offerers_api.set_offerer_attachment_pending(user_offerer_id, author_user, comment=body.comment)
-    except offerers_exceptions.UserOffererNotFoundException:
+
+    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
+    if user_offerer is None:
         raise api_errors.ResourceNotFoundError(errors={"user_offerer_id": "Le rattachement n'existe pas"})
+
+    offerers_api.set_offerer_attachment_pending(user_offerer, author_user, comment=body.comment)
 
 
 @blueprint.backoffice_blueprint.route("users_offerers/<int:user_offerer_id>/reject", methods=["POST"])
@@ -178,10 +182,12 @@ def set_offerer_attachment_pending(user_offerer_id: int, body: serialization.Opt
 @perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def reject_offerer_attachment(user_offerer_id: int, body: serialization.OptionalCommentRequest) -> None:
     author_user = get_current_user()
-    try:
-        offerers_api.reject_offerer_attachment(user_offerer_id, author_user, comment=body.comment)
-    except offerers_exceptions.UserOffererNotFoundException:
+
+    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
+    if user_offerer is None:
         raise api_errors.ResourceNotFoundError(errors={"user_offerer_id": "Le rattachement n'existe pas"})
+
+    offerers_api.reject_offerer_attachment(user_offerer, author_user, comment=body.comment)
 
 
 @blueprint.backoffice_blueprint.route("users_offerers/<int:user_offerer_id>/comment", methods=["POST"])
@@ -189,10 +195,12 @@ def reject_offerer_attachment(user_offerer_id: int, body: serialization.Optional
 @perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def comment_offerer_attachment(user_offerer_id: int, body: serialization.CommentRequest) -> None:
     author_user = get_current_user()
-    try:
-        offerers_api.add_comment_to_offerer_attachment(user_offerer_id, author_user, comment=body.comment)
-    except offerers_exceptions.UserOffererNotFoundException:
-        raise api_errors.ResourceNotFoundError(errors={"user_offerer_id": "La rattachement n'existe pas"})
+
+    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
+    if user_offerer is None:
+        raise api_errors.ResourceNotFoundError(errors={"user_offerer_id": "Le rattachement n'existe pas"})
+
+    offerers_api.add_comment_to_offerer_attachment(user_offerer, author_user, comment=body.comment)
 
 
 @blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/validate", methods=["POST"])
@@ -430,24 +438,6 @@ def toggle_top_actor(offerer_id: int, body: serialization.IsTopActorRequest) -> 
         db.session.commit()
 
 
-def _get_user_offerer_request_date(user_offerer: offerers_models.UserOfferer) -> str | None:
-    if user_offerer.offerer.action_history:
-        actions_new = sorted(
-            [
-                action
-                for action in user_offerer.offerer.action_history
-                if action.actionType == history_models.ActionType.USER_OFFERER_NEW
-                and action.userId == user_offerer.userId
-            ],
-            key=lambda a: a.actionDate,
-            reverse=True,
-        )
-        if actions_new:
-            return format_into_utc_date(actions_new[0].actionDate)
-
-    return None  # No dateCreated in user_offerer table
-
-
 @blueprint.backoffice_blueprint.route("users_offerers/to_be_validated", methods=["GET"])
 @spectree_serialize(
     response_model=serialization.ListUserOffererToBeValidatedResponseModel, on_success_status=200, api=blueprint.api
@@ -459,7 +449,7 @@ def list_offerers_attachments_to_be_validated(
     filters = []
     if query.filter:
         filters = json.loads(urllib.parse.unquote_plus(query.filter))
-    users_offerers = offerers_api.list_users_offerers_to_be_validated(filters)
+    users_offerers = offerers_api.list_users_offerers_to_be_validated_legacy(filters)
 
     sorts = urllib.parse.unquote_plus(query.sort or "[]")
     try:
@@ -490,7 +480,7 @@ def list_offerers_attachments_to_be_validated(
                     email=user_offerer.user.email,
                     userName=f"{user_offerer.user.firstName} {user_offerer.user.lastName}",
                     status=_get_validation_status(user_offerer),
-                    requestDate=_get_user_offerer_request_date(user_offerer),
+                    requestDate=format_into_utc_date(user_offerer.requestDate) if user_offerer.requestDate else None,
                     lastComment=_get_serialized_offerer_last_comment(user_offerer.offerer, user_id=user_offerer.userId),
                     phoneNumber=user_offerer.user.phoneNumber,
                     offererId=user_offerer.offerer.id,

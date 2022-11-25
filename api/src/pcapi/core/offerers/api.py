@@ -540,11 +540,7 @@ def validate_offerer_attachment_by_token(token: str) -> None:
     _validate_offerer_attachment(user_offerer, None)
 
 
-def validate_offerer_attachment_by_id(user_offerer_id: int, author_user: users_models.User) -> None:
-    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
-    if user_offerer is None:
-        raise exceptions.UserOffererNotFoundException()
-
+def validate_offerer_attachment(user_offerer: offerers_models.UserOfferer, author_user: users_models.User) -> None:
     if user_offerer.isValidated:
         raise exceptions.UserOffererAlreadyValidatedException()
 
@@ -552,12 +548,8 @@ def validate_offerer_attachment_by_id(user_offerer_id: int, author_user: users_m
 
 
 def set_offerer_attachment_pending(
-    user_offerer_id: int, author_user: users_models.User, comment: str | None = None
+    user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str | None = None
 ) -> None:
-    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
-    if user_offerer is None:
-        raise exceptions.UserOffererNotFoundException()
-
     user_offerer.validationStatus = models.ValidationStatus.PENDING
     action = history_api.log_action(
         history_models.ActionType.USER_OFFERER_PENDING,
@@ -570,11 +562,9 @@ def set_offerer_attachment_pending(
     repository.save(user_offerer, action)
 
 
-def reject_offerer_attachment(user_offerer_id: int, author_user: users_models.User, comment: str | None = None) -> None:
-    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
-    if user_offerer is None:
-        raise exceptions.UserOffererNotFoundException()
-
+def reject_offerer_attachment(
+    user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str | None = None
+) -> None:
     db.session.add(
         history_api.log_action(
             history_models.ActionType.USER_OFFERER_REJECTED,
@@ -592,8 +582,7 @@ def reject_offerer_attachment(user_offerer_id: int, author_user: users_models.Us
             extra={"offerer": user_offerer.offerer.id},
         )
 
-    models.UserOfferer.query.filter_by(id=user_offerer_id).delete()
-
+    db.session.delete(user_offerer)
     db.session.commit()
 
 
@@ -703,11 +692,9 @@ def add_comment_to_offerer(offerer: offerers_models.Offerer, author_user: users_
     history_api.log_action(history_models.ActionType.COMMENT, author_user, offerer=offerer, comment=comment)
 
 
-def add_comment_to_offerer_attachment(user_offerer_id: int, author_user: users_models.User, comment: str) -> None:
-    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
-    if user_offerer is None:
-        raise exceptions.UserOffererNotFoundException()
-
+def add_comment_to_offerer_attachment(
+    user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str
+) -> None:
     history_api.log_action(
         history_models.ActionType.COMMENT,
         author_user,
@@ -1468,7 +1455,8 @@ def is_top_actor(offerer: offerers_models.Offerer) -> bool:
     return False
 
 
-def list_users_offerers_to_be_validated(filter_: list[dict[str, typing.Any]]) -> sa.orm.Query:
+def list_users_offerers_to_be_validated_legacy(filter_: list[dict[str, typing.Any]]) -> sa.orm.Query:
+    # This function becomes deprecated when backoffice v2 is stopped
     query = offerers_models.UserOfferer.query.options(
         sa.orm.joinedload(offerers_models.UserOfferer.user),
         sa.orm.joinedload(offerers_models.UserOfferer.offerer)
@@ -1481,6 +1469,28 @@ def list_users_offerers_to_be_validated(filter_: list[dict[str, typing.Any]]) ->
 
     filter_dict = {f["field"]: f["value"] for f in filter_}
     query = _filter_on_validation_status(query, filter_dict, offerers_models.UserOfferer)
+
+    return query
+
+
+def list_users_offerers_to_be_validated(
+    status: list[offerers_models.ValidationStatus] | None = None,
+    **_: typing.Any,
+) -> sa.orm.Query:
+    query = offerers_models.UserOfferer.query.options(
+        sa.orm.joinedload(offerers_models.UserOfferer.user),
+        sa.orm.joinedload(offerers_models.UserOfferer.offerer)
+        .joinedload(offerers_models.Offerer.action_history)
+        .joinedload(history_models.ActionHistory.authorUser),
+        sa.orm.joinedload(offerers_models.UserOfferer.offerer)
+        .joinedload(offerers_models.Offerer.UserOfferers)
+        .joinedload(offerers_models.UserOfferer.user),
+    )
+
+    if status:
+        query = query.filter(offerers_models.UserOfferer.validationStatus.in_(status))
+    else:
+        query = query.filter(offerers_models.UserOfferer.isWaitingForValidation)
 
     return query
 
