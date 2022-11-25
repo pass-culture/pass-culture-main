@@ -1,0 +1,42 @@
+<turbo-frame id="pro_user_history_frame">
+
+    <ul class="nav nav-tabs nav-fill" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button
+                class="nav-link active fw-bolder py-3"
+                id="pills-home-tab"
+                data-bs-toggle="pill"
+                data-bs-target="#pills-home"
+                type="button"
+                role="tab"
+                aria-controls="pills-home"
+                aria-selected="true"
+            >
+                HISTORIQUE DU COMPTE
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button
+                class="nav-link fw-bolder py-3"
+                id="pills-offerers-tab"
+                data-bs-toggle="pill"
+                data-bs-target="#pills-offerers"
+                type="button"
+                role="tab"
+                aria-controls="pills-offerers"
+                aria-selected="false"
+            >
+                RATTACHEMENTS AUX STRUCTURES
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content bg-body border border-top-0" id="pills-tabContent">
+        <div class="tab-pane fade show active p-4" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+            {% include "pro_user/get/details/history.html" %}
+        </div>
+        <div class="tab-pane fade" id="pills-offerers" role="tabpanel" aria-labelledby="pills-offerers-tab" tabindex="0">
+        </div>
+    </div>
+
+</turbo-frame>

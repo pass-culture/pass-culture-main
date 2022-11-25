@@ -30,3 +30,7 @@ class EditProUserForm(FlaskForm):
         if not raw_email:
             return ""
         return email_utils.sanitize_email(raw_email)
+
+
+class CommentForm(FlaskForm):
+    comment = fields.PCCommentField("Commentaire interne pour le compte pro")
