@@ -61,6 +61,8 @@ export const imageConstraints = {
   minRatio: (minRatio: number, orientation: OrientationEnum): Constraint => {
     const isRatioTooClose: FileChecker = async file => {
       const imageBitmap = await getImageBitmap(file)
+      // istanbul ignore next
+      // return true because we don't want to display the message if no image
       if (imageBitmap === null) {
         return true
       }
@@ -76,7 +78,7 @@ export const imageConstraints = {
           (imageBitmap.width / imageBitmap.height) * 100,
       }[orientation]
 
-      return imageRatio >= totalMinRatio || true
+      return imageRatio >= totalMinRatio
     }
 
     return {

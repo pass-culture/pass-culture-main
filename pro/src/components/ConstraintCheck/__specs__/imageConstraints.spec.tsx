@@ -1,3 +1,4 @@
+import { OrientationEnum } from 'components/ImageUploadBrowserForm/types'
 import { createImageFile } from 'utils/testFileHelpers'
 
 import { getValidatorErrors, imageConstraints } from '../imageConstraints'
@@ -72,10 +73,10 @@ describe('image constraints', () => {
     })
   })
 
-  describe('width', () => {
-    it("accepts image when it's larger that minimum", async () => {
-      const file = createImageFile({ width: 300 })
-      const constraint = imageConstraints.width(300)
+  describe('height', () => {
+    it("accepts image when it's higher than minimum", async () => {
+      const file = createImageFile({ height: 400 })
+      const constraint = imageConstraints.height(400)
 
       const isValid = await constraint.asyncValidator(file)
 
@@ -83,13 +84,68 @@ describe('image constraints', () => {
     })
 
     it("refuses image when it's smaller than minimum", async () => {
-      const file = createImageFile({ width: 200 })
-      const constraint = imageConstraints.width(300)
+      const file = createImageFile({ width: 400 })
+      const constraint = imageConstraints.height(300)
 
       const isValid = await constraint.asyncValidator(file)
 
       expect(isValid).toBe(false)
     })
+
+    it('refuses when no min height', async () => {
+      const file = createImageFile({ width: 400 })
+      const constraint = imageConstraints.height()
+
+      const isValid = await constraint.asyncValidator(file)
+
+      expect(isValid).toBe(false)
+    })
+  })
+})
+
+describe('width', () => {
+  it("accepts image when it's larger that minimum", async () => {
+    const file = createImageFile({ width: 300 })
+    const constraint = imageConstraints.width(300)
+
+    const isValid = await constraint.asyncValidator(file)
+
+    expect(isValid).toBe(true)
+  })
+
+  it("refuses image when it's smaller than minimum", async () => {
+    const file = createImageFile({ width: 200 })
+    const constraint = imageConstraints.width(300)
+
+    const isValid = await constraint.asyncValidator(file)
+
+    expect(isValid).toBe(false)
+  })
+})
+
+describe('minRatio', () => {
+  it('accepts image landscape orientation when the ratio is higher than minimum for', async () => {
+    const file = createImageFile({ width: 400, height: 600 })
+    const constraint = imageConstraints.minRatio(
+      3 / 2,
+      OrientationEnum.LANDSCAPE
+    )
+
+    const isValid = await constraint.asyncValidator(file)
+
+    expect(isValid).toBe(true)
+  })
+
+  it('accepts image portrait orientation when the ratio is higher than minimum for', async () => {
+    const file = createImageFile({ width: 400, height: 400 })
+    const constraint = imageConstraints.minRatio(
+      6 / 9,
+      OrientationEnum.PORTRAIT
+    )
+
+    const isValid = await constraint.asyncValidator(file)
+
+    expect(isValid).toBe(true)
   })
 })
 

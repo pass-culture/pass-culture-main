@@ -75,10 +75,13 @@ const getValidationSchema = ({
     })
   }
 
+  /* istanbul ignore next */
   if (minRatio) {
     validationSchema.minRatio = yup.mixed().test({
       test: async (_width, context: yup.TestContext) => {
         const imageBitmap = await getImageBitmap(context.parent.image)
+        // istanbul ignore next
+        // return true because we don't want to display the message if no image
         if (imageBitmap === null) {
           return true
         }
