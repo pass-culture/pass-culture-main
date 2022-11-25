@@ -172,7 +172,7 @@ describe('screens:StocksEvent', () => {
       stocks: [
         {
           beginningDatetime: '2020-12-15T11:00:00Z',
-          bookingLimitDatetime: '2020-12-15T00:00:00Z',
+          bookingLimitDatetime: '2020-12-15T11:00:00Z',
           price: 20,
           quantity: null,
         },
