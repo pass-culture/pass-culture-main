@@ -147,6 +147,7 @@ describe('screens:StocksEvent:Edition', () => {
     expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
+
   it("should allow user to delete a stock he just created (and didn't save)", async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
     renderStockEventScreen({
@@ -165,6 +166,7 @@ describe('screens:StocksEvent:Edition', () => {
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
     expect(screen.getAllByLabelText('Prix').length).toBe(1)
   })
+
   it('should not allow user to delete a stock undeletable', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
     const undeletableStock = { ...defaultStock, isEventDeletable: false }
@@ -184,6 +186,7 @@ describe('screens:StocksEvent:Edition', () => {
     expect(api.deleteStock).not.toHaveBeenCalled()
     expect(screen.getByLabelText('Prix')).toHaveValue('10.01')
   })
+
   it('should not allow user to delete stock from a synchronized offer', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
     offer.lastProvider = { id: 'PROVIDER_ID', isActive: true, name: 'Provider' }
@@ -200,6 +203,21 @@ describe('screens:StocksEvent:Edition', () => {
     const deleteButton = screen.getAllByTitle('Supprimer le stock')[0]
     expect(deleteButton).toHaveAttribute('aria-disabled', 'true')
   })
+
+  it('should not allow user to add a date for a synchronized offer', () => {
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
+    offer.lastProvider = { id: 'PROVIDER_ID', isActive: true, name: 'Provider' }
+    props.offer = { ...(offer as IOfferIndividual) }
+
+    renderStockEventScreen({
+      props,
+      storeOverride,
+      contextValue,
+    })
+
+    expect(screen.queryByText('Ajouter une date')).toBeDisabled()
+  })
+
   it('should display an error message when there is an api error', async () => {
     jest.spyOn(api, 'deleteStock').mockRejectedValue(
       new ApiError(
