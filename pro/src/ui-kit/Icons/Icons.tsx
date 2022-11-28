@@ -58,6 +58,7 @@ import { ReactComponent as IcoRadioOn } from 'icons/ico-radio-on.svg'
 import { ReactComponent as IcoRightCircleArrow } from 'icons/ico-right-circle-arrow.svg'
 import { ReactComponent as IcoSearchGray } from 'icons/ico-search-gray.svg'
 import { ReactComponent as SignoutIcon } from 'icons/ico-signout.svg'
+import { ReactComponent as StatsIconGrey } from 'icons/ico-stats-grey.svg'
 import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
 import { ReactComponent as StatusDraftIcon } from 'icons/ico-status-draft.svg'
 import { ReactComponent as StatusExpiredIcon } from 'icons/ico-status-expired.svg'
@@ -575,6 +576,12 @@ export const Icons = () => (
           <StatsIcon />
         </td>
         <td>ico-stats</td>
+      </tr>
+      <tr>
+        <td>
+          <StatsIconGrey />
+        </td>
+        <td>ico-stats-grey</td>
       </tr>
       <tr>
         <td className={styles['with-background']}>
