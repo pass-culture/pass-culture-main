@@ -39,7 +39,12 @@
     </form>
     <div>
         {% if rows and rows.total > 0 %}
-            <p class="lead num-results">{{ rows.total }} résultat{{ "s" if rows.total > 1 else "" }}</p>
+            <div class="d-flex justify-content-between">
+                <p class="lead num-results">{{ rows.total }} résultat{{ "s" if rows.total > 1 else "" }}</p>
+                <div>
+                    {% include 'components/search/pagination.html' %}
+                </div>
+            </div>
             <table class="table mb-4">
                 <thead>
                     <tr>
@@ -131,7 +136,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-            {% include 'components/search/pagination.html' %}
 
             {% for user_offerer in rows.items %}
                 {% call build_edit_status_modal(
