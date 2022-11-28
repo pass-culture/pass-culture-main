@@ -36,7 +36,7 @@ const StockEventForm = ({
     if (stockBookingLimitDatetime === null) {
       return
     }
-    if (date && isAfter(date, stockBookingLimitDatetime)) {
+    if (date && isAfter(stockBookingLimitDatetime, date)) {
       setTouched({
         [`stocks[${stockIndex}]bookingLimitDatetime`]: true,
       })
