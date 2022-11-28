@@ -213,7 +213,7 @@ describe('Summary', () => {
 
     props = {
       offerId: offer.id,
-      providerName: null,
+      providerName: 'Ciné Office',
       offer: offer,
       stockThing: stock,
       stockEventList: undefined,
@@ -234,6 +234,9 @@ describe('Summary', () => {
       renderSummary({ props })
 
       // then
+      expect(
+        screen.getByText('Offre synchronisée avec Ciné Office')
+      ).toBeInTheDocument()
       expect(screen.getAllByText('Modifier')).toHaveLength(2)
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(screen.getByText('Type d’offre')).toBeInTheDocument()
