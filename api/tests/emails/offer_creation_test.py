@@ -6,6 +6,7 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.mailing import make_offer_creation_notification_email
@@ -18,6 +19,7 @@ class MakeOfferCreationNotificationEmailTest:
         "isEducationalOffer",
         [True, False],
     )
+    @override_features(OFFER_FORM_V3=True)
     def test_with_physical_offer(self, isEducationalOffer):
         author = users_factories.ProFactory()
         venue = offerers_factories.VenueFactory(
@@ -55,11 +57,16 @@ class MakeOfferCreationNotificationEmailTest:
         assert f"Lien vers l'offre dans la Webapp :" f" {settings.WEBAPP_V2_URL}/offre/{offer.id}" in webapp_offer_link
 
         pro_offer_link = str(parsed_email.find("p", {"id": "pro_offer_link"}))
-        pro_offer_type = "individuel" if isEducationalOffer is False else "collectif"
-        assert (
-            f"Lien vers l'offre dans le portail PRO :"
-            f" http://localhost:3001/offre/{humanize(offer.id)}/{pro_offer_type}/edition" in pro_offer_link
-        )
+        if isEducationalOffer is True:
+            assert (
+                f"Lien vers l'offre dans le portail PRO :"
+                f" http://localhost:3001/offre/{humanize(offer.id)}/collectif/edition" in pro_offer_link
+            )
+        else:
+            assert (
+                f"Lien vers l'offre dans le portail PRO :"
+                f" http://localhost:3001/offre/individuelle/{humanize(offer.id)}/recapitulatif" in pro_offer_link
+            )
         offer_is_duo = str(parsed_email.find("p", {"id": "offer_is_duo"}))
         assert "Offre duo : False" in offer_is_duo
 
@@ -105,6 +112,7 @@ class MakeOfferRejectionNotificationEmailTest:
         "isEducationalOffer",
         [True, False],
     )
+    @override_features(OFFER_FORM_V3=True)
     def test_with_physical_offer(self, isEducationalOffer):
         author = users_factories.ProFactory(firstName=None)
         venue = offerers_factories.VenueFactory(
@@ -139,11 +147,16 @@ class MakeOfferRejectionNotificationEmailTest:
         assert "Vient d'être créée par : Cinéma de Montreuil" in offerer_html
 
         pro_offer_link = str(parsed_email.find("p", {"id": "pro_offer_link"}))
-        pro_offer_type = "individuel" if not isEducationalOffer else "collectif"
-        assert (
-            f"Lien vers l'offre dans le portail PRO :"
-            f" http://localhost:3001/offre/{humanize(offer.id)}/{pro_offer_type}/edition" in pro_offer_link
-        )
+        if isEducationalOffer is True:
+            assert (
+                f"Lien vers l'offre dans le portail PRO :"
+                f" http://localhost:3001/offre/{humanize(offer.id)}/collectif/edition" in pro_offer_link
+            )
+        else:
+            assert (
+                f"Lien vers l'offre dans le portail PRO :"
+                f" http://localhost:3001/offre/individuelle/{humanize(offer.id)}/recapitulatif" in pro_offer_link
+            )
 
         offer_is_duo = str(parsed_email.find("p", {"id": "offer_is_duo"}))
         assert "Offre duo : False" in offer_is_duo

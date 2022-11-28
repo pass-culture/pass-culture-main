@@ -9,6 +9,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.testing import override_features
 from pcapi.settings import PRO_URL
 from pcapi.utils.human_ids import humanize
 
@@ -17,6 +18,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class SendinblueSendOfferValidationTest:
+    @override_features(OFFER_FORM_V3=True)
     def test_get_validation_approval_correct_email_metadata(self):
         # Given
         offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
@@ -29,9 +31,10 @@ class SendinblueSendOfferValidationTest:
         assert new_offer_validation_email.params == {
             "OFFER_NAME": "Ma petite offre",
             "VENUE_NAME": "Mon stade",
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/{humanize(offer.id)}/individuel/edition",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{humanize(offer.id)}/recapitulatif",
         }
 
+    @override_features(OFFER_FORM_V3=True)
     def test_send_offer_approval_email(
         self,
     ):
@@ -48,10 +51,11 @@ class SendinblueSendOfferValidationTest:
         assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": offer.name,
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/{humanize(offer.id)}/individuel/edition",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{humanize(offer.id)}/recapitulatif",
             "VENUE_NAME": venue.name,
         }
 
+    @override_features(OFFER_FORM_V3=True)
     def test_get_validation_rejection_correct_email_metadata(self):
         # Given
         offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
@@ -65,7 +69,7 @@ class SendinblueSendOfferValidationTest:
             "IS_COLLECTIVE_OFFER": False,
             "OFFER_NAME": "Ma petite offre",
             "VENUE_NAME": "Mon stade",
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/{humanize(offer.id)}/individuel/edition",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{humanize(offer.id)}/recapitulatif",
         }
 
     def test_get_validation_rejection_correct_collective_attribute(self):
@@ -90,6 +94,7 @@ class SendinblueSendOfferValidationTest:
         assert new_offer_validation_email.template == TransactionalEmail.OFFER_REJECTION_TO_PRO.value
         assert new_offer_validation_email.params["IS_COLLECTIVE_OFFER"] == True
 
+    @override_features(OFFER_FORM_V3=True)
     def test_send_offer_rejection_email(
         self,
     ):
@@ -107,6 +112,6 @@ class SendinblueSendOfferValidationTest:
         assert mails_testing.outbox[0].sent_data["params"] == {
             "IS_COLLECTIVE_OFFER": False,
             "OFFER_NAME": offer.name,
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/{humanize(offer.id)}/individuel/edition",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{humanize(offer.id)}/recapitulatif",
             "VENUE_NAME": venue.name,
         }
