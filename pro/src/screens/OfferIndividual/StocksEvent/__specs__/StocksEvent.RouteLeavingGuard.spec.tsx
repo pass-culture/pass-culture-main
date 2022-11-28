@@ -165,8 +165,7 @@ describe('screens:StocksEvent', () => {
       screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
     )
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-    // FIX ME: local seems ok but cannot reproduce in test...
-    // expect(screen.getByText('Save draft page')).toBeInTheDocument()
+    expect(screen.getByText('Save draft page')).toBeInTheDocument()
   })
 
   it('should not block and submit stock form when click on "Étape suivante"', async () => {
@@ -185,8 +184,7 @@ describe('screens:StocksEvent', () => {
     )
 
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-    // FIX ME: local seems ok but cannot reproduce in test...
-    // expect(screen.getByText('Next page')).toBeInTheDocument()
+    expect(screen.getByText('Next page')).toBeInTheDocument()
   })
 
   it('should not block when going outside and form is not touched', async () => {

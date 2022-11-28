@@ -106,6 +106,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors(payload.errors)
     }
+    setIsClickingFromActionBar(false)
   }
 
   let minQuantity = null
@@ -131,9 +132,9 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     () => {
-      setIsClickingFromActionBar(true)
       // tested but coverage don't see it.
       /* istanbul ignore next */
+      setIsClickingFromActionBar(true)
       setAfterSubmitUrl(
         getOfferIndividualUrl({
           offerId: offer.id,
@@ -143,7 +144,8 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
           mode,
         })
       )
-      if (saveDraft && !Object.keys(formik.touched).length) {
+      if (!Object.keys(formik.touched).length) {
+        setIsClickingFromActionBar(false)
         notify.success('Brouillon sauvegardé dans la liste des offres')
       } else {
         formik.handleSubmit()
@@ -160,8 +162,8 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
         offerId: offer.id,
       })
-      setIsClickingFromActionBar(false)
     }
+
   const handlePreviousStep = () => {
     if (!formik.dirty) {
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
