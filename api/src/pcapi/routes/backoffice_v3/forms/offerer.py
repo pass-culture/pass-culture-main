@@ -31,7 +31,7 @@ class OffererValidationListForm(FlaskForm):
     per_page = fields.PCSelectField(
         "Par page",
         choices=(("10", "10"), ("25", "25"), ("50", "50"), ("100", "100")),
-        default="10",
+        default="100",
         validators=(wtforms.validators.Optional(),),
     )
 
@@ -53,7 +53,7 @@ class UserOffererValidationListForm(FlaskForm):
     per_page = fields.PCSelectField(
         "Par page",
         choices=(("10", "10"), ("25", "25"), ("50", "50"), ("100", "100")),
-        default="10",
+        default="100",
         validators=(wtforms.validators.Optional(),),
     )
 

@@ -532,7 +532,7 @@ class ListOfferersToValidateTest:
                 (31, {"per_page": 10, "page": 3}, 4, 3, 10),
                 (31, {"per_page": 10, "page": 4}, 4, 4, 1),
                 (20, {"per_page": 10, "page": 1}, 2, 1, 10),
-                (10, {"page": 1}, 1, 1, 10),
+                (27, {"page": 1}, 1, 1, 27),
                 (10, {"per_page": 25, "page": 1}, 1, 1, 10),
             ),
         )
@@ -1142,7 +1142,7 @@ class ListUserOffererToValidateTest:
             (31, {"per_page": 10, "page": 3}, 4, 3, 10),
             (31, {"per_page": 10, "page": 4}, 4, 4, 1),
             (20, {"per_page": 10, "page": 1}, 2, 1, 10),
-            (10, {"page": 1}, 1, 1, 10),
+            (27, {"page": 1}, 1, 1, 27),
             (10, {"per_page": 25, "page": 1}, 1, 1, 10),
         ),
     )
