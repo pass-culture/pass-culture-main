@@ -82,3 +82,10 @@
 
   pointer-events: initial;
 }
+
+@mixin field-layout-footer() {
+  margin-top: rem.torem(forms.$input-space-before-error);
+  display: flex;
+  justify-content: flex-end;
+  min-height: rem.torem(forms.$input-error-reserved-space);
+}

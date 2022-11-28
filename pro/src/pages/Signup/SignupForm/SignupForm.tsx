@@ -181,6 +181,7 @@ const SignupForm = (): JSX.Element => {
                     name="password"
                     label="Mot de passe"
                     placeholder="Mon mot de passe"
+                    withErrorPreview={true}
                   />
                 </FormLayout.Row>
                 <FormLayout.Row>
