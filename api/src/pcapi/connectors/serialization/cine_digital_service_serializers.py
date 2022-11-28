@@ -227,13 +227,21 @@ class SeatCDS:
 
             if screen_infos.seatmap_skip_missing_seats:
                 seat_row_array = seat_map.map[seat_location_indices[0]]
-                previous_seats = (
+                seat_col_array = [seat_map.map[i][seat_location_indices[1]] for i in range(seat_map.nb_row)]
+                previous_col_seats = (
                     seat_row_array[: seat_location_indices[1]]
                     if screen_infos.seatmap_left_to_right
                     else seat_row_array[seat_location_indices[1] :]
                 )
-                skipped_seat = sum(1 for seat_value in previous_seats if seat_value == 0)
-                self.seatCol -= skipped_seat
+                previous_row_seats = (
+                    seat_col_array[: seat_location_indices[0]]
+                    if screen_infos.seatmap_front_to_back
+                    else seat_col_array[seat_location_indices[0] :]
+                )
+                skipped_col_seats = sum(1 for seat_value in previous_col_seats if seat_value == 0)
+                skipped_row_seats = sum(1 for seat_value in previous_row_seats if seat_value == 0)
+                self.seatCol -= skipped_col_seats
+                self.seatRow -= skipped_row_seats
 
             seat_letter = chr(ord("A") + self.seatRow)
             self.seatNumber = f"{seat_letter}_{self.seatCol + 1}"
