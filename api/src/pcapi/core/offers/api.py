@@ -162,7 +162,7 @@ def create_offer(
     offer.venue = venue
     offer.visualDisabilityCompliant = visual_disability_compliant
 
-    repository.save(offer)
+    repository.add_to_session(offer)
 
     logger.info(  # type: ignore [call-arg]
         "Offer has been created",

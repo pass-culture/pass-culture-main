@@ -15,9 +15,9 @@ def delete(*models: Model) -> None:
     db.session.commit()
 
 
-def save(*models: Model) -> None:
+def add_to_session(*models: Model) -> None:
     if not models:
-        return None
+        return
 
     api_errors = ApiErrors()
     for model in models:
@@ -32,6 +32,14 @@ def save(*models: Model) -> None:
         db.session.rollback()
         raise api_errors
 
+
+def save(*models: Model, commit: bool = True) -> None:
+    add_to_session(*models)
+
+    if not commit:
+        return None
+
+    api_errors = ApiErrors()
     try:
         db.session.commit()
     except DataError as data_error:
