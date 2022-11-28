@@ -44,7 +44,7 @@ class Coordinates:
 class ImageRatio(enum.Enum):
     """Ratio is width / height"""
 
-    PORTRAIT: float = 6 / 9
+    PORTRAIT: float = 2 / 3
     LANDSCAPE: float = 3 / 2
 
 
