@@ -26,6 +26,7 @@ $offer-image-width: rem(176px);
   }
   &-main-container {
     display: flex;
+    width: 100%;
   }
   &-image-container {
     border-radius: rem(3px);
