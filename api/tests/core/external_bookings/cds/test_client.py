@@ -668,11 +668,12 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_setmap", return_value=None)
     def test_should_return_seat_infos_according_to_screen(self, mocked_gat_hardcoded_seatmap, mocked_get_resource):
         seatmap_json = [
-            [3, 3, 3, 3, 0, 3],
-            [3, 3, 3, 3, 0, 3],
-            [3, 3, 3, 3, 0, 3],
-            [3, 3, 3, 1, 0, 3],
-            [3, 3, 3, 3, 0, 3],
+            [3, 3, 3, 3, 0, 0, 3, 3],
+            [3, 3, 3, 3, 0, 0, 3, 3],
+            [3, 3, 3, 3, 0, 0, 3, 3],
+            [3, 3, 3, 1, 0, 0, 3, 3],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [3, 3, 3, 3, 0, 0, 3, 3],
         ]
 
         screen = cds_serializers.ScreenCDS(
@@ -691,8 +692,8 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         best_seat = cine_digital_service.get_available_seat(show, screen)
         assert len(best_seat) == 1
         assert best_seat[0].seatRow == 1
-        assert best_seat[0].seatCol == 1
-        assert best_seat[0].seatNumber == "B_2"
+        assert best_seat[0].seatCol == 2
+        assert best_seat[0].seatNumber == "B_3"
 
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_return_None_if_no_seat_available(self, mocked_get_resource):
