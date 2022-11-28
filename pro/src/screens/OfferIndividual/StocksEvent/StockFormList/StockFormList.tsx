@@ -46,7 +46,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
     offer.venue.departmentCode
   )
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
-  const isSynchronized = offer.lastProvider !== null
+  const isSynchronized = Boolean(offer?.lastProvider)
   return (
     <FieldArray
       name="stocks"
@@ -56,6 +56,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
             variant={ButtonVariant.TERNARY}
             Icon={IconPlusCircle}
             onClick={() => arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)}
+            disabled={isSynchronized}
           >
             Ajouter une date
           </Button>
