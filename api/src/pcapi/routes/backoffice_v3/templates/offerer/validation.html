@@ -122,7 +122,7 @@
                                     </form>
                                 </div>
                             </td>
-                            <td>{{ offerer.requestDate | format_date("%d/%m/%Y") }}</td>
+                            <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                             <td>{{ get_last_comment_func(offerer) | empty_string_if_null }}</td>
                             <td>
                                 {% if offerer.siren %}

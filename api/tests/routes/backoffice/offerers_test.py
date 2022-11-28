@@ -1435,7 +1435,7 @@ class ListOfferersToBeValidatedTest:
         payload = response.json["data"][0]
         assert payload["id"] == user_offerer.offerer.id
         assert payload["name"] == user_offerer.offerer.name
-        assert payload["requestDate"] == "2022-10-03T12:00:00+00:00"
+        assert payload["dateCreated"] == "2022-10-03T11:59:00+00:00"
         assert payload["status"] == expected_status
         assert payload["step"] is None  # TODO
         assert payload["siren"] == user_offerer.offerer.siren
@@ -1459,58 +1459,6 @@ class ListOfferersToBeValidatedTest:
         assert payload["isTopActor"] == (tag in user_offerer.offerer.tags)
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_payload_content_rejected_and_registered_again(self, client):
-        # given
-        user_offerer = offerers_factories.UserNotValidatedOffererFactory(
-            offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59)
-        )
-        reviewer = users_factories.AdminFactory()
-        history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime(2022, 10, 3, 12, 0),
-            actionType=history_models.ActionType.OFFERER_NEW,
-            authorUser=reviewer,
-            offerer=user_offerer.offerer,
-            user=user_offerer.user,
-            comment=None,
-        )
-        history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime(2022, 10, 3, 15, 3),
-            actionType=history_models.ActionType.USER_OFFERER_REJECTED,
-            authorUser=reviewer,
-            offerer=user_offerer.offerer,
-            user=user_offerer.user,
-            comment=None,
-        )
-        history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime(2022, 10, 28, 17, 5),
-            actionType=history_models.ActionType.OFFERER_NEW,
-            authorUser=reviewer,
-            offerer=user_offerer.offerer,
-            user=user_offerer.user,
-            comment=None,
-        )
-
-        admin = users_factories.UserFactory()
-        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
-
-        # when
-        with assert_no_duplicated_queries():
-            response = client.with_explicit_token(auth_token).get(
-                url_for("backoffice_blueprint.list_offerers_to_be_validated")
-            )
-
-        # then
-        assert response.status_code == 200
-        payload = response.json["data"][0]
-        assert payload["id"] == user_offerer.offerer.id
-        assert payload["name"] == user_offerer.offerer.name
-        assert payload["requestDate"] == "2022-10-28T17:05:00+00:00"
-        assert payload["status"] == "NEW"
-        assert payload["step"] is None  # TODO
-        assert payload["lastComment"] is None
-        assert payload["isTopActor"] is False
-
-    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_payload_content_no_action(self, client):
         # given
         user_offerer = offerers_factories.UserNotValidatedOffererFactory(
@@ -1531,7 +1479,7 @@ class ListOfferersToBeValidatedTest:
         payload = response.json["data"][0]
         assert payload["id"] == user_offerer.offerer.id
         assert payload["name"] == user_offerer.offerer.name
-        assert payload["requestDate"] == "2022-10-03T11:59:00+00:00"
+        assert payload["dateCreated"] == "2022-10-03T11:59:00+00:00"
         assert payload["status"] == "NEW"
         assert payload["step"] is None  # TODO
         assert payload["lastComment"] is None
@@ -1585,45 +1533,6 @@ class ListOfferersToBeValidatedTest:
             offerer__name="C",
             offerer__dateCreated=datetime.datetime.utcnow() - datetime.timedelta(hours=2),
         ).offerer
-        reviewer = users_factories.AdminFactory()
-
-        # Add history to check sorting by requestDate
-        history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() + datetime.timedelta(hours=2),
-            actionType=history_models.ActionType.OFFERER_NEW,
-            authorUser=reviewer,
-            offerer=offerer_1,
-            comment=None,
-        )
-        history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow(),
-            actionType=history_models.ActionType.OFFERER_NEW,
-            authorUser=reviewer,
-            offerer=offerer_2,
-            comment=None,
-        )
-        # We make sure that the latest actionDate with OFFERER_NEW is the one used in the sort
-        history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() + datetime.timedelta(hours=1),
-            actionType=history_models.ActionType.OFFERER_NEW,
-            authorUser=reviewer,
-            offerer=offerer_3,
-            comment=None,
-        )
-        history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() + datetime.timedelta(hours=3),
-            actionType=history_models.ActionType.OFFERER_REJECTED,
-            authorUser=reviewer,
-            offerer=offerer_3,
-            comment=None,
-        )
-        history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() + datetime.timedelta(hours=4),
-            actionType=history_models.ActionType.OFFERER_NEW,
-            authorUser=reviewer,
-            offerer=offerer_3,
-            comment=None,
-        )
 
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
@@ -1637,19 +1546,12 @@ class ListOfferersToBeValidatedTest:
                 "backoffice_blueprint.list_offerers_to_be_validated", sort='[{"field": "dateCreated", "order": "desc"}]'
             )
         )
-        request_date_desc = client.with_explicit_token(auth_token).get(
-            url_for(
-                "backoffice_blueprint.list_offerers_to_be_validated", sort='[{"field": "requestDate", "order": "desc"}]'
-            )
-        )
 
         # then
         assert name_asc.status_code == 200
         assert [o["id"] for o in name_asc.json["data"]] == [o.id for o in (offerer_1, offerer_2, offerer_3)]
         assert creation_date_desc.status_code == 200
         assert [o["id"] for o in creation_date_desc.json["data"]] == [o.id for o in (offerer_2, offerer_1, offerer_3)]
-        assert request_date_desc.status_code == 200
-        assert [o["id"] for o in request_date_desc.json["data"]] == [o.id for o in (offerer_3, offerer_1, offerer_2)]
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     @pytest.mark.parametrize(
@@ -1681,35 +1583,11 @@ class ListOfferersToBeValidatedTest:
         assert sorted(o["name"] for o in data) == sorted(expected_offerer_names)
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_list_filtering_by_request_date(self, client):
+    def test_list_filtering_by_date(self, client):
         # given
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
-        # Created before requested range but registered again within date range:
-        user_offerer_1 = offerers_factories.UserNotValidatedOffererFactory(
-            offerer__dateCreated=datetime.datetime(2022, 11, 2, 1)
-        )
-        history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime(2022, 11, 2, 1),
-            actionType=history_models.ActionType.OFFERER_NEW,
-            authorUser=user_offerer_1.user,
-            offerer=user_offerer_1.offerer,
-            user=user_offerer_1.user,
-        )
-        history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime(2022, 11, 3, 2),
-            actionType=history_models.ActionType.OFFERER_REJECTED,
-            offerer=user_offerer_1.offerer,
-            user=user_offerer_1.user,
-        )
-        history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime(2022, 11, 5, 3),
-            actionType=history_models.ActionType.OFFERER_NEW,
-            authorUser=user_offerer_1.user,
-            offerer=user_offerer_1.offerer,
-            user=user_offerer_1.user,
-        )
         # Created before requested range, excluded from results:
         user_offerer_2 = offerers_factories.UserNotValidatedOffererFactory(
             offerer__dateCreated=datetime.datetime(2022, 11, 4, 4)
@@ -1752,9 +1630,7 @@ class ListOfferersToBeValidatedTest:
 
         # then
         assert response.status_code == 200
-        assert {o["id"] for o in response.json["data"]} == {
-            uo.offerer.id for uo in (user_offerer_1, user_offerer_3, user_offerer_4)
-        }
+        assert {o["id"] for o in response.json["data"]} == {uo.offerer.id for uo in (user_offerer_3, user_offerer_4)}
 
     @pytest.mark.parametrize(
         "dates_filter",
@@ -1765,7 +1641,7 @@ class ListOfferersToBeValidatedTest:
         ],
     )
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_list_filtering_by_invalid_request_date(self, client, dates_filter):
+    def test_list_filtering_by_invalid_date(self, client, dates_filter):
         # given
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
@@ -2395,7 +2271,9 @@ class ListUserOffererToBeValidatedTest:
             offerer__dateCreated=datetime.datetime(2022, 11, 2, 11, 30)
         )
         new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(
-            offerer=owner_user_offerer.offerer, validationStatus=validation_status
+            offerer=owner_user_offerer.offerer,
+            validationStatus=validation_status,
+            dateCreated=datetime.datetime(2022, 11, 3, 12, 0),
         )
         commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
         history_factories.ActionHistoryFactory(
@@ -2440,7 +2318,7 @@ class ListUserOffererToBeValidatedTest:
         assert payload["email"] == new_user_offerer.user.email
         assert payload["userName"] == f"{new_user_offerer.user.firstName} {new_user_offerer.user.lastName}"
         assert payload["status"] == expected_status
-        assert payload["requestDate"] == "2022-11-03T12:00:00+00:00"
+        assert payload["dateCreated"] == "2022-11-03T12:00:00+00:00"
         assert payload["lastComment"] == {
             "author": "Inspecteur Validateur",
             "content": "Bla blabla",
@@ -2459,7 +2337,10 @@ class ListUserOffererToBeValidatedTest:
         # given
         owner_user_offerer = offerers_factories.UserOffererFactory(offerer__dateCreated=datetime.datetime(2022, 11, 3))
         offerers_factories.UserOffererFactory(offerer=owner_user_offerer.offerer)  # other validated, not owner
-        new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(offerer=owner_user_offerer.offerer)
+        new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(
+            offerer=owner_user_offerer.offerer,
+            dateCreated=datetime.datetime(2022, 11, 25, 12, 34),
+        )
 
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
@@ -2478,7 +2359,7 @@ class ListUserOffererToBeValidatedTest:
         assert payload["email"] == new_user_offerer.user.email
         assert payload["userName"] == f"{new_user_offerer.user.firstName} {new_user_offerer.user.lastName}"
         assert payload["status"] == offerers_models.ValidationStatus.NEW.value
-        assert payload["requestDate"] is None
+        assert payload["dateCreated"] == "2022-11-25T12:34:00+00:00"
         assert payload["lastComment"] is None
         assert payload["phoneNumber"] == new_user_offerer.user.phoneNumber
         assert payload["offererId"] == owner_user_offerer.offerer.id

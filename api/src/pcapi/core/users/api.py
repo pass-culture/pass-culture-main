@@ -710,6 +710,11 @@ def _generate_offerer(data: dict, existing_offerer: offerers_models.Offerer | No
         offerer = offerers_models.Offerer()
     offerer.populate_from_dict(data)
 
+    # If offerer was rejected, it appears as deleted from the view. When registering again with the same SIREN, it
+    # should look like it was created again, with up-to-date data, and start a new validation process.
+    # So in any case, creation date is now:
+    offerer.dateCreated = datetime.datetime.utcnow()
+
     if not settings.IS_INTEGRATION:
         offerer.generate_validation_token()
         offerer.validationStatus = offerers_models.ValidationStatus.NEW
