@@ -4,7 +4,6 @@ import uuid
 import factory
 
 from pcapi.core.categories import subcategories
-from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
@@ -17,7 +16,7 @@ class ProductFactory(BaseFactory):
     class Meta:
         model = models.Product
 
-    subcategoryId = factory.Iterator(ALL_SUBCATEGORIES, getter=lambda s: s.id)
+    subcategoryId = subcategories.CARTE_MUSEE.id
     name = factory.Sequence("Product {}".format)
     description = factory.Sequence("A passionate description of product {}".format)
 
