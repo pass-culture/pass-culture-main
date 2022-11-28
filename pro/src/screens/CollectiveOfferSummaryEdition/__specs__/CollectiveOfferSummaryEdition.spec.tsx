@@ -124,7 +124,7 @@ describe('CollectiveOfferSummary', () => {
     )
   })
 
-  it('should display desactive offer when clicking on activate offer', async () => {
+  it('should activate offer', async () => {
     offer = collectiveOfferTemplateFactory({
       isTemplate: true,
       isActive: false,
@@ -144,31 +144,6 @@ describe('CollectiveOfferSummary', () => {
 
     const desactivateOffer = screen.getByRole('button', {
       name: 'Désactiver l’offre',
-    })
-
-    expect(desactivateOffer).toBeInTheDocument()
-  })
-
-  it('should display activate offer when clicking on desactive offer', async () => {
-    offer = collectiveOfferTemplateFactory({
-      isTemplate: true,
-      isActive: true,
-    })
-    renderCollectiveOfferSummaryEdition(offer, categories)
-    const toggle = jest
-      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
-      .mockResolvedValue()
-
-    const activateOffer = screen.getByRole('button', {
-      name: 'Désactiver l’offre',
-    })
-
-    await userEvent.click(activateOffer)
-
-    expect(toggle).toHaveBeenCalledTimes(1)
-
-    const desactivateOffer = screen.getByRole('button', {
-      name: 'Activer l’offre',
     })
 
     expect(desactivateOffer).toBeInTheDocument()
