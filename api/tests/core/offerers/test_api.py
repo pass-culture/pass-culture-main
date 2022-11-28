@@ -1439,3 +1439,35 @@ def test_get_offerer_stats_dashboard_url():
         "params": {"siren": [offerer.siren], "venueid": [str(venue.id)]},
         "exp": round(time.time()) + 600,
     }
+
+
+class CountOfferersByValidationStatusTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_get_offerer_stats(self, client):
+        # given
+        offerers_factories.UserOffererFactory(offerer__validationStatus=offerers_models.ValidationStatus.NEW)
+        offerers_factories.UserOffererFactory.create_batch(
+            2, offerer__validationStatus=offerers_models.ValidationStatus.PENDING
+        )
+        offerers_factories.UserOffererFactory.create_batch(
+            3, offerer__validationStatus=offerers_models.ValidationStatus.VALIDATED
+        )
+        offerers_factories.UserOffererFactory.create_batch(
+            4, offerer__validationStatus=offerers_models.ValidationStatus.REJECTED
+        )
+
+        # when
+        with assert_num_queries(1):
+            stats = offerers_api.count_offerers_by_validation_status()
+
+        # then
+        assert stats == {"NEW": 1, "PENDING": 2, "VALIDATED": 3, "REJECTED": 4}
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_get_offerer_stats_zero(self, client):
+        # when
+        with assert_num_queries(1):
+            stats = offerers_api.count_offerers_by_validation_status()
+
+        # then
+        assert stats == {"NEW": 0, "PENDING": 0, "VALIDATED": 0, "REJECTED": 0}
