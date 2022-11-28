@@ -117,6 +117,14 @@ class EventStockFactory(StockFactory):
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
 
 
+class CinemaStockProviderFactory(StockFactory):
+    offer = factory.SubFactory(EventOfferFactory)
+    beginningDatetime = factory.LazyFunction(
+        lambda: datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=5)
+    )
+    bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
+
+
 class StockWithActivationCodesFactory(StockFactory):
     offer = factory.SubFactory(DigitalOfferFactory)
 
