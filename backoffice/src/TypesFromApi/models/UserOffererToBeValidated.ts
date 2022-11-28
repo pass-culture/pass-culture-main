@@ -85,7 +85,7 @@ export interface UserOffererToBeValidated {
    * @type {Date}
    * @memberof UserOffererToBeValidated
    */
-  requestDate?: Date | null
+  dateCreated?: Date | null
   /**
    *
    * @type {string}
@@ -137,11 +137,11 @@ export function UserOffererToBeValidatedFromJSONTyped(
     ownerEmail: !exists(json, 'ownerEmail') ? undefined : json['ownerEmail'],
     ownerId: !exists(json, 'ownerId') ? undefined : json['ownerId'],
     phoneNumber: !exists(json, 'phoneNumber') ? undefined : json['phoneNumber'],
-    requestDate: !exists(json, 'requestDate')
+    dateCreated: !exists(json, 'dateCreated')
       ? undefined
-      : json['requestDate'] === null
+      : json['dateCreated'] === null
       ? null
-      : new Date(json['requestDate']),
+      : new Date(json['dateCreated']),
     siren: json['siren'],
     status: json['status'],
     userId: json['userId'],
@@ -168,12 +168,12 @@ export function UserOffererToBeValidatedToJSON(
     ownerEmail: value.ownerEmail,
     ownerId: value.ownerId,
     phoneNumber: value.phoneNumber,
-    requestDate:
-      value.requestDate === undefined
+    dateCreated:
+      value.dateCreated === undefined
         ? undefined
-        : value.requestDate === null
+        : value.dateCreated === null
         ? null
-        : value.requestDate.toISOString(),
+        : value.dateCreated.toISOString(),
     siren: value.siren,
     status: value.status,
     userId: value.userId,

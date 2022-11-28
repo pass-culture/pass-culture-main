@@ -46,6 +46,8 @@ class UserOffererValidationListForm(FlaskForm):
         csrf = False
 
     status = fields.PCSelectMultipleField("États", choices=utils.choices_from_enum(offerers_models.ValidationStatus))
+    from_date = fields.PCDateField("Demande à partir du", validators=(wtforms.validators.Optional(),))
+    to_date = fields.PCDateField("Demande jusqu'au", validators=(wtforms.validators.Optional(),))
 
     page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
     per_page = fields.PCSelectField(

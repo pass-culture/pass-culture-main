@@ -108,7 +108,7 @@
                                 </a>
                             </td>
                             <td>{% include "components/offerer/user_offerer_status_badge.html" %}</td>
-                            <td>{{ user_offerer.requestDate | format_date("%d/%m/%Y") }}</td>
+                            <td>{{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                             <td>{{ get_last_comment_func(offerer, user_offerer.userId) | empty_string_if_null }}</td>
                             <td>{{ user_offerer.user.phoneNumber | format_phone_number }}</td>
                             <td>
@@ -116,7 +116,7 @@
                                     {{ offerer.name | upper | escape }}
                                 </a>
                             </td>
-                            <td>{{ offerer.requestDate | format_date("%d/%m/%Y") }}</td>
+                            <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                             <td>{{ (owner and owner.email) | empty_string_if_null }}</td>
                             <td>
                                 {% if offerer.siren %}

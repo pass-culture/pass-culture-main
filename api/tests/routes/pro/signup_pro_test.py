@@ -63,6 +63,7 @@ class Returns204Test:
         assert user_offerer is not None
         assert user_offerer.validationToken is None
         assert user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
+        assert user_offerer.dateCreated is not None
 
         actions_list = history_models.ActionHistory.query.all()
         assert len(actions_list) == 1
@@ -162,11 +163,13 @@ class Returns204Test:
 
     def test_when_offerer_was_previously_rejected(self, client):
         # Given
-        offerers_factories.OffererFactory(
+        offerer = offerers_factories.OffererFactory(
             name="Rejected Offerer",
             siren=BASE_DATA_PRO["siren"],
             validationStatus=offerers_models.ValidationStatus.REJECTED,
         )
+
+        first_creation_date = offerer.dateCreated
 
         data = BASE_DATA_PRO.copy()
 
@@ -182,8 +185,10 @@ class Returns204Test:
         assert offerer.name == BASE_DATA_PRO["name"]
         assert offerer.validationToken is not None
         assert offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert offerer.dateCreated > first_creation_date
         user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).one()
         assert user_offerer.validationToken is None
+        assert user_offerer.dateCreated is not None
 
         actions_list = history_models.ActionHistory.query.all()
         assert len(actions_list) == 1
