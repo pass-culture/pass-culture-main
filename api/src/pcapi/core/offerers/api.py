@@ -404,6 +404,7 @@ def _fill_in_offerer(
     offerer.siren = offerer_informations.siren
     offerer.generate_validation_token()
     offerer.validationStatus = models.ValidationStatus.NEW
+    offerer.dateCreated = datetime.utcnow()
 
 
 def _auto_tag_new_offerer(offerer: offerers_models.Offerer, siren_info: sirene.SirenInfo) -> None:
@@ -1374,7 +1375,7 @@ def list_offerers_to_be_validated_legacy(
             min_datetime = datetime.combine(date.fromisoformat(from_date), datetime.min.time())
         except ValueError:
             raise ApiErrors({"filter": "Le format de date est invalide"})
-        query = query.filter(offerers_models.Offerer.requestDate >= min_datetime)  # type: ignore [operator]
+        query = query.filter(offerers_models.Offerer.dateCreated >= min_datetime)
 
     to_date = filter_dict.get("toDate")
     if to_date:
@@ -1382,7 +1383,7 @@ def list_offerers_to_be_validated_legacy(
             max_datetime = datetime.combine(date.fromisoformat(to_date), datetime.max.time())
         except ValueError:
             raise ApiErrors({"filter": "Le format de date est invalide"})
-        query = query.filter(offerers_models.Offerer.requestDate <= max_datetime)  # type: ignore [operator]
+        query = query.filter(offerers_models.Offerer.dateCreated <= max_datetime)
 
     return query
 
@@ -1439,11 +1440,11 @@ def list_offerers_to_be_validated(
 
     if from_date:
         min_datetime = datetime.combine(from_date, datetime.min.time())
-        query = query.filter(offerers_models.Offerer.requestDate >= min_datetime)  # type: ignore [operator]
+        query = query.filter(offerers_models.Offerer.dateCreated >= min_datetime)
 
     if to_date:
         max_datetime = datetime.combine(to_date, datetime.max.time())
-        query = query.filter(offerers_models.Offerer.requestDate <= max_datetime)  # type: ignore [operator]
+        query = query.filter(offerers_models.Offerer.dateCreated <= max_datetime)
 
     return query
 
@@ -1475,6 +1476,8 @@ def list_users_offerers_to_be_validated_legacy(filter_: list[dict[str, typing.An
 
 def list_users_offerers_to_be_validated(
     status: list[offerers_models.ValidationStatus] | None = None,
+    from_date: datetime | None = None,
+    to_date: datetime | None = None,
     **_: typing.Any,
 ) -> sa.orm.Query:
     query = offerers_models.UserOfferer.query.options(
@@ -1491,6 +1494,14 @@ def list_users_offerers_to_be_validated(
         query = query.filter(offerers_models.UserOfferer.validationStatus.in_(status))
     else:
         query = query.filter(offerers_models.UserOfferer.isWaitingForValidation)
+
+    if from_date:
+        min_datetime = datetime.combine(from_date, datetime.min.time())
+        query = query.filter(offerers_models.UserOfferer.dateCreated >= min_datetime)
+
+    if to_date:
+        max_datetime = datetime.combine(to_date, datetime.max.time())
+        query = query.filter(offerers_models.UserOfferer.dateCreated <= max_datetime)
 
     return query
 

@@ -385,7 +385,7 @@ def list_offerers_to_be_validated(
                 serialization.OffererToBeValidated(
                     id=offerer.id,
                     name=offerer.name,
-                    requestDate=format_into_utc_date(offerer.requestDate),
+                    dateCreated=format_into_utc_date(offerer.dateCreated),
                     status=_get_validation_status(offerer),
                     step=None,  # TODO
                     siren=offerer.siren,
@@ -480,12 +480,12 @@ def list_offerers_attachments_to_be_validated(
                     email=user_offerer.user.email,
                     userName=f"{user_offerer.user.firstName} {user_offerer.user.lastName}",
                     status=_get_validation_status(user_offerer),
-                    requestDate=format_into_utc_date(user_offerer.requestDate) if user_offerer.requestDate else None,
+                    dateCreated=format_into_utc_date(user_offerer.dateCreated) if user_offerer.dateCreated else None,
                     lastComment=_get_serialized_offerer_last_comment(user_offerer.offerer, user_id=user_offerer.userId),
                     phoneNumber=user_offerer.user.phoneNumber,
                     offererId=user_offerer.offerer.id,
                     offererName=user_offerer.offerer.name,
-                    offererCreatedDate=format_into_utc_date(user_offerer.offerer.requestDate),
+                    offererCreatedDate=format_into_utc_date(user_offerer.offerer.dateCreated),
                     ownerId=user_offerer.offerer.UserOfferers[0].userId if user_offerer.offerer.UserOfferers else None,
                     ownerEmail=(
                         user_offerer.offerer.UserOfferers[0].user.email if user_offerer.offerer.UserOfferers else None

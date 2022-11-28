@@ -428,7 +428,7 @@ class OfferersStatsResponseModel(BaseModel):
 class OffererToBeValidated(BaseModel):
     id: int
     name: str
-    requestDate: datetime.datetime
+    dateCreated: datetime.datetime
     status: str
     step: str | None
     siren: str | None
@@ -465,7 +465,7 @@ class UserOffererToBeValidated(BaseModel):
     email: str | None
     userName: str
     status: str
-    requestDate: datetime.datetime | None
+    dateCreated: datetime.datetime | None
     lastComment: Comment | None
     phoneNumber: str | None
     offererId: int

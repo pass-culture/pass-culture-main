@@ -464,6 +464,7 @@ class CreateOffererTest:
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is None
         assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
+        assert created_user_offerer.dateCreated is not None
 
         assert not created_user_offerer.user.has_pro_role
 
@@ -521,6 +522,7 @@ class CreateOffererTest:
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is not None
         assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert created_user_offerer.dateCreated is not None
 
         assert not created_user_offerer.user.has_pro_role
 
@@ -564,6 +566,7 @@ class CreateOffererTest:
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is not None
         assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert created_user_offerer.dateCreated is not None
 
     @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
     def test_create_new_offerer_with_validation_token_if_siren_was_previously_rejected(
@@ -580,6 +583,7 @@ class CreateOffererTest:
             siren=offerer_informations.siren,
             validationStatus=offerers_models.ValidationStatus.REJECTED,
         )
+        first_creation_date = offerer.dateCreated
 
         # When
         created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
@@ -594,10 +598,12 @@ class CreateOffererTest:
         assert created_offerer.city == offerer_informations.city
         assert created_offerer.validationToken is not None
         assert created_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert created_offerer.dateCreated > first_creation_date
 
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is None
         assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
+        assert created_user_offerer.dateCreated is not None
 
         assert not created_user_offerer.user.has_pro_role
 

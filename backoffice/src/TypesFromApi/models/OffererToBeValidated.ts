@@ -97,7 +97,7 @@ export interface OffererToBeValidated {
    * @type {Date}
    * @memberof OffererToBeValidated
    */
-  requestDate: Date
+  dateCreated: Date
   /**
    *
    * @type {string}
@@ -143,7 +143,7 @@ export function OffererToBeValidatedFromJSONTyped(
     ownerId: !exists(json, 'ownerId') ? undefined : json['ownerId'],
     phoneNumber: !exists(json, 'phoneNumber') ? undefined : json['phoneNumber'],
     postalCode: json['postalCode'],
-    requestDate: new Date(json['requestDate']),
+    dateCreated: new Date(json['dateCreated']),
     siren: !exists(json, 'siren') ? undefined : json['siren'],
     status: json['status'],
     step: !exists(json, 'step') ? undefined : json['step'],
@@ -171,7 +171,7 @@ export function OffererToBeValidatedToJSON(
     ownerId: value.ownerId,
     phoneNumber: value.phoneNumber,
     postalCode: value.postalCode,
-    requestDate: value.requestDate.toISOString(),
+    dateCreated: value.dateCreated.toISOString(),
     siren: value.siren,
     status: value.status,
     step: value.step,

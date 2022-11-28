@@ -501,54 +501,6 @@ class ListOfferersToValidateTest:
             assert rows[0]["Téléphone"] == user_offerer.offerer.UserOfferers[0].user.phoneNumber
 
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-        def test_payload_content_rejected_and_registered_again(self, authenticated_client):
-            # given
-            user_offerer = offerers_factories.UserNotValidatedOffererFactory(
-                offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59)
-            )
-            reviewer = users_factories.AdminFactory()
-            history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime(2022, 10, 3, 12, 0),
-                actionType=history_models.ActionType.OFFERER_NEW,
-                authorUser=reviewer,
-                offerer=user_offerer.offerer,
-                user=user_offerer.user,
-                comment=None,
-            )
-            history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime(2022, 10, 3, 15, 3),
-                actionType=history_models.ActionType.USER_OFFERER_REJECTED,
-                authorUser=reviewer,
-                offerer=user_offerer.offerer,
-                user=user_offerer.user,
-                comment=None,
-            )
-            history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime(2022, 10, 28, 17, 5),
-                actionType=history_models.ActionType.OFFERER_NEW,
-                authorUser=reviewer,
-                offerer=user_offerer.offerer,
-                user=user_offerer.user,
-                comment=None,
-            )
-
-            # when
-            with assert_no_duplicated_queries():
-                response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate")
-                )
-
-            # then
-            assert response.status_code == 200
-            rows = html_parser.extract_table_rows(response.data)
-            assert len(rows) == 1
-            assert rows[0]["ID"] == str(user_offerer.offerer.id)
-            assert rows[0]["Nom de la structure"] == user_offerer.offerer.name.upper()
-            assert rows[0]["État"] == "Nouvelle"
-            assert rows[0]["Date de la demande"] == "28/10/2022"
-            assert rows[0]["Dernier commentaire"] == ""
-
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_payload_content_no_action(self, authenticated_client):
             # given
             user_offerer = offerers_factories.UserNotValidatedOffererFactory(
@@ -644,32 +596,8 @@ class ListOfferersToValidateTest:
             assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
 
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-        def test_list_filtering_by_request_date(self, authenticated_client):
+        def test_list_filtering_by_date(self, authenticated_client):
             # given
-            # Created before requested range but registered again within date range:
-            user_offerer_1 = offerers_factories.UserNotValidatedOffererFactory(
-                offerer__dateCreated=datetime.datetime(2022, 11, 2, 1)
-            )
-            history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime(2022, 11, 2, 1),
-                actionType=history_models.ActionType.OFFERER_NEW,
-                authorUser=user_offerer_1.user,
-                offerer=user_offerer_1.offerer,
-                user=user_offerer_1.user,
-            )
-            history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime(2022, 11, 3, 2),
-                actionType=history_models.ActionType.OFFERER_REJECTED,
-                offerer=user_offerer_1.offerer,
-                user=user_offerer_1.user,
-            )
-            history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime(2022, 11, 5, 3),
-                actionType=history_models.ActionType.OFFERER_NEW,
-                authorUser=user_offerer_1.user,
-                offerer=user_offerer_1.offerer,
-                user=user_offerer_1.user,
-            )
             # Created before requested range, excluded from results:
             user_offerer_2 = offerers_factories.UserNotValidatedOffererFactory(
                 offerer__dateCreated=datetime.datetime(2022, 11, 4, 4)
@@ -713,10 +641,10 @@ class ListOfferersToValidateTest:
             assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             ids = [int(row["ID"]) for row in rows]
-            assert sorted(ids) == sorted(uo.offerer.id for uo in (user_offerer_1, user_offerer_3, user_offerer_4))
+            assert sorted(ids) == sorted(uo.offerer.id for uo in (user_offerer_3, user_offerer_4))
 
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-        def test_list_filtering_by_invalid_request_date(self, authenticated_client):
+        def test_list_filtering_by_invalid_date(self, authenticated_client):
             # given
 
             # when
@@ -1114,11 +1042,13 @@ class ListUserOffererToValidateTest:
     def test_payload_content(self, authenticated_client, validation_status, expected_status):
         # given
         owner_user_offerer = offerers_factories.UserOffererFactory(
-            offerer__dateCreated=datetime.datetime(2022, 11, 2, 11, 30)
+            offerer__dateCreated=datetime.datetime(2022, 11, 2, 11, 30),
+            dateCreated=datetime.datetime(2022, 11, 2, 11, 59),
         )
         new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(
             offerer=owner_user_offerer.offerer,
             validationStatus=validation_status,
+            dateCreated=datetime.datetime(2022, 11, 3, 11, 59),
             user__phoneNumber="+33612345678",
         )
         commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
@@ -1173,9 +1103,13 @@ class ListUserOffererToValidateTest:
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_payload_content_no_action(self, authenticated_client):
         # given
-        owner_user_offerer = offerers_factories.UserOffererFactory(offerer__dateCreated=datetime.datetime(2022, 11, 3))
+        owner_user_offerer = offerers_factories.UserOffererFactory(
+            offerer__dateCreated=datetime.datetime(2022, 11, 3), dateCreated=datetime.datetime(2022, 11, 24)
+        )
         offerers_factories.UserOffererFactory(offerer=owner_user_offerer.offerer)  # other validated, not owner
-        new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(offerer=owner_user_offerer.offerer)
+        new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(
+            offerer=owner_user_offerer.offerer, dateCreated=datetime.datetime(2022, 11, 25)
+        )
 
         # when
         with assert_no_duplicated_queries():
@@ -1191,7 +1125,7 @@ class ListUserOffererToValidateTest:
         assert rows[0]["Email Compte pro"] == new_user_offerer.user.email
         assert rows[0]["Nom Compte pro"] == f"{new_user_offerer.user.firstName} {new_user_offerer.user.lastName}"
         assert rows[0]["État"] == "Nouveau"
-        assert rows[0]["Date de la demande"] == ""
+        assert rows[0]["Date de la demande"] == "25/11/2022"
         assert rows[0]["Dernier commentaire"] == ""
         assert rows[0]["Tél Compte pro"] == ""
         assert rows[0]["Nom Structure"] == owner_user_offerer.offerer.name.upper()
