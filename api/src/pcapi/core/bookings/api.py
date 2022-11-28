@@ -106,6 +106,7 @@ def book_offer(
             venueId=stock.offer.venueId,
             offererId=stock.offer.venue.managingOffererId,
             status=BookingStatus.CONFIRMED,
+            depositId=beneficiary.deposit.id if beneficiary.has_active_deposit else None,  # type: ignore [union-attr]
         )
 
         booking.dateCreated = datetime.datetime.utcnow()
