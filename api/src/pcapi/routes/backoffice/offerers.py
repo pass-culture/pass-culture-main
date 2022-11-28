@@ -306,11 +306,9 @@ def remove_tag_from_offerer(offerer_id: int, tag_name: str) -> None:
 @spectree_serialize(response_model=serialization.OfferersStatsResponseModel, on_success_status=200, api=blueprint.api)
 @perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_offerers_stats() -> serialization.OfferersStatsResponseModel:
-    stats = offerers_api.get_offerers_stats()
+    stats = offerers_api.count_offerers_by_validation_status()
 
-    return serialization.OfferersStatsResponseModel(
-        data={status.name: stats.get(status, 0) for status in offerers_models.ValidationStatus}
-    )
+    return serialization.OfferersStatsResponseModel(data=stats)
 
 
 def _get_serialized_offerer_last_comment(

@@ -1,11 +1,25 @@
 {% from "offerer/edit_status_modal.html" import build_edit_status_modal with context %}
+{% macro stats_card(value, text_one, text_many) %}
+    <div class="col-3 p-2">
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="fs-2">{{ value }}</div>
+                <div class="text-muted">{{ text_many if value > 1 else text_one }}</div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
 
 {% extends "layouts/connected.html" %}
 
 {% block page %}
 <div class="pt-3 px-5">
-    <div class="d-flex justify-content-between">
-        <h2 class="fw-light">Structures à valider</h2>
+    <h2 class="fw-light">Structures à valider</h2>
+    <div class="row px-1">
+        {{ stats_card(stats["NEW"], "nouvelle structure", "nouvelles structures") }}
+        {{ stats_card(stats["PENDING"], "structure en attente", "structures en attente") }}
+        {{ stats_card(stats["VALIDATED"], "structure validée", "structures validées") }}
+        {{ stats_card(stats["REJECTED"], "structure rejetée", "structures rejetées") }}
     </div>
     <form action="{{ dst }}" method="GET" class="mb-4 mt-3">
         <div class="row">

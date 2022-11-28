@@ -206,9 +206,11 @@ class OffererToBeValidatedRow:
 
 @validate_offerer_blueprint.route("/offerer", methods=["GET"])
 def list_offerers_to_validate() -> utils.BackofficeResponse:
+    stats = offerers_api.count_offerers_by_validation_status()
+
     form = offerer_forms.OffererValidationListForm(request.args)
     if not form.validate():
-        return render_template("offerer/validation.html", rows=[], form=form), 400
+        return render_template("offerer/validation.html", rows=[], form=form, stats=stats), 400
 
     offerers = offerers_api.list_offerers_to_be_validated(**form.data)
 
@@ -229,6 +231,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
         next_pages_urls=next_pages_urls,
         is_top_actor_func=offerers_api.is_top_actor,
         get_last_comment_func=_get_serialized_offerer_last_comment,
+        stats=stats,
     )
 
 
