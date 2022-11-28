@@ -608,8 +608,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     )
   })
 
-  it.skip('should not block when submitting minimal physical offer from action bar', async () => {
-    // FIX ME: this test is broken RouteLeavingGuard shouldn't be there
+  it('should not block when submitting minimal physical offer from action bar', async () => {
     renderInformationsScreen(props, store, contextOverride)
 
     const categorySelect = screen.getByLabelText('Catégorie')

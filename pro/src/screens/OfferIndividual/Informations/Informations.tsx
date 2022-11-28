@@ -82,6 +82,7 @@ const Informations = ({
       setIsSubmittingDraft(saveDraft)
       if (Object.keys(formik.errors).length !== 0) {
         /* istanbul ignore next: DEBT, TO FIX */
+        setIsClickingFromActionBar(false)
         if (saveDraft) {
           notify.error(
             'Des informations sont nécessaires pour sauvegarder le brouillon'
@@ -93,7 +94,6 @@ const Informations = ({
         }
       }
       formik.handleSubmit()
-      setIsClickingFromActionBar(false)
     }
 
   // FIXME: find a way to test FileReader
@@ -285,6 +285,7 @@ const Informations = ({
     } else {
       formik.setErrors(payload.errors)
     }
+    setIsClickingFromActionBar(false)
   }
 
   const formik = useFormik({

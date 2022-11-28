@@ -333,10 +333,6 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
     })
     expect(api.getOffer).toHaveBeenCalledTimes(1)
-    // FIX ME: this button "Quitter" come from RouteLeavingGuard
-    // in reality it is not here (and this is expected)
-    // so it would be great if we could remove this line
-    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
     expect(
       await screen.findByText('There is the summary route content')
     ).toBeInTheDocument()
@@ -399,10 +395,6 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       withdrawalType: undefined,
     })
     expect(api.getOffer).toHaveBeenCalledTimes(1)
-    // FIX ME: this button "Quitter" come from RouteLeavingGuard
-    // in reality it is not here (and this is expected)
-    // so it would be great if we could remove this line
-    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
     expect(
       await screen.findByText('There is the summary route content')
     ).toBeInTheDocument()

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -196,18 +196,10 @@ describe('screens:StocksThing', () => {
     expect(nextButton).not.toBeDisabled()
     expect(draftButton).not.toBeDisabled()
     await userEvent.click(draftButton)
-    // FIX ME: comportement seems ok in local
-    // but impossible to reproduce here...
-    // expect(nextButton).toBeDisabled()
-    // expect(draftButton).toBeDisabled()
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
-    // FIX ME: this button "Quitter" come from RouteLeavingGuard
-    // in reality it is not here (and this is expected)
-    // so it would be great if we could remove this line
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
     expect(screen.getByText('Save draft page')).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })
@@ -222,29 +214,21 @@ describe('screens:StocksThing', () => {
       name: 'Sauvegarder le brouillon',
     })
     await userEvent.type(screen.getByLabelText('Prix'), '20')
-    // We need fireEvent here to test intermediate state of the component
-    fireEvent.click(nextButton)
-    expect(nextButton).toBeDisabled()
+    await userEvent.click(nextButton)
     expect(draftButton).toBeDisabled()
-    await waitFor(() => {
-      expect(api.upsertStocks).toHaveBeenCalledWith({
-        humanizedOfferId: 'OFFER_ID',
-        stocks: [
-          {
-            bookingLimitDatetime: null,
-            price: 20,
-            quantity: null,
-          },
-        ],
-      })
+    expect(api.upsertStocks).toHaveBeenCalledWith({
+      humanizedOfferId: 'OFFER_ID',
+      stocks: [
+        {
+          bookingLimitDatetime: null,
+          price: 20,
+          quantity: null,
+        },
+      ],
     })
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
-    // FIX ME: this button "Quitter" come from RouteLeavingGuard
-    // in reality it is not here (and this is expected)
-    // so it would be great if we could remove this line
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
     expect(screen.getByText('Next page')).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })
