@@ -124,11 +124,7 @@ describe('CollectiveOfferSummary', () => {
     )
   })
 
-<<<<<<< HEAD
   it('should activate offer', async () => {
-=======
-  it('should display desactive offer when clicking on activate offer', async () => {
->>>>>>> 71d0e3779c ((PC-18673)[PRO] feat: update wording onclick collective offers active status)
     offer = collectiveOfferTemplateFactory({
       isTemplate: true,
       isActive: false,
