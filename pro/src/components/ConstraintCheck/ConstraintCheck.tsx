@@ -28,7 +28,7 @@ export const ConstraintCheck: FunctionComponent<ConstraintCheckProps> = ({
             {constraint.description}
           </strong>
         ) : (
-          !constraint.hideDescription && constraint.description
+          constraint.showDescription && constraint.description
         )}
       </li>
     ))
