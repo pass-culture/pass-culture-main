@@ -37,10 +37,6 @@
       &.provider {
         display: flex;
         align-items: center;
-        & > img.provider-logo {
-          max-width: rem.torem(102px);
-          margin: 0 rem.torem(16px);
-        }
       }
     }
     .bi-link {
