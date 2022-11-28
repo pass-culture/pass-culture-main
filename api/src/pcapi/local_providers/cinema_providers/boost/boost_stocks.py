@@ -18,7 +18,6 @@ from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
-import pcapi.utils.date as utils_date
 
 
 class BoostStocks(LocalProvider):
@@ -106,10 +105,8 @@ class BoostStocks(LocalProvider):
 
     def fill_stock_attributes(self, stock: Stock) -> None:
         stock.offerId = cast(int, self.last_offer_id)
-
-        local_tz = utils_date.get_department_timezone(self.venue.departementCode)
-        datetime_in_utc = utils_date.local_datetime_to_default_timezone(self.showtime_details.showDate, local_tz)
-        stock.beginningDatetime = datetime_in_utc
+        # a pydantic validator has already converted the showDate to a UTC datetime
+        stock.beginningDatetime = self.showtime_details.showDate
 
         is_new_stock_to_insert = stock.id is None
         if is_new_stock_to_insert:
