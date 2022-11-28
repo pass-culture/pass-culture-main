@@ -161,18 +161,12 @@ const Summary = (
               </div>
             )
           }
-          {
-            /* istanbul ignore next: DEBT, TO FIX */
-            providerName !== null && (
-              <div className={styles['offer-preview-banner']}>
-                <SynchronizedProviderInformation providerName={providerName} />
-              </div>
-            )
-          }
+          {providerName !== null && (
+            <div className={styles['offer-preview-banner']}>
+              <SynchronizedProviderInformation providerName={providerName} />
+            </div>
+          )}
         </div>
-      )}
-      {providerName && (
-        <SynchronizedProviderInformation providerName={providerName} />
       )}
       <SummaryLayout>
         <SummaryLayout.Content>
