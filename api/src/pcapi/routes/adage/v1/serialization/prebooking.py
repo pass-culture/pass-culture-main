@@ -214,7 +214,10 @@ def get_collective_booking_status(
     ):
         return CollectiveBookingStatus.USED.value
 
-    if collective_booking.cancellationReason == CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE:
+    if collective_booking.cancellationReason in [
+        CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE,
+        CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER,
+    ]:
         return "REFUSED"
 
     return collective_booking.status.value
