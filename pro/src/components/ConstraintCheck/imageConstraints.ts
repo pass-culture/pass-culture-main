@@ -7,7 +7,7 @@ export type Constraint = {
   id: string
   description: string
   asyncValidator: FileChecker
-  hideDescription?: boolean
+  showDescription: boolean
 }
 
 export const imageConstraints = {
@@ -19,6 +19,7 @@ export const imageConstraints = {
       id: 'formats',
       description: 'Formats supportés : JPG, PNG',
       asyncValidator: isNotAnImage,
+      showDescription: true,
     }
   },
   size: (maxSize: number): Constraint => {
@@ -28,6 +29,7 @@ export const imageConstraints = {
       id: 'size',
       description: 'Poids maximal du fichier : 10 Mo',
       asyncValidator: isTooBig,
+      showDescription: true,
     }
   },
   width: (minWidth: number): Constraint => {
@@ -40,6 +42,7 @@ export const imageConstraints = {
       id: 'width',
       description: `Largeur minimale de l’image : ${minWidth} px`,
       asyncValidator: isOfPoorQuality,
+      showDescription: true,
     }
   },
   height: (minHeight?: number): Constraint => {
@@ -55,7 +58,7 @@ export const imageConstraints = {
       id: 'height',
       description: `La hauteur minimale de l’image : ${minHeight} px`,
       asyncValidator: isOfPoorQuality,
-      hideDescription: !minHeight || minHeight <= 0,
+      showDescription: minHeight !== undefined && minHeight >= 0,
     }
   },
   minRatio: (minRatio: number, orientation: OrientationEnum): Constraint => {
@@ -85,7 +88,7 @@ export const imageConstraints = {
       id: 'minRatio',
       description: `La hauteur de l'image n'est pas assez grande.`,
       asyncValidator: isRatioTooClose,
-      hideDescription: true,
+      showDescription: false,
     }
   },
 }
