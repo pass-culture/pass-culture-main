@@ -198,3 +198,7 @@ UPDATE beneficiary_fraud_review
 SET reason = ''
 WHERE reason is not null
 ;
+
+TRUNCATE TABLE activity;
+TRUNCATE TABLE user_session;
+UPDATE venue_provider SET "isActive" = false;
