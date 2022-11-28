@@ -86,6 +86,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors({ stocks: payload.errors })
     }
+    setIsClickingFromActionBar(false)
   }
 
   const onDeleteStock = async (stockValues: IStockEventFormValues) => {
@@ -117,6 +118,8 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     onSubmit,
     validationSchema: getValidationSchema(minQuantity),
     // enableReinitialize is needed to reset dirty after submit (and not block after saving a draft)
+    // mostly needed to reinitialize the form after initialValue update and so not submiting duplicated stocks
+    // when clicking multiple times on "Save draft"
     enableReinitialize: true,
   })
 
@@ -135,7 +138,8 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
           mode,
         })
       )
-      if (saveDraft && !Object.keys(formik.touched).length) {
+      if (!Object.keys(formik.touched).length) {
+        setIsClickingFromActionBar(false)
         notify.success('Brouillon sauvegardé dans la liste des offres')
       } else {
         formik.handleSubmit()
@@ -152,7 +156,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
         offerId: offer.id,
       })
-      setIsClickingFromActionBar(false)
     }
 
   const handlePreviousStep = () => {
