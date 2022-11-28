@@ -92,6 +92,30 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert refused_collective_booking.status == CollectiveBookingStatus.CANCELLED
+        assert (
+            refused_collective_booking.cancellationReason == CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
+        )
+        assert len(mails_testing.outbox) == 1
+
+    def test_refuse_collective_booking_when_confirmed(self, client: Any) -> None:
+        collective_booking = CollectiveBookingFactory(
+            status=CollectiveBookingStatus.CONFIRMED,
+            cancellationLimitDate=datetime(2022, 11, 18),
+            collectiveStock__collectiveOffer__bookingEmails=["johndoe@mail.com", "jacksmith@mail.com"],
+        )
+
+        client.with_eac_token()
+        response = client.post(f"/adage/v1/prebookings/{collective_booking.id}/refuse")
+
+        refused_collective_booking = CollectiveBooking.query.filter(
+            CollectiveBooking.id == collective_booking.id
+        ).first()
+
+        assert response.status_code == 200
+        assert refused_collective_booking.status == CollectiveBookingStatus.CANCELLED
+        assert (
+            refused_collective_booking.cancellationReason == CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER
+        )
         assert len(mails_testing.outbox) == 1
 
     @freeze_time("2022-05-05 10:00:00")
