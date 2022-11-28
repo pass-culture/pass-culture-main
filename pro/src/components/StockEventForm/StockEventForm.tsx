@@ -23,6 +23,7 @@ const StockEventForm = ({
   const { values, setFieldValue, setTouched } = useFormikContext<{
     stocks: IStockEventFormValues[]
   }>()
+
   const [showCurrencyIcon, showShowCurrencyIcon] = useState<boolean>(
     values.stocks[stockIndex].price.length > 0
   )
