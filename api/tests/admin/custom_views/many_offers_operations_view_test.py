@@ -6,6 +6,7 @@ import pytest
 
 from pcapi.admin.custom_views.many_offers_operations_view import _get_current_criteria_on_active_offers
 from pcapi.admin.custom_views.many_offers_operations_view import _get_products_compatible_status
+from pcapi.core.categories import subcategories
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.offerers.factories as offerers_factories
@@ -25,7 +26,9 @@ class ManyOffersOperationsViewTest:
     def test_search_product_from_isbn(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
-        product = offers_factories.ProductFactory(extraData={"isbn": "9783161484100"})
+        product = offers_factories.ProductFactory(
+            extraData={"isbn": "9783161484100"}, subcategoryId=subcategories.LIVRE_PAPIER.id
+        )
         offers_factories.OfferFactory(product=product, extraData={"isbn": "9783161484100"})
 
         data = dict(isbn="978-3-16-148410-0")
