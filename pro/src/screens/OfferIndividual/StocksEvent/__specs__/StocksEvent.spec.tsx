@@ -131,10 +131,14 @@ describe('screens:StocksEvent', () => {
   it('should render stock event', async () => {
     props.offer = {
       ...(offer as IOfferIndividual),
+      lastProviderName: 'Ciné Office',
       isDigital: false,
     }
 
     renderStockEventScreen({ props, storeOverride, contextValue })
+    expect(
+      screen.getByText('Offre synchronisée avec Ciné Office')
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { name: /Stock & Prix/ })
     ).toBeInTheDocument()

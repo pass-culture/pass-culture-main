@@ -106,6 +106,7 @@ describe('screens:StocksThing', () => {
         departmentCode: '75',
       } as IOfferIndividualVenue,
       stocks: [],
+      lastProviderName: 'Ciné Office',
     }
     props = {
       offer: offer as IOfferIndividual,
@@ -126,12 +127,16 @@ describe('screens:StocksThing', () => {
   })
 
   it('should render physical stock thing', async () => {
+    offer.lastProviderName = 'Ciné Office'
     props.offer = {
       ...(offer as IOfferIndividual),
       isDigital: false,
     }
 
     renderStockThingScreen({ props, storeOverride, contextValue })
+    expect(
+      screen.getByText('Offre synchronisée avec Ciné Office')
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { name: /Stock & Prix/ })
     ).toBeInTheDocument()
@@ -155,6 +160,9 @@ describe('screens:StocksThing', () => {
       isDigital: true,
     }
     renderStockThingScreen({ props, storeOverride, contextValue })
+    expect(
+      screen.getByText('Offre synchronisée avec Ciné Office')
+    ).toBeInTheDocument()
     expect(
       screen.getByText(
         /Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée. Pour ajouter des codes d’activation, veuillez passer par le menu ··· et choisir l’option correspondante./

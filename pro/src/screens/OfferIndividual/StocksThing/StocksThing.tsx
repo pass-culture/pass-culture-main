@@ -79,6 +79,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     showModal: deleteConfirmShow,
     hideModal: deleteConfirmHide,
   } = useModal()
+  /* istanbul ignore next: DEBT, TO FIX */
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
   const isSynchronized = offer.lastProvider !== null
   const providerName = offer?.lastProviderName
