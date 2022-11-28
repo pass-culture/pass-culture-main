@@ -30,7 +30,11 @@ const SynchronizedProviderInformation = ({
         className={styles['banner-provider']}
         isProvider
       >
-        <Icon alt={providerInfo.name} svg={providerInfo.icon} />
+        <Icon
+          alt={providerInfo.name}
+          svg={providerInfo.icon}
+          className="provider-logo"
+        />
         <span>{providerInfo.synchronizedOfferMessage}</span>
       </Banner>
     </div>
