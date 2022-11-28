@@ -1292,8 +1292,8 @@ def get_venue_offers_stats(venue_id: int) -> sa.engine.Row:
     return db.session.execute(offers_stats_query).one_or_none()
 
 
-def get_offerers_stats() -> dict[offerers_models.ValidationStatus, int]:
-    stats = (
+def count_offerers_by_validation_status() -> dict[str, int]:
+    stats = dict(
         offerers_models.Offerer.query.with_entities(
             offerers_models.Offerer.validationStatus,
             sa.func.count(offerers_models.Offerer.validationStatus).label("count"),
@@ -1302,7 +1302,8 @@ def get_offerers_stats() -> dict[offerers_models.ValidationStatus, int]:
         .all()
     )
 
-    return dict(stats)
+    # Ensure that the result includes every status, even if no offerer has this status
+    return {status.name: stats.get(status, 0) for status in offerers_models.ValidationStatus}
 
 
 def _filter_on_validation_status(

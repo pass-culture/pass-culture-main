@@ -748,6 +748,19 @@ class ListOfferersToValidateTest:
             else:
                 assert html_parser.count_table_rows(response.data) == 0
 
+        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+        def test_offerers_stats_are_displayed(self, authenticated_client, offerers_to_be_validated):
+            # when
+            response = authenticated_client.get(url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate"))
+
+            # then
+            assert response.status_code == 200
+            cards = html_parser.extract_cards_text(response.data)
+            assert "3 nouvelles structures" in cards
+            assert "3 structures en attente" in cards
+            assert "1 structure validée" in cards
+            assert "1 structure rejetée" in cards
+
 
 class ValidateOffererUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
     method = "post"
