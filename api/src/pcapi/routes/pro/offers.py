@@ -4,6 +4,7 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi import repository
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -114,26 +115,27 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
         )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
-        offer = offers_api.create_offer(
-            audio_disability_compliant=body.audio_disability_compliant,
-            booking_email=body.booking_email,
-            description=body.description,
-            duration_minutes=body.duration_minutes,
-            external_ticket_office_url=body.external_ticket_office_url,
-            extra_data=body.extra_data,
-            is_duo=body.is_duo,
-            is_national=body.is_national,
-            mental_disability_compliant=body.mental_disability_compliant,
-            motor_disability_compliant=body.motor_disability_compliant,
-            name=body.name,
-            subcategory_id=body.subcategory_id,
-            url=body.url,
-            venue=venue,
-            visual_disability_compliant=body.visual_disability_compliant,
-            withdrawal_delay=body.withdrawal_delay,
-            withdrawal_details=body.withdrawal_details,
-            withdrawal_type=body.withdrawal_type,
-        )
+        with repository.transaction():
+            offer = offers_api.create_offer(
+                audio_disability_compliant=body.audio_disability_compliant,
+                booking_email=body.booking_email,
+                description=body.description,
+                duration_minutes=body.duration_minutes,
+                external_ticket_office_url=body.external_ticket_office_url,
+                extra_data=body.extra_data,
+                is_duo=body.is_duo,
+                is_national=body.is_national,
+                mental_disability_compliant=body.mental_disability_compliant,
+                motor_disability_compliant=body.motor_disability_compliant,
+                name=body.name,
+                subcategory_id=body.subcategory_id,
+                url=body.url,
+                venue=venue,
+                visual_disability_compliant=body.visual_disability_compliant,
+                withdrawal_delay=body.withdrawal_delay,
+                withdrawal_details=body.withdrawal_details,
+                withdrawal_type=body.withdrawal_type,
+            )
 
     except exceptions.OfferCreationBaseException as error:
         raise ApiErrors(
