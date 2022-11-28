@@ -256,7 +256,7 @@ PASSED_STOCK_DATA: list[StockData] = [
     ),
 ]
 
-MAINLAND_INTERVENTION_AREA = [str(i) for i in chain(range(1, 95), ["2A", "2B", "mainland"]) if i != 20]
+MAINLAND_INTERVENTION_AREA = [str(i).zfill(2) for i in chain(range(1, 95), ["2A", "2B", "mainland"]) if i != 20]
 ALL_INTERVENTION_AREA = [
     *MAINLAND_INTERVENTION_AREA,
     "971",
