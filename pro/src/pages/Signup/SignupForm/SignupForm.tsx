@@ -16,6 +16,7 @@ import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import { Button, SubmitButton, TextInput, Checkbox } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { PasswordInput, SirenInput } from 'ui-kit/form'
+import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 import { removeWhitespaces } from 'utils/string'
 
 import {
@@ -198,10 +199,11 @@ const SignupForm = (): JSX.Element => {
                   />
                 </FormLayout.Row>
                 <FormLayout.Row>
-                  <TextInput
-                    label="Téléphone (utilisé uniquement par l’équipe du pass Culture)"
+                  <PhoneNumberInput
                     name="phoneNumber"
-                    placeholder="Mon numéro de téléphone"
+                    label={
+                      'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
+                    }
                   />
                 </FormLayout.Row>
                 <div className="siren-field">
