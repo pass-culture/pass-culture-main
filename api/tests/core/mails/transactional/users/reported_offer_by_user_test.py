@@ -9,6 +9,7 @@ from pcapi.core.mails.transactional.users.reported_offer_by_user import get_repo
 from pcapi.core.mails.transactional.users.reported_offer_by_user import send_email_reported_offer_by_user
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.models import Reason
+from pcapi.core.testing import override_features
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.utils.human_ids import humanize
 
@@ -44,6 +45,7 @@ class ReportedOfferByUserEmailTest:
         # Then
         assert mails_testing.outbox[0].sent_data["To"] == settings.REPORT_OFFER_EMAIL_ADDRESS
 
+    @override_features(OFFER_FORM_V3=True)
     def test_get_email_metadata(self):
 
         # Given
@@ -61,5 +63,5 @@ class ReportedOfferByUserEmailTest:
             "OFFER_ID": offer.id,
             "OFFER_NAME": offer.name,
             "REASON": "Le contenu est inapproprié",
-            "OFFER_URL": "http://localhost:3001/offre/" + f"{humanize(offer.id)}/individuel/edition",
+            "OFFER_URL": "http://localhost:3001/offre/" + f"individuelle/{humanize(offer.id)}/recapitulatif",
         }
