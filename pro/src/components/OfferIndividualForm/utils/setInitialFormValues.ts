@@ -8,7 +8,7 @@ import buildSubCategoryFields from './buildSubCategoryFields'
 
 const serializeDurationHour = (durationMinute: number): string => {
   const hours = Math.floor(durationMinute / 60)
-  const minutes = durationMinute - hours * 60
+  const minutes = (durationMinute % 60).toString().padStart(2, '0')
   return `${hours}:${minutes}`
 }
 
