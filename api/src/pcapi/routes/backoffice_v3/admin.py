@@ -31,7 +31,7 @@ def get_roles() -> utils.BackofficeResponse:
     return render_template("admin/roles.html", forms=perm_forms)
 
 
-@blueprint.backoffice_v3_web.route("/admin/roles/<int:role_id>", methods=["PATCH"])
+@blueprint.backoffice_v3_web.route("/admin/roles/<int:role_id>", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 def update_role(role_id: int) -> utils.BackofficeResponse:
     permissions = perm_api.list_permissions()

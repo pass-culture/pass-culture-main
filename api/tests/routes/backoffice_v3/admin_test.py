@@ -24,7 +24,7 @@ class UpdateRoleTest:
     class UnauthorizedTest(unauthorized_helpers.MissingCSRFHelper):
         endpoint = "backoffice_v3_web.update_role"
         endpoint_kwargs = {"role_id": 1}
-        method = "patch"
+        method = "post"
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_update_role(self, client, legit_user):
@@ -58,4 +58,4 @@ class UpdateRoleTest:
         url = url_for("backoffice_v3_web.update_role", role_id=role_to_edit.id)
 
         form["csrf_token"] = g.get("csrf_token", "")
-        return client.with_session_auth(legit_user.email).patch(url, form=form)
+        return client.with_session_auth(legit_user.email).post(url, form=form)
