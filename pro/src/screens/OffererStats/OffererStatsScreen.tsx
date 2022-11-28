@@ -3,9 +3,12 @@ import React, { useEffect, useState } from 'react'
 import { api } from 'apiClient/api'
 import PageTitle from 'components/PageTitle/PageTitle'
 import { Option } from 'core/Offers/types'
+import { ReactComponent as StatsIconGrey } from 'icons/ico-stats-grey.svg'
 import Select from 'ui-kit/form_raw/Select'
 import Titles from 'ui-kit/Titles/Titles'
 import { sortByDisplayName } from 'utils/strings'
+
+import OffererStatsNoResult from '../../components/OffererStatsNoResult'
 
 import styles from './OffererStatsScreen.module.scss'
 
@@ -20,7 +23,6 @@ const OffererStatsScreen = ({ offererOptions }: IOffererStatsScreenProps) => {
   )
   const [selectedVenueId, setSelectedVenueId] = useState('')
   const [venueOptions, setVenueOptions] = useState<Option[]>([])
-
   const ALL_VENUES_OPTION = {
     id: 'all',
     displayName: 'Tous les lieux',
@@ -38,21 +40,20 @@ const OffererStatsScreen = ({ offererOptions }: IOffererStatsScreenProps) => {
   useEffect(() => {
     api.getOfferer(selectedOffererId).then(offerer => {
       if (offerer.managedVenues) {
-        setVenueOptions([
-          ALL_VENUES_OPTION,
-          ...sortByDisplayName(
-            offerer.managedVenues
-              .filter(
-                venue =>
-                  offerer.hasDigitalVenueAtLeastOneOffer || !venue.isVirtual
-              )
-              .map(venue => ({
-                id: venue.id,
-                displayName: venue.publicName || venue.name,
-              }))
-          ),
-        ])
-        setSelectedVenueId(ALL_VENUES_OPTION.id)
+        const sortedVenueOptions = sortByDisplayName(
+          offerer.managedVenues
+            .filter(
+              venue =>
+                offerer.hasDigitalVenueAtLeastOneOffer || !venue.isVirtual
+            )
+            .map(venue => ({
+              id: venue.id,
+              displayName: venue.publicName || venue.name,
+            }))
+        )
+        setVenueOptions([ALL_VENUES_OPTION, ...sortedVenueOptions])
+
+        setSelectedVenueId(sortedVenueOptions[0].id)
       } else {
         setVenueOptions([])
       }
@@ -93,7 +94,7 @@ const OffererStatsScreen = ({ offererOptions }: IOffererStatsScreenProps) => {
         isDisabled={offererOptions.length <= 1}
         className={styles['offerer-stats-select-offerer']}
       />
-      {venueOptions.length > 0 && iframeUrl && (
+      {venueOptions.length > 0 && iframeUrl ? (
         <>
           <Select
             handleSelection={handleChangeVenue}
@@ -112,6 +113,15 @@ const OffererStatsScreen = ({ offererOptions }: IOffererStatsScreenProps) => {
             />
           </div>
         </>
+      ) : (
+        <OffererStatsNoResult
+          extraClassName={styles['no-result-section']}
+          title={'Aucune donnée à afficher'}
+          subtitle={
+            'Vos données statistiques s’afficheront dès la première réservation.'
+          }
+          icon={<StatsIconGrey />}
+        />
       )}
     </div>
   )
