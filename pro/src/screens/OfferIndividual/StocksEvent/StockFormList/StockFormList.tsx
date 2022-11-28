@@ -7,9 +7,10 @@ import {
   IStockEventFormValues,
   STOCK_EVENT_FORM_DEFAULT_VALUES,
 } from 'components/StockEventForm'
-import { StockThingFormRow } from 'components/StockThingFormRow'
-import { isOfferDisabled } from 'core/Offers'
+import { StockEventFormRow } from 'components/StockEventFormRow'
+import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
+import { useOfferWizardMode } from 'hooks'
 import { useModal } from 'hooks/useModal'
 import { IconPlusCircle } from 'icons'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
@@ -32,6 +33,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
     showModal: deleteConfirmShow,
     hideModal: deleteConfirmHide,
   } = useModal()
+  const mode = useOfferWizardMode()
   const [deletingStockData, setDeletingStockDate] = useState<{
     deletingStock: IStockEventFormValues
     deletingIndex: number
@@ -60,8 +62,8 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
 
           <div className={styles['form-list']}>
             {values.stocks.map((stockValues: IStockEventFormValues, index) => (
-              <StockThingFormRow
-                key={index}
+              <StockEventFormRow
+                stockIndex={index}
                 Form={
                   <StockEventForm
                     today={today}
@@ -96,6 +98,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
                   },
                 ]}
                 actionDisabled={false}
+                showStockInfo={mode === OFFER_WIZARD_MODE.EDITION}
               />
             ))}
           </div>
