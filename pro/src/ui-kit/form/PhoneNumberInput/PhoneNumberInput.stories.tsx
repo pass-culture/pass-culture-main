@@ -25,3 +25,9 @@ WithInitialValue.args = {
   name: 'phone',
   initialValues: { phone: '06 94 20 12 34' },
 }
+
+export const WithCustomLabel = Template.bind({})
+WithCustomLabel.args = {
+  name: 'phone',
+  label: 'Custom label for my field',
+}
