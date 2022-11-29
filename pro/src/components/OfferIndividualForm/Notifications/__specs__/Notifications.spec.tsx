@@ -11,14 +11,16 @@ import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { configureTestStore } from 'store/testUtils'
 import { SubmitButton } from 'ui-kit'
 
-import Notifications from '../Notifications'
+import Notifications, { INotifications } from '../Notifications'
 import validationSchema from '../validationSchema'
 
 const renderNotifications = ({
+  props,
   initialValues,
   onSubmit = jest.fn(),
   venueBookingEmail,
 }: {
+  props?: INotifications
   initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
   venueBookingEmail?: string | null
@@ -39,7 +41,7 @@ const renderNotifications = ({
         validationSchema={yup.object().shape(validationSchema)}
       >
         <Form>
-          <Notifications venueBookingEmail={venueBookingEmail} />
+          <Notifications {...props} venueBookingEmail={venueBookingEmail} />
           <SubmitButton className="primary-button" isLoading={false}>
             Submit
           </SubmitButton>
@@ -175,5 +177,40 @@ describe('OfferIndividual section: Notifications', () => {
     expect(
       await screen.findByText('Veuillez renseigner un e-mail valide')
     ).toBeInTheDocument()
+  })
+
+  it('should disable read only fields', () => {
+    const props = {
+      readOnlyFields: ['receiveNotificationEmails'],
+    }
+    renderNotifications({
+      props,
+      initialValues,
+      onSubmit,
+    })
+
+    expect(
+      screen.getByLabelText('Être notifié par e-mail des réservations')
+    ).toBeDisabled()
+  })
+
+  it('should disable bookingEmail read only fields', async () => {
+    const props = {
+      readOnlyFields: ['bookingEmail'],
+    }
+
+    renderNotifications({
+      props,
+      initialValues,
+      onSubmit,
+    })
+
+    await userEvent.click(
+      screen.getByText('Être notifié par e-mail des réservations')
+    )
+
+    expect(
+      screen.getByLabelText('E-mail auquel envoyer les notifications')
+    ).toBeDisabled()
   })
 })

@@ -271,4 +271,17 @@ describe('OfferIndividual section: venue', () => {
       ).not.toBeInTheDocument()
     })
   })
+
+  it('should disable read only fields', () => {
+    props.readOnlyFields = ['venueId', 'offererId']
+
+    renderVenue({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
+    expect(screen.getByLabelText('Structure')).toBeDisabled()
+    expect(screen.getByLabelText('Lieu')).toBeDisabled()
+  })
 })

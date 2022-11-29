@@ -56,9 +56,10 @@ describe('setFormReadOnlyFields', () => {
     }
   )
 
-  it('should allow edition of "isDuo" for allocine sychronised offers', () => {
+  it('should allow edition of "isDuo" "accessibility" and "externalTicketOfficeUrl" for allocine sychronised offers', () => {
     const expectedReadOnlyFields = Object.keys(FORM_DEFAULT_VALUES).filter(
-      (field: string) => field !== 'isDuo'
+      (field: string) =>
+        !['accessibility', 'externalTicketOfficeUrl', 'isDuo'].includes(field)
     )
     const offer = {
       lastProvider: {

@@ -33,6 +33,7 @@ const BaseCheckbox = ({
         className={cn(styles['base-checkbox-input'], {
           [styles['has-error']]: hasError,
         })}
+        data-testid={'checkbox'}
       />
       {!!Icon && (
         <span className={styles['base-checkbox-icon']}>

@@ -9,11 +9,15 @@ import { IOfferIndividualFormValues } from '../types'
 
 import { NOTIFICATIONS_DEFAULT_VALUES } from './constants'
 
-interface INotifications {
+export interface INotifications {
   venueBookingEmail?: string | null
+  readOnlyFields?: string[]
 }
 
-const Notifications = ({ venueBookingEmail }: INotifications): JSX.Element => {
+const Notifications = ({
+  readOnlyFields,
+  venueBookingEmail,
+}: INotifications): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const {
     values: { receiveNotificationEmails, bookingEmail },
@@ -37,6 +41,7 @@ const Notifications = ({ venueBookingEmail }: INotifications): JSX.Element => {
           name="receiveNotificationEmails"
           value=""
           hideFooter={receiveNotificationEmails}
+          disabled={readOnlyFields?.includes('receiveNotificationEmails')}
         />
       </FormLayout.Row>
 
@@ -47,6 +52,7 @@ const Notifications = ({ venueBookingEmail }: INotifications): JSX.Element => {
             maxLength={90}
             name="bookingEmail"
             placeholder="email@exemple.com"
+            disabled={readOnlyFields?.includes('bookingEmail')}
           />
         </FormLayout.Row>
       )}

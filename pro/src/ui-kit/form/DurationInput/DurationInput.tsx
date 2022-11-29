@@ -10,6 +10,7 @@ export interface IDurationInputProps {
   name: string
   isOptional?: boolean
   className?: string
+  disabled?: boolean
 }
 
 const DurationInput = ({
@@ -17,6 +18,7 @@ const DurationInput = ({
   name,
   isOptional = false,
   className,
+  disabled,
   ...props
 }: IDurationInputProps): JSX.Element => {
   const [field, , helpers] = useField({ name })
@@ -47,6 +49,7 @@ const DurationInput = ({
       className={className}
       isOptional={isOptional}
       placeholder="HH:MM"
+      disabled={disabled}
       {...props}
     />
   )

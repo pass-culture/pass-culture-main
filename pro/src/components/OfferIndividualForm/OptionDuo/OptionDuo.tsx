@@ -6,7 +6,11 @@ import { Checkbox } from 'ui-kit'
 
 import { IOfferIndividualFormValues } from '../types'
 
-const OptionDuo = (): JSX.Element | null => {
+export interface IOptionDuo {
+  readOnlyFields?: string[]
+}
+
+const OptionDuo = ({ readOnlyFields }: IOptionDuo): JSX.Element | null => {
   const {
     values: { subCategoryFields },
   } = useFormikContext<IOfferIndividualFormValues>()
@@ -23,6 +27,7 @@ const OptionDuo = (): JSX.Element | null => {
           description="En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l‘accompagnateur."
           name="isDuo"
           hideFooter
+          disabled={readOnlyFields?.includes('isDuo')}
         />
       </FormLayout.Row>
     </FormLayout.Section>
