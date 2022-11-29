@@ -13,7 +13,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.factories import CDSCinemaDetailsFactory
-from pcapi.core.providers.factories import CinemaProviderPivotFactory
+from pcapi.core.providers.factories import CDSCinemaProviderPivotFactory
 from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.models import Provider
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
@@ -32,7 +32,7 @@ class CDSStocksTest:
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         venue_provider = VenueProviderFactory(provider=cds_provider)
-        cinema_provider_pivot = CinemaProviderPivotFactory(
+        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
@@ -89,7 +89,7 @@ class CDSStocksTest:
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         venue_provider = VenueProviderFactory(provider=cds_provider)
-        cinema_provider_pivot = CinemaProviderPivotFactory(
+        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
@@ -175,7 +175,7 @@ class CDSStocksTest:
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         venue_provider = VenueProviderFactory(provider=cds_provider)
-        cinema_provider_pivot = CinemaProviderPivotFactory(
+        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
@@ -245,7 +245,7 @@ class CDSStocksTest:
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         venue_provider = VenueProviderFactory(provider=cds_provider)
-        cinema_provider_pivot = CinemaProviderPivotFactory(
+        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
@@ -326,7 +326,7 @@ class CDSStocksTest:
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         venue_provider = VenueProviderFactory(provider=cds_provider, isDuoOffers=True)
-        cinema_provider_pivot = CinemaProviderPivotFactory(
+        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
@@ -448,7 +448,7 @@ class CDSStocksTest:
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         venue_provider = VenueProviderFactory(provider=cds_provider, isDuoOffers=True)
-        cinema_provider_pivot = CinemaProviderPivotFactory(
+        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
@@ -547,7 +547,7 @@ class CDSStocksQuantityTest:
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         cds_venue_provider = VenueProviderFactory(provider=cds_provider)
-        cinema_provider_pivot = CinemaProviderPivotFactory(
+        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
             venue=cds_venue_provider.venue, idAtProvider=cds_venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)

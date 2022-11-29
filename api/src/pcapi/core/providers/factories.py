@@ -6,6 +6,7 @@ import secrets
 import factory
 
 from pcapi.core.offerers.factories import VenueFactory
+import pcapi.core.providers.repository as providers_repository
 from pcapi.core.testing import BaseFactory
 
 from . import models
@@ -74,11 +75,25 @@ class CinemaProviderPivotFactory(BaseFactory):
     idAtProvider = factory.Sequence("idProvider{}".format)
 
 
+class BoostCinemaProviderPivotFactory(CinemaProviderPivotFactory):
+    class Meta:
+        sqlalchemy_get_or_create = ["provider"]
+
+    provider = factory.LazyFunction(lambda: providers_repository.get_provider_by_local_class("BoostStocks"))
+
+
+class CDSCinemaProviderPivotFactory(CinemaProviderPivotFactory):
+    class Meta:
+        sqlalchemy_get_or_create = ["provider"]
+
+    provider = factory.LazyFunction(lambda: providers_repository.get_provider_by_local_class("CDSStocks"))
+
+
 class CDSCinemaDetailsFactory(BaseFactory):
     class Meta:
         model = models.CDSCinemaDetails
 
-    cinemaProviderPivot = factory.SubFactory(CinemaProviderPivotFactory)
+    cinemaProviderPivot = factory.SubFactory(CDSCinemaProviderPivotFactory)
     cinemaApiToken = factory.LazyFunction(secrets.token_urlsafe)
     accountId = factory.Sequence("account{}".format)
 
@@ -87,7 +102,7 @@ class BoostCinemaDetailsFactory(BaseFactory):
     class Meta:
         model = models.BoostCinemaDetails
 
-    cinemaProviderPivot = factory.SubFactory(CinemaProviderPivotFactory)
+    cinemaProviderPivot = factory.SubFactory(BoostCinemaProviderPivotFactory)
     cinemaUrl = factory.Sequence("https://cinema-{}.example.com/".format)
     username = "pass_culture"
     password = "a great password"

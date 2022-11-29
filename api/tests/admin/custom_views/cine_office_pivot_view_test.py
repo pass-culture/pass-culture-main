@@ -37,6 +37,29 @@ class CreateCineOfficePivotTest:
         assert cds_cinema_details.accountId == "account_test"
         assert cds_cinema_details.cinemaApiToken == "token_test"
 
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_id_at_provider_unicity(self, _mocked_validate_csrf_token, app):
+        AdminFactory(email="user@example.com")
+        venue = offerers_factories.VenueFactory()
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        _cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue, provider=cds_provider, idAtProvider="cinema_test"
+        )
+
+        data = {
+            "venue_id": venue.id,
+            "account_id": "account_test",
+            "cinema_id": "cinema_test",
+            "api_token": "token_test",
+        }
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post("/pc/back-office/cine-office/new", form=data)
+
+        assert response.status_code == 200
+        assert "Cet identifiant cinéma existe déjà pour un autre lieu" in response.data.decode("utf8")
+        assert providers_models.CinemaProviderPivot.query.count() == 1
+
 
 class EditCineOfficePivotTest:
     @clean_database
