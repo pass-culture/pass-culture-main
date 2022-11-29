@@ -13,6 +13,9 @@
     justify-content: space-between;
     align-items: center;
     white-space: nowrap;
+    &.label-hidden {
+      display: none;
+    }
   }
 
   &-small-label &-label {
@@ -46,7 +49,7 @@
   }
 
   &-footer {
-    @include formsM.field-layout-footer()
+    @include formsM.field-layout-footer();
   }
 
   &-error {

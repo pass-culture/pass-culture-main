@@ -52,6 +52,7 @@ const StockEventForm = ({
         smallLabel
         name={`stocks[${stockIndex}]beginningDate`}
         label="Date"
+        isLabelHidden={stockIndex !== 0}
         className={styles['field-layout-align-self']}
         classNameFooter={styles['field-layout-footer']}
         minDateTime={today}
@@ -62,6 +63,7 @@ const StockEventForm = ({
       <TimePicker
         smallLabel
         label="Horaire"
+        isLabelHidden={stockIndex !== 0}
         className={cn(
           styles['input-beginning-time'],
           styles['field-layout-align-self']
@@ -74,6 +76,7 @@ const StockEventForm = ({
         smallLabel
         name={`stocks[${stockIndex}]price`}
         label="Prix"
+        isLabelHidden={stockIndex !== 0}
         className={cn(styles['input-price'], styles['field-layout-align-self'])}
         placeholder="Ex: 20€"
         classNameFooter={styles['field-layout-footer']}
@@ -84,6 +87,7 @@ const StockEventForm = ({
         smallLabel
         name={`stocks[${stockIndex}]bookingLimitDatetime`}
         label="Date limite de réservation"
+        isLabelHidden={stockIndex !== 0}
         className={cn(
           styles['input-bookingLimitDatetime'],
           styles['field-layout-align-self']
@@ -98,6 +102,7 @@ const StockEventForm = ({
         smallLabel
         name={`stocks[${stockIndex}]quantity`}
         label="Quantité"
+        isLabelHidden={stockIndex !== 0}
         placeholder="Illimité"
         className={cn(
           styles['input-quantity'],

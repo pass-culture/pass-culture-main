@@ -28,7 +28,7 @@ const StockEventFormRow = ({
       {showStockInfo && (
         <StockEventFormInfo
           className={styles['stock-form-info']}
-          index={stockIndex}
+          stockIndex={stockIndex}
         />
       )}
 
