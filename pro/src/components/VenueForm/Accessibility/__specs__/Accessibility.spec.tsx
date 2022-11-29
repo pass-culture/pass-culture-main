@@ -42,6 +42,7 @@ describe('Accessibility', () => {
 
   beforeEach(() => {
     initialValues = {
+      isVenueVirtual: false,
       accessibility: {
         [AccessiblityEnum.VISUAL]: false,
         [AccessiblityEnum.MENTAL]: false,
@@ -89,6 +90,7 @@ describe('Accessibility', () => {
 
     expect(onSubmit).toHaveBeenCalledWith(
       {
+        isVenueVirtual: false,
         accessibility: {
           audio: false,
           mental: false,
@@ -142,7 +144,7 @@ describe('Accessibility', () => {
     expect(checkboxNone).not.toBeChecked()
   })
 
-  it('should display an error on submit if accessibility is empty', async () => {
+  it('should display an error on submit if accessibility is empty for non virtual venues', async () => {
     await renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
 
     // tab to focus the first accessibility checkbox
@@ -155,6 +157,22 @@ describe('Accessibility', () => {
         'Veuillez sélectionner au moins un critère d’accessibilité'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should not display an error on submit if accessibility is empty for virtual venues', async () => {
+    initialValues.isVenueVirtual = true
+    await renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
+
+    // tab to focus the first accessibility checkbox
+    // then the form is touched and errors will be displayed.
+    await userEvent.tab()
+    await userEvent.click(await screen.findByRole('button', { name: 'Submit' }))
+
+    expect(
+      screen.queryByText(
+        'Veuillez sélectionner au moins un critère d’accessibilité'
+      )
+    ).not.toBeInTheDocument()
   })
 
   it('should display apply accessibility to all offer when its venue edition and accessibility has changed', async () => {

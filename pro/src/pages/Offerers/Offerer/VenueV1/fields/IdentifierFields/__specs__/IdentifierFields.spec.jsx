@@ -46,7 +46,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       isCreatedEntity: false,
       isDirtyFieldBookingEmail: false,
       readOnly: true,
-      venueIsVirtual: false,
+      isVenueVirtual: false,
       venueLabelId: null,
       venueTypeCode: null,
 
@@ -100,7 +100,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         initialSiret: '12345678912345',
         isCreatedEntity: false,
         isDirtyFieldBookingEmail: false,
-        venueIsVirtual: false,
+        isVenueVirtual: false,
         venueTypeCode: 'OTHER_TYPE_ID',
         venueLabelId: 'OTHER_LABEL_ID',
       }
@@ -188,7 +188,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         formSiret: null,
         initialSiret: null,
         isDirtyFieldBookingEmail: false,
-        venueIsVirtual: false,
+        isVenueVirtual: false,
         venueLabelId: null,
         venueTypeCode: null,
       }
@@ -262,7 +262,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         formSiret: '00000000000027',
         initialSiret: '00000000000027',
         isDirtyFieldBookingEmail: false,
-        venueIsVirtual: false,
+        isVenueVirtual: false,
         venueLabelId: null,
         venueTypeCode: null,
       }

@@ -38,6 +38,7 @@ interface IVenueForm {
   provider?: IProviders[]
   venueProvider?: VenueProviderResponse[]
   venue?: IVenue
+  initialIsVirtual?: boolean
 }
 
 const VenueForm = ({
@@ -49,6 +50,7 @@ const VenueForm = ({
   provider,
   venueProvider,
   venue,
+  initialIsVirtual = false,
 }: IVenueForm) => {
   const {
     isSubmitting,
@@ -87,18 +89,22 @@ const VenueForm = ({
     <div>
       <FormLayout fullWidthActions>
         <FormLayout.MandatoryInfo />
-        {!isCreatingVenue && provider && venueProvider && venue && (
-          <OffersSynchronization
-            provider={provider}
-            venueProvider={venueProvider}
-            venue={venue}
-          />
-        )}
+        {!isCreatingVenue &&
+          !initialIsVirtual &&
+          provider &&
+          venueProvider &&
+          venue && (
+            <OffersSynchronization
+              provider={provider}
+              venueProvider={venueProvider}
+              venue={venue}
+            />
+          )}
         <Informations
           isCreatedEntity={isCreatingVenue}
           readOnly={!isCreatingVenue}
           updateIsSiretValued={updateIsSiretValued}
-          venueIsVirtual={false}
+          isVenueVirtual={initialIsVirtual}
           setIsSiretValued={setIsSiretValued}
           siren={offerer.siren}
         />
@@ -106,15 +112,25 @@ const VenueForm = ({
           /* istanbul ignore next: DEBT, TO FIX */
           !!shouldDisplayImageVenueUploaderSection && <ImageUploaderVenue />
         }
-        <Address />
-        <Activity venueTypes={venueTypes} venueLabels={venueLabels} />
-        <Accessibility isCreatingVenue={isCreatingVenue} />
-        <WithdrawalDetails isCreatedEntity={isCreatingVenue} />
-        <Contact />
-        {canOffererCreateCollectiveOffer &&
-          ((isCreatingVenue && isSiretValued) || !isCreatingVenue) && (
-            <EACInformation isCreatingVenue={isCreatingVenue} venue={venue} />
-          )}
+        {!initialIsVirtual && <Address />}
+        <Activity
+          venueTypes={venueTypes}
+          venueLabels={venueLabels}
+          isVenueVirtual={initialIsVirtual}
+        />
+        {!initialIsVirtual && (
+          <>
+            <Accessibility isCreatingVenue={isCreatingVenue} />
+            <WithdrawalDetails isCreatedEntity={isCreatingVenue} />
+          </>
+        )}
+        <Contact isVenueVirtual={initialIsVirtual} />
+        {
+          /* istanbul ignore next: DEBT, TO FIX */ canOffererCreateCollectiveOffer &&
+            ((isCreatingVenue && isSiretValued) || !isCreatingVenue) && (
+              <EACInformation isCreatingVenue={isCreatingVenue} venue={venue} />
+            )
+        }
         {!isCreatingVenue && venue && (
           <ReimbursementFields
             offerer={offerer}
