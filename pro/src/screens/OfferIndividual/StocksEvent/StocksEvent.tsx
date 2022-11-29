@@ -24,6 +24,8 @@ import { useNavigate, useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
+import { getToday } from 'utils/date'
+import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
 import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
@@ -108,24 +110,26 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         )
   }
 
-  let minQuantity = null
-  // validation is test in getValidationSchema
-  // and it's not possible as is to test it here
-  /* istanbul ignore next: DEBT, TO FIX */
-  if (offer.stocks.length > 0) {
-    minQuantity = offer.stocks[0].bookingsQuantity
-  }
-  const initialValues = buildInitialValues(offer)
+  const today = getLocalDepartementDateTimeFromUtc(
+    getToday(),
+    offer.venue.departmentCode
+  )
+  const initialValues = buildInitialValues({
+    departmentCode: offer.venue.departmentCode,
+    offerStocks: offer.stocks,
+    today,
+    lastProviderName: offer.lastProviderName,
+    offerStatus: offer.status,
+  })
   const formik = useFormik<{ stocks: IStockEventFormValues[] }>({
     initialValues,
     onSubmit,
-    validationSchema: getValidationSchema(minQuantity),
     // enableReinitialize is needed to reset dirty after submit (and not block after saving a draft)
     // mostly needed to reinitialize the form after initialValue update and so not submiting duplicated stocks
     // when clicking multiple times on "Save draft"
+    validationSchema: getValidationSchema(),
     enableReinitialize: true,
   })
-
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     () => {

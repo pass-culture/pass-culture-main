@@ -85,6 +85,7 @@ const TemplateWithInitialValues: ComponentStory<typeof StockEventForm> =
       ),
       quantity: '10',
       isDeletable: true,
+      readOnlyFields: [],
     },
   })
 
@@ -93,14 +94,31 @@ WithInitialValues.args = {
   today,
 }
 
-export const Disabled = TemplateWithInitialValues.bind({})
+const TemplateDisabled: ComponentStory<typeof StockEventForm> =
+  renderStockEventForm({
+    initialValues: {
+      beginningDate: new Date(),
+      beginningTime: today,
+      stockId: 'STOCK_ID',
+      remainingQuantity: '7',
+      bookingsQuantity: '5',
+      price: '5',
+      bookingLimitDatetime: getLocalDepartementDateTimeFromUtc(
+        new Date().toISOString(),
+        '75'
+      ),
+      quantity: '10',
+      isDeletable: true,
+      readOnlyFields: [
+        'eventDatetime',
+        'eventTime',
+        'price',
+        'bookingLimitDatetime',
+        'quantity',
+      ],
+    },
+  })
+export const Disabled = TemplateDisabled.bind({})
 Disabled.args = {
-  readOnlyFields: [
-    'eventDatetime',
-    'eventTime',
-    'price',
-    'bookingLimitDatetime',
-    'quantity',
-  ],
   today,
 }

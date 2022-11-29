@@ -107,6 +107,7 @@ describe('screens:StocksEvent:Edition', () => {
     offer = {
       id: 'OFFER_ID',
       lastProvider: null,
+      lastProviderName: null,
       venue: {
         departmentCode: '75',
       } as IOfferIndividualVenue,

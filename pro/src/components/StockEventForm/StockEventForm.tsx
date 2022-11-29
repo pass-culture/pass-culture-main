@@ -12,29 +12,29 @@ import { IStockEventFormValues } from './types'
 
 export interface IStockEventFormProps {
   today: Date
-  readOnlyFields?: string[]
   stockIndex: number
 }
 
 const StockEventForm = ({
   today,
-  readOnlyFields = [],
   stockIndex,
 }: IStockEventFormProps): JSX.Element => {
   const { values, setFieldValue, setTouched } = useFormikContext<{
     stocks: IStockEventFormValues[]
   }>()
 
+  const stockFormValues = values.stocks[stockIndex]
+  const { readOnlyFields } = stockFormValues
+
   const [showCurrencyIcon, showShowCurrencyIcon] = useState<boolean>(
-    values.stocks[stockIndex].price.length > 0
+    stockFormValues.price.length > 0
   )
   useEffect(() => {
-    showShowCurrencyIcon(values.stocks[stockIndex].price.length > 0)
-  }, [values.stocks[stockIndex].price])
+    showShowCurrencyIcon(stockFormValues.price.length > 0)
+  }, [stockFormValues.price])
 
   const onChangeBeginningDate = (_name: string, date: Date | null) => {
-    const stockBookingLimitDatetime =
-      values.stocks[stockIndex].bookingLimitDatetime
+    const stockBookingLimitDatetime = stockFormValues.bookingLimitDatetime
     if (stockBookingLimitDatetime === null) {
       return
     }
@@ -45,7 +45,7 @@ const StockEventForm = ({
       setFieldValue(`stocks[${stockIndex}]bookingLimitDatetime`, date)
     }
   }
-  const beginningDate = values.stocks[stockIndex].beginningDate
+  const beginningDate = stockFormValues.beginningDate
 
   return (
     <>

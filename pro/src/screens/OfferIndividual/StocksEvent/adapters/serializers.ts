@@ -20,15 +20,21 @@ const serializeBookingLimitDatetime = (
   )
 }
 
+const buildDateTime = (date: Date, time: Date) =>
+  set(date, {
+    hours: time.getHours(),
+    minutes: time.getMinutes(),
+  })
+
 export const serializeBeginningDateTime = (
   beginningDate: Date,
   beginningTime: Date,
   departementCode: string
 ): string => {
-  const beginningDateTimeInDepartementTimezone = set(beginningDate, {
-    hours: beginningTime.getHours(),
-    minutes: beginningTime.getMinutes(),
-  })
+  const beginningDateTimeInDepartementTimezone = buildDateTime(
+    beginningDate,
+    beginningTime
+  )
   const beginningDateTimeInUTCTimezone = getUtcDateTimeFromLocalDepartement(
     beginningDateTimeInDepartementTimezone,
     departementCode
@@ -78,10 +84,16 @@ export const serializeStockEventList = (
 ): StockCreationBodyModel[] | StockEditionBodyModel[] => {
   const today = getToday()
   return formValuesList
-    .filter(
-      stockFormValues =>
-        !stockFormValues.beginningDate || stockFormValues.beginningDate >= today
-    )
+    .filter(stockFormValues => {
+      const beginingDatetime =
+        stockFormValues.beginningDate && stockFormValues.beginningTime
+          ? buildDateTime(
+              stockFormValues.beginningDate,
+              stockFormValues.beginningTime
+            )
+          : null
+      return beginingDatetime === null || beginingDatetime >= today
+    })
     .map((formValues: IStockEventFormValues) =>
       serializeStockEvent(formValues, departementCode)
     )
