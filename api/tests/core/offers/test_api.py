@@ -67,43 +67,6 @@ class CreateStockTest:
         assert created_stock.price == 10
         assert created_stock.quantity == 7
 
-    def test_draft_offer_validation(self):
-        api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
-        draft_approvable_offer = factories.OfferFactory(
-            name="a great offer", validation=models.OfferValidationStatus.DRAFT
-        )
-
-        api.create_stock(offer=draft_approvable_offer, price=10, quantity=7)
-
-        assert draft_approvable_offer.validation == models.OfferValidationStatus.DRAFT
-        assert draft_approvable_offer.isActive
-        assert draft_approvable_offer.lastValidationDate == None
-        assert draft_approvable_offer.lastValidationType == OfferValidationType.AUTO
-
-    def test_draft_suspicious_offer_validation(self):
-        api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
-        draft_suspicious_offer = factories.OfferFactory(
-            name="a great offer", validation=models.OfferValidationStatus.DRAFT
-        )
-
-        api.create_stock(offer=draft_suspicious_offer, price=10, quantity=7)
-
-        assert draft_suspicious_offer.validation == models.OfferValidationStatus.DRAFT
-        assert draft_suspicious_offer.isActive
-        assert draft_suspicious_offer.lastValidationDate == None
-        assert draft_suspicious_offer.lastValidationType == OfferValidationType.AUTO
-
-    def test_approved_offer_validation(self):
-        approved_offer = factories.OfferFactory(name="a great offer")
-        factories.StockFactory(offer=approved_offer, price=10)
-
-        # When stocks are upserted
-        api.create_stock(offer=approved_offer, price=8, quantity=7)
-
-        # Then validations status is not recomputed
-        assert approved_offer.validation == models.OfferValidationStatus.APPROVED
-        assert approved_offer.isActive
-
     def test_does_not_allow_invalid_quantity(self):
         # Given
         offer = factories.ThingOfferFactory()
@@ -588,42 +551,6 @@ class EditStockTest:
         existing_stock = models.Stock.query.one()
         assert existing_stock.price == 10
 
-        assert not mocked_send_first_venue_approved_offer_email_to_pro.called
-
-    @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
-    @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
-    @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
-    def test_not_send_email_when_offer_automatically_approved_based_on_fraud_criteria(
-        self,
-        mocked_set_offer_status_based_on_fraud_criteria,
-        mocked_send_first_venue_approved_offer_email_to_pro,
-        mocked_offer_creation_notification_to_admin,
-    ):
-        offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.DRAFT)
-        created_stock_data = stock_serialize.StockCreationBodyModel(price=10, quantity=7)
-        mocked_set_offer_status_based_on_fraud_criteria.return_value = models.OfferValidationStatus.APPROVED
-
-        api.edit_stock(offer=offer, stock_data_list=[created_stock_data])
-
-        assert not mocked_offer_creation_notification_to_admin.called
-        assert not mocked_send_first_venue_approved_offer_email_to_pro.called
-
-    @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
-    @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
-    @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
-    def test_not_send_email_when_offer_pass_to_pending_based_on_fraud_criteria(
-        self,
-        mocked_set_offer_status_based_on_fraud_criteria,
-        mocked_send_first_venue_approved_offer_email_to_pro,
-        mocked_offer_creation_notification_to_admin,
-    ):
-        offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.DRAFT)
-        created_stock_data = stock_serialize.StockCreationBodyModel(price=10, quantity=7)
-        mocked_set_offer_status_based_on_fraud_criteria.return_value = models.OfferValidationStatus.PENDING
-
-        api.edit_stock(offer=offer, stock_data_list=[created_stock_data])
-
-        assert not mocked_offer_creation_notification_to_admin.called
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
 
