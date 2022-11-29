@@ -1220,6 +1220,38 @@ class ListUserOffererToValidateTest:
         else:
             assert html_parser.count_table_rows(response.data) == 0
 
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    @pytest.mark.parametrize(
+        "tag_filter, expected_users_emails",
+        (
+            (["Top acteur"], {"b@example.com", "e@example.com", "f@example.com"}),
+            (["Collectivité"], {"c@example.com", "e@example.com"}),
+            (["Établissement public"], {"d@example.com", "f@example.com"}),
+            (["Établissement public", "Top acteur"], {"f@example.com"}),
+        ),
+    )
+    def test_list_filtering_by_tags(
+        self, authenticated_client, tag_filter, expected_users_emails, user_offerer_to_be_validated
+    ):
+        # given
+        tags = (
+            offerers_models.OffererTag.query.filter(offerers_models.OffererTag.label.in_(tag_filter))
+            .with_entities(offerers_models.OffererTag.id)
+            .all()
+        )
+        tags_ids = [_id for _id, in tags]
+
+        # when
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(
+                url_for("backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", tags=tags_ids)
+            )
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Email Compte pro"] for row in rows} == expected_users_emails
+
 
 class ValidateOffererAttachmentUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
     method = "post"
