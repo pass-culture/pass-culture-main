@@ -30,6 +30,11 @@ body {
 }
 
 #root {
+  width: 100%;
+  height: 100%;
+}
+
+.app-layout-root {
   display: grid;
   grid-template-columns: [col-start] 1fr [col-main] rem.torem(874px) 1fr;
   grid-template-rows:

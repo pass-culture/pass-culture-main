@@ -7,6 +7,9 @@ import DomainNameBanner from 'components/DomainNameBanner'
 import GoBackLink from 'components/GoBackLink'
 import Header from 'components/Header/Header'
 import TutorialDialog from 'components/TutorialDialog'
+import { USE_ADMIN_LAYOUT } from 'core/shared'
+
+import { AdminLayout } from './AdminLayout'
 
 const AppLayout = props => {
   const { children, layoutConfig } = props
@@ -21,8 +24,13 @@ const AppLayout = props => {
     ...defaultConfig,
     ...layoutConfig,
   }
+
+  if (USE_ADMIN_LAYOUT) {
+    return <AdminLayout layoutConfig={layoutConfig}>{children}</AdminLayout>
+  }
+
   return (
-    <>
+    <div className="app-layout-root">
       {!fullscreen && <Header />}
       <ReactTooltip
         className="flex-center items-center"
@@ -59,7 +67,7 @@ const AppLayout = props => {
         )}
         <TutorialDialog />
       </main>
-    </>
+    </div>
   )
 }
 

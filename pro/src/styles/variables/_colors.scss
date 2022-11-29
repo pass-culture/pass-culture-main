@@ -35,5 +35,19 @@ $linear-gradient-to-bottom-right: linear-gradient(
   $secondary
 );
 $linear-gradient-to-right: linear-gradient(to right, $primary, $secondary);
+
+$primary-transparent: rgba(red($primary), green($primary), blue($primary), 0.3);
+$secondary-transparent: rgba(
+  red($secondary),
+  green($secondary),
+  blue($secondary),
+  0.3
+);
+$linear-gradient-to-right-transparent: linear-gradient(
+  to right,
+  $primary-transparent,
+  $secondary-transparent
+);
+
 $booking-pending-status: #f9c030;
 $input-text-color: #161617;

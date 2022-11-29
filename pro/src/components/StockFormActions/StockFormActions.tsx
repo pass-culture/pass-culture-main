@@ -3,7 +3,7 @@ import { positionRight } from '@reach/popover'
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as OptionMenuIcon } from 'icons/ico-more-horiz.svg'
+import { IcoOptionMenu } from 'icons'
 
 import styles from './StockFormActions.module.scss'
 import { IStockFormRowAction } from './types'
@@ -26,7 +26,7 @@ const StockFormActions = ({
           type="button"
           data-testid="stock-form-actions-button-open"
         >
-          <OptionMenuIcon
+          <IcoOptionMenu
             title="Opérations sur le stock"
             className={styles['menu-button-icon']}
           />

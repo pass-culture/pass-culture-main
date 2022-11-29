@@ -1,6 +1,7 @@
 /* No need to test this file */
 /* istanbul ignore file */
 import { Redirect, useLocation } from 'react-router-dom'
+import { boolean } from 'yup'
 
 import Bookings from 'pages/Bookings'
 import BusinessUnitList from 'pages/BusinessUnitList'
@@ -10,6 +11,7 @@ import CollectiveOffers from 'pages/CollectiveOffers'
 import CsvTable from 'pages/CsvTable'
 import Desk from 'pages/Desk'
 import { EmailChangeValidation } from 'pages/EmailChangeValidation'
+import { Entreprises } from 'pages/Entreprises'
 import Unavailable from 'pages/Errors/Unavailable/Unavailable'
 import Homepage from 'pages/Home/Homepage'
 import LostPassword from 'pages/LostPassword/LostPassword'
@@ -35,7 +37,7 @@ import { VenueCreation } from 'pages/VenueCreation'
 import { VenueEdition } from 'pages/VenueEdition'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
-interface ILayoutConfig {
+export interface ILayoutConfig {
   pageName?: string
   fullscreen?: boolean
 }
@@ -114,6 +116,16 @@ const routes: IRoute[] = [
     exact: true,
     path: '/accueil',
     title: 'Accueil',
+  },
+  {
+    component: Entreprises,
+    path: '/entreprises',
+    title: 'Vos entreprises',
+    meta: {
+      layoutConfig: {
+        pageName: 'entreprises',
+      },
+    },
   },
   {
     component: Desk,
