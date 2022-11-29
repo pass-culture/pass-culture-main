@@ -44,6 +44,7 @@ const StockEventForm = ({
       setFieldValue(`stocks[${stockIndex}]bookingLimitDatetime`, date)
     }
   }
+  const beginningDate = values.stocks[stockIndex].beginningDate
 
   return (
     <>
@@ -89,6 +90,7 @@ const StockEventForm = ({
         )}
         classNameFooter={styles['field-layout-footer']}
         minDateTime={today}
+        maxDateTime={beginningDate ? beginningDate : undefined}
         openingDateTime={today}
         disabled={readOnlyFields.includes('bookingLimitDatetime')}
       />
