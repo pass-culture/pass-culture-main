@@ -172,5 +172,7 @@ jobs:
         working-directory: backoffice
     needs: deploy-helm-release
     steps:
-      - run: su pcapi -c "flask algolia_settings --dry-run=false ${ALGOLIA_OFFERS_INDEX_NAME} set"
+      - run: su pcapi -c "flask set_algolia_settings OFFERS set --dry-run=false"
+      - run: su pcapi -c "flask set_algolia_settings COLLECTIVE_OFFERS set --dry-run=false"
+      - run: su pcapi -c "flask set_algolia_settings VENUES set --dry-run=false"
 
