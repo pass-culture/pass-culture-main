@@ -12,7 +12,7 @@ class SearchForm(FlaskForm):
     class Meta:
         csrf = False
 
-    terms = fields.PCSearchField()
+    terms = fields.PCSearchField(label="")
     order_by = wtforms.HiddenField("order_by", validators=[validators.Optional(strip_whitespace=True)])
     page = wtforms.HiddenField("page", validators=[validators.Optional()])
     per_page = wtforms.HiddenField("per_page", validators=[validators.Optional()])
