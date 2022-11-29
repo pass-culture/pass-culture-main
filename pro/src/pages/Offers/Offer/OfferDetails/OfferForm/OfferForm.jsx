@@ -360,14 +360,14 @@ const OfferForm = ({
   useEffect(
     function setBookingEmail() {
       if (!initialValues.bookingEmail) {
-        if (
+        if (venue && venue.bookingEmail) {
+          handleFormUpdate({ bookingEmail: venue.bookingEmail })
+        } else if (
           (offerSubCategory &&
             offerSubCategory.onlineOfflinePlatform === PLATFORM.ONLINE) ||
           venue?.isVirtual
         ) {
           handleFormUpdate({ bookingEmail: userEmail })
-        } else if (venue) {
-          handleFormUpdate({ bookingEmail: venue.bookingEmail })
         }
       }
     },

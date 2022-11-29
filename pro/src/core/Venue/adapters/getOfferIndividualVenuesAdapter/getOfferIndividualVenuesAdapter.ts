@@ -38,6 +38,7 @@ const getOfferIndividualVenuesAdapter: TGetOfferIndividualVenuesAdapter =
             [AccessiblityEnum.NONE]:
               !Object.values(baseAccessibility).includes(true),
           },
+          bookingEmail: venue.bookingEmail || null,
         }
       }
 
