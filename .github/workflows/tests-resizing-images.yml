@@ -12,7 +12,7 @@ jobs:
     name: "Deploy image-resizing"
     needs: check-resizing-image-folder-changes
     if: needs.check-resizing-image-folder-changes.outputs.folder_changed == 'true'
-    uses: ./.github/workflows/deploy-app-engine-image-resizing-master.yaml
+    uses: ./.github/workflows/deploy-app-engine-image-resizing.yaml
     with:
       environment: testing
       google_project: passculture-metier-ehp
