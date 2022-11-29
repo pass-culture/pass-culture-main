@@ -6,6 +6,7 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
+import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { TOffererName } from 'core/Offerers/types'
@@ -27,7 +28,7 @@ const renderUsefulInformations = async ({
   onSubmit: () => void
   props: IUsefulInformationsProps
 }) => {
-  render(
+  return render(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
@@ -154,6 +155,42 @@ describe('OfferIndividual section: UsefulInformations', () => {
         withdrawalDelay: undefined,
         withdrawalDetails: '',
         withdrawalType: 'by_email',
+      },
+      expect.anything()
+    )
+  })
+
+  it('should submit valid form if initialValues has been given', async () => {
+    initialValues = {
+      ...initialValues,
+      name: 'Set offer',
+      venueId: 'AAAA',
+      offererId: 'AA',
+      subcategoryId: 'CONCERT',
+      subCategoryFields: ['withdrawalType'],
+      withdrawalDelay: 7200,
+      withdrawalType: WithdrawalTypeEnum.ON_SITE,
+    }
+
+    await renderUsefulInformations({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
+    await userEvent.click(await screen.findByText('Submit'))
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      {
+        name: 'Set offer',
+        offererId: 'AA',
+        subCategoryFields: ['withdrawalType'],
+        url: '',
+        subcategoryId: 'CONCERT',
+        venueId: 'AAAA',
+        withdrawalDelay: 7200,
+        withdrawalDetails: '',
+        withdrawalType: WithdrawalTypeEnum.ON_SITE,
       },
       expect.anything()
     )
