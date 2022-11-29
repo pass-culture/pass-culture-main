@@ -113,7 +113,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     expect(screen.getByLabelText(/Durée/)).not.toBeDisabled()
   })
 
-  it('should disable read only fields', async () => {
+  it('should disable read only fields', () => {
     props.readOnlyFields = [
       'name',
       'description',
@@ -138,14 +138,12 @@ describe('OfferIndividual section: UsefulInformations', () => {
     renderInformations({ props, initialValues, onSubmit })
     expect(screen.getByLabelText(/Titre de l’offre/)).toBeDisabled()
     expect(screen.getByLabelText(/Description/)).toBeDisabled()
-
-    // only name and description can be disabled on edition.
-    expect(screen.getByLabelText(/Auteur/)).not.toBeDisabled()
-    expect(screen.getByLabelText(/ISBN/)).not.toBeDisabled()
-    expect(screen.getByLabelText(/Intervenant/)).not.toBeDisabled()
-    expect(screen.getByLabelText(/Visa d’exploitation/)).not.toBeDisabled()
-    expect(screen.getByLabelText(/Metteur en scène/)).not.toBeDisabled()
-    expect(screen.getByLabelText(/Interprète/)).not.toBeDisabled()
-    expect(screen.getByLabelText(/Durée/)).not.toBeDisabled()
+    expect(screen.getByLabelText(/Auteur/)).toBeDisabled()
+    expect(screen.getByLabelText(/ISBN/)).toBeDisabled()
+    expect(screen.getByLabelText(/Intervenant/)).toBeDisabled()
+    expect(screen.getByLabelText(/Visa d’exploitation/)).toBeDisabled()
+    expect(screen.getByLabelText(/Metteur en scène/)).toBeDisabled()
+    expect(screen.getByLabelText(/Interprète/)).toBeDisabled()
+    expect(screen.getByLabelText(/Durée/)).toBeDisabled()
   })
 })

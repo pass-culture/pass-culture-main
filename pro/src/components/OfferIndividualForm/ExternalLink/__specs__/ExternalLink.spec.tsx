@@ -10,13 +10,15 @@ import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { SubmitButton } from 'ui-kit'
 
 import { EXTERNAL_LINK_DEFAULT_VALUES } from '../constants'
-import ExternalLink from '../ExternalLink'
+import ExternalLink, { IExternalLink } from '../ExternalLink'
 import validationSchema from '../validationSchema'
 
 const renderExternalLink = ({
+  props,
   initialValues,
   onSubmit,
 }: {
+  props?: IExternalLink
   initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
 }) => {
@@ -27,7 +29,7 @@ const renderExternalLink = ({
       validationSchema={yup.object().shape(validationSchema)}
     >
       <Form>
-        <ExternalLink />
+        <ExternalLink {...props} />
         <SubmitButton isLoading={false}>Submit</SubmitButton>
       </Form>
     </Formik>
@@ -117,5 +119,19 @@ describe('OfferIndividual section: ExternalLink', () => {
         'Veuillez renseigner une URL valide. Ex : https://exemple.com'
       )
     ).not.toBeInTheDocument()
+  })
+
+  it('should disable read only fields', () => {
+    const props = { readOnlyFields: ['externalTicketOfficeUrl'] }
+    renderExternalLink({
+      props,
+      initialValues,
+      onSubmit,
+    })
+    expect(
+      screen.getByLabelText('URL de votre site ou billetterie', {
+        exact: false,
+      })
+    ).toBeDisabled()
   })
 })

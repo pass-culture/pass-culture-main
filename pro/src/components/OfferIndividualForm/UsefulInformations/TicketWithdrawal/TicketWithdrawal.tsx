@@ -15,7 +15,7 @@ import {
 
 import { TICKET_WITHDRAWAL_DEFAULT_VALUES } from '.'
 
-interface ITicketWithdrawalProps {
+export interface ITicketWithdrawalProps {
   readOnlyFields?: string[]
 }
 
@@ -58,7 +58,7 @@ const TicketWithdrawal = ({
             description="avant le début de l’évènement"
             name="withdrawalDelay"
             options={ticketSentDateOptions}
-            disabled={readOnlyFields.includes('withdrawalType')}
+            disabled={readOnlyFields.includes('withdrawalDelay')}
           />
         </FormLayout.Row>
       )}
@@ -70,7 +70,7 @@ const TicketWithdrawal = ({
             description="avant le début de l’évènement"
             name="withdrawalDelay"
             options={ticketWithdrawalHourOptions}
-            disabled={readOnlyFields.includes('withdrawalType')}
+            disabled={readOnlyFields.includes('withdrawalDelay')}
           />
         </FormLayout.Row>
       )}

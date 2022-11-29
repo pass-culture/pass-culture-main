@@ -9,13 +9,15 @@ import * as yup from 'yup'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm/types'
 import { SubmitButton } from 'ui-kit'
 
-import TicketWithdrawal from '../TicketWithdrawal'
+import TicketWithdrawal, { ITicketWithdrawalProps } from '../TicketWithdrawal'
 import validationSchema from '../validationSchema'
 
 const renderTicketWithdrawal = ({
+  props,
   initialValues,
   onSubmit = jest.fn(),
 }: {
+  props?: ITicketWithdrawalProps
   initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
 }) => {
@@ -26,7 +28,7 @@ const renderTicketWithdrawal = ({
       validationSchema={yup.object().shape(validationSchema)}
     >
       <Form>
-        <TicketWithdrawal />
+        <TicketWithdrawal {...props} />
         <SubmitButton className="primary-button" isLoading={false}>
           Submit
         </SubmitButton>
@@ -140,5 +142,21 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
     expect(
       screen.getByText('Vous devez choisir l’une des options ci-dessus')
     ).toBeInTheDocument()
+  })
+
+  it('should disable read only fields', () => {
+    const props = { readOnlyFields: ['withdrawalType', 'withdrawalDelay'] }
+
+    renderTicketWithdrawal({
+      props,
+      initialValues,
+      onSubmit,
+    })
+
+    expect(screen.getByLabelText('Envoi par e-mail')).toBeDisabled()
+    expect(screen.getByLabelText('Évènement sans billet')).toBeDisabled()
+    expect(
+      screen.getByLabelText('Retrait sur place (guichet, comptoir ...)')
+    ).toBeDisabled()
   })
 })
