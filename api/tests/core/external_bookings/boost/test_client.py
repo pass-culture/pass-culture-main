@@ -30,7 +30,7 @@ class GetVenueMoviesTest:
             external_bookings_models.Movie(
                 id="207",
                 title="BLACK PANTHER : WAKANDA FOREVER",
-                duration=1,
+                duration=162,
                 description="",
                 posterpath="http://example.com/images/158026.jpg",
                 visa="158026",
@@ -38,7 +38,7 @@ class GetVenueMoviesTest:
             external_bookings_models.Movie(
                 id="210",
                 title="CHARLOTTE",
-                duration=1,
+                duration=92,
                 description="",
                 posterpath="http://example.com/images/149489.jpg",
                 visa="149489",
@@ -46,7 +46,7 @@ class GetVenueMoviesTest:
             external_bookings_models.Movie(
                 id="147",
                 title="CASSE NOISETTE ROH 2021",
-                duration=1,
+                duration=100,
                 description="",
                 posterpath="http://example.com/images/2021001414.jpg",
                 visa="2021001414",
