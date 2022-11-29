@@ -410,6 +410,7 @@ def create_industrial_educational_bookings() -> None:
             pricing_point="self",
             reimbursement_point="self",
             venueLabelId=22,
+            venueTypeCode=offerers_models.VenueTypeCode.ADMINISTRATIVE,
         )
     )
 
