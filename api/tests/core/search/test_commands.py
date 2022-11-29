@@ -3,34 +3,28 @@ import json
 from unittest import mock
 
 from algoliasearch.search_index import SearchIndex
+import pytest
 import requests_mock
 
 from pcapi import settings
-from pcapi.scripts import algolia_settings
+from pcapi.core.search import commands
 
 
 class AlgoliaSettingsTest:
-    @mock.patch("os.makedirs")
-    def test_can_get_an_index_client_from_index_name(self, mock_makedirs):
-        # given
-        index_name = "random_index"
-
+    @pytest.mark.parametrize("index_type", list(commands.IndexTypes))
+    def test_can_get_an_index_client_from_index_name(self, index_type):
         # when
-        client = algolia_settings._get_index_client(index_name)
+        client = commands._get_index_client(index_type)
 
         # then
         assert isinstance(client, SearchIndex)
-        assert client.name == index_name
+        assert client.name == index_type.value
         assert client.app_id == settings.ALGOLIA_APPLICATION_ID
-        assert mock_makedirs.called_once_with(
-            algolia_settings.ALGOLIA_SETTINGS_DIR,
-            exist_ok=True,
-        )
 
-    def test_can_retrieve_settings_from_algolia(self):
+    @pytest.mark.parametrize("index_type", list(commands.IndexTypes))
+    def test_can_retrieve_settings_from_algolia(self, index_type):
         # given
-        index_name = "random_index"
-        index = algolia_settings._get_index_client(index_name)
+        index = commands._get_index_client(index_type)
         index_settings = {"random_field": "random_value"}
 
         with requests_mock.Mocker() as requests_mocker:
@@ -42,17 +36,18 @@ class AlgoliaSettingsTest:
             )
 
             # when
-            outputs = algolia_settings._get_settings(index, dry=False)
+            outputs = commands._get_settings(index)
 
         # then
         assert requests_mocker.called_once
         assert len(outputs) == 1
         assert json.dumps(index_settings, indent=4) in outputs
 
-    def test_can_send_settings_to_algolia(self):
+    @pytest.mark.parametrize("index_type", list(commands.IndexTypes))
+    def test_can_send_settings_to_algolia(self, index_type):
         # given
-        index_name = "random_index"
-        index = algolia_settings._get_index_client(index_name)
+        index = commands._get_index_client(index_type)
+        config_path = commands._get_index_default_file(index_type)
         old_index_settings = {"random_field": "random_value"}
         config_file_content = {"random_field": "other_value"}
 
@@ -77,24 +72,20 @@ class AlgoliaSettingsTest:
             )
 
             # when
-            outputs = algolia_settings._set_settings(
-                index,
-                algolia_settings.ALGOLIA_SETTINGS_DEFAULT_FILE,
-                dry=False,
-            )
+            outputs = commands._set_settings(index, config_path, dry=False)
 
         # then
         assert requests_mocker.call_count == 2
-        assert mock_open.call_once_with(algolia_settings.ALGOLIA_SETTINGS_DEFAULT_FILE, "r")
+        assert mock_open.call_once_with(commands._get_index_default_file(index_type), "r")
         put_request = requests_mocker.request_history[1]
         assert put_request.text == json.dumps(config_file_content)
         assert len(outputs) == 1
         assert json.dumps(old_index_settings, indent=4) in outputs
 
-    def test_dry_settings_retrieval_actually_does_nothing(self):
+    @pytest.mark.parametrize("index_type", list(commands.IndexTypes))
+    def test_dry_settings_retrieval_actually_does_nothing(self, index_type):
         # given
-        index_name = "random_index"
-        index = algolia_settings._get_index_client(index_name)
+        index = commands._get_index_client(index_type)
 
         with requests_mock.Mocker() as requests_mocker:
             requests_mocker.register_uri(
@@ -109,18 +100,19 @@ class AlgoliaSettingsTest:
             )
 
             # when
-            outputs = algolia_settings._get_settings(index, dry=True)
+            outputs = commands._get_settings(index, dry=True)
 
         # then
         assert not requests_mocker.called
         assert len(outputs) == 2  # dry sim messages: settings fetched + settings displayed
-        assert index_name in outputs[0]
-        assert index_name in outputs[1]
+        assert index_type.value in outputs[0]
+        assert index_type.value in outputs[1]
 
-    def test_dry_settings_applying_actually_does_nothing(self):
+    @pytest.mark.parametrize("index_type", list(commands.IndexTypes))
+    def test_dry_settings_applying_actually_does_nothing(self, index_type):
         # given
-        index_name = "random_index"
-        index = algolia_settings._get_index_client(index_name)
+        index = commands._get_index_client(index_type)
+        config_path = commands._get_index_default_file(index_type)
 
         with (
             requests_mock.Mocker() as requests_mocker,
@@ -138,9 +130,9 @@ class AlgoliaSettingsTest:
             )
 
             # when
-            outputs = algolia_settings._set_settings(
+            outputs = commands._set_settings(
                 index,
-                algolia_settings.ALGOLIA_SETTINGS_DEFAULT_FILE,
+                config_path,
                 dry=True,
             )
 
@@ -149,7 +141,7 @@ class AlgoliaSettingsTest:
         assert not mock_open.called
         # dry sim messages: settings fetched + settings displayed + settings read + settings applied
         assert len(outputs) == 4
-        assert index_name in outputs[0]
-        assert index_name in outputs[1]
-        assert algolia_settings.ALGOLIA_SETTINGS_DEFAULT_FILE in outputs[2]
-        assert index_name in outputs[3]
+        assert index_type.value in outputs[0]
+        assert index_type.value in outputs[1]
+        assert config_path in outputs[2]
+        assert index_type.value in outputs[3]

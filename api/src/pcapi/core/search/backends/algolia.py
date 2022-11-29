@@ -233,7 +233,7 @@ class AlgoliaBackend(base.SearchBackend):
     def index_offers(self, offers: Iterable[offers_models.Offer], last_30_days_bookings: dict[int, int]) -> None:
         if not offers:
             return
-        objects = [self.serialize_offer(offer, last_30_days_bookings.get(offer.id) or 0) for offer in offers]
+        objects = [self.serialize_offer(offer, last_30_days_bookings.get(offer.id, 0) or 0) for offer in offers]
         self.algolia_offers_client.save_objects(objects)
 
         try:

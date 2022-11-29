@@ -397,32 +397,28 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
     )
 
 
-BASE_QUERY_FOR_LAST_30_DAYS_BOOKINGS = (
-    sa.select(
-        offers_models.Offer.id.label("offer_id"), sa.func.count(bookings_models.Booking.id).label("bookings_number")
-    )
-    .select_from(offers_models.Offer)
-    .outerjoin(offers_models.Stock, offers_models.Stock.offerId == offers_models.Offer.id)
-    .outerjoin(bookings_models.Booking, bookings_models.Booking.stockId == offers_models.Stock.id)
-    .where(
-        sa.or_(
+def get_base_query_for_last_30_days_bookings() -> BaseQuery:
+    return (
+        sa.select(
+            offers_models.Offer.id.label("offer_id"), sa.func.count(bookings_models.Booking.id).label("bookings_number")
+        )
+        .select_from(offers_models.Offer)
+        .join(offers_models.Stock, offers_models.Stock.offerId == offers_models.Offer.id)
+        .join(bookings_models.Booking, bookings_models.Booking.stockId == offers_models.Stock.id)
+        .where(
             bookings_models.Booking.dateCreated >= datetime.datetime.utcnow() - datetime.timedelta(days=30),
-            bookings_models.Booking.dateCreated.is_(None),
-        ),
-        sa.or_(
-            sa.not_(
-                bookings_models.Booking.status.in_(
+            sa.or_(
+                bookings_models.Booking.status.notin_(
                     (
                         bookings_models.BookingStatus.PENDING,
                         bookings_models.BookingStatus.CANCELLED,
                     )
-                )
+                ),
+                bookings_models.Booking.status.is_(None),
             ),
-            bookings_models.Booking.status.is_(None),
-        ),
+        )
+        .group_by(offers_models.Offer.id)
     )
-    .group_by(offers_models.Offer.id)
-)
 
 
 def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
@@ -440,7 +436,9 @@ def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
     to_delete_ids = []
     offers = get_base_query_for_offer_indexation().filter(offers_models.Offer.id.in_(offer_ids))
 
-    last_30_days_bookings_query = BASE_QUERY_FOR_LAST_30_DAYS_BOOKINGS.filter(offers_models.Offer.id.in_(offer_ids))
+    last_30_days_bookings_query = get_base_query_for_last_30_days_bookings().filter(
+        offers_models.Offer.id.in_(offer_ids)
+    )
     last_30_days_bookings = {
         row.offer_id: row.bookings_number for row in db.session.execute(last_30_days_bookings_query).all()
     }
