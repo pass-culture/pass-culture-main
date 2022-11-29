@@ -46,7 +46,8 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
     offer.venue.departmentCode
   )
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
-  const isSynchronized = Boolean(offer?.lastProvider)
+  const isSynchronized = Boolean(offer.lastProvider)
+
   return (
     <FieldArray
       name="stocks"
