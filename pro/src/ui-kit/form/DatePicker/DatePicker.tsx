@@ -14,6 +14,7 @@ registerLocale('fr', fr)
 interface IDatePickerProps {
   name: string
   className?: string
+  classNameLabel?: string
   classNameFooter?: string
   disabled?: boolean
   label: string
@@ -32,6 +33,7 @@ const DatePicker = ({
   minDateTime,
   openingDateTime,
   className,
+  classNameLabel,
   classNameFooter,
   disabled,
   label,
@@ -46,6 +48,7 @@ const DatePicker = ({
   return (
     <FieldLayout
       className={className}
+      classNameLabel={classNameLabel}
       classNameFooter={classNameFooter}
       error={meta.error}
       label={label}

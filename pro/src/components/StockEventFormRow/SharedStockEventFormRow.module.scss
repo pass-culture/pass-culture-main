@@ -1,0 +1,8 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
+.field-layout-label {
+  white-space: break-spaces;
+  min-height: rem.torem(32px);
+  display: flex;
+  align-items: end;
+}
