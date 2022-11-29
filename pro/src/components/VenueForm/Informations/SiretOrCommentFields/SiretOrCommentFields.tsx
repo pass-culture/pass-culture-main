@@ -71,6 +71,7 @@ const SiretOrCommentFields = ({
 
     const response = await getSiretData(siret)
 
+    /* istanbul ignore next: DEBT, TO FIX */
     if (!response?.isOk) {
       return
     }
@@ -83,6 +84,7 @@ const SiretOrCommentFields = ({
     setFieldValue('name', response.payload.values?.name)
     // getSuggestions pour récupérer les adresses
     const responseAdressDataAdapter = await getAdressDataAdapter(address)
+    /* istanbul ignore next: DEBT, TO FIX */
     if (!responseAdressDataAdapter.isOk) {
       return
     }

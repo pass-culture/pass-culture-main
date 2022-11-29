@@ -14,6 +14,10 @@ type VenueBodyModel = Omit<
   'managingOffererId' | 'venueLabelId'
 >
 
+export interface EditVirtualVenueBodyModel {
+  reimbursementPointId?: number | null
+}
+
 const serializeCommunData = (
   formValues: IVenueFormValues,
   { hideSiret }: HideSiretParam
@@ -70,15 +74,21 @@ export const serializePostVenueBodyModel = (
 export const serializeEditVenueBodyModel = (
   formValues: IVenueFormValues,
   { hideSiret }: HideSiretParam
-): EditVenueBodyModel => {
-  const model = serializeCommunData(formValues, {
-    hideSiret,
-  })
-  return {
-    ...model,
-    // @ts-expect-error string is not assignable to type number
-    venueLabelId: !formValues.venueLabel ? null : formValues.venueLabel,
-    isEmailAppliedOnAllOffers: true,
-    reimbursementPointId: formValues.reimbursementPointId,
+): EditVenueBodyModel | EditVirtualVenueBodyModel => {
+  if (formValues.isVenueVirtual) {
+    return {
+      reimbursementPointId: formValues.reimbursementPointId || null,
+    }
+  } else {
+    const model = serializeCommunData(formValues, {
+      hideSiret,
+    })
+    return {
+      ...model,
+      // @ts-expect-error string is not assignable to type number
+      venueLabelId: !formValues.venueLabel ? null : formValues.venueLabel,
+      isEmailAppliedOnAllOffers: true,
+      reimbursementPointId: formValues.reimbursementPointId,
+    }
   }
 }

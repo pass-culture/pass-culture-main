@@ -1,9 +1,13 @@
 import * as yup from 'yup'
 
 const validationSchema = {
-  addressAutocomplete: yup
-    .string()
-    .required('Veuillez sélectionner une adresse parmi les suggestions'),
+  isVenueVirtual: yup.boolean(),
+  addressAutocomplete: yup.string().when('isVenueVirtual', {
+    is: false,
+    then: yup
+      .string()
+      .required('Veuillez sélectionner une adresse parmi les suggestions'),
+  }),
 }
 
 export default validationSchema

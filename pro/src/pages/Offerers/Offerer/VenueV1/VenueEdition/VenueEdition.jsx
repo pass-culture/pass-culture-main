@@ -323,7 +323,7 @@ const VenueEdition = () => {
             isDirtyFieldBookingEmail={isDirtyFieldBookingEmail}
             isToggleDisabled
             readOnly={readOnly || initialIsVirtual}
-            venueIsVirtual={initialIsVirtual}
+            isVenueVirtual={initialIsVirtual}
             venueLabelId={venueLabelId}
             venueLabels={venueLabels}
             venueTypeCode={venueTypeCode}
