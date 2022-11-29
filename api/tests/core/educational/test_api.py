@@ -125,29 +125,6 @@ class CreateCollectiveOfferStocksTest:
         }
         assert CollectiveStock.query.count() == 0
 
-    @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
-    @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
-    def test_not_send_email_when_offer_pass_to_pending_based_on_fraud_criteria(
-        self, mocked_set_offer_status_based_on_fraud_criteria, mocked_offer_creation_notification_to_admin
-    ) -> None:
-        # Given
-        user = users_factories.ProFactory()
-        offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
-        created_stock_data = collective_stock_serialize.CollectiveStockCreationBodyModel(
-            offerId=offer.id,
-            beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
-            bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
-            totalPrice=1500,
-            numberOfTickets=38,
-        )
-        mocked_set_offer_status_based_on_fraud_criteria.return_value = OfferValidationStatus.PENDING
-
-        # When
-        educational_api_stock.create_collective_stock(stock_data=created_stock_data, user=user)
-
-        # Then
-        assert not mocked_offer_creation_notification_to_admin.called
-
 
 @freeze_time("2020-01-05 10:00:00")
 @pytest.mark.usefixtures("db_session")

@@ -8,17 +8,12 @@ from pcapi import settings
 from pcapi.connectors import sirene
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 import pcapi.core.mails.models as mails_models
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.offers.utils import offer_app_link
 from pcapi.utils import urls
 from pcapi.utils.date import utc_datetime_to_department_timezone
-from pcapi.utils.human_ids import humanize
 import pcapi.utils.postal_code as postal_code_utils
 
 
@@ -73,58 +68,6 @@ def make_offerer_internal_validation_email(
     return mails_models.TransactionalWithoutTemplateEmailData(
         subject="%s - inscription / rattachement PRO à valider : %s" % (offerer_departement_code, offerer.name),
         html_content=email_html,
-        sender=mails_models.TransactionalSender.SUPPORT_PRO,
-    )
-
-
-def make_offer_creation_notification_email(
-    offer: Offer | CollectiveOffer | CollectiveOfferTemplate,
-) -> mails_models.TransactionalWithoutTemplateEmailData:
-    author = getattr(offer, "author", None) or offer.venue.managingOfferer.first_user
-    venue = offer.venue
-    pro_link_to_offer = urls.build_pc_pro_offer_link(offer)
-    pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
-    webapp_link_to_offer = offer_app_link(offer)
-    html = render_template(
-        "mails/offer_creation_notification_email.html",
-        offer=offer,
-        venue=venue,
-        author=author,
-        pro_link_to_offer=pro_link_to_offer,
-        webapp_link_to_offer=webapp_link_to_offer,
-        pro_venue_link=pro_venue_link,
-    )
-    location_information = offer.venue.departementCode or "numérique"
-    is_educational_offer_label = "EAC " if offer.isEducational else ""
-
-    return mails_models.TransactionalWithoutTemplateEmailData(
-        subject=f"[Création d’offre {is_educational_offer_label}- {location_information}] {offer.name}",
-        html_content=html,
-        sender=mails_models.TransactionalSender.SUPPORT_PRO,
-    )
-
-
-def make_offer_rejection_notification_email(
-    offer: Offer | CollectiveOfferTemplate | CollectiveOffer,
-) -> mails_models.TransactionalWithoutTemplateEmailData:
-    author = getattr(offer, "author", None) or offer.venue.managingOfferer.first_user
-    pro_link_to_offer = urls.build_pc_pro_offer_link(offer)
-    venue = offer.venue
-    pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
-    html = render_template(
-        "mails/offer_creation_refusal_notification_email.html",
-        offer=offer,
-        venue=venue,
-        author=author,
-        pro_link_to_offer=pro_link_to_offer,
-        pro_venue_link=pro_venue_link,
-    )
-    location_information = offer.venue.departementCode or "numérique"
-    is_educational_offer_label = "" if isinstance(offer, Offer) else "EAC "
-
-    return mails_models.TransactionalWithoutTemplateEmailData(
-        subject=f"[Création d’offre {is_educational_offer_label}: refus - {location_information}] {offer.name}",
-        html_content=html,
         sender=mails_models.TransactionalSender.SUPPORT_PRO,
     )
 

@@ -3,17 +3,11 @@ from unittest.mock import MagicMock
 import pytest
 
 from pcapi.connectors import sirene
-from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
-from pcapi.domain.admin_emails import send_offer_creation_notification_to_administration
-from pcapi.domain.admin_emails import send_offer_rejection_notification_to_administration
-from pcapi.domain.admin_emails import send_offer_validation_notification_to_administration
 from pcapi.domain.admin_emails import send_suspended_fraudulent_users_email
 
 
@@ -90,69 +84,6 @@ def test_maybe_send_offerer_validation_email_disabled(app):
     # Then
     assert result is True
     assert not mails_testing.outbox
-
-
-@pytest.mark.usefixtures("db_session")
-class SendOfferCreationNotificationToAdministrationTest:
-    def test_when_sendinblue_status_code_200_sends_email_to_administration_email(self, app):
-        author = users_factories.UserFactory()
-        offer = OfferFactory(author=author)
-
-        # When
-        send_offer_creation_notification_to_administration(offer)
-
-        # Then
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
-
-
-@pytest.mark.usefixtures("db_session")
-class SendOfferCreationRefusalNotificationToAdministrationTest:
-    def test_when_sendinblue_status_code_200_sends_email_to_administration_email(self, app):
-        author = users_factories.UserFactory(email="author@email.com")
-        offer = OfferFactory(author=author)
-
-        # When
-        send_offer_rejection_notification_to_administration(offer)
-
-        # Then
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
-
-
-@pytest.mark.usefixtures("db_session")
-class SendOfferNotificationToAdministrationTest:
-    def test_send_refusal_notification(self, app):
-        author = users_factories.UserFactory(email="author@email.com")
-        offer = OfferFactory(name="Test Book", author=author)
-
-        # When
-        send_offer_validation_notification_to_administration(OfferValidationStatus.REJECTED, offer)
-
-        # Then
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
-        assert mails_testing.outbox[0].sent_data["subject"] == "[Création d’offre : refus - 75] Test Book"
-
-    def test_send_approval_notification_failure(self):
-        author = users_factories.UserFactory(email="author@email.com")
-        offer = OfferFactory(name="Test Film", author=author, subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-
-        # When
-        send_offer_validation_notification_to_administration(OfferValidationStatus.APPROVED, offer)
-
-        assert len(mails_testing.outbox) == 0
-
-    def test_send_approval_notification_success(self):
-        author = users_factories.UserFactory(email="author@email.com")
-        offer = OfferFactory(name="Test Visit", author=author, subcategoryId=subcategories.VISITE_GUIDEE.id)
-
-        # When
-        send_offer_validation_notification_to_administration(OfferValidationStatus.APPROVED, offer)
-
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
-        assert mails_testing.outbox[0].sent_data["subject"] == "[Création d’offre - 75] Test Visit"
 
 
 @pytest.mark.usefixtures("db_session")
