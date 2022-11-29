@@ -89,6 +89,20 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
     )
 
 
+def _is_user_offerer_action_type(historyItem: serialization.HistoryItem) -> bool:
+    user_offerer_action_types = [
+        history_models.ActionType.USER_OFFERER_NEW,
+        history_models.ActionType.USER_OFFERER_PENDING,
+        history_models.ActionType.USER_OFFERER_VALIDATED,
+        history_models.ActionType.USER_OFFERER_REJECTED,
+    ]
+    return history_models.ActionType(historyItem.type) in user_offerer_action_types
+
+
+def _is_offerer_new_action_type(historyItem: serialization.HistoryItem) -> bool:
+    return history_models.ActionType(historyItem.type) == history_models.ActionType.OFFERER_NEW
+
+
 def get_offerer_history_data(offerer_id: int) -> typing.Sequence[serialization.HistoryItem]:
     actions = history_repository.find_all_actions_by_offerer(offerer_id)
     return [
@@ -111,7 +125,12 @@ def get_offerer_history(offerer_id: int) -> utils.BackofficeResponse:
     history = get_offerer_history_data(offerer_id)
     can_add_comment = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
     return render_template(
-        "offerer/get/details.html", offerer=offerer, history=history, can_add_comment=can_add_comment
+        "offerer/get/details.html",
+        offerer=offerer,
+        history=history,
+        can_add_comment=can_add_comment,
+        is_user_offerer_action_type=_is_user_offerer_action_type,
+        is_offerer_new_action_type=_is_offerer_new_action_type,
     )
 
 

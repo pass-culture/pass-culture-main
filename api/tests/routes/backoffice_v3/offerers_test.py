@@ -269,6 +269,40 @@ class GetOffererHistoryTest:
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_action_name_depends_on_type(self, authenticated_client, offerer):
+        admin_user = users_factories.AdminFactory()
+        user_offerer_1 = offerers_factories.UserOffererFactory(
+            offerer=offerer, user__firstName="Vincent", user__lastName="Auriol"
+        )
+        user_offerer_2 = offerers_factories.UserOffererFactory(offerer=offerer)
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 3, 13, 1),
+            actionType=history_models.ActionType.OFFERER_NEW,
+            authorUser=admin_user,
+            user=user_offerer_1.user,
+            offerer=offerer,
+            comment=None,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 5, 13, 1),
+            actionType=history_models.ActionType.USER_OFFERER_NEW,
+            authorUser=admin_user,
+            user=user_offerer_2.user,
+            offerer=offerer,
+            comment=None,
+        )
+        url = url_for("backoffice_v3_web.offerer.get_offerer_history", offerer_id=offerer.id)
+
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url)
+        assert response.status_code == 200
+
+        content = response.data.decode("utf-8")
+
+        assert f"{user_offerer_1.user.firstName} {user_offerer_1.user.lastName}" not in content
+        assert f"{user_offerer_2.user.firstName} {user_offerer_2.user.lastName}" in content
+
 
 class GetOffererHistoryDataTest:
     def test_one_action(self):
