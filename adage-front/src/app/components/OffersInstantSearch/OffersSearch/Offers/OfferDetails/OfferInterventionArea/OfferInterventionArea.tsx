@@ -5,6 +5,7 @@ import {
   MAINLAND_OPTION_VALUE,
   domtomOptions,
   departmentOptions,
+  ALL_FRANCE_OPTION_VALUE,
 } from 'app/constants/departmentOptions'
 
 export const getInterventionAreaLabels = (
@@ -12,7 +13,7 @@ export const getInterventionAreaLabels = (
 ): string => {
   const labels: string[] = []
 
-  if (interventionArea.includes(MAINLAND_OPTION_VALUE)) {
+  if (interventionArea.includes(MAINLAND_OPTION_VALUE) || interventionArea.includes(ALL_FRANCE_OPTION_VALUE)) {
     labels.push(departmentLabelByValue[MAINLAND_OPTION_VALUE])
 
     domtomOptions.forEach(domtomOption => {
