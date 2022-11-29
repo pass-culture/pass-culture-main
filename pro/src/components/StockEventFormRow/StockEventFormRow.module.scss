@@ -8,19 +8,21 @@
     display: flex;
     align-items: center;
     > *:not(:last-child) {
-      margin-right: rem.torem(16px);
+      margin-right: rem.torem(12px);
     }
     &:not(:last-child) {
-      margin-right: rem.torem(16px);
+      margin-right: rem.torem(12px);
     }
   }
 
   .stock-form-info {
-    flex: 1 0 rem.torem(180px);
     margin-right: 0;
   }
 
   .stock-actions {
-    margin-top: rem.torem(-17px);
+    &.stock-first-action {
+      margin-top: rem.torem(-6px);
+    }
+    margin-top: rem.torem(-40px);
   }
 }

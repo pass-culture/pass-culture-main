@@ -19,6 +19,7 @@ interface IFieldLayoutProps {
   smallLabel?: boolean
   hideFooter?: boolean
   inline?: boolean
+  classNameLabel?: string
   classNameFooter?: string
 }
 /* istanbul ignore next: DEBT, TO FIX */
@@ -36,6 +37,7 @@ const FieldLayout = ({
   smallLabel,
   hideFooter = false,
   inline = false,
+  classNameLabel,
   classNameFooter,
 }: IFieldLayoutProps): JSX.Element => (
   <div
@@ -46,7 +48,7 @@ const FieldLayout = ({
     data-testid={`wrapper-${name}`}
   >
     <label
-      className={cn(styles['field-layout-label'], {
+      className={cn(styles['field-layout-label'], classNameLabel, {
         [styles['label-hidden']]: isLabelHidden,
       })}
       htmlFor={name}

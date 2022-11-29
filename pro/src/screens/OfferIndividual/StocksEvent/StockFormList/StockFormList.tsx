@@ -63,6 +63,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
           <div className={styles['form-list']}>
             {values.stocks.map((stockValues: IStockEventFormValues, index) => (
               <StockEventFormRow
+                key={index}
                 stockIndex={index}
                 Form={
                   <StockEventForm

@@ -18,11 +18,13 @@ interface ITimePickerProps {
   dateTime?: Date
   smallLabel?: boolean
   classNameFooter?: string
+  classNameLabel?: string
 }
 
 const TimePicker = ({
   name,
   className,
+  classNameLabel,
   classNameFooter,
   disabled,
   label,
@@ -42,6 +44,7 @@ const TimePicker = ({
       name={name}
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}
+      classNameLabel={classNameLabel}
       classNameFooter={classNameFooter}
     >
       <ReactDatePicker

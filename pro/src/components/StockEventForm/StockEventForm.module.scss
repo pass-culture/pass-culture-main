@@ -1,17 +1,19 @@
 @use 'styles/mixins/_rem.scss' as rem;
 
-.input-quantity, .input-beginning-time, .input-price {
-    flex: 1 0 rem.torem(112px);
-}
-
-.input-bookingLimitDatetime {
-    min-width: rem.torem(208px);
-}
-
 .field-layout-footer {
-    min-height: rem.torem(32px);
+  min-height: rem.torem(32px);
 }
 
 .field-layout-align-self {
-    align-self: flex-start;
+  align-self: flex-start;
+}
+
+.input-beginning-time {
+  flex: 1 0 rem.torem(90px);
+}
+.input-quantity {
+  flex: 1 0 rem.torem(85px);
+}
+.input-price {
+  flex: 1 0 rem.torem(90px);
 }
