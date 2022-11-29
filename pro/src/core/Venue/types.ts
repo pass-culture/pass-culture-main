@@ -15,6 +15,7 @@ export type TOfferIndividualVenue = {
   isVirtual: boolean
   withdrawalDetails: string | null
   accessibility: IAccessibiltyFormValues
+  bookingEmail?: string | null
 }
 
 export type VenueCollectiveInformation = Pick<
