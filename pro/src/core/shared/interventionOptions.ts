@@ -116,10 +116,6 @@ export const MAINLAND_OPTION_LABEL = 'France métropolitaine'
 export const CULTURAL_PARTNER_OPTION_LABEL = 'Dans mon lieu'
 
 export const otherInterventionOptions: SelectOption[] = [
-  {
-    value: ALL_FRANCE_OPTION_VALUE,
-    label: ALL_FRANCE_OPTION_LABEL,
-  },
   { value: MAINLAND_OPTION_VALUE, label: MAINLAND_OPTION_LABEL },
 ]
 
