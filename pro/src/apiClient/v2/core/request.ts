@@ -7,6 +7,7 @@ import type { ApiResult } from './ApiResult';
 import { CancelablePromise } from './CancelablePromise';
 import type { OnCancel } from './CancelablePromise';
 import type { OpenAPIConfig } from './OpenAPI';
+import { URL_FOR_MAINTENANCE } from 'utils/config'
 
 const isDefined = <T>(value: T | null | undefined): value is Exclude<T, null | undefined> => {
   return value !== undefined && value !== null;
@@ -258,6 +259,12 @@ const catchErrorCodes = (options: ApiRequestOptions, result: ApiResult): void =>
   }
 
   const error = errors[result.status];
+
+  if (result.status === 503) {
+    window.location.assign(URL_FOR_MAINTENANCE)
+    return
+  }
+
   if (error) {
     throw new ApiError(options, result, error);
   }
