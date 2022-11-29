@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 
 import {
   StockEventForm,
-  setFormReadOnlyFields,
   IStockEventFormValues,
   STOCK_EVENT_FORM_DEFAULT_VALUES,
 } from 'components/StockEventForm'
@@ -67,17 +66,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
               <StockEventFormRow
                 key={index}
                 stockIndex={index}
-                Form={
-                  <StockEventForm
-                    today={today}
-                    readOnlyFields={setFormReadOnlyFields(
-                      offer,
-                      stockValues.beginningDate || null,
-                      today
-                    )}
-                    stockIndex={index}
-                  />
-                }
+                Form={<StockEventForm today={today} stockIndex={index} />}
                 actions={[
                   {
                     callback: async () => {

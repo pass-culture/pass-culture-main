@@ -10,6 +10,7 @@ import { getToday } from 'utils/date'
 
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../constants'
 import StockEventForm, { IStockEventFormProps } from '../StockEventForm'
+import { IStockEventFormValues } from '../types'
 import { getValidationSchema } from '../validationSchema'
 
 jest.mock('utils/date', () => ({
@@ -28,20 +29,20 @@ yesterday.setDate(yesterday.getDate() - 1)
 oneWeekLater.setDate(oneWeekLater.getDate() + 7)
 
 const renderStockEventForm = ({
-  minQuantity,
+  initialValues = STOCK_EVENT_FORM_DEFAULT_VALUES,
   onSubmit = jest.fn(),
 }: {
-  minQuantity?: number | null
+  initialValues?: IStockEventFormValues
   onSubmit?: () => void
 } = {}) => {
   const props: IStockEventFormProps = { today, stockIndex: 0 }
   return render(
     <Formik
       initialValues={{
-        stocks: [STOCK_EVENT_FORM_DEFAULT_VALUES],
+        stocks: [initialValues],
       }}
       onSubmit={onSubmit}
-      validationSchema={getValidationSchema(minQuantity)}
+      validationSchema={getValidationSchema()}
     >
       {({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>
@@ -159,7 +160,12 @@ describe('StockEventForm:validationSchema', () => {
   )
 
   it('should display quantity error when min quantity is given', async () => {
-    renderStockEventForm({ minQuantity: 10 })
+    renderStockEventForm({
+      initialValues: {
+        ...STOCK_EVENT_FORM_DEFAULT_VALUES,
+        bookingsQuantity: '10',
+      },
+    })
 
     const inputQuantity = screen.getByLabelText('Quantité')
     await userEvent.type(inputQuantity, '9')

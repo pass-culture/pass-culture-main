@@ -1,46 +1,93 @@
-import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
+import { OfferStatus } from 'apiClient/v1'
+import { IOfferIndividualStock } from 'core/Offers/types'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../constants'
 import { IStockEventFormValues } from '../types'
+import { setFormReadOnlyFields } from '../utils'
 
-export const buildSingleInitialValues =
-  (departementCode: string) => (stock: IOfferIndividualStock) => {
-    return {
-      stockId: stock.id,
-      remainingQuantity: stock.remainingQuantity?.toString() || 'unlimited',
-      bookingsQuantity: stock.bookingsQuantity.toString(),
-      quantity: stock.quantity?.toString() || '',
+interface IBuildSingleInitialValuesArgs {
+  departmentCode: string
+  stock: IOfferIndividualStock
+  today: Date
+  lastProviderName: string | null
+  offerStatus: OfferStatus
+}
+
+export const buildSingleInitialValues = ({
+  departmentCode,
+  stock,
+  today,
+  lastProviderName,
+  offerStatus,
+}: IBuildSingleInitialValuesArgs): IStockEventFormValues => {
+  const hiddenValues = {
+    stockId: stock.id,
+    isDeletable: stock.isEventDeletable,
+    readOnlyFields: setFormReadOnlyFields({
       beginningDate: stock.beginningDatetime
-        ? getLocalDepartementDateTimeFromUtc(
-            stock.beginningDatetime,
-            departementCode
-          )
+        ? new Date(stock.beginningDatetime)
         : null,
-      beginningTime: stock.beginningDatetime
-        ? getLocalDepartementDateTimeFromUtc(
-            stock.beginningDatetime,
-            departementCode
-          )
-        : null,
-      bookingLimitDatetime: stock.bookingLimitDatetime
-        ? getLocalDepartementDateTimeFromUtc(
-            stock.bookingLimitDatetime,
-            departementCode
-          )
-        : null,
-      price: stock.price.toString(),
-      isDeletable: stock.isEventDeletable,
-    }
+      today,
+      lastProviderName: lastProviderName,
+      offerStatus,
+    }),
   }
 
-export const buildInitialValues = (
-  offer: IOfferIndividual
-): { stocks: IStockEventFormValues[] } => {
+  return {
+    ...hiddenValues,
+    remainingQuantity: stock.remainingQuantity?.toString() || 'unlimited',
+    bookingsQuantity: stock.bookingsQuantity.toString(),
+    quantity: stock.quantity?.toString() || '',
+    beginningDate: stock.beginningDatetime
+      ? getLocalDepartementDateTimeFromUtc(
+          stock.beginningDatetime,
+          departmentCode
+        )
+      : null,
+    beginningTime: stock.beginningDatetime
+      ? getLocalDepartementDateTimeFromUtc(
+          stock.beginningDatetime,
+          departmentCode
+        )
+      : null,
+    bookingLimitDatetime: stock.bookingLimitDatetime
+      ? getLocalDepartementDateTimeFromUtc(
+          stock.bookingLimitDatetime,
+          departmentCode
+        )
+      : null,
+    price: stock.price.toString(),
+  }
+}
+
+export interface IBuildInitialValuesArgs {
+  departmentCode: string
+  offerStocks: IOfferIndividualStock[]
+  today: Date
+  lastProviderName: string | null
+  offerStatus: OfferStatus
+}
+
+export const buildInitialValues = ({
+  departmentCode,
+  offerStocks,
+  today,
+  lastProviderName,
+  offerStatus,
+}: IBuildInitialValuesArgs): { stocks: IStockEventFormValues[] } => {
   return {
     stocks:
-      offer.stocks.length > 0
-        ? offer.stocks.map(buildSingleInitialValues(offer.venue.departmentCode))
+      offerStocks.length > 0
+        ? offerStocks.map(stock =>
+            buildSingleInitialValues({
+              departmentCode,
+              stock,
+              today,
+              lastProviderName,
+              offerStatus,
+            })
+          )
         : [STOCK_EVENT_FORM_DEFAULT_VALUES],
   }
 }
