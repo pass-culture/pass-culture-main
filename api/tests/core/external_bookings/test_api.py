@@ -51,7 +51,7 @@ class GetExternalBookingsClientApiTest:
         venue_provider = providers_factories.VenueProviderFactory(
             provider=cds_provider, venueIdAtOfferProvider="test_id"
         )
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+        cinema_provider_pivot = providers_factories.CDSCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         providers_factories.CDSCinemaDetailsFactory(

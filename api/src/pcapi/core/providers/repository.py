@@ -5,6 +5,7 @@ from typing import cast
 from flask_sqlalchemy import BaseQuery
 
 from pcapi.core.offerers.models import Venue
+from pcapi.models import db
 
 from . import constants
 from . import exceptions
@@ -90,7 +91,9 @@ def get_providers_to_exclude(venue: Venue) -> list[str]:
 def get_cds_cinema_details(cinema_id: str) -> models.CDSCinemaDetails:
     cinema_details = (
         models.CDSCinemaDetails.query.join(models.CinemaProviderPivot)
+        .join(models.CinemaProviderPivot.provider)
         .filter(models.CinemaProviderPivot.idAtProvider == cinema_id)
+        .filter(models.Provider.localClass == "CDSStocks")
         .one()
     )
     return cinema_details
@@ -106,7 +109,9 @@ def get_cinema_venue_provider_query(venue_id: int) -> BaseQuery:
 def get_boost_cinema_details(cinema_id: str) -> models.BoostCinemaDetails:
     cinema_details = (
         models.BoostCinemaDetails.query.join(models.CinemaProviderPivot)
+        .join(models.CinemaProviderPivot.provider)
         .filter(models.CinemaProviderPivot.idAtProvider == cinema_id)
+        .filter(models.Provider.localClass == "BoostStocks")
         .one()
     )
     return cinema_details
@@ -157,3 +162,12 @@ def find_latest_sync_part_end_event(provider: models.Provider) -> models.LocalPr
         .order_by(models.LocalProviderEvent.date.desc())
         .first()
     )
+
+
+def id_at_provider_exists_for_provider(id_at_provider: str, provider_id: int) -> bool:
+    return db.session.query(
+        models.CinemaProviderPivot.query.filter(
+            models.CinemaProviderPivot.idAtProvider == id_at_provider,
+            models.CinemaProviderPivot.providerId == provider_id,
+        ).exists()
+    ).scalar()

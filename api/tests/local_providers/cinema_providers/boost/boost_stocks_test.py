@@ -7,7 +7,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.factories import BoostCinemaDetailsFactory
-from pcapi.core.providers.factories import CinemaProviderPivotFactory
+from pcapi.core.providers.factories import BoostCinemaProviderPivotFactory
 from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import BoostStocks
@@ -20,7 +20,7 @@ class BoostStocksTest:
     def should_return_providable_info_on_next(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider)
-        cinema_provider_pivot = CinemaProviderPivotFactory(
+        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
@@ -70,7 +70,7 @@ class BoostStocksTest:
     def should_fill_offer_and_product_and_stock_informations_for_each_movie(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
-        cinema_provider_pivot = CinemaProviderPivotFactory(
+        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
@@ -147,7 +147,7 @@ class BoostStocksTest:
     def should_not_create_stock_when_showtime_does_not_have_pass_culture_pricing(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
-        cinema_provider_pivot = CinemaProviderPivotFactory(
+        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
@@ -174,7 +174,7 @@ class BoostStocksTest:
     def should_update_stock_with_the_correct_stock_quantity(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
-        cinema_provider_pivot = CinemaProviderPivotFactory(
+        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")

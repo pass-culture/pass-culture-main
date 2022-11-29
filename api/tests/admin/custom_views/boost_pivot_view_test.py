@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
+import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.factories import AdminFactory
 
 from tests.conftest import TestClient
@@ -14,9 +15,6 @@ class CreateBoostPivotTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_create_boost_information(self, _mocked_validate_csrf_token, app):
         AdminFactory(email="admin@example.fr")
-        providers_factories.ProviderFactory(
-            localClass="BoostStocks"
-        )  # Fixme(yacine-hc 14-10-2022) remove this line when boostStocks Provider added to DB
         venue = offerers_factories.VenueFactory()
 
         data = {
@@ -41,15 +39,35 @@ class CreateBoostPivotTest:
         assert boost_cinema_details.password == "password_test"
         assert boost_cinema_details.cinemaUrl == "https://test.com/"
 
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_id_at_provider_unicity(self, _mocked_validate_csrf_token, app):
+        AdminFactory(email="user@example.com")
+        venue = offerers_factories.VenueFactory()
+        boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
+        _cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue, provider=boost_provider, idAtProvider="cinema_test"
+        )
+        data = {
+            "venue_id": venue.id,
+            "account_id": "account_test",
+            "cinema_id": "cinema_test",
+            "api_token": "token_test",
+        }
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post("/pc/back-office/boost/new", form=data)
+
+        assert response.status_code == 200
+        assert "Cet identifiant cinéma existe déjà pour un autre lieu" in response.data.decode("utf8")
+        assert providers_models.CinemaProviderPivot.query.count() == 1
+
 
 class EditBoostPivotTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_update_boost_information(self, _mocked_validate_csrf_token, app):
         AdminFactory(email="admin@example.fr")
-        boost_provider = providers_factories.ProviderFactory(
-            localClass="BoostStocks"
-        )  # Fixme(yacine-hc 14-10-2022) remove this line when boostStocks Provider added to DB
+        boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
         venue = offerers_factories.VenueFactory()
         cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
             venue=venue, provider=boost_provider, idAtProvider="12"
@@ -86,9 +104,7 @@ class DeleteBoostPivotTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_delete_boost_information(self, _mocked_validate_csrf_token, app):
         AdminFactory(email="admin@example.fr")
-        boost_provider = providers_factories.ProviderFactory(
-            localClass="BoostStocks"
-        )  # Fixme(yacine-hc 14-10-2022) remove this line when boostStocks Provider added to DB
+        boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
         venue = offerers_factories.VenueFactory()
         cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
             venue=venue, provider=boost_provider, idAtProvider="12"
@@ -111,9 +127,7 @@ class DeleteBoostPivotTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_should_not_delete_boost_pivot_when_venue_provider_exist(self, _mocked_validate_csrf_token, app):
         AdminFactory(email="admin@example.fr")
-        boost_provider = providers_factories.ProviderFactory(
-            localClass="BoostStocks"
-        )  # Fixme(yacine-hc 14-10-2022) remove this line when boostStocks Provider added to DB
+        boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
         venue = offerers_factories.VenueFactory()
         cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
             venue=venue, provider=boost_provider, idAtProvider="12"
