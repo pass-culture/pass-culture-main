@@ -18,7 +18,6 @@ from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.domain import admin_emails
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.utils import date as date_utils
@@ -370,7 +369,6 @@ def validate_offer(offer_id: int) -> utils.BackofficeResponse:
             else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
         )
         transactional_mails.send_offer_validation_status_update_email(offer, new_validation, recipients)
-        admin_emails.send_offer_validation_notification_to_administration(new_validation, offer)
         flash("L'offre a été validée avec succès", "success")
         search.async_index_offer_ids([offer.id])
 
@@ -424,7 +422,6 @@ def reject_offer(offer_id: int) -> utils.BackofficeResponse:
             else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
         )
         transactional_mails.send_offer_validation_status_update_email(offer, new_validation, recipients)
-        admin_emails.send_offer_validation_notification_to_administration(new_validation, offer)
         flash("L'offre a été rejetée avec succès", "success")
         search.async_index_offer_ids([offer.id])
 

@@ -391,13 +391,7 @@ class OfferValidationViewTest:
 
     @freeze_time("2032-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
-    def test_approve_offer_and_send_mail_to_administration(
-        self,
-        mocked_send_offer_validation_notification_to_administration,
-        mocked_validate_csrf_token,
-        client,
-    ):
+    def test_approve_offer(self, mocked_validate_csrf_token, client):
         # Given
         config_yaml = """
                     minimum_score: 0.6
@@ -414,32 +408,22 @@ class OfferValidationViewTest:
         admin = users_factories.AdminFactory(email="admin@example.com")
         import_offer_validation_config(config_yaml, admin)
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
-        data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
 
         # When
-        response = client.with_session_auth("admin@example.com").post(
-            url_for("validation.edit", id=offer.id), form=data
-        )
+        data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
+        client = client.with_session_auth("admin@example.com")
+        response = client.post(url_for("validation.edit", id=offer.id), form=data)
 
         # Then
         assert response.status_code == 302
         assert url_for("validation.index_view") in response.location
         assert offer.validation == OfferValidationStatus.APPROVED
-        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
-            OfferValidationStatus.APPROVED, offer
-        )
         assert offer.lastValidationDate == datetime.datetime(2032, 11, 17, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
     @freeze_time("2032-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
-    def test_reject_offer_and_send_mail_to_administration(
-        self,
-        mocked_send_offer_validation_notification_to_administration,
-        mocked_validate_csrf_token,
-        client,
-    ):
+    def test_reject_offer(self, mocked_validate_csrf_token, client):
         # Given
         config_yaml = """
                     minimum_score: 0.6
@@ -457,17 +441,12 @@ class OfferValidationViewTest:
         import_offer_validation_config(config_yaml, admin)
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
-        data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
-
         # When
-        response = client.with_session_auth("admin@example.com").post(
-            url_for("validation.edit", id=offer.id), form=data
-        )
+        data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
+        client = client.with_session_auth("admin@example.com")
+        response = client.post(url_for("validation.edit", id=offer.id), form=data)
 
         # Then
-        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
-            OfferValidationStatus.REJECTED, offer
-        )
         assert response.status_code == 302
         assert url_for("validation.index_view") in response.location
         assert offer.validation == OfferValidationStatus.REJECTED
@@ -625,13 +604,7 @@ class OfferValidationViewTest:
 
     @freeze_time("2032-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
-    def test_approve_collective_offer_template_and_send_mail_to_administration(
-        self,
-        mocked_send_offer_validation_notification_to_administration,
-        mocked_validate_csrf_token,
-        client,
-    ):
+    def test_approve_collective_offer_template(self, mocked_validate_csrf_token, client):
         # Given
         config_yaml = """
                     minimum_score: 0.6
@@ -650,9 +623,9 @@ class OfferValidationViewTest:
         offer = educational_factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.PENDING, isActive=True
         )
-        data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
 
         # When
+        data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
         response = client.with_session_auth("admin@example.com").post(
             url_for("validation-collective-offer-template.edit", id=offer.id), form=data
         )
@@ -661,21 +634,12 @@ class OfferValidationViewTest:
         assert response.status_code == 302
         assert url_for("validation-collective-offer-template.index_view") in response.location
         assert offer.validation == OfferValidationStatus.APPROVED
-        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
-            OfferValidationStatus.APPROVED, offer
-        )
         assert offer.lastValidationDate == datetime.datetime(2032, 11, 17, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
     @freeze_time("2032-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
-    def test_reject_collective_offer_template_and_send_mail_to_administration(
-        self,
-        mocked_send_offer_validation_notification_to_administration,
-        mocked_validate_csrf_token,
-        client,
-    ):
+    def test_reject_collective_offer_template(self, mocked_validate_csrf_token, client):
         # Given
         config_yaml = """
                     minimum_score: 0.6
@@ -693,17 +657,13 @@ class OfferValidationViewTest:
         import_offer_validation_config(config_yaml, admin)
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=OfferValidationStatus.PENDING)
 
-        data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
-
         # When
+        data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
         response = client.with_session_auth("admin@example.com").post(
             url_for("validation-collective-offer-template.edit", id=offer.id), form=data
         )
 
         # Then
-        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
-            OfferValidationStatus.REJECTED, offer
-        )
         assert response.status_code == 302
         assert url_for("validation-collective-offer-template.index_view") in response.location
         assert offer.validation == OfferValidationStatus.REJECTED
@@ -836,13 +796,7 @@ class OfferValidationViewTest:
     @freeze_time("2032-11-17 15:00:00")
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
-    def test_approve_collective_offer_and_send_mail_to_administration_and_notify_adage(
-        self,
-        mocked_send_offer_validation_notification_to_administration,
-        mocked_validate_csrf_token,
-        client,
-    ):
+    def test_approve_collective_offer_and_notify_adage(self, mocked_validate_csrf_token, client):
         # Given
         config_yaml = """
                     minimum_score: 0.6
@@ -864,9 +818,9 @@ class OfferValidationViewTest:
             collectiveOffer__isActive=True,
             collectiveOffer__institution=educational_institution,
         ).collectiveOffer
-        data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
 
         # When
+        data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
         response = client.with_session_auth("admin@example.com").post(
             url_for("validation-collective-offer.edit", id=offer.id), form=data
         )
@@ -875,9 +829,6 @@ class OfferValidationViewTest:
         assert response.status_code == 302
         assert url_for("validation-collective-offer.index_view") in response.location
         assert offer.validation == OfferValidationStatus.APPROVED
-        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
-            OfferValidationStatus.APPROVED, offer
-        )
         assert offer.lastValidationDate == datetime.datetime(2032, 11, 17, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
@@ -887,13 +838,7 @@ class OfferValidationViewTest:
 
     @freeze_time("2032-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
-    def test_reject_collective_offer_and_send_mail_to_administration(
-        self,
-        mocked_send_offer_validation_notification_to_administration,
-        mocked_validate_csrf_token,
-        client,
-    ):
+    def test_reject_collective_offer_and_send_mail_to_administration(self, mocked_validate_csrf_token, client):
         # Given
         config_yaml = """
                     minimum_score: 0.6
@@ -911,17 +856,13 @@ class OfferValidationViewTest:
         import_offer_validation_config(config_yaml, admin)
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
 
-        data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
-
         # When
+        data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
         response = client.with_session_auth("admin@example.com").post(
             url_for("validation-collective-offer.edit", id=offer.id), form=data
         )
 
         # Then
-        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
-            OfferValidationStatus.REJECTED, offer
-        )
         assert response.status_code == 302
         assert url_for("validation-collective-offer.index_view") in response.location
         assert offer.validation == OfferValidationStatus.REJECTED
@@ -1094,13 +1035,11 @@ class OfferViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
-    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_approved_offer(
         self,
-        mocked_send_offer_validation_notification_to_administration,
         mocked_send_offer_validation_status_update_email,
         mocked_validate_csrf_token,
-        app,
+        client,
     ):
         users_factories.AdminFactory(email="admin@example.com")
         with freeze_time("2032-11-17 15:00:00") as frozen_time:
@@ -1109,8 +1048,7 @@ class OfferViewTest:
             )
             frozen_time.move_to("2032-12-20 15:00:00")
             data = dict(validation=OfferValidationStatus.REJECTED.value)
-            client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-
+            client = client.with_session_auth("admin@example.com")
             response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
 
         assert response.status_code == 302
@@ -1118,9 +1056,6 @@ class OfferViewTest:
         assert offer.lastValidationDate == datetime.datetime(2032, 12, 20, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
-        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
-            OfferValidationStatus.REJECTED, offer
-        )
         mocked_send_offer_validation_status_update_email.assert_called_once_with(
             offer, OfferValidationStatus.REJECTED, ["offerer@example.com"]
         )
@@ -1128,21 +1063,18 @@ class OfferViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
-    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_approve_rejected_offer(
         self,
-        mocked_send_offer_validation_notification_to_administration,
         mocked_send_offer_validation_status_update_email,
         mocked_validate_csrf_token,
-        app,
+        client,
     ):
         users_factories.AdminFactory(email="admin@example.com")
         with freeze_time("2032-11-17 15:00:00") as frozen_time:
             offer = offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED, isActive=True)
             frozen_time.move_to("2032-12-20 15:00:00")
             data = dict(validation=OfferValidationStatus.APPROVED.value)
-            client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-
+            client = client.with_session_auth("admin@example.com")
             response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
 
         assert response.status_code == 302
@@ -1150,23 +1082,18 @@ class OfferViewTest:
         assert offer.lastValidationDate == datetime.datetime(2032, 12, 20, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
-        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
-            OfferValidationStatus.APPROVED, offer
-        )
         assert mocked_send_offer_validation_status_update_email.call_count == 1
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
-    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     @patch("pcapi.workers.push_notification_job.send_cancel_booking_notification.delay")
     def test_reject_approved_offer_with_bookings(
         self,
         mocked_send_cancel_booking_notification,
-        mocked_send_offer_validation_notification_to_administration,
         mocked_send_offer_validation_status_update_email,
         mocked_validate_csrf_token,
-        app,
+        client,
     ):
         users_factories.AdminFactory(email="admin@example.com")
         with freeze_time("2032-11-17 15:00:00") as frozen_time:
@@ -1176,8 +1103,7 @@ class OfferViewTest:
             used_booking = booking_factories.UsedBookingFactory(stock=stock)
             frozen_time.move_to("2032-12-20 15:00:00")
             data = dict(validation=OfferValidationStatus.REJECTED.value)
-            client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-
+            client = client.with_session_auth("admin@example.com")
             response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
 
         assert response.status_code == 302

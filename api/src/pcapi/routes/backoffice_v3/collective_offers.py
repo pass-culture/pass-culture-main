@@ -15,7 +15,6 @@ from pcapi.core.educational.adage_backends.serialize import serialize_collective
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.domain import admin_emails
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
@@ -187,7 +186,6 @@ def validate_collective_offer(collective_offer_id: int) -> utils.BackofficeRespo
     )
 
     transactional_mails.send_offer_validation_status_update_email(collective_offer, new_validation_status, recipients)
-    admin_emails.send_offer_validation_notification_to_administration(new_validation_status, collective_offer)
 
     if collective_offer.institutionId is not None:
         adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
@@ -242,7 +240,6 @@ def reject_collective_offer(collective_offer_id: int) -> utils.BackofficeRespons
     )
 
     transactional_mails.send_offer_validation_status_update_email(collective_offer, new_validation_status, recipients)
-    admin_emails.send_offer_validation_notification_to_administration(new_validation_status, collective_offer)
 
     if collective_offer.institutionId is not None:
         adage_client.notify_institution_association(serialize_collective_offer(collective_offer))

@@ -51,7 +51,6 @@ from pcapi.core.offers.offer_validation import compute_offer_validation_score
 from pcapi.core.offers.offer_validation import parse_offer_validation_config
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_user_can_load_config
-from pcapi.domain import admin_emails
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
@@ -311,7 +310,6 @@ class OfferView(BaseAdminView):
                     else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
                 )
                 transactional_mails.send_offer_validation_status_update_email(offer, new_validation, recipients)
-                admin_emails.send_offer_validation_notification_to_administration(new_validation, offer)
                 logger.info(
                     "validation status updated",
                     extra={"offer": offer.id, "offer_validation": offer.validation},
@@ -486,8 +484,6 @@ class ValidationBaseView(BaseAdminView):
                         else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
                     )
                     transactional_mails.send_offer_validation_status_update_email(offer, validation_status, recipients)
-                    admin_emails.send_offer_validation_notification_to_administration(validation_status, offer)
-
                     if isinstance(offer, CollectiveOffer) and offer.institutionId is not None:
                         adage_client.notify_institution_association(serialize_collective_offer(offer))
                 else:
@@ -537,10 +533,7 @@ class ValidationBaseView(BaseAdminView):
                         if offer.venue.bookingEmail
                         else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
                     )
-
                     transactional_mails.send_offer_validation_status_update_email(offer, validation_status, recipients)
-                    admin_emails.send_offer_validation_notification_to_administration(validation_status, offer)
-
                     if isinstance(offer, CollectiveOffer) and offer.institutionId is not None:
                         adage_client.notify_institution_association(serialize_collective_offer(offer))
 
