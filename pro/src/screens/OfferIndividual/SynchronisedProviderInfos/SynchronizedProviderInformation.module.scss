@@ -1,7 +1,9 @@
 @use 'styles/mixins/_rem.scss' as rem;
+$provider-banner-height: rem.torem(52px);
+
 .banner-provider {
 	width: 100%;
-	height: 52px;
+	height: $provider-banner-height;
 	padding: 0;
 }
 
