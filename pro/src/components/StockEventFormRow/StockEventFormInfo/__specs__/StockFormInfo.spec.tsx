@@ -15,7 +15,7 @@ const renderStockFormInfo = () => {
       onSubmit={() => {}}
     >
       <Form>
-        <StockEventFormInfo index={0} />
+        <StockEventFormInfo stockIndex={0} />
       </Form>
     </Formik>
   )

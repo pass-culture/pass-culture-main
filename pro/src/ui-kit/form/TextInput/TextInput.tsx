@@ -14,6 +14,7 @@ interface ITextInputProps
   readOnly?: boolean
   hideFooter?: boolean
   label: string
+  isLabelHidden?: boolean
   placeholder?: string
   type?: 'text' | 'number' | 'email' | 'url' | 'password' | 'tel'
   countCharacters?: boolean
@@ -36,6 +37,7 @@ const TextInput = ({
   readOnly,
   hideFooter,
   label,
+  isLabelHidden = false,
   placeholder,
   countCharacters,
   maxLength,
@@ -62,6 +64,7 @@ const TextInput = ({
       hideFooter={hideFooter}
       isOptional={isOptional}
       label={label}
+      isLabelHidden={isLabelHidden}
       maxLength={maxLength}
       name={name}
       showError={meta.touched && !!meta.error}

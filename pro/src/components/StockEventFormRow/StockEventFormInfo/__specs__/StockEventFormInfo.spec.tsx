@@ -21,7 +21,7 @@ const renderStockFormInfo = () => {
   return render(
     <Formik initialValues={{ stocks: [stock] }} onSubmit={() => {}}>
       <Form>
-        <StockFormInfo index={0} />
+        <StockFormInfo stockIndex={0} />
       </Form>
     </Formik>
   )

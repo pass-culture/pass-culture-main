@@ -9,31 +9,33 @@ import styles from './StockEventFormInfo.module.scss'
 
 interface IStockEventFormInfoProps {
   className?: string
-  index: number
+  stockIndex: number
 }
 const StockEventFormInfo = ({
-  index,
+  stockIndex,
   className,
 }: IStockEventFormInfoProps): JSX.Element => {
   const { values } = useFormikContext<{ stocks: IStockEventFormValues[] }>()
-  const { remainingQuantity, bookingsQuantity } = values.stocks[index]
+  const { remainingQuantity, bookingsQuantity } = values.stocks[stockIndex]
   return (
     <div className={cn(styles['stock-form-info'], className)}>
       <TextInput
-        name={`stocks[${index}]remainingQuantity`}
+        name={`stocks[${stockIndex}]remainingQuantity`}
         value={
           remainingQuantity === 'unlimited' ? 'Illimité' : remainingQuantity
         }
         readOnly
         label="Stock restant"
+        isLabelHidden={stockIndex !== 0}
         smallLabel
         classNameFooter={styles['field-layout-footer']}
       />
       <TextInput
-        name={`stocks[${index}]bookingsQuantity`}
+        name={`stocks[${stockIndex}]bookingsQuantity`}
         value={bookingsQuantity || 0}
         readOnly
         label="Réservations"
+        isLabelHidden={stockIndex !== 0}
         smallLabel
         classNameFooter={styles['field-layout-footer']}
       />

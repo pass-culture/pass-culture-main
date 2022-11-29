@@ -17,6 +17,7 @@ interface IDatePickerProps {
   classNameFooter?: string
   disabled?: boolean
   label: string
+  isLabelHidden?: boolean
   maxDateTime?: Date
   minDateTime?: Date
   openingDateTime?: Date
@@ -34,6 +35,7 @@ const DatePicker = ({
   classNameFooter,
   disabled,
   label,
+  isLabelHidden = false,
   smallLabel,
   isOptional = false,
   onChange,
@@ -47,6 +49,7 @@ const DatePicker = ({
       classNameFooter={classNameFooter}
       error={meta.error}
       label={label}
+      isLabelHidden={isLabelHidden}
       name={name}
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}
