@@ -391,7 +391,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       venueId: 'VID virtual',
       visualDisabilityCompliant: true,
       withdrawalDetails: 'Offer withdrawalDetails',
-      withdrawalDelay: undefined,
+      withdrawalDelay: null,
       withdrawalType: undefined,
     })
     expect(api.getOffer).toHaveBeenCalledTimes(1)
