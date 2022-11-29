@@ -169,6 +169,11 @@ class CinemaProviderPivot(PcObject, Base, Model):
             "providerId",
             name="unique_pivot_venue_provider",
         ),
+        UniqueConstraint(
+            "providerId",
+            "idAtProvider",
+            name="unique_provider_id_at_provider",
+        ),
     )
 
 
