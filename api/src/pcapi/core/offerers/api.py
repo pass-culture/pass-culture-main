@@ -1306,9 +1306,10 @@ def count_offerers_by_validation_status() -> dict[str, int]:
     return {status.name: stats.get(status, 0) for status in offerers_models.ValidationStatus}
 
 
-def _filter_on_validation_status(
+def _filter_on_validation_status_legacy(
     query: sa.orm.Query, filter_dict: dict, cls: typing.Type[offerers_models.ValidationStatusMixin]
 ) -> sa.orm.Query:
+    # This function becomes deprecated when backoffice v2 is stopped
     status_list = filter_dict.get("status")
     if status_list:
         statuses = []
@@ -1346,7 +1347,7 @@ def list_offerers_to_be_validated_legacy(
 
     filter_dict = {f["field"]: f["value"] for f in filter_}
 
-    query = _filter_on_validation_status(query, filter_dict, offerers_models.Offerer)
+    query = _filter_on_validation_status_legacy(query, filter_dict, offerers_models.Offerer)
 
     tags = filter_dict.get("tags")
     if tags:
@@ -1389,6 +1390,52 @@ def list_offerers_to_be_validated_legacy(
     return query
 
 
+def _apply_query_filters(
+    query: sa.orm.Query,
+    tags: list[offerers_models.OffererTag] | None,
+    status: list[offerers_models.ValidationStatus] | None,
+    from_date: datetime | None,
+    to_date: datetime | None,
+    cls: typing.Type[offerers_models.Offerer | offerers_models.UserOfferer],
+    offerer_id_column: sa.orm.InstrumentedAttribute,
+) -> sa.orm.Query:
+    if status:
+        query = query.filter(cls.validationStatus.in_(status))  # type: ignore [union-attr]
+    else:
+        query = query.filter(cls.isWaitingForValidation)
+
+    if tags:
+        tagged_offerers = (
+            sa.select(offerers_models.Offerer.id, sa.func.array_agg(offerers_models.OffererTag.id).label("tags"))
+            .join(
+                offerers_models.OffererTagMapping,
+                offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
+            )
+            .join(
+                offerers_models.OffererTag,
+                offerers_models.OffererTag.id == offerers_models.OffererTagMapping.tagId,
+            )
+            .group_by(
+                offerers_models.Offerer.id,
+            )
+            .cte()
+        )
+
+        query = query.join(tagged_offerers, tagged_offerers.c.id == offerer_id_column).filter(
+            sa.and_(*(tagged_offerers.c.tags.any(tag.id) for tag in tags))
+        )
+
+    if from_date:
+        min_datetime = datetime.combine(from_date, datetime.min.time())
+        query = query.filter(cls.dateCreated >= min_datetime)
+
+    if to_date:
+        max_datetime = datetime.combine(to_date, datetime.max.time())
+        query = query.filter(cls.dateCreated <= max_datetime)
+
+    return query
+
+
 def list_offerers_to_be_validated(
     q: str | None,  # search query
     tags: list[offerers_models.OffererTag] | None = None,
@@ -1413,41 +1460,9 @@ def list_offerers_to_be_validated(
             name = clean_accents(name)
             query = query.filter(sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{name}%"))
 
-    if status:
-        query = query.filter(offerers_models.Offerer.validationStatus.in_(status))
-    else:
-        query = query.filter(offerers_models.Offerer.isWaitingForValidation)
-
-    if tags:
-        tagged_offerers = (
-            sa.select(offerers_models.Offerer.id, sa.func.array_agg(offerers_models.OffererTag.id).label("tags"))
-            .join(
-                offerers_models.OffererTagMapping,
-                offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
-            )
-            .join(
-                offerers_models.OffererTag,
-                offerers_models.OffererTag.id == offerers_models.OffererTagMapping.tagId,
-            )
-            .group_by(
-                offerers_models.Offerer.id,
-            )
-            .cte()
-        )
-
-        query = query.join(tagged_offerers, tagged_offerers.c.id == offerers_models.Offerer.id).filter(
-            sa.and_(*(tagged_offerers.c.tags.any(tag.id) for tag in tags))
-        )
-
-    if from_date:
-        min_datetime = datetime.combine(from_date, datetime.min.time())
-        query = query.filter(offerers_models.Offerer.dateCreated >= min_datetime)
-
-    if to_date:
-        max_datetime = datetime.combine(to_date, datetime.max.time())
-        query = query.filter(offerers_models.Offerer.dateCreated <= max_datetime)
-
-    return query
+    return _apply_query_filters(
+        query, tags, status, from_date, to_date, offerers_models.Offerer, offerers_models.Offerer.id
+    )
 
 
 def is_top_actor(offerer: offerers_models.Offerer) -> bool:
@@ -1470,12 +1485,13 @@ def list_users_offerers_to_be_validated_legacy(filter_: list[dict[str, typing.An
     )
 
     filter_dict = {f["field"]: f["value"] for f in filter_}
-    query = _filter_on_validation_status(query, filter_dict, offerers_models.UserOfferer)
+    query = _filter_on_validation_status_legacy(query, filter_dict, offerers_models.UserOfferer)
 
     return query
 
 
 def list_users_offerers_to_be_validated(
+    tags: list[offerers_models.OffererTag] | None = None,
     status: list[offerers_models.ValidationStatus] | None = None,
     from_date: datetime | None = None,
     to_date: datetime | None = None,
@@ -1491,20 +1507,9 @@ def list_users_offerers_to_be_validated(
         .joinedload(offerers_models.UserOfferer.user),
     )
 
-    if status:
-        query = query.filter(offerers_models.UserOfferer.validationStatus.in_(status))
-    else:
-        query = query.filter(offerers_models.UserOfferer.isWaitingForValidation)
-
-    if from_date:
-        min_datetime = datetime.combine(from_date, datetime.min.time())
-        query = query.filter(offerers_models.UserOfferer.dateCreated >= min_datetime)
-
-    if to_date:
-        max_datetime = datetime.combine(to_date, datetime.max.time())
-        query = query.filter(offerers_models.UserOfferer.dateCreated <= max_datetime)
-
-    return query
+    return _apply_query_filters(
+        query, tags, status, from_date, to_date, offerers_models.UserOfferer, offerers_models.UserOfferer.offererId
+    )
 
 
 def get_metabase_stats_iframe_url(
