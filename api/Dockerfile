@@ -80,7 +80,7 @@ RUN pip install \
 		--no-cache-dir \
 		--editable .
 
-ENTRYPOINT ./entrypoint.sh
+ENTRYPOINT exec ./entrypoint.sh
 
 ######### CONSOLE #########
 
