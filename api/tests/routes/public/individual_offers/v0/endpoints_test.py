@@ -289,5 +289,5 @@ class PostProductTest:
         )
 
         assert response.status_code == 404
-        assert response.json == {"venueId": ["There is no Venue associated to your ApiKey"]}
+        assert response.json == {"venueId": ["There is no venue with this id associated to your API key"]}
         assert offers_models.Offer.query.first() is None
