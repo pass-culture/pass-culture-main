@@ -110,9 +110,12 @@ const OfferIndividualForm = ({
             readOnlyFields={readOnlyFields}
           />
           <Accessibility readOnlyFields={readOnlyFields} />
-          <OptionDuo />
-          <ExternalLink />
-          <Notifications venueBookingEmail={venue?.bookingEmail} />
+          <OptionDuo readOnlyFields={readOnlyFields} />
+          <ExternalLink readOnlyFields={readOnlyFields} />
+          <Notifications
+            venueBookingEmail={venue?.bookingEmail}
+            readOnlyFields={readOnlyFields}
+          />
         </>
       )}
     </>

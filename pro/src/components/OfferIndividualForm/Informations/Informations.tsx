@@ -45,7 +45,7 @@ const Informations = ({
           label="Description"
           maxLength={1000}
           name="description"
-          disabled={readOnlyFields.includes('name')}
+          disabled={readOnlyFields.includes('description')}
         />
       </FormLayout.Row>
       {hasSpeaker && (
@@ -55,12 +55,19 @@ const Informations = ({
             label="Intervenant"
             maxLength={1000}
             name="speaker"
+            disabled={readOnlyFields.includes('speaker')}
           />
         </FormLayout.Row>
       )}
       {hasAuthor && (
         <FormLayout.Row>
-          <TextInput isOptional label="Auteur" maxLength={1000} name="author" />
+          <TextInput
+            isOptional
+            label="Auteur"
+            maxLength={1000}
+            name="author"
+            disabled={readOnlyFields.includes('author')}
+          />
         </FormLayout.Row>
       )}
       {hasVisa && (
@@ -70,12 +77,19 @@ const Informations = ({
             label="Visa d’exploitation"
             maxLength={1000}
             name="visa"
+            disabled={readOnlyFields.includes('visa')}
           />
         </FormLayout.Row>
       )}
       {hasIsbn && (
         <FormLayout.Row>
-          <TextInput isOptional label="ISBN" maxLength={1000} name="isbn" />
+          <TextInput
+            isOptional
+            label="ISBN"
+            maxLength={1000}
+            name="isbn"
+            disabled={readOnlyFields.includes('isbn')}
+          />
         </FormLayout.Row>
       )}
       {hasStageDirector && (
@@ -85,6 +99,7 @@ const Informations = ({
             label="Metteur en scène"
             maxLength={1000}
             name="stageDirector"
+            disabled={readOnlyFields.includes('stageDirector')}
           />
         </FormLayout.Row>
       )}
@@ -95,6 +110,7 @@ const Informations = ({
             label="Interprète"
             maxLength={1000}
             name="performer"
+            disabled={readOnlyFields.includes('performer')}
           />
         </FormLayout.Row>
       )}
@@ -106,6 +122,7 @@ const Informations = ({
             label={'Durée'}
             name="durationMinutes"
             className={styles['input-durationMinutes']}
+            disabled={readOnlyFields.includes('durationMinutes')}
           />
         </FormLayout.Row>
       )}

@@ -29,7 +29,7 @@ const setFormReadOnlyFields = (
   if (isOfferSynchronized(offer)) {
     let editableFields: string[] = []
     if (isAllocineProvider(offer.lastProvider)) {
-      editableFields = ['isDuo']
+      editableFields = ['isDuo', 'accessibility', 'externalTicketOfficeUrl']
     } else {
       editableFields = ['accessibility', 'externalTicketOfficeUrl']
     }

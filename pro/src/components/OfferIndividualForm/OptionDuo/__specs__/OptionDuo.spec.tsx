@@ -7,13 +7,15 @@ import * as yup from 'yup'
 
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm/types'
 
-import OptionDuo from '../OptionDuo'
+import OptionDuo, { IOptionDuo } from '../OptionDuo'
 import validationSchema from '../validationSchema'
 
 const renderOptionDuo = ({
+  props,
   initialValues,
   onSubmit = jest.fn(),
 }: {
+  props?: IOptionDuo
   initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
 }) => {
@@ -23,7 +25,7 @@ const renderOptionDuo = ({
       onSubmit={onSubmit}
       validationSchema={yup.object().shape(validationSchema)}
     >
-      <OptionDuo />
+      <OptionDuo {...props} />
     </Formik>
   )
 }
@@ -70,5 +72,22 @@ describe('OfferIndividual section: OptionDuo', () => {
         })
       ).not.toBeInTheDocument()
     })
+  })
+
+  it('should disable read only fields', () => {
+    const initialValues: Partial<IOfferIndividualFormValues> = {
+      subCategoryFields: ['isDuo'],
+    }
+    const props = {
+      readOnlyFields: ['isDuo'],
+    }
+
+    renderOptionDuo({
+      props,
+      initialValues,
+      onSubmit,
+    })
+
+    expect(screen.getByTestId('checkbox')).toBeDisabled()
   })
 })

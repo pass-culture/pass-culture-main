@@ -115,6 +115,7 @@ const UsefulInformations = ({
             name="url"
             type="text"
             placeholder="https://exemple.com"
+            disabled={readOnlyFields.includes('url')}
           />
         </FormLayout.Row>
       )}

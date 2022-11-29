@@ -3,7 +3,11 @@ import React from 'react'
 import FormLayout from 'components/FormLayout'
 import { InfoBox, TextInput } from 'ui-kit'
 
-const ExternalLink = (): JSX.Element => {
+export interface IExternalLink {
+  readOnlyFields?: string[]
+}
+
+const ExternalLink = ({ readOnlyFields }: IExternalLink): JSX.Element => {
   return (
     <FormLayout.Section title="Lien pour le grand public">
       <FormLayout.Row
@@ -20,6 +24,7 @@ const ExternalLink = (): JSX.Element => {
           isOptional
           type="text"
           placeholder="https://exemple.com"
+          disabled={readOnlyFields?.includes('externalTicketOfficeUrl')}
         />
       </FormLayout.Row>
     </FormLayout.Section>
