@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variabilize "bind" when we will merge dockerfiles. "127.0.0.1 for devs and 0.0.0.0 for kubernetes"
-gunicorn \
+exec gunicorn \
     --preload \
     --bind 0.0.0.0:$GUNICORN_PORT \
     --worker-class gthread \
