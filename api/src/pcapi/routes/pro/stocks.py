@@ -12,7 +12,9 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import get_stocks_for_offer
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
+from pcapi.routes.serialization import stock_serialize
 from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
 from pcapi.routes.serialization.stock_serialize import StockIdsResponseModel
 from pcapi.routes.serialization.stock_serialize import StockResponseModel
@@ -53,17 +55,43 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
+    offer = Offer.query.get(body.offer_id)
+    upserted_stocks = []
+    edited_stocks_with_update_info: list[tuple[Stock, bool]] = []
     try:
-        stocks = offers_api.upsert_stocks(body.offer_id, body.stocks)
+        with transaction():
+            for stock_payload in body.stocks:
+                if isinstance(stock_payload, stock_serialize.StockEditionBodyModel):
+                    edited_stock, is_beginning_updated = offers_api.edit_stock(
+                        offer,
+                        price=stock_payload.price,
+                        stock_id=stock_payload.id,
+                        quantity=stock_payload.quantity,
+                        beginning_datetime=stock_payload.beginning_datetime,
+                        booking_limit_datetime=stock_payload.booking_limit_datetime,
+                    )
+                    upserted_stocks.append(edited_stock)
+                    edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
+                else:
+                    created_stock = offers_api.create_stock(
+                        offer,
+                        price=stock_payload.price,
+                        activation_codes=stock_payload.activation_codes,
+                        activation_codes_expiration_datetime=stock_payload.activation_codes_expiration_datetime,
+                        quantity=stock_payload.quantity,
+                        beginning_datetime=stock_payload.beginning_datetime,
+                        booking_limit_datetime=stock_payload.booking_limit_datetime,
+                    )
+                    upserted_stocks.append(created_stock)
+
     except offers_exceptions.BookingLimitDatetimeTooLate:
         raise ApiErrors(
             {"stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]},
             status_code=400,
         )
+    offers_api.handle_stocks_edition(body.offer_id, edited_stocks_with_update_info)
 
-    return StockIdsResponseModel(
-        stockIds=[StockIdResponseModel.from_orm(stock) for stock in stocks],
-    )
+    return StockIdsResponseModel(stockIds=[StockIdResponseModel.from_orm(stock) for stock in upserted_stocks])
 
 
 @private_api.route("/stocks/<stock_id>", methods=["DELETE"])
