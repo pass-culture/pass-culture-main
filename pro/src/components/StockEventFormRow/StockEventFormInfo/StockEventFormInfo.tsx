@@ -3,6 +3,7 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import { IStockEventFormValues } from 'components/StockEventForm'
+import formRowStyles from 'components/StockEventFormRow/SharedStockEventFormRow.module.scss'
 import { TextInput } from 'ui-kit'
 
 import styles from './StockEventFormInfo.module.scss'
@@ -28,6 +29,8 @@ const StockEventFormInfo = ({
         label="Stock restant"
         isLabelHidden={stockIndex !== 0}
         smallLabel
+        className={styles['field-info-remaining-stocks']}
+        classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
       />
       <TextInput
@@ -37,6 +40,8 @@ const StockEventFormInfo = ({
         label="Réservations"
         isLabelHidden={stockIndex !== 0}
         smallLabel
+        className={styles['field-info-bookings']}
+        classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
       />
     </div>

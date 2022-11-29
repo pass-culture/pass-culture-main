@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React from 'react'
 
 import { StockFormActions } from '../StockFormActions'
@@ -33,7 +34,11 @@ const StockEventFormRow = ({
       )}
 
       {actions && actions.length > 0 && (
-        <div className={styles['stock-actions']}>
+        <div
+          className={cn(styles['stock-actions'], {
+            [styles['stock-first-action']]: stockIndex == 0,
+          })}
+        >
           <StockFormActions actions={actions} disabled={actionDisabled} />
         </div>
       )}

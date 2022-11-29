@@ -9,6 +9,7 @@ interface ITextInputProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   name: string
   className?: string
+  classNameLabel?: string
   classNameFooter?: string
   disabled?: boolean
   readOnly?: boolean
@@ -33,6 +34,7 @@ const TextInput = ({
   type = 'text',
   className,
   classNameFooter,
+  classNameLabel,
   disabled,
   readOnly,
   hideFooter,
@@ -58,6 +60,7 @@ const TextInput = ({
   return (
     <FieldLayout
       className={className}
+      classNameLabel={classNameLabel}
       classNameFooter={classNameFooter}
       count={countCharacters ? field.value.length : undefined}
       error={meta.error}
