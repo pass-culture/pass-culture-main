@@ -29,7 +29,9 @@ def _retrieve_venue_from_location(
             offerers_models.Venue.managingOffererId == offerer_id,
         ).one_or_none()
         if not venue:
-            raise api_errors.ApiErrors({"venueId": ["There is no Venue associated to your ApiKey"]}, status_code=404)
+            raise api_errors.ApiErrors(
+                {"venueId": ["There is no venue with this id associated to your API key"]}, status_code=404
+            )
 
     else:
         venue = offerers_models.Venue.query.filter(
@@ -40,7 +42,7 @@ def _retrieve_venue_from_location(
             raise api_errors.ApiErrors(
                 {
                     "global": [
-                        f"The digital Venue associated to your ApiKey could not be automatically determined. Please contact support at {settings.SUPPORT_PRO_EMAIL_ADDRESS}."
+                        f"The digital venue associated to your API key could not be automatically determined. Please contact support at {settings.SUPPORT_PRO_EMAIL_ADDRESS}."
                     ]
                 },
                 status_code=400,
