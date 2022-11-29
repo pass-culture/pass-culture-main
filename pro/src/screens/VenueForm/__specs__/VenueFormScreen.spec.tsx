@@ -419,5 +419,60 @@ describe('screen | VenueForm', () => {
         ).toBeInTheDocument()
       })
     })
+
+    it('should let update the virtual venue with limited fields', async () => {
+      formValues.isVenueVirtual = true
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: true,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        venue
+      )
+
+      const editVenue = jest.spyOn(api, 'editVenue').mockResolvedValue(venue)
+
+      await userEvent.click(screen.getByText(/Enregistrer/))
+      expect(editVenue).toHaveBeenCalledWith('id', { reimbursementPointId: 91 })
+    })
+  })
+
+  describe('Displaying', () => {
+    it('should diplay only some fields when the venue is virtual', async () => {
+      venue.isVirtual = true
+
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: false,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        venue
+      )
+
+      expect(screen.queryByTestId('wrapper-publicName')).not.toBeInTheDocument()
+      expect(screen.queryByText('Adresse du lieu')).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('wrapper-description')
+      ).not.toBeInTheDocument()
+      expect(screen.queryByTestId('wrapper-venueLabel')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Accessibilité du lieu')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Informations de retrait de vos offres')
+      ).not.toBeInTheDocument()
+      expect(screen.queryByText('Contact')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(
+          'Cette adresse s’appliquera par défaut à toutes vos offres, vous pourrez la modifier à l’échelle de chaque offre.'
+        )
+      ).not.toBeInTheDocument()
+    })
   })
 })

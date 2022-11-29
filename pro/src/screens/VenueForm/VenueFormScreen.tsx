@@ -224,6 +224,7 @@ const VenueFormScreen = ({
             provider={providers}
             venue={venue}
             offerer={offerer}
+            initialIsVirtual={initialIsVirtual}
           />
         </form>
       </FormikProvider>

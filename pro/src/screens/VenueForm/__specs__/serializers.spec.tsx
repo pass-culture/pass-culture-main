@@ -1,8 +1,10 @@
 import '@testing-library/jest-dom'
 
+import { EditVenueBodyModel } from 'apiClient/v1'
 import { IVenueFormValues } from 'components/VenueForm'
 
 import {
+  EditVirtualVenueBodyModel,
   serializeEditVenueBodyModel,
   serializePostVenueBodyModel,
 } from '../serializers'
@@ -67,7 +69,7 @@ describe('screen | VenueForm | serializers', () => {
   })
 
   it('Serialize form value for venue updating with comment', async () => {
-    const result = serializeEditVenueBodyModel(formValues, {
+    const result: EditVenueBodyModel = serializeEditVenueBodyModel(formValues, {
       hideSiret: true,
     })
 
@@ -76,7 +78,7 @@ describe('screen | VenueForm | serializers', () => {
   })
 
   it('Serialize form value for venue updating with venueLabelId', async () => {
-    const result = serializeEditVenueBodyModel(formValues, {
+    const result: EditVenueBodyModel = serializeEditVenueBodyModel(formValues, {
       hideSiret: true,
     })
 
@@ -131,14 +133,18 @@ describe('screen | VenueForm | serializers', () => {
   })
 
   it('Serialize form value for venue updating with siret', async () => {
-    const result = serializeEditVenueBodyModel(formValues, { hideSiret: false })
+    const result: EditVenueBodyModel = serializeEditVenueBodyModel(formValues, {
+      hideSiret: false,
+    })
 
     expect(result.siret).not.toBeUndefined()
     expect(result.comment).toEqual('')
   })
 
   it('Serialize form value for venue updating with comment', async () => {
-    const result = serializeEditVenueBodyModel(formValues, { hideSiret: true })
+    const result: EditVenueBodyModel = serializeEditVenueBodyModel(formValues, {
+      hideSiret: true,
+    })
 
     expect(result.siret).toBeUndefined()
     expect(result.comment).not.toEqual('')
@@ -196,7 +202,7 @@ describe('screen | VenueForm | serializers', () => {
       expect(result.contact?.phoneNumber).toBeNull()
     })
     it("User should be able to delete a venue's contact info", async () => {
-      const result = serializeEditVenueBodyModel(
+      const result: EditVenueBodyModel = serializeEditVenueBodyModel(
         {
           bannerMeta: undefined,
           comment: 'Commentaire',
@@ -295,7 +301,7 @@ describe('screen | VenueForm | serializers', () => {
     })
 
     it("User should be able to delete a venue's venueLabel", async () => {
-      const result = serializeEditVenueBodyModel(
+      const result: EditVenueBodyModel = serializeEditVenueBodyModel(
         {
           bannerMeta: undefined,
           comment: 'Commentaire',
@@ -340,6 +346,69 @@ describe('screen | VenueForm | serializers', () => {
       )
 
       expect(result.venueLabelId).toBeNull()
+    })
+
+    it('should only be able to update reimbursement point if virtual', async () => {
+      const result: EditVirtualVenueBodyModel = serializeEditVenueBodyModel(
+        {
+          bannerMeta: undefined,
+          comment: 'Commentaire',
+          description: '',
+          isVenueVirtual: true,
+          bookingEmail: 'em@ail.fr',
+          name: 'MINISTERE DE LA CULTURE',
+          publicName: 'Melodie Sims',
+          siret: '881 457 238 23022',
+          venueType: 'GAMES',
+          venueLabel: '',
+          departmentCode: '',
+          address: 'PARIS',
+          addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
+          'search-addressAutocomplete': 'PARIS',
+          city: 'Saint-Malo',
+          latitude: 48.635699,
+          longitude: -2.006961,
+          postalCode: '35400',
+          accessibility: {
+            visual: false,
+            mental: true,
+            audio: false,
+            motor: true,
+            none: false,
+          },
+          isAccessibilityAppliedOnAllOffers: false,
+          phoneNumber: '',
+          email: '',
+          webSite: '',
+          isPermanent: false,
+          id: '',
+          bannerUrl: '',
+          withdrawalDetails: 'Oui',
+          venueSiret: null,
+          isWithdrawalAppliedOnAllOffers: false,
+          reimbursementPointId: 91,
+        },
+        {
+          hideSiret: false,
+        }
+      )
+
+      expect(Object.keys(result).length).toEqual(1)
+      expect(result.reimbursementPointId).not.toBeNull()
+    })
+
+    it('should be able to update virtual venue without a reimbursement', async () => {
+      const result: EditVirtualVenueBodyModel = serializeEditVenueBodyModel(
+        {
+          isVenueVirtual: true,
+        } as IVenueFormValues,
+        {
+          hideSiret: false,
+        }
+      )
+
+      expect(Object.keys(result).length).toEqual(1)
+      expect(result.reimbursementPointId).toBeNull()
     })
   })
 })

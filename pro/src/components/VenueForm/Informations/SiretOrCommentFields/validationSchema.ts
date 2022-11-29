@@ -14,31 +14,37 @@ const generateSiretValidationSchema = (
   isSiretValued: boolean
 ) => {
   const siretValidationSchema = {
-    siret: yup
-      .string()
-      .required('Veuillez renseigner un SIRET')
-      .test(
-        'len',
-        'Le SIRET doit comporter 14 caractères',
-        siret => !!siret && valideSiretLength(siret)
-      )
-      .test(
-        'correspondingToSiren',
-        'Le code SIRET doit correspondre à un établissement de votre structure',
-        siret => siret && isSiretStartingWithSiren(siret, siren)
-      )
-      .test(
-        'apiSiretValid',
-        'Le code SIRET saisi n’est pas valide',
-        async siret => {
-          const response = await siretApiValidate(siret || '')
-          return !response
-        }
-      ),
+    siret: yup.string().when('isVenueVirtual', {
+      is: false,
+      then: yup
+        .string()
+        .required('Veuillez renseigner un SIRET')
+        .test(
+          'len',
+          'Le SIRET doit comporter 14 caractères',
+          siret => !!siret && valideSiretLength(siret)
+        )
+        .test(
+          'correspondingToSiren',
+          'Le code SIRET doit correspondre à un établissement de votre structure',
+          siret => siret && isSiretStartingWithSiren(siret, siren)
+        )
+        .test(
+          'apiSiretValid',
+          'Le code SIRET saisi n’est pas valide',
+          async siret => {
+            const response = await siretApiValidate(siret || '')
+            return !response
+          }
+        ),
+    }),
   }
 
   const commentValidationSchema = {
-    comment: yup.string().required('Veuillez renseigner un commentaire'),
+    comment: yup.string().when('isVenueVirtual', {
+      is: false,
+      then: yup.string().required('Veuillez renseigner un commentaire'),
+    }),
   }
 
   /* istanbul ignore next */

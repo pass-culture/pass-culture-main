@@ -38,7 +38,7 @@ const renderInformations = ({
   )
 }
 
-describe('components | Activity', () => {
+describe('Activity', () => {
   let props: IActivity
   let initialValues: Partial<IVenueFormValues>
   const onSubmit = jest.fn()
@@ -81,5 +81,27 @@ describe('components | Activity', () => {
     expect(
       screen.getByText('Veuillez sélectionner un type de lieu')
     ).toBeInTheDocument()
+  })
+
+  it('Should display less fields and infos when venue is virtual', async () => {
+    props.isVenueVirtual = true
+    renderInformations({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
+    expect(screen.queryByTestId('wrapper-description')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText(
+        'Ces informations seront affichées dans votre page lieu sur l’application pass Culture (sauf pour les lieux administratifs). Elles permettront aux jeunes d’en savoir plus sur votre lieu.'
+      )
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText(
+        "S’il s'agit ici de la création du lieu de votre siège social, sélectionnez “lieu administratif”."
+      )
+    ).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Type de lieu')).toBeDisabled()
   })
 })

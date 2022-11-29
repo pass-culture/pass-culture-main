@@ -27,10 +27,14 @@ const validationSchema = {
         return url ? url.match(urlRegex) !== null : true
       },
     }),
+  isVenueVirtual: yup.boolean(),
   bookingEmail: yup
     .string()
-    .required('Veuillez renseigner une adresse e-mail')
-    .email('Veuillez renseigner un e-mail valide'),
+    .email('Veuillez renseigner un e-mail valide')
+    .when('isVenueVirtual', {
+      is: false,
+      then: yup.string().required('Veuillez renseigner une adresse e-mail'),
+    }),
 }
 
 export default validationSchema

@@ -52,7 +52,7 @@ class IdentifierFields extends PureComponent {
       readOnly,
       siren,
       updateIsSiretValued,
-      venueIsVirtual,
+      isVenueVirtual,
       venueLabels,
       venueLabelId,
       venueTypes,
@@ -82,7 +82,7 @@ class IdentifierFields extends PureComponent {
           )}
         </h2>
         <div className="field-group">
-          {!venueIsVirtual && (
+          {!isVenueVirtual && (
             <SiretOrCommentFields
               siretLabel={siretLabel}
               readOnly={readOnly || initialSiret !== null}
@@ -100,7 +100,7 @@ class IdentifierFields extends PureComponent {
             readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
             required
           />
-          {!venueIsVirtual && (
+          {!isVenueVirtual && (
             <TextField
               label="Nom d’usage du lieu : "
               name="publicName"
@@ -112,7 +112,7 @@ class IdentifierFields extends PureComponent {
             name="bookingEmail"
             readOnly={readOnly}
             renderTooltip={this.handleTooltipBookingEmail(readOnly)}
-            required={!venueIsVirtual}
+            required={!isVenueVirtual}
             type="email"
             placeholder="email@exemple.com"
           />
@@ -139,7 +139,7 @@ class IdentifierFields extends PureComponent {
               {readOnly ? (
                 <div className="venue-type-label" id="venue-type">
                   <span>
-                    {venueIsVirtual ? 'Offre numérique' : venueTypeLabel}
+                    {isVenueVirtual ? 'Offre numérique' : venueTypeLabel}
                   </span>
                 </div>
               ) : (
@@ -169,7 +169,7 @@ class IdentifierFields extends PureComponent {
               )}
             </div>
           </div>
-          {!venueIsVirtual && (
+          {!isVenueVirtual && (
             <div
               className={classnames('field field-select is-label-aligned', {
                 readonly: readOnly,
@@ -213,7 +213,7 @@ class IdentifierFields extends PureComponent {
               </div>
             </div>
           )}
-          {!venueIsVirtual && (
+          {!isVenueVirtual && (
             <TextareaField
               label="Description : "
               name="description"
@@ -235,7 +235,7 @@ IdentifierFields.defaultProps = {
   isToggleDisabled: false,
   readOnly: true,
   siren: null,
-  venueIsVirtual: false,
+  isVenueVirtual: false,
   venueLabelId: null,
   venueTypeCode: null,
 }
@@ -250,7 +250,7 @@ IdentifierFields.propTypes = {
   readOnly: PropTypes.bool,
   siren: PropTypes.string,
   updateIsSiretValued: PropTypes.func,
-  venueIsVirtual: PropTypes.bool,
+  isVenueVirtual: PropTypes.bool,
   venueLabelId: PropTypes.string,
   venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,
   venueTypeCode: PropTypes.string,

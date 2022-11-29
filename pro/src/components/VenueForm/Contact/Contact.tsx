@@ -4,43 +4,50 @@ import FormLayout from 'components/FormLayout'
 import { InfoBox, TextInput } from 'ui-kit'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
-const Contact = () => {
+export interface IContactProps {
+  isVenueVirtual?: boolean
+}
+const Contact = ({ isVenueVirtual = false }: IContactProps) => {
   return (
     <>
-      <FormLayout.Section
-        title="Contact"
-        description={
-          'Ces informations seront affichées dans votre page lieu, sur l’application pass Culture. ' +
-          'Elles permettront aux bénéficiaires de vous contacter en cas de besoin.'
-        }
-      >
-        <FormLayout.Row>
-          <PhoneNumberInput name="phoneNumber" isOptional />
-        </FormLayout.Row>
-        <FormLayout.Row>
-          <TextInput
-            name="email"
-            label="Adresse e-mail"
-            placeholder="email@exemple.com"
-            isOptional
-          />
-        </FormLayout.Row>
-        <FormLayout.Row>
-          <TextInput
-            name="webSite"
-            label="URL de votre site web"
-            placeholder="https://exemple.com"
-            isOptional
-          />
-        </FormLayout.Row>
-      </FormLayout.Section>
+      {!isVenueVirtual && (
+        <FormLayout.Section
+          title="Contact"
+          description={
+            'Ces informations seront affichées dans votre page lieu, sur l’application pass Culture. ' +
+            'Elles permettront aux bénéficiaires de vous contacter en cas de besoin.'
+          }
+        >
+          <FormLayout.Row>
+            <PhoneNumberInput name="phoneNumber" isOptional />
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <TextInput
+              name="email"
+              label="Adresse e-mail"
+              placeholder="email@exemple.com"
+              isOptional
+            />
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <TextInput
+              name="webSite"
+              label="URL de votre site web"
+              placeholder="https://exemple.com"
+              isOptional
+            />
+          </FormLayout.Row>
+        </FormLayout.Section>
+      )}
       <FormLayout.Section title="Notifications de réservations">
         <FormLayout.Row
           sideComponent={
-            <InfoBox
-              type="info"
-              text="Cette adresse s’appliquera par défaut à toutes vos offres, vous pourrez la modifier à l’échelle de chaque offre."
-            />
+            isVenueVirtual ? null : (
+              <InfoBox
+                type="info"
+                text="Cette adresse s’appliquera par défaut à toutes vos offres, vous pourrez la modifier à l’échelle de chaque offre."
+              />
+            )
           }
         >
           <TextInput
@@ -48,6 +55,8 @@ const Contact = () => {
             label="Adresse e-mail"
             type="email"
             placeholder="email@exemple.com"
+            isOptional={isVenueVirtual}
+            disabled={isVenueVirtual}
           />
         </FormLayout.Row>
       </FormLayout.Section>

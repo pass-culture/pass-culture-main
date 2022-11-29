@@ -13,7 +13,7 @@ export interface IInformations {
   readOnly: boolean
   updateIsSiretValued: (value: boolean) => void
   setIsSiretValued: (value: boolean) => void
-  venueIsVirtual: boolean
+  isVenueVirtual: boolean
   siren: string
 }
 
@@ -21,7 +21,7 @@ const Informations = ({
   isCreatedEntity,
   readOnly,
   updateIsSiretValued,
-  venueIsVirtual,
+  isVenueVirtual,
   setIsSiretValued,
   siren,
 }: IInformations) => {
@@ -31,8 +31,8 @@ const Informations = ({
   return (
     <>
       <FormLayout.Section title="Informations du lieu">
-        <FormLayout.Row>
-          {!venueIsVirtual && (
+        {!isVenueVirtual && (
+          <FormLayout.Row>
             <SiretOrCommentFields
               initialSiret={initialValues.siret}
               readOnly={readOnly || !!initialValues.siret}
@@ -43,25 +43,27 @@ const Informations = ({
               updateIsSiretValued={updateIsSiretValued}
               siren={siren}
             />
-          )}
-        </FormLayout.Row>
+          </FormLayout.Row>
+        )}
         <FormLayout.Row>
           <TextInput
             name="name"
             label="Nom juridique"
-            disabled={readOnly || isFieldNameFrozen}
+            disabled={readOnly || isFieldNameFrozen || isVenueVirtual}
           />
         </FormLayout.Row>
-        <FormLayout.Row
-          sideComponent={
-            <InfoBox
-              type="info"
-              text="À remplir si différent du nom juridique. En le remplissant, c’est ce dernier qui sera utilisé comme nom principal."
-            />
-          }
-        >
-          <TextInput name="publicName" label="Nom d’affichage" isOptional />
-        </FormLayout.Row>
+        {!isVenueVirtual && (
+          <FormLayout.Row
+            sideComponent={
+              <InfoBox
+                type="info"
+                text="À remplir si différent du nom juridique. En le remplissant, c’est ce dernier qui sera utilisé comme nom principal."
+              />
+            }
+          >
+            <TextInput name="publicName" label="Nom d’affichage" isOptional />
+          </FormLayout.Row>
+        )}
       </FormLayout.Section>
     </>
   )

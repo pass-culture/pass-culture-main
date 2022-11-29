@@ -70,7 +70,7 @@ describe('components | SiretOrCommentFields', () => {
     const updateIsSiretValued = jest.fn()
     const setIsSiretValued = jest.fn()
     validationSchema = generateSiretValidationSchema('012345678', true)
-    initialValues = { comment: '', siret: '' }
+    initialValues = { comment: '', siret: '', isVenueVirtual: false }
     props = {
       isCreatedEntity: true,
       setIsFieldNameFrozen: setIsFieldNameFrozen,
@@ -149,7 +149,26 @@ describe('components | SiretOrCommentFields', () => {
 
       expect(onSubmit).toHaveBeenCalledTimes(1)
     })
-    it('should display required message if siret is empty', async () => {
+    it('should display required message if siret is empty for non virtual venue', async () => {
+      const { buttonSubmit } = await renderSiretOrComment({
+        initialValues,
+        onSubmit,
+        props,
+        validationSchema,
+      })
+
+      expect(
+        screen.queryByText('Veuillez renseigner un SIRET')
+      ).not.toBeInTheDocument()
+      await userEvent.click(buttonSubmit)
+
+      expect(
+        await screen.findByText('Veuillez renseigner un SIRET')
+      ).toBeInTheDocument()
+    })
+
+    it('should not display required message if siret is empty for virtual venue', async () => {
+      initialValues.isVenueVirtual = false
       const { buttonSubmit } = await renderSiretOrComment({
         initialValues,
         onSubmit,
@@ -204,7 +223,7 @@ describe('components | SiretOrCommentFields', () => {
 
       expect(siretInput.value).toEqual('123')
     })
-    it('should display too short message if siret is not 14 characters', async () => {
+    it('should display too short message if siret is not 14 characters if venue is non virtual', async () => {
       const { buttonSubmit } = await renderSiretOrComment({
         initialValues,
         onSubmit,
@@ -224,7 +243,7 @@ describe('components | SiretOrCommentFields', () => {
       )
       expect(errorMessage).toBeInTheDocument()
     })
-    it('should display error message if siret does not match siren', async () => {
+    it('should display error message if siret does not match siren if venue is non virtual', async () => {
       const { buttonSubmit } = await renderSiretOrComment({
         initialValues,
         onSubmit,
@@ -244,7 +263,7 @@ describe('components | SiretOrCommentFields', () => {
       )
       expect(errorMessage).toBeInTheDocument()
     })
-    it('should call api validation and display error message if siret is not valid', async () => {
+    it('should call api validation and display error message if siret is not valid if venue is non virtual', async () => {
       jest
         .spyOn(siretApiValidate, 'default')
         .mockResolvedValue('Le code siret est invalide')

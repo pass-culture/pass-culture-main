@@ -90,7 +90,7 @@ describe('components | Informations', () => {
       readOnly: false,
       updateIsSiretValued,
       setIsSiretValued,
-      venueIsVirtual: false,
+      isVenueVirtual: false,
       siren: '123456789',
     }
   })
