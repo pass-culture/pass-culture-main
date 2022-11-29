@@ -109,6 +109,6 @@ class BookTicketTest:
 
         assert len(tickets) == 2
         assert tickets == [
-            external_bookings_models.Ticket(barcode="PCU-000001-7174057", seat_number=None),
-            external_bookings_models.Ticket(barcode="PCU-000002-7174058", seat_number=None),
+            external_bookings_models.Ticket(barcode="90474", seat_number=None),
+            external_bookings_models.Ticket(barcode="90474", seat_number=None),
         ]

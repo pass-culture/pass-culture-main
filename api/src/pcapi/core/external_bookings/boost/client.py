@@ -1,3 +1,4 @@
+import logging
 import typing
 
 from pydantic import parse_obj_as
@@ -8,6 +9,9 @@ import pcapi.core.external_bookings.models as external_bookings_models
 
 from . import constants
 from . import exceptions
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_pcu_pricing_if_exists(
@@ -48,13 +52,22 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         sale_response = boost.post_resource(self.cinema_str_id, boost.ResourceBoost.COMPLETE_SALE, sale_body)
         sale_confirmation_response = parse_obj_as(boost_serializers.SaleConfirmationResponse, sale_response)
 
-        # FIXME(fseguin, 2022-11-08: waiting for the seat specs)
         tickets = []
         for ticket_response in sale_confirmation_response.data.tickets:
+            # same barcode for each Ticket of the sale
+            barcode = str(sale_confirmation_response.data.id)
             seat_number = str(ticket_response.seat.id) if ticket_response.seat else None
-            tickets.append(
-                external_bookings_models.Ticket(barcode=ticket_response.ticketReference, seat_number=seat_number)
-            )
+            extra_data = {
+                "barcode": barcode,
+                "seat_number": seat_number,
+                "ticketReference": ticket_response.ticketReference,
+                "total_amount": sale_confirmation_response.data.amountTaxesIncluded,
+            }
+            # This will be useful for customer support
+            logger.info("Booked Boost Ticket", extra=extra_data)
+            ticket = external_bookings_models.Ticket(barcode=barcode, seat_number=seat_number)
+            tickets.append(ticket)
+
         return tickets
 
     def get_collection_items(
