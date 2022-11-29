@@ -72,11 +72,9 @@ describe('StockEventForm:validationSchema', () => {
       screen.queryByTestId('error-stocks[0]quantity')
     ).not.toBeInTheDocument()
 
-    expect(errorBeginningDate).toHaveTextContent('Veuillez renseigner une date')
-    expect(errorBeginningTime).toHaveTextContent(
-      'Veuillez renseigner un horaire'
-    )
-    expect(errorPrice).toHaveTextContent('Veuillez renseigner un prix')
+    expect(errorBeginningDate).toHaveTextContent('Champ obligatoire')
+    expect(errorBeginningTime).toHaveTextContent('Champ obligatoire')
+    expect(errorPrice).toHaveTextContent('Champ obligatoire')
   })
 
   const dataSetbeginningDate: Array<number> = [
@@ -101,11 +99,11 @@ describe('StockEventForm:validationSchema', () => {
   const dataSetPriceErrors = [
     {
       price: 'ABCD',
-      error: 'Veuillez renseigner un prix',
+      error: 'Doit être un nombre',
     },
     {
       price: '-5',
-      error: 'Le prix ne peut pas être inferieur à 0€',
+      error: 'Doit être positif',
     },
     {
       price: '301',
