@@ -40,7 +40,13 @@ def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
     if any(stock.price is None for stock in body.stocks):
         # FIXME (dbaty, 2022-04-27): temporary log until we make the
         # price mandatory (if we decide to do so).
-        logger.info("Stock API is used without a price", extra={"venue": venue_id})
+        logger.info(
+            "Stock API is used without a price",
+            extra={
+                "venue": venue_id,
+                "references": [stock.ref for stock in body.stocks],
+            },
+        )
     synchronize_stocks_job.delay(stock_details, venue.id)
 
 
