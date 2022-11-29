@@ -1,10 +1,17 @@
+import dataclasses
 from datetime import datetime
+from unittest import mock
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 import pytest
 
+from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings import models as bookings_models
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional import sendinblue_template_ids
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
@@ -111,7 +118,8 @@ class Returns201Test:
         for activation_code in created_stock.activationCodes:
             assert activation_code.expirationDate == datetime(2021, 6, 22, 23, 59, 59)
 
-    def test_upsert_multiple_stocks(self, app):
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_upsert_multiple_stocks(self, mocked_async_index_offer_ids, app):
         # Given
         offer = offers_factories.ThingOfferFactory()
         existing_stock = offers_factories.StockFactory(offer=offer, price=10)
@@ -159,6 +167,163 @@ class Returns201Test:
             assert result_stock.price == expected_stock["price"]
             assert result_stock.quantity == expected_stock["quantity"]
             assert result_stock.bookingLimitDatetime == booking_limit_datetime
+
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+
+    def test_sends_email_if_beginning_date_changes_on_edition(self, app):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@postponed.net")
+        offer = offers_factories.EventOfferFactory(venue=venue, bookingEmail="offer@bookingemail.fr")
+        existing_stock = offers_factories.StockFactory(offer=offer, price=10)
+        beginning = datetime.utcnow() + relativedelta(days=10)
+
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [
+                {
+                    "humanizedId": humanize(existing_stock.id),
+                    "price": 2,
+                    "beginningDatetime": serialize(beginning),
+                    "bookingLimitDatetime": serialize(beginning),
+                },
+            ],
+        }
+        bookings_factories.IndividualBookingFactory(
+            stock=existing_stock, individualBooking__user__email="beneficiary@bookingEmail.fr"
+        )
+        bookings_factories.CancelledBookingFactory(stock=existing_stock)
+
+        # When
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
+
+        # Then
+        assert response.status_code == 201
+        stock = offers_models.Stock.query.one()
+        assert stock.beginningDatetime == beginning
+        assert stock.bookingLimitDatetime == beginning
+
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            sendinblue_template_ids.TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
+        )
+        assert mails_testing.outbox[0].sent_data["To"] == "venue@postponed.net"
+        assert mails_testing.outbox[1].sent_data["template"] == dataclasses.asdict(
+            sendinblue_template_ids.TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value
+        )
+        assert mails_testing.outbox[1].sent_data["To"] == "beneficiary@bookingEmail.fr"
+
+    @mock.patch("pcapi.core.offers.api.update_cancellation_limit_dates")
+    def should_update_bookings_cancellation_limit_date_on_delayed_event(
+        self, mock_update_cancellation_limit_dates, app
+    ):
+        now = datetime.utcnow()
+        event_in_4_days = now + relativedelta(days=4)
+        event_reported_in_10_days = now + relativedelta(days=10)
+        offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
+        existing_stock = offers_factories.StockFactory(offer=offer, beginningDatetime=event_in_4_days)
+        booking = bookings_factories.BookingFactory(stock=existing_stock, dateCreated=now)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [
+                {
+                    "humanizedId": humanize(existing_stock.id),
+                    "price": 2,
+                    "beginningDatetime": serialize(event_reported_in_10_days),
+                    "bookingLimitDatetime": serialize(existing_stock.bookingLimitDatetime),
+                },
+            ],
+        }
+
+        # When
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
+
+        # Then
+        assert response.status_code == 201
+        mock_update_cancellation_limit_dates.assert_called_once_with([booking], event_reported_in_10_days)
+
+    def should_invalidate_booking_token_when_event_is_reported(self, app):
+        # Given
+        now = datetime.utcnow()
+        booking_made_3_days_ago = now - relativedelta(days=3)
+        event_in_4_days = now + relativedelta(days=4)
+        event_reported_in_10_days = now + relativedelta(days=10)
+        offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
+        existing_stock = offers_factories.StockFactory(offer=offer, beginningDatetime=event_in_4_days)
+        booking = bookings_factories.UsedIndividualBookingFactory(
+            stock=existing_stock, dateCreated=booking_made_3_days_ago
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        # When
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [
+                {
+                    "humanizedId": humanize(existing_stock.id),
+                    "price": 2,
+                    "beginningDatetime": serialize(event_reported_in_10_days),
+                    "bookingLimitDatetime": serialize(existing_stock.bookingLimitDatetime),
+                },
+            ],
+        }
+
+        # When
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
+
+        # Then
+        assert response.status_code == 201
+        updated_booking = bookings_models.Booking.query.get(booking.id)
+        assert updated_booking.status is not bookings_models.BookingStatus.USED
+        assert updated_booking.dateUsed is None
+        assert updated_booking.cancellationLimitDate == booking.cancellationLimitDate
+
+    def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self, app):
+        # Given
+        now = datetime.utcnow()
+        date_used_in_48_hours = datetime.utcnow() + relativedelta(days=2)
+        event_in_3_days = now + relativedelta(days=3)
+        event_reported_in_less_48_hours = now + relativedelta(days=1)
+        offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
+        existing_stock = offers_factories.StockFactory(offer=offer, beginningDatetime=event_in_3_days)
+        booking = bookings_factories.UsedIndividualBookingFactory(
+            stock=existing_stock, dateCreated=now, dateUsed=date_used_in_48_hours
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        # When
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [
+                {
+                    "humanizedId": humanize(existing_stock.id),
+                    "price": 2,
+                    "beginningDatetime": serialize(event_reported_in_less_48_hours),
+                    "bookingLimitDatetime": serialize(existing_stock.bookingLimitDatetime),
+                },
+            ],
+        }
+
+        # When
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
+
+        # Then
+        assert response.status_code == 201
+        updated_booking = bookings_models.Booking.query.get(booking.id)
+        assert updated_booking.status is bookings_models.BookingStatus.USED
+        assert updated_booking.dateUsed == date_used_in_48_hours
 
 
 @pytest.mark.usefixtures("db_session")
