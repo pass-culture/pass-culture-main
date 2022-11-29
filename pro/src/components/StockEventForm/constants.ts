@@ -1,7 +1,12 @@
-import { IStockEventFormValues } from './types'
+import { IStockEventFormValues, IStockEventFormHiddenValues } from './types'
+
+const STOCK_EVENT_FORM_DEFAULT_HIDDEN_VALUES: IStockEventFormHiddenValues = {
+  stockId: undefined,
+  isDeletable: true,
+  readOnlyFields: [],
+}
 
 export const STOCK_EVENT_FORM_DEFAULT_VALUES: IStockEventFormValues = {
-  stockId: undefined,
   beginningDate: null,
   beginningTime: null,
   remainingQuantity: '',
@@ -9,7 +14,7 @@ export const STOCK_EVENT_FORM_DEFAULT_VALUES: IStockEventFormValues = {
   quantity: '',
   bookingLimitDatetime: null,
   price: '',
-  isDeletable: true,
+  ...STOCK_EVENT_FORM_DEFAULT_HIDDEN_VALUES,
 }
 
 // 'price','quantity','bookingLimitDatetime', are editable

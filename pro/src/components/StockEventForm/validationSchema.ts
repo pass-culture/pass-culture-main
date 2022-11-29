@@ -6,19 +6,31 @@ const isBeforeBeginningDate = (
   bookingLimitDatetime: Date | undefined | null,
   context: yup.TestContext
 ) => {
-  if (!context.parent.beginningDate || !bookingLimitDatetime) {
+  if (
+    !context.parent.beginningDate ||
+    !bookingLimitDatetime ||
+    context.parent.readOnlyFields.includes('beginningDate')
+  ) {
     return true
   }
   return bookingLimitDatetime <= context.parent.beginningDate
 }
 
-const getSingleValidationSchema = (minQuantity: number | null = null) => {
+const getSingleValidationSchema = () => {
   const validationSchema = {
     beginningDate: yup
       .date()
       .nullable()
       .required('Champ obligatoire')
-      .min(removeTime(getToday()), "L'évènement doit être à venir"),
+      .when(['readOnlyFields'], (readOnlyFields, schema) => {
+        if (readOnlyFields.includes('beginningDate')) {
+          return schema
+        }
+        return schema.min(
+          removeTime(getToday()),
+          "L'évènement doit être à venir"
+        )
+      }),
     beginningTime: yup.string().nullable().required('Champ obligatoire'),
     price: yup
       .number()
@@ -31,28 +43,26 @@ const getSingleValidationSchema = (minQuantity: number | null = null) => {
       message: 'Date invalide',
       test: isBeforeBeginningDate,
     }),
-
+    bookingsQuantity: yup.number(),
     quantity: yup
       .number()
       .typeError('Doit être un nombre')
-      .moreThan(-1, 'Doit être positif'),
-  }
-
-  if (minQuantity !== null) {
-    validationSchema.quantity = validationSchema.quantity.min(
-      minQuantity,
-      'Quantité trop faible'
-    )
+      .moreThan(-1, 'Doit être positif')
+      .when(['bookingsQuantity'], (bookingsQuantity, schema) => {
+        const bookingQuantityNumber = parseInt(bookingsQuantity, 10)
+        if (!isNaN(bookingQuantityNumber)) {
+          return schema.min(bookingQuantityNumber, 'Quantité trop faible')
+        }
+        return schema
+      }),
   }
 
   return validationSchema
 }
 
-export const getValidationSchema = (minQuantity: number | null = null) => {
+export const getValidationSchema = () => {
   const validationSchema = {
-    stocks: yup
-      .array()
-      .of(yup.object().shape(getSingleValidationSchema(minQuantity))),
+    stocks: yup.array().of(yup.object().shape(getSingleValidationSchema())),
   }
 
   return yup.object().shape(validationSchema)

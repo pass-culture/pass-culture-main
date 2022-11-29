@@ -59,14 +59,16 @@ describe('StockEventForm', () => {
   })
 
   it('render disabled field in list', () => {
-    props.readOnlyFields = [
-      'beginningDate',
-      'beginningTime',
-      'bookingLimitDatetime',
-      'price',
-      'quantity',
-    ]
-    renderStockEventForm(props)
+    renderStockEventForm(props, {
+      ...STOCK_EVENT_FORM_DEFAULT_VALUES,
+      readOnlyFields: [
+        'beginningDate',
+        'beginningTime',
+        'bookingLimitDatetime',
+        'price',
+        'quantity',
+      ],
+    })
 
     expect(screen.getByLabelText('Date', { exact: true })).toBeDisabled()
     expect(screen.getByLabelText('Horaire')).toBeDisabled()
@@ -84,6 +86,7 @@ describe('StockEventForm', () => {
       bookingLimitDatetime: new Date('2022-12-28T00:00:00Z'),
       price: '10',
       isDeletable: true,
+      readOnlyFields: [],
     }
 
     renderStockEventForm(props, initialStock)

@@ -28,6 +28,7 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
         bookingLimitDatetime: new Date('2022-10-26T23:00:00+0200'),
         price: '10',
         isDeletable: true,
+        readOnlyFields: [],
       },
     ]
     departementCode = '75'
