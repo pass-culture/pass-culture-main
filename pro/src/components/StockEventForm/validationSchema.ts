@@ -17,21 +17,18 @@ const getSingleValidationSchema = (minQuantity: number | null = null) => {
     beginningDate: yup
       .date()
       .nullable()
-      .required('Veuillez renseigner une date')
+      .required('Champ obligatoire')
       .min(removeTime(getToday()), "L'évènement doit être à venir"),
-    beginningTime: yup
-      .string()
-      .nullable()
-      .required('Veuillez renseigner un horaire'),
+    beginningTime: yup.string().nullable().required('Champ obligatoire'),
     price: yup
       .number()
-      .typeError('Veuillez renseigner un prix')
-      .moreThan(-1, 'Le prix ne peut pas être inferieur à 0€')
+      .typeError('Doit être un nombre')
+      .moreThan(-1, 'Doit être positif')
       .max(300, 'Veuillez renseigner un prix inférieur à 300€')
-      .required('Veuillez renseigner un prix'),
+      .required('Champ obligatoire'),
     bookingLimitDatetime: yup.date().nullable().test({
       name: 'bookingLimitDatetime-before-beginningDate',
-      message: 'Veuillez rentrer une date antérieure à la date de l’évènement',
+      message: 'Date invalide',
       test: isBeforeBeginningDate,
     }),
 
