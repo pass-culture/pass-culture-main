@@ -247,7 +247,7 @@ class GetOffererHistoryTest:
         content = response.data.decode("utf-8")
 
         assert action.comment in content
-        assert action.authorUser.publicName in content
+        assert action.authorUser.full_name in content
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_no_history(self, authenticated_client, offerer):
@@ -327,7 +327,7 @@ class GetOffererHistoryDataTest:
 
         assert found_action.type == action.actionType.value
         assert found_action.date == action.actionDate
-        assert found_action.authorName == action.authorUser.publicName
+        assert found_action.authorName == action.authorUser.full_name
 
     def test_no_action(self, offerer):
         offerer_id = offerer.id
