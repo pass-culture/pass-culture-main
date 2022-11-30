@@ -279,6 +279,13 @@ class UserTest:
         offerers_factories.VenueFactory(managingOfferer=offerer)
         assert user.hasPhysicalVenues
 
+    def test_full_name(self):
+        user = users_factories.UserFactory()
+        assert user.full_name == f"{user.firstName} {user.lastName}"
+
+        no_name_user = users_factories.UserFactory(firstName="", lastName="")
+        assert no_name_user.full_name == ""
+
 
 class HasAccessTest:
     def test_does_not_have_access_if_not_attached(self):
