@@ -14,7 +14,7 @@ from pcapi.models import db
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def test_integration():
+def test_integration(css_font_http_request_mock):
     venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
     factories.BankInformationFactory(venue=venue)
     booking = bookings_factories.IndividualBookingFactory(stock__offer__venue=venue)

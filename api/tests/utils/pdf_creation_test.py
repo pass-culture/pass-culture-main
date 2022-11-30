@@ -27,7 +27,7 @@ class GeneratePdfFromHtmlTest:
         path = TEST_FILES_PATH / "pdf" / "expected_example.pdf"
         return path.read_bytes()
 
-    def test_basics(self, example_html, expected_pdf):
+    def test_basics(self, example_html, expected_pdf, css_font_http_request_mock):
         start = time.perf_counter()
         out = pdf.generate_pdf_from_html(html_content=example_html)
         duration = time.perf_counter() - start
@@ -43,7 +43,7 @@ class GeneratePdfFromHtmlTest:
     # consecutive renderings are done with a one-second interval, the
     # output is different.
     @mock.patch.dict(os.environ, {"SOURCE_DATE_EPOCH": "0"}, clear=True)
-    def test_cache(self, example_html):
+    def test_cache(self, example_html, css_font_http_request_mock):
         pdf.url_cache.delete_cache()
         pdf.url_cache.create_cache()
         metadata = pdf.PdfMetadata(created=datetime.datetime.utcnow())
@@ -60,7 +60,7 @@ class GeneratePdfFromHtmlTest:
         # thus that the second run should be faster).
 
     @freeze_time("2021-07-30 17:25:00")
-    def test_metadata(self, example_html):
+    def test_metadata(self, example_html, css_font_http_request_mock):
         metadata = pdf.PdfMetadata(
             author="Pass Culture Dev Team",
             title="Le dispositif pass Culture",
