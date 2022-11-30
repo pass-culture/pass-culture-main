@@ -64,7 +64,6 @@ from pcapi.utils.human_ids import humanize
 import pcapi.utils.postal_code as postal_code_utils
 
 from . import constants
-from . import tag_categories
 
 
 if typing.TYPE_CHECKING:
@@ -877,18 +876,40 @@ class OffererTag(PcObject, Base, Model):
     name: str = Column(String(140), nullable=False, unique=True)
     label: str = Column(String(140))
     description: str = Column(Text)
-    categoryId: str = sa.Column(sa.Text, nullable=True, index=True)
 
-    def __repr__(self) -> str:
-        return self.name
+    categories: list["OffererTagCategory"] = sa.orm.relationship(
+        "OffererTagCategory", secondary="offerer_tag_category_mapping"
+    )
 
-    @property
-    def category(self) -> tag_categories.OffererTagCategory | None:
-        if not self.categoryId:
-            return None
-        if self.categoryId not in tag_categories.ALL_OFFERER_TAG_CATEGORIES_DICT:
-            raise ValueError(f"Unexpected categoryId '{self.categoryId}' for offerer tag {self.id}")
-        return tag_categories.ALL_OFFERER_TAG_CATEGORIES_DICT[self.categoryId]
+    def __str__(self) -> str:
+        return self.label or self.name
+
+
+class OffererTagCategory(PcObject, Base, Model):
+    """
+    Tag categories can be considered as "tags on tags", which aims at filtering tags depending on the projet:
+    tags used for partners counting, tags used for offerer validation, etc.
+    The same OffererTag can be used in one or several project.
+    """
+
+    __tablename__ = "offerer_tag_category"
+
+    name: str = Column(String(140), nullable=False, unique=True)
+    label: str = Column(String(140))
+
+    def __str__(self) -> str:
+        return self.label or self.name
+
+
+class OffererTagCategoryMapping(PcObject, Base, Model):
+    __tablename__ = "offerer_tag_category_mapping"
+
+    tagId: int = Column(BigInteger, ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False)
+    categoryId: int = Column(
+        BigInteger, ForeignKey("offerer_tag_category.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+
+    __table_args__ = (UniqueConstraint("tagId", "categoryId", name="unique_offerer_tag_category"),)
 
 
 class OffererTagMapping(PcObject, Base, Model):
@@ -897,10 +918,4 @@ class OffererTagMapping(PcObject, Base, Model):
     offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
     tagId: int = Column(BigInteger, ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    __table_args__ = (
-        UniqueConstraint(
-            "offererId",
-            "tagId",
-            name="unique_offerer_tag",
-        ),
-    )
+    __table_args__ = (UniqueConstraint("offererId", "tagId", name="unique_offerer_tag"),)
