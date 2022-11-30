@@ -283,10 +283,12 @@ const catchErrorCodes = (
 
   const error = errors[result.status]
 
+  // BEGIN CUSTOM SCRIPT
   if (result.status === 503) {
     window.location.assign(URL_FOR_MAINTENANCE)
     return
   }
+  // END CUSTOM SCRIPT
 
   if (error) {
     throw new ApiError(options, result, error)
