@@ -29,7 +29,8 @@ def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
     Les stocks sont référencés par leur isbn au format EAN13.
 
     Le champ "available" représente la quantité de stocks disponible en librairie.
-    Le champ "price" (optionnel) correspond au prix en euros.
+    Le champ "price" correspond au prix en euros. À partir du 10/12/2022, ce champ sera
+    obligatoire.
 
     Le paramètre {venue_id} correspond à un lieu qui doit être attaché à la structure à laquelle la clé d'API utilisée est reliée.
     """

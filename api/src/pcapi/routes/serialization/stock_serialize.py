@@ -1,19 +1,24 @@
 from datetime import datetime
 import decimal
+import logging
 import typing
 
+import pydantic
 from pydantic import Field
 from pydantic import condecimal
-from pydantic import validator
 from pydantic.types import NonNegativeInt
 
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Stock
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import dehumanize_or_raise
+
+
+logger = logging.getLogger(__name__)
 
 
 class StockResponseModel(BaseModel):
@@ -138,22 +143,39 @@ class UpdateVenueStockBodyModel(BaseModel):
     else:
         price: condecimal(decimal_places=2) = Field(
             None,
-            description="(Optionnel) Prix en Euros avec 2 décimales possibles",
+            description="(Requis à partir du 10/12/2022) Prix en Euros avec 2 décimales possibles",
         )
 
-    @validator("price", pre=True)
+    @pydantic.validator("price", pre=True)
     def empty_string_price_casted_to_none(cls, v):  # type: ignore [no-untyped-def]
+        if FeatureToggle.WIP_REQUIRE_PRICE_IN_STOCK_API.is_active():
+            return v  # do nothing if flag is on, let `require_price()` do the job
         # Performed before Pydantic validators to catch empty strings but will not get "0"
         if not v:
             return None
         return v
 
-    @validator("price")
+    @pydantic.validator("price")
     def zero_price_casted_to_none(cls, v):  # type: ignore [no-untyped-def]
+        if FeatureToggle.WIP_REQUIRE_PRICE_IN_STOCK_API.is_active():
+            return v  # do nothing if flag is on, let `require_price()` do the job
         # Performed before Pydantic validators to catch empty strings but will not get "0"
         if not v:
             return None
         return v
+
+    @pydantic.root_validator
+    def require_price(cls, values: dict) -> dict:
+        if not FeatureToggle.WIP_REQUIRE_PRICE_IN_STOCK_API.is_active():
+            return values  # do nothing if flag is off, let validators above do the job
+        price = values.get("price")
+        if not price:
+            # FIXME (dbaty: 2022-11-30): remove this warning around
+            # february 2023 when we're sure that all providers provide
+            # the price.
+            logger.warning("Provider sent stock without price")
+            raise ValueError("Le prix est obligatoire depuis le 10/12/2022")
+        return values
 
     class Config:
         title = "Stock"

@@ -8,7 +8,7 @@
 export type UpdateVenueStockBodyModel = {
   available: number;
   /**
-   * (Optionnel) Prix en Euros avec 2 décimales possibles
+   * (Requis à partir du 10/12/2022) Prix en Euros avec 2 décimales possibles
    */
   price?: number | null;
   /**
