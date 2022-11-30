@@ -482,16 +482,13 @@ def auto_mark_as_used_after_event() -> None:
     # fmt: off
     bookings_subquery = (
         Booking.query.join(offers_models.Stock)
-            .filter(Booking.status.in_((BookingStatus.CONFIRMED, BookingStatus.PENDING)))
+            .filter(Booking.status == BookingStatus.CONFIRMED)
             .filter(offers_models.Stock.beginningDatetime < threshold)
             .with_entities(Booking.id)
             .subquery()
     )
 
-    individual_bookings = (
-        Booking.query.filter(Booking.id.in_(bookings_subquery))
-    )
-
+    individual_bookings = Booking.query.filter(Booking.id.in_(bookings_subquery))
 
     collective_bookings_subquery = (
         CollectiveBooking.query.join(CollectiveStock)

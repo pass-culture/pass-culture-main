@@ -128,15 +128,14 @@ class OffererViewTest:
         assert actions_list[0].user is None
         assert actions_list[0].offerer == offerer
 
-    @pytest.mark.parametrize("booking_status", [BookingStatus.PENDING, BookingStatus.CONFIRMED])
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_deactivate_offerer_rejected(self, mocked_validate_csrf_token, client, booking_status):
+    def test_deactivate_offerer_rejected(self, mocked_validate_csrf_token, client):
         admin = users_factories.AdminFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer)
-        booking_factories.BookingFactory(stock__offer__venue=venue, status=booking_status)
+        booking_factories.BookingFactory(stock__offer__venue=venue)
 
         api_client = client.with_session_auth(admin.email)
         response = api_client.post(
@@ -229,7 +228,6 @@ class OffererViewTest:
     @pytest.mark.parametrize(
         "booking_status",
         [
-            BookingStatus.PENDING,
             BookingStatus.USED,
             BookingStatus.CONFIRMED,
             BookingStatus.CANCELLED,

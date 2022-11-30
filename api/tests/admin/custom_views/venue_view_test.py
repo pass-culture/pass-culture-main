@@ -545,7 +545,6 @@ class DeleteVenueTest:
     @pytest.mark.parametrize(
         "booking_status",
         [
-            BookingStatus.PENDING,
             BookingStatus.USED,
             BookingStatus.CONFIRMED,
             BookingStatus.CANCELLED,

@@ -397,7 +397,6 @@ class FindByProUserTest:
             stock=stock,
             dateCreated=yesterday,
             token="ABCDEF",
-            status=BookingStatus.PENDING,
         )
 
         # When
@@ -1175,7 +1174,7 @@ class GetCsvReportTest:
         )
         yesterday = datetime.utcnow() - timedelta(days=1)
         booking = bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCDEF", status=BookingStatus.PENDING
+            user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCDEF"
         )
 
         # When
