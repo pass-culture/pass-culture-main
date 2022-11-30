@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom'
 import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
 } from 'components/RouteLeavingGuard'
-import useActiveFeature from 'hooks/useActiveFeature'
 
 const STEP_OFFER = 'offer'
 const STEP_OFFER_EDITION = 'offer_edition'
@@ -34,9 +33,6 @@ const RouteLeavingGuardCollectiveOfferCreation = ({
   when = true,
 }: RouteLeavingGuardCollectiveOfferCreationProps): JSX.Element => {
   const location = useLocation()
-  const isSubtypeChosenAtCreation = useActiveFeature(
-    'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
-  )
 
   const shouldBlockNavigation = useCallback(
     (nextLocation: Location): IShouldBlockNavigationReturnValue => {
@@ -71,12 +67,7 @@ const RouteLeavingGuardCollectiveOfferCreation = ({
         (from === STEP_RECAP && to === STEP_OFFER_EDITION) ||
         (from === STEP_RECAP && to === STEP_OFFER)
       ) {
-        if (isSubtypeChosenAtCreation) {
-          return { shouldBlock: false }
-        }
-
-        redirectPath = '/offres'
-        return { redirectPath, shouldBlock: true }
+        return { shouldBlock: false }
       }
       // going from confirmation to stock
       if (from === STEP_CONFIRMATION) {
