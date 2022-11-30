@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+import decimal
 from io import BytesIO
 import logging
 
@@ -109,7 +110,7 @@ def check_stock_quantity(quantity: int | None, bookingQuantity: int = 0) -> None
         raise api_errors
 
 
-def check_stock_price(price: float, offer: Offer) -> None:
+def check_stock_price(price: decimal.Decimal, offer: Offer) -> None:
     if price < 0:
         api_errors = ApiErrors()
         api_errors.add_error("price", "Le prix doit être positif")

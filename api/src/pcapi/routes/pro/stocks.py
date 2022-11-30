@@ -1,3 +1,4 @@
+import decimal
 import logging
 
 from flask_login import current_user
@@ -64,7 +65,7 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
                 if isinstance(stock_payload, stock_serialize.StockEditionBodyModel):
                     edited_stock, is_beginning_updated = offers_api.edit_stock(
                         offer,
-                        price=stock_payload.price,
+                        price=decimal.Decimal(stock_payload.price),
                         stock_id=stock_payload.id,
                         quantity=stock_payload.quantity,
                         beginning_datetime=stock_payload.beginning_datetime,
@@ -75,7 +76,7 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
                 else:
                     created_stock = offers_api.create_stock(
                         offer,
-                        price=stock_payload.price,
+                        price=decimal.Decimal(stock_payload.price),
                         activation_codes=stock_payload.activation_codes,
                         activation_codes_expiration_datetime=stock_payload.activation_codes_expiration_datetime,
                         quantity=stock_payload.quantity,
