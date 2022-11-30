@@ -3,13 +3,13 @@ import datetime
 from dateutil.relativedelta import relativedelta
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.mails.transactional.sendinblue_template_ids as sendinblue_template
-from pcapi.core.mails.transactional.users.ubble.ubble_ko_reminder import find_users_that_failed_ubble_check
+from pcapi.core.mails.transactional.users.ubble.ubble_ko_reminder import _find_users_that_failed_ubble_check
 from pcapi.core.mails.transactional.users.ubble.ubble_ko_reminder import send_ubble_ko_reminder_emails
-from pcapi.core.mails.transactional.users.ubble.ubble_ko_reminder import sort_users_by_reason_codes
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
@@ -53,10 +53,10 @@ class FindUsersThatFailedUbbleTest:
         user = build_user_with_ko_retryable_ubble_fraud_check()
 
         # When
-        users = find_users_that_failed_ubble_check(days_ago=7)
+        found_user, _fraud_check = _find_users_that_failed_ubble_check(days_ago=7)[0]
 
         # Then
-        assert users == [user]
+        assert found_user == user
 
     def should_not_find_users_that_failed_ubble_check_six_days_ago(self):
         # Given
@@ -65,10 +65,10 @@ class FindUsersThatFailedUbbleTest:
         )
 
         # When
-        users = find_users_that_failed_ubble_check(days_ago=7)
+        result = _find_users_that_failed_ubble_check(days_ago=7)
 
         # Then
-        assert users == []
+        assert result == []
 
     def should_not_find_users_when_they_are_already_beneficiary(self):
         # Given
@@ -76,10 +76,10 @@ class FindUsersThatFailedUbbleTest:
         build_user_with_ko_retryable_ubble_fraud_check(user=user)
 
         # When
-        users = find_users_that_failed_ubble_check(days_ago=7)
+        result = _find_users_that_failed_ubble_check(days_ago=7)
 
         # Then
-        assert users == []
+        assert result == []
 
     def should_not_find_users_when_they_have_another_id_check_ok(self):
         # Given
@@ -92,10 +92,10 @@ class FindUsersThatFailedUbbleTest:
         )
 
         # When
-        users = find_users_that_failed_ubble_check(days_ago=7)
+        result = _find_users_that_failed_ubble_check(days_ago=7)
 
         # Then
-        assert users == []
+        assert result == []
 
     def should_find_users_when_they_had_ok_fraud_checks_of_another_eligibility(self):
         # Given
@@ -107,11 +107,13 @@ class FindUsersThatFailedUbbleTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
+        print(_find_users_that_failed_ubble_check(days_ago=7))
+
         # When
-        users = find_users_that_failed_ubble_check(days_ago=7)
+        found_user, _fraud_check = _find_users_that_failed_ubble_check(days_ago=7)[0]
 
         # Then
-        assert users == [user]
+        assert found_user == user
 
     def should_not_find_user_if_they_already_retried_thrice(self):
         # Given
@@ -128,10 +130,10 @@ class FindUsersThatFailedUbbleTest:
         )
 
         # When
-        users = find_users_that_failed_ubble_check(days_ago=7)
+        result = _find_users_that_failed_ubble_check(days_ago=7)
 
         # Then
-        assert users == []
+        assert result == []
 
     def should_not_find_user_if_they_have_a_pending_id_check(self):
         # Given
@@ -143,33 +145,10 @@ class FindUsersThatFailedUbbleTest:
         )
 
         # When
-        users = find_users_that_failed_ubble_check(days_ago=7)
+        result = _find_users_that_failed_ubble_check(days_ago=7)
 
         # Then
-        assert users == []
-
-    def should_sort_users_by_reason_codes(self):
-        # Given
-        user1 = build_user_with_ko_retryable_ubble_fraud_check()
-        user2 = build_user_with_ko_retryable_ubble_fraud_check(
-            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED]
-        )
-
-        # When
-        users = sort_users_by_reason_codes([user1, user2])
-
-        # Then
-        assert users == {
-            fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC.value: [user1],
-            fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED.value: [user2],
-        }
-
-    def should_not_raise_when_no_user_to_sort(self):
-        # When
-        users = sort_users_by_reason_codes([])
-
-        # Then
-        assert not users
+        assert result == []
 
 
 @pytest.mark.usefixtures("db_session")
@@ -183,7 +162,8 @@ class SendUbbleKoReminderEmailTest:
         )
 
         # When
-        send_ubble_ko_reminder_emails()
+        with testing.assert_num_queries(3):
+            send_ubble_ko_reminder_emails()
 
         # Then
         assert len(mails_testing.outbox) == 2
