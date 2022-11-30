@@ -479,29 +479,27 @@ def auto_mark_as_used_after_event() -> None:
 
     now = datetime.datetime.utcnow()
     threshold = now - constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
-    # fmt: off
     bookings_subquery = (
         Booking.query.join(offers_models.Stock)
-            .filter(Booking.status == BookingStatus.CONFIRMED)
-            .filter(offers_models.Stock.beginningDatetime < threshold)
-            .with_entities(Booking.id)
-            .subquery()
+        .filter(Booking.status == BookingStatus.CONFIRMED)
+        .filter(offers_models.Stock.beginningDatetime < threshold)
+        .with_entities(Booking.id)
+        .subquery()
     )
 
     individual_bookings = Booking.query.filter(Booking.id.in_(bookings_subquery))
 
     collective_bookings_subquery = (
         CollectiveBooking.query.join(CollectiveStock)
-            .filter(CollectiveBooking.status == CollectiveBookingStatus.CONFIRMED)
-            .filter(CollectiveStock.beginningDatetime < threshold)
+        .filter(CollectiveBooking.status == CollectiveBookingStatus.CONFIRMED)
+        .filter(CollectiveStock.beginningDatetime < threshold)
     )
-    collective_bookings = (
-        CollectiveBooking.query.filter(CollectiveBooking.id.in_(collective_bookings_subquery.with_entities(CollectiveBooking.id)))
+    collective_bookings = CollectiveBooking.query.filter(
+        CollectiveBooking.id.in_(collective_bookings_subquery.with_entities(CollectiveBooking.id))
     )
 
     _logs_for_data_purpose(collective_bookings_subquery)
 
-    # fmt: on
     n_individual_updated = individual_bookings.update(
         {"status": BookingStatus.USED, "dateUsed": now}, synchronize_session=False
     )

@@ -277,15 +277,13 @@ def update_offer(
     if extraData != UNCHANGED:
         extraData = validation.check_offer_extra_data(offer, offer.subcategoryId, extraData)
 
-    # fmt: off
     modifications = {
         field: new_value
         for field, new_value in locals().items()
-        if field != 'offer'
+        if field != "offer"
         and new_value is not UNCHANGED  # has the user provided a value for this field
         and getattr(offer, field) != new_value  # is the value different from what we have on database?
     }
-    # fmt: on
     if not modifications:
         return offer
 
