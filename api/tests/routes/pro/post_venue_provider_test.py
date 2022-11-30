@@ -500,8 +500,10 @@ class ConnectProviderToVenueTest:
         mocked_connect_venue_to_provider.assert_called_once_with(venue, provider, None)
 
     @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.workers.venue_provider_job.venue_provider_job")
     def test_should_connect_to_allocine(
         self,
+        mocked_venue_provider_job,
         client,
     ):
         # Given
@@ -524,4 +526,6 @@ class ConnectProviderToVenueTest:
 
         # Then
         assert len(venue.venueProviders) == 1
-        assert venue.venueProviders[0].provider == provider
+        venue_provider = venue.venueProviders[0]
+        assert venue_provider.provider == provider
+        mocked_venue_provider_job.assert_called_once_with(venue_provider.id)
