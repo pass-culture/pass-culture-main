@@ -104,8 +104,6 @@ class BookingRecap:
 
     @property
     def booking_status(self) -> BookingRecapStatus:
-        if self.booking_raw_status == bookings_models.BookingStatus.PENDING:
-            return BookingRecapStatus.pending
         if self.booking_is_reimbursed:
             return BookingRecapStatus.reimbursed
         if self.booking_is_cancelled:

@@ -49,7 +49,6 @@ class BookingCancellationReasons(enum.Enum):
 
 
 class BookingStatus(enum.Enum):
-    PENDING = "PENDING"
     CONFIRMED = "CONFIRMED"
     USED = "USED"
     CANCELLED = "CANCELLED"
@@ -175,8 +174,6 @@ class Booking(PcObject, Base, Model):
             raise exceptions.BookingHasAlreadyBeenUsed()
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsCancelled()
-        if self.status is BookingStatus.PENDING:
-            raise exceptions.BookingNotConfirmed()
         self.dateUsed = datetime.utcnow()
         self.status = BookingStatus.USED
 

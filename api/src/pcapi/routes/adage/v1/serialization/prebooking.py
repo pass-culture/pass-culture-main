@@ -4,7 +4,6 @@ from typing import Iterable
 from pydantic import PositiveInt
 from pydantic.fields import Field
 
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
@@ -66,7 +65,7 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     redactor: Redactor
     UAICode: str = Field(description="Educational institution UAI code")
     yearId: int = Field(description="Shared year id")
-    status: EducationalBookingStatus | BookingStatus
+    status: EducationalBookingStatus | CollectiveBookingStatus
     participants: list[str] = Field(description="List of class levels which can participate")
     priceDetail: str | None = Field(description="Offer's stock price detail")
     venueTimezone: str
@@ -96,7 +95,7 @@ class EducationalBookingsResponse(AdageBaseResponseModel):
 class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     id: int
     UAICode: str
-    status: EducationalBookingStatus | BookingStatus | CollectiveBookingStatus
+    status: EducationalBookingStatus | CollectiveBookingStatus
     confirmationLimitDate: datetime
     totalAmount: float
     beginningDatetime: datetime

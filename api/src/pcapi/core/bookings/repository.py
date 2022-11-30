@@ -58,7 +58,6 @@ DUO_QUANTITY = 2
 
 
 BOOKING_STATUS_LABELS = {
-    BookingStatus.PENDING: "préréservé",
     BookingStatus.CONFIRMED: "réservé",
     BookingStatus.CANCELLED: "annulé",
     BookingStatus.USED: "validé",
@@ -158,7 +157,7 @@ def find_by_pro_user(
 def find_ongoing_bookings_by_stock(stock_id: int) -> list[Booking]:
     return Booking.query.filter(
         Booking.stockId == stock_id,
-        Booking.status.in_((BookingStatus.PENDING, BookingStatus.CONFIRMED)),
+        Booking.status == BookingStatus.CONFIRMED,
     ).all()
 
 
@@ -184,7 +183,7 @@ def find_expiring_individual_bookings_query() -> BaseQuery:
         .join(Stock)
         .join(Offer)
         .filter(
-            Booking.status.in_((BookingStatus.PENDING, BookingStatus.CONFIRMED)),
+            Booking.status == BookingStatus.CONFIRMED,
             Offer.canExpire,
             case(
                 [
@@ -217,7 +216,7 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
         .join(Stock)
         .join(Offer)
         .filter(
-            Booking.status.in_((BookingStatus.PENDING, BookingStatus.CONFIRMED)),
+            Booking.status == BookingStatus.CONFIRMED,
             Offer.canExpire,
             case(
                 [
@@ -291,16 +290,8 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
     # Stock.dnBookedQuantity cannot be used here because we exclude used/confirmed bookings.
     active_bookings_query = Booking.query.join(Stock, Booking.stock).filter(
         Booking.venueId == venue_id,
-        or_(
-            and_(
-                Booking.status == BookingStatus.PENDING,
-                not_(Stock.hasBookingLimitDatetimePassed),
-            ),
-            and_(
-                Booking.status == BookingStatus.CONFIRMED,
-                Booking.isConfirmed.is_(False),  # type: ignore [attr-defined]
-            ),
-        ),
+        Booking.status == BookingStatus.CONFIRMED,
+        Booking.isConfirmed.is_(False),  # type: ignore [attr-defined]
     )
 
     n_active_bookings = active_bookings_query.with_entities(coalesce(func.sum(Booking.quantity), 0)).one()[0]
@@ -333,7 +324,6 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
     validated_bookings_quantity_query = Booking.query.filter(
         Booking.venueId == venue_id,
         Booking.status != BookingStatus.CANCELLED,
-        Booking.status != BookingStatus.PENDING,
         or_(Booking.is_used_or_reimbursed.is_(True), Booking.isConfirmed.is_(True)),  # type: ignore [attr-defined]
     )
 
@@ -370,7 +360,7 @@ def find_cancellable_bookings_by_beneficiaries(users: list[User]) -> list[Bookin
     return (
         Booking.query.join(IndividualBooking)
         .filter(IndividualBooking.userId.in_(user.id for user in users))
-        .filter(Booking.status.in_((BookingStatus.PENDING, BookingStatus.CONFIRMED)))
+        .filter(Booking.status == BookingStatus.CONFIRMED)
         .all()
     )
 
@@ -378,9 +368,7 @@ def find_cancellable_bookings_by_beneficiaries(users: list[User]) -> list[Bookin
 def find_cancellable_bookings_by_offerer(offerer_id: int) -> list[Booking]:
     return Booking.query.filter(
         Booking.offererId == offerer_id,
-        Booking.status.in_(
-            (BookingStatus.PENDING, BookingStatus.CONFIRMED),
-        ),
+        Booking.status == BookingStatus.CONFIRMED,
     ).all()
 
 
@@ -774,7 +762,7 @@ def offerer_has_ongoing_bookings(offerer_id: int) -> bool:
     return db.session.query(
         Booking.query.filter(
             Booking.offererId == offerer_id,
-            Booking.status.in_((BookingStatus.PENDING, BookingStatus.CONFIRMED)),
+            Booking.status == BookingStatus.CONFIRMED,
         ).exists()
     ).scalar()
 
