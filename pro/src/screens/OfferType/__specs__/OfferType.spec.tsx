@@ -51,10 +51,6 @@ describe('screens:OfferIndividual::OfferType', () => {
             nameKey: 'OFFER_FORM_V3',
             isActive: false,
           },
-          {
-            nameKey: 'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION',
-            isActive: false,
-          },
         ],
         initialized: true,
       },
@@ -108,8 +104,6 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should select collective offer', async () => {
-    store.features.list[1].isActive = true
-
     renderOfferTypes(store)
 
     expect(
@@ -135,8 +129,6 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should select template offer', async () => {
-    store.features.list[1].isActive = true
-
     renderOfferTypes(store)
 
     expect(

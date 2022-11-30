@@ -10,14 +10,11 @@ import { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.sv
 import { ReactComponent as CaseIcon } from 'icons/ico-case.svg'
 import { ReactComponent as TemplateOfferIcon } from 'icons/ico-template-offer.svg'
 import { ReactComponent as PhoneIcon } from 'icons/info-phone.svg'
-import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import { ReactComponent as UserIcon } from 'icons/user.svg'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
 
 import ActionsBar from './ActionsBar/ActionsBar'
 import ActionsBarLegacy from './ActionsBar/ActionsBarLegacy'
 import styles from './OfferType.module.scss'
-import OldOfferTypeButton from './OldOfferTypeButton'
 
 const OfferType = (): JSX.Element => {
   const history = useHistory()
@@ -25,9 +22,6 @@ const OfferType = (): JSX.Element => {
   const [offerType, setOfferType] = useState(OFFER_TYPES.INDIVIDUAL_OR_DUO)
   const [offerSubtype, setOfferSubtype] = useState(OFFER_SUBTYPES.COLLECTIVE)
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
-  const isSubtypeChosenAtCreation = useActiveFeature(
-    'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
-  )
 
   const getNextPageHref = () => {
     if (offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
@@ -43,7 +37,7 @@ const OfferType = (): JSX.Element => {
     }
 
     // Offer type is EDUCATIONAL
-    if (offerSubtype === OFFER_SUBTYPES.TEMPLATE && isSubtypeChosenAtCreation) {
+    if (offerSubtype === OFFER_SUBTYPES.TEMPLATE) {
       return history.push({
         pathname: '/offre/creation/collectif/vitrine',
         search: location.search,
@@ -75,49 +69,28 @@ const OfferType = (): JSX.Element => {
       <FormLayout>
         <FormLayout.Section title="À qui destinez-vous cette offre ? ">
           <FormLayout.Row inline>
-            {isSubtypeChosenAtCreation ? (
-              <>
-                <RadioButtonWithImage
-                  name="offer-type"
-                  Icon={PhoneIcon}
-                  isChecked={offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO}
-                  label="Au grand public"
-                  onChange={handleOfferTypeChange}
-                  value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
-                  className={styles['offer-type-button']}
-                />
-                <RadioButtonWithImage
-                  name="offer-type"
-                  Icon={CaseIcon}
-                  isChecked={offerType === OFFER_TYPES.EDUCATIONAL}
-                  label="À un groupe scolaire"
-                  onChange={handleOfferTypeChange}
-                  value={OFFER_TYPES.EDUCATIONAL}
-                  className={styles['offer-type-button']}
-                />
-              </>
-            ) : (
-              <>
-                <OldOfferTypeButton
-                  Icon={UserIcon}
-                  isSelected={offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO}
-                  label="Au grand public"
-                  onChange={handleOfferTypeChange}
-                  value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
-                />
-                <OldOfferTypeButton
-                  Icon={LibraryIcon}
-                  isSelected={offerType === OFFER_TYPES.EDUCATIONAL}
-                  label="À un groupe scolaire"
-                  onChange={handleOfferTypeChange}
-                  value={OFFER_TYPES.EDUCATIONAL}
-                />
-              </>
-            )}
+            <RadioButtonWithImage
+              name="offer-type"
+              Icon={PhoneIcon}
+              isChecked={offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO}
+              label="Au grand public"
+              onChange={handleOfferTypeChange}
+              value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
+              className={styles['offer-type-button']}
+            />
+            <RadioButtonWithImage
+              name="offer-type"
+              Icon={CaseIcon}
+              isChecked={offerType === OFFER_TYPES.EDUCATIONAL}
+              label="À un groupe scolaire"
+              onChange={handleOfferTypeChange}
+              value={OFFER_TYPES.EDUCATIONAL}
+              className={styles['offer-type-button']}
+            />
           </FormLayout.Row>
         </FormLayout.Section>
 
-        {offerType === OFFER_TYPES.EDUCATIONAL && isSubtypeChosenAtCreation && (
+        {offerType === OFFER_TYPES.EDUCATIONAL && (
           <FormLayout.Section
             title="Quel est le type de l’offre ?"
             className={styles['subtype-section']}
