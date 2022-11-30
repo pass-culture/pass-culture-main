@@ -221,10 +221,9 @@ const Informations = ({
   }
 
   const onSubmitOffer = async (formValues: IOfferIndividualFormValues) => {
-    const { isOk, payload } =
-      offerId === null
-        ? await createIndividualOffer(formValues)
-        : await updateIndividualOffer({ offerId, formValues })
+    const { isOk, payload } = !offer
+      ? await createIndividualOffer(formValues)
+      : await updateIndividualOffer({ offer, formValues })
 
     const nextStep =
       mode === OFFER_WIZARD_MODE.EDITION

@@ -665,10 +665,9 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.click(screen.getByText('Go outside !'))
     await userEvent.click(screen.getByText('Quitter sans enregistrer'))
 
-    // first log is with 'Sauvegarder le brouillon'
-    expect(mockLogEvent).toHaveBeenCalledTimes(2)
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
-      2,
+      1,
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
         from: 'informations',

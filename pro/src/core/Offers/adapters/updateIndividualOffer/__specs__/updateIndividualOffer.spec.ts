@@ -4,6 +4,7 @@ import '@testing-library/jest-dom'
 import { api } from 'apiClient/api'
 import { PatchOfferBodyModel, WithdrawalTypeEnum } from 'apiClient/v1'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { IOfferIndividual } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
 import { updateIndividualOffer } from '..'
@@ -69,7 +70,7 @@ describe('updateIndividualOffer', () => {
       isNational: true,
       isDuo: true,
       name: 'Test offer',
-      url: null,
+      url: undefined,
       venueId: 'AB',
       withdrawalDelay: 12,
       withdrawalDetails: 'withdrawal description',
@@ -80,9 +81,84 @@ describe('updateIndividualOffer', () => {
     }
 
     const offerId = 'AAAA'
+    const offer = {
+      id: offerId,
+    } as IOfferIndividual
     jest.spyOn(api, 'patchOffer').mockResolvedValue({ id: offerId })
 
-    updateIndividualOffer({ offerId, formValues })
+    updateIndividualOffer({ offer, formValues })
+    expect(api.patchOffer).toHaveBeenCalledWith(offerId, expectedBody)
+  })
+
+  it('should sent patPatchOfferBodyModel to api with provider editable params', async () => {
+    const formValues: IOfferIndividualFormValues = {
+      name: 'Test offer',
+      description: 'Description for testing offer',
+      accessibility: {
+        [AccessiblityEnum.AUDIO]: true,
+        [AccessiblityEnum.MENTAL]: true,
+        [AccessiblityEnum.MOTOR]: true,
+        [AccessiblityEnum.VISUAL]: true,
+        [AccessiblityEnum.NONE]: false,
+      },
+      isNational: true,
+      isDuo: true,
+      venueId: 'AB',
+      withdrawalDelay: 12,
+      withdrawalDetails: 'withdrawal description',
+      withdrawalType: WithdrawalTypeEnum.ON_SITE,
+      isEvent: true,
+      subCategoryFields: [],
+      offererId: 'BB',
+      categoryId: 'CA',
+      subcategoryId: 'SCA',
+      showType: '',
+      showSubType: '',
+      musicType: '',
+      musicSubType: '',
+      author: 'John Author',
+      isbn: undefined,
+      performer: 'John Performer',
+      speaker: 'John Speaker',
+      stageDirector: 'John Stage Director',
+      visa: undefined,
+      durationMinutes: '2:20',
+      receiveNotificationEmails: true,
+      bookingEmail: 'test@email.com',
+      externalTicketOfficeUrl: 'https://example.com',
+      url: '',
+    }
+
+    const expectedBody: PatchOfferBodyModel = {
+      audioDisabilityCompliant: true,
+      bookingEmail: undefined,
+      description: undefined,
+      durationMinutes: undefined,
+      externalTicketOfficeUrl: 'https://example.com',
+      extraData: undefined,
+      isDuo: false,
+      isNational: undefined,
+      mentalDisabilityCompliant: true,
+      motorDisabilityCompliant: true,
+      name: undefined,
+      url: undefined,
+      venueId: undefined,
+      visualDisabilityCompliant: true,
+      withdrawalDelay: undefined,
+      withdrawalDetails: undefined,
+      withdrawalType: undefined,
+    }
+
+    const offerId = 'AAAA'
+    const offer = {
+      id: offerId,
+      lastProvider: {
+        name: 'provider',
+      },
+    } as IOfferIndividual
+    jest.spyOn(api, 'patchOffer').mockResolvedValue({ id: offerId })
+
+    updateIndividualOffer({ offer, formValues })
     expect(api.patchOffer).toHaveBeenCalledWith(offerId, expectedBody)
   })
 })
