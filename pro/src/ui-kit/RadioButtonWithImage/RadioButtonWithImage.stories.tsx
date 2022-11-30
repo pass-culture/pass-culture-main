@@ -13,23 +13,26 @@ export default {
   component: RadioButtonWithImage,
 }
 
-const Template: Story<IRadioButtonWithImage> = () => {
+const Template: Story<IRadioButtonWithImage> = ({ description }) => {
   const [offerType, setOfferType] = useState('indiv')
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setOfferType(e.target.value)
   return (
-    <div style={{ maxWidth: '240px' }}>
+    <div style={{ maxWidth: description ? '480px' : '240px' }}>
       <RadioButtonWithImage
-        name="offer"
+        name="offerType"
         label="Offre Individuelle"
+        description={description}
         isChecked={offerType == 'indiv'}
         onChange={handleChange}
         Icon={PhoneIcon}
         value="indiv"
       />
+      <br />
       <RadioButtonWithImage
-        name="collectiveOffer"
+        name="offerType"
         label="Offre Collective"
+        description={description}
         isChecked={offerType == 'collective'}
         onChange={handleChange}
         Icon={CaseIcon}
@@ -40,3 +43,7 @@ const Template: Story<IRadioButtonWithImage> = () => {
 }
 
 export const Default = Template.bind({})
+export const WithDescription = Template.bind({})
+WithDescription.args = {
+  description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+}
