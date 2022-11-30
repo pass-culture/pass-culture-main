@@ -15,7 +15,7 @@ describe('test updateIndividualOffer::serializers', () => {
     expect(serializeDurationMinutes('2:15')).toEqual(135)
   })
   it('test serializeDurationMinutes with empty input', () => {
-    expect(serializeDurationMinutes('  ')).toBeNull()
+    expect(serializeDurationMinutes('  ')).toBeUndefined()
   })
   it('test serializeExtraData', () => {
     const formValues: IOfferIndividualFormValues = {
@@ -125,10 +125,10 @@ describe('test updateIndividualOffer::serializers', () => {
       }
       patchBody = {
         ...patchBody,
-        bookingEmail: null,
-        durationMinutes: null,
-        externalTicketOfficeUrl: null,
-        url: null,
+        bookingEmail: undefined,
+        durationMinutes: undefined,
+        externalTicketOfficeUrl: undefined,
+        url: undefined,
       }
       expect(serializePatchOffer(formValues)).toEqual(patchBody)
     })

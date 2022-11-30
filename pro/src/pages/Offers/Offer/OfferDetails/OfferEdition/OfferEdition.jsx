@@ -7,7 +7,7 @@ import { computeOffersUrl } from 'core/Offers/utils'
 import {
   isFieldReadOnlyForSynchronizedOffer,
   isSynchronizedOffer,
-} from 'pages/Offers/domain/localProvider'
+} from 'core/Providers/utils/localProvider'
 import {
   searchFiltersSelector,
   searchPageNumberSelector,

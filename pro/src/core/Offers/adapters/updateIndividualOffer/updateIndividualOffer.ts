@@ -1,26 +1,52 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers/constants'
+import { IOfferIndividual } from 'core/Offers/types'
+import {
+  isAllocineOffer,
+  isOfferFromStockProvider,
+} from 'core/Providers/utils/localProvider'
 
 import { serializePatchOffer } from './serializers'
 
 type TSuccessPayload = { id: string }
 type TFailurePayload = { errors: Record<string, string> }
 export type TUpdateIndividualOffer = Adapter<
-  { offerId: string; formValues: IOfferIndividualFormValues },
+  { offer: IOfferIndividual; formValues: IOfferIndividualFormValues },
   TSuccessPayload,
   TFailurePayload
 >
 
 const updateIndividualOffer: TUpdateIndividualOffer = async ({
-  offerId,
+  offer,
   formValues,
 }) => {
   /* istanbul ignore next: DEBT, TO FIX */
   try {
+    let sentValues: Partial<IOfferIndividualFormValues> = formValues
+    if (isOfferFromStockProvider(offer)) {
+      const {
+        ALLOCINE: allocineEditableFields,
+        OTHER_PROVIDERS: otherProvidersEditableFields,
+      } = SYNCHRONIZED_OFFER_EDITABLE_FIELDS
+
+      const asArray = Object.entries(formValues)
+      const editableFields = isAllocineOffer(offer)
+        ? [...allocineEditableFields, ...otherProvidersEditableFields]
+        : otherProvidersEditableFields
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const filtered = asArray.filter(([key, value]) =>
+        editableFields.includes(key)
+      )
+
+      sentValues = Object.fromEntries(filtered)
+    }
+
     const response = await api.patchOffer(
-      offerId,
-      serializePatchOffer(formValues)
+      offer.id,
+      serializePatchOffer(sentValues)
     )
     return {
       isOk: true,
