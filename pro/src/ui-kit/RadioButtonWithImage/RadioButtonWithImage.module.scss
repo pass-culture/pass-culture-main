@@ -41,10 +41,10 @@
     outline: 1px solid colors.$tertiary;
     font-weight: 700;
     background-color: rgba(colors.$tertiary, 0.05);
-
-    &:focus-within {
+    &:has(:focus-visible) {
       border-color: colors.$black;
-      outline-color: colors.$black;
+      outline: rem.torem(1px) solid colors.$black;
+      outline-offset: rem.torem(3px);
     }
   }
 
