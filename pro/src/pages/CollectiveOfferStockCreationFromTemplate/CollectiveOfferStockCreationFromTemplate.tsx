@@ -41,7 +41,6 @@ const CollectiveOfferStockCreationFromTemplate = ({
     <>
       <OfferEducationalStockScreen
         initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
-        isCreatingFromTemplate
         mode={Mode.CREATION}
         offer={offer}
         onSubmit={handleSubmitStock}

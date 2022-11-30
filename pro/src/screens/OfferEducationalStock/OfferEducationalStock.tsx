@@ -15,9 +15,9 @@ import {
   Mode,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
-import { computeOffersUrl, isOfferDisabled } from 'core/Offers/utils'
+import { isOfferDisabled } from 'core/Offers/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
-import { Banner, ButtonLink, RadioGroup, SubmitButton, TextArea } from 'ui-kit'
+import { Banner, ButtonLink, SubmitButton, TextArea } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { DETAILS_PRICE_LABEL } from './constants/labels'
@@ -29,23 +29,10 @@ import {
   validationSchema,
 } from './validationSchema'
 
-const showcaseOfferRadios = [
-  {
-    label: 'Je connais la date et le prix de mon offre',
-    value: EducationalOfferType.CLASSIC,
-  },
-  {
-    label:
-      'Je préfère être contacté par un enseignant avant de définir la date et le prix de l’offre',
-    value: EducationalOfferType.SHOWCASE,
-  },
-]
-
 export interface IOfferEducationalStockProps<
   T = CollectiveOffer | CollectiveOfferTemplate
 > {
   initialValues: OfferEducationalStockFormValues
-  isCreatingFromTemplate?: boolean
   offer: T
   onSubmit: (offer: T, values: OfferEducationalStockFormValues) => Promise<void>
   mode: Mode
@@ -57,7 +44,6 @@ const OfferEducationalStock = <
   T extends CollectiveOffer | CollectiveOfferTemplate
 >({
   initialValues,
-  isCreatingFromTemplate = false,
   offer,
   onSubmit,
   mode,
@@ -66,9 +52,6 @@ const OfferEducationalStock = <
 }: IOfferEducationalStockProps<T>): JSX.Element => {
   const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
-  const isSubtypeChosenAtCreation = useActiveFeature(
-    'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
-  )
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   const submitForm = async (values: OfferEducationalStockFormValues) => {
@@ -99,11 +82,6 @@ const OfferEducationalStock = <
     resetForm({ values: initialValues })
   }, [initialValues, resetForm])
 
-  const shouldDisplayShowcaseOfferRadios =
-    !isCreatingFromTemplate &&
-    mode == Mode.CREATION &&
-    !isSubtypeChosenAtCreation
-
   const displayElementsForShowcaseOption =
     formik.values.educationalOfferType === EducationalOfferType.SHOWCASE
 
@@ -126,15 +104,6 @@ const OfferEducationalStock = <
           <FormLayout className={styles['offer-educational-stock-form-layout']}>
             <FormLayout.MandatoryInfo />
             <FormLayout.Section title="Date et prix">
-              {shouldDisplayShowcaseOfferRadios && (
-                <FormLayout.Row>
-                  <RadioGroup
-                    group={showcaseOfferRadios}
-                    name="educationalOfferType"
-                    hideFooter
-                  />
-                </FormLayout.Row>
-              )}
               {displayElementsForShowcaseOption ? (
                 <ShowcaseBannerInfo />
               ) : (
@@ -184,15 +153,11 @@ const OfferEducationalStock = <
                   <ButtonLink
                     variant={ButtonVariant.SECONDARY}
                     link={{
-                      to: isSubtypeChosenAtCreation
-                        ? `/offre/collectif/${offer.id}/creation`
-                        : computeOffersUrl({}),
+                      to: `/offre/collectif/${offer.id}/creation`,
                       isExternal: false,
                     }}
                   >
-                    {isSubtypeChosenAtCreation
-                      ? 'Étape précédente'
-                      : 'Annuler et quitter'}
+                    Étape précédente
                   </ButtonLink>
                 </ActionsBarSticky.Left>
                 <ActionsBarSticky.Right>
@@ -210,15 +175,11 @@ const OfferEducationalStock = <
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
                   link={{
-                    to: isSubtypeChosenAtCreation
-                      ? `/offre/collectif/${offer.id}/creation`
-                      : computeOffersUrl({}),
+                    to: `/offre/collectif/${offer.id}/creation`,
                     isExternal: false,
                   }}
                 >
-                  {isSubtypeChosenAtCreation
-                    ? 'Étape précédente'
-                    : 'Annuler et quitter'}
+                  Étape précédente
                 </ButtonLink>
                 <SubmitButton
                   className=""
