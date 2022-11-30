@@ -107,12 +107,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
           name: /Créer votre compte professionnel/,
         })
       ).toBeInTheDocument()
-      // and a subtitle
-      expect(
-        screen.getByRole('heading', {
-          name: /Merci de compléter les champs suivants pour créer votre compte./,
-        })
-      ).toBeInTheDocument()
       // and an external link to the help center
       expect(
         screen.getByRole('link', {
@@ -137,7 +131,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       // and a mail to support
       expect(
         screen.getByRole('link', {
-          name: /contactez notre support/,
+          name: /Contacter notre support/,
         })
       ).toHaveAttribute('href', 'mailto:support-pro@passculture.app')
 

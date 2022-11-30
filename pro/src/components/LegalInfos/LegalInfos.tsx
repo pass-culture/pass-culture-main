@@ -25,7 +25,7 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <Icon svg="ico-external-site-red" />
+        <Icon className="icon-legal-infos" svg="ico-external-site-red-filled" />
         <span>Conditions Générales d’Utilisation</span>
       </a>
       <span>{' ainsi que notre '}</span>
@@ -38,7 +38,7 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <Icon svg="ico-external-site-red" />
+        <Icon className="icon-legal-infos" svg="ico-external-site-red-filled" />
         <span>Charte des Données Personnelles</span>
       </a>
       <span>
@@ -57,8 +57,8 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <Icon svg="ico-email-red" />
-        <span>contactez notre support.</span>
+        <Icon className="icon-legal-infos" svg="ico-mail-red-filled" />
+        <span>Contacter notre support.</span>
       </a>
     </div>
   )
