@@ -160,7 +160,6 @@ const SignupForm = (): JSX.Element => {
       {visible && <MaybeAppUserDialog onCancel={hideModal} />}
       <div className="content">
         <h1>Créer votre compte professionnel</h1>
-        <h2>Merci de compléter les champs suivants pour créer votre compte.</h2>
         <OperatingProcedures />
 
         <div className="sign-up-tips">
@@ -174,7 +173,7 @@ const SignupForm = (): JSX.Element => {
                   <TextInput
                     label="Adresse e-mail"
                     name="email"
-                    placeholder="email@exemple.com"
+                    placeholder="mail@exemple.com"
                   />
                 </FormLayout.Row>
                 <FormLayout.Row>
@@ -232,7 +231,6 @@ const SignupForm = (): JSX.Element => {
                   className="sign-up-infos-before-signup"
                   title="Créer mon compte"
                 />
-                <BannerRGS />
               </div>
               <div className="buttons-field">
                 <Button
@@ -249,6 +247,7 @@ const SignupForm = (): JSX.Element => {
                   Créer mon compte
                 </SubmitButton>
               </div>
+              <BannerRGS />
             </FormLayout>
           </Form>
         </FormikProvider>
