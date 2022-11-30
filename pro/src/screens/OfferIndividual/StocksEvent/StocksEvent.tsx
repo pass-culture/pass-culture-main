@@ -129,17 +129,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     () => {
-      if (mode === OFFER_WIZARD_MODE.EDITION) {
-        const offerHasBookings = formik.values.stocks.some(
-          stock => stock.bookingsQuantity !== '0'
-        )
-        if (!visible && offerHasBookings && formik.dirty) {
-          showModal()
-          return
-        } else {
-          hideModal()
-        }
-      }
       // tested but coverage don't see it.
       /* istanbul ignore next */
       setIsClickingFromActionBar(true)
@@ -152,9 +141,32 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
           mode,
         })
       )
+      if (mode === OFFER_WIZARD_MODE.EDITION) {
+        const offerHasBookings = formik.values.stocks.some(
+          stock => stock.bookingsQuantity !== '0'
+        )
+        if (!visible && offerHasBookings && formik.dirty) {
+          showModal()
+          return
+        } else {
+          hideModal()
+        }
+      }
+
       if (!Object.keys(formik.touched).length) {
         setIsClickingFromActionBar(false)
         notify.success('Brouillon sauvegardé dans la liste des offres')
+        if (!saveDraft) {
+          navigate(
+            getOfferIndividualUrl({
+              offerId: offer.id,
+              step: saveDraft
+                ? OFFER_WIZARD_STEP_IDS.STOCKS
+                : OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode,
+            })
+          )
+        }
       } else {
         formik.handleSubmit()
       }
