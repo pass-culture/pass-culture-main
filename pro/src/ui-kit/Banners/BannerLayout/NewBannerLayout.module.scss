@@ -37,7 +37,7 @@
       &.provider {
         display: flex;
         align-items: center;
-        height: rem.torem(52px);
+        height: size.$provider-banner-height;
       }
     }
     .bi-link {
