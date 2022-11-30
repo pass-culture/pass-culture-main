@@ -3,7 +3,8 @@ import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import Icon from 'ui-kit/Icon/Icon'
+import { ReactComponent as IcoExternalSiteRedFilled } from 'icons/ico-external-site-red-filled.svg'
+import { ReactComponent as IcoMail } from 'icons/ico-mail.svg'
 
 interface ILegalInfoProps {
   title: string
@@ -25,7 +26,7 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <Icon className="icon-legal-infos" svg="ico-external-site-red-filled" />
+        <IcoExternalSiteRedFilled className="icon-legal-infos" />
         <span>Conditions Générales d’Utilisation</span>
       </a>
       <span>{' ainsi que notre '}</span>
@@ -38,7 +39,7 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <Icon className="icon-legal-infos" svg="ico-external-site-red-filled" />
+        <IcoExternalSiteRedFilled className="icon-legal-infos" />
         <span>Charte des Données Personnelles</span>
       </a>
       <span>
@@ -57,7 +58,7 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <Icon className="icon-legal-infos" svg="ico-mail-red-filled" />
+        <IcoMail className="icon-legal-infos" />
         <span>Contacter notre support.</span>
       </a>
     </div>
