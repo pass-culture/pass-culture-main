@@ -91,7 +91,6 @@ import { ReactComponent as OfferCardEuroIcon } from 'icons/offer-card-euro.svg'
 import { ReactComponent as OpenDropdownIcon } from 'icons/open-dropdown.svg'
 import { ReactComponent as PendingIcon } from 'icons/pending.svg'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
-import { ReactComponent as TickIcon } from 'icons/tick.svg'
 import { ReactComponent as TicketCrossIcon } from 'icons/ticket-cross.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
 import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
@@ -515,12 +514,6 @@ export const Icons = () => (
           <ResetIcon />
         </td>
         <td>reset</td>
-      </tr>
-      <tr>
-        <td>
-          <TickIcon />
-        </td>
-        <td>tick</td>
       </tr>
       <tr>
         <td>
