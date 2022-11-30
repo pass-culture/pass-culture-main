@@ -11,7 +11,6 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import tag_categories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -467,7 +466,7 @@ class ListOfferersToValidateTest:
             ],
         )
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-        def test_payload_content(self, authenticated_client, validation_status, expected_status):
+        def test_payload_content(self, authenticated_client, validation_status, expected_status, top_acteur_tag):
             # given
             user_offerer = offerers_factories.UserNotValidatedOffererFactory(
                 offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59),
@@ -504,9 +503,6 @@ class ListOfferersToValidateTest:
                 offerer=user_offerer.offerer,
                 user=user_offerer.user,
                 comment=None,
-            )
-            offerers_factories.OffererTagFactory(
-                name="top-acteur", label="Top Actor", categoryId=tag_categories.HOMOLOGATION.id
             )
 
             # when
@@ -973,12 +969,9 @@ class ToggleTopActorUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
 
 class ToggleTopActorTest:
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-    def test_toggle_is_top_actor(self, authenticated_client):
+    def test_toggle_is_top_actor(self, authenticated_client, top_acteur_tag):
         # given
         offerer = offerers_factories.UserNotValidatedOffererFactory().offerer
-        tag = offerers_factories.OffererTagFactory(
-            name="top-acteur", label="Top acteur", categoryId=tag_categories.HOMOLOGATION.id
-        )
 
         # when
         response = authenticated_client.post(
@@ -989,7 +982,7 @@ class ToggleTopActorTest:
         assert response.status_code == 303
         offerer_mappings = offerers_models.OffererTagMapping.query.all()
         assert len(offerer_mappings) == 1
-        assert offerer_mappings[0].tagId == tag.id
+        assert offerer_mappings[0].tagId == top_acteur_tag.id
         assert offerer_mappings[0].offererId == offerer.id
 
         # when
@@ -1002,12 +995,9 @@ class ToggleTopActorTest:
         assert offerers_models.OffererTagMapping.query.count() == 0
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-    def test_toggle_is_top_actor_twice_true(self, authenticated_client):
+    def test_toggle_is_top_actor_twice_true(self, authenticated_client, top_acteur_tag):
         # given
         offerer = offerers_factories.UserNotValidatedOffererFactory().offerer
-        tag = offerers_factories.OffererTagFactory(
-            name="top-acteur", label="Top acteur", categoryId=tag_categories.HOMOLOGATION.id
-        )
 
         # when
         for _ in range(2):
@@ -1022,7 +1012,7 @@ class ToggleTopActorTest:
         # then
         offerer_mappings = offerers_models.OffererTagMapping.query.all()
         assert len(offerer_mappings) == 1
-        assert offerer_mappings[0].tagId == tag.id
+        assert offerer_mappings[0].tagId == top_acteur_tag.id
         assert offerer_mappings[0].offererId == offerer.id
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)

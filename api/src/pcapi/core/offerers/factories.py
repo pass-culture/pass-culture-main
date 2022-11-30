@@ -275,6 +275,18 @@ class OffererTagFactory(BaseFactory):
     name = factory.Sequence("OffererTag_{}".format)
 
 
+class OffererTagCategoryFactory(BaseFactory):
+    class Meta:
+        model = models.OffererTagCategory
+
+    name = factory.Sequence("offerer-tag-category-{}".format)
+
+
+class OffererTagCategoryMappingFactory(BaseFactory):
+    class Meta:
+        model = models.OffererTagCategoryMapping
+
+
 class OffererTagMappingFactory(BaseFactory):
     class Meta:
         model = models.OffererTagMapping

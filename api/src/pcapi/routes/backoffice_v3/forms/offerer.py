@@ -3,16 +3,18 @@ import sqlalchemy as sa
 import wtforms
 
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import tag_categories
 
 from . import fields
 from . import utils
 
 
 def _get_tags_query() -> sa.orm.Query:
-    return offerers_models.OffererTag.query.filter(
-        offerers_models.OffererTag.categoryId == tag_categories.HOMOLOGATION.id
-    ).order_by(offerers_models.OffererTag.label)
+    return (
+        offerers_models.OffererTag.query.join(offerers_models.OffererTagCategoryMapping)
+        .join(offerers_models.OffererTagCategory)
+        .filter(offerers_models.OffererTagCategory.name == "homologation")
+        .order_by(offerers_models.OffererTag.label)
+    )
 
 
 class OffererValidationListForm(FlaskForm):
