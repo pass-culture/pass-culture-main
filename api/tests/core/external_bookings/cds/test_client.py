@@ -594,8 +594,8 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
 
         best_seat = cine_digital_service.get_available_seat(show, screen)
         assert len(best_seat) == 1
-        assert best_seat[0].seatRow == 5
-        assert best_seat[0].seatCol == 6
+        assert best_seat[0].seatRow == 4
+        assert best_seat[0].seatCol == 5
         assert best_seat[0].seatNumber == "E_6"
 
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
@@ -628,8 +628,8 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
 
         best_seat = cine_digital_service.get_available_seat(show, screen)
         assert len(best_seat) == 1
-        assert best_seat[0].seatRow == 2
-        assert best_seat[0].seatCol == 5
+        assert best_seat[0].seatRow == 1
+        assert best_seat[0].seatCol == 4
         assert best_seat[0].seatNumber == "M_9"
 
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
@@ -660,8 +660,8 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         )
         best_seat = cine_digital_service.get_available_seat(show, screen)
         assert len(best_seat) == 1
-        assert best_seat[0].seatRow == 4
-        assert best_seat[0].seatCol == 6
+        assert best_seat[0].seatRow == 3
+        assert best_seat[0].seatCol == 5
         assert best_seat[0].seatNumber == "D_6"
 
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
@@ -690,8 +690,8 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         )
         best_seat = cine_digital_service.get_available_seat(show, screen)
         assert len(best_seat) == 1
-        assert best_seat[0].seatRow == 2
-        assert best_seat[0].seatCol == 2
+        assert best_seat[0].seatRow == 1
+        assert best_seat[0].seatCol == 1
         assert best_seat[0].seatNumber == "B_2"
 
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
