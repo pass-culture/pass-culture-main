@@ -213,17 +213,17 @@ class SeatCDS:
         seat_map: SeatmapCDS,
         hardcoded_seatmap: str = None,
     ):
-        self.seatRow = seat_location_indices[0] + 1
-        self.seatCol = seat_location_indices[1] + 1
+        self.seatRow = seat_location_indices[0]
+        self.seatCol = seat_location_indices[1]
         if hardcoded_seatmap:
             hardcoded_seatmap = json.loads(hardcoded_seatmap)
             assert isinstance(hardcoded_seatmap, list)
-            self.seatNumber: str = hardcoded_seatmap[self.seatRow - 1][self.seatCol - 1]
+            self.seatNumber: str = hardcoded_seatmap[self.seatRow][self.seatCol]
         else:
             if not screen_infos.seatmap_front_to_back:
-                self.seatRow = seat_map.nb_row - seat_location_indices[0]
+                self.seatRow = seat_map.nb_row - seat_location_indices[0] - 1
             if not screen_infos.seatmap_left_to_right:
-                self.seatCol = seat_map.nb_col - seat_location_indices[1]
+                self.seatCol = seat_map.nb_col - seat_location_indices[1] - 1
 
             if screen_infos.seatmap_skip_missing_seats:
                 seat_row_array = seat_map.map[seat_location_indices[0]]
@@ -235,5 +235,5 @@ class SeatCDS:
                 skipped_seat = sum(1 for seat_value in previous_seats if seat_value == 0)
                 self.seatCol -= skipped_seat
 
-            seat_letter = chr(ord("A") + self.seatRow - 1)
-            self.seatNumber = f"{seat_letter}_{self.seatCol}"
+            seat_letter = chr(ord("A") + self.seatRow)
+            self.seatNumber = f"{seat_letter}_{self.seatCol + 1}"
