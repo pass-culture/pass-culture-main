@@ -180,7 +180,7 @@ const SignupForm = (): JSX.Element => {
                   <PasswordInput
                     name="password"
                     label="Mot de passe"
-                    placeholder="Mon mot de passe"
+                    placeholder="Votre mot de passe"
                     withErrorPreview={true}
                   />
                 </FormLayout.Row>
@@ -188,14 +188,14 @@ const SignupForm = (): JSX.Element => {
                   <TextInput
                     label="Nom"
                     name="lastName"
-                    placeholder="Mon nom"
+                    placeholder="Votre nom"
                   />
                 </FormLayout.Row>
                 <FormLayout.Row>
                   <TextInput
                     label="Prénom"
                     name="firstName"
-                    placeholder="Mon prénom"
+                    placeholder="Votre prénom"
                   />
                 </FormLayout.Row>
                 <FormLayout.Row>
