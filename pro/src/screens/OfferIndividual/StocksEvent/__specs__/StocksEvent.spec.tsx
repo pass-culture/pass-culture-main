@@ -17,7 +17,11 @@ import {
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
+import {
+  IOfferIndividual,
+  IOfferIndividualStock,
+  IOfferIndividualVenue,
+} from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
@@ -182,6 +186,34 @@ describe('screens:StocksEvent', () => {
   })
 
   it('should submit stock form when click on "Étape suivante""', async () => {
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+    })
+    const stock = {
+      id: 'STOCK_ID',
+      quantity: 10,
+      price: 10.01,
+      remainingQuantity: 6,
+      bookingsQuantity: 4,
+      isEventDeletable: true,
+      beginningDatetime: '2023-03-10T00:00:00.0200',
+    }
+    props.offer = {
+      ...(offer as IOfferIndividual),
+      stocks: [stock as IOfferIndividualStock],
+    }
+    renderStockEventScreen({ props, storeOverride, contextValue })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+    expect(api.upsertStocks).not.toHaveBeenCalled()
+    expect(
+      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Next page')).toBeInTheDocument()
+  })
+  it('should not submit stock if nothing has changed when click on "Étape suivante" and redirect to summary', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stockIds: [{ id: 'CREATED_STOCK_ID' }],
     })
