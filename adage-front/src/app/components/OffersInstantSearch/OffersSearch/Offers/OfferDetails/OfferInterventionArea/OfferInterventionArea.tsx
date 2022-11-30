@@ -13,7 +13,10 @@ export const getInterventionAreaLabels = (
 ): string => {
   const labels: string[] = []
 
-  if (interventionArea.includes(MAINLAND_OPTION_VALUE) || interventionArea.includes(ALL_FRANCE_OPTION_VALUE)) {
+  if (
+    interventionArea.includes(MAINLAND_OPTION_VALUE) ||
+    interventionArea.includes(ALL_FRANCE_OPTION_VALUE)
+  ) {
     labels.push(departmentLabelByValue[MAINLAND_OPTION_VALUE])
 
     domtomOptions.forEach(domtomOption => {
