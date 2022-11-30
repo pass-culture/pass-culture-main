@@ -6,6 +6,13 @@ import {
 
 import { serializeStockEventList } from '../serializers'
 
+jest.mock('utils/date', () => ({
+  ...jest.requireActual('utils/date'),
+  getToday: jest
+    .fn()
+    .mockImplementation(() => new Date('2022-09-26T13:00:00Z')),
+}))
+
 describe('screens::StockEvent::serializers:serializeStockEventList', () => {
   let formValuesList: IStockEventFormValues[]
   let departementCode: string

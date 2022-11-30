@@ -142,10 +142,33 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         })
       )
       if (mode === OFFER_WIZARD_MODE.EDITION) {
-        const offerHasBookings = formik.values.stocks.some(
-          stock => stock.bookingsQuantity !== '0'
+        const changesOnStockWithBookings = formik.values.stocks.some(
+          (stock, index) => {
+            if (
+              !stock.bookingsQuantity ||
+              parseInt(stock.bookingsQuantity, 10) === 0 ||
+              formik.touched.stocks === undefined ||
+              formik.touched.stocks[index] === undefined
+            ) {
+              return false
+            }
+            const stockTouched = formik.touched.stocks[index]
+            if (stockTouched === undefined) {
+              return false
+            }
+            const fieldsWithWarning: (keyof IStockEventFormValues)[] = [
+              'price',
+              'beginningDate',
+              'beginningTime',
+            ] as (keyof IStockEventFormValues)[]
+
+            return fieldsWithWarning.some(
+              (fieldName: keyof IStockEventFormValues) =>
+                stockTouched[fieldName] === true
+            )
+          }
         )
-        if (!visible && offerHasBookings && formik.dirty) {
+        if (!visible && changesOnStockWithBookings) {
           showModal()
           return
         } else {
