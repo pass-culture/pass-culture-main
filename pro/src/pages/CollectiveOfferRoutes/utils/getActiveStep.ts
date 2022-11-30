@@ -1,19 +1,19 @@
-import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
+import { CollectiveOfferBreadcrumbStep } from 'components/CollectiveOfferBreadcrumb'
 
 export const getActiveStep = (
   locationPathname: string
-): OfferBreadcrumbStep => {
+): CollectiveOfferBreadcrumbStep => {
   if (locationPathname.includes('stocks')) {
-    return OfferBreadcrumbStep.STOCKS
+    return CollectiveOfferBreadcrumbStep.STOCKS
   }
 
   if (locationPathname.includes('visibilite')) {
-    return OfferBreadcrumbStep.VISIBILITY
+    return CollectiveOfferBreadcrumbStep.VISIBILITY
   }
 
   if (locationPathname.includes('recapitulatif')) {
-    return OfferBreadcrumbStep.SUMMARY
+    return CollectiveOfferBreadcrumbStep.SUMMARY
   }
 
-  return OfferBreadcrumbStep.DETAILS
+  return CollectiveOfferBreadcrumbStep.DETAILS
 }

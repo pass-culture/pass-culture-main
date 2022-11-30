@@ -5,17 +5,12 @@ import CollectiveOfferBreadcrumb, {
   CollectiveOfferBreadcrumbStep,
 } from 'components/CollectiveOfferBreadcrumb'
 import HelpLink from 'components/HelpLink'
-import OfferBreadcrumb, {
-  OfferBreadcrumbStep,
-} from 'components/OfferBreadcrumb'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { Tag, Title } from 'ui-kit'
 
 import styles from './CollectiveOfferLayout.module.scss'
 
 interface IBreadcrumbProps {
-  // TODO (alberict): remove OfferBreadcrumbStep when the feature flag is removed
-  activeStep: OfferBreadcrumbStep | CollectiveOfferBreadcrumbStep
+  activeStep: CollectiveOfferBreadcrumbStep
   isCreatingOffer: boolean
   offerId?: string
 }
@@ -34,10 +29,6 @@ const CollectiveOfferLayout = ({
   title,
   subTitle,
 }: ICollectiveOfferLayout): JSX.Element => {
-  const isSubtypeChosenAtCreation = useActiveFeature(
-    'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
-  )
-
   return (
     <div className={styles['eac-layout']}>
       <div className={styles['eac-layout-headings']}>
@@ -54,29 +45,18 @@ const CollectiveOfferLayout = ({
 
       {
         /* istanbul ignore next: DEBT, TO FIX */
-        breadCrumpProps &&
-          (isSubtypeChosenAtCreation ? (
-            <CollectiveOfferBreadcrumb
-              // @ts-expect-error once the feature flag is removed the only type possible will be correct
-              activeStep={breadCrumpProps.activeStep}
-              className={cn(styles['eac-layout-breadcrumb'], {
-                [styles['stepper-breadcrumb']]: breadCrumpProps.isCreatingOffer,
-              })}
-              isCreatingOffer={breadCrumpProps.isCreatingOffer}
-              isOfferEducational
-              offerId={breadCrumpProps.offerId}
-              isTemplate={isTemplate}
-            />
-          ) : (
-            <OfferBreadcrumb
-              // @ts-expect-error once the feature flag is removed this code disappears
-              activeStep={breadCrumpProps.activeStep}
-              className={styles['eac-layout-breadcrumb']}
-              isCreatingOffer={breadCrumpProps.isCreatingOffer}
-              isOfferEducational
-              offerId={breadCrumpProps.offerId}
-            />
-          ))
+        breadCrumpProps && (
+          <CollectiveOfferBreadcrumb
+            activeStep={breadCrumpProps.activeStep}
+            className={cn(styles['eac-layout-breadcrumb'], {
+              [styles['stepper-breadcrumb']]: breadCrumpProps.isCreatingOffer,
+            })}
+            isCreatingOffer={breadCrumpProps.isCreatingOffer}
+            isOfferEducational
+            offerId={breadCrumpProps.offerId}
+            isTemplate={isTemplate}
+          />
+        )
       }
       {children}
       <HelpLink />
