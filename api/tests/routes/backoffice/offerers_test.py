@@ -2316,7 +2316,7 @@ class ListUserOffererToBeValidatedTest:
         assert payload["id"] == new_user_offerer.id
         assert payload["userId"] == new_user_offerer.userId
         assert payload["email"] == new_user_offerer.user.email
-        assert payload["userName"] == f"{new_user_offerer.user.firstName} {new_user_offerer.user.lastName}"
+        assert payload["userName"] == new_user_offerer.user.full_name
         assert payload["status"] == expected_status
         assert payload["dateCreated"] == "2022-11-03T12:00:00+00:00"
         assert payload["lastComment"] == {
@@ -2357,7 +2357,7 @@ class ListUserOffererToBeValidatedTest:
         assert payload["id"] == new_user_offerer.id
         assert payload["userId"] == new_user_offerer.userId
         assert payload["email"] == new_user_offerer.user.email
-        assert payload["userName"] == f"{new_user_offerer.user.firstName} {new_user_offerer.user.lastName}"
+        assert payload["userName"] == new_user_offerer.user.full_name
         assert payload["status"] == offerers_models.ValidationStatus.NEW.value
         assert payload["dateCreated"] == "2022-11-25T12:34:00+00:00"
         assert payload["lastComment"] is None

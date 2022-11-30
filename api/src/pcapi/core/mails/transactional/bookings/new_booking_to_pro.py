@@ -44,7 +44,7 @@ def get_new_booking_to_pro_email_data(
     data = models.TransactionalEmailData(
         reply_to=models.EmailInfo(
             email=individual_booking.user.email,
-            name=f"{individual_booking.user.firstName} {individual_booking.user.lastName}",
+            name=individual_booking.user.full_name,
         ),
         template=template,
         params={

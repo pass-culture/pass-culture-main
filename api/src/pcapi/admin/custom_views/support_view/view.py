@@ -252,5 +252,5 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         db.session.add(user)
         db.session.commit()
         logger.info("flask-admin: Manual phone validation", extra={"validated_user": user.id})
-        flask.flash(f"Le n° de téléphone de l'utilisateur {user.id} {user.firstName} {user.lastName} est validé")
+        flask.flash(f"Le n° de téléphone de l'utilisateur {user.id} {user.full_name} est validé")
         return flask.redirect(flask.url_for(".details_view", id=user_id))
