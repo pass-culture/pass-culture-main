@@ -75,7 +75,7 @@ class GetProUserHistoryTest:
         content = response.data.decode("utf-8")
 
         assert action.comment in content
-        assert action.authorUser.publicName in content
+        assert action.authorUser.full_name in content
         assert format_date(action.actionDate, "Le %d/%m/%Y à %Hh%M") in content
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)

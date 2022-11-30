@@ -110,10 +110,10 @@ def get_offerer_history_data(offerer_id: int) -> typing.Sequence[serialization.H
             type=action.actionType.value,
             date=action.actionDate,
             authorId=action.authorUserId,
-            authorName=action.authorUser.publicName if action.authorUser else None,
+            authorName=action.authorUser.full_name if action.authorUser else None,
             comment=action.comment,
             accountId=action.userId,
-            accountName=action.user.publicName if action.user else None,
+            accountName=action.user.full_name if action.user else None,
         )
         for action in actions
     ]
