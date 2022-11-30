@@ -197,6 +197,11 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     )
   }
 
+  const onConfirmDeleteStock = () => {
+    onDeleteStock()
+    deleteConfirmHide()
+  }
+
   let actions: IStockFormRowAction[] = []
   let description
   if (!offer.isDigital) {
@@ -220,14 +225,24 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       },
     ]
   }
-  if (formik.values.stockId) {
-    actions.push({
-      callback: deleteConfirmShow,
-      label: 'Supprimer le stock',
-      disabled: isDisabled || isSynchronized,
-      Icon: TrashFilledIcon,
-    })
-  }
+
+  // On DRAFT and CREATION mode we can edit the unique
+  // stock so there is no need to delete it
+  const cannotDeleteStock =
+    isDisabled ||
+    isSynchronized ||
+    mode !== OFFER_WIZARD_MODE.EDITION ||
+    !formik.values.stockId
+
+  actions.push({
+    callback:
+      formik.values.bookingsQuantity !== '0'
+        ? deleteConfirmShow
+        : onConfirmDeleteStock,
+    label: 'Supprimer le stock',
+    disabled: cannotDeleteStock,
+    Icon: TrashFilledIcon,
+  })
 
   if (offer.isDigital) {
     description += `
@@ -257,11 +272,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
             'Une erreur est survenue lors de la suppression du stock.'
           )
         )
-  }
-
-  const onConfirmDeleteStock = () => {
-    onDeleteStock()
-    deleteConfirmHide()
   }
 
   return (

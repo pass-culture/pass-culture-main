@@ -54,19 +54,25 @@ const renderStockThingScreen = ({
   const store = configureTestStore(storeOverride)
   return render(
     <Provider store={store}>
-      <MemoryRouter initialEntries={['/creation/stocks']}>
-        <Route path="/creation/stocks">
+      <MemoryRouter
+        initialEntries={[`/offre/individuelle/${contextValue.offerId}/stocks`]}
+      >
+        <Route path={`/offre/individuelle/${contextValue.offerId}/stocks`}>
           <OfferIndividualContext.Provider value={contextValue}>
             <StocksThing {...props} />
           </OfferIndividualContext.Provider>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/recapitulatif">
+        <Route
+          path={`/offre/individuelle/${contextValue.offerId}/recapitulatif`}
+        >
           <div>Next page</div>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/stocks">
+        <Route
+          path={`/offre/individuelle/contextValue.offerId}/brouillon/stocks`}
+        >
           <div>Save draft page</div>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/informations">
+        <Route path={`/offre/:offer_id/v3/creation/individuelle/informations`}>
           <div>Previous page</div>
         </Route>
         <Notification />
@@ -104,8 +110,8 @@ describe('screens:StocksThing', () => {
     }
     storeOverride = {}
     contextValue = {
-      offerId: null,
-      offer: null,
+      offerId: 'OFFER_ID',
+      offer: offer as IOfferIndividual,
       venueList: [],
       offererNames: [],
       categories: [],
@@ -123,8 +129,10 @@ describe('screens:StocksThing', () => {
       storeOverride,
       contextValue,
     })
-    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
-    await userEvent.click(screen.getByText('Supprimer le stock'))
+    await userEvent.click(screen.getAllByTitle('Supprimer le stock')[0])
+    await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
+    await userEvent.click(screen.getAllByTitle('Supprimer le stock')[2])
+
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
@@ -174,12 +182,12 @@ describe('screens:StocksThing', () => {
     await userEvent.click(
       await screen.findByText('Supprimer', { selector: 'button' })
     )
+    expect(api.deleteStock).toHaveBeenCalledTimes(1)
+    expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
     expect(
       screen.getByText(
         'Une erreur est survenue lors de la suppression du stock.'
       )
     ).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledTimes(1)
-    expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
   })
 })
