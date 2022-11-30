@@ -10,7 +10,7 @@
   .content {
     margin-left: calc(rem.torem(30px) + 15%);
     padding: rem.torem(60px) 0;
-    width: rem.torem(500px);
+    width: rem.torem(486px);
 
     .field-password > img {
       position: absolute;
@@ -63,18 +63,20 @@
     }
 
     .sign-up-form {
-      margin: rem.torem(16px) 0 rem.torem(40px) 0;
+      margin: rem.torem(16px) 0 rem.torem(36px) 0;
     }
 
     .buttons-field {
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-between;
+      gap: rem.torem(24px);
       margin-top: rem.torem(16px);
+      margin-bottom: rem.torem(32px);
 
       a,
       button {
         margin-bottom: rem.torem(5px);
+        width: rem.torem(231px);
       }
 
       .button {
@@ -85,6 +87,8 @@
           padding: 0 rem.torem(45px);
         }
       }
+
+
     }
   }
 }

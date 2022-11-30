@@ -14,7 +14,7 @@ export const PHONE_CODE_COUNTRY_CODE_OPTIONS: {
 ]
 
 export const PLACEHOLDER_MAP: Partial<Record<CountryCode, string>> = {
-  FR: '6 39 98 01 01',
+  FR: '6 12 34 56 78',
   RE: '692 12 34 56',
   PM: '55 12 34',
   GP: '690 00 01 02',
