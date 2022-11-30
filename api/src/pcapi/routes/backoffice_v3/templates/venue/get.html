@@ -31,7 +31,7 @@
                         <div class="fs-6">
                             {% if region %}
                                 <p class="mb-1">
-                                    <span class="fw-bold">R&eacute;gion :</span>
+                                    <span class="fw-bold">Région :</span>
                                     {{ region }}
                                 </p>
                             {% endif %}
@@ -59,7 +59,7 @@
 
                             {% if venue.latitude and venue.longitude %}
                                 <p class="mb-1">
-                                    <span class="fw-bold">Coordonn&eacute;es :</span>
+                                    <span class="fw-bold">Coordonnées :</span>
                                     {{ venue.latitude }} (latitude) / {{ venue.longitude }} (longitude)
                                 </p>
                             {% endif %}
@@ -74,7 +74,7 @@
 
                                 {% if venue.contact.phone_number %}
                                     <p class="mb-1">
-                                        <span class="fw-bold">Num&eacute;ro de t&eacute;l&eacute;phone :</span>
+                                        <span class="fw-bold">Numéro de téléphone :</span>
                                         {{ venue.contact.phone_number }}
                                     </p>
                                 {% endif %}
@@ -84,7 +84,7 @@
 
                     <div class="col-lg-4">
                         <p class="mb-1">
-                            <span class="fw-bold">&Eacute;ligible EAC :
+                            <span class="fw-bold">Éligible EAC :
                                 {% if is_collective_eligible %}
                                     <span class="mx-4 pb-1 badge rounded-pill text-bg-success">
                                     <i class="bi bi-check-circle"></i> Oui
@@ -118,7 +118,7 @@
                         </p>
 
                         <p class="mb-1">
-                            <span class="fw-bold">Pr&eacute;sence de CB :</span>
+                            <span class="fw-bold">Présence de CB :</span>
                             {{ has_reimbursement_point | format_bool }}
                         </p>
                     </div>
@@ -131,14 +131,14 @@
                             </p>
 
                             <p class="mb-1">
-                                <span class="fw-bold">date de d&eacute;p&ocirc;t du dossier DMS :</span>
+                                <span class="fw-bold">date de dépôt du dossier DMS :</span>
                                 {{ dms_stats.subscriptionDate | format_date }}
                             </p>
 
                             <p class="mb-1  d-flex justify-content-center">
                                 <a href="{{ dms_stats.url }}" class="card-link">
                                     <button class="btn btn-outline-primary lead fw-bold mt-2">
-                                        ACC&Eacute;DER AU DOSSIER DMS
+                                        ACCÉDER AU DOSSIER DMS
                                     </button>
                                 </a>
                             </p>
