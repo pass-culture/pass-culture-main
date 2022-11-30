@@ -15,8 +15,13 @@ from tests.scripts.beneficiary import fixture
 
 class DmsImportTest:
     @pytest.mark.usefixtures("db_session")
-    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    def test_initialize_latest_import_datetime(self, mock_get_applications_with_details):
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_applications_with_details")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.send_user_message")
+    def test_initialize_latest_import_datetime(
+        self,
+        mock_send_user_message,
+        mock_get_applications_with_details,
+    ):
         mock_get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
                 123,
@@ -55,8 +60,13 @@ class DmsImportTest:
         assert latest_import_record.latestImportDatetime == datetime.datetime(2020, 10, 1, 18, 10, 0)
 
     @pytest.mark.usefixtures("db_session")
-    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    def test_second_import_of_same_procedure_updates_latest_import_datetime(self, mock_get_applications_with_details):
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_applications_with_details")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.send_user_message")
+    def test_second_import_of_same_procedure_updates_latest_import_datetime(
+        self,
+        mock_send_user_message,
+        mock_get_applications_with_details,
+    ):
         mock_get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
                 123,
