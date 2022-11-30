@@ -10,12 +10,12 @@ from pcapi.admin.base_configuration import BaseAdminView
 TAG_NAME_REGEX = r"^[^\s]+$"
 
 
-class OffererTagView(BaseAdminView):
+class OffererTagCategoryView(BaseAdminView):
     can_create = True
     can_edit = True
     can_delete = True
-    column_list = ["id", "name", "label", "description", "categories"]
-    column_labels = {"name": "Nom", "label": "Libellé", "description": "Description", "categories": "Catégories"}
+    column_list = ["id", "name", "label"]
+    column_labels = {"name": "Nom", "label": "Libellé"}
     column_searchable_list = ["name"]
     column_filters: list[str] = []
 
@@ -35,5 +35,4 @@ class OffererTagView(BaseAdminView):
                 Length(max=140, message="Le libellé ne peut excéder 140 caractères"),
             ],
         )
-        form.description = StringField("Description")
         return form
