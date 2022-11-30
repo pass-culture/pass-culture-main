@@ -113,8 +113,14 @@ else:
     ]
 
 
+class StockBody(serialization.BaseModel):
+    price: pydantic.PositiveInt = pydantic.Field(..., description="The price of the offer in cents", example=1000)
+    quantity: pydantic.PositiveInt | typing.Literal["unlimited"]
+
+
 class ProductOfferCreationBody(OfferCreationBaseModel):
     category_related_fields: category_related_fields
+    stock: StockBody | None
 
 
 class OfferResponse(serialization.BaseModel):

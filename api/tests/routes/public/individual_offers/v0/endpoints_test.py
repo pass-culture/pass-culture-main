@@ -1,3 +1,5 @@
+import decimal
+
 import pytest
 
 from pcapi.core import testing
@@ -70,6 +72,10 @@ class PostProductTest:
                 "externalTicketOfficeUrl": "https://maposaic.com",
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
+                "stock": {
+                    "price": 1234,
+                    "quantity": 3,
+                },
             },
         )
 
@@ -91,6 +97,38 @@ class PostProductTest:
         assert created_offer.bookingEmail == "spam@example.com"
         assert created_offer.description == "Enregistrement pour la nuit des temps"
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
+
+        created_stock = offers_models.Stock.query.one()
+        assert created_stock.price == decimal.Decimal("12.34")
+        assert created_stock.quantity == 3
+        assert created_stock.offer == created_offer
+
+    def test_unlimited_quantity(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products",
+            json={
+                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "stock": {
+                    "price": 1,
+                    "quantity": "unlimited",
+                },
+            },
+        )
+
+        assert response.status_code == 200
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.name == "Le champ des possibles"
+
+        created_stock = offers_models.Stock.query.one()
+        assert created_stock.price == decimal.Decimal("0.01")
+        assert created_stock.quantity == None
+        assert created_stock.offer == created_offer
 
     def test_is_duo_not_applicable(self, client):
         api_key = offerers_factories.ApiKeyFactory()

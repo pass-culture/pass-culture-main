@@ -2,6 +2,7 @@ import logging
 
 from pcapi import repository
 from pcapi import settings
+from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -63,9 +64,7 @@ def _compute_extra_data(body: serialization.ProductOfferCreationBody) -> dict[st
 @blueprint.v1_blueprint.route("/products", methods=["POST"])
 @spectree_serialize(api=blueprint.v1_schema, tags=[PRODUCT_OFFERS_TAG])
 @api_key_required
-def post_product_offer(
-    body: serialization.ProductOfferCreationBody,
-) -> serialization.OfferResponse:
+def post_product_offer(body: serialization.ProductOfferCreationBody) -> serialization.OfferResponse:
     """
     Post a product offer.
     """
@@ -88,6 +87,12 @@ def post_product_offer(
                 venue=venue,
                 visual_disability_compliant=body.disability_compliance.visual_disability_compliant,
             )
+            if body.stock:
+                offers_api.create_stock(
+                    offer=offer,
+                    price=finance_utils.to_euros(body.stock.price),
+                    quantity=body.stock.quantity if body.stock.quantity != "unlimited" else None,
+                )
 
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
