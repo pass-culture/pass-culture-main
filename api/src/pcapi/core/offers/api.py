@@ -488,7 +488,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: Stock, bookings: typing.List[Bo
 
 def create_stock(
     offer: Offer,
-    price: float,
+    price: decimal.Decimal,
     quantity: int | None,
     activation_codes: list[str] | None = None,
     activation_codes_expiration_datetime: datetime.datetime | None = None,
@@ -538,7 +538,7 @@ def create_stock(
 
 def edit_stock(
     offer: Offer,
-    price: float,
+    price: decimal.Decimal,
     quantity: int | None,
     stock_id: int,
     beginning_datetime: datetime.datetime | None = None,
