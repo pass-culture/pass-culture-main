@@ -1973,7 +1973,7 @@ class GenerateAndStoreInvoiceTest:
     STORAGE_DIR = pathlib.Path(tests.__path__[0]) / ".." / "src" / "pcapi" / "static" / "object_store_data"
 
     @override_settings(OBJECT_STORAGE_URL=STORAGE_DIR)
-    def test_basics(self, clear_tests_invoices_bucket):
+    def test_basics(self, clear_tests_invoices_bucket, css_font_http_request_mock):
         reimbursement_point = offerers_factories.VenueFactory()
         factories.BankInformationFactory(venue=reimbursement_point, iban="FR2710010000000000000000064")
 

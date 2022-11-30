@@ -253,6 +253,56 @@ def ubble_mocker() -> typing.Callable:
     return ubble_mock
 
 
+@pytest.fixture
+def css_font_http_request_mock():
+    """Intercept requests to fonts.googleapis.com and return an empty
+    string.
+
+    This is for weasyprint, which uses ``urllib.request.urlopen()``.
+    """
+
+    class FakeResponse:
+        class FakeInfo:
+            def __init__(self, filename):
+                self.filename = filename
+
+            def get_content_type(self):
+                return "text/plain"
+
+            def get_param(self, param):
+                if param == "charset":
+                    return "utf-8"
+                raise NotImplementedError()
+
+            def get_filename(self):
+                return self.filename
+
+            def get(self, header):
+                if header == "Content-Encoding":
+                    return None
+                raise NotImplementedError()
+
+        def __init__(self, url, content):
+            self.url = url
+            self.content = content
+
+        def read(self):
+            return self.content
+
+        def info(self):
+            return self.FakeInfo("dummy_filename.ext")
+
+        def geturl(self):
+            return self.url
+
+    def fake_urlopen(request, *args, **kwargs):
+        assert request.host == "fonts.googleapis.com"
+        return FakeResponse(request.full_url, content="")
+
+    with patch("weasyprint.urls.urlopen", fake_urlopen):
+        yield
+
+
 # Define the CHECK_DATA_LEAKS env variable to assert that no test
 # leaks any data. This is useful to detect a missing use of the
 # `db_session` fixture.

@@ -613,7 +613,7 @@ class FindAllOffererPaymentsTest:
     # pre-2022 payments, we can rename and update this test. Some
     # tests above could be updated, some could be removed if they
     # don't make sense.
-    def test_with_new_models(self):
+    def test_with_new_models(self, css_font_http_request_mock):
         stock = offers_factories.ThingStockFactory(
             offer__name="Test Book",
             offer__venue__managingOfferer__address="7 rue du livre",
