@@ -23,7 +23,6 @@ from werkzeug.exceptions import abort
 from wtforms import Form
 from wtforms.fields import BooleanField
 from wtforms.fields import HiddenField
-from wtforms.fields import IntegerField
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.connectors import sirene
@@ -186,11 +185,9 @@ class VenueView(BaseAdminView):
         "publicName",
         "latitude",
         "longitude",
-        "adageId",
         "isPermanent",
         "criteria",
     ]
-    form_overrides = {"adageId": IntegerField}
 
     def get_query(self) -> BaseQuery:
         return (
@@ -286,36 +283,11 @@ class VenueView(BaseAdminView):
 
             update_siret = True
 
-        # adageId validation and cleanning
-        if edit_venue_form.adageId.data == "":
-            edit_venue_form.adageId.data = None
-        if edit_venue_form.adageId.data is not None and edit_venue_form.adageId.data < 1:
-            flash("L'adageId doit être un nombre entier supérieur ou égal à 1")
-            return False
-
         changed_attributes = {
             field
             for field in offerers_api.VENUE_ALGOLIA_INDEXED_FIELDS
             if hasattr(edit_venue_form, field) and getattr(edit_venue_form, field).data != getattr(venue, field)
         }
-
-        if (edit_venue_form.adageId.data and str(edit_venue_form.adageId.data) != venue.adageId) or (
-            edit_venue_form.adageId.data is None and venue.adageId
-        ):
-            emails = offerers_repository.get_emails_by_venue(venue)
-            for email in emails:
-                update_external_pro(email)
-
-            old_adage_id = venue.adageId or ""
-            new_adage_id = edit_venue_form.adageId.data or ""
-            logger.info(
-                '[ADMIN] User with email "%s" changed the adageId for venue "%s" (id: %s) from "%s" to "%s"',
-                current_user.email,
-                venue.name,
-                venue.id,
-                old_adage_id,
-                new_adage_id,
-            )
 
         # A failed update (invalid DB constraint for example) does not raise but returns False
         update_success = super().update_model(edit_venue_form, venue)
