@@ -67,8 +67,8 @@ const OfferIndividualForm = ({
 
   const offerSubCategory = subCategories.find(s => s.id === subcategoryId)
 
-  const isVenueVirtual =
-    filteredVenueList.find(v => v.id === venueId)?.isVirtual || false
+  const venue = filteredVenueList.find(v => v.id === venueId)
+  const isVenueVirtual = venue?.isVirtual || false
 
   const areAllVenuesVirtual = venueList
     .filter(v => v.managingOffererId == offererId)
@@ -112,7 +112,7 @@ const OfferIndividualForm = ({
           <Accessibility readOnlyFields={readOnlyFields} />
           <OptionDuo />
           <ExternalLink />
-          <Notifications />
+          <Notifications venueBookingEmail={venue?.bookingEmail} />
         </>
       )}
     </>
