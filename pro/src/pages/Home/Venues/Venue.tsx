@@ -15,6 +15,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as DownIcon } from 'icons/ico-caret-down.svg'
 import { ReactComponent as RightIcon } from 'icons/ico-caret-right.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
+import { ReactComponent as IcoPlusCircle } from 'icons/ico-plus-circle.svg'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -207,7 +208,7 @@ const Venue = ({
                         to: reimbursementSectionLink,
                         isExternal: false,
                       }}
-                      Icon={IcoPlus}
+                      Icon={IcoPlusCircle}
                     >
                       Ajouter un RIB
                     </ButtonLink>
