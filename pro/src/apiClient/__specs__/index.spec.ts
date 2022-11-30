@@ -5,9 +5,6 @@ import { api, apiContremarque } from 'apiClient/api'
 import { URL_FOR_MAINTENANCE } from 'utils/config'
 
 describe('Maintenance', () => {
-  afterEach(() => {
-    fetch.resetMocks()
-  })
   it('should redirect to maintenance page api v1 responds with status 503', async () => {
     fetch.mockResponse('Service Unavailable', { status: 503 })
 
