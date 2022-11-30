@@ -9,7 +9,11 @@ import { IOfferIndividualFormValues } from '../types'
 
 import { NOTIFICATIONS_DEFAULT_VALUES } from './constants'
 
-const Notifications = (): JSX.Element => {
+interface INotifications {
+  venueBookingEmail?: string | null
+}
+
+const Notifications = ({ venueBookingEmail }: INotifications): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const {
     values: { receiveNotificationEmails, bookingEmail },
@@ -21,7 +25,7 @@ const Notifications = (): JSX.Element => {
       receiveNotificationEmails &&
       bookingEmail === NOTIFICATIONS_DEFAULT_VALUES.bookingEmail
     ) {
-      setFieldValue('bookingEmail', currentUser.email)
+      setFieldValue('bookingEmail', venueBookingEmail ?? currentUser.email)
     }
   }, [receiveNotificationEmails])
 
