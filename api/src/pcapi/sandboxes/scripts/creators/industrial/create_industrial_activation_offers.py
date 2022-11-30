@@ -2,7 +2,6 @@ from decimal import Decimal
 import logging
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users.models import User
@@ -17,10 +16,7 @@ def create_industrial_activation_offers() -> None:
     activated_user = User.query.filter_by(has_beneficiary_role=True).first()
     offerer = offerers_factories.OffererFactory()
     venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-    offer = offers_factories.OfferFactory(
-        venue=venue,
-        product__subcategoryId=subcategories.ACTIVATION_THING.id,
-    )
+    offer = offers_factories.OfferFactory(venue=venue)
     stock = offers_factories.StockFactory(
         offer=offer,
         price=Decimal(0),

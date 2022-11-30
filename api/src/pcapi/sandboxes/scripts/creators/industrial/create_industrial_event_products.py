@@ -6,8 +6,6 @@ import pcapi.core.offers.models as offers_models
 from pcapi.domain.music_types import music_types
 from pcapi.domain.show_types import show_types
 from pcapi.repository import repository
-from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_DESCRIPTION
-from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_NAME
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_DESCRIPTIONS
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_NAMES
 from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES
@@ -27,20 +25,13 @@ def create_industrial_event_products() -> dict[str, offers_models.Product]:
 
     event_subcategories = [s for s in subcategories.ALL_SUBCATEGORIES if s.is_event and s.is_offline_only]
 
-    activation_index = 0
-
     for product_creation_counter in range(0, EVENT_COUNTS_PER_TYPE):
 
         for (event_subcategories_list_index, event_subcategory) in enumerate(event_subcategories):
 
             mock_index = (product_creation_counter + event_subcategories_list_index) % len(MOCK_NAMES)
-            if event_subcategory == subcategories.ACTIVATION_EVENT:
-                event_name = "{} {}".format(MOCK_ACTIVATION_NAME, activation_index)
-                description = MOCK_ACTIVATION_DESCRIPTION
-                activation_index += 1
-            else:
-                event_name = MOCK_NAMES[mock_index]
-                description = MOCK_DESCRIPTIONS[mock_index]
+            event_name = MOCK_NAMES[mock_index]
+            description = MOCK_DESCRIPTIONS[mock_index]
 
             name = "{} / {}".format(event_subcategory.id, event_name)
             event_product = offers_factories.ProductFactory(
