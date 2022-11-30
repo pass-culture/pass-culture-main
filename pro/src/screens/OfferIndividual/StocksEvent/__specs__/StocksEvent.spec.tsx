@@ -43,7 +43,7 @@ jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
   getToday: jest
     .fn()
-    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+    .mockImplementation(() => new Date('2020-12-15T09:00:00Z')),
 }))
 
 const renderStockEventScreen = ({
@@ -220,7 +220,7 @@ describe('screens:StocksEvent', () => {
     renderStockEventScreen({ props, storeOverride, contextValue })
 
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
-    await userEvent.click(await screen.getByText(today.getDate()))
+    await userEvent.click(await screen.getByText(getToday().toUTCString()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
     await userEvent.type(screen.getByLabelText('Prix'), '20')

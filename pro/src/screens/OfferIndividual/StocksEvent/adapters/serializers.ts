@@ -4,7 +4,7 @@ import startOfDay from 'date-fns/startOfDay'
 
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
 import { IStockEventFormValues } from 'components/StockEventForm'
-import { toISOStringWithoutMilliseconds } from 'utils/date'
+import { getToday, toISOStringWithoutMilliseconds } from 'utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
 
 const serializeBookingLimitDatetime = (
@@ -76,7 +76,13 @@ export const serializeStockEventList = (
   formValuesList: IStockEventFormValues[],
   departementCode: string
 ): StockCreationBodyModel[] | StockEditionBodyModel[] => {
-  return formValuesList.map((formValues: IStockEventFormValues) =>
-    serializeStockEvent(formValues, departementCode)
-  )
+  const today = getToday()
+  return formValuesList
+    .filter(
+      stockFormValues =>
+        !stockFormValues.beginningDate || stockFormValues.beginningDate >= today
+    )
+    .map((formValues: IStockEventFormValues) =>
+      serializeStockEvent(formValues, departementCode)
+    )
 }
