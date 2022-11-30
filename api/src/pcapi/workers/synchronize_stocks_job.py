@@ -2,20 +2,19 @@ import logging
 
 from pcapi.core.offerers.repository import find_venue_by_id
 from pcapi.core.providers import api
+from pcapi.core.providers import constants
 from pcapi.core.providers.models import StockDetail
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 
 
-PASS_CULTURE_STOCKS_PROVIDER_NAME = "PCAPIStocks"
-
 logger = logging.getLogger(__name__)
 
 
 @job(worker.low_queue)
 def synchronize_stocks_job(serialized_stock_details: list[dict], venue_id: str) -> None:
-    pc_provider = get_provider_by_local_class(PASS_CULTURE_STOCKS_PROVIDER_NAME)
+    pc_provider = get_provider_by_local_class(constants.PASS_CULTURE_STOCKS_PROVIDER_NAME)
 
     stock_details = [
         StockDetail(
