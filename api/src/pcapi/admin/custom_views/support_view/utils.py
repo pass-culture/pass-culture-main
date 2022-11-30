@@ -24,7 +24,7 @@ def beneficiary_fraud_review_formatter(view, context, model, name) -> Markup:  #
 
     for beneficiary_fraud_review in ordered_fraud_reviews:
         reviewer = beneficiary_fraud_review.author
-        reviewer_name = f"{reviewer.firstName} {reviewer.lastName}"
+        reviewer_name = reviewer.full_name
         review_result = beneficiary_fraud_review.review
         badge = result_mapping_class[review_result]
         html += Markup(

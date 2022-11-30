@@ -288,7 +288,7 @@ class Booking(PcObject, Base, Model):
     @property
     def userName(self) -> str:
         if self.individualBooking is not None:
-            return f"{self.individualBooking.user.firstName} {self.individualBooking.user.lastName}"
+            return self.individualBooking.user.full_name
 
         raise ValueError(f"Booking {self.id} has no individual booking.")
 

@@ -379,6 +379,10 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return fraud_api.decide_eligibility(self, self.birth_date, datetime.utcnow())
 
     @property
+    def full_name(self) -> str | None:
+        return f"{self.firstName or ''} {self.lastName or ''}".strip()
+
+    @property
     def has_active_deposit(self):  # type: ignore [no-untyped-def]
         return self.deposit.expirationDate > datetime.utcnow() if self.deposit else False
 

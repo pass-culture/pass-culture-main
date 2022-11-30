@@ -299,8 +299,8 @@ class GetOffererHistoryTest:
 
         content = response.data.decode("utf-8")
 
-        assert f"{user_offerer_1.user.firstName} {user_offerer_1.user.lastName}" not in content
-        assert f"{user_offerer_2.user.firstName} {user_offerer_2.user.lastName}" in content
+        assert user_offerer_1.user.full_name not in content
+        assert user_offerer_2.user.full_name in content
 
 
 class GetOffererHistoryDataTest:
@@ -523,10 +523,7 @@ class ListOfferersToValidateTest:
             assert rows[0]["Dernier commentaire"] == "Houlala"
             assert rows[0]["SIREN"] == user_offerer.offerer.siren
             assert rows[0]["Email"] == user_offerer.offerer.first_user.email
-            assert (
-                rows[0]["Responsable Structure"] == f"{user_offerer.offerer.first_user.firstName} "
-                f"{user_offerer.offerer.first_user.lastName}"
-            )
+            assert rows[0]["Responsable Structure"] == user_offerer.offerer.first_user.full_name
             assert rows[0]["Ville"] == user_offerer.offerer.city
             assert rows[0]["Téléphone"] == user_offerer.offerer.first_user.phoneNumber
 
@@ -1127,7 +1124,7 @@ class ListUserOffererToValidateTest:
         assert len(rows) == 1
         assert rows[0]["ID Compte pro"] == str(new_user_offerer.user.id)
         assert rows[0]["Email Compte pro"] == new_user_offerer.user.email
-        assert rows[0]["Nom Compte pro"] == f"{new_user_offerer.user.firstName} {new_user_offerer.user.lastName}"
+        assert rows[0]["Nom Compte pro"] == new_user_offerer.user.full_name
         assert rows[0]["État"] == expected_status
         assert rows[0]["Date de la demande"] == "03/11/2022"
         assert rows[0]["Dernier commentaire"] == "Bla blabla"
@@ -1160,7 +1157,7 @@ class ListUserOffererToValidateTest:
         assert len(rows) == 1
         assert rows[0]["ID Compte pro"] == str(new_user_offerer.user.id)
         assert rows[0]["Email Compte pro"] == new_user_offerer.user.email
-        assert rows[0]["Nom Compte pro"] == f"{new_user_offerer.user.firstName} {new_user_offerer.user.lastName}"
+        assert rows[0]["Nom Compte pro"] == new_user_offerer.user.full_name
         assert rows[0]["État"] == "Nouveau"
         assert rows[0]["Date de la demande"] == "25/11/2022"
         assert rows[0]["Dernier commentaire"] == ""

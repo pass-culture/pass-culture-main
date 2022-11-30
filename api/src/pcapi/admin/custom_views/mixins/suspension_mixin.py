@@ -68,11 +68,7 @@ def beneficiary_suspension_history_formatter(view, context, model, name) -> Mark
     html = Markup("<ul>")
 
     for suspension_event in suspension_history:
-        author_text = (
-            f"par {suspension_event.actorUser.firstName} {suspension_event.actorUser.lastName}"
-            if suspension_event.actorUser
-            else ""
-        )
+        author_text = f"par {suspension_event.actorUser.full_name}" if suspension_event.actorUser else ""
 
         reason_text = (
             " : " + dict(users_constants.SUSPENSION_REASON_CHOICES)[suspension_event.reasonCode]

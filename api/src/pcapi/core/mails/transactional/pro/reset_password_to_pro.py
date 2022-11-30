@@ -35,7 +35,7 @@ def get_reset_password_link_to_admin_email_data(
         html_content=(
             "<html><head></head><body>"
             "<div><div>Bonjour,</div>"
-            f"<div>Vous venez de créer le compte de {created_user.firstName} {created_user.lastName}.</div>"
+            f"<div>Vous venez de créer le compte de {created_user.full_name}.</div>"
             f"<div>Le lien de création de mot de passe est <a href='{reset_password_link}'>{reset_password_link}</a></div>"
         ),
     )

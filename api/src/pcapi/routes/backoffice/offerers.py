@@ -322,7 +322,7 @@ def _get_serialized_offerer_last_comment(
             last = max(actions_with_comment, key=lambda a: a.actionDate)
             return serialization.Comment(
                 date=format_into_utc_date(last.actionDate) if last.actionDate else None,
-                author=f"{last.authorUser.firstName} {last.authorUser.lastName}" if last.authorUser else None,
+                author=last.authorUser.full_name if last.authorUser else None,
                 content=last.comment,
             )
 
@@ -390,11 +390,7 @@ def list_offerers_to_be_validated(
                     address=offerer.address,
                     postalCode=offerer.postalCode,
                     city=offerer.city,
-                    owner=(
-                        f"{offerer.first_user.firstName} {offerer.first_user.lastName}"
-                        if offerer.UserOfferers
-                        else None
-                    ),
+                    owner=(offerer.first_user.full_name if offerer.UserOfferers else None),
                     ownerId=offerer.first_user.id if offerer.UserOfferers else None,
                     phoneNumber=(offerer.first_user.phoneNumber if offerer.UserOfferers else None),
                     email=(offerer.first_user.email if offerer.UserOfferers else None),

@@ -23,7 +23,7 @@
                 <td class="px-4">
                     <p>{{ action.comment | empty_string_if_null }}</p>
                 </td>
-                <td>{{ action.authorUser.firstName + " " + action.authorUser.lastName if action.authorUser else None | empty_string_if_null }}</td>
+                <td>{{ action.authorUser.full_name if action.authorUser else None | empty_string_if_null }}</td>
             </tr>
         {% endfor %}
     </tbody>
