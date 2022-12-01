@@ -61,7 +61,6 @@ class CollectiveOffersPublicPostOfferTest:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
-            "interventionArea": ["44"],
             "isActive": True,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
@@ -90,7 +89,7 @@ class CollectiveOffersPublicPostOfferTest:
         assert offer.name == payload["name"]
         assert offer.domains == [domain]
         assert offer.institutionId == educational_institution.id
-        assert offer.interventionArea == ["44"]
+        assert offer.interventionArea == []
         assert offer.offerVenue == {
             "venueId": humanize(venue.id),
             "addressType": "offererVenue",
@@ -128,7 +127,6 @@ class CollectiveOffersPublicPostOfferTest:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
-            "interventionArea": ["44"],
             "isActive": True,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
@@ -178,7 +176,6 @@ class CollectiveOffersPublicPostOfferTest:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
-            "interventionArea": ["44"],
             "isActive": True,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
@@ -230,7 +227,6 @@ class CollectiveOffersPublicPostOfferTest:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
-            "interventionArea": ["44"],
             "isActive": True,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
@@ -240,56 +236,6 @@ class CollectiveOffersPublicPostOfferTest:
             "educationalPriceDetail": "Justification du prix",
             # link to educational institution
             "educationalInstitutionId": -1,
-        }
-
-        # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-                "/v2/collective/offers/", json=payload
-            )
-
-        # Then
-        assert response.status_code == 404
-
-    def test_bad_intervention_area(self, client):
-        # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        domain = educational_factories.EducationalDomainFactory()
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-
-        payload = {
-            "venueId": venue.id,
-            "name": "Un nom en français ævœc des diàcrtîtïqués",
-            "description": "une description d'offre",
-            "subcategoryId": "EVENEMENT_CINE",
-            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
-            "contactEmail": "offerer-contact@example.com",
-            "contactPhone": "+33100992798",
-            "domains": [domain.id],
-            "durationMinutes": 183,
-            "students": [educational_models.StudentLevels.COLLEGE4.name],
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "offerVenue": {
-                "venueId": venue.id,
-                "addressType": "offererVenue",
-                "otherAddress": "",
-            },
-            "interventionArea": ["44", "158"],
-            "isActive": True,
-            # stock part
-            "beginningDatetime": "2022-09-25T11:00",
-            "bookingLimitDatetime": "2022-09-15T11:00",
-            "totalPrice": 35621,
-            "numberOfTickets": 30,
-            "educationalPriceDetail": "Justification du prix",
-            # link to educational institution
-            "educationalInstitutionId": educational_institution.id,
         }
 
         # When
@@ -329,7 +275,6 @@ class CollectiveOffersPublicPostOfferTest:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
-            "interventionArea": ["44"],
             "isActive": True,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
@@ -379,7 +324,6 @@ class CollectiveOffersPublicPostOfferTest:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
-            "interventionArea": ["44"],
             "isActive": True,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
@@ -431,7 +375,6 @@ class CollectiveOffersPublicPostOfferTest:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
-            "interventionArea": ["44"],
             "isActive": True,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
