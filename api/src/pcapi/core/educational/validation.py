@@ -6,7 +6,6 @@ from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
-from pcapi.core.educational.constants import INTERVENTION_AREA
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import collective_offers_serialize
@@ -118,15 +117,6 @@ def check_user_can_prebook_collective_stock(uai: str, stock: models.CollectiveSt
     offer_institution = stock.collectiveOffer.institution
     if offer_institution is not None and offer_institution.institutionId != uai:
         raise exceptions.CollectiveStockNotBookableByUser()
-
-
-def check_intervention_area(intervention_area: list[str]) -> None:
-    if not INTERVENTION_AREA.issuperset(intervention_area):
-        errors = []
-        for area in intervention_area:
-            if area not in INTERVENTION_AREA:
-                errors.append(area)
-        raise exceptions.InvalidInterventionArea(errors=errors)
 
 
 def check_institution_id_exists(institution_id: int) -> None:
