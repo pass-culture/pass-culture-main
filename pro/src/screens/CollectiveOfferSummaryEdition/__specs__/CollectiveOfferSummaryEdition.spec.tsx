@@ -85,7 +85,7 @@ describe('CollectiveOfferSummary', () => {
     renderCollectiveOfferSummaryEdition(offer, categories)
 
     const desactivateOffer = screen.getByRole('button', {
-      name: 'Désactiver l’offre',
+      name: 'Masquer la publication sur Adage',
     })
 
     expect(desactivateOffer).toBeInTheDocument()
@@ -135,7 +135,7 @@ describe('CollectiveOfferSummary', () => {
       .mockResolvedValue()
 
     const activateOffer = screen.getByRole('button', {
-      name: 'Activer l’offre',
+      name: 'Publier sur Adage',
     })
 
     await userEvent.click(activateOffer)
@@ -143,7 +143,7 @@ describe('CollectiveOfferSummary', () => {
     expect(toggle).toHaveBeenCalledTimes(1)
 
     const desactivateOffer = screen.getByRole('button', {
-      name: 'Désactiver l’offre',
+      name: 'Masquer la publication sur Adage',
     })
 
     expect(desactivateOffer).toBeInTheDocument()
