@@ -8,6 +8,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.pro import blueprint
+from pcapi.routes.public import utils
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
@@ -154,9 +155,12 @@ def post_collective_offer_public(
 ) -> public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Création d'une offre collective."""
-    image_as_bytes = body.get_image_as_bytes()
-    try:
-        if image_as_bytes:
+    if body.image_file:
+        try:
+            image_as_bytes = utils.get_bytes_from_base64_string(body.image_file)
+        except utils.InvalidBase64Exception:
+            raise ApiErrors(errors={"imageFile": ["La valeur ne semble pas être du base 64 valide."]})
+        try:
             offers_validation.check_image(
                 image_as_bytes=image_as_bytes,
                 accepted_types=offers_validation.ACCEPTED_THUMBNAIL_FORMATS,
@@ -165,20 +169,22 @@ def post_collective_offer_public(
                 max_width=IMAGE_WIDTH,
                 max_height=IMAGE_HEIGHT,
             )
-    except offers_exceptions.UnacceptedFileType:
-        raise ApiErrors(
-            errors={
-                "imageFile": [f"Les formats acceptés sont:  {', '.join(offers_validation.ACCEPTED_THUMBNAIL_FORMATS)}"],
-            },
-            status_code=400,
-        )
-    except (offers_exceptions.ImageTooSmall, offers_exceptions.ImageTooLarge):
-        raise ApiErrors(
-            errors={
-                "imageFile": [f"L'image doit faire exactement {IMAGE_WIDTH}*{IMAGE_HEIGHT} pixels"],
-            },
-            status_code=400,
-        )
+        except offers_exceptions.UnacceptedFileType:
+            raise ApiErrors(
+                errors={
+                    "imageFile": [
+                        f"Les formats acceptés sont:  {', '.join(offers_validation.ACCEPTED_THUMBNAIL_FORMATS)}"
+                    ],
+                },
+                status_code=400,
+            )
+        except (offers_exceptions.ImageTooSmall, offers_exceptions.ImageTooLarge):
+            raise ApiErrors(
+                errors={
+                    "imageFile": [f"L'image doit faire exactement {IMAGE_WIDTH}*{IMAGE_HEIGHT} pixels"],
+                },
+                status_code=400,
+            )
 
     try:
         offer = educational_api_offer.create_collective_offer_public(
@@ -376,9 +382,11 @@ def patch_collective_offer_public(
                 },
                 status_code=400,
             )
-
-        image_as_bytes = body.get_image_as_bytes()
-        if image_as_bytes is not None:
+        if body.imageFile:
+            try:
+                image_as_bytes = utils.get_bytes_from_base64_string(body.imageFile)
+            except utils.InvalidBase64Exception:
+                raise ApiErrors(errors={"imageFile": ["La valeur ne semble pas être du base 64 valide."]})
             try:
                 offers_validation.check_image(
                     image_as_bytes=image_as_bytes,
