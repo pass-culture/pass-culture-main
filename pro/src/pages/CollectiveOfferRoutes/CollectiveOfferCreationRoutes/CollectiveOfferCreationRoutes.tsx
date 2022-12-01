@@ -9,7 +9,6 @@ import {
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
-import useActiveFeature from 'hooks/useActiveFeature'
 import CollectiveOfferConfirmation from 'pages/CollectiveOfferConfirmation'
 import CollectiveOfferCreation from 'pages/CollectiveOfferCreation'
 import CollectiveOfferStockCreation from 'pages/CollectiveOfferStockCreation'
@@ -35,10 +34,6 @@ const CollectiveOfferCreationRoutes = ({
   const [offer, setOffer] = useState<
     CollectiveOffer | CollectiveOfferTemplate
   >()
-
-  const isSubtypeChosenAtCreation = useActiveFeature(
-    'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
-  )
 
   useEffect(() => {
     if (!offerId) {
@@ -106,28 +101,24 @@ const CollectiveOfferCreationRoutes = ({
             <Route path="/offre/creation/collectif">
               <CollectiveOfferCreation offer={offer} setOffer={setOffer} />
             </Route>
-            {isSubtypeChosenAtCreation && (
-              <Route path="/offre/collectif/:offerId/creation">
-                {offer ? (
-                  <CollectiveOfferCreation offer={offer} setOffer={setOffer} />
-                ) : (
-                  <Spinner />
-                )}
-              </Route>
-            )}
-            {isSubtypeChosenAtCreation && (
-              <Route path="/offre/collectif/vitrine/:offerId/creation">
-                {offer ? (
-                  <CollectiveOfferCreation
-                    offer={offer}
-                    setOffer={setOffer}
-                    isTemplate
-                  />
-                ) : (
-                  <Spinner />
-                )}
-              </Route>
-            )}
+            <Route path="/offre/collectif/:offerId/creation">
+              {offer ? (
+                <CollectiveOfferCreation offer={offer} setOffer={setOffer} />
+              ) : (
+                <Spinner />
+              )}
+            </Route>
+            <Route path="/offre/collectif/vitrine/:offerId/creation">
+              {offer ? (
+                <CollectiveOfferCreation
+                  offer={offer}
+                  setOffer={setOffer}
+                  isTemplate
+                />
+              ) : (
+                <Spinner />
+              )}
+            </Route>
             <Route path="/offre/:offerId/collectif/stocks">
               {offer && isCollectiveOffer(offer) ? (
                 <CollectiveOfferStockCreation
