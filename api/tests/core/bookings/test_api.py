@@ -499,7 +499,8 @@ class BookOfferTest:
 
 @pytest.mark.usefixtures("db_session")
 class CancelByBeneficiaryTest:
-    def test_cancel_booking(self):
+    @patch("pcapi.core.bookings.api._cancel_external_booking")
+    def test_cancel_booking(self, mocked_cancel_external_booking):
         stock = offers_factories.StockFactory(offer__bookingEmail="offerer@example.com")
         booking = booking_factories.IndividualBookingFactory.create_batch(20, stock=stock)[0]
 
@@ -508,6 +509,7 @@ class CancelByBeneficiaryTest:
         with assert_no_duplicated_queries():
             api.cancel_booking_by_beneficiary(user, booking)
 
+        mocked_cancel_external_booking.assert_called_once_with(booking, stock)
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
 
@@ -605,12 +607,14 @@ class CancelByBeneficiaryTest:
     @patch("pcapi.core.bookings.api.external_bookings_api.cancel_booking")
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_cancel_external_booking(self, mocked_cancel_booking):
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
         mocked_cancel_booking.return_value = None
 
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         offer_solo = offers_factories.EventOfferFactory(
-            name="Séance ciné solo", subcategoryId=subcategories.SEANCE_CINE.id
+            name="Séance ciné solo", subcategoryId=subcategories.SEANCE_CINE.id, venue=venue_provider.venue
         )
         stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111")
         booking = booking_factories.IndividualBookingFactory(stock=stock_solo, individualBooking__user=beneficiary)
