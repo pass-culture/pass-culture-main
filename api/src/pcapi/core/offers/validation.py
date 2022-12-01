@@ -5,6 +5,7 @@ from io import BytesIO
 import logging
 
 from PIL import Image
+from PIL import UnidentifiedImageError
 
 from pcapi import settings
 from pcapi.core.categories import subcategories
@@ -224,8 +225,10 @@ def check_image(
 ) -> None:
     try:
         image = Image.open(BytesIO(image_as_bytes))
+    except UnidentifiedImageError:
+        raise exceptions.UnidentifiedImage()
     except Exception:
-        raise exceptions.UnacceptedFileType(accepted_types)
+        raise exceptions.ImageValidationError()
 
     if image.format.lower() not in accepted_types:
         raise exceptions.UnacceptedFileType(accepted_types)

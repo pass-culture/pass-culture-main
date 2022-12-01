@@ -292,7 +292,7 @@ class CheckImageTest:
 
     def test_fake_jpeg(self):
         image_as_bytes = (IMAGES_DIR / "mouette_fake_jpg.jpg").read_bytes()
-        with pytest.raises(exceptions.UnacceptedFileType):
+        with pytest.raises(exceptions.ImageValidationError):
             validation.check_image(
                 image_as_bytes,
                 accepted_types=("jpeg", "jpg"),

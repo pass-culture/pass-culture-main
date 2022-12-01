@@ -1,21 +1,17 @@
 import logging
 
+from flask import Response
 from flask import current_app as app
 
-from pcapi.core.offers.exceptions import FileSizeExceeded
-from pcapi.core.offers.exceptions import ImageTooSmall
-from pcapi.core.offers.exceptions import MissingImage
-from pcapi.core.offers.exceptions import UnacceptedFileType
-from pcapi.routes.error_handlers.utils import generate_error_response
+from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.routes.error_handlers import utils as error_handlers_utils
 
 
 logger = logging.getLogger(__name__)
 
 
-@app.errorhandler(FileSizeExceeded)  # type: ignore [arg-type]
-@app.errorhandler(ImageTooSmall)
-@app.errorhandler(UnacceptedFileType)
-@app.errorhandler(MissingImage)
-def handle_create_a_thumbnail(exception):  # type: ignore [no-untyped-def]
+@app.errorhandler(offers_exceptions.ImageValidationError)
+def handle_create_a_thumbnail(exception: Exception) -> tuple[Response, int]:
     logger.info("When creating the offer thumbnail, this error was encountered: %s", exception.__class__.__name__)
-    return generate_error_response({"errors": [exception.args[0]]}), 400
+    error_message = exception.args[0] if exception.args else "L'image n'est pas valide"
+    return error_handlers_utils.generate_error_response({"errors": [error_message]}), 400
