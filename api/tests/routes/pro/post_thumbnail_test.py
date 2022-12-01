@@ -88,7 +88,7 @@ class CreateThumbnailFromFileTest:
 
         # then
         assert response.status_code == 400
-        assert response.json == {"errors": ["Utilisez un format png, jpg, jpeg"]}
+        assert response.json == {"errors": ["Le fichier fourni n'est pas une image valide"]}
 
     @mock.patch("pcapi.core.offers.validation.check_image")
     def test_image_too_small(self, mock_check_image, app, offer, offerer):
