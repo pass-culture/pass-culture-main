@@ -6,14 +6,6 @@ import getCollectiveOfferFormDataApdater from '../adapters/getCollectiveOfferFor
 import getCollectiveOfferTemplateAdapter from '../adapters/getCollectiveOfferTemplateAdapter'
 import postCollectiveOfferAdapter from '../adapters/postCollectiveOfferAdapter'
 
-// TODO (atrancart): delete when feature flag is removed
-export const oldCreateOfferFromTemplate = async (
-  history: ReturnType<typeof useHistory>,
-  templateOfferId: string
-) => {
-  history.push(`/offre/duplication/collectif/${templateOfferId}`)
-}
-
 export const createOfferFromTemplate = async (
   history: ReturnType<typeof useHistory>,
   notify: ReturnType<typeof useNotification>,
