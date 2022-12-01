@@ -1,7 +1,5 @@
 """delete_collective_offer_choice_creation_ff
 """
-from alembic import op
-import sqlalchemy as sa
 
 
 # pre/post deployment: post
