@@ -119,7 +119,7 @@ describe('ImageUploadBrowserForm', () => {
     await userEvent.upload(fileInput, testFile)
     expect(onSubmit).not.toHaveBeenCalled()
     expect(
-      screen.queryByText('La hauteur minimale de l’image : 600 px')
+      screen.queryByText('Hauteur minimale de l’image : 600 px')
     ).toBeInTheDocument()
     expect(
       screen.queryByText('Largeur minimale de l’image : 400 px')
