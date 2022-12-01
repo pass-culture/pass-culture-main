@@ -2,6 +2,10 @@ from dataclasses import dataclass
 from enum import Enum
 
 from pcapi.core.categories import categories
+from pcapi.domain.book_types import BOOK_MACRO_SECTIONS
+from pcapi.domain.movie_types import MOVIE_TYPES
+from pcapi.domain.music_types import MUSIC_TYPES_DICT
+from pcapi.domain.show_types import SHOW_TYPES_DICT
 
 
 class OnlineOfflinePlatformChoices(Enum):
@@ -102,6 +106,48 @@ class NativeCategory(Enum):
     PRATIQUE_ARTISTIQUE_EN_LIGNE = "Pratique artistique en ligne"
 
 
+class GenreType(Enum):
+    BOOK = "BOOK"
+    MUSIC = "MUSIC"
+    SHOW = "SHOW"
+    MOVIE = "MOVIE"
+
+    @property
+    def values(self) -> list[str]:
+        return {
+            type(self).BOOK.name: self.book_values(),
+            type(self).MUSIC.name: self.music_values(),
+            type(self).SHOW.name: self.show_values(),
+            type(self).MOVIE.name: self.movie_values(),
+        }[self.value]
+
+    def book_values(self) -> list[str]:
+        return sorted(BOOK_MACRO_SECTIONS)
+
+    def music_values(self) -> list[str]:
+        return sorted(MUSIC_TYPES_DICT.values())
+
+    def show_values(self) -> list[str]:
+        return sorted(SHOW_TYPES_DICT.values())
+
+    def movie_values(self) -> list[str]:
+        return sorted(MOVIE_TYPES)
+
+
+NATIVE_CATEGORY_GENRES_TYPES_MAPPING = {
+    NativeCategory.LIVRES_PAPIER: GenreType.BOOK,
+    NativeCategory.SEANCES_DE_CINEMA: GenreType.MOVIE,
+    NativeCategory.FESTIVALS: GenreType.MUSIC,
+    NativeCategory.CD_VINYLES: GenreType.MUSIC,
+    NativeCategory.MUSIQUE_EN_LIGNE: GenreType.MUSIC,
+    NativeCategory.CONCERTS_EN_LIGNE: GenreType.MUSIC,
+    NativeCategory.CONCERTS_EVENEMENTS: GenreType.MUSIC,
+    NativeCategory.ABONNEMENTS_SPECTACLE: GenreType.SHOW,
+    NativeCategory.SPECTACLES_ENREGISTRES: GenreType.SHOW,
+    NativeCategory.SPECTACLES_REPRESENTATIONS: GenreType.SHOW,
+}
+
+
 @dataclass(frozen=True)
 class Subcategory:
     id: str
@@ -149,6 +195,13 @@ class Subcategory:
     @property
     def is_online_only(self) -> bool:
         return self.online_offline_platform == OnlineOfflinePlatformChoices.ONLINE.value
+
+    @property
+    def genre_type(self) -> GenreType | None:
+        try:
+            return NATIVE_CATEGORY_GENRES_TYPES_MAPPING[self.native_category]
+        except KeyError:
+            return None
 
 
 # region Subcategories declarations

@@ -138,4 +138,8 @@ def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponse
             subcategories_v2_serializers.HomepageLabelResponseModelv2.from_orm(homepage_label_name)
             for homepage_label_name in subcategories_v2.HomepageLabels
         ],
+        genreTypes=[
+            subcategories_v2_serializers.GenreTypeModel.from_orm(genre_type)
+            for genre_type in subcategories_v2.GenreType
+        ],
     )
