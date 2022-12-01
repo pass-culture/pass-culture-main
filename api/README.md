@@ -255,16 +255,13 @@ spécifiques.
 
 ### Installation de psycopg2
 
-> Install openssl with `brew install openssl` if you don't have it already.
->
-> add openssl path to `LIBRARY_PATH` :
->
-> `export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/`
->
-> install psycopg2 with pip `pip3 install psycopg2`
+Installer `openssl` avec `brew install openssl`.
 
+Ajouter `openssl` au path `LIBRARY_PATH` (path for intel chip brew) `export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/`.
 
-Autre [piste](https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7/62931654#62931654)
+Sur mac, vous pouvez aussi avoir besoin de lancer `brew install postgresql`.
+
+Autre [piste](https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7/62931654#62931654).
 
 ### Tests qui échouent
 
