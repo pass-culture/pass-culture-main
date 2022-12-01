@@ -4,6 +4,7 @@ Documentation of the API: https://api.insee.fr/catalogue/site/themes/wso2/subthe
 """
 
 from collections import defaultdict
+import json
 import logging
 import re
 import typing
@@ -191,7 +192,10 @@ class InseeBackend(BaseBackend):
             raise SireneApiException("Sirene API is unavailable")
         if response.status_code != 200:
             raise SireneApiException(f"Unexpected {response.status_code} response from Sirene API: {url}")
-        return response.json()
+        try:
+            return response.json()
+        except json.JSONDecodeError:
+            raise SireneApiException(f"Unexpected non-JSON response from Sirene API: {url}")
 
     def _get_head_office(self, siren_data: dict) -> dict:
         return [_b for _b in siren_data["periodesUniteLegale"] if not _b["dateFin"]][0]
