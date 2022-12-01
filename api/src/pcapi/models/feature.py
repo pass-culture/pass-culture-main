@@ -124,7 +124,6 @@ class FeatureToggle(enum.Enum):
     TEMP_DISABLE_OFFERER_VALIDATION_EMAIL = (
         "Désactiver l'envoi d'email interne de validation par token pour les structures et rattachements"
     )
-    WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION = "Active l'écran carrefour sur la page de choix du type d’offre à créer, afin de pouvoir créer une offre collective vitrine dès le départ"
     WIP_ENABLE_BACKOFFICE_V3 = "Autorise l'accès au nouveau back-office (v3)"
     WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
     WIP_IMAGE_COLLECTIVE_OFFER = "Active les images dans les offres collectives et les offres vitrines."
@@ -191,7 +190,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.DISABLE_STORE_REVIEW,
     FeatureToggle.TEMP_ENABLE_JOB_HIGHLIGHTS_BANNER,
     FeatureToggle.TEMP_DISABLE_OFFERER_VALIDATION_EMAIL,
-    FeatureToggle.WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION,
     FeatureToggle.WIP_ENABLE_BACKOFFICE_V3,
     FeatureToggle.WIP_IMAGE_COLLECTIVE_OFFER,
     FeatureToggle.WIP_REQUIRE_PRICE_IN_STOCK_API,
