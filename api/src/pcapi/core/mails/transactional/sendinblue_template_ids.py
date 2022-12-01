@@ -124,13 +124,15 @@ class TransactionalEmail(Enum):
     EAC_NEW_PREBOOKING_TO_PRO = models.TemplatePro(
         id_prod=429, id_not_prod=68, tags=["pro_nouvelle_prereservation_eac"]
     )
-    EAC_ONE_DAY_BEFORE_EVENT = models.TemplatePro(id_prod=615, id_not_prod=112, tags=["pro_notification_1j"])
+    EAC_ONE_DAY_BEFORE_EVENT = models.TemplatePro(
+        id_prod=615, id_not_prod=112, tags=["pro_notification_1j"], send_to_ehp=False
+    )
     EAC_PENDING_BOOKING_WITH_BOOKING_LIMIT_DATE_3_DAYS = models.TemplatePro(
-        id_prod=524, id_not_prod=64, tags=["pro_preresa_3_jours_avant_la_date_limite"]
+        id_prod=524, id_not_prod=64, tags=["pro_preresa_3_jours_avant_la_date_limite"], send_to_ehp=False
     )
     EAC_OFFERER_ACTIVATION_EMAIL = models.TemplatePro(id_prod=815, id_not_prod=114, tags=["pro_offerer_activation"])
     EDUCATIONAL_BOOKING_CANCELLATION = models.TemplatePro(
-        id_prod=522, id_not_prod=65, tags=["pro_eac_annulation_reservation"]
+        id_prod=522, id_not_prod=65, tags=["pro_eac_annulation_reservation"], send_to_ehp=False
     )
     EMAIL_VALIDATION_TO_PRO = models.TemplatePro(id_prod=361, id_not_prod=56, tags=["validation_email_invitation_pro"])
     EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO = models.TemplatePro(
