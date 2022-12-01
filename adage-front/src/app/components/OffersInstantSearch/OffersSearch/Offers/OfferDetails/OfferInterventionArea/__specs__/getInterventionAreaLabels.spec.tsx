@@ -8,13 +8,6 @@ describe('getInterventionAreaLabels', () => {
     )
   })
 
-  it('should format intervention area when all france option is selected', () => {
-    const interventionArea = ['all', '75', '92']
-    expect(getInterventionAreaLabels(interventionArea)).toStrictEqual(
-      'France métropolitaine et d’outre-mer'
-    )
-  })
-
   it('should format intervention area when mainland option is selected + domtom departments', () => {
     const interventionArea = ['mainland', '971']
     expect(getInterventionAreaLabels(interventionArea)).toStrictEqual(
