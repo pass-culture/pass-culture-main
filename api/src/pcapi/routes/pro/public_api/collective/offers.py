@@ -18,10 +18,6 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 
 
-IMAGE_HEIGHT = 600
-IMAGE_WIDTH = 400
-
-
 BASE_CODE_DESCRIPTIONS = {
     "HTTP_401": (public_api_collective_offers_serialize.AuthErrorResponseModel, "Authentification nécessaire"),
     "HTTP_403": (
@@ -164,10 +160,10 @@ def post_collective_offer_public(
             offers_validation.check_image(
                 image_as_bytes=image_as_bytes,
                 accepted_types=offers_validation.ACCEPTED_THUMBNAIL_FORMATS,
-                min_width=IMAGE_WIDTH,
-                min_height=IMAGE_HEIGHT,
-                max_width=IMAGE_WIDTH,
-                max_height=IMAGE_HEIGHT,
+                min_width=offers_validation.STANDARD_THUMBNAIL_WIDTH,
+                min_height=offers_validation.STANDARD_THUMBNAIL_HEIGHT,
+                max_width=offers_validation.STANDARD_THUMBNAIL_WIDTH,
+                max_height=offers_validation.STANDARD_THUMBNAIL_HEIGHT,
             )
         except offers_exceptions.UnacceptedFileType:
             raise ApiErrors(
@@ -181,7 +177,9 @@ def post_collective_offer_public(
         except (offers_exceptions.ImageTooSmall, offers_exceptions.ImageTooLarge):
             raise ApiErrors(
                 errors={
-                    "imageFile": [f"L'image doit faire exactement {IMAGE_WIDTH}*{IMAGE_HEIGHT} pixels"],
+                    "imageFile": [
+                        f"L'image doit faire exactement {offers_validation.STANDARD_THUMBNAIL_WIDTH}*{offers_validation.STANDARD_THUMBNAIL_HEIGHT} pixels"
+                    ],
                 },
                 status_code=400,
             )
@@ -391,10 +389,10 @@ def patch_collective_offer_public(
                 offers_validation.check_image(
                     image_as_bytes=image_as_bytes,
                     accepted_types=offers_validation.ACCEPTED_THUMBNAIL_FORMATS,
-                    min_width=IMAGE_WIDTH,
-                    min_height=IMAGE_HEIGHT,
-                    max_width=IMAGE_WIDTH,
-                    max_height=IMAGE_HEIGHT,
+                    min_width=offers_validation.STANDARD_THUMBNAIL_WIDTH,
+                    min_height=offers_validation.STANDARD_THUMBNAIL_HEIGHT,
+                    max_width=offers_validation.STANDARD_THUMBNAIL_WIDTH,
+                    max_height=offers_validation.STANDARD_THUMBNAIL_HEIGHT,
                 )
             except offers_exceptions.UnacceptedFileType:
                 raise ApiErrors(
@@ -408,7 +406,9 @@ def patch_collective_offer_public(
             except (offers_exceptions.ImageTooSmall, offers_exceptions.ImageTooLarge):
                 raise ApiErrors(
                     errors={
-                        "imageFile": [f"L'image doit faire exactement {IMAGE_WIDTH}*{IMAGE_HEIGHT} pixels"],
+                        "imageFile": [
+                            f"L'image doit faire exactement {offers_validation.STANDARD_THUMBNAIL_WIDTH}*{offers_validation.STANDARD_THUMBNAIL_HEIGHT} pixels"
+                        ],
                     },
                     status_code=400,
                 )
