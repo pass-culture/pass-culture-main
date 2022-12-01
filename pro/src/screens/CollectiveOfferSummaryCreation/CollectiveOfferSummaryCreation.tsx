@@ -68,7 +68,15 @@ const CollectiveOfferSummaryCreation = ({
         Vous y êtes presque !<br />
         Vérifiez les informations ci-dessous avant de publier votre offre.
       </Banner>
-      <CollectiveOfferSummary offer={offer} categories={categories} />
+      <CollectiveOfferSummary
+        offer={offer}
+        categories={categories}
+        offerEditLink={`/offre/collectif${offer.isTemplate ? '/vitrine' : ''}/${
+          offer.id
+        }/creation`}
+        stockEditLink={`/offre/${offer.id}/collectif/stocks/edition`}
+        visibilityEditLink={`/offre/${offer.id}/collectif/visibilite`}
+      />
       {isOfferFormV3 ? (
         <ActionsBarSticky>
           <ActionsBarSticky.Left>
