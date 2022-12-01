@@ -6,7 +6,6 @@ import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   isCollectiveOffer,
-  isCollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
@@ -14,7 +13,6 @@ import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/compute
 import CollectiveOfferEdition from 'pages/CollectiveOfferEdition'
 import CollectiveOfferStockEdition from 'pages/CollectiveOfferStockEdition'
 import CollectiveOfferSummaryEdition from 'pages/CollectiveOfferSummaryEdition'
-import CollectiveOfferTemplateStockEdition from 'pages/CollectiveOfferTemplateStockEdition'
 import CollectiveOfferVisibility from 'pages/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -97,15 +95,6 @@ const CollectiveOfferEditionRoutes = ({
               />
             </Route>
           </>
-        )}
-        {/* TODO delete this page when WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION feature is in prod */}
-        {isTemplate && isCollectiveOfferTemplate(offer) && (
-          <Route path="/offre/:offerId/collectif/stocks/edition">
-            <CollectiveOfferTemplateStockEdition
-              offer={offer}
-              reloadCollectiveOffer={loadCollectiveOffer}
-            />
-          </Route>
         )}
       </Switch>
     </CollectiveOfferLayout>
