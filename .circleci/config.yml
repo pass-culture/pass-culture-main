@@ -390,12 +390,11 @@ jobs:
             flask install_data
             python tests/alembic/check_db_schema.py
           working_directory: /usr/src/app
-      # This step will fail ("Walked too far") if there are less than 10 migrations on each branch, for example after a squash
       - run:
           name: Check that downgrade scripts are correctly written
           command: |
-            alembic downgrade post@head-10
-            alembic downgrade pre@head-10
+            alembic downgrade post@f460dc2c9f93
+            alembic downgrade pre@f460dc2c9f93
             alembic upgrade pre@head
             alembic upgrade post@head
           working_directory: /usr/src/app
