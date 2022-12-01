@@ -15,6 +15,7 @@ class SubcategoryResponseModelv2(BaseModel):
     homepage_label_name: subcategories_v2.HomepageLabelNameEnumv2
     is_event: bool
     online_offline_platform: subcategories_v2.OnlineOfflinePlatformChoicesEnumv2
+    genre_type: subcategories_v2.GenreType | None
 
     class Config:
         alias_generator = to_camel
@@ -42,7 +43,18 @@ class HomepageLabelResponseModelv2(BaseModel):
         orm_mode = True
 
 
+class GenreTypeModel(BaseModel):
+    name: subcategories_v2.GenreType
+    values: list[str]
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
+
+
 class SubcategoriesResponseModelv2(BaseModel):
     subcategories: list[SubcategoryResponseModelv2]
     searchGroups: list[SearchGroupResponseModelv2]
     homepageLabels: list[HomepageLabelResponseModelv2]
+    genreTypes: list[GenreTypeModel]

@@ -583,6 +583,20 @@ def test_public_api(client):
                     "title": "FavoritesCountResponse",
                     "type": "object",
                 },
+                "GenreType": {
+                    "description": "An enumeration.",
+                    "enum": ["BOOK", "MUSIC", "SHOW", "MOVIE"],
+                    "title": "GenreType",
+                },
+                "GenreTypeModel": {
+                    "properties": {
+                        "name": {"$ref": "#/components/schemas/GenreType"},
+                        "values": {"items": {"type": "string"}, "title": "Values", "type": "array"},
+                    },
+                    "required": ["name", "values"],
+                    "title": "GenreTypeModel",
+                    "type": "object",
+                },
                 "HomepageLabelResponseModel": {
                     "properties": {
                         "name": {"$ref": "#/components/schemas/_HomepageLabelNameEnum"},
@@ -1234,8 +1248,13 @@ def test_public_api(client):
                             "title": "Subcategories",
                             "type": "array",
                         },
+                        "genreTypes": {
+                            "items": {"$ref": "#/components/schemas/GenreTypeModel"},
+                            "title": "Genretypes",
+                            "type": "array",
+                        },
                     },
-                    "required": ["subcategories", "searchGroups", "homepageLabels"],
+                    "required": ["subcategories", "searchGroups", "homepageLabels", "genreTypes"],
                     "title": "SubcategoriesResponseModelv2",
                     "type": "object",
                 },
@@ -1425,6 +1444,7 @@ def test_public_api(client):
                         "onlineOfflinePlatform": {"$ref": "#/components/schemas/OnlineOfflinePlatformChoicesEnumv2"},
                         "searchGroupName": {"$ref": "#/components/schemas/SearchGroupNameEnumv2"},
                         "nativeCategory": {"$ref": "#/components/schemas/NativeCategory"},
+                        "genreType": {"anyOf": [{"$ref": "#/components/schemas/GenreType"}], "nullable": True},
                     },
                     "required": [
                         "id",
