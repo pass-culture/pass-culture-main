@@ -283,3 +283,23 @@ class HasPendingBankInformationApplicationTest:
         )
 
         assert venue.hasPendingBankInformationApplication is False
+
+
+class OffererFirstUserPropertyTest:
+    def test_first_user_when_none(self):
+        offerer = factories.OffererFactory()
+
+        assert offerer.first_user is None
+
+    def test_first_user_when_only_one(self):
+        offerer = factories.OffererFactory()
+        user_offerer = factories.UserOffererFactory(offerer=offerer)
+
+        assert offerer.first_user == user_offerer.user
+
+    def test_first_user_when_multiple(self):
+        offerer = factories.OffererFactory()
+        first = factories.UserOffererFactory(offerer=offerer)
+        factories.UserOffererFactory.create_batch(3, offerer=offerer)
+
+        assert offerer.first_user == first.user
