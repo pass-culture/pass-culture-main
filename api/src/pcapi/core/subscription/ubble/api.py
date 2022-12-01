@@ -98,34 +98,45 @@ def start_ubble_workflow(user: users_models.User, first_name: str, last_name: st
     return content.identification_url  # type: ignore [return-value]
 
 
+def get_most_relevant_ubble_error(
+    fraud_check: fraud_models.BeneficiaryFraudCheck,
+) -> fraud_models.FraudReasonCode | None:
+    reason_codes = fraud_check.reasonCodes or []
+
+    if fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in reason_codes:
+        return fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
+
+    if fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in reason_codes:
+        return fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH
+
+    if fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in reason_codes:
+        return fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED
+
+    if fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in reason_codes:
+        return fraud_models.FraudReasonCode.ID_CHECK_EXPIRED
+
+    if fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in reason_codes:
+        return fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
+
+    return None
+
+
 def handle_validation_errors(  # type: ignore [no-untyped-def]
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
 ):
-    reason_codes = fraud_check.reasonCodes or []
+    error_code = get_most_relevant_ubble_error(fraud_check)
+    if error_code:
+        transactional_mails.send_subscription_document_error_email(user.email, error_code)
+    else:
+        reason_codes = fraud_check.reasonCodes or []
+        if fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
+            transactional_mails.send_duplicate_beneficiary_email(user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_USER)  # type: ignore [arg-type]
 
-    if fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in reason_codes:
-        transactional_mails.send_subscription_document_error_email(user.email, "unread-document")
-
-    elif fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in reason_codes:
-        transactional_mails.send_subscription_document_error_email(user.email, "information-error")
-
-    elif fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in reason_codes:
-        transactional_mails.send_subscription_document_error_email(user.email, "unread-mrz-document")
-
-    elif fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in reason_codes:
-        transactional_mails.send_subscription_document_error_email(user.email, "invalid-document")
-
-    elif fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in reason_codes:
-        transactional_mails.send_subscription_document_error_email(user.email, "not-authentic-document")
-
-    elif fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
-        transactional_mails.send_duplicate_beneficiary_email(user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_USER)  # type: ignore [arg-type]
-
-    elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
-        transactional_mails.send_duplicate_beneficiary_email(
-            user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER  # type: ignore [arg-type]
-        )
+        elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
+            transactional_mails.send_duplicate_beneficiary_email(
+                user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER  # type: ignore [arg-type]
+            )
 
 
 def get_ubble_subscription_item_status(

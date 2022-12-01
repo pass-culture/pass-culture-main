@@ -6,19 +6,26 @@ from werkzeug.exceptions import Forbidden
 from wtforms import Form
 from wtforms import IntegerField
 from wtforms import StringField
+from wtforms import ValidationError
 from wtforms.validators import DataRequired
 
 from pcapi.admin.base_configuration import BaseAdminView
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.providers.models as providers_models
-from pcapi.core.providers.repository import get_provider_by_local_class
+import pcapi.core.providers.repository as providers_repository
 from pcapi.models import db
+
+
+def unique_id_at_provider_check(_form: SecureForm, field: StringField) -> None:
+    cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
+    if providers_repository.id_at_provider_exists_for_provider(id_at_provider=field.data, provider_id=cds_provider.id):
+        raise ValidationError("Cet identifiant cinéma existe déjà pour un autre lieu")
 
 
 class CineOfficePivotForm(SecureForm):
     venue_id = IntegerField("Identifiant numérique du lieu (pass Culture)", [DataRequired()])
     account_id = StringField("Nom de compte (CDS)", [DataRequired()])
-    cinema_id = StringField("Identifiant cinéma (CDS)", [DataRequired()])
+    cinema_id = StringField("Identifiant cinéma (CDS)", [DataRequired(), unique_id_at_provider_check])
     api_token = StringField("Clé API (CDS)", [DataRequired()])
 
 
@@ -83,7 +90,7 @@ class CineOfficePivotView(BaseAdminView):
     def create_model(self, form: CineOfficePivotForm) -> providers_models.CDSCinemaDetails | None:
         if not self.can_create:
             raise Forbidden()
-        cds_provider = get_provider_by_local_class("CDSStocks")
+        cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
         if not cds_provider:
             flash("Provider Ciné Office n'existe pas.", "error")
             return None

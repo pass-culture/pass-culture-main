@@ -59,7 +59,6 @@ def parse_phone_number(phone_number: str | None, region: str | None = None) -> P
         raise phone_validation_exceptions.InvalidPhoneNumber(
             f"provided phone number ({phone_number}) does not belong to an eligible region {tuple(r.value for r in regions)}"
         )
-
     return parsed_phone_number
 
 

@@ -31,7 +31,7 @@ class OffererValidationListForm(FlaskForm):
     per_page = fields.PCSelectField(
         "Par page",
         choices=(("10", "10"), ("25", "25"), ("50", "50"), ("100", "100")),
-        default="10",
+        default="100",
         validators=(wtforms.validators.Optional(),),
     )
 
@@ -39,6 +39,26 @@ class OffererValidationListForm(FlaskForm):
         if q.data and q.data.isnumeric() and len(q.data) != 9:
             raise wtforms.validators.ValidationError("Le SIREN doit faire 9 caractères")
         return q
+
+
+class UserOffererValidationListForm(FlaskForm):
+    class Meta:
+        csrf = False
+
+    tags = fields.PCQuerySelectMultipleField(
+        "Tags", query_factory=_get_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
+    )
+    status = fields.PCSelectMultipleField("États", choices=utils.choices_from_enum(offerers_models.ValidationStatus))
+    from_date = fields.PCDateField("Demande à partir du", validators=(wtforms.validators.Optional(),))
+    to_date = fields.PCDateField("Demande jusqu'au", validators=(wtforms.validators.Optional(),))
+
+    page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
+    per_page = fields.PCSelectField(
+        "Par page",
+        choices=(("10", "10"), ("25", "25"), ("50", "50"), ("100", "100")),
+        default="100",
+        validators=(wtforms.validators.Optional(),),
+    )
 
 
 class CommentForm(FlaskForm):

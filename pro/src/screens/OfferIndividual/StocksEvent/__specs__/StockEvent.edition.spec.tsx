@@ -11,19 +11,29 @@ import { ApiError, GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import {
   IOfferIndividual,
   IOfferIndividualStock,
   IOfferIndividualVenue,
 } from 'core/Offers/types'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
 import StocksEvent, { IStocksEventProps } from '../StocksEvent'
+
+jest.mock('utils/date', () => ({
+  ...jest.requireActual('utils/date'),
+  getToday: jest
+    .fn()
+    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+}))
 
 const renderStockEventScreen = ({
   props,
@@ -37,19 +47,38 @@ const renderStockEventScreen = ({
   const store = configureTestStore(storeOverride)
   return render(
     <Provider store={store}>
-      <MemoryRouter initialEntries={['/creation/stocks']}>
-        <Route path="/creation/stocks">
+      <MemoryRouter
+        initialEntries={[
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          }),
+        ]}
+      >
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          })}
+        >
           <OfferIndividualContext.Provider value={contextValue}>
             <StocksEvent {...props} />
           </OfferIndividualContext.Provider>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/recapitulatif">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          })}
+        >
           <div>Next page</div>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/stocks">
-          <div>Save draft page</div>
-        </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/informations">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          })}
+        >
           <div>Previous page</div>
         </Route>
         <Notification />
@@ -73,6 +102,7 @@ describe('screens:StocksEvent:Edition', () => {
       remainingQuantity: 6,
       bookingsQuantity: 4,
       isEventDeletable: true,
+      beginningDatetime: '2023-03-10T00:00:00.0200',
     }
     offer = {
       id: 'OFFER_ID',
@@ -199,5 +229,46 @@ describe('screens:StocksEvent:Edition', () => {
     ).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
     expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
+  })
+  it('should save the offer without warning on "Enregistrer les modifications" button click', async () => {
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stockIds: [{ id: 'STOCK_ID' }],
+    })
+    const undeletableStock = { ...defaultStock, bookingsQuantity: 0 }
+    props.offer.stocks = [undeletableStock as IOfferIndividualStock]
+    renderStockEventScreen({
+      props,
+      storeOverride,
+      contextValue,
+    })
+
+    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+    )
+    expect(await screen.getByText('Next page')).toBeInTheDocument()
+    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+  })
+  it('should show a warning on "Enregistrer les modifications" button click then save the offer', async () => {
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stockIds: [{ id: 'STOCK_ID' }],
+    })
+    const undeletableStock = { ...defaultStock }
+    props.offer.stocks = [undeletableStock as IOfferIndividualStock]
+    renderStockEventScreen({
+      props,
+      storeOverride,
+      contextValue,
+    })
+
+    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+    )
+    expect(
+      await screen.getByText('Des réservations sont en cours pour cette offre')
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Confirmer les modifications'))
+    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
   })
 })

@@ -1,18 +1,20 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
-import { StockFormRow } from 'components/StockFormRow'
-import { IStockFormRowAction } from 'components/StockFormRow/SockFormActions/types'
+import { IStockFormRowAction } from 'components/StockFormActions/types'
 import {
   StockThingForm,
   getValidationSchema,
   buildInitialValues,
   IStockThingFormValues,
+  STOCK_THING_FORM_DEFAULT_VALUES,
 } from 'components/StockThingForm'
 import { setFormReadOnlyFields } from 'components/StockThingForm/utils'
+import { StockThingFormRow } from 'components/StockThingFormRow'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
@@ -26,15 +28,19 @@ import {
 } from 'core/Offers/constants'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
+import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { useNavigate, useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as AddActivationCodeIcon } from 'icons/add-activation-code-light.svg'
+import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
+import { DialogStockDeleteConfirm } from '../DialogStockDeleteConfirm'
+import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 import { logTo } from '../utils/logTo'
 
 import { ActivationCodeFormDialog } from './ActivationCodeFormDialog'
@@ -63,7 +69,20 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer } = useOfferIndividualContext()
-  const { visible, showModal, hideModal } = useModal()
+  const {
+    visible: activationCodeFormVisible,
+    showModal: activationCodeFormShow,
+    hideModal: activationCodeFormHide,
+  } = useModal()
+  const {
+    visible: deleteConfirmVisible,
+    showModal: deleteConfirmShow,
+    hideModal: deleteConfirmHide,
+  } = useModal()
+  /* istanbul ignore next: DEBT, TO FIX */
+  const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
+  const isSynchronized = offer.lastProvider !== null
+  const providerName = offer?.lastProviderName
 
   const onSubmit = async (formValues: IStockThingFormValues) => {
     const { isOk, payload, message } = await upsertStocksThingAdapter({
@@ -125,7 +144,8 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
           mode,
         })
       )
-      if (saveDraft && !Object.keys(formik.touched).length) {
+      if (!Object.keys(formik.touched).length) {
+        setIsClickingFromActionBar(false)
         notify.success('Brouillon sauvegardé dans la liste des offres')
       } else {
         formik.handleSubmit()
@@ -143,6 +163,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         offerId: offer.id,
       })
     }
+
   const handlePreviousStep = () => {
     if (!formik.dirty) {
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
@@ -176,6 +197,11 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     )
   }
 
+  const onConfirmDeleteStock = () => {
+    onDeleteStock()
+    deleteConfirmHide()
+  }
+
   let actions: IStockFormRowAction[] = []
   let description
   if (!offer.isDigital) {
@@ -192,13 +218,31 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
     actions = [
       {
-        callback: showModal,
+        callback: activationCodeFormShow,
         label: "Ajouter des codes d'activation",
         disabled: isDisabled,
         Icon: AddActivationCodeIcon,
       },
     ]
   }
+
+  // On DRAFT and CREATION mode we can edit the unique
+  // stock so there is no need to delete it
+  const cannotDeleteStock =
+    isDisabled ||
+    isSynchronized ||
+    mode !== OFFER_WIZARD_MODE.EDITION ||
+    !formik.values.stockId
+
+  actions.push({
+    callback:
+      formik.values.bookingsQuantity !== '0'
+        ? deleteConfirmShow
+        : onConfirmDeleteStock,
+    label: 'Supprimer le stock',
+    disabled: cannotDeleteStock,
+    Icon: TrashFilledIcon,
+  })
 
   if (offer.isDigital) {
     description += `
@@ -210,29 +254,57 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     (activationCodes: string[]) => {
       formik.setFieldValue('quantity', activationCodes?.length, true)
       formik.setFieldValue('activationCodes', activationCodes)
-      hideModal()
+      activationCodeFormHide()
     },
-    [hideModal]
+    [activationCodeFormHide]
   )
+
+  const onDeleteStock = async () => {
+    formik.values.stockId &&
+      api
+        .deleteStock(formik.values.stockId)
+        .then(() => {
+          notify.success('Le stock a été supprimé.')
+          formik.setValues(STOCK_THING_FORM_DEFAULT_VALUES)
+        })
+        .catch(() =>
+          notify.error(
+            'Une erreur est survenue lors de la suppression du stock.'
+          )
+        )
+  }
 
   return (
     <FormikProvider value={formik}>
-      {visible && (
+      {deleteConfirmVisible && (
+        <DialogStockDeleteConfirm
+          onConfirm={onConfirmDeleteStock}
+          onCancel={deleteConfirmHide}
+          isEvent={true}
+        />
+      )}
+      {activationCodeFormVisible && (
         <ActivationCodeFormDialog
           onSubmit={submitActivationCodes}
-          onCancel={hideModal}
+          onCancel={activationCodeFormHide}
           today={today}
           minExpirationDate={formik.values.bookingLimitDatetime}
         />
       )}
+
+      {providerName && (
+        <SynchronizedProviderInformation providerName={providerName} />
+      )}
       <FormLayout>
         <FormLayout.Section title="Stock & Prix" description={description}>
           <form onSubmit={formik.handleSubmit}>
-            <StockFormRow
+            <StockThingFormRow
               Form={renderStockForm()}
               actions={actions}
               actionDisabled={false}
-              showStockInfo={mode === OFFER_WIZARD_MODE.EDITION}
+              showStockInfo={
+                mode === OFFER_WIZARD_MODE.EDITION && offer.stocks.length > 0
+              }
             />
 
             <ActionBar
@@ -253,7 +325,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
             setIsSubmittingFromRouteLeavingGuard
           }
           mode={mode}
-          hasOfferBeenCreated
           isFormValid={formik.isValid}
           tracking={nextLocation =>
             logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
@@ -265,6 +336,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
               offerId: offer?.id,
             })
           }
+          hasOfferBeenCreated
         />
       )}
     </FormikProvider>

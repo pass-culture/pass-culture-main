@@ -519,6 +519,7 @@ def update_user_info(  # type: ignore [no-untyped-def]
     needs_to_fill_cultural_survey=UNCHANGED,
     phone_number=UNCHANGED,
     public_name=UNCHANGED,
+    postal_code=UNCHANGED,
 ):
     old_email = None
 
@@ -539,12 +540,20 @@ def update_user_info(  # type: ignore [no-untyped-def]
         user.phoneNumber = phone_number
     if public_name is not UNCHANGED:
         user.publicName = public_name
+    if postal_code is not UNCHANGED:
+        user.postalCode = postal_code
+        user.departementCode = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
+
     repository.save(user)
 
     # TODO(prouzet) even for young users, we should probably remove contact with former email from sendinblue lists
     if old_email and user.has_pro_role:
         users_external.update_external_pro(old_email)
     users_external.update_external_user(user)
+
+
+def add_comment_to_user(user: models.User, author_user: models.User, comment: str) -> None:
+    history_api.log_action(history_models.ActionType.COMMENT, author_user, user=user, comment=comment)
 
 
 def get_domains_credit(
@@ -709,6 +718,11 @@ def _generate_offerer(data: dict, existing_offerer: offerers_models.Offerer | No
     else:
         offerer = offerers_models.Offerer()
     offerer.populate_from_dict(data)
+
+    # If offerer was rejected, it appears as deleted from the view. When registering again with the same SIREN, it
+    # should look like it was created again, with up-to-date data, and start a new validation process.
+    # So in any case, creation date is now:
+    offerer.dateCreated = datetime.datetime.utcnow()
 
     if not settings.IS_INTEGRATION:
         offerer.generate_validation_token()

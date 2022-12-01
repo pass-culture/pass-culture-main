@@ -3,6 +3,10 @@ import re
 from bs4 import BeautifulSoup
 
 
+def _filter_whitespaces(text: str) -> str:
+    return re.sub(r"\s+", " ", text.strip())
+
+
 def extract_table_rows(html_content: str) -> list[dict[str, str]]:
     """
     Extract data from html table (thead + tbody), so that we can compare with expected data when testing routes.
@@ -34,8 +38,7 @@ def extract_table_rows(html_content: str) -> list[dict[str, str]]:
         assert len(td_list) == len(headers)
         for idx, td in enumerate(td_list):
             if headers[idx]:
-                td_text = re.sub(r"\s+", " ", td.text.strip())
-                row_data[headers[idx]] = td_text
+                row_data[headers[idx]] = _filter_whitespaces(td.text)
         rows.append(row_data)
 
     return rows
@@ -75,3 +78,13 @@ def extract_pagination_info(html_content: str) -> tuple[int, int, int]:
     assert active_page_link
 
     return int(active_page_link.text), len(page_links), total_results
+
+
+def extract_cards_text(html_content: str) -> list[str]:
+    """
+    Extract text from all cards in the page, as strings
+    """
+    soup = BeautifulSoup(html_content, features="html5lib", from_encoding="utf-8")
+
+    cards = soup.find_all("div", class_="card")
+    return [_filter_whitespaces(card.text) for card in cards]

@@ -9,6 +9,7 @@ interface IFieldLayoutProps {
   children: React.ReactNode
   label: string
   name: string
+  isLabelHidden?: boolean
   showError: boolean
   className?: string
   error?: string
@@ -18,12 +19,14 @@ interface IFieldLayoutProps {
   smallLabel?: boolean
   hideFooter?: boolean
   inline?: boolean
+  classNameLabel?: string
   classNameFooter?: string
 }
 /* istanbul ignore next: DEBT, TO FIX */
 const FieldLayout = ({
   children,
   label,
+  isLabelHidden = false,
   className,
   name,
   showError = false,
@@ -34,6 +37,7 @@ const FieldLayout = ({
   smallLabel,
   hideFooter = false,
   inline = false,
+  classNameLabel,
   classNameFooter,
 }: IFieldLayoutProps): JSX.Element => (
   <div
@@ -43,7 +47,12 @@ const FieldLayout = ({
     })}
     data-testid={`wrapper-${name}`}
   >
-    <label className={styles['field-layout-label']} htmlFor={name}>
+    <label
+      className={cn(styles['field-layout-label'], classNameLabel, {
+        [styles['label-hidden']]: isLabelHidden,
+      })}
+      htmlFor={name}
+    >
       {label}
       {isOptional && (
         <span className={styles['field-layout-optional']}>Optionnel</span>

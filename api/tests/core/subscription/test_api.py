@@ -2037,3 +2037,112 @@ class HasSubscriptionIssuesTest:
             user=user,
         )
         assert subscription_api.has_subscription_issues(user) is False
+
+    @pytest.mark.parametrize(
+        "reason_code",
+        [
+            fraud_models.FraudReasonCode.INVALID_PHONE_COUNTRY_CODE,
+            fraud_models.FraudReasonCode.PHONE_ALREADY_EXISTS,
+            fraud_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED,
+        ],
+    )
+    def should_have_issues_when_phone_validation_fails_and_can_be_solved_by_user(self, reason_code) -> None:
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.AGE18,
+            reasonCodes=[reason_code],
+            status=fraud_models.FraudCheckStatus.KO,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            user=user,
+        )
+        assert subscription_api.has_subscription_issues(user) is True
+
+    def should_not_have_issues_when_phone_unvalidated_by_peer(self) -> None:
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.AGE18,
+            reasonCodes=[fraud_models.FraudReasonCode.PHONE_UNVALIDATED_BY_PEER],
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            user=user,
+        )
+        assert subscription_api.has_subscription_issues(user) is False
+
+    def should_not_have_issues_when_phone_unvalidation_for_peer(self) -> None:
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.AGE18,
+            reasonCodes=[fraud_models.FraudReasonCode.PHONE_UNVALIDATION_FOR_PEER],
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            user=user,
+        )
+        assert subscription_api.has_subscription_issues(user) is False
+
+    def should_have_issues_when_has_reached_the_sms_limit(self) -> None:
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.AGE18,
+            reasonCodes=[fraud_models.FraudReasonCode.SMS_SENDING_LIMIT_REACHED],
+            status=fraud_models.FraudCheckStatus.KO,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            user=user,
+        )
+        assert subscription_api.has_subscription_issues(user) is True
+
+    def should_not_have_issues_when_issue_has_been_solved(self) -> None:
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.AGE18,
+            reasonCodes=[fraud_models.FraudReasonCode.PHONE_ALREADY_EXISTS],
+            status=fraud_models.FraudCheckStatus.KO,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            user=user,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            user=user,
+        )
+        user.phoneNumber = "0612345678"
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+        assert subscription_api.has_subscription_issues(user) is False
+
+    def should_have_issues_when_phone_issue_has_been_solved_but_still_have_issue_with_identity_check(self) -> None:
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.AGE18,
+            reasonCodes=[fraud_models.FraudReasonCode.PHONE_ALREADY_EXISTS],
+            status=fraud_models.FraudCheckStatus.KO,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            user=user,
+        )
+        user.phoneNumber = "0612345678"
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            user=user,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+            user=user,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.KO,
+            reasonCodes=[fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR],
+            type=fraud_models.FraudCheckType.DMS,
+            user=user,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            user=user,
+        )
+        assert subscription_api.has_subscription_issues(user) is True

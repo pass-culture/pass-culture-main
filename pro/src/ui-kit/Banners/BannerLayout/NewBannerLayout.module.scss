@@ -37,6 +37,7 @@
       &.provider {
         display: flex;
         align-items: center;
+        height: size.$provider-banner-height;
       }
     }
     .bi-link {

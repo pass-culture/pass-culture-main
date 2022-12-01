@@ -236,6 +236,8 @@ def test_public_api(client, app):
                             "type": "boolean",
                         },
                         "id": {"title": "Id", "type": "integer"},
+                        "imageCredit": {"nullable": True, "title": "Imagecredit", "type": "string"},
+                        "imageUrl": {"nullable": True, "title": "Imageurl", "type": "string"},
                         "interventionArea": {"items": {"type": "string"}, "title": "Interventionarea", "type": "array"},
                         "isActive": {"nullable": True, "title": "Isactive", "type": "boolean"},
                         "isSoldOut": {"title": "Issoldout", "type": "boolean"},
@@ -364,6 +366,8 @@ def test_public_api(client, app):
                             "title": "Educationalpricedetail",
                             "type": "string",
                         },
+                        "imageCredit": {"nullable": True, "title": "Imagecredit", "type": "string"},
+                        "imageFile": {"nullable": True, "title": "Imagefile", "type": "string"},
                         "interventionArea": {
                             "items": {"type": "string"},
                             "nullable": True,
@@ -436,6 +440,8 @@ def test_public_api(client, app):
                             "title": "Educationalpricedetail",
                             "type": "string",
                         },
+                        "imageCredit": {"nullable": True, "title": "Imagecredit", "type": "string"},
+                        "imageFile": {"nullable": True, "title": "Imagefile", "type": "string"},
                         "interventionArea": {"items": {"type": "string"}, "title": "Interventionarea", "type": "array"},
                         "isActive": {"title": "Isactive", "type": "boolean"},
                         "mentalDisabilityCompliant": {
@@ -487,7 +493,7 @@ def test_public_api(client, app):
                     "properties": {
                         "available": {"minimum": 0, "title": "Available", "type": "integer"},
                         "price": {
-                            "description": "(Optionnel) Prix en Euros avec 2 décimales possibles",
+                            "description": "(Requis à partir du 10/12/2022) Prix en Euros avec 2 décimales possibles",
                             "nullable": True,
                             "title": "Price",
                             "type": "number",
@@ -1168,7 +1174,7 @@ def test_public_api(client, app):
             },
             "/v2/venue/{venue_id}/stocks": {
                 "post": {
-                    "description": 'Seuls les livres, préalablement présents dans le catalogue du pass Culture seront pris en compte, tous les autres stocks seront filtrés. Les stocks sont référencés par leur isbn au format EAN13. Le champ "available" représente la quantité de stocks disponible en librairie. Le champ "price" (optionnel) correspond au prix en euros. Le paramètre {venue_id} correspond à un lieu qui doit être attaché à la structure à laquelle la clé d\'API utilisée est reliée.',
+                    "description": 'Seuls les livres, préalablement présents dans le catalogue du pass Culture seront pris en compte, tous les autres stocks seront filtrés. Les stocks sont référencés par leur isbn au format EAN13. Le champ "available" représente la quantité de stocks disponible en librairie. Le champ "price" correspond au prix en euros. À partir du 10/12/2022, ce champ sera obligatoire. Le paramètre {venue_id} correspond à un lieu qui doit être attaché à la structure à laquelle la clé d\'API utilisée est reliée.',
                     "operationId": "UpdateStocks",
                     "parameters": [
                         {

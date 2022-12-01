@@ -76,7 +76,10 @@ export const Offer = ({
             )}
           </div>
         )}
-        <div className="offer-container">
+        <div
+          className="offer-container"
+          style={!isCollectiveImageOfferActive ? { paddingLeft: '18px' } : {}}
+        >
           {offer.isTemplate ? (
             <ContactButton
               className="offer-prebooking-button"

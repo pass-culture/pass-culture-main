@@ -25,16 +25,19 @@ const TicketWithdrawal = ({
   const {
     values: { withdrawalType },
     setFieldValue,
+    dirty,
   } = useFormikContext<IOfferIndividualFormValues>()
 
   useEffect(
     function onWithdrawalTypeChange() {
-      setFieldValue(
-        'withdrawalDelay',
-        TICKET_WITHDRAWAL_DEFAULT_VALUES['withdrawalDelay']
-      )
+      if (dirty) {
+        setFieldValue(
+          'withdrawalDelay',
+          TICKET_WITHDRAWAL_DEFAULT_VALUES['withdrawalDelay']
+        )
+      }
     },
-    [withdrawalType]
+    [withdrawalType, dirty]
   )
 
   return (

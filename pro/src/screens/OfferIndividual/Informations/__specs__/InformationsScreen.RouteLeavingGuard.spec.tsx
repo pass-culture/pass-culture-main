@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { generatePath, MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -17,14 +17,16 @@ import {
   FORM_DEFAULT_VALUES,
   setInitialFormValues,
 } from 'components/OfferIndividualForm'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { Events } from 'core/FirebaseEvents/constants'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -50,7 +52,13 @@ const renderInformationsScreen = (
   props: IInformationsProps,
   storeOverride: any,
   contextOverride: Partial<IOfferIndividualContext>,
-  url = '/offre/AA/v3/creation/individuelle/informations'
+  url = generatePath(
+    getOfferIndividualPath({
+      step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+      mode: OFFER_WIZARD_MODE.CREATION,
+    }),
+    { offerId: 'AA' }
+  )
 ) => {
   const store = configureTestStore(storeOverride)
   const contextValue: IOfferIndividualContext = {
@@ -67,20 +75,29 @@ const renderInformationsScreen = (
     <Provider store={store}>
       <MemoryRouter initialEntries={[url]}>
         <Route
-          path={[
-            '/offre/AA/v3/creation/individuelle/informations',
-            '/offre/AA/v3/brouillon/individuelle/informations',
-            '/offre/AA/v3/individuelle/informations',
-          ]}
+          path={Object.values(OFFER_WIZARD_MODE).map(mode =>
+            getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+              mode,
+            })
+          )}
         >
           <OfferIndividualContext.Provider value={contextValue}>
             <InformationsScreen {...props} />
             <ButtonLink link={{ to: '/outside', isExternal: false }}>
               Go outside !
             </ButtonLink>
+            <ButtonLink link={{ to: '/stocks', isExternal: false }}>
+              Go to stocks !
+            </ButtonLink>
           </OfferIndividualContext.Provider>
         </Route>
-        <Route path="/offre/AA/v3/creation/individuelle/stocks">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <div>There is the stock route content</div>
         </Route>
         <Route path="/outside">
@@ -312,6 +329,36 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     ).toBeInTheDocument()
   })
 
+  it('should block with internal not valid block type when form has just been touched and nav is internal', async () => {
+    renderInformationsScreen(props, store, contextOverride)
+
+    const categorySelect = screen.getByLabelText('Catégorie')
+    await userEvent.selectOptions(categorySelect, 'A')
+
+    await userEvent.click(screen.getByText('Go to stocks !'))
+
+    expect(
+      screen.getByText('Des erreurs sont présentes sur cette page')
+    ).toBeInTheDocument()
+  })
+
+  it('should block with internal valid block type when form has been filled with mandatory data and nav is internal', async () => {
+    renderInformationsScreen(props, store, contextOverride)
+
+    const categorySelect = screen.getByLabelText('Catégorie')
+    await userEvent.selectOptions(categorySelect, 'A')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    await userEvent.selectOptions(subCategorySelect, 'physical')
+    const nameField = screen.getByLabelText('Titre de l’offre')
+    await userEvent.type(nameField, 'Le nom de mon offre')
+
+    await userEvent.click(screen.getByText('Go to stocks !'))
+
+    expect(
+      screen.getByText('Souhaitez-vous enregistrer vos modifications ?')
+    ).toBeInTheDocument()
+  })
+
   it('should block with draft creation block when form has been filled with mandatory data', async () => {
     renderInformationsScreen(props, store, contextOverride)
 
@@ -331,6 +378,35 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     ).toBeInTheDocument()
   })
 
+  it('should block with draft block type when form has just been touched in creation', async () => {
+    contextOverride = {
+      ...contextOverride,
+      offerId: offer.id,
+      offer: offer,
+    }
+
+    props.initialValues = setInitialFormValues(
+      offer,
+      contextOverride.subCategories as IOfferSubCategory[]
+    )
+    renderInformationsScreen(props, store, contextOverride)
+
+    const nameField = screen.getByLabelText('Titre de l’offre')
+    await userEvent.type(nameField, 'New name')
+    await userEvent.click(screen.getByText('Go outside !'))
+
+    expect(
+      screen.getByText(
+        'Souhaitez-vous enregistrer vos modifications avant de quitter ?'
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Si vous quittez, les informations saisies ne seront pas sauvegardées dans votre brouillon.'
+      )
+    ).toBeInTheDocument()
+  })
+
   it('should block with draft block type when form has just been touched in draft', async () => {
     contextOverride = {
       ...contextOverride,
@@ -346,7 +422,13 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       props,
       store,
       contextOverride,
-      '/offre/AA/v3/brouillon/individuelle/informations'
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        }),
+        { offerId: 'AA' }
+      )
     )
 
     const nameField = screen.getByLabelText('Titre de l’offre')
@@ -380,7 +462,13 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       props,
       store,
       contextOverride,
-      '/offre/AA/v3/individuelle/informations'
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        }),
+        { offerId: 'AA' }
+      )
     )
 
     const nameField = screen.getByLabelText('Titre de l’offre')
@@ -411,7 +499,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
 
     await userEvent.click(screen.getByText('Go outside !'))
     await userEvent.click(
-      screen.getByText('Enregistrer un brouillon et quitter')
+      screen.getByText('Sauvegarder le brouillon et quitter')
     )
 
     expect(api.postOffer).toHaveBeenCalledTimes(1)
@@ -432,7 +520,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
 
     await userEvent.click(screen.getByText('Go outside !'))
     await userEvent.click(
-      screen.getByText('Enregistrer un brouillon et quitter')
+      screen.getByText('Sauvegarder le brouillon et quitter')
     )
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(

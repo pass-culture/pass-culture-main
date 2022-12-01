@@ -14,17 +14,21 @@ interface ITimePickerProps {
   className?: string
   disabled?: boolean
   label: string
+  isLabelHidden?: boolean
   dateTime?: Date
   smallLabel?: boolean
   classNameFooter?: string
+  classNameLabel?: string
 }
 
 const TimePicker = ({
   name,
   className,
+  classNameLabel,
   classNameFooter,
   disabled,
   label,
+  isLabelHidden = false,
   smallLabel,
 }: ITimePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'text' })
@@ -36,9 +40,11 @@ const TimePicker = ({
       className={className}
       error={meta.error}
       label={label}
+      isLabelHidden={isLabelHidden}
       name={name}
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}
+      classNameLabel={classNameLabel}
       classNameFooter={classNameFooter}
     >
       <ReactDatePicker

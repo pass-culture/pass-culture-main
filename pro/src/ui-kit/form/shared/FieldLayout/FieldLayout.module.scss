@@ -1,6 +1,7 @@
 @use 'styles/variables/_colors.scss' as colors;
 @use 'styles/mixins/_fonts.scss' as fonts;
 @use 'styles/variables/_forms.scss' as forms;
+@use 'styles/mixins/_forms.scss' as formsM;
 @use 'styles/mixins/_rem.scss' as rem;
 
 .field-layout {
@@ -12,6 +13,9 @@
     justify-content: space-between;
     align-items: center;
     white-space: nowrap;
+    &.label-hidden {
+      display: none;
+    }
   }
 
   &-small-label &-label {
@@ -45,10 +49,7 @@
   }
 
   &-footer {
-    margin-top: rem.torem(forms.$input-space-before-error);
-    display: flex;
-    justify-content: flex-end;
-    min-height: rem.torem(forms.$input-error-reserved-space);
+    @include formsM.field-layout-footer();
   }
 
   &-error {

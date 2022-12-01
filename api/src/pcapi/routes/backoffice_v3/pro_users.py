@@ -2,12 +2,20 @@ from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import url_for
+from flask_login import current_user
 
-import pcapi.core.offerers.models as offerers_models
-import pcapi.core.permissions.models as perm_models
-import pcapi.core.users.models as users_models
+from pcapi.core.history import repository as history_repository
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.permissions import models as perm_models
+from pcapi.core.users import api as users_api
+from pcapi.core.users import exceptions as users_exceptions
+from pcapi.core.users import external as users_external
+from pcapi.core.users import models as users_models
+import pcapi.core.users.email.update as email_update
+import pcapi.utils.email as email_utils
 
 from . import utils
+from .forms import pro_user as pro_user_forms
 
 
 pro_user_blueprint = utils.child_backoffice_blueprint(
@@ -20,7 +28,7 @@ pro_user_blueprint = utils.child_backoffice_blueprint(
 
 @pro_user_blueprint.route("", methods=["GET"])
 def get(user_id: int) -> utils.BackofficeResponse:
-    # TODO (vroullier) 24-11-2022 : use User.roles once it is updated
+    # TODO (vroullier) 24-11-2022 : check user role with User.roles once it is updated
     # Make sure user is pro
     user = (
         users_models.User.query.join(offerers_models.UserOfferer).filter(users_models.User.id == user_id).one_or_none()
@@ -29,4 +37,84 @@ def get(user_id: int) -> utils.BackofficeResponse:
         flash("Cet utilisateur n'a pas de compte pro ou n'existe pas", "warning")
         return redirect(url_for("backoffice_v3_web.search_pro"), code=303)
 
-    return render_template("pro_user/get.html", user=user)
+    form = pro_user_forms.EditProUserForm(
+        first_name=user.firstName,
+        last_name=user.lastName,
+        email=user.email,
+        phone_number=user.phoneNumber,
+        postal_code=user.postalCode,
+    )
+    dst = url_for(".update_pro_user", user_id=user.id)
+
+    can_edit_user = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+
+    return render_template("pro_user/get.html", user=user, form=form, dst=dst, can_edit_user=can_edit_user)
+
+
+@pro_user_blueprint.route("", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def update_pro_user(user_id: int) -> utils.BackofficeResponse:
+    user = users_models.User.query.get_or_404(user_id)
+
+    form = pro_user_forms.EditProUserForm()
+    if not form.validate():
+        dst = url_for(".update_pro_user", user_id=user_id)
+        flash("Le formulaire n'est pas valide", "warning")
+        return (
+            render_template("pro_user/get.html", form=form, dst=dst, user=user, can_edit_user=True),
+            400,
+        )
+
+    users_api.update_user_info(
+        user,
+        first_name=form.first_name.data,
+        last_name=form.last_name.data,
+        phone_number=form.phone_number.data,
+        postal_code=form.postal_code.data,
+    )
+
+    if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
+        old_email = user.email
+        try:
+            email_update.request_email_update_from_admin(user, form.email.data)
+        except users_exceptions.EmailExistsError:
+            form.email.errors.append("L'email est déjà associé à un autre utilisateur")
+            dst = url_for(".update_pro_user", user_id=user.id)
+            return render_template("pro_user/get.html", form=form, dst=dst, user=user), 400
+
+        users_external.update_external_user(user)
+
+        users_external.update_external_pro(old_email)  # to delete previous user info from SendinBlue
+
+    flash("Informations mises à jour", "success")
+    return redirect(url_for(".get", user_id=user_id), code=303)
+
+
+@pro_user_blueprint.route("/history", methods=["GET"])
+def get_user_history(user_id: int) -> utils.BackofficeResponse:
+    user = users_models.User.query.get_or_404(user_id)
+    actions = history_repository.find_all_actions_by_user(user_id)
+    can_add_comment = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+
+    form = pro_user_forms.CommentForm()
+    dst = url_for("backoffice_v3_web.pro_user.comment_pro_user", user_id=user.id)
+
+    return render_template(
+        "pro_user/get/details.html", user=user, form=form, dst=dst, actions=actions, can_add_comment=can_add_comment
+    )
+
+
+@pro_user_blueprint.route("/comment", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
+    user = users_models.User.query.get_or_404(user_id)
+
+    form = pro_user_forms.CommentForm()
+    if not form.validate():
+        flash("Les données envoyées comportent des erreurs", "warning")
+        return redirect(url_for("backoffice_v3_web.pro_user.get", user_id=user_id), code=302)
+
+    users_api.add_comment_to_user(user=user, author_user=current_user, comment=form.comment.data)
+    flash("Commentaire enregistré", "success")
+
+    return redirect(url_for("backoffice_v3_web.pro_user.get", user_id=user_id), code=303)

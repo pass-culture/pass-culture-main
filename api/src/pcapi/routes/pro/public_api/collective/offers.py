@@ -4,14 +4,21 @@ from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
+from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
+from pcapi.utils.image_conversion import DO_NOT_CROP
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
+
+
+IMAGE_HEIGHT = 600
+IMAGE_WIDTH = 400
 
 
 BASE_CODE_DESCRIPTIONS = {
@@ -147,6 +154,32 @@ def post_collective_offer_public(
 ) -> public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Création d'une offre collective."""
+    image_as_bytes = body.get_image_as_bytes()
+    try:
+        if image_as_bytes:
+            offers_validation.check_image(
+                image_as_bytes=image_as_bytes,
+                accepted_types=offers_validation.ACCEPTED_THUMBNAIL_FORMATS,
+                min_width=IMAGE_WIDTH,
+                min_height=IMAGE_HEIGHT,
+                max_width=IMAGE_WIDTH,
+                max_height=IMAGE_HEIGHT,
+            )
+    except offers_exceptions.UnacceptedFileType:
+        raise ApiErrors(
+            errors={
+                "imageFile": [f"Les formats acceptés sont:  {', '.join(offers_validation.ACCEPTED_THUMBNAIL_FORMATS)}"],
+            },
+            status_code=400,
+        )
+    except (offers_exceptions.ImageTooSmall, offers_exceptions.ImageTooLarge):
+        raise ApiErrors(
+            errors={
+                "imageFile": [f"L'image doit faire exactement {IMAGE_WIDTH}*{IMAGE_HEIGHT} pixels"],
+            },
+            status_code=400,
+        )
+
     try:
         offer = educational_api_offer.create_collective_offer_public(
             offerer_id=current_api_key.offererId,  # type: ignore [attr-defined]
@@ -179,6 +212,11 @@ def post_collective_offer_public(
                 "educationalInstitutionId": ["Établissement scolaire non trouvé."],
             },
             status_code=404,
+        )
+
+    if image_as_bytes and body.image_credit is not None:
+        educational_api_offer.attach_image(
+            obj=offer, image=image_as_bytes, crop_params=DO_NOT_CROP, credit=body.image_credit
         )
 
     return public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel.from_orm(offer)
@@ -224,6 +262,8 @@ def patch_collective_offer_public(
     # in French, to be used by Swagger for the API documentation
     """Édition d'une offre collective."""
     new_values = body.dict(exclude_unset=True)
+    image_as_bytes = None
+    image_file = False
     # checking data
     educational_validation.validate_offer_venue(body.offerVenue)
     non_nullable_fields = [
@@ -304,6 +344,68 @@ def patch_collective_offer_public(
                     status_code=404,
                 )
 
+    # validate image_data
+    if "imageCredit" in new_values:
+        image_credit = new_values["imageCredit"]
+        if image_credit is None and (offer.hasImage or new_values.get("imageFile", None)):
+            ApiErrors(
+                errors={
+                    "imageCredit": [
+                        "Les champs imageFile et imageCredit sont liés, si l'un est rempli l'autre doit l'être aussi"
+                    ],
+                },
+                status_code=400,
+            )
+        if image_credit is not None and not offer.hasImage and not new_values.get("imageFile", None):
+            ApiErrors(
+                errors={
+                    "imageCredit": [
+                        "Les champs imageFile et imageCredit sont liés, si l'un est rempli l'autre doit l'être aussi"
+                    ],
+                },
+                status_code=400,
+            )
+
+    if "imageFile" in new_values:
+        if offer.imageCredit is None and not new_values.get("imageCredit", None):
+            ApiErrors(
+                errors={
+                    "imageFile": [
+                        "Les champs imageFile et imageCredit sont liés, si l'un est rempli l'autre doit l'être aussi"
+                    ],
+                },
+                status_code=400,
+            )
+
+        image_as_bytes = body.get_image_as_bytes()
+        if image_as_bytes is not None:
+            try:
+                offers_validation.check_image(
+                    image_as_bytes=image_as_bytes,
+                    accepted_types=offers_validation.ACCEPTED_THUMBNAIL_FORMATS,
+                    min_width=IMAGE_WIDTH,
+                    min_height=IMAGE_HEIGHT,
+                    max_width=IMAGE_WIDTH,
+                    max_height=IMAGE_HEIGHT,
+                )
+            except offers_exceptions.UnacceptedFileType:
+                raise ApiErrors(
+                    errors={
+                        "imageFile": [
+                            f"Les formats acceptés sont:  {', '.join(offers_validation.ACCEPTED_THUMBNAIL_FORMATS)}"
+                        ],
+                    },
+                    status_code=400,
+                )
+            except (offers_exceptions.ImageTooSmall, offers_exceptions.ImageTooLarge):
+                raise ApiErrors(
+                    errors={
+                        "imageFile": [f"L'image doit faire exactement {IMAGE_WIDTH}*{IMAGE_HEIGHT} pixels"],
+                    },
+                    status_code=400,
+                )
+        image_file = new_values.pop("imageFile")
+
     # real edition
     try:
         offer = educational_api_offer.edit_collective_offer_public(
@@ -353,5 +455,12 @@ def patch_collective_offer_public(
             },
             status_code=422,
         )
+
+    if image_as_bytes and offer.imageCredit is not None:
+        educational_api_offer.attach_image(
+            obj=offer, image=image_as_bytes, crop_params=DO_NOT_CROP, credit=offer.imageCredit
+        )
+    elif image_file is None:
+        educational_api_offer.delete_image(obj=offer)
 
     return public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel.from_orm(offer)

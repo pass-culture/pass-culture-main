@@ -22,9 +22,12 @@ import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate, useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
+import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
+import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
+import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 import { logTo } from '../utils/logTo'
 
 import { upsertStocksEventAdapter } from './adapters'
@@ -53,6 +56,8 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer } = useOfferIndividualContext()
+  const providerName = offer?.lastProviderName
+  const { visible, showModal, hideModal } = useModal()
 
   const onSubmit = async (formValues: { stocks: IStockEventFormValues[] }) => {
     const { isOk, payload } = await upsertStocksEventAdapter({
@@ -115,28 +120,69 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     initialValues,
     onSubmit,
     validationSchema: getValidationSchema(minQuantity),
+    // enableReinitialize is needed to reset dirty after submit (and not block after saving a draft)
+    // mostly needed to reinitialize the form after initialValue update and so not submiting duplicated stocks
+    // when clicking multiple times on "Save draft"
     enableReinitialize: true,
   })
 
-  const handleNextStep = () => {
-    setIsClickingFromActionBar(true)
-    setAfterSubmitUrl(
-      getOfferIndividualUrl({
+  const handleNextStep =
+    ({ saveDraft = false } = {}) =>
+    () => {
+      // tested but coverage don't see it.
+      /* istanbul ignore next */
+      setIsClickingFromActionBar(true)
+      setAfterSubmitUrl(
+        getOfferIndividualUrl({
+          offerId: offer.id,
+          step: saveDraft
+            ? OFFER_WIZARD_STEP_IDS.STOCKS
+            : OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode,
+        })
+      )
+      if (mode === OFFER_WIZARD_MODE.EDITION) {
+        const offerHasBookings = formik.values.stocks.some(
+          stock => stock.bookingsQuantity !== '0'
+        )
+        if (!visible && offerHasBookings && formik.dirty) {
+          showModal()
+          return
+        } else {
+          hideModal()
+        }
+      }
+
+      if (!Object.keys(formik.touched).length) {
+        setIsClickingFromActionBar(false)
+        notify.success('Brouillon sauvegardé dans la liste des offres')
+        if (!saveDraft) {
+          navigate(
+            getOfferIndividualUrl({
+              offerId: offer.id,
+              step: saveDraft
+                ? OFFER_WIZARD_STEP_IDS.STOCKS
+                : OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode,
+            })
+          )
+        }
+      } else {
+        formik.handleSubmit()
+      }
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.STOCKS,
+        to: saveDraft
+          ? OFFER_WIZARD_STEP_IDS.STOCKS
+          : OFFER_WIZARD_STEP_IDS.SUMMARY,
+        used: saveDraft
+          ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
+          : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
         offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-        mode,
       })
-    )
-    formik.handleSubmit()
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OFFER_WIZARD_STEP_IDS.STOCKS,
-      to: OFFER_WIZARD_STEP_IDS.SUMMARY,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offer.id,
-    })
-  }
+    }
 
   const handlePreviousStep = () => {
     if (!formik.dirty) {
@@ -159,34 +205,17 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     )
   }
 
-  const handleSaveDraft = () => {
-    setIsClickingFromActionBar(true)
-    /* istanbul ignore next: DEBT, TO FIX */
-    setAfterSubmitUrl(
-      getOfferIndividualUrl({
-        offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.STOCKS,
-        mode,
-      })
-    )
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (!Object.keys(formik.touched).length) {
-      notify.success('Brouillon sauvegardé dans la liste des offres')
-    } else {
-      formik.handleSubmit()
-    }
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OFFER_WIZARD_STEP_IDS.STOCKS,
-      to: OFFER_WIZARD_STEP_IDS.STOCKS,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS,
-      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: true,
-      offerId: offer.id,
-    })
-  }
-
   return (
     <FormikProvider value={formik}>
+      {providerName && (
+        <SynchronizedProviderInformation providerName={providerName} />
+      )}
+      {visible && (
+        <DialogStocksEventEditConfirm
+          onConfirm={handleNextStep()}
+          onCancel={hideModal}
+        />
+      )}
       <FormLayout>
         <FormLayout.Section
           title="Stock & Prix"
@@ -198,9 +227,9 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
             <StockFormList offer={offer} onDeleteStock={onDeleteStock} />
             <ActionBar
               isDisabled={formik.isSubmitting}
-              onClickNext={handleNextStep}
+              onClickNext={handleNextStep()}
               onClickPrevious={handlePreviousStep}
-              onClickSaveDraft={handleSaveDraft}
+              onClickSaveDraft={handleNextStep({ saveDraft: true })}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
               offerId={offer.id}
             />
@@ -214,7 +243,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
             setIsSubmittingFromRouteLeavingGuard
           }
           mode={mode}
-          hasOfferBeenCreated
           isFormValid={formik.isValid}
           tracking={nextLocation =>
             logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
@@ -226,6 +254,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
               offerId: offer?.id,
             })
           }
+          hasOfferBeenCreated
         />
       )}
     </FormikProvider>

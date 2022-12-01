@@ -1,1 +1,169 @@
-{% extends "pro/get.html" %}
+{% from "components/badges.html" import build_venue_badges %}
+
+{% extends "layouts/pro.html" %}
+
+{% block pro_main_content %}
+<div class="row row-cols-1 g-4 py-3">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title mb-3">
+                    {{ venue.name }}
+
+                    <span class="fs-5 ps-4 mb-3 align-middle">
+                        {{ build_venue_badges(venue) }}
+                    </span>
+                </h2>
+
+                <p class="card-subtitle text-muted mb-3 h5">
+                    Venue ID : {{ venue.id }}
+                </p>
+
+                <p class="card-subtitle text-muted mb-3 h5">
+                    {% if venue.siret %}
+                        SIRET : {{ venue.siret }}
+                    {% endif %}
+                </p>
+
+                <div class="row pt-3">
+
+                    <div class="col-lg-4">
+                        <div class="fs-6">
+                            {% if region %}
+                                <p class="mb-1">
+                                    <span class="fw-bold">R&eacute;gion :</span>
+                                    {{ region }}
+                                </p>
+                            {% endif %}
+
+                            {% if venue.city %}
+                                <p class="mb-1">
+                                    <span class="fw-bold">Ville :</span>
+                                    {{ venue.city }}
+                                </p>
+                            {% endif %}
+
+                            {% if venue.postalCode %}
+                                <p class="mb-1">
+                                    <span class="fw-bold">Code postal :</span>
+                                    {{ venue.postalCode }}
+                                </p>
+                            {% endif %}
+
+                            {% if venue.address %}
+                                <p class="mb-1">
+                                    <span class="fw-bold">Adresse :</span>
+                                    {{ venue.address }}
+                                </p>
+                            {% endif %}
+
+                            {% if venue.latitude and venue.longitude %}
+                                <p class="mb-1">
+                                    <span class="fw-bold">Coordonn&eacute;es :</span>
+                                    {{ venue.latitude }} (latitude) / {{ venue.longitude }} (longitude)
+                                </p>
+                            {% endif %}
+
+                            {% if venue.contact %}
+                                {% if venue.contact.email %}
+                                    <p class="mb-1">
+                                        <span class="fw-bold">Email :</span>
+                                        {{ venue.contact.email }}
+                                    </p>
+                                {% endif %}
+
+                                {% if venue.contact.phone_number %}
+                                    <p class="mb-1">
+                                        <span class="fw-bold">Num&eacute;ro de t&eacute;l&eacute;phone :</span>
+                                        {{ venue.contact.phone_number }}
+                                    </p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <p class="mb-1">
+                            <span class="fw-bold">&Eacute;ligible EAC :
+                                {% if is_collective_eligible %}
+                                    <span class="mx-4 pb-1 badge rounded-pill text-bg-success">
+                                    <i class="bi bi-check-circle"></i> Oui
+                                    </span>
+                                {% else %}
+                                    <span class="mx-2 pb-1 badge rounded-pill text-bg-dark">
+                                        <i class="bi bi-x-circle"></i> Non
+                                    </span>
+                                {% endif %}
+                            </span>
+                        </p>
+
+                        {% if venue.venueTypeCode %}
+                            <p class="mb-1">
+                                <span class="fw-bold">Type de lieu :</span>
+                                {{ venue.venueTypeCode.value }}
+                            </p>
+                        {% endif %}
+
+                        <p class="mb-1">
+                            <span class="fw-bold">Structure :</span>
+                            <a
+                                href="{{ url_for(
+                                    "backoffice_v3_web.offerer.get",
+                                    offerer_id=venue.managingOffererId
+                                )}}"
+                                class="fw-bold text-decoration-none"
+                            >
+                                {{ venue.managingOfferer.name }}
+                            </a>
+                        </p>
+
+                        <p class="mb-1">
+                            <span class="fw-bold">Pr&eacute;sence de CB :</span>
+                            {{ has_reimbursement_point | format_bool }}
+                        </p>
+                    </div>
+
+                    <div class="col-lg-4">
+                        {% if dms_stats %}
+                            <p class="mb-1">
+                                <span class="fw-bold">statut DMS :</span>
+                                {{ dms_stats.status }}
+                            </p>
+
+                            <p class="mb-1">
+                                <span class="fw-bold">date de d&eacute;p&ocirc;t du dossier DMS :</span>
+                                {{ dms_stats.subscriptionDate | format_date }}
+                            </p>
+
+                            <p class="mb-1  d-flex justify-content-center">
+                                <a href="{{ dms_stats.url }}" class="card-link">
+                                    <button class="btn btn-outline-primary lead fw-bold mt-2">
+                                        ACC&Eacute;DER AU DOSSIER DMS
+                                    </button>
+                                </a>
+                            </p>
+                        {% else %}
+                            <p class="mb-1">
+                                <span class="fw-bold">Pas de dossier DMS<span>
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <turbo-frame id="venue_total_revenue_frame" src="{{ url_for("backoffice_v3_web.venue.get_stats", venue_id=venue.id) }}">
+                <p class="text-center">
+                    <span class="spinner-grow spinner-grow-sm" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </span>
+                    Chargement...
+                </p>
+            </turbo-frame>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

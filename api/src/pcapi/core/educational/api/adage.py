@@ -7,6 +7,7 @@ from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api.venue import get_relative_venues_by_siret
+from pcapi.core.mails.transactional import send_eac_offerer_activation_email
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.repository import get_emails_by_venue
@@ -106,6 +107,7 @@ def synchronize_adage_ids_on_venues() -> None:
             emails = get_emails_by_venue(venue)
             for email in emails:
                 update_external_pro(email)
+            send_eac_offerer_activation_email(venue, list(emails))
 
         venue.adageId = str(filtered_cultural_partner_by_ids[venue.id].id)
 

@@ -3,12 +3,6 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import {
-  IStockEventFormValues,
-  StockEventForm,
-  STOCK_EVENT_FORM_DEFAULT_VALUES,
-  getValidationSchema as getEventValidationSchema,
-} from 'components/StockEventForm'
-import {
   StockThingForm,
   IStockThingFormValues,
   getValidationSchema,
@@ -19,10 +13,10 @@ import { SubmitButton } from 'ui-kit'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
-import StockFormRow from './StockFormRow'
+import StockFormRow from './StockThingFormRow'
 
 export default {
-  title: 'components/stocks/StockFormRow',
+  title: 'components/stocks/StockThingFormRow',
   component: StockFormRow,
 }
 
@@ -66,47 +60,7 @@ const renderStockFormRow =
       </Formik>
     )
 
-interface IRenderStockEventFormRow {
-  initialValues?: IStockEventFormValues
-}
-const renderStockEventFormRow =
-  ({
-    initialValues,
-  }: IRenderStockEventFormRow): ComponentStory<typeof StockFormRow> =>
-  args =>
-    (
-      <Formik
-        initialValues={initialValues || STOCK_EVENT_FORM_DEFAULT_VALUES}
-        onSubmit={async (values: IStockEventFormValues) => {
-          alert(`onSubmit with values: ${JSON.stringify(values)}`)
-          return Promise.resolve()
-        }}
-        validationSchema={getEventValidationSchema()}
-        validateOnChange={false}
-      >
-        {({ handleSubmit, isSubmitting }) => (
-          <form onSubmit={handleSubmit}>
-            <div
-              style={{
-                width: '874px',
-                margin: 'auto',
-                background: '#FAFAFA',
-                marginBottom: '24px',
-              }}
-            >
-              <StockFormRow {...args} />
-            </div>
-            <SubmitButton onClick={handleSubmit} isLoading={isSubmitting}>
-              Valider
-            </SubmitButton>
-          </form>
-        )}
-      </Formik>
-    )
-
 const Template: ComponentStory<typeof StockFormRow> = renderStockFormRow({})
-const TemplateEvent: ComponentStory<typeof StockFormRow> =
-  renderStockEventFormRow({})
 
 const actionsCallBack = (name: string) => () => {
   alert(`Action ${name} have been call`)
@@ -173,36 +127,4 @@ WithoutActions.args = {
   actions: [],
   actionDisabled: false,
   showStockInfo: false,
-}
-
-export const CreateEvent = TemplateEvent.bind({})
-CreateEvent.args = {
-  Form: <StockEventForm today={today} stockIndex={0} />,
-  actions: [
-    {
-      callback: actionsCallBack('one'),
-      label: 'Action one',
-      disabled: false,
-      Icon: TrashFilledIcon,
-    },
-    {
-      callback: actionsCallBack('two'),
-      label: 'Action two',
-      disabled: false,
-      Icon: TrashFilledIcon,
-    },
-    {
-      callback: actionsCallBack('disabled'),
-      label: 'Disabled action',
-      disabled: true,
-      Icon: TrashFilledIcon,
-    },
-    {
-      callback: actionsCallBack('four'),
-      label: 'Action four',
-      disabled: false,
-      Icon: TrashFilledIcon,
-    },
-  ],
-  actionDisabled: false,
 }

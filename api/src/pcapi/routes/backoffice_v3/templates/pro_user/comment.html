@@ -1,0 +1,35 @@
+<button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
+    data-bs-target="#addCommentProUserModal" type="button">
+    Ajouter un commentaire
+</button>
+<div class="modal modal-lg fade" id="addCommentProUserModal" tabindex="-1"
+    aria-describedby="addCommentProUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header fs-5" id="addCommentProUserModalLabel">
+                {{ user.firstName }} {{ user.lastName | upper }}
+            </div>
+            <form action="{{ dst }}" method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        {% for form_field in form %}
+                            <div class="w-100 my-4">
+                                {% for error in form_field.errors %}
+                                    <p class="text-warning lead">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {{ form_field }}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary"
+                            data-bs-dismiss="modal">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary">Commenter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

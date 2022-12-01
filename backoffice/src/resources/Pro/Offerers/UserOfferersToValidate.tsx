@@ -264,8 +264,8 @@ export const UserOfferersToValidate = () => {
                           />
                         </TableCell>
                         <TableCell>
-                          {userOfferer.requestDate &&
-                            format(userOfferer.requestDate, 'dd/MM/yyyy')}
+                          {userOfferer.dateCreated &&
+                            format(userOfferer.dateCreated, 'dd/MM/yyyy')}
                         </TableCell>
                         <TableCell>
                           {userOfferer.lastComment &&

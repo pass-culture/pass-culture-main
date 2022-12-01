@@ -2,3 +2,5 @@ CINEMA_PROVIDER_NAMES = [
     "CDSStocks",
     "BoostStocks",
 ]
+
+PASS_CULTURE_STOCKS_PROVIDER_NAME = "PCAPIStocks"

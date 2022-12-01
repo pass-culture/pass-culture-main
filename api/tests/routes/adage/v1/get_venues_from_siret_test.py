@@ -55,6 +55,8 @@ class Returns200Test:
                     "label": None,
                     "siren": "12345",
                     "isPermanent": venue.isPermanent,
+                    "isAdmin": False,
+                    "offerer": {"id": venue.managingOfferer.id, "name": venue.managingOfferer.name},
                 }
             ]
         }
@@ -111,6 +113,8 @@ class Returns200Test:
                     },
                     "siren": "12345",
                     "isPermanent": venue.isPermanent,
+                    "isAdmin": False,
+                    "offerer": {"id": venue.managingOfferer.id, "name": venue.managingOfferer.name},
                 }
             ]
         }
@@ -168,6 +172,8 @@ class Returns200Test:
                     "label": None,
                     "siren": "12345",
                     "isPermanent": venue.isPermanent,
+                    "isAdmin": False,
+                    "offerer": {"id": venue.managingOfferer.id, "name": venue.managingOfferer.name},
                 }
             ]
         }
@@ -247,6 +253,8 @@ class Returns200Test:
                     "label": None,
                     "siren": venue1.managingOfferer.siren,
                     "isPermanent": venue1.isPermanent,
+                    "isAdmin": False,
+                    "offerer": {"id": venue1.managingOfferer.id, "name": venue1.managingOfferer.name},
                 },
                 {
                     "id": venue2.id,
@@ -274,6 +282,8 @@ class Returns200Test:
                     "label": None,
                     "siren": venue2.managingOfferer.siren,
                     "isPermanent": venue2.isPermanent,
+                    "isAdmin": False,
+                    "offerer": {"id": venue2.managingOfferer.id, "name": venue2.managingOfferer.name},
                 },
             ]
         }

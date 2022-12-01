@@ -67,6 +67,7 @@ const UserPasswordForm = ({
                   name="newPassword"
                   label="Nouveau mot de passe"
                   placeholder="Votre nouveau mot de passe"
+                  withErrorPreview={true}
                 />
               </FormLayout.Row>
               <FormLayout.Row>

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
+import ActionsBarSticky from 'components/ActionsBarSticky'
 import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
 import FormLayout from 'components/FormLayout'
 import {
@@ -9,7 +10,7 @@ import {
   EducationalCategories,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { computeOffersUrl } from 'core/Offers'
+import { computeCollectiveOffersUrl } from 'core/Offers'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { Banner, Button, ButtonLink } from 'ui-kit'
@@ -64,6 +65,8 @@ const CollectiveOfferSummaryCreation = ({
   const backRedirectionUrl = offer.isTemplate
     ? `/offre/collectif/vitrine/${offer.id}/creation`
     : `/offre/${offer.id}/collectif/visibilite`
+
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   return (
     <div className={styles['summary']}>
       <Banner type="notification-info" className={styles['summary-banner']}>
@@ -71,22 +74,45 @@ const CollectiveOfferSummaryCreation = ({
         Vérifiez les informations ci-dessous avant de publier votre offre.
       </Banner>
       <CollectiveOfferSummary offer={offer} categories={categories} />
-      <FormLayout.Actions>
-        <ButtonLink
-          variant={ButtonVariant.SECONDARY}
-          link={{
-            to: isSubtypeChosenAtCreation
-              ? backRedirectionUrl
-              : computeOffersUrl({}),
-            isExternal: false,
-          }}
-        >
-          {isSubtypeChosenAtCreation
-            ? 'Etape précédente'
-            : 'Annuler et quitter'}
-        </ButtonLink>
-        <Button onClick={publishOffer}>Publier l’offre</Button>
-      </FormLayout.Actions>
+      {isOfferFormV3 ? (
+        <ActionsBarSticky>
+          <ActionsBarSticky.Left>
+            <ButtonLink
+              variant={ButtonVariant.SECONDARY}
+              link={{
+                to: isSubtypeChosenAtCreation
+                  ? backRedirectionUrl
+                  : computeCollectiveOffersUrl({}),
+                isExternal: false,
+              }}
+            >
+              {isSubtypeChosenAtCreation
+                ? 'Etape précédente'
+                : 'Annuler et quitter'}
+            </ButtonLink>
+          </ActionsBarSticky.Left>
+          <ActionsBarSticky.Right>
+            <Button onClick={publishOffer}>Publier l’offre</Button>{' '}
+          </ActionsBarSticky.Right>
+        </ActionsBarSticky>
+      ) : (
+        <FormLayout.Actions>
+          <ButtonLink
+            variant={ButtonVariant.SECONDARY}
+            link={{
+              to: isSubtypeChosenAtCreation
+                ? backRedirectionUrl
+                : computeCollectiveOffersUrl({}),
+              isExternal: false,
+            }}
+          >
+            {isSubtypeChosenAtCreation
+              ? 'Etape précédente'
+              : 'Annuler et quitter'}
+          </ButtonLink>
+          <Button onClick={publishOffer}>Publier l’offre</Button>
+        </FormLayout.Actions>
+      )}
     </div>
   )
 }

@@ -1,0 +1,38 @@
+{% macro build_badges(title, object, new, pending, validated, rejected, suspended) %}
+    <span class="me-1 pb-1 badge rounded-pill text-bg-primary align-middle">
+        {{ title }}
+    </span>
+
+    {% if object.isNew %}
+        <span class="me-1 pb-1 badge rounded-pill text-bg-info">
+            {{ new }}
+        </span>
+    {% elif object.isPending %}
+        <span class="me-1 pb-1 badge rounded-pill text-bg-warning">
+            {{ pending }}
+        </span>
+    {% elif object.isValidated %}
+        <span class="me-1 pb-1 badge rounded-pill text-bg-success">
+            {{ validated }}
+        </span>
+    {% elif object.isRejected %}
+        <span class="me-1 pb-1 badge rounded-pill text-bg-danger">
+            {{ rejected }}
+        </span>
+    {% endif %}
+
+    {% if not object.isActive %}
+        <span class="me-1 pb-1 badge rounded-pill text-bg-dark">
+            <i class="bi bi-x-circle"></i> 
+            {{ suspended }}
+        </span>
+    {% endif %}
+{% endmacro %}
+
+{% macro build_venue_badges(venue) %}
+    {{  build_badges("Lieu", venue, "Nouveau", "En attente", "Validé", "Rejeté", "Suspendu") }}
+{% endmacro %}
+
+{% macro build_offerer_badges(venue) %}
+    {{  build_badges("Structure", venue, "Nouvelle", "En attente", "Validée", "Rejetée", "Suspendue") }}
+{% endmacro %}

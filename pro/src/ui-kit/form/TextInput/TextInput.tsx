@@ -9,11 +9,13 @@ interface ITextInputProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   name: string
   className?: string
+  classNameLabel?: string
   classNameFooter?: string
   disabled?: boolean
   readOnly?: boolean
   hideFooter?: boolean
   label: string
+  isLabelHidden?: boolean
   placeholder?: string
   type?: 'text' | 'number' | 'email' | 'url' | 'password' | 'tel'
   countCharacters?: boolean
@@ -32,10 +34,12 @@ const TextInput = ({
   type = 'text',
   className,
   classNameFooter,
+  classNameLabel,
   disabled,
   readOnly,
   hideFooter,
   label,
+  isLabelHidden = false,
   placeholder,
   countCharacters,
   maxLength,
@@ -56,12 +60,14 @@ const TextInput = ({
   return (
     <FieldLayout
       className={className}
+      classNameLabel={classNameLabel}
       classNameFooter={classNameFooter}
       count={countCharacters ? field.value.length : undefined}
       error={meta.error}
       hideFooter={hideFooter}
       isOptional={isOptional}
       label={label}
+      isLabelHidden={isLabelHidden}
       maxLength={maxLength}
       name={name}
       showError={meta.touched && !!meta.error}

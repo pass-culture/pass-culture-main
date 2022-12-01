@@ -4,9 +4,13 @@ import { renderHook } from '@testing-library/react-hooks'
 
 import { api } from 'apiClient/api'
 import { VenueListItemResponseModel } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { ApiError } from 'apiClient/v2'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
+import getOfferIndividualVenuesAdapter from '../getOfferIndividualVenuesAdapter'
 import useGetOfferIndividualVenues from '../useOfferIndividualVenues'
 
 describe('useGetOfferIndividualVenues', () => {
@@ -46,7 +50,6 @@ describe('useGetOfferIndividualVenues', () => {
         motorDisabilityCompliant: false,
         name: 'Entreprise AA',
         offererName: 'Structure AA',
-        publicName: 'Entreprise AAAA public name',
         siret: '',
         visualDisabilityCompliant: false,
         withdrawalDetails: null,
@@ -56,7 +59,7 @@ describe('useGetOfferIndividualVenues', () => {
           id: 'AAAA',
           isVirtual: false,
           managingOffererId: 'AA',
-          name: 'Entreprise AAAA public name',
+          name: 'Entreprise AA',
           withdrawalDetails: null,
           accessibility: {
             audio: false,
@@ -104,6 +107,20 @@ describe('useGetOfferIndividualVenues', () => {
       expect(updatedState.isLoading).toBe(false)
       expect(updatedState.data).toEqual(offerIndividualVenues)
       expect(updatedState.error).toBeUndefined()
+    })
+  })
+
+  it('should call api and get error', async () => {
+    jest
+      .spyOn(api, 'getVenues')
+      .mockRejectedValueOnce(
+        new ApiError({} as ApiRequestOptions, {} as ApiResult, '')
+      )
+
+    expect(await getOfferIndividualVenuesAdapter({})).toStrictEqual({
+      isOk: false,
+      message: GET_DATA_ERROR_MESSAGE,
+      payload: [],
     })
   })
 

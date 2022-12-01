@@ -216,6 +216,8 @@ def check_image(
     accepted_types: tuple = ACCEPTED_THUMBNAIL_FORMATS,
     min_width: int = MIN_THUMBNAIL_WIDTH,
     min_height: int = MIN_THUMBNAIL_HEIGHT,
+    max_width: int | None = None,
+    max_height: int | None = None,
 ) -> None:
     try:
         image = Image.open(BytesIO(image_as_bytes))
@@ -227,6 +229,12 @@ def check_image(
 
     if image.width < min_width or image.height < min_height:
         raise exceptions.ImageTooSmall(min_width, min_height)
+
+    if max_width is not None and image.width > max_width:
+        raise exceptions.ImageTooLarge(max_width, max_height)
+
+    if max_height is not None and image.height > max_height:
+        raise exceptions.ImageTooLarge(max_width, max_height)
 
 
 def check_validation_status(offer: Offer | CollectiveOffer | CollectiveOfferTemplate) -> None:
@@ -401,3 +409,8 @@ def check_offer_extra_data(offer: Offer | None, subcategory_id: str, extra_data:
 def check_offer_is_from_current_cinema_provider(offer: Offer) -> bool:
     venue_cinema_pivot = CinemaProviderPivot.query.filter(CinemaProviderPivot.venueId == offer.venueId).one_or_none()
     return venue_cinema_pivot and offer.lastProviderId == venue_cinema_pivot.providerId
+
+
+def check_is_duo_compliance(is_duo: bool | None, subcategory: subcategories.Subcategory) -> None:
+    if is_duo and not subcategory.can_be_duo:
+        raise exceptions.OfferCannotBeDuo()

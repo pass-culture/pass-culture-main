@@ -1,5 +1,4 @@
 import copy
-import dataclasses
 from datetime import datetime
 from datetime import timedelta
 import logging
@@ -17,7 +16,6 @@ import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
@@ -31,9 +29,7 @@ import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import api_errors
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.notifications.push import testing as push_testing
-from pcapi.routes.serialization import stock_serialize
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -58,190 +54,245 @@ SIMPLE_OFFER_VALIDATION_CONFIG = """
         """
 
 
-class UpsertStocksTest:
-    @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_upsert_multiple_stocks(self, mocked_async_index_offer_ids):
+class CreateStockTest:
+    def test_create_stock(self):
         # Given
-        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
-        existing_stock = factories.StockFactory(offer=offer, price=10)
-        created_stock_data = stock_serialize.StockCreationBodyModel(price=10, quantity=7)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(existing_stock.id), price=5, quantity=7
-        )
 
         # When
-        stocks_upserted = api.upsert_stocks(
-            offer_id=offer.id, stock_data_list=[created_stock_data, edited_stock_data], user=user
-        )
+        created_stock = api.create_stock(offer=offer, price=10, quantity=7)
 
         # Then
-        created_stock = models.Stock.query.filter_by(id=stocks_upserted[0].id).first()
-        assert created_stock.offer == offer
+        assert created_stock.offerId == offer.id
         assert created_stock.price == 10
         assert created_stock.quantity == 7
-        edited_stock = models.Stock.query.filter_by(id=existing_stock.id).first()
+
+    def test_does_not_allow_invalid_quantity(self):
+        # Given
+        offer = factories.ThingOfferFactory()
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_stock(offer=offer, quantity=-4, price=30)
+
+        # Then
+        assert error.value.errors == {"quantity": ["Le stock doit être positif"]}
+
+    def test_does_not_allow_invalid_price(self):
+        # Given
+        offer = factories.ThingOfferFactory()
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_stock(offer=offer, price=-3, quantity=1)
+
+        # Then
+        assert error.value.errors == {"price": ["Le prix doit être positif"]}
+
+    def test_does_not_allow_price_above_300_euros(self):
+        # Given
+        offer = factories.ThingOfferFactory()
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_stock(offer=offer, price=301, quantity=None)
+
+        # Then
+        assert error.value.errors == {"price300": ["Le prix d’une offre ne peut excéder 300 euros."]}
+
+    def test_cannot_create_with_different_price_if_reimbursement_rule_exists(self):
+        # If a stock exists with a price, we cannot add a new stock
+        # with another price.
+        stock = factories.ThingStockFactory(price=10)
+        offer = stock.offer
+        finance_factories.CustomReimbursementRuleFactory(offer=stock.offer)
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_stock(offer=offer, price=9, quantity=None)
+        assert error.value.errors["price"][0].startswith("Vous ne pouvez pas modifier le prix")
+
+    def test_cannot_create_stock_with_different_price_if_reimbursement_rule_exists_with_soft_deleted_price(self):
+        # Same as above, but with an offer than only has one,
+        # soft-deleted stock.
+        stock = factories.ThingStockFactory(price=10, isSoftDeleted=True)
+        offer = stock.offer
+        finance_factories.CustomReimbursementRuleFactory(offer=stock.offer)
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_stock(offer=offer, quantity=None, price=9)
+        assert error.value.errors["price"][0].startswith("Vous ne pouvez pas modifier le prix")
+
+    def test_does_not_allow_beginning_datetime_for_thing_offers(self):
+        # Given
+        offer = factories.ThingOfferFactory()
+        beginning_date = datetime.utcnow() + timedelta(days=4)
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_stock(
+                offer=offer,
+                price=0,
+                quantity=None,
+                beginning_datetime=beginning_date,
+                booking_limit_datetime=beginning_date,
+            )
+
+        # Then
+        assert error.value.errors == {
+            "global": ["Impossible de mettre une date de début si l'offre ne porte pas sur un évènement"],
+        }
+
+    def test_validate_booking_limit_datetime_with_expiration_datetime(self):
+        # Given
+        offer = factories.DigitalOfferFactory()
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_stock(
+                offer=offer,
+                price=0,
+                quantity=None,
+                booking_limit_datetime=None,
+                activation_codes=["ABC", "DEF"],
+                activation_codes_expiration_datetime=datetime.utcnow(),
+            )
+
+        # Then
+        assert error.value.errors == {
+            "bookingLimitDatetime": [
+                (
+                    "Une date limite de validité a été renseignée. Dans ce cas, il faut également"
+                    " renseigner une date limite de réservation qui doit être antérieure d'au moins 7 jours."
+                ),
+            ],
+        }
+
+    def test_does_not_allow_missing_dates_for_an_event_offer(self):
+        # Given
+        offer = factories.EventOfferFactory()
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_stock(offer=offer, price=10, quantity=None, beginning_datetime=None, booking_limit_datetime=None)
+
+        # Then
+        assert error.value.errors == {"beginningDatetime": ["Ce paramètre est obligatoire"]}
+
+    def test_does_not_allow_booking_limit_after_beginning_for_an_event_offer(self):
+        # Given
+        offer = factories.EventOfferFactory()
+        beginning_date = datetime.utcnow() + timedelta(days=4)
+        booking_limit = beginning_date + timedelta(days=4)
+
+        # When
+        with pytest.raises(exceptions.BookingLimitDatetimeTooLate):
+            api.create_stock(
+                offer=offer,
+                price=10,
+                quantity=None,
+                beginning_datetime=beginning_date,
+                booking_limit_datetime=booking_limit,
+            )
+
+        # Then
+        assert models.Stock.query.count() == 0
+
+    def test_does_not_allow_creation_on_a_synchronized_offer(self):
+        # Given
+        offer = factories.ThingOfferFactory(
+            lastProvider=providers_factories.AllocineProviderFactory(localClass="TiteLiveStocks")
+        )
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_stock(offer=offer, price=10, quantity=1)
+
+        # Then
+        assert error.value.errors == {"global": ["Les offres importées ne sont pas modifiables"]}
+
+    @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
+    def test_create_stock_for_non_approved_offer_fails(self, mocked_send_first_venue_approved_offer_email_to_pro):
+        offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.PENDING)
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_stock(offer=offer, price=10, quantity=7)
+
+        assert error.value.errors == {
+            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        }
+        assert models.Stock.query.count() == 0
+
+        assert not mocked_send_first_venue_approved_offer_email_to_pro.called
+
+
+class EditStockTest:
+    def test_edit_stock(self):
+        # Given
+        offer = factories.ThingOfferFactory()
+        existing_stock = factories.StockFactory(offer=offer, price=10)
+
+        # When
+        edited_stock, update_info = api.edit_stock(offer=offer, price=5, quantity=7, stock_id=existing_stock.id)
+
+        # Then
+        assert edited_stock == models.Stock.query.filter_by(id=existing_stock.id).first()
         assert edited_stock.price == 5
         assert edited_stock.quantity == 7
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+        assert update_info is False
 
-    @freeze_time("2020-11-17 15:00:00")
-    def test_upsert_stocks_triggers_draft_offer_validation(self):
-        api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
-        # Given draft offers and new stock data
-        user = users_factories.ProFactory()
-        draft_approvable_offer = factories.OfferFactory(
-            name="a great offer", validation=models.OfferValidationStatus.DRAFT
-        )
-        draft_suspicious_offer = factories.OfferFactory(
-            name="A suspicious offer", validation=models.OfferValidationStatus.DRAFT
-        )
-        created_stock_data = stock_serialize.StockCreationBodyModel(price=10, quantity=7)
-
-        # When stocks are upserted
-        api.upsert_stocks(offer_id=draft_approvable_offer.id, stock_data_list=[created_stock_data], user=user)
-        api.upsert_stocks(offer_id=draft_suspicious_offer.id, stock_data_list=[created_stock_data], user=user)
-
-        # Then validations statuses are correctly computed
-        assert draft_approvable_offer.validation == models.OfferValidationStatus.DRAFT
-        assert draft_approvable_offer.isActive
-        assert draft_approvable_offer.lastValidationDate == None
-        assert draft_approvable_offer.lastValidationType == OfferValidationType.AUTO
-        assert draft_suspicious_offer.validation == models.OfferValidationStatus.DRAFT
-        assert draft_suspicious_offer.isActive
-        assert draft_suspicious_offer.lastValidationDate == None
-        assert draft_suspicious_offer.lastValidationType == OfferValidationType.AUTO
-
-    def test_upsert_stocks_does_not_trigger_approved_offer_validation(self):
-        # Given offers with stock and new stock data
-        user = users_factories.ProFactory()
-        approved_offer = factories.OfferFactory(name="a great offer that should be REJECTED")
-        factories.StockFactory(offer=approved_offer, price=10)
-        created_stock_data = stock_serialize.StockCreationBodyModel(price=8, quantity=7)
-
-        # When stocks are upserted
-        api.upsert_stocks(offer_id=approved_offer.id, stock_data_list=[created_stock_data], user=user)
-
-        # Then validations status is not recomputed
-        assert approved_offer.validation == models.OfferValidationStatus.APPROVED
-        assert approved_offer.isActive
-
-    def test_sends_email_if_beginning_date_changes_on_edition(self):
+    def test_edit_beginning_datetime(self):
         # Given
-        user = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
-
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@postponed.net")
-        offer = factories.EventOfferFactory(venue=venue, bookingEmail="offer@bookingemail.fr")
-        existing_stock = factories.StockFactory(offer=offer, price=10)
-        beginning = datetime.utcnow() + timedelta(days=10)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(existing_stock.id),
-            beginningDatetime=beginning,
-            bookingLimitDatetime=existing_stock.bookingLimitDatetime,
-            price=2,
-        )
-
-        bookings_factories.IndividualBookingFactory(
-            stock=existing_stock, individualBooking__user__email="beneficiary@bookingEmail.fr"
-        )
-        bookings_factories.CancelledBookingFactory(stock=existing_stock)
-
-        # When
-        api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
-
-        # Then
-        stock = models.Stock.query.one()
-        assert stock.beginningDatetime == beginning
-
-        assert len(mails_testing.outbox) == 2
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
-        )
-        assert mails_testing.outbox[0].sent_data["To"] == "venue@postponed.net"
-        assert mails_testing.outbox[1].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value
-        )
-        assert mails_testing.outbox[1].sent_data["To"] == "beneficiary@bookingEmail.fr"
-
-    @mock.patch("pcapi.core.offers.api.update_cancellation_limit_dates")
-    def should_update_bookings_cancellation_limit_date_if_report_of_event(self, mock_update_cancellation_limit_dates):
-        # Given
-        user = users_factories.ProFactory()
-        now = datetime.utcnow()
-        event_in_4_days = now + timedelta(days=4)
-        event_reported_in_10_days = now + timedelta(days=10)
-        offer = factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
-        existing_stock = factories.StockFactory(offer=offer, beginningDatetime=event_in_4_days)
-        booking = bookings_factories.BookingFactory(stock=existing_stock, dateCreated=now)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(existing_stock.id),
-            beginningDatetime=event_reported_in_10_days,
-            bookingLimitDatetime=existing_stock.bookingLimitDatetime,
-            price=2,
+        previous_booking_limit = datetime.utcnow() + timedelta(days=4)
+        previous_beginning = datetime.utcnow() + timedelta(days=8)
+        new_beginning = datetime.utcnow() + timedelta(days=15)
+        existing_stock = factories.EventStockFactory(
+            price=10, quantity=7, beginningDatetime=previous_beginning, bookingLimitDatetime=previous_booking_limit
         )
 
         # When
-        api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
+        edited_stock, update_info = api.edit_stock(
+            offer=existing_stock.offer,
+            price=12,
+            quantity=77,
+            stock_id=existing_stock.id,
+            beginning_datetime=new_beginning,
+            booking_limit_datetime=previous_booking_limit,
+        )
 
         # Then
-        mock_update_cancellation_limit_dates.assert_called_once_with([booking], event_reported_in_10_days)
+        assert edited_stock == models.Stock.query.filter_by(id=existing_stock.id).first()
+        assert edited_stock.price == 12
+        assert edited_stock.quantity == 77
+        assert edited_stock.beginningDatetime == new_beginning
+        assert edited_stock.bookingLimitDatetime == previous_booking_limit
+        assert update_info is True
 
-    def should_invalidate_booking_token_when_event_is_reported(self):
+    def test_edit_event_without_beginning_update(self):
         # Given
-        user = users_factories.ProFactory()
-        now = datetime.utcnow()
-        booking_made_3_days_ago = now - timedelta(days=3)
-        event_in_4_days = now + timedelta(days=4)
-        event_reported_in_10_days = now + timedelta(days=10)
-        offer = factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
-        existing_stock = factories.StockFactory(offer=offer, beginningDatetime=event_in_4_days)
-        booking = bookings_factories.UsedIndividualBookingFactory(
-            stock=existing_stock, dateCreated=booking_made_3_days_ago
-        )
-        edited_stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(existing_stock.id),
-            beginningDatetime=event_reported_in_10_days,
-            bookingLimitDatetime=existing_stock.bookingLimitDatetime,
-            price=2,
+        previous_booking_limit = datetime.utcnow() + timedelta(days=4)
+        beginning = datetime.utcnow() + timedelta(days=8)
+        new_booking_limit = datetime.utcnow() + timedelta(days=6)
+        existing_stock = factories.EventStockFactory(
+            price=10, quantity=7, beginningDatetime=beginning, bookingLimitDatetime=previous_booking_limit
         )
 
         # When
-        api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
-
-        # Then
-        updated_booking = bookings_models.Booking.query.get(booking.id)
-        assert updated_booking.status is not bookings_models.BookingStatus.USED
-        assert updated_booking.dateUsed is None
-        assert updated_booking.cancellationLimitDate == booking.cancellationLimitDate
-
-    def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self):
-        # Given
-        user = users_factories.ProFactory()
-        now = datetime.utcnow()
-        date_used_in_48_hours = datetime.utcnow() + timedelta(days=2)
-        event_in_3_days = now + timedelta(days=3)
-        event_reported_in_less_48_hours = now + timedelta(days=1)
-        offer = factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
-        existing_stock = factories.StockFactory(offer=offer, beginningDatetime=event_in_3_days)
-        booking = bookings_factories.UsedIndividualBookingFactory(
-            stock=existing_stock, dateCreated=now, dateUsed=date_used_in_48_hours
-        )
-        edited_stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(existing_stock.id),
-            beginningDatetime=event_reported_in_less_48_hours,
-            bookingLimitDatetime=existing_stock.bookingLimitDatetime,
-            price=2,
+        edited_stock, update_info = api.edit_stock(
+            offer=existing_stock.offer,
+            price=10,
+            quantity=7,
+            stock_id=existing_stock.id,
+            beginning_datetime=beginning,
+            booking_limit_datetime=new_booking_limit,
         )
 
-        # When
-        api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
-
         # Then
-        updated_booking = bookings_models.Booking.query.get(booking.id)
-        assert updated_booking.status is bookings_models.BookingStatus.USED
-        assert updated_booking.dateUsed == date_used_in_48_hours
+        assert edited_stock == models.Stock.query.filter_by(id=existing_stock.id).first()
+        assert edited_stock.price == 10
+        assert edited_stock.quantity == 7
+        assert edited_stock.beginningDatetime == beginning
+        assert edited_stock.bookingLimitDatetime == new_booking_limit
+        assert update_info is False
 
     def test_update_fields_updated_on_allocine_stocks(self):
         allocine_provider = providers_factories.ProviderFactory(localClass="AllocineStocks")
@@ -251,27 +302,21 @@ class UpsertStocksTest:
             offer__idAtProvider="dummy",
             offer__lastProviderId=allocine_provider.id,
         )
-        stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(stock.id),
-            price=stock.price,
-            quantity=50,
-        )
-        api.upsert_stocks(stock.offerId, stock_data_list=[stock_data], user="not needed")
+
+        edited_stock, _ = api.edit_stock(offer=stock.offer, stock_id=stock.id, price=stock.price, quantity=50)
+
+        assert edited_stock == models.Stock.query.filter_by(id=stock.id).first()
         assert set(stock.fieldsUpdated) == {"quantity", "price"}
 
     def test_does_not_allow_edition_of_stock_of_another_offer_than_given(self):
         # Given
-        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         other_offer = factories.ThingOfferFactory()
         existing_stock_on_other_offer = factories.StockFactory(offer=other_offer, price=10)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(existing_stock_on_other_offer.id), price=30
-        )
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
+            api.edit_stock(offer=offer, stock_id=existing_stock_on_other_offer.id, price=30, quantity=None)
 
         # Then
         assert error.value.status_code == 403
@@ -279,218 +324,103 @@ class UpsertStocksTest:
             "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
         }
 
-    def test_does_not_allow_invalid_quantity_on_creation_and_edition(self):
+    def test_does_not_allow_invalid_quantity(self):
         # Given
-        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         existing_stock = factories.StockFactory(offer=offer, price=10)
-        created_stock_data = stock_serialize.StockCreationBodyModel(price=10, quantity=-2)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(existing_stock.id), price=30, quantity=-4
-        )
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data, edited_stock_data], user=user)
+            api.edit_stock(offer=offer, quantity=-4, stock_id=existing_stock.id, price=30)
 
         # Then
         assert error.value.errors == {"quantity": ["Le stock doit être positif"]}
 
-    def test_does_not_allow_invalid_price_on_creation_and_edition(self):
+    def test_does_not_allow_invalid_price(self):
         # Given
-        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         existing_stock = factories.StockFactory(offer=offer, price=10)
-        created_stock_data = stock_serialize.StockCreationBodyModel(price=-1)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(humanizedId=humanize(existing_stock.id), price=-3)
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data, edited_stock_data], user=user)
+            api.edit_stock(offer=offer, stock_id=existing_stock.id, price=-3, quantity=existing_stock.quantity)
 
         # Then
-        assert error.value.errors == {
-            "price": ["Le prix doit être positif"],
-        }
-
-    def test_does_not_allow_price_above_300_euros_on_creation_for_individual_thing_offers(self):
-        # Given
-        user = users_factories.ProFactory()
-        offer = factories.ThingOfferFactory()
-        created_stock_data = stock_serialize.StockCreationBodyModel(price=301)
-
-        # When
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
-
-        # Then
-        assert error.value.errors == {
-            "price300": ["Le prix d’une offre ne peut excéder 300 euros."],
-        }
+        assert error.value.errors == {"price": ["Le prix doit être positif"]}
 
     def test_does_not_allow_price_above_300_euros_on_edition_for_individual_thing_offers(self):
         # Given
-        user = users_factories.ProFactory()
         existing_stock = factories.ThingStockFactory(price=10)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(humanizedId=humanize(existing_stock.id), price=301)
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=existing_stock.offer.id, stock_data_list=[edited_stock_data], user=user)
+            api.edit_stock(
+                offer=existing_stock.offer, price=301, quantity=existing_stock.quantity, stock_id=existing_stock.id
+            )
 
         # Then
         assert error.value.errors == {
             "price300": ["Le prix d’une offre ne peut excéder 300 euros."],
         }
 
-    def test_does_not_allow_price_above_300_euros_on_creation_for_individual_event_offers(self):
+    def test_does_not_allow_price_above_300_euros(self):
         # Given
-        user = users_factories.ProFactory()
-        offer = factories.EventOfferFactory()
+        existing_stock = factories.EventStockFactory(price=10)
         now = datetime.utcnow()
-        created_stock_data = stock_serialize.StockCreationBodyModel(
-            price=301, beginningDatetime=now, bookingLimitDatetime=now
-        )
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
+            api.edit_stock(
+                offer=existing_stock.offer,
+                stock_id=existing_stock.id,
+                price=301,
+                quantity=None,
+                beginning_datetime=now,
+                booking_limit_datetime=now,
+            )
 
         # Then
-        assert error.value.errors == {
-            "price300": ["Le prix d’une offre ne peut excéder 300 euros."],
-        }
-
-    def test_does_not_allow_price_above_300_euros_on_edition_for_individual_event_offers(self):
-        # Given
-        user = users_factories.ProFactory()
-        existing_stock = factories.EventStockFactory(price=10, offer__bookingEmail="test@bookingEmail.fr")
-        now = datetime.utcnow()
-        edited_stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(existing_stock.id), price=301, beginningDatetime=now, bookingLimitDatetime=now
-        )
-
-        # When
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=existing_stock.offer.id, stock_data_list=[edited_stock_data], user=user)
-
-        # Then
-        assert error.value.errors == {
-            "price300": ["Le prix d’une offre ne peut excéder 300 euros."],
-        }
+        assert error.value.errors == {"price300": ["Le prix d’une offre ne peut excéder 300 euros."]}
 
     def test_cannot_edit_price_if_reimbursement_rule_exists(self):
-        user = users_factories.AdminFactory()
         stock = factories.ThingStockFactory(price=10)
         finance_factories.CustomReimbursementRuleFactory(offer=stock.offer)
 
-        data = stock_serialize.StockEditionBodyModel(humanizedId=humanize(stock.id), price=9)
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=stock.offerId, stock_data_list=[data], user=user)
+            api.edit_stock(offer=stock.offer, stock_id=stock.id, price=9, quantity=None)
         assert error.value.errors["price"][0].startswith("Vous ne pouvez pas modifier le prix")
 
-    def test_cannot_create_stock_with_different_price_if_reimbursement_rule_exists(self):
-        # If a stock exists with a price, we cannot add a new stock
-        # with another price.
-        user = users_factories.AdminFactory()
-        stock = factories.ThingStockFactory(price=10)
-        offer = stock.offer
-        finance_factories.CustomReimbursementRuleFactory(offer=stock.offer)
-
-        data = stock_serialize.StockCreationBodyModel(price=9)
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[data], user=user)
-        assert error.value.errors["price"][0].startswith("Vous ne pouvez pas modifier le prix")
-
-    def test_cannot_create_stock_with_different_price_if_reimbursement_rule_exists_with_soft_deleted_price(self):
-        # Same as above, but with an offer than only has one,
-        # soft-deleted stock.
-        user = users_factories.AdminFactory()
-        stock = factories.ThingStockFactory(price=10, isSoftDeleted=True)
-        offer = stock.offer
-        finance_factories.CustomReimbursementRuleFactory(offer=stock.offer)
-
-        data = stock_serialize.StockCreationBodyModel(price=9)
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[data], user=user)
-        assert error.value.errors["price"][0].startswith("Vous ne pouvez pas modifier le prix")
-
-    def test_cannot_create_stock_if_reimbursement_rule_exists(self):
-        # We really should not have a custom reimbursement rule for an
-        # offer that does not have any stock. Let's be defensive,
-        # though, and block stock creation.
-        user = users_factories.AdminFactory()
-        offer = factories.ThingOfferFactory()
-        finance_factories.CustomReimbursementRuleFactory(offer=offer)
-
-        data = stock_serialize.StockCreationBodyModel(price=9)
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[data], user=user)
-        assert error.value.errors["price"][0].startswith("Vous ne pouvez pas modifier le prix")
-
-    def test_does_not_allow_beginning_datetime_on_thing_offer_on_creation_and_edition(self):
+    def test_does_not_allow_beginning_datetime_for_thing_offers(self):
         # Given
-        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         beginning_date = datetime.utcnow() + timedelta(days=4)
         existing_stock = factories.StockFactory(offer=offer, price=10)
-        created_stock_data = stock_serialize.StockCreationBodyModel(
-            price=-1, beginningDatetime=beginning_date, bookingLimitDatetime=beginning_date
-        )
-        edited_stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(existing_stock.id),
-            price=0,
-            beginningDatetime=beginning_date,
-            bookingLimitDatetime=beginning_date,
-        )
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data, edited_stock_data], user=user)
+            api.edit_stock(
+                offer=offer,
+                price=0,
+                quantity=None,
+                stock_id=existing_stock.id,
+                beginning_datetime=beginning_date,
+                booking_limit_datetime=beginning_date,
+            )
 
         # Then
         assert error.value.errors == {
             "global": ["Impossible de mettre une date de début si l'offre ne porte pas sur un évènement"],
         }
 
-    def test_validate_booking_limit_datetime_with_expiration_datetime_on_creation(self):
+    def test_validate_booking_limit_datetime_with_expiration_datetime(self):
         # Given
-        user = users_factories.ProFactory()
-        offer = factories.DigitalOfferFactory()
-        created_stock_data = stock_serialize.StockCreationBodyModel(
-            price=0,
-            bookingLimitDatetime=None,
-            activationCodesExpirationDatetime=datetime.utcnow(),
-            activationCodes=["ABC", "DEF"],
-        )
-
-        # When
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
-
-        # Then
-        assert error.value.errors == {
-            "bookingLimitDatetime": [
-                (
-                    "Une date limite de validité a été renseignée. Dans ce cas, il faut également"
-                    " renseigner une date limite de réservation qui doit être antérieure d'au moins 7 jours."
-                ),
-            ],
-        }
-
-    def test_validate_booking_limit_datetime_with_expiration_datetime_on_edition(self):
-        # Given
-        user = users_factories.ProFactory()
         offer = factories.DigitalOfferFactory()
         existing_stock = factories.StockFactory(offer=offer)
         factories.ActivationCodeFactory(expirationDate=datetime.utcnow(), stock=existing_stock)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(existing_stock.id), price=0, bookingLimitDatetime=None
-        )
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
+            api.edit_stock(offer=offer, stock_id=existing_stock.id, price=0, quantity=None, booking_limit_datetime=None)
 
         # Then
         assert error.value.errors == {
@@ -502,160 +432,118 @@ class UpsertStocksTest:
             ],
         }
 
-    def test_does_not_allow_a_negative_remaining_quantity_on_edition(self):
+    def test_does_not_allow_a_negative_remaining_quantity(self):
         # Given
-        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         booking = bookings_factories.BookingFactory(stock__offer=offer, stock__quantity=10)
         existing_stock = booking.stock
-        edited_stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(existing_stock.id), quantity=0, price=10
-        )
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
+            api.edit_stock(offer=offer, price=10, quantity=0, stock_id=existing_stock.id)
 
         # Then
         assert error.value.errors == {"quantity": ["Le stock total ne peut être inférieur au nombre de réservations"]}
 
-    def test_does_not_allow_missing_dates_for_an_event_offer_on_creation_and_edition(self):
+    def test_does_not_allow_booking_limit_after_beginning_for_an_event_offer(self):
         # Given
-        user = users_factories.ProFactory()
-        offer = factories.EventOfferFactory()
-        created_stock_data = stock_serialize.StockCreationBodyModel(
-            price=10, beginningDatetime=None, bookingLimitDatetime=None
+        previous_booking_limit = datetime.utcnow()
+        previous_beginning = datetime.utcnow() + timedelta(days=1)
+        existing_stock = factories.EventStockFactory(
+            bookingLimitDatetime=previous_booking_limit, beginningDatetime=previous_beginning
         )
-
-        # When
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
-
-        # Then
-        assert error.value.errors == {"beginningDatetime": ["Ce paramètre est obligatoire"]}
-
-    def test_does_not_allow_booking_limit_after_beginning_for_an_event_offer_on_creation_and_edition(self):
-        # Given
-        user = users_factories.ProFactory()
-        offer = factories.EventOfferFactory()
         beginning_date = datetime.utcnow() + timedelta(days=4)
         booking_limit = beginning_date + timedelta(days=4)
-        created_stock_data = stock_serialize.StockCreationBodyModel(
-            price=10, beginningDatetime=beginning_date, bookingLimitDatetime=booking_limit
-        )
 
         # When
         with pytest.raises(exceptions.BookingLimitDatetimeTooLate):
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
+            api.edit_stock(
+                offer=existing_stock.offer,
+                stock_id=existing_stock.id,
+                beginning_datetime=beginning_date,
+                booking_limit_datetime=booking_limit,
+                price=10,
+                quantity=existing_stock.quantity,
+            )
 
         # Then
-        assert models.Stock.query.count() == 0
+        assert existing_stock.bookingLimitDatetime == previous_booking_limit
+        assert existing_stock.beginningDatetime == previous_beginning
 
     def test_does_not_allow_edition_of_a_past_event_stock(self):
         # Given
-        user = users_factories.ProFactory()
-        offer = factories.ThingOfferFactory()
         date_in_the_past = datetime.utcnow() - timedelta(days=4)
-        existing_stock = factories.StockFactory(offer=offer, price=10, beginningDatetime=date_in_the_past)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(humanizedId=humanize(existing_stock.id), price=4)
+        existing_stock = factories.EventStockFactory(price=10, beginningDatetime=date_in_the_past)
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
+            api.edit_stock(
+                offer=existing_stock.offer,
+                price=4,
+                beginning_datetime=date_in_the_past,
+                stock_id=existing_stock.id,
+                quantity=1,
+            )
 
         # Then
         assert error.value.errors == {"global": ["Les évènements passés ne sont pas modifiables"]}
 
-    def test_does_not_allow_upsert_stocks_on_a_synchronized_offer(self):
-        # Given
-        user = users_factories.ProFactory()
-        offer = factories.ThingOfferFactory(
-            lastProvider=providers_factories.AllocineProviderFactory(localClass="TiteLiveStocks")
-        )
-        created_stock_data = stock_serialize.StockCreationBodyModel(price=10)
-
-        # When
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
-
-        # Then
-        assert error.value.errors == {"global": ["Les offres importées ne sont pas modifiables"]}
-
     def test_allow_edition_of_price_and_quantity_for_stocks_of_offers_synchronized_with_allocine(self):
         # Given
-        user = users_factories.ProFactory()
         offer = factories.EventOfferFactory(
             lastProvider=providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         )
         date_in_the_future = datetime.utcnow() + timedelta(days=4)
-        existing_stock = factories.StockFactory(offer=offer, price=10, beginningDatetime=date_in_the_future)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(existing_stock.id),
-            beginningDatetime=existing_stock.beginningDatetime,
-            bookingLimitDatetime=existing_stock.bookingLimitDatetime,
-            price=4,
-        )
+        existing_stock = factories.StockFactory(offer=offer, price=10, beginningDatetime=date_in_the_future, quantity=2)
 
         # When
-        api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
+        api.edit_stock(
+            offer=offer,
+            stock_id=existing_stock.id,
+            price=4,
+            quantity=None,
+            beginning_datetime=existing_stock.beginningDatetime,
+            booking_limit_datetime=existing_stock.bookingLimitDatetime,
+        )
 
         # Then
         edited_stock = models.Stock.query.filter_by(id=existing_stock.id).first()
         assert edited_stock.price == 4
+        assert edited_stock.quantity == None
 
     def test_does_not_allow_edition_of_beginningDateTime_for_stocks_of_offers_synchronized_with_allocine(self):
         # Given
-        user = users_factories.ProFactory()
         offer = factories.EventOfferFactory(
             lastProvider=providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         )
         date_in_the_future = datetime.utcnow() + timedelta(days=4)
         other_date_in_the_future = datetime.utcnow() + timedelta(days=6)
         existing_stock = factories.StockFactory(offer=offer, price=10, beginningDatetime=date_in_the_future)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(existing_stock.id),
-            beginningDatetime=other_date_in_the_future,
-            bookingLimitDatetime=other_date_in_the_future,
-            price=10,
-        )
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
+            api.edit_stock(
+                offer=offer,
+                stock_id=existing_stock.id,
+                price=10,
+                quantity=None,
+                beginning_datetime=other_date_in_the_future,
+                booking_limit_datetime=other_date_in_the_future,
+            )
 
         # Then
         assert error.value.errors == {"global": ["Pour les offres importées, certains champs ne sont pas modifiables"]}
-
-    @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
-    def test_create_stock_for_non_approved_offer_fails(self, mocked_send_first_venue_approved_offer_email_to_pro):
-        user = users_factories.ProFactory()
-        offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.PENDING)
-        created_stock_data = stock_serialize.StockCreationBodyModel(price=10, quantity=7)
-
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
-
-        assert error.value.errors == {
-            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
-        }
-        assert models.Stock.query.count() == 0
-
-        assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
     @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     def test_edit_stock_of_non_approved_offer_fails(
         self,
         mocked_send_first_venue_approved_offer_email_to_pro,
     ):
-        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.PENDING)
         existing_stock = factories.StockFactory(offer=offer, price=10)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(
-            humanizedId=humanize(existing_stock.id), price=5, quantity=7
-        )
 
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
+            api.edit_stock(offer=offer, stock_id=existing_stock.id, price=5, quantity=7)
 
         assert error.value.errors == {
             "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -663,44 +551,6 @@ class UpsertStocksTest:
         existing_stock = models.Stock.query.one()
         assert existing_stock.price == 10
 
-        assert not mocked_send_first_venue_approved_offer_email_to_pro.called
-
-    @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
-    @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
-    @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
-    def test_not_send_email_when_offer_automatically_approved_based_on_fraud_criteria(
-        self,
-        mocked_set_offer_status_based_on_fraud_criteria,
-        mocked_send_first_venue_approved_offer_email_to_pro,
-        mocked_offer_creation_notification_to_admin,
-    ):
-        user = users_factories.ProFactory()
-        offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.DRAFT)
-        created_stock_data = stock_serialize.StockCreationBodyModel(price=10, quantity=7)
-        mocked_set_offer_status_based_on_fraud_criteria.return_value = models.OfferValidationStatus.APPROVED
-
-        api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
-
-        assert not mocked_offer_creation_notification_to_admin.called
-        assert not mocked_send_first_venue_approved_offer_email_to_pro.called
-
-    @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
-    @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
-    @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
-    def test_not_send_email_when_offer_pass_to_pending_based_on_fraud_criteria(
-        self,
-        mocked_set_offer_status_based_on_fraud_criteria,
-        mocked_send_first_venue_approved_offer_email_to_pro,
-        mocked_offer_creation_notification_to_admin,
-    ):
-        user = users_factories.ProFactory()
-        offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.DRAFT)
-        created_stock_data = stock_serialize.StockCreationBodyModel(price=10, quantity=7)
-        mocked_set_offer_status_based_on_fraud_criteria.return_value = models.OfferValidationStatus.PENDING
-
-        api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
-
-        assert not mocked_offer_creation_notification_to_admin.called
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
 
@@ -881,12 +731,9 @@ class CreateOfferTest:
     def test_create_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
 
         offer = api.create_offer(
-            user=user,
-            venue_id=venue.id,
+            venue=venue,
             name="A pretty good offer",
             subcategory_id=subcategories.SEANCE_CINE.id,
             external_ticket_office_url="http://example.net",
@@ -919,12 +766,9 @@ class CreateOfferTest:
             isGcuCompatible=True,
         )
         venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
 
         offer = api.create_offer(
-            venue_id=venue.id,
+            venue=venue,
             name="FONDATION T.1",
             subcategory_id=subcategories.LIVRE_PAPIER.id,
             extra_data={"isbn": "9782207300893", "author": "Isaac Asimov"},
@@ -932,7 +776,6 @@ class CreateOfferTest:
             mental_disability_compliant=True,
             motor_disability_compliant=True,
             visual_disability_compliant=False,
-            user=user,
         )
 
         assert offer.name == "FONDATION T.1"
@@ -955,13 +798,10 @@ class CreateOfferTest:
         )
 
         venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(
-                venue_id=venue.id,
+                venue=venue,
                 name="FONDATION T.1",
                 subcategory_id=subcategories.LIVRE_PAPIER.id,
                 extra_data={"isbn": "9782207300893"},
@@ -969,7 +809,6 @@ class CreateOfferTest:
                 mental_disability_compliant=True,
                 motor_disability_compliant=True,
                 visual_disability_compliant=False,
-                user=user,
             )
 
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
@@ -977,13 +816,10 @@ class CreateOfferTest:
     @override_features(ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION=True)
     def test_create_offer_livre_edition_from_isbn_with_product_not_exists_should_fail(self):
         venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(
-                venue_id=venue.id,
+                venue=venue,
                 name="FONDATION T.1",
                 subcategory_id=subcategories.LIVRE_PAPIER.id,
                 extra_data={"isbn": "9782207300893"},
@@ -991,25 +827,22 @@ class CreateOfferTest:
                 mental_disability_compliant=True,
                 motor_disability_compliant=True,
                 visual_disability_compliant=False,
-                user=user,
             )
 
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
 
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
-        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
         with pytest.raises(exceptions.SubCategoryIsInactive) as error:
 
             api.create_offer(
-                venue_id=venue.id,
+                venue=venue,
                 name="An offer he can't refuse",
                 subcategory_id=subcategories.ACTIVATION_EVENT.id,
                 audio_disability_compliant=True,
                 mental_disability_compliant=True,
                 motor_disability_compliant=True,
                 visual_disability_compliant=True,
-                user=user_offerer.user,
             )
 
         assert error.value.errors["subcategory"] == [
@@ -1018,65 +851,27 @@ class CreateOfferTest:
 
     def test_cannot_create_offer_when_invalid_subcategory(self):
         venue = offerers_factories.VenueFactory()
-        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
         with pytest.raises(exceptions.UnknownOfferSubCategory) as error:
             api.create_offer(
-                venue_id=venue.id,
+                venue=venue,
                 name="An offer he can't refuse",
                 subcategory_id="TOTO",
                 audio_disability_compliant=True,
                 mental_disability_compliant=True,
                 motor_disability_compliant=True,
                 visual_disability_compliant=True,
-                user=user_offerer.user,
             )
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
-    def test_fail_if_unknown_venue(self):
-        user = users_factories.ProFactory()
-        with pytest.raises(exceptions.VenueNotFound) as error:
-            api.create_offer(
-                venue_id=1,
-                name="An awful offer",
-                subcategory_id=subcategories.CONCERT.id,
-                audio_disability_compliant=True,
-                mental_disability_compliant=True,
-                motor_disability_compliant=True,
-                visual_disability_compliant=True,
-                user=user,
-            )
-        assert error.value.errors == {"venue": ["not found"]}
-
-    def test_fail_if_user_not_related_to_offerer(self):
-        venue = offerers_factories.VenueFactory()
-        user = users_factories.ProFactory()
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.create_offer(
-                venue_id=venue.id,
-                subcategory_id=subcategories.CONCERT.id,
-                audio_disability_compliant=True,
-                mental_disability_compliant=True,
-                motor_disability_compliant=True,
-                visual_disability_compliant=True,
-                name="Les users sans structure",
-                user=user,
-            )
-        err = "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
-        assert error.value.errors["global"] == [err]
-
     def test_raise_error_if_extra_data_mandatory_fields_not_provided(self):
         venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(
-                venue_id=venue.id,
+                venue=venue,
                 name="A pretty good offer",
                 subcategory_id=subcategories.CONCERT.id,
-                user=user,
                 audio_disability_compliant=True,
                 mental_disability_compliant=True,
                 motor_disability_compliant=True,

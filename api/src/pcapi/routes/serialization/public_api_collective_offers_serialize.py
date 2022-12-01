@@ -1,14 +1,18 @@
+import base64
+import binascii
 from datetime import datetime
 from datetime import timezone
 from typing import Any
 
 from pydantic import Field
+from pydantic import root_validator
 from pydantic import validator
 
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.subscription.phone_validation.exceptions import InvalidPhoneNumber
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import collective_offers_serialize
@@ -128,6 +132,17 @@ def validate_students(students: list[str] | None) -> list[StudentLevels]:
     return output
 
 
+def validate_image_file(image_file: str | None) -> str | None:
+    if image_file is None:
+        return None
+    if not image_file or len(image_file) % 4 != 0:
+        # empty string case
+        raise ValueError("Ce champ doit contenir une image en base 64 valide")
+    if len(image_file) > 2000000:
+        raise ValueError("l'image ne doit pas faire plus de 1.5 Mio (2 000 000 caractères en base 64)")
+    return image_file
+
+
 def number_of_tickets_validator(field_name: str) -> classmethod:
     return validator(field_name, allow_reuse=True, pre=True)(validate_number_of_tickets)
 
@@ -162,6 +177,10 @@ def email_validator(field_name: str) -> classmethod:
 
 def emails_validator(field_name: str) -> classmethod:
     return validator(field_name, allow_reuse=True)(validate_emails)
+
+
+def image_file_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True, pre=True)(validate_image_file)
 
 
 class CollectiveOffersResponseModel(BaseModel):
@@ -318,6 +337,8 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     educationalPriceDetail: str | None
     educationalInstitution: str | None
     offerVenue: OfferVenueModel
+    imageCredit: str | None
+    imageUrl: str | None
 
     class Config:
         extra = "forbid"
@@ -358,6 +379,8 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
                 "addressType": offer.offerVenue["addressType"],
                 "otherAddress": offer.offerVenue["otherAddress"] or None,
             },
+            imageCredit=offer.imageCredit,
+            imageUrl=offer.imageUrl,
         )
 
 
@@ -380,6 +403,8 @@ class PostCollectiveOfferBodyModel(BaseModel):
     offer_venue: OfferVenueModel
     intervention_area: list[str]
     isActive: bool
+    image_file: str | None
+    image_credit: str | None
     # stock part
     beginning_datetime: datetime
     booking_limit_datetime: datetime
@@ -398,6 +423,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     _validate_contact_phone = phone_number_validator("contact_phone")
     _validate_booking_emails = emails_validator("booking_emails")
     _validate_contact_email = email_validator("contact_email")
+    _validate_image_file = image_file_validator("image_file")
 
     @validator("name", pre=True)
     def validate_name(cls, name: str) -> str:
@@ -410,6 +436,29 @@ class PostCollectiveOfferBodyModel(BaseModel):
             raise ValueError("domains must have at least one value")
 
         return domains
+
+    @root_validator(pre=True)
+    def image_validator(cls, values: dict) -> dict:
+        image = values.get("image_file")
+        credit = values.get("image_credit")
+        if (image is not None and credit is None) or (credit is not None and image is None):
+            raise ValueError(
+                "Les champs imageFile et imageCredit sont liés, si l'un est rempli l'autre doit l'être aussi"
+            )
+        return values
+
+    def get_image_as_bytes(self) -> bytes | None:
+        if not self.image_file:
+            return None
+        try:
+            return base64.b64decode(self.image_file.encode("utf-8"))
+        except binascii.Error:
+            raise ApiErrors(
+                errors={
+                    "imageFile": ["La valeur ne semble pas être du base 64 valide."],
+                },
+                status_code=400,
+            )
 
     class Config:
         alias_generator = to_camel
@@ -434,6 +483,8 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     motorDisabilityCompliant: bool | None
     visualDisabilityCompliant: bool | None
     isActive: bool | None
+    imageCredit: str | None
+    imageFile: str | None
     # stock part
     beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
@@ -489,6 +540,19 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         if beginningDatetime is None:
             raise ValueError("La date de début de l'évènement ne peut pas être nulle.")
         return beginningDatetime
+
+    def get_image_as_bytes(self) -> bytes | None:
+        if not self.imageFile:
+            return None
+        try:
+            return base64.b64decode(self.imageFile.encode("utf-8"))
+        except binascii.Error:
+            raise ApiErrors(
+                errors={
+                    "imageFile": ["La valeur ne semble pas être du base 64 valide."],
+                },
+                status_code=400,
+            )
 
     class Config:
         alias_generator = to_camel

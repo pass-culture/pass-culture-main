@@ -41,7 +41,6 @@ from werkzeug.utils import cached_property
 from pcapi.connectors import sirene
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.models as finance_models
-from pcapi.core.history import models as history_models
 from pcapi.domain.ts_vector import create_ts_vector_and_table_args
 from pcapi.models import Base
 from pcapi.models import Model
@@ -747,30 +746,6 @@ class Offerer(
             cls.validationStatus == ValidationStatus.PENDING,
         ).is_(True)
 
-    @hybrid_property
-    def requestDate(self) -> datetime:
-        # Offerer may have been registered, rejected, then registered again, get the last 'NEW' date
-        return max(
-            (
-                action.actionDate
-                for action in self.action_history
-                if action.actionType == history_models.ActionType.OFFERER_NEW
-            ),
-            default=self.dateCreated,
-        )
-
-    @requestDate.expression  # type: ignore [no-redef]
-    def requestDate(cls) -> datetime:  # pylint: disable=no-self-argument
-        return sa.select(
-            sa.func.coalesce(
-                sa.func.max(history_models.ActionHistory.actionDate).filter(
-                    history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_NEW,
-                    history_models.ActionHistory.offererId == cls.id,
-                ),
-                cls.dateCreated,
-            )
-        ).scalar_subquery()
-
 
 offerer_ts_indexes = [
     ("idx_offerer_fts_name", Offerer.name),
@@ -797,6 +772,9 @@ class UserOfferer(PcObject, Base, Model, NeedsValidationMixin, ValidationStatusM
             name="unique_user_offerer",
         ),
     )
+
+    # dateCreated will remain null for all rows already in this table before this field was added
+    dateCreated: datetime = Column(DateTime, nullable=True, default=datetime.utcnow)
 
     @hybrid_property
     def isValidated(self) -> bool:

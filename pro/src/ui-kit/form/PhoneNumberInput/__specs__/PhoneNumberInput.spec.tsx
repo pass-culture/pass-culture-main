@@ -15,10 +15,10 @@ jest.mock('libphonenumber-js', () => {
   }
 })
 
-const renderPhoneNumberInput = () => {
+const renderPhoneNumberInput = (label?: string) => {
   render(
     <Formik initialValues={{}} onSubmit={() => {}}>
-      <PhoneNumberInput name="phone" />
+      <PhoneNumberInput name="phone" label={label} />
     </Formik>
   )
 }
@@ -92,6 +92,20 @@ describe('PhoneNumberInput', () => {
       expect(
         screen.queryByText('Veuillez entrer un numéro de téléphone valide')
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('label', () => {
+    it('default label', () => {
+      renderPhoneNumberInput()
+
+      expect(screen.getByLabelText('Téléphone')).toBeInTheDocument()
+    })
+
+    it('it should have a custom label when set', async () => {
+      renderPhoneNumberInput('Custom Label')
+      expect(screen.getByLabelText('Custom Label')).toBeInTheDocument()
+      expect(screen.queryByLabelText('Téléphone')).not.toBeInTheDocument()
     })
   })
 })

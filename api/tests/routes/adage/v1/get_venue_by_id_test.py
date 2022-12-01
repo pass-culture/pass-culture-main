@@ -3,6 +3,7 @@ from typing import Any
 import pytest
 
 from pcapi.core.offerers import factories as offerer_factories
+from pcapi.core.offerers.models import VenueTypeCode
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -42,6 +43,8 @@ class Returns200Test:
             "label": None,
             "siren": venue.managingOfferer.siren,
             "isPermanent": venue.isPermanent,
+            "isAdmin": False,
+            "offerer": {"id": venue.managingOfferer.id, "name": venue.managingOfferer.name},
         }
 
     def test_get_relative_venues_by_id(self, client: Any) -> None:
@@ -51,7 +54,12 @@ class Returns200Test:
             managingOfferer=offerer,
             name="azerty",
         )
-        venue2 = offerer_factories.CollectiveVenueFactory(isPermanent=False, managingOfferer=offerer, name="zertyu")
+        venue2 = offerer_factories.CollectiveVenueFactory(
+            isPermanent=False,
+            managingOfferer=offerer,
+            name="zertyu",
+            venueTypeCode=VenueTypeCode.ADMINISTRATIVE,
+        )
         offerer_factories.CollectiveVenueFactory(
             isPermanent=True,
         )
@@ -88,6 +96,8 @@ class Returns200Test:
                     "label": None,
                     "isPermanent": venue1.isPermanent,
                     "siren": venue1.managingOfferer.siren,
+                    "isAdmin": False,
+                    "offerer": {"id": venue1.managingOfferer.id, "name": venue1.managingOfferer.name},
                 },
                 {
                     "id": venue2.id,
@@ -115,6 +125,8 @@ class Returns200Test:
                     "label": None,
                     "isPermanent": venue2.isPermanent,
                     "siren": venue2.managingOfferer.siren,
+                    "isAdmin": True,
+                    "offerer": {"id": venue2.managingOfferer.id, "name": venue2.managingOfferer.name},
                 },
             ]
         }

@@ -125,7 +125,7 @@ describe('OffererStatsScreen', () => {
 
     const iframe = screen.getByTitle('Tableau des statistiques')
     expect(iframe).toBeInTheDocument()
-    expect(iframe).toHaveAttribute('src', 'offererIframeUrl')
+    expect(iframe).toHaveAttribute('src', 'venueIframeUrl')
 
     expect(screen.getByText('Terre de livres')).toBeInTheDocument()
     expect(screen.getByText('La voie aux chapitres')).toBeInTheDocument()

@@ -49,8 +49,8 @@ export const serializePatchOffer = (
   name: formValues.name,
   venueId: formValues.venueId,
   visualDisabilityCompliant: formValues.accessibility[AccessiblityEnum.VISUAL],
-  withdrawalDelay: formValues.withdrawalDelay,
-  withdrawalDetails: formValues.withdrawalDetails,
+  withdrawalDelay: formValues.withdrawalDelay || null,
+  withdrawalDetails: formValues.withdrawalDetails || null,
   withdrawalType: formValues.withdrawalType,
   durationMinutes: serializeDurationMinutes(formValues.durationMinutes || ''),
   bookingEmail: formValues.receiveNotificationEmails

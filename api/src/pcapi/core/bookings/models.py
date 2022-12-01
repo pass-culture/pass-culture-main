@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 import enum
+from typing import TYPE_CHECKING
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
@@ -20,6 +21,7 @@ from sqlalchemy import exists
 from sqlalchemy import select
 import sqlalchemy.exc as sa_exc
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import Label
@@ -32,6 +34,10 @@ from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.human_ids import humanize
+
+
+if TYPE_CHECKING:
+    from pcapi.core.finance.models import Deposit
 
 
 class BookingCancellationReasons(enum.Enum):
@@ -159,6 +165,10 @@ class Booking(PcObject, Base, Model):
         back_populates="booking",
         uselist=False,
     )
+
+    depositId = Column(BigInteger, ForeignKey("deposit.id"), index=True, nullable=True)
+
+    deposit: Mapped["Deposit | None"] = relationship("Deposit", foreign_keys=[depositId], backref="bookings")
 
     def mark_as_used(self) -> None:
         if self.is_used_or_reimbursed:

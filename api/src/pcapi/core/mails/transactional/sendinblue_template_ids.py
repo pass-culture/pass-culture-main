@@ -10,6 +10,7 @@ class TransactionalEmail(Enum):
     ACCEPTED_AS_EAC_BENEFICIARY = models.Template(
         id_prod=257, id_not_prod=27, tags=["jeunes_pass_credite_eac"], use_priority_queue=True
     )
+    ACCOUNT_UNSUSPENDED = models.Template(id_prod=644, id_not_prod=87, tags=["reactivation_compte_utilisateur"])
     BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER = models.Template(
         id_prod=78, id_not_prod=32, tags=["anniversaire_18_ans"], send_to_ehp=False
     )
@@ -96,7 +97,19 @@ class TransactionalEmail(Enum):
     USER_REQUEST_DELETE_ACCOUNT_RECEPTION = models.Template(
         id_prod=511, id_not_prod=54, tags=["reception_demande_suppression_compte_jeune"]
     )
-    ACCOUNT_UNSUSPENDED = models.Template(id_prod=644, id_not_prod=87, tags=["reactivation_compte_utilisateur"])
+
+    UBBLE_KO_REMINDER_ID_CHECK_DATA_MATCH = models.Template(
+        id_prod=824, id_not_prod=116, tags=["jeunes_relance_ubble_ko_infos_incorrectes"], use_priority_queue=False
+    )
+    UBBLE_KO_REMINDER_ID_CHECK_NOT_AUTHENTIC = models.Template(
+        id_prod=821,
+        id_not_prod=117,
+        tags=["jeunes_relance_ubble_ko_document_non_authentique"],
+        use_priority_queue=False,
+    )
+    UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE = models.Template(
+        id_prod=823, id_not_prod=115, tags=["jeunes_relance_ubble_ko_video_illisible"], use_priority_queue=False
+    )
 
     # PRO EMAIL
 
@@ -115,6 +128,7 @@ class TransactionalEmail(Enum):
     EAC_PENDING_BOOKING_WITH_BOOKING_LIMIT_DATE_3_DAYS = models.TemplatePro(
         id_prod=524, id_not_prod=64, tags=["pro_preresa_3_jours_avant_la_date_limite"]
     )
+    EAC_OFFERER_ACTIVATION_EMAIL = models.TemplatePro(id_prod=815, id_not_prod=114, tags=["pro_offerer_activation"])
     EDUCATIONAL_BOOKING_CANCELLATION = models.TemplatePro(
         id_prod=522, id_not_prod=65, tags=["pro_eac_annulation_reservation"]
     )

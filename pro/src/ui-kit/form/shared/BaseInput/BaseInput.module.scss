@@ -13,7 +13,7 @@
     @include forms.input-theme-error();
   }
 
-  &-with-right-icon {
+  &-with-right-icon:not(:placeholder-shown) {
     padding-right: rem.torem(36px);
   }
 

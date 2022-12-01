@@ -452,7 +452,7 @@ export const OfferersToValidate = () => {
                           />
                         </TableCell>
                         <TableCell>
-                          {format(offerer.requestDate, 'dd/MM/yyyy')}
+                          {format(offerer.dateCreated, 'dd/MM/yyyy')}
                         </TableCell>
                         <TableCell>
                           {offerer.lastComment && offerer.lastComment.content}

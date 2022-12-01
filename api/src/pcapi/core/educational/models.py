@@ -55,6 +55,7 @@ class CollectiveBookingCancellationReasons(enum.Enum):
     EXPIRED = "EXPIRED"
     FRAUD = "FRAUD"
     REFUSED_BY_INSTITUTE = "REFUSED_BY_INSTITUTE"
+    REFUSED_BY_HEADMASTER = "REFUSED_BY_HEADMASTER"
 
 
 class Ministry(enum.Enum):
@@ -805,9 +806,13 @@ class CollectiveBooking(PcObject, Base, Model):
 
         if self.status != CollectiveBookingStatus.PENDING and self.cancellationLimitDate <= datetime.utcnow():
             raise exceptions.EducationalBookingNotRefusable()
-
+        cancellation_reason = (
+            CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
+            if self.status == CollectiveBookingStatus.PENDING
+            else CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER
+        )
         try:
-            self.cancel_booking(CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE)
+            self.cancel_booking(cancellation_reason)
         except exceptions.CollectiveBookingIsAlreadyUsed:
             raise exceptions.EducationalBookingNotRefusable()
 

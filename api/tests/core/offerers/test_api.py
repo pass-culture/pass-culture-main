@@ -464,6 +464,7 @@ class CreateOffererTest:
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is None
         assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
+        assert created_user_offerer.dateCreated is not None
 
         assert not created_user_offerer.user.has_pro_role
 
@@ -521,6 +522,7 @@ class CreateOffererTest:
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is not None
         assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert created_user_offerer.dateCreated is not None
 
         assert not created_user_offerer.user.has_pro_role
 
@@ -564,6 +566,7 @@ class CreateOffererTest:
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is not None
         assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert created_user_offerer.dateCreated is not None
 
     @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
     def test_create_new_offerer_with_validation_token_if_siren_was_previously_rejected(
@@ -580,6 +583,7 @@ class CreateOffererTest:
             siren=offerer_informations.siren,
             validationStatus=offerers_models.ValidationStatus.REJECTED,
         )
+        first_creation_date = offerer.dateCreated
 
         # When
         created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
@@ -594,10 +598,12 @@ class CreateOffererTest:
         assert created_offerer.city == offerer_informations.city
         assert created_offerer.validationToken is not None
         assert created_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert created_offerer.dateCreated > first_creation_date
 
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is None
         assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
+        assert created_user_offerer.dateCreated is not None
 
         assert not created_user_offerer.user.has_pro_role
 
@@ -721,7 +727,7 @@ class RejectOffererAttachementTest:
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # When
-        offerers_api.reject_offerer_attachment(user_offerer.id, admin)
+        offerers_api.reject_offerer_attachment(user_offerer, admin)
 
         # Then
         assert offerers_models.UserOfferer.query.count() == 0
@@ -733,7 +739,7 @@ class RejectOffererAttachementTest:
         user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=user)
 
         # When
-        offerers_api.reject_offerer_attachment(user_offerer.id, admin)
+        offerers_api.reject_offerer_attachment(user_offerer, admin)
 
         # Then
         assert not user.has_pro_role
@@ -745,7 +751,7 @@ class RejectOffererAttachementTest:
         user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=validated_user_offerer.user)
 
         # When
-        offerers_api.reject_offerer_attachment(user_offerer.id, admin)
+        offerers_api.reject_offerer_attachment(user_offerer, admin)
 
         # Then
         assert validated_user_offerer.user.has_pro_role
@@ -757,7 +763,7 @@ class RejectOffererAttachementTest:
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # When
-        offerers_api.reject_offerer_attachment(user_offerer.id, admin)
+        offerers_api.reject_offerer_attachment(user_offerer, admin)
 
         # Then
         send_offerer_attachment_rejection_email_to_pro.assert_called_once_with(user_offerer)
@@ -770,7 +776,7 @@ class RejectOffererAttachementTest:
         user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=user, offerer=offerer)
 
         # When
-        offerers_api.reject_offerer_attachment(user_offerer.id, admin)
+        offerers_api.reject_offerer_attachment(user_offerer, admin)
 
         # Then
         action = history_models.ActionHistory.query.one()
@@ -780,19 +786,6 @@ class RejectOffererAttachementTest:
         assert action.userId == user.id
         assert action.offererId == offerer.id
         assert action.venueId is None
-
-    def test_do_not_reject_if_id_not_found(self):
-        # Given
-        admin = users_factories.AdminFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
-
-        # When
-        with pytest.raises(offerers_exceptions.UserOffererNotFoundException):
-            offerers_api.reject_offerer_attachment(user_offerer.id + 100, admin)
-
-        # Then
-        assert user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
-        assert history_models.ActionHistory.query.count() == 0
 
 
 @freeze_time("2020-10-15 00:00:00")
@@ -1446,3 +1439,35 @@ def test_get_offerer_stats_dashboard_url():
         "params": {"siren": [offerer.siren], "venueid": [str(venue.id)]},
         "exp": round(time.time()) + 600,
     }
+
+
+class CountOfferersByValidationStatusTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_get_offerer_stats(self, client):
+        # given
+        offerers_factories.UserOffererFactory(offerer__validationStatus=offerers_models.ValidationStatus.NEW)
+        offerers_factories.UserOffererFactory.create_batch(
+            2, offerer__validationStatus=offerers_models.ValidationStatus.PENDING
+        )
+        offerers_factories.UserOffererFactory.create_batch(
+            3, offerer__validationStatus=offerers_models.ValidationStatus.VALIDATED
+        )
+        offerers_factories.UserOffererFactory.create_batch(
+            4, offerer__validationStatus=offerers_models.ValidationStatus.REJECTED
+        )
+
+        # when
+        with assert_num_queries(1):
+            stats = offerers_api.count_offerers_by_validation_status()
+
+        # then
+        assert stats == {"NEW": 1, "PENDING": 2, "VALIDATED": 3, "REJECTED": 4}
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_get_offerer_stats_zero(self, client):
+        # when
+        with assert_num_queries(1):
+            stats = offerers_api.count_offerers_by_validation_status()
+
+        # then
+        assert stats == {"NEW": 0, "PENDING": 0, "VALIDATED": 0, "REJECTED": 0}

@@ -15,7 +15,6 @@ const SynchronizedProviderInformation = ({
   providerName,
 }: ISynchronizedProviderInformation): JSX.Element | null => {
   const providerInfo = getProviderInfo(providerName)
-
   if (providerInfo === undefined) {
     return null
   }
@@ -31,7 +30,11 @@ const SynchronizedProviderInformation = ({
         className={styles['banner-provider']}
         isProvider
       >
-        <Icon alt={providerInfo.name} svg={providerInfo.icon} />
+        <Icon
+          alt={providerInfo.name}
+          svg={providerInfo.icon}
+          className={styles['provider-logo']}
+        />
         <span>{providerInfo.synchronizedOfferMessage}</span>
       </Banner>
     </div>

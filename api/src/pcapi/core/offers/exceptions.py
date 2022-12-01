@@ -62,6 +62,16 @@ class ImageTooSmall(ImageValidationError):
         super().__init__(f"Utilisez une image plus grande (supérieure à {min_width}px par {min_height}px)")
 
 
+class ImageTooLarge(ImageValidationError):
+    def __init__(self, max_width: int | None, max_height: int | None):
+        if max_width and not max_height:
+            super().__init__(f"Utilisez une image plus petite (inférieure à {max_width} px de large)")
+        elif max_height and not max_width:
+            super().__init__(f"Utilisez une image plus petite (inférieure à  {max_height}px de haut)")
+        else:
+            super().__init__(f"Utilisez une image plus petite (inférieure à {max_width}px par {max_height}px)")
+
+
 class UnacceptedFileType(ImageValidationError):
     def __init__(self, accepted_types):  # type: ignore [no-untyped-def]
         super().__init__(f"Utilisez un format {', '.join(accepted_types)}")
@@ -76,9 +86,9 @@ class OfferCreationBaseException(ClientError):
     pass
 
 
-class VenueNotFound(OfferCreationBaseException):
+class OfferCannotBeDuo(OfferCreationBaseException):
     def __init__(self) -> None:
-        super().__init__("venue", "not found")
+        super().__init__("acceptDoubleBookings", "the category chosen does not allow double bookings")
 
 
 class SubcategoryNotEligibleForEducationalOffer(OfferCreationBaseException):

@@ -47,11 +47,6 @@ from pcapi.core.offers.offer_validation import parse_offer_validation_config
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.repository import update_stock_quantity_to_dn_booked_quantity
 from pcapi.core.offers.utils import as_utc_without_timezone
-from pcapi.core.offers.validation import KEY_VALIDATION_CONFIG
-from pcapi.core.offers.validation import check_booking_limit_datetime
-from pcapi.core.offers.validation import check_offer_subcategory_is_valid
-from pcapi.core.offers.validation import check_offer_withdrawal
-from pcapi.core.offers.validation import check_validation_config_parameters
 import pcapi.core.providers.models as providers_models
 from pcapi.core.users.external import update_external_pro
 import pcapi.core.users.models as users_models
@@ -65,11 +60,8 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.repository import transaction
-from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
-from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.utils import image_conversion
 from pcapi.utils.cinema_providers import get_cds_show_id_from_uuid
-from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.workers import push_notification_job
 
 from . import exceptions
@@ -120,8 +112,7 @@ def create_offer(
     motor_disability_compliant: bool,
     name: str,
     subcategory_id: str,
-    user: User,
-    venue_id: int,
+    venue: Venue,
     visual_disability_compliant: bool,
     booking_email: str | None = None,
     description: str | None = None,
@@ -135,15 +126,12 @@ def create_offer(
     withdrawal_details: str | None = None,
     withdrawal_type: models.WithdrawalTypeEnum | None = None,
 ) -> Offer:
-    venue: Venue | None = Venue.query.get(venue_id)
-    if not venue:
-        raise exceptions.VenueNotFound()
-    check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id)
-    check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
-    check_offer_subcategory_is_valid(subcategory_id)
+    validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id)
+    validation.check_offer_subcategory_is_valid(subcategory_id)
     validation.check_offer_extra_data(None, subcategory_id, extra_data)
-
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
+    validation.check_is_duo_compliance(is_duo, subcategory)
+
     if _is_able_to_create_book_offer_from_isbn(subcategory):
         offer = _initialize_book_offer_from_template(description, extra_data, is_national, name, url)
     else:
@@ -172,7 +160,7 @@ def create_offer(
     offer.venue = venue
     offer.visualDisabilityCompliant = visual_disability_compliant
 
-    repository.save(offer)
+    repository.add_to_session(offer)
 
     logger.info(  # type: ignore [call-arg]
         "Offer has been created",
@@ -246,7 +234,7 @@ def _initialize_offer_with_new_data(
         durationMinutes=duration_minutes,
         extraData=extra_data,
         isDuo=bool(is_duo),
-        isNational=is_national,
+        isNational=bool(is_national),
         name=name,
         product=product,
         subcategoryId=subcategory_id,
@@ -305,7 +293,7 @@ def update_offer(
         try:
             changed_withdrawalType = withdrawalType if withdrawalType != UNCHANGED else offer.withdrawalType
             changed_withdrawalDelay = withdrawalDelay if withdrawalDelay != UNCHANGED else offer.withdrawalDelay
-            check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)
+            validation.check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)
         except offers_exceptions.OfferCreationBaseException as error:
             raise ApiErrors(
                 error.errors,
@@ -475,81 +463,6 @@ def batch_update_collective_offers_template(query, update_fields):  # type: igno
         search.async_index_collective_offer_template_ids(collective_offer_template_ids_batch)
 
 
-def _create_stock(
-    offer: Offer,
-    price: float,
-    quantity: int = None,
-    beginning: datetime.datetime = None,
-    booking_limit_datetime: datetime.datetime = None,
-) -> Stock:
-    validation.check_required_dates_for_stock(offer, beginning, booking_limit_datetime)
-    validation.check_stock_can_be_created_for_offer(offer)
-    validation.check_stock_price(price, offer)
-    validation.check_stock_quantity(quantity)
-
-    return Stock(
-        offer=offer,
-        price=decimal.Decimal(price),
-        quantity=quantity,
-        beginningDatetime=beginning,
-        bookingLimitDatetime=booking_limit_datetime,
-    )
-
-
-def _edit_stock(
-    stock: Stock,
-    price: float,
-    quantity: int,
-    beginning: datetime.datetime,
-    booking_limit_datetime: datetime.datetime,
-) -> Stock:
-    # FIXME (dbaty, 2020-11-25): We need this ugly workaround because
-    # the frontend sends us datetimes like "2020-12-03T14:00:00Z"
-    # (note the "Z" suffix). Pydantic deserializes it as a datetime
-    # *with* a timezone. However, datetimes are stored in the database
-    # as UTC datetimes *without* any timezone. Thus, we wrongly detect
-    # a change for the "beginningDatetime" field for Allocine stocks:
-    # because we do not allow it to be changed, we raise an error when
-    # we should not.
-
-    if beginning:
-        beginning = as_utc_without_timezone(beginning)
-    if booking_limit_datetime:
-        booking_limit_datetime = as_utc_without_timezone(booking_limit_datetime)
-
-    validation.check_stock_is_updatable(stock)
-    validation.check_required_dates_for_stock(stock.offer, beginning, booking_limit_datetime)
-    validation.check_stock_price(price, stock.offer)
-    validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
-    validation.check_activation_codes_expiration_datetime_on_stock_edition(
-        stock.activationCodes,
-        booking_limit_datetime,
-    )
-
-    updates = {
-        "price": price,
-        "quantity": quantity,
-        "beginningDatetime": beginning,
-        "bookingLimitDatetime": booking_limit_datetime,
-    }
-
-    if stock.offer.isFromAllocine:
-        # fmt: off
-        updated_fields = {
-            attr
-            for attr, new_value in updates.items()
-            if new_value != getattr(stock, attr)
-        }
-        # fmt: on
-        validation.check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields)
-        stock.fieldsUpdated = list(set(stock.fieldsUpdated) | updated_fields)
-
-    for model_attr, value in updates.items():
-        setattr(stock, model_attr, value)
-
-    return stock
-
-
 def _notify_pro_upon_stock_edit_for_event_offer(stock: Stock, bookings: typing.List[Booking]):  # type: ignore [no-untyped-def]
     if stock.offer.isEvent:
         if not transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings)):
@@ -573,103 +486,143 @@ def _notify_beneficiaries_upon_stock_edit(stock: Stock, bookings: typing.List[Bo
             )
 
 
-def upsert_stocks(
-    offer_id: int, stock_data_list: list[StockCreationBodyModel | StockEditionBodyModel], user: User
-) -> list[Stock]:
-    activation_codes = []
-    stocks = []
-    edited_stocks = []
-    edited_stocks_previous_beginnings = {}
+def create_stock(
+    offer: Offer,
+    price: float,
+    quantity: int | None,
+    activation_codes: list[str] | None = None,
+    activation_codes_expiration_datetime: datetime.datetime | None = None,
+    beginning_datetime: datetime.datetime | None = None,
+    booking_limit_datetime: datetime.datetime | None = None,
+) -> Stock:
+    validation.check_booking_limit_datetime(None, beginning_datetime, booking_limit_datetime)
 
-    offer = models.Offer.query.get(offer_id)
+    activation_codes = activation_codes or []
+    if activation_codes:
+        validation.check_offer_is_digital(offer)
+        validation.check_activation_codes_expiration_datetime(
+            activation_codes_expiration_datetime,
+            booking_limit_datetime,
+        )
+        quantity = len(activation_codes)
 
-    for stock_data in stock_data_list:
-        if isinstance(stock_data, StockEditionBodyModel):
-            stock = (
-                Stock.queryNotSoftDeleted()
-                .filter_by(id=stock_data.id)
-                .options(sqla_orm.joinedload(Stock.activationCodes))
-                .first_or_404()
+    if beginning_datetime and booking_limit_datetime and beginning_datetime < booking_limit_datetime:
+        booking_limit_datetime = beginning_datetime
+
+    validation.check_required_dates_for_stock(offer, beginning_datetime, booking_limit_datetime)
+    validation.check_stock_can_be_created_for_offer(offer)
+    validation.check_stock_price(price, offer)
+    validation.check_stock_quantity(quantity)
+
+    created_stock = Stock(
+        offerId=offer.id,
+        price=decimal.Decimal(price),
+        quantity=quantity,
+        beginningDatetime=beginning_datetime,
+        bookingLimitDatetime=booking_limit_datetime,
+    )
+    created_activation_codes = []
+
+    for activation_code in activation_codes:
+        created_activation_codes.append(
+            ActivationCode(
+                code=activation_code,
+                expirationDate=activation_codes_expiration_datetime,
+                stock=created_stock,
             )
-            if stock.offerId != offer_id:
-                errors = ApiErrors()
-                errors.add_error(
-                    "global", "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
-                )
-                errors.status_code = 403
-                raise errors
-            check_booking_limit_datetime(stock, stock_data.beginning_datetime, stock_data.booking_limit_datetime)
-            edited_stocks_previous_beginnings[stock.id] = stock.beginningDatetime
+        )
+    repository.add_to_session(created_stock, *created_activation_codes)
 
-            booking_limit_datetime = stock_data.booking_limit_datetime or stock.bookingLimitDatetime
-            beginning = stock_data.beginning_datetime or stock.beginningDatetime
-            if beginning and booking_limit_datetime and beginning < booking_limit_datetime:
-                booking_limit_datetime = beginning
+    return created_stock
 
-            edited_stock = _edit_stock(
-                stock,
-                price=stock_data.price,
-                quantity=stock_data.quantity,  # type: ignore [arg-type]
-                beginning=stock_data.beginning_datetime,  # type: ignore [arg-type]
-                booking_limit_datetime=booking_limit_datetime,
-            )
-            edited_stocks.append(edited_stock)
-            stocks.append(edited_stock)
-        else:
-            check_booking_limit_datetime(None, stock_data.beginning_datetime, stock_data.booking_limit_datetime)
 
-            activation_codes_exist = stock_data.activation_codes is not None and len(stock_data.activation_codes) > 0
+def edit_stock(
+    offer: Offer,
+    price: float,
+    quantity: int | None,
+    stock_id: int,
+    beginning_datetime: datetime.datetime | None = None,
+    booking_limit_datetime: datetime.datetime | None = None,
+) -> typing.Tuple[Stock, bool]:
+    stock = (
+        Stock.queryNotSoftDeleted()
+        .filter_by(id=stock_id)
+        .options(sqla_orm.joinedload(Stock.activationCodes))
+        .first_or_404()
+    )
+    if stock.offerId != offer.id:
+        errors = ApiErrors()
+        errors.add_error("global", "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information.")
+        errors.status_code = 403
+        raise errors
 
-            if activation_codes_exist:
-                validation.check_offer_is_digital(offer)
-                validation.check_activation_codes_expiration_datetime(
-                    stock_data.activation_codes_expiration_datetime,
-                    stock_data.booking_limit_datetime,
-                )
+    validation.check_booking_limit_datetime(stock, beginning_datetime, booking_limit_datetime)
 
-            quantity = len(stock_data.activation_codes) if activation_codes_exist else stock_data.quantity  # type: ignore[arg-type]
+    new_booking_limit_datetime = booking_limit_datetime or stock.bookingLimitDatetime
+    new_beginning_datetime = beginning_datetime or stock.beginningDatetime
 
-            booking_limit_datetime = stock_data.booking_limit_datetime
-            if (
-                stock_data.beginning_datetime
-                and booking_limit_datetime
-                and stock_data.beginning_datetime < booking_limit_datetime
-            ):
-                booking_limit_datetime = stock_data.beginning_datetime
+    if new_beginning_datetime and new_booking_limit_datetime and new_beginning_datetime < new_booking_limit_datetime:
+        new_booking_limit_datetime = new_beginning_datetime
 
-            created_stock = _create_stock(
-                offer=offer,
-                price=stock_data.price,
-                quantity=quantity,
-                beginning=stock_data.beginning_datetime,
-                booking_limit_datetime=booking_limit_datetime,
-            )
+    # FIXME (dbaty, 2020-11-25): We need this ugly workaround because
+    # the frontend sends us datetimes like "2020-12-03T14:00:00Z"
+    # (note the "Z" suffix). Pydantic deserializes it as a datetime
+    # *with* a timezone. However, datetimes are stored in the database
+    # as UTC datetimes *without* any timezone. Thus, we wrongly detect
+    # a change for the "beginningDatetime" field for Allocine stocks:
+    # because we do not allow it to be changed, we raise an error when
+    # we should not.
+    if new_beginning_datetime:
+        new_beginning_datetime = as_utc_without_timezone(new_beginning_datetime)
+    if new_booking_limit_datetime:
+        new_booking_limit_datetime = as_utc_without_timezone(new_booking_limit_datetime)
 
-            if activation_codes_exist:
-                for activation_code in stock_data.activation_codes:  # type: ignore[union-attr]
-                    activation_codes.append(
-                        ActivationCode(
-                            code=activation_code,
-                            expirationDate=stock_data.activation_codes_expiration_datetime,
-                            stock=created_stock,
-                        )
-                    )
+    validation.check_stock_is_updatable(stock)
+    validation.check_required_dates_for_stock(stock.offer, new_beginning_datetime, new_booking_limit_datetime)
+    validation.check_stock_price(price, stock.offer)
+    validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
+    validation.check_activation_codes_expiration_datetime_on_stock_edition(
+        stock.activationCodes,
+        new_booking_limit_datetime,
+    )
 
-            stocks.append(created_stock)
+    is_beginning_updated = new_beginning_datetime != stock.beginningDatetime
 
-    repository.save(*stocks, *activation_codes)
-    logger.info("Stock has been created or updated", extra={"offer": offer_id})
-    for stock in edited_stocks:
-        previous_beginning = edited_stocks_previous_beginnings[stock.id]
-        if stock.beginningDatetime != previous_beginning:
+    updates = {
+        "price": price,
+        "quantity": quantity,
+        "beginningDatetime": new_beginning_datetime,
+        "bookingLimitDatetime": new_booking_limit_datetime,
+    }
+
+    if stock.offer.isFromAllocine:
+        # fmt: off
+        updated_fields = {
+            attr
+            for attr, new_value in updates.items()
+            if new_value != getattr(stock, attr)
+        }
+        # fmt: on
+        validation.check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields)
+        stock.fieldsUpdated = list(set(stock.fieldsUpdated) | updated_fields)
+
+    for model_attr, value in updates.items():
+        setattr(stock, model_attr, value)
+
+    repository.add_to_session(stock)
+
+    return stock, is_beginning_updated
+
+
+def handle_stocks_edition(offer_id: int, edited_stocks: list[typing.Tuple[Stock, bool]]) -> None:
+    if edited_stocks:
+        search.async_index_offer_ids([offer_id])
+
+    for stock, is_beginning_datetime_updated in edited_stocks:
+        if is_beginning_datetime_updated:
             bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
             _notify_pro_upon_stock_edit_for_event_offer(stock, bookings)
             _notify_beneficiaries_upon_stock_edit(stock, bookings)
-
-    if edited_stocks:
-        search.async_index_offer_ids([offer.id])
-
-    return stocks
 
 
 def publish_offer(offer_id: int, user: User) -> Offer:
@@ -1041,7 +994,7 @@ def update_pending_offer_validation(offer: Offer, validation_status: OfferValida
 def import_offer_validation_config(config_as_yaml: str, user: User = None) -> OfferValidationConfig:
     try:
         config_as_dict = yaml.safe_load(config_as_yaml)
-        check_validation_config_parameters(config_as_dict, KEY_VALIDATION_CONFIG["init"])
+        validation.check_validation_config_parameters(config_as_dict, validation.KEY_VALIDATION_CONFIG["init"])
     except (KeyError, ValueError, ScannerError) as error:
         logger.exception(
             "Wrong configuration file format: %s",

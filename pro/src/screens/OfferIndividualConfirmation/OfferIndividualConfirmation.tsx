@@ -1,13 +1,15 @@
 import React from 'react'
 
 import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_STATUS_PENDING } from 'core/Offers'
+import { OFFER_STATUS_PENDING, OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
+import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as PendingIcon } from 'icons/pending.svg'
@@ -75,7 +77,11 @@ const OfferIndividualConfirmation = ({
       <div className={styles['confirmation-actions']}>
         <ButtonLink
           link={{
-            to: `/offre/v3/creation/individuelle/informations${queryString}`,
+            to:
+              getOfferIndividualUrl({
+                step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+                mode: OFFER_WIZARD_MODE.CREATION,
+              }) + queryString,
             isExternal: true,
           }}
           variant={ButtonVariant.SECONDARY}

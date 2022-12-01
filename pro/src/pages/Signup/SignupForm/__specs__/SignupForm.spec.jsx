@@ -318,7 +318,8 @@ describe('src | components | pages | Signup | SignupForm', () => {
           screen.getByRole('textbox', {
             name: /Téléphone/,
           }),
-          '0722332233'
+
+          '+33722332233'
         )
         expect(submitButton).toBeDisabled()
         await userEvent.type(
@@ -352,7 +353,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
           longitude: 1.1,
           name: 'Ma Petite structure',
           password: 'user@AZERTY123',
-          phoneNumber: '0722332233',
+          phoneNumber: '+33722332233',
           postalCode: '22350',
           publicName: 'Prénom',
           siren: '881457238',

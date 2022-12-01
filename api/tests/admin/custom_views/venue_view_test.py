@@ -46,22 +46,6 @@ class EditVenueTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def test_update_adage_id(self, mocked_async_index_offers_of_venue_ids, _mocked_validate_csrf_token, app):
-        AdminFactory(email="user@example.com")
-        venue = offerers_factories.VenueFactory(adageId="123")
-
-        data = base_form_data(venue) | dict(adageId="456")
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
-        response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
-
-        assert response.status_code == 302
-        venue_edited = Venue.query.get(venue.id)
-        assert venue_edited.adageId == "456"
-        mocked_async_index_offers_of_venue_ids.assert_not_called()
-
-    @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_add_siret_to_venue_without_pricing_point(
         self, mocked_async_index_offers_of_venue_ids, _mocked_validate_csrf_token, caplog, app
     ):

@@ -17,8 +17,11 @@
   &-select-venue {
     width: rem.torem(486px);
   }
-}
 
+}
+.no-result-section {
+  margin-top: rem.torem(60px);
+}
 .iframeContainer {
   margin-top: rem.torem(44px);
   height: rem.torem(3500px);

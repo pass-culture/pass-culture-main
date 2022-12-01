@@ -11,11 +11,18 @@ import { ApiError, GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
-import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
+import {
+  IOfferIndividual,
+  IOfferIndividualStock,
+  IOfferIndividualVenue,
+} from 'core/Offers/types'
+import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 import { getToday } from 'utils/date'
@@ -51,19 +58,38 @@ const renderStockEventScreen = ({
   const store = configureTestStore(storeOverride)
   return render(
     <Provider store={store}>
-      <MemoryRouter initialEntries={['/creation/stocks']}>
-        <Route path="/creation/stocks">
+      <MemoryRouter
+        initialEntries={[
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+        ]}
+      >
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <OfferIndividualContext.Provider value={contextValue}>
             <StocksEvent {...props} />
           </OfferIndividualContext.Provider>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/recapitulatif">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <div>Next page</div>
         </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/stocks">
-          <div>Save draft page</div>
-        </Route>
-        <Route path="/offre/:offer_id/v3/creation/individuelle/informations">
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <div>Previous page</div>
         </Route>
         <Notification />
@@ -109,10 +135,14 @@ describe('screens:StocksEvent', () => {
   it('should render stock event', async () => {
     props.offer = {
       ...(offer as IOfferIndividual),
+      lastProviderName: 'Ciné Office',
       isDigital: false,
     }
 
     renderStockEventScreen({ props, storeOverride, contextValue })
+    expect(
+      screen.getByText('Offre synchronisée avec Ciné Office')
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { name: /Stock & Prix/ })
     ).toBeInTheDocument()
@@ -149,11 +179,41 @@ describe('screens:StocksEvent', () => {
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
-    expect(screen.getByText('Save draft page')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Stock & Prix' })
+    ).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })
 
   it('should submit stock form when click on "Étape suivante""', async () => {
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+    })
+    const stock = {
+      id: 'STOCK_ID',
+      quantity: 10,
+      price: 10.01,
+      remainingQuantity: 6,
+      bookingsQuantity: 4,
+      isEventDeletable: true,
+      beginningDatetime: '2023-03-10T00:00:00.0200',
+    }
+    props.offer = {
+      ...(offer as IOfferIndividual),
+      stocks: [stock as IOfferIndividualStock],
+    }
+    renderStockEventScreen({ props, storeOverride, contextValue })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+    expect(api.upsertStocks).not.toHaveBeenCalled()
+    expect(
+      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Next page')).toBeInTheDocument()
+  })
+  it('should not submit stock if nothing has changed when click on "Étape suivante" and redirect to summary', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stockIds: [{ id: 'CREATED_STOCK_ID' }],
     })
@@ -172,7 +232,7 @@ describe('screens:StocksEvent', () => {
       stocks: [
         {
           beginningDatetime: '2020-12-15T11:00:00Z',
-          bookingLimitDatetime: '2020-12-15T00:00:00Z',
+          bookingLimitDatetime: '2020-12-15T11:00:00Z',
           price: 20,
           quantity: null,
         },

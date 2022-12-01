@@ -3,6 +3,7 @@ import { isAfter } from 'date-fns'
 import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
+import formRowStyles from 'components/StockEventFormRow/SharedStockEventFormRow.module.scss'
 import { IconEuroGrey } from 'icons'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
 
@@ -23,6 +24,7 @@ const StockEventForm = ({
   const { values, setFieldValue, setTouched } = useFormikContext<{
     stocks: IStockEventFormValues[]
   }>()
+
   const [showCurrencyIcon, showShowCurrencyIcon] = useState<boolean>(
     values.stocks[stockIndex].price.length > 0
   )
@@ -33,17 +35,17 @@ const StockEventForm = ({
   const onChangeBeginningDate = (_name: string, date: Date | null) => {
     const stockBookingLimitDatetime =
       values.stocks[stockIndex].bookingLimitDatetime
-    if (
-      date &&
-      (stockBookingLimitDatetime === null ||
-        isAfter(date, stockBookingLimitDatetime))
-    ) {
+    if (stockBookingLimitDatetime === null) {
+      return
+    }
+    if (date && isAfter(stockBookingLimitDatetime, date)) {
       setTouched({
         [`stocks[${stockIndex}]bookingLimitDatetime`]: true,
       })
       setFieldValue(`stocks[${stockIndex}]bookingLimitDatetime`, date)
     }
   }
+  const beginningDate = values.stocks[stockIndex].beginningDate
 
   return (
     <>
@@ -51,7 +53,9 @@ const StockEventForm = ({
         smallLabel
         name={`stocks[${stockIndex}]beginningDate`}
         label="Date"
+        isLabelHidden={stockIndex !== 0}
         className={styles['field-layout-align-self']}
+        classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
         minDateTime={today}
         openingDateTime={today}
@@ -61,21 +65,25 @@ const StockEventForm = ({
       <TimePicker
         smallLabel
         label="Horaire"
+        isLabelHidden={stockIndex !== 0}
         className={cn(
           styles['input-beginning-time'],
           styles['field-layout-align-self']
         )}
-        name={`stocks[${stockIndex}]beginningTime`}
+        classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
+        name={`stocks[${stockIndex}]beginningTime`}
         disabled={readOnlyFields.includes('beginningTime')}
       />
       <TextInput
         smallLabel
         name={`stocks[${stockIndex}]price`}
         label="Prix"
+        isLabelHidden={stockIndex !== 0}
         className={cn(styles['input-price'], styles['field-layout-align-self'])}
-        placeholder="Ex: 20€"
+        classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
+        placeholder="Ex: 20€"
         disabled={readOnlyFields.includes('price')}
         rightIcon={() => (showCurrencyIcon ? <IconEuroGrey /> : null)}
       />
@@ -83,12 +91,15 @@ const StockEventForm = ({
         smallLabel
         name={`stocks[${stockIndex}]bookingLimitDatetime`}
         label="Date limite de réservation"
+        isLabelHidden={stockIndex !== 0}
         className={cn(
           styles['input-bookingLimitDatetime'],
           styles['field-layout-align-self']
         )}
+        classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
         minDateTime={today}
+        maxDateTime={beginningDate ? beginningDate : undefined}
         openingDateTime={today}
         disabled={readOnlyFields.includes('bookingLimitDatetime')}
       />
@@ -96,11 +107,13 @@ const StockEventForm = ({
         smallLabel
         name={`stocks[${stockIndex}]quantity`}
         label="Quantité"
+        isLabelHidden={stockIndex !== 0}
         placeholder="Illimité"
         className={cn(
           styles['input-quantity'],
           styles['field-layout-align-self']
         )}
+        classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('quantity')}
       />

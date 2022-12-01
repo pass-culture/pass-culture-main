@@ -462,7 +462,9 @@ def create_collective_offer_public(
 
 
 def edit_collective_offer_public(
-    offerer_id: int, new_values: dict, offer: educational_models.CollectiveOffer
+    offerer_id: int,
+    new_values: dict,
+    offer: educational_models.CollectiveOffer,
 ) -> educational_models.CollectiveOffer:
     from pcapi.core.educational.api.stock import _update_educational_booking_cancellation_limit_date
     from pcapi.core.educational.api.stock import _update_educational_booking_educational_year_id

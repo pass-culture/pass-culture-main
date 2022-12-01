@@ -95,6 +95,14 @@ class Subcategory:
     def category_id(self) -> str:
         return self.category.id
 
+    @property
+    def is_offline_only(self) -> bool:
+        return self.online_offline_platform == OnlineOfflinePlatformChoices.OFFLINE.value
+
+    @property
+    def is_online_only(self) -> bool:
+        return self.online_offline_platform == OnlineOfflinePlatformChoices.ONLINE.value
+
 
 # region Subcategories declarations
 # region FILM
@@ -1515,9 +1523,11 @@ WITHDRAWABLE_SUBCATEGORIES = {
     subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.can_be_withdrawable
 }
 
+
 assert set(subcategory.id for subcategory in ALL_SUBCATEGORIES) == set(
     subcategory.id for subcategory in locals().values() if isinstance(subcategory, Subcategory)
 )
+
 
 SubcategoryIdEnumv2 = Enum("SubcategoryIdEnumv2", {subcategory.id: subcategory.id for subcategory in ALL_SUBCATEGORIES})  # type: ignore [misc]
 SearchGroupNameEnumv2 = Enum(  # type: ignore [misc]

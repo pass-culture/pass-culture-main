@@ -1,5 +1,3 @@
-import datetime
-
 import pytest
 
 from pcapi.connectors.serialization import boost_serializers
@@ -7,7 +5,7 @@ from pcapi.core.external_bookings.boost.client import BoostClientAPI
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
 
-from . import fixtures
+from tests.local_providers.cinema_providers.boost import fixtures
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -30,36 +28,28 @@ class GetVenueMoviesTest:
 
         assert movies == [
             external_bookings_models.Movie(
-                id="52",
-                title="#JESUISLA",
-                duration=1,
+                id="207",
+                title="BLACK PANTHER : WAKANDA FOREVER",
+                duration=162,
                 description="",
-                posterpath="http://example.com/images/147956.jpg",
-                visa="147956",
+                posterpath="http://example.com/images/158026.jpg",
+                visa="158026",
             ),
             external_bookings_models.Movie(
-                id="62",
-                title="10 JOURS SANS MAMAN",
-                duration=1,
+                id="210",
+                title="CHARLOTTE",
+                duration=92,
                 description="",
-                posterpath="http://example.com/images/151172.jpg",
-                visa="151172",
+                posterpath="http://example.com/images/149489.jpg",
+                visa="149489",
             ),
             external_bookings_models.Movie(
-                id="134",
-                title="100 % LOUP",
-                duration=1,
+                id="147",
+                title="CASSE NOISETTE ROH 2021",
+                duration=100,
                 description="",
-                posterpath="http://example.com/images/2020002189.jpg",
-                visa="2020002189",
-            ),
-            external_bookings_models.Movie(
-                id="40",
-                title="1917",
-                duration=1,
-                description="",
-                posterpath="http://example.com/images/152284.jpg",
-                visa="152284",
+                posterpath="http://example.com/images/2021001414.jpg",
+                visa="2021001414",
             ),
         ]
 
@@ -79,88 +69,9 @@ class GetShowtimesTest:
         boost = BoostClientAPI(cinema_str_id)
         showtimes = boost.get_showtimes(per_page=2)
         assert showtimes == [
-            boost_serializers.ShowTime3(
-                id=34709,
-                showDate=datetime.datetime(2022, 10, 17, 7, 0),
-                showEndDate=datetime.datetime(2022, 10, 17, 10, 10),
-                soldOut=False,
-                authorizedAccess=False,
-                numberSeatsRemaining=136,
-                film=boost_serializers.Film2(
-                    id=189,
-                    titleCnc="Avatar : La Voie De L'eau",
-                    numVisa=123456,
-                    posterUrl="http://example.com/images/Tmpd188acaa73008cd5bb4f182a82cd3f36.jpg",
-                    thumbUrl="http://example.com/img/thumb/film/Tmpd188acaa73008cd5bb4f182a82cd3f36.jpg",
-                    idFilmAllocine=178014,
-                ),
-                format={"id": 2, "title": "3D"},
-                version={"id": 2, "title": "Film Etranger en Langue Etrangère", "code": "VO"},
-                screen={
-                    "id": 1,
-                    "auditoriumNumber": 1,
-                    "name": "SALLE CINEMAX",
-                    "capacity": 136,
-                    "seatingAllowed": False,
-                },
-            ),
-            boost_serializers.ShowTime3(
-                id=34772,
-                showDate=datetime.datetime(2022, 10, 17, 7, 10),
-                showEndDate=datetime.datetime(2022, 10, 17, 9, 1),
-                soldOut=False,
-                authorizedAccess=False,
-                numberSeatsRemaining=136,
-                film=boost_serializers.Film2(
-                    id=190,
-                    titleCnc="UNE BELLE COURSE",
-                    numVisa=153041,
-                    posterUrl="http://example.com/images/153041.jpg",
-                    thumbUrl="http://example.com/img/thumb/film/153041.jpg",
-                    idFilmAllocine=292290,
-                ),
-                format={"id": 1, "title": "2D"},
-                version={"id": 1, "title": "Film Français", "code": "VF"},
-                screen={"id": 3, "auditoriumNumber": 3, "name": "SALLE 03", "capacity": 136, "seatingAllowed": True},
-            ),
-            boost_serializers.ShowTime3(
-                id=34877,
-                showDate=datetime.datetime(2022, 10, 17, 7, 30),
-                showEndDate=datetime.datetime(2022, 10, 17, 9, 26),
-                soldOut=False,
-                authorizedAccess=False,
-                numberSeatsRemaining=177,
-                film=boost_serializers.Film2(
-                    id=192,
-                    titleCnc="JACK MIMOUN ET LES SECRETS DE VAL VERDE",
-                    numVisa=155104,
-                    posterUrl="http://example.com/images/155104.jpg",
-                    thumbUrl="http://example.com/img/thumb/film/155104.jpg",
-                    idFilmAllocine=271293,
-                ),
-                format={"id": 1, "title": "2D"},
-                version={"id": 1, "title": "Film Français", "code": "VF"},
-                screen={"id": 5, "auditoriumNumber": 5, "name": "SALLE 05", "capacity": 177, "seatingAllowed": True},
-            ),
-            boost_serializers.ShowTime3(
-                id=34926,
-                showDate=datetime.datetime(2022, 10, 17, 7, 40),
-                showEndDate=datetime.datetime(2022, 10, 17, 9, 20),
-                soldOut=False,
-                authorizedAccess=False,
-                numberSeatsRemaining=174,
-                film=boost_serializers.Film2(
-                    id=193,
-                    titleCnc="LE NOUVEAU JOUET",
-                    numVisa=155775,
-                    posterUrl="http://example.com/images/155775.jpg",
-                    thumbUrl="http://example.com/img/thumb/film/155775.jpg",
-                    idFilmAllocine=286890,
-                ),
-                format={"id": 1, "title": "2D"},
-                version={"id": 1, "title": "Film Français", "code": "VF"},
-                screen={"id": 6, "auditoriumNumber": 6, "name": "SALLE 06", "capacity": 174, "seatingAllowed": True},
-            ),
+            boost_serializers.ShowTime3(id=36683),
+            boost_serializers.ShowTime3(id=36848),
+            boost_serializers.ShowTime3(id=36932),
         ]
 
 
@@ -170,13 +81,13 @@ class GetShowtimeRemainingSeatsTest:
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
             "https://cinema-0.example.com/api/showtimes/35278",
-            json=fixtures.ShowtimeDetailsEndpointResponse.DATA,
+            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36683_DATA,
         )
         boost = BoostClientAPI(cinema_str_id)
 
         nb_remaining_online_seats = boost.get_showtime_remaining_online_seats(35278)
 
-        assert nb_remaining_online_seats == 122
+        assert nb_remaining_online_seats == 96
 
 
 class BookTicketTest:
@@ -184,7 +95,8 @@ class BookTicketTest:
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/35278", json=fixtures.ShowtimeDetailsEndpointResponse.DATA
+            "https://cinema-0.example.com/api/showtimes/36683",
+            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36683_DATA,
         )
         requests_mock.post(
             "https://cinema-0.example.com/api/sale/complete",
@@ -193,10 +105,10 @@ class BookTicketTest:
         )
 
         boost = BoostClientAPI(cinema_str_id)
-        tickets = boost.book_ticket(show_id=35278, quantity=2)
+        tickets = boost.book_ticket(show_id=36683, quantity=2)
 
         assert len(tickets) == 2
         assert tickets == [
-            external_bookings_models.Ticket(barcode="PCU-000001-7171980", seat_number=None),
-            external_bookings_models.Ticket(barcode="PCU-000002-7171981", seat_number=None),
+            external_bookings_models.Ticket(barcode="90474", seat_number=None),
+            external_bookings_models.Ticket(barcode="90474", seat_number=None),
         ]

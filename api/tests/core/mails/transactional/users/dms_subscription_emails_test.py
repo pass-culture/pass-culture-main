@@ -33,8 +33,6 @@ class PreSubscriptionDmsErrorEmailSendinblueTest:
             == TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value.__dict__
         )
         assert mails_testing.outbox[0].sent_data["params"] == {
-            "POSTAL_CODE": postal_code,
-            "ID_CARD_NUMBER": id_card_number,
             "DMS_ERRORS": [
                 {"name": "ton code postal", "value": postal_code},
                 {"name": "ton numéro de pièce d'identité", "value": id_card_number},

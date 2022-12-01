@@ -404,6 +404,7 @@ def _fill_in_offerer(
     offerer.siren = offerer_informations.siren
     offerer.generate_validation_token()
     offerer.validationStatus = models.ValidationStatus.NEW
+    offerer.dateCreated = datetime.utcnow()
 
 
 def _auto_tag_new_offerer(offerer: offerers_models.Offerer, siren_info: sirene.SirenInfo) -> None:
@@ -540,11 +541,7 @@ def validate_offerer_attachment_by_token(token: str) -> None:
     _validate_offerer_attachment(user_offerer, None)
 
 
-def validate_offerer_attachment_by_id(user_offerer_id: int, author_user: users_models.User) -> None:
-    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
-    if user_offerer is None:
-        raise exceptions.UserOffererNotFoundException()
-
+def validate_offerer_attachment(user_offerer: offerers_models.UserOfferer, author_user: users_models.User) -> None:
     if user_offerer.isValidated:
         raise exceptions.UserOffererAlreadyValidatedException()
 
@@ -552,12 +549,8 @@ def validate_offerer_attachment_by_id(user_offerer_id: int, author_user: users_m
 
 
 def set_offerer_attachment_pending(
-    user_offerer_id: int, author_user: users_models.User, comment: str | None = None
+    user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str | None = None
 ) -> None:
-    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
-    if user_offerer is None:
-        raise exceptions.UserOffererNotFoundException()
-
     user_offerer.validationStatus = models.ValidationStatus.PENDING
     action = history_api.log_action(
         history_models.ActionType.USER_OFFERER_PENDING,
@@ -570,11 +563,9 @@ def set_offerer_attachment_pending(
     repository.save(user_offerer, action)
 
 
-def reject_offerer_attachment(user_offerer_id: int, author_user: users_models.User, comment: str | None = None) -> None:
-    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
-    if user_offerer is None:
-        raise exceptions.UserOffererNotFoundException()
-
+def reject_offerer_attachment(
+    user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str | None = None
+) -> None:
     db.session.add(
         history_api.log_action(
             history_models.ActionType.USER_OFFERER_REJECTED,
@@ -592,8 +583,7 @@ def reject_offerer_attachment(user_offerer_id: int, author_user: users_models.Us
             extra={"offerer": user_offerer.offerer.id},
         )
 
-    models.UserOfferer.query.filter_by(id=user_offerer_id).delete()
-
+    db.session.delete(user_offerer)
     db.session.commit()
 
 
@@ -703,11 +693,9 @@ def add_comment_to_offerer(offerer: offerers_models.Offerer, author_user: users_
     history_api.log_action(history_models.ActionType.COMMENT, author_user, offerer=offerer, comment=comment)
 
 
-def add_comment_to_offerer_attachment(user_offerer_id: int, author_user: users_models.User, comment: str) -> None:
-    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
-    if user_offerer is None:
-        raise exceptions.UserOffererNotFoundException()
-
+def add_comment_to_offerer_attachment(
+    user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str
+) -> None:
     history_api.log_action(
         history_models.ActionType.COMMENT,
         author_user,
@@ -1304,8 +1292,8 @@ def get_venue_offers_stats(venue_id: int) -> sa.engine.Row:
     return db.session.execute(offers_stats_query).one_or_none()
 
 
-def get_offerers_stats() -> dict[offerers_models.ValidationStatus, int]:
-    stats = (
+def count_offerers_by_validation_status() -> dict[str, int]:
+    stats = dict(
         offerers_models.Offerer.query.with_entities(
             offerers_models.Offerer.validationStatus,
             sa.func.count(offerers_models.Offerer.validationStatus).label("count"),
@@ -1314,12 +1302,14 @@ def get_offerers_stats() -> dict[offerers_models.ValidationStatus, int]:
         .all()
     )
 
-    return dict(stats)
+    # Ensure that the result includes every status, even if no offerer has this status
+    return {status.name: stats.get(status, 0) for status in offerers_models.ValidationStatus}
 
 
-def _filter_on_validation_status(
+def _filter_on_validation_status_legacy(
     query: sa.orm.Query, filter_dict: dict, cls: typing.Type[offerers_models.ValidationStatusMixin]
 ) -> sa.orm.Query:
+    # This function becomes deprecated when backoffice v2 is stopped
     status_list = filter_dict.get("status")
     if status_list:
         statuses = []
@@ -1357,7 +1347,7 @@ def list_offerers_to_be_validated_legacy(
 
     filter_dict = {f["field"]: f["value"] for f in filter_}
 
-    query = _filter_on_validation_status(query, filter_dict, offerers_models.Offerer)
+    query = _filter_on_validation_status_legacy(query, filter_dict, offerers_models.Offerer)
 
     tags = filter_dict.get("tags")
     if tags:
@@ -1387,7 +1377,7 @@ def list_offerers_to_be_validated_legacy(
             min_datetime = datetime.combine(date.fromisoformat(from_date), datetime.min.time())
         except ValueError:
             raise ApiErrors({"filter": "Le format de date est invalide"})
-        query = query.filter(offerers_models.Offerer.requestDate >= min_datetime)  # type: ignore [operator]
+        query = query.filter(offerers_models.Offerer.dateCreated >= min_datetime)
 
     to_date = filter_dict.get("toDate")
     if to_date:
@@ -1395,7 +1385,53 @@ def list_offerers_to_be_validated_legacy(
             max_datetime = datetime.combine(date.fromisoformat(to_date), datetime.max.time())
         except ValueError:
             raise ApiErrors({"filter": "Le format de date est invalide"})
-        query = query.filter(offerers_models.Offerer.requestDate <= max_datetime)  # type: ignore [operator]
+        query = query.filter(offerers_models.Offerer.dateCreated <= max_datetime)
+
+    return query
+
+
+def _apply_query_filters(
+    query: sa.orm.Query,
+    tags: list[offerers_models.OffererTag] | None,
+    status: list[offerers_models.ValidationStatus] | None,
+    from_date: datetime | None,
+    to_date: datetime | None,
+    cls: typing.Type[offerers_models.Offerer | offerers_models.UserOfferer],
+    offerer_id_column: sa.orm.InstrumentedAttribute,
+) -> sa.orm.Query:
+    if status:
+        query = query.filter(cls.validationStatus.in_(status))  # type: ignore [union-attr]
+    else:
+        query = query.filter(cls.isWaitingForValidation)
+
+    if tags:
+        tagged_offerers = (
+            sa.select(offerers_models.Offerer.id, sa.func.array_agg(offerers_models.OffererTag.id).label("tags"))
+            .join(
+                offerers_models.OffererTagMapping,
+                offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
+            )
+            .join(
+                offerers_models.OffererTag,
+                offerers_models.OffererTag.id == offerers_models.OffererTagMapping.tagId,
+            )
+            .group_by(
+                offerers_models.Offerer.id,
+            )
+            .cte()
+        )
+
+        query = query.join(tagged_offerers, tagged_offerers.c.id == offerer_id_column).filter(
+            sa.and_(*(tagged_offerers.c.tags.any(tag.id) for tag in tags))
+        )
+
+    if from_date:
+        min_datetime = datetime.combine(from_date, datetime.min.time())
+        query = query.filter(cls.dateCreated >= min_datetime)
+
+    if to_date:
+        max_datetime = datetime.combine(to_date, datetime.max.time())
+        query = query.filter(cls.dateCreated <= max_datetime)
 
     return query
 
@@ -1424,41 +1460,9 @@ def list_offerers_to_be_validated(
             name = clean_accents(name)
             query = query.filter(sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{name}%"))
 
-    if status:
-        query = query.filter(offerers_models.Offerer.validationStatus.in_(status))
-    else:
-        query = query.filter(offerers_models.Offerer.isWaitingForValidation)
-
-    if tags:
-        tagged_offerers = (
-            sa.select(offerers_models.Offerer.id, sa.func.array_agg(offerers_models.OffererTag.id).label("tags"))
-            .join(
-                offerers_models.OffererTagMapping,
-                offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
-            )
-            .join(
-                offerers_models.OffererTag,
-                offerers_models.OffererTag.id == offerers_models.OffererTagMapping.tagId,
-            )
-            .group_by(
-                offerers_models.Offerer.id,
-            )
-            .cte()
-        )
-
-        query = query.join(tagged_offerers, tagged_offerers.c.id == offerers_models.Offerer.id).filter(
-            sa.and_(*(tagged_offerers.c.tags.any(tag.id) for tag in tags))
-        )
-
-    if from_date:
-        min_datetime = datetime.combine(from_date, datetime.min.time())
-        query = query.filter(offerers_models.Offerer.requestDate >= min_datetime)  # type: ignore [operator]
-
-    if to_date:
-        max_datetime = datetime.combine(to_date, datetime.max.time())
-        query = query.filter(offerers_models.Offerer.requestDate <= max_datetime)  # type: ignore [operator]
-
-    return query
+    return _apply_query_filters(
+        query, tags, status, from_date, to_date, offerers_models.Offerer, offerers_models.Offerer.id
+    )
 
 
 def is_top_actor(offerer: offerers_models.Offerer) -> bool:
@@ -1468,7 +1472,8 @@ def is_top_actor(offerer: offerers_models.Offerer) -> bool:
     return False
 
 
-def list_users_offerers_to_be_validated(filter_: list[dict[str, typing.Any]]) -> sa.orm.Query:
+def list_users_offerers_to_be_validated_legacy(filter_: list[dict[str, typing.Any]]) -> sa.orm.Query:
+    # This function becomes deprecated when backoffice v2 is stopped
     query = offerers_models.UserOfferer.query.options(
         sa.orm.joinedload(offerers_models.UserOfferer.user),
         sa.orm.joinedload(offerers_models.UserOfferer.offerer)
@@ -1480,9 +1485,31 @@ def list_users_offerers_to_be_validated(filter_: list[dict[str, typing.Any]]) ->
     )
 
     filter_dict = {f["field"]: f["value"] for f in filter_}
-    query = _filter_on_validation_status(query, filter_dict, offerers_models.UserOfferer)
+    query = _filter_on_validation_status_legacy(query, filter_dict, offerers_models.UserOfferer)
 
     return query
+
+
+def list_users_offerers_to_be_validated(
+    tags: list[offerers_models.OffererTag] | None = None,
+    status: list[offerers_models.ValidationStatus] | None = None,
+    from_date: datetime | None = None,
+    to_date: datetime | None = None,
+    **_: typing.Any,
+) -> sa.orm.Query:
+    query = offerers_models.UserOfferer.query.options(
+        sa.orm.joinedload(offerers_models.UserOfferer.user),
+        sa.orm.joinedload(offerers_models.UserOfferer.offerer)
+        .joinedload(offerers_models.Offerer.action_history)
+        .joinedload(history_models.ActionHistory.authorUser),
+        sa.orm.joinedload(offerers_models.UserOfferer.offerer)
+        .joinedload(offerers_models.Offerer.UserOfferers)
+        .joinedload(offerers_models.UserOfferer.user),
+    )
+
+    return _apply_query_filters(
+        query, tags, status, from_date, to_date, offerers_models.UserOfferer, offerers_models.UserOfferer.offererId
+    )
 
 
 def get_metabase_stats_iframe_url(

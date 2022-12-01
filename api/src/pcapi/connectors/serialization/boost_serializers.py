@@ -24,13 +24,14 @@ class Film2(BaseModel):
     numVisa: int
     posterUrl: str
     thumbUrl: str | None
+    duration: int  # in minutes
     idFilmAllocine: int
 
     def to_generic_movie(self) -> external_bookings_models.Movie:
         return external_bookings_models.Movie(
             id=str(self.id),
             title=self.titleCnc,
-            duration=1,  # FIXME
+            duration=self.duration,
             description="",  # FIXME
             posterpath=self.posterUrl,
             visa=str(self.numVisa),

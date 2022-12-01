@@ -79,7 +79,9 @@ const VenueFormScreen = ({
       : api.editVenue(
           /* istanbul ignore next: there will always be a venue id on update screen */
           venue?.id || '',
-          serializeEditVenueBodyModel(value, { hideSiret: !!venue?.comment })
+          serializeEditVenueBodyModel(value, {
+            hideSiret: venue?.siret.length === 0,
+          })
         )
 
     logEvent?.(Events.CLICKED_SAVE_VENUE, {

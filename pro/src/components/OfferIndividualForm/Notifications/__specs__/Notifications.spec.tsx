@@ -17,9 +17,11 @@ import validationSchema from '../validationSchema'
 const renderNotifications = ({
   initialValues,
   onSubmit = jest.fn(),
+  venueBookingEmail,
 }: {
   initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
+  venueBookingEmail?: string | null
 }) => {
   const store = {
     user: {
@@ -37,7 +39,7 @@ const renderNotifications = ({
         validationSchema={yup.object().shape(validationSchema)}
       >
         <Form>
-          <Notifications />
+          <Notifications venueBookingEmail={venueBookingEmail} />
           <SubmitButton className="primary-button" isLoading={false}>
             Submit
           </SubmitButton>
@@ -75,7 +77,7 @@ describe('OfferIndividual section: Notifications', () => {
     )
   })
 
-  it('should display bookingEmail field with default value depending of receiveNotificationEmails.', async () => {
+  it('should display bookingEmail field with default user mail value depending of receiveNotificationEmails.', async () => {
     await renderNotifications({
       initialValues,
       onSubmit,
@@ -95,6 +97,55 @@ describe('OfferIndividual section: Notifications', () => {
       await screen.findByText('E-mail auquel envoyer les notifications')
     ).toBeInTheDocument()
     expect(screen.getByDisplayValue('email@example.com')).toBeInTheDocument()
+  })
+
+  it('should display bookingEmail field with venueBookingMail default value depending of receiveNotificationEmails.', async () => {
+    await renderNotifications({
+      initialValues,
+      onSubmit,
+      venueBookingEmail: 'venue@exemple.com',
+    })
+    expect(await screen.findByText('Notifications')).toBeInTheDocument()
+    expect(
+      await screen.findByText('Être notifié par e-mail des réservations')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('E-mail auquel envoyer les notifications')
+    ).not.toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByText('Être notifié par e-mail des réservations')
+    )
+    expect(
+      await screen.findByText('E-mail auquel envoyer les notifications')
+    ).toBeInTheDocument()
+    expect(screen.getByDisplayValue('venue@exemple.com')).toBeInTheDocument()
+  })
+
+  it('should display bookingEmail field with value already set depending of receiveNotificationEmails.', async () => {
+    initialValues.bookingEmail = 'customMail@exemple.com'
+    await renderNotifications({
+      initialValues,
+      onSubmit,
+      venueBookingEmail: 'venue@exemple.com',
+    })
+    expect(await screen.findByText('Notifications')).toBeInTheDocument()
+    expect(
+      await screen.findByText('Être notifié par e-mail des réservations')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('E-mail auquel envoyer les notifications')
+    ).not.toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByText('Être notifié par e-mail des réservations')
+    )
+    expect(
+      await screen.findByText('E-mail auquel envoyer les notifications')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByDisplayValue('customMail@exemple.com')
+    ).toBeInTheDocument()
   })
 
   it('should display errors when bookingEmail is empty or wrong email', async () => {
