@@ -36,7 +36,16 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         pass
 
     def cancel_booking(self, barcodes: list[str]) -> None:
-        pass
+        barcodes = list(set(barcodes))
+        sale_cancel_items = []
+        for barcode in barcodes:
+            sale_cancel_item = boost_serializers.SaleCancelItem(
+                code=constants.BOOST_SALE_PREFIX + barcode, refundType=constants.BOOST_PASS_CULTURE_PRICING_CODE
+            )
+            sale_cancel_items.append(sale_cancel_item)
+
+        sale_cancel = boost_serializers.SaleCancel(sales=sale_cancel_items)
+        boost.put_resource(self.cinema_str_id, boost.ResourceBoost.CANCEL_ORDER_SALE, sale_cancel)
 
     def book_ticket(self, show_id: int, quantity: int) -> list[external_bookings_models.Ticket]:
         showtime = self.get_showtime(show_id)

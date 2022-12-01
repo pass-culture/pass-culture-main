@@ -27,6 +27,7 @@ class ResourceBoost(enum.Enum):
     SHOWTIMES = "api/showtimes"
     SHOWTIME = "api/showtimes/{id}"
     COMPLETE_SALE = "api/sale/complete"
+    CANCEL_ORDER_SALE = "api/sale/orderCancel"
 
 
 LOGIN_ENDPOINT = "api/vendors/login"
@@ -173,6 +174,6 @@ def _extract_message_from_response(response: requests.Response) -> str:
 
 
 def _filter_token(error_message: str, token: str | None) -> str:
-    if isinstance(token, str) and token in error_message:
+    if isinstance(token, str) and error_message and token in error_message:
         error_message = error_message.replace(token, "")
     return error_message
