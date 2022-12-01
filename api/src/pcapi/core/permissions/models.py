@@ -111,9 +111,10 @@ class Roles(enum.Enum):
 role_backoffice_profile_table = sa.Table(
     "role_backoffice_profile",
     Base.metadata,
-    sa.Column("roleId", sa.ForeignKey("role.id", ondelete="CASCADE"), nullable=False),
-    sa.Column("profileId", sa.ForeignKey("backoffice_user_profile.id", ondelete="CASCADE"), nullable=False),
-    sa.UniqueConstraint("roleId", "profileId"),
+    sa.Column("roleId", sa.ForeignKey("role.id", ondelete="CASCADE"), nullable=False, primary_key=True),
+    sa.Column(
+        "profileId", sa.ForeignKey("backoffice_user_profile.id", ondelete="CASCADE"), nullable=False, primary_key=True
+    ),
 )
 
 
