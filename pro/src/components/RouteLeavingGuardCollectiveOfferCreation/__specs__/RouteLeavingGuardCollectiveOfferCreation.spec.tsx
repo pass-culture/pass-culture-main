@@ -78,31 +78,6 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation', () => {
         screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
-
-    it('should not display confirmation modal when following duplication flow', async () => {
-      history.push('/offre/duplication/collectif/PU')
-      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
-
-      history.push('/offre/duplication/collectif/AE/stocks')
-      expect(
-        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-      ).not.toBeInTheDocument()
-
-      history.push('/offre/duplication/collectif/AE/visibilite')
-      expect(
-        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-      ).not.toBeInTheDocument()
-
-      history.push('/offre/duplication/collectif/AE/recapitulatif')
-      expect(
-        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-      ).not.toBeInTheDocument()
-
-      history.push('/offre/AE/collectif/confirmation')
-      expect(
-        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-      ).not.toBeInTheDocument()
-    })
   })
 
   describe('when leaving creation flow', () => {
@@ -154,46 +129,6 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation', () => {
       expect(
         screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
-    })
-
-    it('should display confirmation modal when leaving offer creation', () => {
-      history.push('/offre/duplication/collectif/PU')
-      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
-      history.push('/')
-
-      expect(
-        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-      ).toBeInTheDocument()
-    })
-
-    it('should display confirmation modal when leaving stock creation', () => {
-      history.push('/offre/duplication/collectif/AE/stocks')
-      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
-      history.push('/')
-
-      expect(
-        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-      ).toBeInTheDocument()
-    })
-
-    it('should display confirmation modal when leaving visibility creation', () => {
-      history.push('/offre/duplication/collectif/AE/visibilite')
-      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
-      history.push('/')
-
-      expect(
-        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-      ).toBeInTheDocument()
-    })
-
-    it('should display confirmation modal when leaving summary creation', () => {
-      history.push('/offre/duplication/collectif/AE/recapitulatif')
-      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
-      history.push('/')
-
-      expect(
-        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-      ).toBeInTheDocument()
     })
   })
 

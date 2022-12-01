@@ -16,13 +16,13 @@ const collectiveUrlPatterns: { [key: string]: RegExp } = {
   [STEP_OFFER]: /\/offre\/creation\/collectif/g,
   [STEP_OFFER_EDITION]: /\/offre\/collectif(\/vitrine)?\/[A-Z,0-9]+\/creation/g,
   [STEP_STOCKS]:
-    /\/offre(\/(((T-){0,1}[A-Z0-9]+)|duplication))\/collectif(\/[A-Z,0-9]+)?\/stocks/g,
+    /\/offre(\/((T-){0,1}[A-Z0-9]+))\/collectif(\/[A-Z,0-9]+)?\/stocks/g,
   [STEP_VISIBILITY]:
-    /\/offre(\/([A-Z0-9]+|duplication))\/collectif(\/[A-Z,0-9]+)?\/visibilite/g,
+    /\/offre(\/([A-Z0-9]+))\/collectif(\/[A-Z,0-9]+)?\/visibilite/g,
   [STEP_RECAP]:
-    /\/offre(\/(((T-){0,1}[A-Z0-9]+)|duplication))\/collectif(\/vitrine)?(\/[A-Z,0-9]+)?(\/creation)?\/recapitulatif/g,
+    /\/offre(\/((T-){0,1}[A-Z0-9]+))\/collectif(\/vitrine)?(\/[A-Z,0-9]+)?(\/creation)?\/recapitulatif/g,
   [STEP_CONFIRMATION]:
-    /\/offre\/(((T-){0,1}[A-Z0-9]+)|duplication)\/collectif(\/vitrine)?(\/[A-Z,0-9]+)?\/confirmation/g,
+    /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif(\/vitrine)?(\/[A-Z,0-9]+)?\/confirmation/g,
 }
 
 export interface RouteLeavingGuardCollectiveOfferCreationProps {
