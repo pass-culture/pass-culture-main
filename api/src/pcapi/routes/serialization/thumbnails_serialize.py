@@ -36,12 +36,10 @@ class CreateThumbnailBodyModel(BaseModel):
     def get_image_as_bytes(self, request: flask.Request) -> bytes:
         """
         Get the image from the POSTed data (request)
-        Only the max size is checked at this stage, and possibly the content type header
         """
         if "thumb" in request.files:
             blob = request.files["thumb"]
-            image_as_bytes = blob.read()
-            return validation.get_uploaded_image(image_as_bytes)
+            return blob.read()
 
         raise validation.exceptions.MissingImage()
 

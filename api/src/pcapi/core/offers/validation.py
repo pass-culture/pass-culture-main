@@ -209,10 +209,9 @@ def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: se
         raise api_errors
 
 
-def get_uploaded_image(image_as_bytes: bytes, max_size: int = MAX_THUMBNAIL_SIZE) -> bytes:
+def check_image_size(image_as_bytes: bytes, max_size: int = MAX_THUMBNAIL_SIZE) -> None:
     if len(image_as_bytes) > max_size:
         raise exceptions.FileSizeExceeded(max_size=max_size)
-    return image_as_bytes
 
 
 def check_image(
@@ -222,7 +221,9 @@ def check_image(
     min_height: int = MIN_THUMBNAIL_HEIGHT,
     max_width: int | None = None,
     max_height: int | None = None,
+    max_size: int = MAX_THUMBNAIL_SIZE,
 ) -> None:
+    check_image_size(image_as_bytes, max_size)
     try:
         image = Image.open(BytesIO(image_as_bytes))
     except UnidentifiedImageError:
