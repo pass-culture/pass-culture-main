@@ -148,32 +148,4 @@ describe('CollectiveOfferSummary', () => {
 
     expect(desactivateOffer).toBeInTheDocument()
   })
-<<<<<<< HEAD
-=======
-
-  it('should display activate offer when clicking on desactive offer', async () => {
-    offer = collectiveOfferTemplateFactory({
-      isTemplate: true,
-      isActive: true,
-    })
-    renderCollectiveOfferSummaryEdition(offer, categories)
-    const toggle = jest
-      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
-      .mockResolvedValue()
-
-    const activateOffer = screen.getByRole('button', {
-      name: 'Désactiver l’offre',
-    })
-
-    await userEvent.click(activateOffer)
-
-    expect(toggle).toHaveBeenCalledTimes(1)
-
-    const desactivateOffer = screen.getByRole('button', {
-      name: 'Activer l’offre',
-    })
-
-    expect(desactivateOffer).toBeInTheDocument()
-  })
->>>>>>> 71d0e3779c ((PC-18673)[PRO] feat: update wording onclick collective offers active status)
 })
