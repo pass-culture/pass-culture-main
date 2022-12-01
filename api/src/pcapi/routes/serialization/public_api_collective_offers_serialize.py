@@ -1,5 +1,3 @@
-import base64
-import binascii
 from datetime import datetime
 from datetime import timezone
 from typing import Any
@@ -12,7 +10,6 @@ from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.subscription.phone_validation.exceptions import InvalidPhoneNumber
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import collective_offers_serialize
@@ -447,19 +444,6 @@ class PostCollectiveOfferBodyModel(BaseModel):
             )
         return values
 
-    def get_image_as_bytes(self) -> bytes | None:
-        if not self.image_file:
-            return None
-        try:
-            return base64.b64decode(self.image_file.encode("utf-8"))
-        except binascii.Error:
-            raise ApiErrors(
-                errors={
-                    "imageFile": ["La valeur ne semble pas être du base 64 valide."],
-                },
-                status_code=400,
-            )
-
     class Config:
         alias_generator = to_camel
         extra = "forbid"
@@ -540,19 +524,6 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         if beginningDatetime is None:
             raise ValueError("La date de début de l'évènement ne peut pas être nulle.")
         return beginningDatetime
-
-    def get_image_as_bytes(self) -> bytes | None:
-        if not self.imageFile:
-            return None
-        try:
-            return base64.b64decode(self.imageFile.encode("utf-8"))
-        except binascii.Error:
-            raise ApiErrors(
-                errors={
-                    "imageFile": ["La valeur ne semble pas être du base 64 valide."],
-                },
-                status_code=400,
-            )
 
     class Config:
         alias_generator = to_camel
