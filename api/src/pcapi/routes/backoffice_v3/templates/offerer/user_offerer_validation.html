@@ -65,7 +65,7 @@
                 <tbody>
                     {% for user_offerer in rows.items %}
                         {% set offerer = user_offerer.offerer %}
-                        {% set owner = offerer.UserOfferers[0].user if offerer.UserOfferers else none %}
+                        {% set owner = offerer.first_user %}
                         <tr>
                             <td>
                                 <div class="dropdown">

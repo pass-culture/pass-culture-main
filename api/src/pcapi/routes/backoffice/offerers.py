@@ -391,13 +391,13 @@ def list_offerers_to_be_validated(
                     postalCode=offerer.postalCode,
                     city=offerer.city,
                     owner=(
-                        f"{offerer.UserOfferers[0].user.firstName} {offerer.UserOfferers[0].user.lastName}"
+                        f"{offerer.first_user.firstName} {offerer.first_user.lastName}"
                         if offerer.UserOfferers
                         else None
                     ),
-                    ownerId=offerer.UserOfferers[0].userId if offerer.UserOfferers else None,
-                    phoneNumber=(offerer.UserOfferers[0].user.phoneNumber if offerer.UserOfferers else None),
-                    email=(offerer.UserOfferers[0].user.email if offerer.UserOfferers else None),
+                    ownerId=offerer.first_user.id if offerer.UserOfferers else None,
+                    phoneNumber=(offerer.first_user.phoneNumber if offerer.UserOfferers else None),
+                    email=(offerer.first_user.email if offerer.UserOfferers else None),
                     lastComment=_get_serialized_offerer_last_comment(offerer),
                     isTopActor=offerers_api.is_top_actor(offerer),
                 )
@@ -484,10 +484,8 @@ def list_offerers_attachments_to_be_validated(
                     offererId=user_offerer.offerer.id,
                     offererName=user_offerer.offerer.name,
                     offererCreatedDate=format_into_utc_date(user_offerer.offerer.dateCreated),
-                    ownerId=user_offerer.offerer.UserOfferers[0].userId if user_offerer.offerer.UserOfferers else None,
-                    ownerEmail=(
-                        user_offerer.offerer.UserOfferers[0].user.email if user_offerer.offerer.UserOfferers else None
-                    ),
+                    ownerId=user_offerer.offerer.first_user.id if user_offerer.offerer.UserOfferers else None,
+                    ownerEmail=(user_offerer.offerer.first_user.email if user_offerer.offerer.UserOfferers else None),
                     siren=user_offerer.offerer.siren,
                 )
                 for user_offerer in paginated_users_offerers.items
