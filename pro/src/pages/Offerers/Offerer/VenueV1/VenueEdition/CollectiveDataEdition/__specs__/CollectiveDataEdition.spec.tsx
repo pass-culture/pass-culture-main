@@ -322,27 +322,6 @@ describe('CollectiveDataEdition', () => {
   })
 
   describe('intervention area', () => {
-    it('should select all departments when clicking on "Toute la France"', async () => {
-      renderCollectiveDataEdition()
-
-      await waitForLoader()
-
-      const interventionAreaField = screen.getByLabelText(/Zone de mobilité :/)
-      await userEvent.click(interventionAreaField)
-      await waitFor(() =>
-        expect(
-          screen.queryByText(/France métropolitaine et d’outre-mer/)
-        ).toBeInTheDocument()
-      )
-      const allDepartmentsOption = screen.getByLabelText(
-        /France métropolitaine et d’outre-mer/
-      )
-      await userEvent.click(allDepartmentsOption)
-      ;[...mainlandOptions, ...domtomOptions].forEach(option => {
-        expect(screen.getByLabelText(option.label)).toBeChecked()
-      })
-    })
-
     it('should select all mainland departments when clicking on "France métropolitaine"', async () => {
       renderCollectiveDataEdition()
 
@@ -360,7 +339,7 @@ describe('CollectiveDataEdition', () => {
       })
     })
 
-    it('should select only domtom options after selecting "Toute la France" then unselecting "France métropolitaine"', async () => {
+    it('should select only domtom options', async () => {
       renderCollectiveDataEdition()
 
       await waitForLoader()
@@ -368,22 +347,19 @@ describe('CollectiveDataEdition', () => {
       const interventionAreaField = screen.getByLabelText(/Zone de mobilité :/)
       await userEvent.click(interventionAreaField)
       await waitFor(() =>
-        expect(screen.queryByText('France métropolitaine')).toBeInTheDocument()
+        expect(
+          screen.getByLabelText(mainlandOptions[0].label)
+        ).not.toBeChecked()
       )
-
-      await userEvent.click(
-        screen.getByLabelText(/France métropolitaine et d’outre-mer/)
-      )
-      await userEvent.click(screen.getByLabelText('France métropolitaine'))
-      expect(
-        screen.queryByLabelText(mainlandOptions[0].label)
-      ).not.toBeChecked()
+      for await (const option of domtomOptions) {
+        await userEvent.click(screen.getByLabelText(option.label))
+      }
       domtomOptions.forEach(option =>
-        expect(screen.queryByLabelText(option.label)).toBeChecked()
+        expect(screen.getByLabelText(option.label)).toBeChecked()
       )
     })
 
-    it('should select (unselect) "Toute la France" and "France métropolitaine" when selecting (unselecting) all (one) departments', async () => {
+    it('should select (unselect) "France métropolitaine" when selecting (unselecting) all (one) departments', async () => {
       renderCollectiveDataEdition()
 
       await waitForLoader()
@@ -407,17 +383,6 @@ describe('CollectiveDataEdition', () => {
       for await (const option of domtomOptions) {
         await userEvent.click(screen.getByLabelText(option.label))
       }
-
-      const allFranceOption = screen.getByLabelText(
-        /France métropolitaine et d’outre-mer/
-      )
-      expect(allFranceOption).toBeChecked()
-
-      // unselect dom tom department
-      await userEvent.click(screen.getByLabelText(domtomOptions[0].label))
-      expect(
-        screen.getByLabelText(/France métropolitaine et d’outre-mer/)
-      ).not.toBeChecked()
 
       await userEvent.click(screen.getByLabelText(mainlandOptions[0].label))
       expect(screen.getByLabelText('France métropolitaine')).not.toBeChecked()
