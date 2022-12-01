@@ -137,3 +137,16 @@ def test_error_handling(status_code, expected_exception):
         )
         with pytest.raises(expected_exception):
             sirene.get_siret(siret)
+
+
+@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+def test_error_handling_on_non_json_response():
+    siret = "anything"
+    with requests_mock.Mocker() as mock:
+        mock.get(
+            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}",
+            status_code=200,
+            text="non-JSON content",
+        )
+        with pytest.raises(sirene.SireneApiException):
+            sirene.get_siret(siret)
