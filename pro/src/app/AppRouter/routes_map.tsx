@@ -276,7 +276,6 @@ const routes: IRoute[] = [
     exact: false,
     path: [
       '/offre/:offerId/collectif',
-      '/offre/duplication/collectif',
       '/offre/creation/collectif',
       '/offre/collectif/:offerId/creation',
       '/offre/collectif/vitrine/:offerId/creation',

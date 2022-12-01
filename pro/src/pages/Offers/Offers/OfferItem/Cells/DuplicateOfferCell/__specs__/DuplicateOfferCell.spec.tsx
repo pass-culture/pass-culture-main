@@ -5,11 +5,16 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
+import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { configureTestStore } from 'store/testUtils'
 
 import DuplicateOfferCell, {
   LOCAL_STORAGE_HAS_SEEN_MODAL_KEY,
 } from '../DuplicateOfferCell'
+
+jest.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
+  createOfferFromTemplate: jest.fn(),
+}))
 
 const renderDuplicateOfferCell = (isTemplate = true) => {
   const store = configureTestStore({
@@ -67,15 +72,17 @@ describe('DuplicateOfferCell', () => {
     const modalCancelButton = screen.getByRole('button', {
       name: 'Annuler',
     })
+    jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
+
     await userEvent.click(modalCancelButton)
 
+    expect(
+      createFromTemplateUtils.createOfferFromTemplate
+    ).not.toHaveBeenCalled()
     expect(
       screen.queryByText(
         'Créer une offre réservable pour un établissement scolaire'
       )
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByText('Parcours de duplication d’offre')
     ).not.toBeInTheDocument()
   })
 
@@ -96,10 +103,11 @@ describe('DuplicateOfferCell', () => {
     const modalConfirmButton = screen.getByRole('button', {
       name: 'Créer une offre réservable',
     })
+    jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
+
     await userEvent.click(modalConfirmButton)
-    expect(
-      screen.getByText('Parcours de duplication d’offre')
-    ).toBeInTheDocument()
+
+    expect(createFromTemplateUtils.createOfferFromTemplate).toHaveBeenCalled()
     expect(localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY)).toEqual(
       'true'
     )
@@ -116,10 +124,11 @@ describe('DuplicateOfferCell', () => {
     const modalConfirmButton = screen.getByRole('button', {
       name: 'Créer une offre réservable',
     })
+    jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
+
     await userEvent.click(modalConfirmButton)
-    expect(
-      screen.getByText('Parcours de duplication d’offre')
-    ).toBeInTheDocument()
+
+    expect(createFromTemplateUtils.createOfferFromTemplate).toHaveBeenCalled()
     expect(localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY)).toEqual(
       'false'
     )
@@ -132,10 +141,10 @@ describe('DuplicateOfferCell', () => {
       name: 'Créer une offre réservable pour un établissement',
     })
 
+    jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
+
     await userEvent.click(button)
 
-    expect(
-      screen.getByText('Parcours de duplication d’offre')
-    ).toBeInTheDocument()
+    expect(createFromTemplateUtils.createOfferFromTemplate).toHaveBeenCalled()
   })
 })

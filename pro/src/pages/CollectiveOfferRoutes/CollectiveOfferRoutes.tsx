@@ -3,7 +3,6 @@ import { useParams, Route, Switch } from 'react-router-dom'
 
 import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational'
 
-import CollectiveOfferCreationFromTemplateRoutes from './CollectiveOfferCreationFromTemplateRoutes/CollectiveOfferCreationFromTemplateRoutes'
 import CollectiveOfferCreationRoutes from './CollectiveOfferCreationRoutes'
 import CollectiveOfferEditionRoutes from './CollectiveOfferEditionRoutes'
 
@@ -19,16 +18,6 @@ const CollectiveOfferRoutes = (): JSX.Element => {
 
   return (
     <Switch>
-      <Route
-        path={[
-          '/offre/duplication/collectif/:offerId/stocks',
-          '/offre/duplication/collectif/:offerId/visibilite',
-          '/offre/duplication/collectif/:offerId/confirmation',
-          '/offre/duplication/:templateId',
-        ]}
-      >
-        <CollectiveOfferCreationFromTemplateRoutes />
-      </Route>
       <Route
         path={[
           '/offre/:offerId/collectif/edition',
