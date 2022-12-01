@@ -132,7 +132,7 @@ export const WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE = [
 ]
 
 export const SYNCHRONIZED_OFFER_EDITABLE_FIELDS = {
-  OTHER_PROVIDERS: [
+  ALL_PROVIDERS: [
     'audioDisabilityCompliant',
     'mentalDisabilityCompliant',
     'motorDisabilityCompliant',

@@ -6,7 +6,7 @@ import { isAllocineProvider } from 'core/Providers'
 import { removeTime } from 'utils/date'
 
 import {
-  STOCK_EVENT_ALLOCINE_NOT_EDITABLE_FIELDS,
+  STOCK_EVENT_ALLOCINE_READ_ONLY_FIELDS,
   STOCK_EVENT_FORM_DEFAULT_VALUES,
 } from '../constants'
 
@@ -29,7 +29,7 @@ const setFormReadOnlyFields = (
   ) {
     return Object.keys(STOCK_EVENT_FORM_DEFAULT_VALUES)
   } else if (isOfferSynchronizedAllocine) {
-    return STOCK_EVENT_ALLOCINE_NOT_EDITABLE_FIELDS
+    return STOCK_EVENT_ALLOCINE_READ_ONLY_FIELDS
   }
   return []
 }

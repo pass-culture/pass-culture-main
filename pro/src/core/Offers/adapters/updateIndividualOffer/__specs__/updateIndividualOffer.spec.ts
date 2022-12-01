@@ -10,7 +10,7 @@ import { AccessiblityEnum } from 'core/shared'
 import { updateIndividualOffer } from '..'
 
 describe('updateIndividualOffer', () => {
-  it('should sent patPatchOfferBodyModel to api', async () => {
+  it('should sent PatchOfferBodyModel to api', async () => {
     const formValues: IOfferIndividualFormValues = {
       name: 'Test offer',
       description: 'Description for testing offer',
@@ -90,7 +90,7 @@ describe('updateIndividualOffer', () => {
     expect(api.patchOffer).toHaveBeenCalledWith(offerId, expectedBody)
   })
 
-  it('should sent patPatchOfferBodyModel to api with provider editable params', async () => {
+  it('should sent PatchOfferBodyModel to api with provider editable params', async () => {
     const formValues: IOfferIndividualFormValues = {
       name: 'Test offer',
       description: 'Description for testing offer',
@@ -144,8 +144,8 @@ describe('updateIndividualOffer', () => {
       url: undefined,
       venueId: undefined,
       visualDisabilityCompliant: true,
-      withdrawalDelay: undefined,
-      withdrawalDetails: undefined,
+      withdrawalDelay: null,
+      withdrawalDetails: null,
       withdrawalType: undefined,
     }
 
