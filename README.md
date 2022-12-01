@@ -30,7 +30,7 @@ Le repo `main` contient les 5 projets suivants :
 
 - [Commitizen](https://commitizen-tools.github.io/commitizen/#installation) (CLI pour écrire des commits au bon format)
 
-  - `pip install -U commitizen`
+  - `pip install -U commitizen` ou `brew install commitizen`
 
 - Pour MacOS spécifiquement
   - CoreUtils: `brew install coreutils libxmlsec1`
@@ -113,16 +113,8 @@ sa BDD locale via `pc restart-backend`. Sinon:
 - `pc start-backend`
 - `pc sandbox -n industrial`
 
-## Déployer en staging, production et intégration
+## Déploiement
 
-Les instructions se trouvent sur notion (article Tag-MES-et-MEP).
-
-Pour connaître le numéro de version de l'api déployé :
-
-```
-https://backend.staging.passculture.team/health/api
-https://backend.passculture.app/health/api
-```
 
 ### Déployer dans l'environnement Testing
 
@@ -132,31 +124,14 @@ Pré-requis : installer [jq](https://stedolan.github.io/jq/download/)
 
 ### Déployer dans les environnements Staging, Production et Integration
 
-#### Processus de livraison
+Le déploiement se fait à partir d'actions github (notamment `release--build`, `release--deploy.yml`, `release--build.yml`, `release--build-hotfix.yml`) et est documenté sur Notion (article Tag-MES-et-MEP).
 
-1. Tagging de la version : [lire plus haut](#tagging-des-versions)
-2. Déploiement du tag en `staging`
-3. Tests de la version déployée en `staging`
-4. Déploiement du tag en `production`
-5. Déploiement du tag en `integration`
+Pour connaître le numéro de version de l'api déployé :
 
-Une fois le tag posé, on vérifie que les tests sont bien en succès, puis on lance le déploiement avec la commande
-
-```bash
-pc -e <staging|production|integration> -t {numéro_de_version} deploy
 ```
-
-Par exemple pour déployer la version 138.0.0 en staging :
-
-```bash
-pc -e staging -t 138.0.0 deploy
+https://backend.staging.passculture.team/health/api
+https://backend.passculture.app/health/api
 ```
-
-A la fin de l'opération, une fenêtre de votre navigateur s'ouvrira sur le pipeline en cours.
-
-> **ATTENTION**: Ne pas oublier les opérations de MES/MEP/MEI de l'itération correspondante listées dans [la page notion](https://www.notion.so/passcultureapp/Manip-faire-pour-les-MES-MEP-MEI-1e3c8bc00b224ca18852be1d717c52e5)
-
-Après avoir livré en production, ne pas oublier de livrer ensuite sur l' environnement **integration**.
 
 ## Administration
 
