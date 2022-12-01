@@ -48,7 +48,9 @@ const OfferEducationalActions = ({
             onClick={() => setIsOfferActive(!isOfferActive)}
             variant={ButtonVariant.TERNARY}
           >
-            {isOfferActive ? 'Désactiver l’offre' : 'Activer l’offre'}
+            {isOfferActive
+              ? 'Masquer la publication sur Adage'
+              : 'Publier sur Adage'}
           </Button>
         )}
 
