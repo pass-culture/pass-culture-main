@@ -51,7 +51,7 @@ export const imageConstraints = {
 
     return {
       id: 'height',
-      description: `La hauteur minimale de l’image : ${minHeight} px`,
+      description: `Hauteur minimale de l’image : ${minHeight} px`,
       asyncValidator: isOfPoorQuality,
     }
   },
