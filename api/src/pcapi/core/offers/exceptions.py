@@ -14,6 +14,11 @@ class ImageValidationError(Exception):
     pass
 
 
+class UnidentifiedImage(ImageValidationError):
+    def __init__(self) -> None:
+        super().__init__("Le fichier fourni n'est pas une image valide")
+
+
 class FileSizeExceeded(ImageValidationError):
     def __init__(self, max_size):  # type: ignore [no-untyped-def]
         super().__init__(f"Utilisez une image dont le poids est inférieur à {self._natural_size(max_size)}")
