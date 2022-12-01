@@ -398,7 +398,6 @@ class PostCollectiveOfferBodyModel(BaseModel):
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
     offer_venue: OfferVenueModel
-    intervention_area: list[str]
     isActive: bool
     image_file: str | None
     image_credit: str | None
@@ -409,7 +408,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     number_of_tickets: int
     educational_price_detail: str | None
     # link to educational institution
-    educational_institution_id: int | None
+    educational_institution_id: int
 
     _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets")
     _validate_total_price = price_validator("total_price")
