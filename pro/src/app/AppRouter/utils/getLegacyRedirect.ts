@@ -38,7 +38,7 @@ const getLegacyRedirect = ({
       .flat()
       .filter(
         ({ step, mode }) =>
-          mode !== OFFER_WIZARD_MODE.EDITION &&
+          mode !== OFFER_WIZARD_MODE.EDITION ||
           step !== OFFER_WIZARD_STEP_IDS.CONFIRMATION
       )
 
