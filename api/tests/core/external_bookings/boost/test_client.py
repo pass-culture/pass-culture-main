@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
+import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
 
@@ -112,3 +113,40 @@ class BookTicketTest:
             external_bookings_models.Ticket(barcode="90474", seat_number=None),
             external_bookings_models.Ticket(barcode="90474", seat_number=None),
         ]
+
+
+class CancelBookingTest:
+    def test_should_cancel_booking_with_success(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.put(
+            "https://cinema-0.example.com/api/sale/orderCancel",
+            json=fixtures.CANCEL_ORDER_SALE_90577,
+            headers={"Content-Type": "application/json"},
+        )
+        boost = BoostClientAPI(cinema_str_id)
+
+        try:
+            boost.cancel_booking(barcodes=["90577"])
+        except Exception:  # pylint: disable=broad-except
+            assert False, "Should not raise exception"
+
+    def test_when_boost_return_element_not_found(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.put(
+            "https://cinema-0.example.com/api/sale/orderCancel",
+            headers={"Content-Type": "application/json"},
+            json={"code": 404, "message": "The sale with ID: 55555 not found"},
+            reason="Not found",
+            status_code=404,
+        )
+        boost = BoostClientAPI(cinema_str_id)
+
+        with pytest.raises(boost_exceptions.BoostAPIException) as exception:
+            boost.cancel_booking(barcodes=["55555"])
+
+        assert (
+            str(exception.value)
+            == "Error on Boost API on PUT ResourceBoost.CANCEL_ORDER_SALE : Not found - The sale with ID: 55555 not found"
+        )

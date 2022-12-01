@@ -129,3 +129,12 @@ class SaleResponse3(BaseModel):
 class SaleConfirmationResponse(BaseModel):
     message: str
     data: SaleResponse3
+
+
+class SaleCancelItem(BaseModel):
+    code: str | None
+    refundType: str
+
+
+class SaleCancel(BaseModel):
+    sales: list[SaleCancelItem]

@@ -239,13 +239,22 @@ def _cancel_booking(
 
 
 def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
-    if (
-        FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active()
-        and stock.offer.subcategory.id == subcategories.SEANCE_CINE.id
-        and booking.isExternal
-    ):
-        barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
-        external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
+    if not booking.isExternal:
+        return None
+    venue_provider_name = external_bookings_api.get_active_cinema_venue_provider(
+        stock.offer.venueId
+    ).provider.localClass
+    match venue_provider_name:
+        case "CDSStocks":
+            if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_CDS_IMPLEMENTATION is inactive")
+        case "BoostStocks":
+            if not FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
+        case _:
+            raise Exception(f"Unknown Provider: {venue_provider_name}")
+    barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
+    external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
 
 
 def _cancel_bookings_from_stock(stock: offers_models.Stock, reason: BookingCancellationReasons) -> list[Booking]:
