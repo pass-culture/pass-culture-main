@@ -13,11 +13,7 @@ export const STOCK_EVENT_FORM_DEFAULT_VALUES: IStockEventFormValues = {
 }
 
 // 'price','quantity','bookingLimitDatetime', are editable
-export const STOCK_EVENT_ALLOCINE_NOT_EDITABLE_FIELDS = [
-  'stockId',
+export const STOCK_EVENT_ALLOCINE_READ_ONLY_FIELDS = [
   'beginningDate',
   'beginningTime',
-  'remainingQuantity',
-  'bookingsQuantity',
-  'isDeletable',
 ]

@@ -3,10 +3,7 @@ import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers/constants'
 import { IOfferIndividual } from 'core/Offers/types'
-import {
-  isAllocineOffer,
-  isOfferFromStockProvider,
-} from 'core/Providers/utils/localProvider'
+import { isAllocineOffer } from 'core/Providers/utils/localProvider'
 
 import { serializePatchOffer } from './serializers'
 
@@ -25,16 +22,16 @@ const updateIndividualOffer: TUpdateIndividualOffer = async ({
   /* istanbul ignore next: DEBT, TO FIX */
   try {
     let sentValues: Partial<IOfferIndividualFormValues> = formValues
-    if (isOfferFromStockProvider(offer)) {
+    if (offer?.lastProvider) {
       const {
         ALLOCINE: allocineEditableFields,
-        OTHER_PROVIDERS: otherProvidersEditableFields,
+        ALL_PROVIDERS: allProvidersEditableFields,
       } = SYNCHRONIZED_OFFER_EDITABLE_FIELDS
 
       const asArray = Object.entries(formValues)
       const editableFields = isAllocineOffer(offer)
-        ? [...allocineEditableFields, ...otherProvidersEditableFields]
-        : otherProvidersEditableFields
+        ? [...allocineEditableFields, ...allProvidersEditableFields]
+        : allProvidersEditableFields
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const filtered = asArray.filter(([key, value]) =>
