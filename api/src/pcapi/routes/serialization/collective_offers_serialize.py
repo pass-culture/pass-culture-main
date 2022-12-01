@@ -585,7 +585,8 @@ class AttachImageFormModel(BaseModel):
         if "thumb" in request.files:
             blob = request.files["thumb"]
             image_as_bytes = blob.read()
-            return offers_validation.get_uploaded_image(image_as_bytes)
+            offers_validation.check_image_size(image_as_bytes)
+            return image_as_bytes
 
         raise offers_validation.exceptions.MissingImage()
 
