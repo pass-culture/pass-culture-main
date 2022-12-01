@@ -44,7 +44,9 @@ const ImageUploader = ({
                 }}
                 onImageUpload={onImageUpload}
               />
-              <ButtonAppPreview imageUrl={imageUrl} mode={mode} />
+              {mode != UploaderModeEnum.OFFER_COLLECTIVE && (
+                <ButtonAppPreview imageUrl={imageUrl} mode={mode} />
+              )}
               <ButtonImageDelete onImageDelete={onImageDelete} />
             </div>
           </div>
