@@ -3,8 +3,7 @@ import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as IcoExternalSiteRedFilled } from 'icons/ico-external-site-red-filled.svg'
-import { ReactComponent as IcoMail } from 'icons/ico-mail.svg'
+import { IcoExternalSiteRedFilled, IcoMail } from 'icons'
 
 interface ILegalInfoProps {
   title: string
