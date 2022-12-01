@@ -324,7 +324,11 @@ describe('screens:StocksThing', () => {
       await userEvent.type(priceInput, '14.01')
       const expirationInput = screen.getByLabelText("Date d'expiration")
       expect(expirationInput).toBeDisabled()
-      expect(expirationInput).toHaveValue('25/11/2022')
+      const date = new Date()
+      date.setDate(25)
+      date.setUTCHours(22, 59, 59, 999)
+
+      expect(expirationInput).toHaveValue(date.toLocaleDateString('en-GB'))
       await userEvent.click(screen.getByText('Étape suivante'))
       expect(api.upsertStocks).toHaveBeenCalledWith({
         humanizedOfferId: 'OFFER_ID',
@@ -334,7 +338,8 @@ describe('screens:StocksThing', () => {
             price: 14,
             quantity: 5,
             activationCodes: ['ABH', 'JHB', 'IOP', 'KLM', 'MLK'],
-            activationCodesExpirationDatetime: '2022-11-25T22:59:59Z',
+            activationCodesExpirationDatetime:
+              date.toISOString().slice(0, -5) + 'Z',
           },
         ],
       })
