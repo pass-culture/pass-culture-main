@@ -1444,13 +1444,13 @@ class ListOfferersToBeValidatedTest:
         assert payload["city"] == user_offerer.offerer.city
         assert payload["owner"] == " ".join(
             (
-                user_offerer.offerer.UserOfferers[0].user.firstName,
-                user_offerer.offerer.UserOfferers[0].user.lastName,
+                user_offerer.offerer.first_user.firstName,
+                user_offerer.offerer.first_user.lastName,
             )
         )
-        assert payload["ownerId"] == user_offerer.offerer.UserOfferers[0].user.id
-        assert payload["phoneNumber"] == user_offerer.offerer.UserOfferers[0].user.phoneNumber
-        assert payload["email"] == user_offerer.offerer.UserOfferers[0].user.email
+        assert payload["ownerId"] == user_offerer.offerer.first_user.id
+        assert payload["phoneNumber"] == user_offerer.offerer.first_user.phoneNumber
+        assert payload["email"] == user_offerer.offerer.first_user.email
         assert payload["lastComment"] == {
             "author": "Inspecteur Validateur",
             "content": "Houlala",

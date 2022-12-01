@@ -615,7 +615,9 @@ class Offerer(
     name: str = Column(String(140), nullable=False)
     sa.Index("idx_offerer_trgm_name", name, postgresql_using="gin")
 
-    UserOfferers: list["UserOfferer"] = sa.orm.relationship("UserOfferer", back_populates="offerer")
+    UserOfferers: list["UserOfferer"] = sa.orm.relationship(
+        "UserOfferer", order_by="UserOfferer.id", back_populates="offerer"
+    )
 
     siren = Column(
         String(9), nullable=True, unique=True
@@ -681,6 +683,14 @@ class Offerer(
         else:
             code = label = "Donnée indisponible"
         return {"code": code, "label": label}
+
+    @property
+    def first_user(self) -> "users_models.User | None":
+        # Currently there is no way to mark a UserOfferer as the owner/creator, so we consider that this first user
+        # is the oldest entry in the table. When creator leaves the offerer, next registered user becomes the "first".
+        if not self.UserOfferers:
+            return None
+        return self.UserOfferers[0].user
 
     @hybrid_property
     def isValidated(self) -> bool:

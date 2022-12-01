@@ -526,13 +526,13 @@ class ListOfferersToValidateTest:
             assert rows[0]["Date de la demande"] == "03/10/2022"
             assert rows[0]["Dernier commentaire"] == "Houlala"
             assert rows[0]["SIREN"] == user_offerer.offerer.siren
-            assert rows[0]["Email"] == user_offerer.offerer.UserOfferers[0].user.email
+            assert rows[0]["Email"] == user_offerer.offerer.first_user.email
             assert (
-                rows[0]["Responsable Structure"] == f"{user_offerer.offerer.UserOfferers[0].user.firstName} "
-                f"{user_offerer.offerer.UserOfferers[0].user.lastName}"
+                rows[0]["Responsable Structure"] == f"{user_offerer.offerer.first_user.firstName} "
+                f"{user_offerer.offerer.first_user.lastName}"
             )
             assert rows[0]["Ville"] == user_offerer.offerer.city
-            assert rows[0]["Téléphone"] == user_offerer.offerer.UserOfferers[0].user.phoneNumber
+            assert rows[0]["Téléphone"] == user_offerer.offerer.first_user.phoneNumber
 
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_payload_content_no_action(self, authenticated_client):
