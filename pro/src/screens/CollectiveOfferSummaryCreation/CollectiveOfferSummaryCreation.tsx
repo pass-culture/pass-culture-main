@@ -10,7 +10,6 @@ import {
   EducationalCategories,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { computeCollectiveOffersUrl } from 'core/Offers'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { Banner, Button, ButtonLink } from 'ui-kit'
@@ -33,18 +32,14 @@ const CollectiveOfferSummaryCreation = ({
 }: CollectiveOfferSummaryCreationProps) => {
   const notify = useNotification()
   const history = useHistory()
-  const isSubtypeChosenAtCreation = useActiveFeature(
-    'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
-  )
 
   const publishOffer = async () => {
-    const confirmationUrl =
-      isSubtypeChosenAtCreation && offer.isTemplate
-        ? `/offre/${offer.id}/collectif/vitrine/confirmation`
-        : `/offre/${computeURLCollectiveOfferId(
-            offer.id,
-            offer.isTemplate
-          )}/collectif/confirmation`
+    const confirmationUrl = offer.isTemplate
+      ? `/offre/${offer.id}/collectif/vitrine/confirmation`
+      : `/offre/${computeURLCollectiveOfferId(
+          offer.id,
+          offer.isTemplate
+        )}/collectif/confirmation`
 
     if (offer.isTemplate) {
       const response = await publishCollectiveOfferTemplateAdapter(offer.id)
@@ -80,15 +75,11 @@ const CollectiveOfferSummaryCreation = ({
             <ButtonLink
               variant={ButtonVariant.SECONDARY}
               link={{
-                to: isSubtypeChosenAtCreation
-                  ? backRedirectionUrl
-                  : computeCollectiveOffersUrl({}),
+                to: backRedirectionUrl,
                 isExternal: false,
               }}
             >
-              {isSubtypeChosenAtCreation
-                ? 'Etape précédente'
-                : 'Annuler et quitter'}
+              Étape précédente
             </ButtonLink>
           </ActionsBarSticky.Left>
           <ActionsBarSticky.Right>
@@ -100,15 +91,11 @@ const CollectiveOfferSummaryCreation = ({
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
             link={{
-              to: isSubtypeChosenAtCreation
-                ? backRedirectionUrl
-                : computeCollectiveOffersUrl({}),
+              to: backRedirectionUrl,
               isExternal: false,
             }}
           >
-            {isSubtypeChosenAtCreation
-              ? 'Etape précédente'
-              : 'Annuler et quitter'}
+            Étape précédente
           </ButtonLink>
           <Button onClick={publishOffer}>Publier l’offre</Button>
         </FormLayout.Actions>

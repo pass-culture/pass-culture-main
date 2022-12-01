@@ -5,11 +5,7 @@ import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
 } from 'core/FirebaseEvents/constants'
-import {
-  createOfferFromTemplate,
-  oldCreateOfferFromTemplate,
-} from 'core/OfferEducational'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { createOfferFromTemplate } from 'core/OfferEducational'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as PlusIcon } from 'icons/ico-plus.svg'
@@ -31,9 +27,6 @@ const DuplicateOfferCell = ({
 }) => {
   const history = useHistory()
   const notify = useNotification()
-  const isSubtypeChosenAtCreation = useActiveFeature(
-    'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
-  )
   const { logEvent } = useAnalytics()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const shouldDisplayModal =
@@ -46,11 +39,7 @@ const DuplicateOfferCell = ({
     if (shouldNotDisplayModalAgain) {
       localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
     }
-    if (isSubtypeChosenAtCreation) {
-      createOfferFromTemplate(history, notify, templateOfferId)
-    } else {
-      oldCreateOfferFromTemplate(history, templateOfferId)
-    }
+    createOfferFromTemplate(history, notify, templateOfferId)
   }
 
   const handleCreateOfferClick = () => {
@@ -58,11 +47,7 @@ const DuplicateOfferCell = ({
       logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
         from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS,
       })
-      if (isSubtypeChosenAtCreation) {
-        createOfferFromTemplate(history, notify, templateOfferId)
-      } else {
-        oldCreateOfferFromTemplate(history, templateOfferId)
-      }
+      createOfferFromTemplate(history, notify, templateOfferId)
     }
     setIsModalOpen(true)
   }

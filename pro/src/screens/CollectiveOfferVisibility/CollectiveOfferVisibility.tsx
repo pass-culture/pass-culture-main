@@ -11,7 +11,6 @@ import {
   VisibilityFormValues,
 } from 'core/OfferEducational'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
-import { computeOffersUrl } from 'core/Offers/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
@@ -58,9 +57,6 @@ const CollectiveOfferVisibility = ({
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
 
-  const isSubtypeChosenAtCreation = useActiveFeature(
-    'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
-  )
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   const onSubmit = async (values: VisibilityFormValues) => {
@@ -207,15 +203,11 @@ const CollectiveOfferVisibility = ({
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
                   link={{
-                    to: isSubtypeChosenAtCreation
-                      ? `/offre/${offerId}/collectif/stocks`
-                      : computeOffersUrl({}),
+                    to: `/offre/${offerId}/collectif/stocks`,
                     isExternal: false,
                   }}
                 >
-                  {isSubtypeChosenAtCreation
-                    ? 'Étape précédente'
-                    : 'Annuler et quitter'}
+                  Étape précédente
                 </ButtonLink>
               </ActionsBarSticky.Left>
               <ActionsBarSticky.Right>
@@ -235,15 +227,11 @@ const CollectiveOfferVisibility = ({
               <ButtonLink
                 variant={ButtonVariant.SECONDARY}
                 link={{
-                  to: isSubtypeChosenAtCreation
-                    ? `/offre/${offerId}/collectif/stocks`
-                    : computeOffersUrl({}),
+                  to: `/offre/${offerId}/collectif/stocks`,
                   isExternal: false,
                 }}
               >
-                {isSubtypeChosenAtCreation
-                  ? 'Étape précédente'
-                  : 'Annuler et quitter'}
+                Étape précédente
               </ButtonLink>
               <SubmitButton
                 className=""

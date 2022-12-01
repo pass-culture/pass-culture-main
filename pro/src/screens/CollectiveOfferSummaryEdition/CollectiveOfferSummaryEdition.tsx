@@ -14,7 +14,6 @@ import {
   CollectiveOfferTemplate,
   createOfferFromTemplate,
   EducationalCategories,
-  oldCreateOfferFromTemplate,
   patchIsCollectiveOfferActiveAdapter,
   patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
@@ -42,9 +41,6 @@ const CollectiveOfferSummaryEdition = ({
   const [isActive, setIsActive] = useState(offer.isActive)
   const notify = useNotification()
   const history = useHistory()
-  const isSubtypeChosenAtCreation = useActiveFeature(
-    'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
-  )
 
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
     offer.id,
@@ -125,11 +121,7 @@ const CollectiveOfferSummaryEdition = ({
               logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
                 from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
               })
-              if (isSubtypeChosenAtCreation) {
-                createOfferFromTemplate(history, notify, offer.id)
-              } else {
-                oldCreateOfferFromTemplate(history, offer.id)
-              }
+              createOfferFromTemplate(history, notify, offer.id)
             }}
           >
             Créer une offre réservable pour un établissement scolaire
