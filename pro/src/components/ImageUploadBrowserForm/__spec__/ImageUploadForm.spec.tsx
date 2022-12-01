@@ -5,10 +5,17 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { UploaderModeEnum } from 'components/ImageUploader/types'
+import { createImageFile } from 'utils/testFileHelpers'
 
 import ImageUploadBrowserForm from '../ImageUploadBrowserForm'
 
 const onSubmit = jest.fn()
+const mockCreateImageBitmap = jest.fn()
+
+Object.defineProperty(global, 'createImageBitmap', {
+  writable: true,
+  value: mockCreateImageBitmap,
+})
 
 const renderImageUploadBrowserForm = (
   mode: UploaderModeEnum = UploaderModeEnum.OFFER
@@ -32,20 +39,12 @@ describe('ImageUploadBrowserForm', () => {
     )
     expect(fileInput).toBeInTheDocument()
 
-    const testFile = new File([''], 'hello.png', {
+    const testFile = createImageFile({
+      name: 'hello.png',
       type: 'image/png',
-    })
-    Object.defineProperty(testFile, 'size', {
-      value: 9000000,
-      configurable: true,
-    })
-    Object.defineProperty(testFile, 'width', {
-      value: 600,
-      configurable: true,
-    })
-    Object.defineProperty(testFile, 'height', {
-      value: 400,
-      configurable: true,
+      sizeInMB: 9,
+      width: 600,
+      height: 600,
     })
 
     await userEvent.upload(fileInput, testFile)
@@ -58,16 +57,11 @@ describe('ImageUploadBrowserForm', () => {
       'Importer une image depuis l’ordinateur'
     )
 
-    const testFile = new File([''], 'hello.png', {
+    const testFile = createImageFile({
+      name: 'hello.png',
       type: 'image/png',
-    })
-    Object.defineProperty(testFile, 'size', {
-      value: 11000000,
-      configurable: true,
-    })
-    Object.defineProperty(testFile, 'width', {
-      value: 600,
-      configurable: true,
+      sizeInMB: 11000000,
+      width: 600,
     })
 
     await userEvent.upload(fileInput, testFile)
@@ -80,16 +74,11 @@ describe('ImageUploadBrowserForm', () => {
       'Importer une image depuis l’ordinateur'
     )
 
-    const testFile = new File([''], 'hello.png', {
+    const testFile = createImageFile({
+      name: 'hello.png',
       type: 'image/png',
-    })
-    Object.defineProperty(testFile, 'size', {
-      value: 9000000,
-      configurable: true,
-    })
-    Object.defineProperty(testFile, 'width', {
-      value: 200,
-      configurable: true,
+      sizeInMB: 9,
+      width: 200,
     })
 
     await userEvent.upload(fileInput, testFile)
@@ -102,16 +91,11 @@ describe('ImageUploadBrowserForm', () => {
       'Importer une image depuis l’ordinateur'
     )
 
-    const testFile = new File([''], 'hello.png', {
-      type: 'image/gif',
-    })
-    Object.defineProperty(testFile, 'size', {
-      value: 9000000,
-      configurable: true,
-    })
-    Object.defineProperty(testFile, 'width', {
-      value: 600,
-      configurable: true,
+    const testFile = createImageFile({
+      name: 'hello.png',
+      type: 'image/png',
+      sizeInMB: 9,
+      width: 600,
     })
 
     await userEvent.upload(fileInput, testFile)
@@ -124,20 +108,12 @@ describe('ImageUploadBrowserForm', () => {
       'Importer une image depuis l’ordinateur'
     )
 
-    const testFile = new File([''], 'hello.png', {
+    const testFile = createImageFile({
+      name: 'hello.png',
       type: 'image/png',
-    })
-    Object.defineProperty(testFile, 'size', {
-      value: 9000000,
-      configurable: true,
-    })
-    Object.defineProperty(testFile, 'width', {
-      value: 400,
-      configurable: true,
-    })
-    Object.defineProperty(testFile, 'height', {
-      value: 399,
-      configurable: true,
+      sizeInMB: 9,
+      width: 400,
+      height: 399,
     })
 
     await userEvent.upload(fileInput, testFile)
@@ -170,20 +146,12 @@ describe('ImageUploadBrowserForm', () => {
       'Importer une image depuis l’ordinateur'
     )
 
-    const testFile = new File([''], 'hello.png', {
+    const testFile = createImageFile({
+      name: 'hello.png',
       type: 'image/png',
-    })
-    Object.defineProperty(testFile, 'size', {
-      value: 9000000,
-      configurable: true,
-    })
-    Object.defineProperty(testFile, 'width', {
-      value: 600,
-      configurable: true,
-    })
-    Object.defineProperty(testFile, 'height', {
-      value: 2,
-      configurable: true,
+      sizeInMB: 9,
+      width: 600,
+      height: 2,
     })
 
     await userEvent.upload(fileInput, testFile)
