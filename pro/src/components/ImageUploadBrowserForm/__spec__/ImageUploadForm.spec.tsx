@@ -43,7 +43,7 @@ describe('ImageUploadBrowserForm', () => {
       name: 'hello.png',
       type: 'image/png',
       sizeInMB: 9,
-      width: 600,
+      width: 400,
       height: 600,
     })
 
@@ -102,7 +102,7 @@ describe('ImageUploadBrowserForm', () => {
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
-  it("should display error when file's height is too small for portrait", async () => {
+  it("should display error when file's height and width is too small for portrait", async () => {
     await renderImageUploadBrowserForm()
     const fileInput = screen.getByLabelText(
       'Importer une image depuis l’ordinateur'
@@ -112,52 +112,17 @@ describe('ImageUploadBrowserForm', () => {
       name: 'hello.png',
       type: 'image/png',
       sizeInMB: 9,
-      width: 400,
-      height: 399,
+      width: 399,
+      height: 400,
     })
 
     await userEvent.upload(fileInput, testFile)
     expect(onSubmit).not.toHaveBeenCalled()
     expect(
-      screen.queryByText('La hauteur minimale de l’image : 400 px')
+      screen.queryByText('La hauteur minimale de l’image : 600 px')
     ).toBeInTheDocument()
-  })
-
-  it('should not display height message with venue mode', async () => {
-    await renderImageUploadBrowserForm(UploaderModeEnum.VENUE)
     expect(
-      screen.queryByText('La hauteur minimale de l’image : 400 px')
-    ).not.toBeInTheDocument()
-  })
-
-  it('should display height message with offer mode', async () => {
-    await renderImageUploadBrowserForm()
-    expect(
-      screen.queryByText('La hauteur minimale de l’image : 400 px')
-    ).toBeInTheDocument()
-  })
-
-  it("should display error when file's ratio is too low in landscape", async () => {
-    await renderImageUploadBrowserForm(UploaderModeEnum.VENUE)
-    expect(
-      screen.queryByText("La hauteur de l'image n'est pas assez grande.")
-    ).not.toBeInTheDocument()
-    const fileInput = screen.getByLabelText(
-      'Importer une image depuis l’ordinateur'
-    )
-
-    const testFile = createImageFile({
-      name: 'hello.png',
-      type: 'image/png',
-      sizeInMB: 9,
-      width: 600,
-      height: 2,
-    })
-
-    await userEvent.upload(fileInput, testFile)
-    expect(onSubmit).not.toHaveBeenCalled()
-    expect(
-      screen.queryByText("La hauteur de l'image n'est pas assez grande.")
+      screen.queryByText('Largeur minimale de l’image : 400 px')
     ).toBeInTheDocument()
   })
 })

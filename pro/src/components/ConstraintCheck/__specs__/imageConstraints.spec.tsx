@@ -1,4 +1,3 @@
-import { OrientationEnum } from 'components/ImageUploadBrowserForm/types'
 import { createImageFile } from 'utils/testFileHelpers'
 
 import { getValidatorErrors, imageConstraints } from '../imageConstraints'
@@ -120,32 +119,6 @@ describe('width', () => {
     const isValid = await constraint.asyncValidator(file)
 
     expect(isValid).toBe(false)
-  })
-})
-
-describe('minRatio', () => {
-  it('accepts image landscape orientation when the ratio is higher than minimum for', async () => {
-    const file = createImageFile({ width: 400, height: 600 })
-    const constraint = imageConstraints.minRatio(
-      3 / 2,
-      OrientationEnum.LANDSCAPE
-    )
-
-    const isValid = await constraint.asyncValidator(file)
-
-    expect(isValid).toBe(true)
-  })
-
-  it('accepts image portrait orientation when the ratio is higher than minimum for', async () => {
-    const file = createImageFile({ width: 400, height: 400 })
-    const constraint = imageConstraints.minRatio(
-      6 / 9,
-      OrientationEnum.PORTRAIT
-    )
-
-    const isValid = await constraint.asyncValidator(file)
-
-    expect(isValid).toBe(true)
   })
 })
 
