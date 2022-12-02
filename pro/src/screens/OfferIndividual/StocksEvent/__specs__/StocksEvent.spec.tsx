@@ -283,14 +283,44 @@ describe('screens:StocksEvent', () => {
     //   screen.getByText('API bookingLimitDatetime ERROR')
     // ).toBeInTheDocument()
   })
-  it('should show a success notification if nothing has been touched', async () => {
+
+  it('should show a success notification if nothing has been touched and form is valid', async () => {
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+    })
+    const stock = {
+      id: 'STOCK_ID',
+      quantity: 10,
+      price: 10.01,
+      remainingQuantity: 6,
+      bookingsQuantity: 4,
+      isEventDeletable: true,
+      beginningDatetime: '2023-03-10T00:00:00.0200',
+    }
+    props.offer = {
+      ...(offer as IOfferIndividual),
+      stocks: [stock as IOfferIndividualStock],
+    }
+    renderStockEventScreen({ props, storeOverride, contextValue })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+    expect(
+      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+    ).toBeInTheDocument()
+  })
+
+  it('should show a error notification if nothing has been touched and form has errors', async () => {
     renderStockEventScreen({ props, storeOverride, contextValue })
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
     )
     expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      screen.getByText(
+        'Une ou plusieurs erreurs sont présentes dans le formulaire'
+      )
     ).toBeInTheDocument()
   })
 })

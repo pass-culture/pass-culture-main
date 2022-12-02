@@ -403,7 +403,19 @@ describe('screens:StocksThing', () => {
       expect(expirationInput).toBeDisabled()
       expect(expirationInput).toHaveValue('15/12/2020')
     })
-    it('should show a success notification if nothing has been touched', async () => {
+    it('should show a success notification if nothing has been touched and form is valid', async () => {
+      props.offer = {
+        ...(offer as IOfferIndividual),
+        stocks: [
+          {
+            hasActivationCode: false,
+            bookingsQuantity: 10,
+            id: 'STOCK_ID',
+            price: 12,
+          } as IOfferIndividualStock,
+        ],
+      }
+
       renderStockThingScreen({ props, storeOverride, contextValue })
 
       await userEvent.click(
@@ -413,5 +425,17 @@ describe('screens:StocksThing', () => {
         screen.getByText('Brouillon sauvegardé dans la liste des offres')
       ).toBeInTheDocument()
     })
+  })
+  it('should show a error notification if nothing has been touched and form has errors', async () => {
+    renderStockThingScreen({ props, storeOverride, contextValue })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
+    )
+    expect(
+      screen.getByText(
+        'Une ou plusieurs erreurs sont présentes dans le formulaire'
+      )
+    ).toBeInTheDocument()
   })
 })

@@ -127,6 +127,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     validationSchema: getValidationSchema(minQuantity),
     // enableReinitialize is needed to reset dirty after submit (and not block after saving a draft)
     enableReinitialize: true,
+    validateOnMount: true,
   })
 
   const handleNextStep =
@@ -144,11 +145,28 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
           mode,
         })
       )
-      if (!Object.keys(formik.touched).length) {
+      if (
+        !Object.keys(formik.touched).length &&
+        !Object.keys(formik.errors).length
+      ) {
         setIsClickingFromActionBar(false)
         notify.success('Brouillon sauvegardé dans la liste des offres')
+        if (!saveDraft) {
+          navigate(
+            getOfferIndividualUrl({
+              offerId: offer.id,
+              step: saveDraft
+                ? OFFER_WIZARD_STEP_IDS.STOCKS
+                : OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode,
+            })
+          )
+        }
       } else {
         formik.handleSubmit()
+        notify.error(
+          'Une ou plusieurs erreurs sont présentes dans le formulaire'
+        )
       }
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.STOCKS,

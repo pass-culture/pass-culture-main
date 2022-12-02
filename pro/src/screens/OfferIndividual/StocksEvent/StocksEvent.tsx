@@ -129,6 +129,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     // when clicking multiple times on "Save draft"
     validationSchema: getValidationSchema(),
     enableReinitialize: true,
+    validateOnMount: true,
   })
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
@@ -180,7 +181,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         }
       }
 
-      if (!Object.keys(formik.touched).length) {
+      if (!Object.keys(formik.touched).length && !formik.errors.stocks) {
         setIsClickingFromActionBar(false)
         notify.success('Brouillon sauvegardé dans la liste des offres')
         if (!saveDraft) {
@@ -196,7 +197,11 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         }
       } else {
         formik.handleSubmit()
+        notify.error(
+          'Une ou plusieurs erreurs sont présentes dans le formulaire'
+        )
       }
+
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.STOCKS,
         to: saveDraft
