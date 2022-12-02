@@ -4,6 +4,7 @@ export enum ButtonVariant {
   PRIMARY = 'primary',
   SECONDARY = 'secondary',
   TERNARY = 'ternary',
+  BOX = 'box',
 }
 
 export enum IconPositionEnum {
