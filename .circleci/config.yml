@@ -26,7 +26,7 @@ parameters:
     default: "node-18.12-jest-cache-{{ epoch }}" # epoch is to ensure we store jest cache at each run (cf https://circleci.com/docs/2.0/caching/#using-keys-and-templates)
   adage-front_cache_key:
     type: string
-    default: 'node_modules-16.17-{{ checksum "adage-front/yarn.lock" }}'
+    default: 'node_modules-18.12-{{ checksum "adage-front/yarn.lock" }}'
   backoffice-front_cache_key:
     type: string
     default: 'node_modules-14.13-{{ checksum "backoffice/yarn.lock" }}'
@@ -99,7 +99,6 @@ executors:
 ###################
 
 commands:
-
   notify-slack:
     description: Send notification to Slack
     parameters:
@@ -461,7 +460,7 @@ jobs:
 
   type-checking-adage-front:
     docker:
-      - image: cimg/node:16.17
+      - image: cimg/node:18.12
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -500,7 +499,7 @@ jobs:
 
   quality-adage-front:
     docker:
-      - image: cimg/node:16.17
+      - image: cimg/node:18.12
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -541,7 +540,7 @@ jobs:
 
   tests-adage-front:
     docker:
-      - image: cimg/node:16.17
+      - image: cimg/node:18.12
     working_directory: ~/pass-culture
     steps:
       - checkout
