@@ -4,6 +4,7 @@ import { Offer, Venue } from 'core/Offers/types'
 import useActiveFeature from 'hooks/useActiveFeature'
 
 import CheckboxCell from './Cells/CheckboxCell'
+import CollectiveOfferStatusCell from './Cells/CollectiveOfferStatusCell'
 import DuplicateOfferCell from './Cells/DuplicateOfferCell'
 import EditOfferCell from './Cells/EditOfferCell'
 import OfferInstitutionCell from './Cells/OfferInstitutionCell'
@@ -34,6 +35,9 @@ const CollectiveOfferItem = ({
   const isImageCollectiveOfferActive = useActiveFeature(
     'WIP_IMAGE_COLLECTIVE_OFFER'
   )
+  const isImproveCollectiveStatusActive = useActiveFeature(
+    'WIP_IMPROVE_COLLECTIVE_STATUS'
+  )
   return (
     <>
       <CheckboxCell
@@ -52,7 +56,11 @@ const CollectiveOfferItem = ({
       <OfferInstitutionCell
         educationalInstitution={offer.educationalInstitution}
       />
-      <OfferStatusCell status={offer.status} />
+      {isImproveCollectiveStatusActive ? (
+        <CollectiveOfferStatusCell offer={offer} />
+      ) : (
+        <OfferStatusCell status={offer.status} />
+      )}
       <DuplicateOfferCell
         isTemplate={Boolean(offer.isShowcase)}
         templateOfferId={offer.id}
