@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Redirect, Route, Switch } from 'react-router'
+import { Redirect, Route, Switch, useLocation } from 'react-router'
 
 import AppLayout from 'app/AppLayout'
 import routes, { routesWithoutLayout } from 'app/AppRouter/routes_map'
@@ -21,7 +21,7 @@ const AppRouter = (): JSX.Element => {
       (route.disabledFeatureName &&
         !activeFeatures.includes(route.disabledFeatureName))
   )
-
+  const location = useLocation()
   const activeRoutesWithoutLayout = routesWithoutLayout.filter(
     route => !route.featureName || activeFeatures.includes(route.featureName)
   )
@@ -34,7 +34,7 @@ const AppRouter = (): JSX.Element => {
             exact
             key={`legacy-redirect-${index}`}
             from={redirectFrom}
-            to={redirectTo}
+            to={`${redirectTo}${location.search}`}
           />
         )
       )}
