@@ -1,11 +1,11 @@
 import logging
 
+from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import profile_options
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
-from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -58,7 +58,7 @@ def complete_profile(user: users_models.User, body: serializers.ProfileUpdateReq
     is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
 
     if not is_activated:
-        users_external.update_external_user(user)
+        external_attributes_api.update_external_user(user)
 
 
 @blueprint.native_v1.route("/subscription/profile_options", methods=["GET"])
@@ -88,7 +88,7 @@ def create_honor_statement_fraud_check(user: users_models.User) -> None:
     is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
 
     if not is_activated:
-        users_external.update_external_user(user)
+        external_attributes_api.update_external_user(user)
 
 
 @blueprint.native_v1.route("/ubble_identification", methods=["POST"])

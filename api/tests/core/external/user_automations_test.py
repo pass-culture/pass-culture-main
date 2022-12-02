@@ -9,13 +9,10 @@ from sib_api_v3_sdk import RequestContactImport
 
 from pcapi import settings
 import pcapi.core.bookings.factories as bookings_factories
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
-from pcapi.core.users.external import user_automations
+from pcapi.core.external.automations import user as user_automations
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
-from pcapi.models.offer_mixin import OfferValidationStatus
 
 
 @pytest.mark.usefixtures("db_session")
@@ -52,7 +49,7 @@ class UserAutomationsTest:
         assert sorted(result) == ["fabien+test@example.net", "gerard+test@example.net"]
         assert len(User.query.all()) == 6
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
     def test_user_turned_eighteen_automation(self, mock_import_contacts):
         self._create_users_around_18()
 
@@ -156,7 +153,7 @@ class UserAutomationsTest:
             results = user_automations.get_users_beneficiary_credit_expiration_within_next_3_months()
             assert sorted([user.email for user in results]) == [user.email for user in users[4:7]]
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
     def test_users_beneficiary_credit_expiration_within_next_3_months_automation(self, mock_import_contacts):
         users = self._create_users_with_deposits()
 
@@ -197,7 +194,7 @@ class UserAutomationsTest:
             results = user_automations.get_users_ex_beneficiary()
             assert sorted([user.email for user in results]) == [user.email for user in users[1:4] + [users[6]]]
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
     def test_user_ex_beneficiary_automation(self, mock_import_contacts):
         users = self._create_users_with_deposits()
 
@@ -243,7 +240,7 @@ class UserAutomationsTest:
             results = user_automations.get_email_for_inactive_user_since_thirty_days()
             assert sorted(results) == sorted([beneficiary.email, not_beneficiary.email])
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
     def test_users_inactive_since_30_days_automation(self, mock_import_contacts):
         with freeze_time("2033-08-01 15:00:00") as frozen_time:
             users_factories.BeneficiaryGrant18Factory(
@@ -274,7 +271,7 @@ class UserAutomationsTest:
 
             assert result is True
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
     def test_users_inactive_since_30_days_automation_no_result(self, mock_import_contacts):
         with freeze_time("2033-08-01 15:00:00") as frozen_time:
             users_factories.BeneficiaryGrant18Factory(
@@ -314,7 +311,7 @@ class UserAutomationsTest:
             results = user_automations.get_email_for_users_created_one_year_ago_per_month()
             assert sorted(results) == sorted([user.email for user in matching_users])
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
     def test_users_nearly_one_year_with_pass_automation(self, mock_import_contacts):
         users_factories.UserFactory(email="fabien+test@example.net", dateCreated=datetime(2033, 8, 31))
         users_factories.UserFactory(email="pierre+test@example.net", dateCreated=datetime(2033, 9, 1))
@@ -352,8 +349,8 @@ class UserAutomationsTest:
             results = list(user_automations.get_users_whose_credit_expired_today())
             assert results == [users[2]]
 
-    @patch("pcapi.core.users.external.update_batch_user")
-    @patch("pcapi.core.users.external.update_sendinblue_user")
+    @patch("pcapi.core.external.attributes.api.update_batch_user")
+    @patch("pcapi.core.external.attributes.api.update_sendinblue_user")
     def test_users_whose_credit_expired_today_automation(self, mock_update_sendinblue, mock_update_batch):
         users = self._create_users_with_deposits()
 
@@ -393,8 +390,8 @@ class UserAutomationsTest:
             results = list(user_automations.get_ex_underage_beneficiaries_who_can_no_longer_recredit())
             assert not results
 
-    @patch("pcapi.core.users.external.update_batch_user")
-    @patch("pcapi.core.users.external.update_sendinblue_user")
+    @patch("pcapi.core.external.attributes.api.update_batch_user")
+    @patch("pcapi.core.external.attributes.api.update_sendinblue_user")
     def test_users_whose_credit_expired_today_automation_underage(self, mock_update_sendinblue, mock_update_batch):
         with freeze_time("2033-09-10 15:00:00"):
             user = users_factories.UnderageBeneficiaryFactory(
@@ -413,105 +410,3 @@ class UserAutomationsTest:
 
         assert mock_update_batch.call_args.args[0] == user.id
         assert mock_update_batch.call_args.args[1].is_former_beneficiary is True
-
-    def test_get_inactive_venues_emails(self):
-        date_92_days_ago = datetime.utcnow() - relativedelta(days=92)
-        date_70_days_ago = datetime.utcnow() - relativedelta(days=70)
-
-        offerer_validated_92_days_ago = offerers_factories.OffererFactory(dateValidated=date_92_days_ago)
-
-        venue_no_booking = offerers_factories.VenueFactory(
-            managingOfferer=offerer_validated_92_days_ago, bookingEmail="no_booking@example.com"
-        )
-        offers_factories.ThingStockFactory(
-            offer=offers_factories.ThingOfferFactory(venue=venue_no_booking, validation=OfferValidationStatus.APPROVED)
-        )
-
-        # excluded because parent offerer has been validated less than 90 days ago:
-        offerer_validated_70_days_ago = offerers_factories.OffererFactory(dateValidated=date_70_days_ago)
-        venue_validated_70_days_ago = offerers_factories.VenueFactory(
-            managingOfferer=offerer_validated_70_days_ago, bookingEmail="validated_70_days_ago@example.com"
-        )
-        offers_factories.ThingOfferFactory(venue=venue_validated_70_days_ago, validation=OfferValidationStatus.APPROVED)
-
-        # excluded because of venue type:
-        venue_festival = offerers_factories.VenueFactory(
-            managingOfferer=offerer_validated_92_days_ago,
-            venueType=offerers_factories.VenueTypeFactory(label="Festival"),
-            bookingEmail="venue_type_festival@example.com",
-        )
-        offers_factories.EventOfferFactory(venue=venue_festival, validation=OfferValidationStatus.APPROVED)
-
-        venue_digital = offerers_factories.VenueFactory(
-            managingOfferer=offerer_validated_92_days_ago,
-            venueType=offerers_factories.VenueTypeFactory(label="Offre numérique"),
-            isVirtual=True,
-            siret=None,
-            bookingEmail="venue_type_digital@example.com",
-        )
-        offers_factories.EventOfferFactory(venue=venue_digital, validation=OfferValidationStatus.APPROVED)
-
-        # excluded because venue does not have approved offer:
-        venue_no_approved_offer = offerers_factories.VenueFactory(
-            managingOfferer=offerer_validated_92_days_ago, bookingEmail="no_approved_offer@example.com"
-        )
-        offers_factories.ThingOfferFactory(venue=venue_no_approved_offer, validation=OfferValidationStatus.DRAFT)
-
-        # excluded because venue does not have offer at all:
-        offerers_factories.VenueFactory(
-            managingOfferer=offerer_validated_92_days_ago, bookingEmail="no_offer@example.com"
-        )
-
-        # matching because booking has more than 3 months:
-        venue_old_booking = offerers_factories.VenueFactory(
-            managingOfferer=offerer_validated_92_days_ago, bookingEmail="old_booking@example.com"
-        )
-        bookings_factories.IndividualBookingFactory(
-            dateCreated=date_92_days_ago,
-            stock=offers_factories.ThingStockFactory(
-                offer=offers_factories.ThingOfferFactory(
-                    venue=venue_old_booking, validation=OfferValidationStatus.APPROVED
-                )
-            ),
-        )
-
-        # excluded because offer has been booked less than 3 months ago
-        venue_has_booking = offerers_factories.VenueFactory(
-            managingOfferer=offerer_validated_92_days_ago, bookingEmail="has_booking@example.com"
-        )
-        bookings_factories.IndividualBookingFactory(
-            stock=offers_factories.ThingStockFactory(
-                offer=offers_factories.ThingOfferFactory(
-                    venue=venue_has_booking, validation=OfferValidationStatus.APPROVED
-                )
-            ),
-            dateCreated=date_70_days_ago,
-        )
-
-        results = user_automations.get_inactive_venues_emails()
-
-        assert set(results) == {venue_no_booking.bookingEmail, venue_old_booking.bookingEmail}
-
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
-    def test_pro_inactive_venues_automation(self, mock_import_contacts):
-        offerer = offerers_factories.OffererFactory(dateValidated=datetime.utcnow() - relativedelta(days=100))
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offers_factories.EventOfferFactory(venue=venue, validation=OfferValidationStatus.APPROVED)
-
-        result = user_automations.pro_inactive_venues_automation()
-
-        mock_import_contacts.assert_called_once_with(
-            RequestContactImport(
-                file_url=None,
-                file_body=f"EMAIL\n{venue.bookingEmail}",
-                list_ids=[settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID],
-                notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID}/1",
-                new_list=None,
-                email_blacklist=False,
-                sms_blacklist=False,
-                update_existing_contacts=True,
-                empty_contacts_attributes=False,
-            )
-        )
-
-        assert result is True

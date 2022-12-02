@@ -12,6 +12,8 @@ from wtforms import Form
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.bookings.repository import offerer_has_ongoing_bookings
+from pcapi.core.external import zendesk_sell
+from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 import pcapi.core.offerers.exceptions as offerers_exceptions
@@ -19,8 +21,6 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import OffererTag
 from pcapi.core.offerers.models import ValidationStatus
 import pcapi.core.offerers.repository as offerers_repository
-from pcapi.core.users.external import update_external_pro
-from pcapi.core.users.external import zendesk_sell
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 from pcapi.utils.urls import build_pc_pro_offerer_link
 

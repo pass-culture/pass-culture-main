@@ -17,6 +17,7 @@ from wtforms.validators import ValidationError
 from pcapi.admin.base_configuration import BaseAdminView
 import pcapi.admin.rules as pcapi_rules
 from pcapi.admin.validators import PhoneNumberValidator
+from pcapi.core.external.attributes.api import update_external_pro
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
@@ -24,7 +25,6 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.api as users_api
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
-from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import User
 from pcapi.utils.email import sanitize_email
 from pcapi.utils.mailing import build_pc_pro_create_password_link

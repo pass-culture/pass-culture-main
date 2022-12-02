@@ -5,12 +5,12 @@ fix this issue.
 """
 import sys
 
-from pcapi.core.users.external import batch
-from pcapi.core.users.external import get_user_attributes
-from pcapi.core.users.external import get_user_or_pro_attributes
-from pcapi.core.users.external import sendinblue
-from pcapi.core.users.external.sendinblue import SendinblueUserUpdateData
-from pcapi.core.users.external.sendinblue import import_contacts_in_sendinblue
+from pcapi.core.external import batch
+from pcapi.core.external import sendinblue
+from pcapi.core.external.attributes.api import get_user_attributes
+from pcapi.core.external.attributes.api import get_user_or_pro_attributes
+from pcapi.core.external.sendinblue import SendinblueUserUpdateData
+from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.users.models import User
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.backends.batch import UserUpdateData

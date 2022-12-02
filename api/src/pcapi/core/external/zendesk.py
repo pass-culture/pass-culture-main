@@ -14,17 +14,14 @@ from urllib.parse import quote
 from markupsafe import Markup
 
 from pcapi import settings
+from pcapi.core.external.attributes import api as attributes_api
+from pcapi.core.external.attributes import models as attributes_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import constants as users_constants
+from pcapi.core.users import models as users_models
+from pcapi.core.users import repository as users_repository
 from pcapi.core.users import testing
 from pcapi.core.users import utils as users_utils
-from pcapi.core.users.external import ProAttributes
-from pcapi.core.users.external import UserAttributes
-from pcapi.core.users.external import get_pro_attributes
-from pcapi.core.users.external import get_user_attributes
-from pcapi.core.users.models import User
-from pcapi.core.users.models import UserRole
-from pcapi.core.users.repository import find_user_by_email
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import requests
 
@@ -66,21 +63,21 @@ def update_contact_attributes(
 ) -> None:
 
     # First search for user by email (unique in "user" table)
-    user: User | None = find_user_by_email(email) if email else None
+    user: users_models.User | None = users_repository.find_user_by_email(email) if email else None
 
     # Then search by phone number, which is NOT unique in user database
     # TODO(prouzet) Should we search by phone number in venues?
     if not user and phone_number:
-        user = User.query.filter(User.phoneNumber == phone_number).first()
+        user = users_models.User.query.filter(users_models.User.phoneNumber == phone_number).first()
 
     if user and not email:
         email = user.email
 
     if user and not user.has_pro_role:
-        attributes = get_user_attributes(user)
+        attributes = attributes_api.get_user_attributes(user)
     elif email:
         # get_pro_attributes also search for email in venues
-        attributes = get_pro_attributes(email)
+        attributes = attributes_api.get_pro_attributes(email)
         if not attributes.is_user_email and not attributes.is_booking_email:
             return  # not found
     else:
@@ -91,7 +88,7 @@ def update_contact_attributes(
         _add_internal_note(ticket_id, zendesk_user_id, email, attributes)
 
 
-def _format_user_attributes(email: str, attributes: UserAttributes) -> dict:
+def _format_user_attributes(email: str, attributes: attributes_models.UserAttributes) -> dict:
     # https://developer.zendesk.com/api-reference/ticketing/users/users/#phone-number
     try:
         parsed_phone_number = phone_number_utils.parse_phone_number(attributes.phone_number)
@@ -138,8 +135,8 @@ def _format_user_attributes(email: str, attributes: UserAttributes) -> dict:
     }
 
 
-def _format_pro_attributes(email: str, attributes: ProAttributes) -> dict:
-    tags = [UserRole.PRO.value]
+def _format_pro_attributes(email: str, attributes: attributes_models.ProAttributes) -> dict:
+    tags = [users_models.UserRole.PRO.value]
     if attributes.departement_code:
         tags += [ZENDESK_TAG_DEPARTMENT_CODE_PREFIX + code for code in attributes.departement_code]
     return {
@@ -165,13 +162,17 @@ def _format_pro_attributes(email: str, attributes: ProAttributes) -> dict:
     }
 
 
-def format_contact_attributes(email: str, attributes: UserAttributes | ProAttributes) -> dict:
-    if isinstance(attributes, ProAttributes):
+def format_contact_attributes(
+    email: str, attributes: attributes_models.UserAttributes | attributes_models.ProAttributes
+) -> dict:
+    if isinstance(attributes, attributes_models.ProAttributes):
         return _format_pro_attributes(email, attributes)
     return _format_user_attributes(email, attributes)
 
 
-def _send_contact_attributes(zendesk_user_id: int, email: str, attributes: UserAttributes | ProAttributes) -> bool:
+def _send_contact_attributes(
+    zendesk_user_id: int, email: str, attributes: attributes_models.UserAttributes | attributes_models.ProAttributes
+) -> bool:
     """
     Update user with custom attributes
     https://developer.zendesk.com/api-reference/ticketing/users/users/#update-user
@@ -182,7 +183,10 @@ def _send_contact_attributes(zendesk_user_id: int, email: str, attributes: UserA
 
 
 def _add_internal_note(
-    ticket_id: int, zendesk_user_id: int, email: str, attributes: UserAttributes | ProAttributes
+    ticket_id: int,
+    zendesk_user_id: int,
+    email: str,
+    attributes: attributes_models.UserAttributes | attributes_models.ProAttributes,
 ) -> bool:
     """
     Post an internal note so that support people can click on hyperlinks (not possible with custom attributes)
@@ -196,7 +200,7 @@ def _add_internal_note(
         else f"id {attributes.user_id}"
     )
 
-    if isinstance(attributes, ProAttributes):
+    if isinstance(attributes, attributes_models.ProAttributes):
         if attributes.user_id:
             html_body += Markup("Utilisateur pro identifié : <b>{}</b><br/>, {}").format(name, email)
             for bo_link in _get_backoffice_pro_user_links(email):

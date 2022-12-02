@@ -18,7 +18,7 @@ class VenuePayload(BaseModel):
 
 @task(GCP_ZENDESK_SELL_QUEUE_NAME, "/zendesk_sell/create_offerer")  # type: ignore [arg-type]
 def create_offerer_task(payload: OffererPayload) -> None:
-    from pcapi.core.users.external import zendesk_sell
+    from pcapi.core.external import zendesk_sell
 
     logger.info("create_offerer_task - payload: %s", payload)
     zendesk_sell.do_create_offerer(payload.offerer_id)
@@ -26,7 +26,7 @@ def create_offerer_task(payload: OffererPayload) -> None:
 
 @task(GCP_ZENDESK_SELL_QUEUE_NAME, "/zendesk_sell/update_offerer")  # type: ignore [arg-type]
 def update_offerer_task(payload: OffererPayload) -> None:
-    from pcapi.core.users.external import zendesk_sell
+    from pcapi.core.external import zendesk_sell
 
     logger.info("update_offerer_task - payload: %s", payload)
     zendesk_sell.do_update_offerer(payload.offerer_id)
@@ -34,7 +34,7 @@ def update_offerer_task(payload: OffererPayload) -> None:
 
 @task(GCP_ZENDESK_SELL_QUEUE_NAME, "/zendesk_sell/create_venue")  # type: ignore [arg-type]
 def create_venue_task(payload: VenuePayload) -> None:
-    from pcapi.core.users.external import zendesk_sell
+    from pcapi.core.external import zendesk_sell
 
     logger.info("create_venue_task - payload: %s", payload)
     zendesk_sell.do_create_venue(payload.venue_id)
@@ -42,7 +42,7 @@ def create_venue_task(payload: VenuePayload) -> None:
 
 @task(GCP_ZENDESK_SELL_QUEUE_NAME, "/zendesk_sell/update_venue")  # type: ignore [arg-type]
 def update_venue_task(payload: VenuePayload) -> None:
-    from pcapi.core.users.external import zendesk_sell
+    from pcapi.core.external import zendesk_sell
 
     logger.info("update_venue_task - payload: %s", payload)
     zendesk_sell.do_update_venue(payload.venue_id)

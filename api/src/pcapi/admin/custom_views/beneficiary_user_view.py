@@ -19,10 +19,10 @@ from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.admin.custom_views.mixins.resend_validation_email_mixin import ResendValidationEmailMixin
 from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
+from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.finance.api import compute_underage_deposit_expiration_datetime
 import pcapi.core.finance.models as finance_models
 import pcapi.core.users.api as users_api
-from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
 from pcapi.repository import repository

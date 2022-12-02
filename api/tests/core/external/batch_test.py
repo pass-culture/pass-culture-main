@@ -2,7 +2,7 @@ from copy import deepcopy
 
 import pytest
 
-from pcapi.core.users.external.batch import format_user_attributes
+from pcapi.core.external.batch import format_user_attributes
 
 from . import common_user_attributes
 

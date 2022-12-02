@@ -9,13 +9,13 @@ from sqlalchemy.orm import Load
 from sqlalchemy.orm import joinedload
 
 from pcapi import settings
+from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
-from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
 from pcapi.models import db

@@ -2,12 +2,12 @@ import datetime
 import logging
 
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
+from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
-from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 
 from . import exceptions
@@ -48,7 +48,7 @@ def handle_educonnect_authentication(
             raise exceptions.EduconnectSubscriptionException()
 
         if not is_activated:
-            users_external.update_external_user(user)
+            external_attributes_api.update_external_user(user)
     else:
         if fraud_models.FraudReasonCode.DUPLICATE_USER in (fraud_check.reasonCodes or []):
             transactional_mails.send_duplicate_beneficiary_email(

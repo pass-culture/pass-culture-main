@@ -12,6 +12,8 @@ from pcapi.core.bookings.external import booking_notifications
 from pcapi.core.bookings.external.booking_notifications import notify_users_bookings_not_retrieved
 from pcapi.core.bookings.external.booking_notifications import send_today_events_notifications_metropolitan_france
 import pcapi.core.bookings.repository as bookings_repository
+from pcapi.core.external.automations import user as user_automations
+from pcapi.core.external.automations import venue as venue_automations
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.repository import (
@@ -27,7 +29,6 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import api as users_api
 import pcapi.core.users.constants as users_constants
-from pcapi.core.users.external import user_automations
 from pcapi.core.users.repository import get_newly_eligible_age_18_users
 from pcapi.local_providers.provider_manager import synchronize_venue_providers
 from pcapi.models import db
@@ -345,7 +346,7 @@ def users_whose_credit_expired_today_automation() -> None:
 def pro_inactive_venues_automation() -> None:
     """Updates the list of venues which are inactive since 90 days or more ("pros-inactivité-90j" list).
     This command is meant to be called every day."""
-    user_automations.pro_inactive_venues_automation()
+    venue_automations.pro_inactive_venues_automation()
 
 
 @blueprint.cli.command("notify_users_bookings_not_retrieved")

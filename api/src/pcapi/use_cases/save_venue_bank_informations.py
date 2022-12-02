@@ -2,10 +2,10 @@ import logging
 
 from pcapi import settings
 from pcapi.connectors import sirene
+from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.offerers import api as offerers_api
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.users.external import update_external_pro
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
 from pcapi.domain.bank_information import check_new_bank_information_older_than_saved_one

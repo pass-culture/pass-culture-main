@@ -19,6 +19,8 @@ from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.external.attributes.api import update_external_pro
+from pcapi.core.external.attributes.api import update_external_user
 import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
@@ -29,8 +31,6 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Stock
 import pcapi.core.offers.validation as offers_validation
 import pcapi.core.providers.repository as providers_repository
-from pcapi.core.users.external import update_external_pro
-from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_and_lock_user
 from pcapi.models import db
