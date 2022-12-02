@@ -626,32 +626,20 @@ class ListOfferersToValidateTest:
         def test_list_filtering_by_date(self, authenticated_client):
             # given
             # Created before requested range, excluded from results:
+            offerers_factories.UserNotValidatedOffererFactory(offerer__dateCreated=datetime.datetime(2022, 11, 4, 4))
+            # Created within requested range: Nov 4 23:45 UTC is Nov 5 00:45 CET
             user_offerer_2 = offerers_factories.UserNotValidatedOffererFactory(
-                offerer__dateCreated=datetime.datetime(2022, 11, 4, 4)
+                offerer__dateCreated=datetime.datetime(2022, 11, 4, 23, 45)
             )
-            history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime(2022, 11, 4, 4),
-                actionType=history_models.ActionType.OFFERER_NEW,
-                authorUser=user_offerer_2.user,
-                offerer=user_offerer_2.offerer,
-                user=user_offerer_2.user,
-            )
-            # Created within requested range:
+            # Within requested range:
             user_offerer_3 = offerers_factories.UserNotValidatedOffererFactory(
                 offerer__dateCreated=datetime.datetime(2022, 11, 6, 5)
             )
-            history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime(2022, 11, 6, 5),
-                actionType=history_models.ActionType.OFFERER_NEW,
-                authorUser=user_offerer_3.user,
-                offerer=user_offerer_3.offerer,
-                user=user_offerer_3.user,
+            # Excluded from results: Nov 8 23:15 UTC is Now 9 00:15 CET
+            offerers_factories.UserNotValidatedOffererFactory(
+                offerer__dateCreated=datetime.datetime(2022, 11, 8, 23, 15)
             )
-            # No history, in requested range:
-            user_offerer_4 = offerers_factories.UserNotValidatedOffererFactory(
-                offerer__dateCreated=datetime.datetime(2022, 11, 8, 6)
-            )
-            # No history, excluded from results:
+            # Excluded from results:
             offerers_factories.UserNotValidatedOffererFactory(offerer__dateCreated=datetime.datetime(2022, 11, 10, 7))
 
             # when
@@ -667,8 +655,7 @@ class ListOfferersToValidateTest:
             # then
             assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
-            ids = [int(row["ID"]) for row in rows]
-            assert sorted(ids) == sorted(uo.offerer.id for uo in (user_offerer_3, user_offerer_4))
+            assert [int(row["ID"]) for row in rows] == [uo.offerer.id for uo in (user_offerer_3, user_offerer_2)]
 
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_list_filtering_by_invalid_date(self, authenticated_client):
@@ -1272,6 +1259,37 @@ class ListUserOffererToValidateTest:
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert {row["Email Compte pro"] for row in rows} == expected_users_emails
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_list_filtering_by_date(self, authenticated_client):
+        # given
+        # Created before requested range, excluded from results:
+        offerers_factories.NotValidatedUserOffererFactory(dateCreated=datetime.datetime(2022, 11, 24, 22, 30))
+        # Created within requested range: Nov 24 23:45 UTC is Nov 25 00:45 CET
+        user_offerer_2 = offerers_factories.NotValidatedUserOffererFactory(
+            dateCreated=datetime.datetime(2022, 11, 24, 23, 45)
+        )
+        # Within requested range:
+        user_offerer_3 = offerers_factories.NotValidatedUserOffererFactory(
+            dateCreated=datetime.datetime(2022, 11, 25, 9, 15)
+        )
+        # Excluded from results because on the day after, Metropolitan French time:
+        offerers_factories.NotValidatedUserOffererFactory(dateCreated=datetime.datetime(2022, 11, 25, 23, 30))
+
+        # when
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(
+                url_for(
+                    "backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate",
+                    from_date="2022-11-25",
+                    to_date="2022-11-25",
+                )
+            )
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert [int(row["ID Compte pro"]) for row in rows] == [uo.user.id for uo in (user_offerer_3, user_offerer_2)]
 
 
 class ValidateOffererAttachmentUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
