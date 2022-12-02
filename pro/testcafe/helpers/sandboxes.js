@@ -1,5 +1,3 @@
-import fetch from 'node-fetch'
-
 import { API_URL } from '../../src/utils/config'
 
 export async function fetchSandbox(moduleName, getterName) {
