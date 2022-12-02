@@ -15,6 +15,7 @@ import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
@@ -242,13 +243,14 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
 
     image_as_bytes = form.get_image_as_bytes(request)
 
-    thumbnail = offers_api.create_mediation(
-        user=current_user,
-        offer=offer,
-        credit=form.credit,
-        image_as_bytes=image_as_bytes,
-        crop_params=form.crop_params,
-    )
+    with transaction():
+        thumbnail = offers_api.create_mediation(
+            user=current_user,
+            offer=offer,
+            credit=form.credit,
+            image_as_bytes=image_as_bytes,
+            crop_params=form.crop_params,
+        )
 
     return CreateThumbnailResponseModel(id=thumbnail.id, url=thumbnail.thumbUrl, credit=thumbnail.credit)
 
@@ -271,7 +273,8 @@ def delete_thumbnail(offer_id: str) -> None:
         )
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    offers_api.delete_mediation(offer=offer)
+    with transaction():
+        offers_api.delete_mediation(offer=offer)
 
 
 @private_api.route("/offers/categories", methods=["GET"])

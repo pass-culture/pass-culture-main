@@ -16,8 +16,6 @@ from tests import conftest
 from tests.routes import image_data
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
 DISABILITY_COMPLIANCE_FIELDS = {
     "audioDisabilityCompliant": True,
     "mentalDisabilityCompliant": True,
@@ -27,6 +25,7 @@ DISABILITY_COMPLIANCE_FIELDS = {
 
 
 class PostProductTest:
+    @pytest.mark.usefixtures("db_session")
     def test_physical_product_minimal_body(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -125,6 +124,7 @@ class PostProductTest:
             == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(created_mediation.id)}"
         )
 
+    @pytest.mark.usefixtures("db_session")
     def test_unlimited_quantity(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -152,6 +152,7 @@ class PostProductTest:
         assert created_stock.quantity == None
         assert created_stock.offer == created_offer
 
+    @pytest.mark.usefixtures("db_session")
     def test_is_duo_not_applicable(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -170,6 +171,7 @@ class PostProductTest:
         assert offers_models.Offer.query.one_or_none() is None
         assert response.json == {"acceptDoubleBookings": ["the category chosen does not allow double bookings"]}
 
+    @pytest.mark.usefixtures("db_session")
     @testing.override_features(WIP_ENABLE_OFFER_CREATION_API_V1=False)
     def test_api_disabled(self, client):
         api_key = offerers_factories.ApiKeyFactory()
@@ -189,6 +191,7 @@ class PostProductTest:
         assert offers_models.Offer.query.first() is None
         assert response.json == {"global": ["This API is not enabled"]}
 
+    @pytest.mark.usefixtures("db_session")
     def test_digital_product(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=api_key.offerer)
@@ -215,6 +218,7 @@ class PostProductTest:
         assert created_offer.url == "https://example.com"
         assert created_offer.extraData == {}
 
+    @pytest.mark.usefixtures("db_session")
     def test_extra_data_deserialization(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         offerers_factories.VirtualVenueFactory(managingOfferer=api_key.offerer)
@@ -239,6 +243,7 @@ class PostProductTest:
 
         assert created_offer.extraData == {"author": "Maurice", "stageDirector": "Alfred"}
 
+    @pytest.mark.usefixtures("db_session")
     def test_physical_product_attached_to_digital_venue(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=api_key.offerer)
@@ -257,6 +262,7 @@ class PostProductTest:
         assert response.json == {"venue": ['Une offre physique ne peut être associée au lieu "Offre numérique"']}
         assert offers_models.Offer.query.first() is None
 
+    @pytest.mark.usefixtures("db_session")
     def test_physical_product_with_digital_category(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -277,6 +283,7 @@ class PostProductTest:
         }
         assert offers_models.Offer.query.first() is None
 
+    @pytest.mark.usefixtures("db_session")
     def test_right_isbn_format(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -296,6 +303,7 @@ class PostProductTest:
 
         assert created_offer.extraData == {"isbn": "1234567891123"}
 
+    @pytest.mark.usefixtures("db_session")
     def test_wrong_isbn_format(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -316,6 +324,7 @@ class PostProductTest:
         }
         assert offers_models.Offer.query.first() is None
 
+    @pytest.mark.usefixtures("db_session")
     def test_event_category_not_accepted(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -334,6 +343,7 @@ class PostProductTest:
         assert "categoryRelatedFields" in response.json
         assert offers_models.Offer.query.first() is None
 
+    @pytest.mark.usefixtures("db_session")
     def test_venue_allowed(self, client):
         offerers_factories.ApiKeyFactory()
         not_allowed_venue = offerers_factories.VenueFactory()
@@ -352,7 +362,9 @@ class PostProductTest:
         assert response.json == {"venueId": ["There is no venue with this id associated to your API key"]}
         assert offers_models.Offer.query.first() is None
 
+    @conftest.clean_database
     @mock.patch("pcapi.core.offers.api.create_thumb", side_effect=Exception)
+    # this test needs "clean_database" instead of "db_session" fixture because with the latter, the mediation would still be present in databse
     def test_no_objects_saved_on_image_error(self, create_thumb_mock, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -375,6 +387,7 @@ class PostProductTest:
         assert offers_models.Offer.query.first() is None
         assert offers_models.Stock.query.first() is None
 
+    @conftest.clean_database
     def test_image_too_small(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
