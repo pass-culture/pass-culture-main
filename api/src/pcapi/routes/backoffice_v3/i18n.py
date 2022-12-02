@@ -47,6 +47,23 @@ def i18n_subscription_type(term: str) -> str:
             return term.replace("_", " ").capitalize()
 
 
+def i18n_column_name(term: str) -> str:
+    match term.lower():
+        case "email":
+            return "Email"
+        case "firstname":
+            return "Prénom"
+        case "lastname":
+            return "Nom"
+        case "postalcode":
+            return "Code postal"
+        case "phonenumber":
+            return "Téléphone"
+        case _:
+            return term.replace("_", " ").capitalize()
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["i18n_public_account"] = i18n_public_account
     app.jinja_env.filters["i18n_subscription_type"] = i18n_subscription_type
+    app.jinja_env.filters["i18n_column_name"] = i18n_column_name

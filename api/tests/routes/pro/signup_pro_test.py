@@ -64,12 +64,16 @@ class Returns204Test:
         assert user_offerer.validationStatus == ValidationStatus.VALIDATED
         assert user_offerer.dateCreated is not None
 
-        actions_list = history_models.ActionHistory.query.all()
-        assert len(actions_list) == 1
+        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        assert len(actions_list) == 2
         assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
         assert actions_list[0].offerer == offerer
+        assert actions_list[1].actionType == history_models.ActionType.USER_CREATED
+        assert actions_list[1].authorUser == user
+        assert actions_list[1].user == user
+        assert actions_list[1].offerer == offerer
 
     def test_creates_user_offerer_digital_venue_and_userOfferer_and_does_not_log_user_in(self, client):
         # Given
@@ -117,12 +121,16 @@ class Returns204Test:
         assert user_offerer is not None
         assert user_offerer.validationStatus == ValidationStatus.NEW
 
-        actions_list = history_models.ActionHistory.query.all()
-        assert len(actions_list) == 1
-        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        assert len(actions_list) == 2
+        assert actions_list[0].actionType == history_models.ActionType.USER_CREATED
         assert actions_list[0].authorUser == pro
         assert actions_list[0].user == pro
         assert actions_list[0].offerer == offerer
+        assert actions_list[1].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[1].authorUser == pro
+        assert actions_list[1].user == pro
+        assert actions_list[1].offerer == offerer
 
     def when_successful_and_existing_offerer_but_no_user_offerer_does_not_signin(self, client):
         # Given
@@ -186,13 +194,17 @@ class Returns204Test:
         assert user_offerer.validationStatus == ValidationStatus.VALIDATED
         assert user_offerer.dateCreated is not None
 
-        actions_list = history_models.ActionHistory.query.all()
-        assert len(actions_list) == 1
+        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        assert len(actions_list) == 2
         assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
         assert actions_list[0].offerer == offerer
         assert actions_list[0].comment == "Nouvelle demande sur un SIREN précédemment rejeté"
+        assert actions_list[1].actionType == history_models.ActionType.USER_CREATED
+        assert actions_list[1].authorUser == user
+        assert actions_list[1].user == user
+        assert actions_list[1].offerer == offerer
 
 
 @pytest.mark.usefixtures("db_session")
