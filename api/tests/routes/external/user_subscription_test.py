@@ -77,7 +77,6 @@ class DmsWebhookApplicationTest:
         [
             (dms_models.GraphQLApplicationStates.draft, fraud_models.FraudCheckStatus.STARTED),
             (dms_models.GraphQLApplicationStates.on_going, fraud_models.FraudCheckStatus.PENDING),
-            (dms_models.GraphQLApplicationStates.refused, fraud_models.FraudCheckStatus.KO),
         ],
     )
     def test_dms_request_with_existing_user(self, execute_query, dms_status, fraud_check_status, client):
@@ -104,6 +103,34 @@ class DmsWebhookApplicationTest:
         assert fraud_check.status == fraud_check_status
 
         assert fraud_api.has_user_performed_identity_check(user)
+
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_dms_request_ko_with_existing_user(self, execute_query, client):
+        user = users_factories.UserFactory()
+        execute_query.return_value = make_single_application(
+            6044787, state=dms_models.GraphQLApplicationStates.refused.value, email=user.email
+        )
+        form_data = {
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
+            "state": dms_models.GraphQLApplicationStates.refused.value,
+            "updated_at": "2021-09-30 17:55:58 +0200",
+        }
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        assert response.status_code == 204
+        assert execute_query.call_count == 1
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        assert fraud_check.userId == user.id
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+
+        assert not fraud_api.has_user_performed_identity_check(user)
 
     @freezegun.freeze_time("2022-03-17 09:00:00")
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")

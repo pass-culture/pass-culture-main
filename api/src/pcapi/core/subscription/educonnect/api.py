@@ -58,26 +58,6 @@ def handle_educonnect_authentication(
     return fraud_check.reasonCodes  # type: ignore [return-value]
 
 
-def get_educonnect_subscription_item_status(
-    user: users_models.User,
-    eligibility: users_models.EligibilityType | None,
-    educonnect_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
-) -> subscription_models.SubscriptionItemStatus:
-    """
-    An educonnect failure is always retryable, as long as the user is eligible for UNDERAGE grant
-    """
-    if any(check.status == fraud_models.FraudCheckStatus.OK for check in educonnect_fraud_checks):
-        return subscription_models.SubscriptionItemStatus.OK
-
-    if (
-        subscription_api.is_eligibility_activable(user, eligibility)
-        and user.eligibility == users_models.EligibilityType.UNDERAGE
-    ):
-        return subscription_models.SubscriptionItemStatus.TODO
-
-    return subscription_models.SubscriptionItemStatus.VOID
-
-
 def get_educonnect_subscription_message(
     educonnect_fraud_check: fraud_models.BeneficiaryFraudCheck,
 ) -> subscription_models.SubscriptionMessage | None:
