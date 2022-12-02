@@ -28,14 +28,15 @@ from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.notifications.push import testing as push_testing
 from pcapi.utils.human_ids import humanize
 
 import tests
+from tests import conftest
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 
@@ -54,6 +55,7 @@ SIMPLE_OFFER_VALIDATION_CONFIG = """
         """
 
 
+@pytest.mark.usefixtures("db_session")
 class CreateStockTest:
     def test_create_stock(self):
         # Given
@@ -225,6 +227,7 @@ class CreateStockTest:
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
 
+@pytest.mark.usefixtures("db_session")
 class EditStockTest:
     def test_edit_stock(self):
         # Given
@@ -554,6 +557,7 @@ class EditStockTest:
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
 
+@pytest.mark.usefixtures("db_session")
 class DeleteStockTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_delete_stock_basics(self, mocked_async_index_offer_ids):
@@ -661,6 +665,7 @@ class CreateMediationV2Test:
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
+    @pytest.mark.usefixtures("db_session")
     def test_ok(self, mocked_async_index_offer_ids, clear_tests_assets_bucket):
         # Given
         user = users_factories.ProFactory()
@@ -680,6 +685,7 @@ class CreateMediationV2Test:
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
+    @pytest.mark.usefixtures("db_session")
     def test_erase_former_mediations(self, clear_tests_assets_bucket):
         # Given
         user = users_factories.ProFactory()
@@ -711,8 +717,9 @@ class CreateMediationV2Test:
 
     @mock.patch("pcapi.core.object_storage.store_public_object", side_effect=Exception)
     @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
+    @conftest.clean_database
+    # this test needs "clean_database" instead of "db_session" fixture because with the latter, the mediation would still be present in databse
     def test_rollback_if_exception(self, mock_store_public_object, clear_tests_assets_bucket):
-        # Given
         user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
@@ -721,12 +728,14 @@ class CreateMediationV2Test:
         # When
         with pytest.raises(exceptions.ThumbnailStorageError):
             api.create_mediation(user, offer, "©Photographe", image_as_bytes)
+        db.session.rollback()
 
         # Then
         assert models.Mediation.query.count() == 0
         assert len(os.listdir(self.THUMBS_DIR)) == existing_number_of_files
 
 
+@pytest.mark.usefixtures("db_session")
 class CreateOfferTest:
     def test_create_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
@@ -881,6 +890,7 @@ class CreateOfferTest:
         assert error.value.errors["musicType"] == ["Ce champ est obligatoire"]
 
 
+@pytest.mark.usefixtures("db_session")
 class UpdateOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_basics(self, mocked_async_index_offer_ids):
@@ -1043,6 +1053,7 @@ class UpdateOfferTest:
         assert pending_offer.name == "Soliloquy"
 
 
+@pytest.mark.usefixtures("db_session")
 class BatchUpdateOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate_empty_list(self, mocked_async_index_offer_ids, caplog):
@@ -1136,6 +1147,7 @@ class BatchUpdateOffersTest:
         }
 
 
+@pytest.mark.usefixtures("db_session")
 class UpdateStockIdAtProvidersTest:
     def test_update_and_stock_id_at_providers(self):
         # Given
@@ -1151,6 +1163,7 @@ class UpdateStockIdAtProvidersTest:
         assert stock.idAtProviders == "1111111111111@88888888888888"
 
 
+@pytest.mark.usefixtures("db_session")
 class OfferExpenseDomainsTest:
     def test_offer_expense_domains(self):
         assert api.get_expense_domains(factories.OfferFactory(subcategoryId=subcategories.EVENEMENT_JEU.id)) == ["all"]
@@ -1168,6 +1181,7 @@ class OfferExpenseDomainsTest:
         }
 
 
+@pytest.mark.usefixtures("db_session")
 class AddCriterionToOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_from_isbn(self, mocked_async_index_offer_ids):
@@ -1261,6 +1275,7 @@ class AddCriterionToOffersTest:
         assert is_successful is False
 
 
+@pytest.mark.usefixtures("db_session")
 class DeactivateInappropriateProductTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_deactivate_product_with_inappropriate_content(self, mocked_async_index_offer_ids):
@@ -1288,6 +1303,7 @@ class DeactivateInappropriateProductTest:
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == {o.id for o in offers}
 
 
+@pytest.mark.usefixtures("db_session")
 class DeactivatePermanentlyUnavailableProductTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_deactivate_permanently_unavailable_product(self, mocked_async_index_offer_ids):
@@ -1316,6 +1332,7 @@ class DeactivatePermanentlyUnavailableProductTest:
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == {o.id for o in offers}
 
 
+@pytest.mark.usefixtures("db_session")
 class ComputeOfferValidationTest:
     def test_approve_if_no_offer_validation_config(self):
         offer = models.Offer(name="Maybe we should reject this offer")
@@ -1329,6 +1346,7 @@ class ComputeOfferValidationTest:
         assert api.set_offer_status_based_on_fraud_criteria(offer) == models.OfferValidationStatus.PENDING
 
 
+@pytest.mark.usefixtures("db_session")
 class UpdateOfferValidationStatusTest:
     def test_update_pending_offer_validation_status_to_approved(self):
         offer = factories.OfferFactory(validation=models.OfferValidationStatus.PENDING)
@@ -1365,6 +1383,7 @@ class UpdateOfferValidationStatusTest:
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
 
+@pytest.mark.usefixtures("db_session")
 class ImportOfferValidationConfigTest:
     def test_raise_a_WrongFormatInFraudConfigurationFile_error_for_key_error(self):
         config_yaml = """
@@ -1489,6 +1508,7 @@ class ImportOfferValidationConfigTest:
         assert current_config.specs["rules"][1]["conditions"][0]["attribute"] == "max_price"
 
 
+@pytest.mark.usefixtures("db_session")
 class ParseOfferValidationConfigTest:
     def test_parse_offer_validation_config(self):
         offer = factories.OfferFactory(name="REJECTED")
@@ -1518,6 +1538,7 @@ class ParseOfferValidationConfigTest:
         assert validation_rules[0].offer_validation_items[0].attribute == "withdrawalDetails"
 
 
+@pytest.mark.usefixtures("db_session")
 class ComputeOfferValidationScoreTest:
     def test_offer_validation_with_one_item_config_with_in(self):
         offer = factories.OfferFactory(name="REJECTED")
@@ -1729,6 +1750,7 @@ class ComputeOfferValidationScoreTest:
         assert score == 0.3
 
 
+@pytest.mark.usefixtures("db_session")
 class LoadProductByIsbnAndCheckIsGCUCompatibleOrRaiseErrorTest:
     def test_returns_product_if_found_and_is_gcu_compatible(self):
         isbn = "2221001648"
@@ -1757,6 +1779,7 @@ class LoadProductByIsbnAndCheckIsGCUCompatibleOrRaiseErrorTest:
 
 
 @freeze_time("2020-01-05 10:00:00")
+@pytest.mark.usefixtures("db_session")
 class UnindexExpiredOffersTest:
     @override_settings(ALGOLIA_DELETING_OFFERS_CHUNK_SIZE=2)
     @mock.patch("pcapi.core.search.unindex_offer_ids")
@@ -1793,6 +1816,7 @@ class UnindexExpiredOffersTest:
         ]
 
 
+@pytest.mark.usefixtures("db_session")
 class DeleteUnwantedExistingProductTest:
     def test_delete_product_when_isbn_found(self):
         isbn = "1111111111111"
@@ -1837,6 +1861,7 @@ class DeleteUnwantedExistingProductTest:
         assert not product.isSynchronizationCompatible
 
 
+@pytest.mark.usefixtures("db_session")
 class DeleteDraftOffersTest:
     def test_delete_draft_with_mediation_offer_criterion_activation_code_and_stocks(self, client):
         criterion = criteria_factories.CriterionFactory()
