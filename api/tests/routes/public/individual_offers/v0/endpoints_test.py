@@ -153,6 +153,50 @@ class PostProductTest:
         assert created_stock.offer == created_offer
 
     @pytest.mark.usefixtures("db_session")
+    def test_price_must_be_integer_strict(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products",
+            json={
+                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "stock": {
+                    "price": 12.34,
+                    "quantity": "unlimited",
+                },
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"stock.price": ["Saisissez un nombre valide"]}
+
+    @pytest.mark.usefixtures("db_session")
+    def test_price_must_be_positive(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products",
+            json={
+                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "stock": {
+                    "price": -1200,
+                    "quantity": "unlimited",
+                },
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"stock.price": ["The value must be positive"]}
+
+    @pytest.mark.usefixtures("db_session")
     def test_is_duo_not_applicable(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
