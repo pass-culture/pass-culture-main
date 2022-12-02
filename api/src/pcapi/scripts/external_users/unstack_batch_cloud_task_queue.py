@@ -10,8 +10,8 @@ from google.cloud.tasks_v2 import CloudTasksClient
 from google.cloud.tasks_v2.types import Task
 
 from pcapi import settings
-from pcapi.core.users.external import batch as batch_operations
-from pcapi.core.users.external import get_user_attributes
+from pcapi.core.external import batch as batch_operations
+from pcapi.core.external.attributes.api import get_user_attributes
 from pcapi.core.users.models import User
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.backends import batch as batch_backend

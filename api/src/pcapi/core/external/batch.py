@@ -1,7 +1,7 @@
 from datetime import datetime
 import logging
 
-from pcapi.core.users.external.models import UserAttributes
+from pcapi.core.external.attributes import models as attributes_models
 from pcapi.tasks import batch_tasks
 
 
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 BATCH_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 
-def update_user_attributes(user_id: int, user_attributes: UserAttributes) -> None:
+def update_user_attributes(user_id: int, user_attributes: attributes_models.UserAttributes) -> None:
     if user_attributes.is_pro:
         return
 
@@ -22,7 +22,7 @@ def update_user_attributes(user_id: int, user_attributes: UserAttributes) -> Non
     batch_tasks.update_user_attributes_ios_task.delay(payload)
 
 
-def format_user_attributes(user_attributes: UserAttributes) -> dict:
+def format_user_attributes(user_attributes: attributes_models.UserAttributes) -> dict:
     attributes = {
         "date(u.date_created)": _format_date(user_attributes.date_created),
         "date(u.date_of_birth)": _format_date(user_attributes.date_of_birth),

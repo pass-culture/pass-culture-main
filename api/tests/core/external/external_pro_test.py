@@ -3,6 +3,7 @@ from dataclasses import asdict
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.external.attributes.api import get_pro_attributes
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
@@ -10,7 +11,6 @@ from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.users.external import get_pro_attributes
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import NotificationSubscriptions
 

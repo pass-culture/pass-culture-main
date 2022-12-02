@@ -4,12 +4,12 @@ from flask import render_template
 from flask import url_for
 from flask_login import current_user
 
+from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
-from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 import pcapi.core.users.email.update as email_update
 import pcapi.utils.email as email_utils
@@ -82,9 +82,8 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
             dst = url_for(".update_pro_user", user_id=user.id)
             return render_template("pro_user/get.html", form=form, dst=dst, user=user), 400
 
-        users_external.update_external_user(user)
-
-        users_external.update_external_pro(old_email)  # to delete previous user info from SendinBlue
+        external_attributes_api.update_external_pro(old_email)  # to delete previous user info from SendinBlue
+        external_attributes_api.update_external_user(user)
 
     flash("Informations mises à jour", "success")
     return redirect(url_for(".get", user_id=user_id), code=303)

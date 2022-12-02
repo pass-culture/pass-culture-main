@@ -10,6 +10,7 @@ import pydantic
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import user_profiling
 import pcapi.core.bookings.exceptions as bookings_exceptions
+from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.phone_validation import sending_limit
 from pcapi.core.logging import get_or_set_correlation_id
@@ -21,8 +22,6 @@ from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions
-from pcapi.core.users import external as users_external
-from pcapi.core.users.external import update_external_user
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import api_errors
@@ -62,7 +61,7 @@ def update_user_profile(
     user: users_models.User, body: serializers.UserProfileUpdateRequest
 ) -> serializers.UserProfileResponse:
     api.update_notification_subscription(user, body.subscriptions)
-    update_external_user(user)
+    external_attributes_api.update_external_user(user)
     return serializers.UserProfileResponse.from_orm(user)
 
 
@@ -288,7 +287,7 @@ def validate_phone_number(user: users_models.User, body: serializers.ValidatePho
 
         is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
         if not is_activated:
-            users_external.update_external_user(user)
+            external_attributes_api.update_external_user(user)
 
 
 @blueprint.native_v1.route("/phone_validation/remaining_attempts", methods=["GET"])

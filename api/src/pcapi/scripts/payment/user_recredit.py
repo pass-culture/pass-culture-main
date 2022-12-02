@@ -5,12 +5,12 @@ import typing
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import api as users_api
-from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import transaction
@@ -105,7 +105,7 @@ def recredit_underage_users() -> None:
         logger.info("Recredited %s underage users deposits", len(users_to_recredit))
 
         for user, recredit_amount in users_and_recredit_amounts:
-            users_external.update_external_user(user)
+            external_attributes_api.update_external_user(user)
             domains_credit = users_api.get_domains_credit(user)
             if not transactional_mails.send_recredit_email_to_underage_beneficiary(
                 user, recredit_amount, domains_credit

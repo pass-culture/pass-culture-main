@@ -87,7 +87,7 @@ def get_venue_by_id_for_adage_iframe(
 
 
 def synchronize_adage_ids_on_venues() -> None:
-    from pcapi.core.users.external import update_external_pro
+    from pcapi.core.external.attributes.api import update_external_pro
 
     adage_cultural_partners = get_cultural_partners(force_update=True)
 

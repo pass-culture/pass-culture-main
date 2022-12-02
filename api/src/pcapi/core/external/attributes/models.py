@@ -2,8 +2,7 @@ from dataclasses import dataclass
 import datetime
 import typing
 
-from pcapi.core.users.models import DomainsCredit
-from pcapi.core.users.models import EligibilityType
+from pcapi.core.users import models as users_models
 
 
 @dataclass
@@ -17,8 +16,8 @@ class UserAttributes:
     departement_code: str | None
     deposit_activation_date: datetime.datetime | None
     deposit_expiration_date: datetime.datetime | None
-    domains_credit: DomainsCredit | None
-    eligibility: EligibilityType | None
+    domains_credit: users_models.DomainsCredit | None
+    eligibility: users_models.EligibilityType | None
     first_name: str | None
     has_completed_id_check: bool
     user_id: int
@@ -78,3 +77,12 @@ class ProAttributes:
     isPermanent: bool | None = None  # At least one venue is permanent
     has_offers: bool | None = None  # At least one venue has at least one active offer
     has_bookings: bool | None = None  # At least one venue has at least one booking not canceled, at least once
+
+
+@dataclass
+class BookingsAttributes:
+    """Attributes computed from bookings (values returned by get_bookings_categories_and_subcategories)"""
+
+    booking_categories: list[str]
+    booking_subcategories: list[str]
+    most_booked_subcategory: str | None = None

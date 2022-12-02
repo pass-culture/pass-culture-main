@@ -29,6 +29,8 @@ from pcapi.connectors import sirene
 from pcapi.core import search
 import pcapi.core.criteria.api as criteria_api
 import pcapi.core.criteria.models as criteria_models
+from pcapi.core.external import zendesk_sell
+from pcapi.core.external.attributes.api import update_external_pro
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.validation as finance_validation
 from pcapi.core.mails.transactional.pro.permanent_venue_needs_picture import send_permanent_venue_needs_picture
@@ -38,8 +40,6 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.offers.api import update_stock_id_at_providers
-from pcapi.core.users.external import update_external_pro
-from pcapi.core.users.external import zendesk_sell
 from pcapi.models import db
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 from pcapi.utils.urls import build_pc_pro_offerer_link

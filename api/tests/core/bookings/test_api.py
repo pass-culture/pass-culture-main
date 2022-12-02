@@ -24,6 +24,7 @@ from pcapi.core.categories import subcategories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.external_bookings.models import Ticket
 import pcapi.core.finance.factories as finance_factories
@@ -36,7 +37,6 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import override_features
-from pcapi.core.users.external.batch import BATCH_DATETIME_FORMAT
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
 from pcapi.models import db

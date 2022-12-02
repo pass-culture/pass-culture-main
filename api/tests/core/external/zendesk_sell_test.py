@@ -4,11 +4,11 @@ import pytest
 import requests_mock
 
 from pcapi import settings
+from pcapi.core.external import zendesk_sell
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
-from pcapi.core.users.external import zendesk_sell
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

@@ -14,9 +14,8 @@ from sib_api_v3_sdk.models.created_process_id import CreatedProcessId
 from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
 
 from pcapi import settings
+from pcapi.core.external.attributes import models as attributes_models
 from pcapi.core.users import testing
-from pcapi.core.users.external import ProAttributes
-from pcapi.core.users.external import UserAttributes
 from pcapi.core.users.models import UserRole
 from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
@@ -86,7 +85,9 @@ class SendinblueAttributes(Enum):
 
 
 def update_contact_attributes(
-    user_email: str, attributes: UserAttributes | ProAttributes, asynchronous: bool = True
+    user_email: str,
+    attributes: attributes_models.UserAttributes | attributes_models.ProAttributes,
+    asynchronous: bool = True,
 ) -> None:
     formatted_attributes = format_user_attributes(attributes)
 
@@ -117,14 +118,18 @@ def format_list_or_str(raw_value: str | Iterable[str]) -> str:
     return format_list(raw_value)
 
 
-def _get_attr(attributes: UserAttributes | ProAttributes, name: str, func: Callable[[Any], Any] = None) -> Any:
+def _get_attr(
+    attributes: attributes_models.UserAttributes | attributes_models.ProAttributes,
+    name: str,
+    func: Callable[[Any], Any] = None,
+) -> Any:
     value = getattr(attributes, name, None)
     if value is not None and func is not None:
         value = func(value)
     return value
 
 
-def format_user_attributes(attributes: UserAttributes | ProAttributes) -> dict:
+def format_user_attributes(attributes: attributes_models.UserAttributes | attributes_models.ProAttributes) -> dict:
     return {
         SendinblueAttributes.BOOKED_OFFER_CATEGORIES.value: _get_attr(attributes, "booking_categories", format_list),
         SendinblueAttributes.BOOKED_OFFER_SUBCATEGORIES.value: _get_attr(

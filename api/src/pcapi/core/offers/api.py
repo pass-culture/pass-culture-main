@@ -27,6 +27,7 @@ from pcapi.core.categories.conf import can_create_from_isbn
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api_offer
+from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external_bookings.api import get_shows_stock
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
@@ -48,7 +49,6 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.repository import update_stock_quantity_to_dn_booked_quantity
 from pcapi.core.offers.utils import as_utc_without_timezone
 import pcapi.core.providers.models as providers_models
-from pcapi.core.users.external import update_external_pro
 import pcapi.core.users.models as users_models
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User

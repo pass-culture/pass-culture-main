@@ -3,8 +3,8 @@ import markupsafe
 import sqlalchemy.orm as sqla_orm
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.offerers.models import UserOfferer
-from pcapi.core.users.external import update_external_pro
 from pcapi.utils.urls import build_pc_pro_offerer_link
 
 

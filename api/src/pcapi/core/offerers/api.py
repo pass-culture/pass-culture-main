@@ -18,6 +18,8 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.external import zendesk_sell
+from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
@@ -25,8 +27,6 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
-import pcapi.core.users.external as users_external
-from pcapi.core.users.external import zendesk_sell
 import pcapi.core.users.models as users_models
 import pcapi.core.users.repository as users_repository
 from pcapi.domain import admin_emails
@@ -119,8 +119,8 @@ def update_venue(
 
     # Former booking email address shall no longer receive emails about data related to this venue.
     # If booking email was only in this object, this will clear all columns here and it will never be updated later.
-    users_external.update_external_pro(old_booking_email)
-    users_external.update_external_pro(venue.bookingEmail)
+    external_attributes_api.update_external_pro(old_booking_email)
+    external_attributes_api.update_external_pro(venue.bookingEmail)
     zendesk_sell.update_venue(venue)
 
     return venue
@@ -223,7 +223,7 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
 
     search.async_index_venue_ids([venue.id])
 
-    users_external.update_external_pro(venue.bookingEmail)
+    external_attributes_api.update_external_pro(venue.bookingEmail)
     zendesk_sell.create_venue(venue)
 
     return venue
@@ -498,7 +498,7 @@ def create_offerer(
             extra={"user_offerer": user_offerer.id},
         )
 
-    users_external.update_external_pro(user.email)
+    external_attributes_api.update_external_pro(user.email)
     zendesk_sell.create_offerer(offerer)
 
     return user_offerer
@@ -524,7 +524,7 @@ def _validate_offerer_attachment(user_offerer: models.UserOfferer, author_user: 
 
     repository.save(user_offerer, action)
 
-    users_external.update_external_pro(user_offerer.user.email)
+    external_attributes_api.update_external_pro(user_offerer.user.email)
 
     if not transactional_mails.send_offerer_attachment_validation_email_to_pro(user_offerer):
         logger.warning(
@@ -612,7 +612,7 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User | N
     search.async_index_offers_of_venue_ids([venue.id for venue in managed_venues])
 
     for applicant in applicants:
-        users_external.update_external_pro(applicant.email)
+        external_attributes_api.update_external_pro(applicant.email)
 
     zendesk_sell.update_offerer(offerer)
 
@@ -676,7 +676,7 @@ def reject_offerer(
 
     if was_validated:
         for applicant in applicants:
-            users_external.update_external_pro(applicant.email)
+            external_attributes_api.update_external_pro(applicant.email)
 
 
 def set_offerer_pending(
