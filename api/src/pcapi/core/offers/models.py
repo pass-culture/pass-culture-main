@@ -104,7 +104,7 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
-    author = sa.orm.relationship("User", foreign_keys=[authorId], backref="mediations")  # type: ignore [misc]
+    author: Mapped["User"] | None = sa.orm.relationship("User", foreign_keys=[authorId], backref="mediations")
 
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
