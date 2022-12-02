@@ -175,7 +175,7 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         expirationDate=None,
         id=collective_booking.id,
         isDigital=False,
-        venueName=venue.name,
+        venueName=venue.publicName or venue.name,
         name=offer.name,
         numberOfTickets=stock.numberOfTickets,
         participants=[student.value for student in offer.students],
