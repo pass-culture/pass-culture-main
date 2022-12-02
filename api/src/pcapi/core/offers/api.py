@@ -704,15 +704,22 @@ def delete_stock(stock: Stock) -> None:
 
 
 def create_mediation(
-    user: User,
+    user: User | None,
     offer: Offer,
-    credit: str,
+    credit: str | None,
     image_as_bytes: bytes,
     crop_params: image_conversion.CropParams | None = None,
     keep_ratio: bool = False,
+    min_width: int = validation.MIN_THUMBNAIL_WIDTH,
+    min_height: int = validation.MIN_THUMBNAIL_HEIGHT,
+    max_width: int | None = None,
+    max_height: int | None = None,
+    aspect_ratio: image_conversion.ImageRatio = image_conversion.ImageRatio.PORTRAIT,
 ) -> Mediation:
     # checks image type, min dimensions
-    validation.check_image(image_as_bytes)
+    validation.check_image(
+        image_as_bytes, min_width=min_width, min_height=min_height, max_width=max_width, max_height=max_height
+    )
 
     mediation = Mediation(
         author=user,
@@ -724,7 +731,12 @@ def create_mediation(
 
     try:
         create_thumb(
-            mediation, image_as_bytes, storage_id_suffix_str="", crop_params=crop_params, keep_ratio=keep_ratio
+            mediation,
+            image_as_bytes,
+            storage_id_suffix_str="",
+            crop_params=crop_params,
+            ratio=aspect_ratio,
+            keep_ratio=keep_ratio,
         )
     except image_conversion.ImageRatioError:
         raise

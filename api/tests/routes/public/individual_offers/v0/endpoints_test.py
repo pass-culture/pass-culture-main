@@ -1,10 +1,19 @@
+import base64
 import decimal
+import pathlib
+from unittest import mock
 
 import pytest
 
+from pcapi import settings
 from pcapi.core import testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.utils import human_ids
+
+import tests
+from tests import conftest
+from tests.routes import image_data
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -46,7 +55,8 @@ class PostProductTest:
         assert created_offer.bookingEmail is None
         assert created_offer.description is None
 
-    def test_offer_creation_with_full_body(self, client):
+    @pytest.mark.usefixtures("db_session")
+    def test_offer_creation_with_full_body(self, client, clear_tests_assets_bucket):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
 
@@ -70,6 +80,10 @@ class PostProductTest:
                     "visualDisabilityCompliant": False,
                 },
                 "externalTicketOfficeUrl": "https://maposaic.com",
+                "image": {
+                    "credit": "Jean-Crédit Photo",
+                    "file": image_data.GOOD_IMAGE,
+                },
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "stock": {
@@ -102,6 +116,14 @@ class PostProductTest:
         assert created_stock.price == decimal.Decimal("12.34")
         assert created_stock.quantity == 3
         assert created_stock.offer == created_offer
+
+        created_mediation = offers_models.Mediation.query.one()
+        assert created_mediation.offer == created_offer
+        assert created_offer.image.url == created_mediation.thumbUrl
+        assert (
+            created_offer.image.url
+            == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(created_mediation.id)}"
+        )
 
     def test_unlimited_quantity(self, client):
         api_key = offerers_factories.ApiKeyFactory()
@@ -329,3 +351,74 @@ class PostProductTest:
         assert response.status_code == 404
         assert response.json == {"venueId": ["There is no venue with this id associated to your API key"]}
         assert offers_models.Offer.query.first() is None
+
+    @mock.patch("pcapi.core.offers.api.create_thumb", side_effect=Exception)
+    def test_no_objects_saved_on_image_error(self, create_thumb_mock, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products",
+            json={
+                "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "image": {"file": image_data.GOOD_IMAGE},
+                "stock": {"quantity": 1, "price": 100},
+            },
+        )
+
+        assert response.status_code == 500
+        assert response.json == {}
+
+        assert offers_models.Offer.query.first() is None
+        assert offers_models.Stock.query.first() is None
+
+    def test_image_too_small(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products",
+            json={
+                "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "image": {"file": image_data.WRONG_IMAGE_SIZE},
+                "stock": {"quantity": 1, "price": 100},
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"imageFile": "The image is too small. It must be It must be above 400x600 pixels."}
+
+        assert offers_models.Offer.query.first() is None
+        assert offers_models.Stock.query.first() is None
+
+    @conftest.clean_database
+    def test_bad_image_ratio(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        image_bytes = (pathlib.Path(tests.__path__[0]) / "files" / "mouette_square.jpg").read_bytes()
+        encoded_bytes = base64.b64encode(image_bytes)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products",
+            json={
+                "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "image": {"file": encoded_bytes.decode()},
+                "stock": {"quantity": 1, "price": 100},
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"imageFile": "Bad image ratio: expected 0.66, found 1.0"}
+
+        assert offers_models.Offer.query.first() is None
+        assert offers_models.Stock.query.first() is None

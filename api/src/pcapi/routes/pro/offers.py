@@ -245,7 +245,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     thumbnail = offers_api.create_mediation(
         user=current_user,
         offer=offer,
-        credit=form.credit,  # type: ignore [arg-type]
+        credit=form.credit,
         image_as_bytes=image_as_bytes,
         crop_params=form.crop_params,
     )

@@ -37,7 +37,16 @@ class DigitalLocation(serialization.BaseModel):
     )
 
 
-class OfferCreationBaseModel(serialization.BaseModel):
+class ImageBody(serialization.BaseModel):
+    credit: str | None
+    file: str = pydantic.Field(
+        ...,
+        description="The image file encoded in base64 string. The image format must be PNG or JPEG. The size must be between 400x600 and 800x1200 pixels. The aspect ratio must be 2:3 (portrait format).",
+        example="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=",
+    )
+
+
+class OfferCreationBase(serialization.BaseModel):
     accept_double_bookings: bool | None = pydantic.Field(
         None,
         description="If set to true, the user may book the offer for two persons. The second item will be delivered at the same price as the first one. The category must be compatible with this feature.",
@@ -53,6 +62,7 @@ class OfferCreationBaseModel(serialization.BaseModel):
         None,
         description="This link is displayed to users wishing to book the offer but who do not have (anymore) credit.",
     )
+    image: ImageBody | None
     location: PhysicalLocation | DigitalLocation = pydantic.Field(
         ..., discriminator="type", description="The location where the offer will be available or will take place."
     )
@@ -118,7 +128,7 @@ class StockBody(serialization.BaseModel):
     quantity: pydantic.PositiveInt | typing.Literal["unlimited"]
 
 
-class ProductOfferCreationBody(OfferCreationBaseModel):
+class ProductOfferCreationBody(OfferCreationBase):
     category_related_fields: category_related_fields
     stock: StockBody | None
 
