@@ -185,7 +185,7 @@ describe('screens:StocksEvent', () => {
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })
 
-  it('should submit stock form when click on "Étape suivante""', async () => {
+  it('should not submit stock if nothing has changed when click on "Étape suivante" and redirect to summary', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stockIds: [{ id: 'CREATED_STOCK_ID' }],
     })
@@ -213,17 +213,17 @@ describe('screens:StocksEvent', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Next page')).toBeInTheDocument()
   })
-  it('should not submit stock if nothing has changed when click on "Étape suivante" and redirect to summary', async () => {
+  it('should submit stock form when click on "Étape suivante" (for christmas :)', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stockIds: [{ id: 'CREATED_STOCK_ID' }],
     })
     renderStockEventScreen({ props, storeOverride, contextValue })
-
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
-    await userEvent.click(await screen.getByText(getToday().toUTCString()))
+    await userEvent.click(await screen.getByText('25'))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
     await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.tab()
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )
@@ -231,18 +231,17 @@ describe('screens:StocksEvent', () => {
       humanizedOfferId: 'OFFER_ID',
       stocks: [
         {
-          beginningDatetime: '2020-12-15T11:00:00Z',
-          bookingLimitDatetime: '2020-12-15T11:00:00Z',
+          beginningDatetime: '2020-12-25T11:00:00Z',
+          bookingLimitDatetime: '2020-12-25T11:00:00Z',
           price: 20,
           quantity: null,
         },
       ],
     })
     expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
     expect(screen.getByText('Next page')).toBeInTheDocument()
-    expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })
 
   it('should display api errors', async () => {
