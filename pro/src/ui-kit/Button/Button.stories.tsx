@@ -1,8 +1,10 @@
+/* istanbul ignore file */
 import type { Story } from '@storybook/react'
 import React from 'react'
 
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
+import { ReactComponent as RightCircleArrowIcon } from 'icons/ico-right-circle-arrow.svg'
 
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
@@ -15,7 +17,7 @@ export default {
   decorators: [withRouterDecorator],
   argTypes: {
     variant: {
-      options: ['primary', 'secondary', 'ternary'],
+      options: ['primary', 'secondary', 'ternary', 'box'],
       control: 'radio',
     },
     iconPosition: {
@@ -94,7 +96,6 @@ LinkButtonWithIcon.args = {
 }
 
 export const WithTooltip = Template.bind({})
-
 WithTooltip.args = {
   ...DefaultButton.args,
   children: 'Créer une offre réservable pour un établissement',
@@ -102,4 +103,13 @@ WithTooltip.args = {
   iconPosition: IconPositionEnum.CENTER,
   variant: ButtonLink.variant.SECONDARY,
   hasTooltip: true,
+}
+
+export const ArrowButtonWithIcon = Template.bind({})
+ArrowButtonWithIcon.args = {
+  children: 'Hello world',
+  disabled: false,
+  variant: ButtonVariant.BOX,
+  iconPosition: IconPositionEnum.LEFT,
+  Icon: RightCircleArrowIcon,
 }

@@ -2,6 +2,8 @@ import cn from 'classnames'
 import React, { MouseEventHandler, useRef } from 'react'
 import { Link } from 'react-router-dom'
 
+import { ReactComponent as IcoArrowRight } from 'icons/ico-mini-arrow-right.svg'
+
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 import useTooltipMargin from './useTooltipMargin'
@@ -61,6 +63,9 @@ const ButtonLink = ({
         >
           {children}
         </div>
+      ) : /* istanbul ignore next: graphic variation */ variant ===
+        ButtonVariant.BOX ? (
+        <div className={styles['button-arrow-content']}>{children}</div>
       ) : (
         children
       )}
@@ -68,6 +73,14 @@ const ButtonLink = ({
         /* istanbul ignore next: graphic variation */
         Icon && iconPosition === IconPositionEnum.RIGHT && (
           <Icon className={styles['button-icon']} />
+        )
+      }
+      {
+        /* istanbul ignore next: graphic variation */ variant ===
+          ButtonVariant.BOX && (
+          <IcoArrowRight
+            className={cn(styles['button-icon'], styles['button-icon-arrow'])}
+          />
         )
       }
     </>

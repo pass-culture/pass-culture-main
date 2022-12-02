@@ -62,13 +62,13 @@
   }
 
   &.button-left {
-    .button-icon {
+    .button-icon:not(.button-icon-arrow) {
       margin-right: rem.torem(8px);
     }
   }
 
   &.button-right {
-    .button-icon {
+    .button-icon:not(.button-icon-arrow) {
       margin-left: rem.torem(8px);
     }
   }
@@ -165,6 +165,63 @@
     &.button-center {
       .button-icon {
         margin-right: 0;
+      }
+    }
+  }
+
+  &-box {
+    background-color: #E5E5E5;
+    justify-content: flex-start;
+    width: 100%;
+    padding: rem.torem(12px) rem.torem(4px) rem.torem(12px) rem.torem(8px);
+    border: rem.torem(1px) solid colors.$grey-dark;
+    border-radius: rem.torem(6px);
+
+    &:hover:not(:disabled):not(.button-disabled) {
+      background-color: colors.$white;
+      box-shadow: rem.torem(0px) rem.torem(3px) rem.torem(4px) colors.$grey-medium-shadow;
+    }
+
+    &:focus,
+    &:focus-visible {
+      outline: 0;
+      position: relative;
+      border-color: colors.$black;
+
+      &::before {
+        display: block;
+        content: '';
+        position: absolute;
+        left: rem.torem(2px);
+        right: rem.torem(2px);
+        top: rem.torem(2px);
+        bottom: rem.torem(2px);
+        border: 1px solid colors.$grey-dark;;
+        border-radius: rem.torem(4px);
+      }
+    }
+
+    .button-arrow-content {
+      flex-grow: 1;
+      text-align: left;
+    }
+
+    .button-icon {
+      &:not(.button-icon-arrow) {
+        fill: colors.$primary;
+      }
+      &.button-icon-arrow {
+        fill: colors.$black;
+      }
+    }
+
+    &:disabled, &.button-disabled {
+      background: colors.$grey-light;
+      border: none;
+      color: colors.$grey-dark;
+
+      .button-icon {
+        fill: colors.$grey-dark;
       }
     }
   }
