@@ -598,6 +598,15 @@ class UpdateUserInfoTest:
         user = users_models.User.query.one()
         assert user.email == "new@example.com"
 
+    def test_update_user_info_returns_modified_info(self):
+        user = users_factories.UserFactory(firstName="Noël", lastName="Flantier")
+
+        modified_info = users_api.update_user_info(user, first_name="Hubert", last_name="Bonisseur de la Bath")
+        assert modified_info == {
+            "firstName": {"new_info": "Hubert", "old_info": "Noël"},
+            "lastName": {"new_info": "Bonisseur de la Bath", "old_info": "Flantier"},
+        }
+
 
 @pytest.mark.usefixtures("db_session")
 class DomainsCreditTest:

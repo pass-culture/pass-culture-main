@@ -3,12 +3,15 @@ from flask import url_for
 import pytest
 
 import pcapi.core.history.factories as history_factories
+import pcapi.core.history.models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
+import pcapi.core.users.models as users_models
 from pcapi.routes.backoffice_v3.filters import format_date
+import pcapi.utils.email as email_utils
 
 from .helpers import unauthorized as unauthorized_helpers
 
@@ -60,6 +63,66 @@ class GetProUserTest:
         assert response.location == expected_url
 
 
+class UpdateProUserTest:
+    class UnauthorizedTest(unauthorized_helpers.MissingCSRFHelper):
+        endpoint = "backoffice_v3_web.pro_user.update_pro_user"
+        endpoint_kwargs = {"user_id": 1}
+        method = "post"
+        form = {"first_name": "aaaaaaaaaaaaaaaaaaa"}
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_update_pro_user(self, client, legit_user):
+        user_to_edit = offerers_factories.UserOffererFactory().user
+
+        old_last_name = user_to_edit.lastName
+        new_last_name = "La Fripouille"
+        old_email = user_to_edit.email
+        new_email = old_email + ".UPDATE  "
+        expected_new_email = email_utils.sanitize_email(new_email)
+        old_postal_code = user_to_edit.postalCode
+        expected_new_postal_code = "75000"
+
+        base_form = {
+            "first_name": user_to_edit.firstName,
+            "last_name": new_last_name,
+            "email": new_email,
+            "postal_code": expected_new_postal_code,
+            "phone_number": user_to_edit.phoneNumber,
+        }
+
+        response = self.update_account(client, legit_user, user_to_edit, base_form)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_v3_web.pro_user.get", user_id=user_to_edit.id, _external=True)
+        assert response.location == expected_url
+
+        client.with_bo_session_auth(legit_user).get(expected_url)
+        history_url = url_for("backoffice_v3_web.pro_user.get_user_history", user_id=user_to_edit.id)
+        response = client.with_bo_session_auth(legit_user).get(history_url)
+
+        user_to_edit = users_models.User.query.get(user_to_edit.id)
+        assert user_to_edit.lastName == new_last_name
+        assert user_to_edit.email == expected_new_email
+        assert user_to_edit.postalCode == expected_new_postal_code
+
+        content = response.data.decode("utf-8")
+
+        assert history_models.ActionType.USER_INFO_MODIFIED.value in content
+        assert f"{old_last_name} =&gt; {user_to_edit.lastName}" in content
+        assert f"{old_email} =&gt; {user_to_edit.email}" in content
+        assert f"{old_postal_code} =&gt; {user_to_edit.postalCode}" in content
+
+    def update_account(self, client, legit_user, user_to_edit, form):
+        # generate csrf token
+        edit_url = url_for("backoffice_v3_web.pro_user.get", user_id=user_to_edit.id)
+        client.with_bo_session_auth(legit_user).get(edit_url)
+
+        url = url_for("backoffice_v3_web.pro_user.update_pro_user", user_id=user_to_edit.id)
+
+        form["csrf_token"] = g.get("csrf_token", "")
+        return client.with_bo_session_auth(legit_user).post(url, form=form)
+
+
 class GetProUserHistoryTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
         endpoint = "backoffice_v3_web.pro_user.get_user_history"
@@ -83,6 +146,14 @@ class GetProUserHistoryTest:
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_no_history(self, authenticated_client, pro_user):
+        url = url_for("backoffice_v3_web.pro_user.get_user_history", user_id=pro_user.id)
+
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url)
+        assert response.status_code == 200
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_something(self, authenticated_client, pro_user):
         url = url_for("backoffice_v3_web.pro_user.get_user_history", user_id=pro_user.id)
 
         with assert_no_duplicated_queries():

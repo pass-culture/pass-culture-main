@@ -29,6 +29,12 @@ class ActionType(enum.Enum):
     USER_OFFERER_PENDING = "Rattachement mis en attente"
     USER_OFFERER_VALIDATED = "Rattachement validé"
     USER_OFFERER_REJECTED = "Rattachement rejeté"
+    # Modification of user info:
+    USER_INFO_MODIFIED = "Modification des informations"
+    # User account status changes:
+    USER_CREATED = "Création du compte"
+    USER_SUSPENDED = "Compte suspendu"
+    USER_UNSUSPENDED = "Compte réactivé"
 
 
 class ActionHistory(PcObject, Base, Model, ExtraDataMixin):
