@@ -147,6 +147,7 @@ describe('Summary trackers', () => {
 
     props = {
       offerId: offer.id,
+      nonHumanizedOfferId: offer.nonHumanizedId,
       formOfferV2: true,
       providerName: null,
       offer: offer,

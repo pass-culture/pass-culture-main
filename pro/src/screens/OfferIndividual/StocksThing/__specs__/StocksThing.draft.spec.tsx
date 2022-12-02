@@ -7,9 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { ApiError, GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
@@ -64,7 +62,7 @@ const renderStockThingScreen = ({
         initialEntries={[
           getOfferIndividualUrl({
             step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.EDITION,
+            mode: OFFER_WIZARD_MODE.DRAFT,
             offerId: contextValue.offerId || undefined,
           }),
         ]}
@@ -72,7 +70,7 @@ const renderStockThingScreen = ({
         <Route
           path={getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.EDITION,
+            mode: OFFER_WIZARD_MODE.DRAFT,
           })}
         >
           <OfferIndividualContext.Provider value={contextValue}>
@@ -82,26 +80,10 @@ const renderStockThingScreen = ({
         <Route
           path={getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-        >
-          <div>Next page</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
             mode: OFFER_WIZARD_MODE.DRAFT,
           })}
         >
-          <div>Save draft page</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-        >
-          <div>Previous page</div>
+          <div>Next page</div>
         </Route>
         <Notification />
       </MemoryRouter>
@@ -109,7 +91,7 @@ const renderStockThingScreen = ({
   )
 }
 
-describe('screens:StocksThing', () => {
+describe('screens:StocksThing::draft', () => {
   let props: IStocksThingProps
   let storeOverride: Partial<RootState>
   let contextValue: IOfferIndividualContext
@@ -150,84 +132,21 @@ describe('screens:StocksThing', () => {
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
   })
-  it('should allow user to delete a stock', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
-    renderStockThingScreen({
-      props,
-      storeOverride,
-      contextValue,
-    })
-    await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
 
-    expect(
-      screen.getByText('Voulez-vous supprimer ce stock ?')
-    ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
-    expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
-    expect(api.deleteStock).toHaveBeenCalledTimes(1)
-  })
-  it('should not allow user to delete stock from a synchronized offer', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
-    offer.lastProvider = { id: 'PROVIDER_ID', isActive: true, name: 'Provider' }
-    props.offer = { ...(offer as IOfferIndividual) }
-    renderStockThingScreen({
-      props,
-      storeOverride,
-      contextValue,
-    })
-
-    await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[1]
-    )
-    const deleteButton = screen.getAllByTitle('Supprimer le stock')[0]
-    expect(deleteButton).toHaveAttribute('aria-disabled', 'true')
-    await deleteButton.click()
-    expect(api.deleteStock).toHaveBeenCalledTimes(0)
-    expect(screen.getByLabelText('Prix')).toHaveValue(10.01)
-  })
-  it('should display an error message when there is an api error', async () => {
-    jest.spyOn(api, 'deleteStock').mockRejectedValue(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: 500,
-          body: [{ error: ["There's might be an error"] }],
-        } as ApiResult,
-        ''
-      )
-    )
-    renderStockThingScreen({
-      props,
-      storeOverride,
-      contextValue,
-    })
-
-    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
-    await userEvent.click(screen.getByText('Supprimer le stock'))
-    await userEvent.click(
-      await screen.findByText('Supprimer', { selector: 'button' })
-    )
-    expect(api.deleteStock).toHaveBeenCalledTimes(1)
-    expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
-    expect(
-      screen.getByText(
-        'Une erreur est survenue lors de la suppression du stock.'
-      )
-    ).toBeInTheDocument()
-  })
   it('should show a success notification if nothing has been touched', async () => {
     renderStockThingScreen({ props, storeOverride, contextValue })
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+      screen.getByRole('button', {
+        name: 'Sauvegarder le brouillon',
+      })
     )
     expect(
-      screen.getByText('Vos modifications ont bien été enregistrées')
+      screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
     expect(
-      screen.queryByRole('heading', { name: /Stock & Prix/ })
-    ).not.toBeInTheDocument()
-    expect(screen.getByText(/Next page/)).toBeInTheDocument()
+      screen.getByRole('heading', { name: /Stock & Prix/ })
+    ).toBeInTheDocument()
+    expect(screen.queryByText(/Next page/)).not.toBeInTheDocument()
   })
 })

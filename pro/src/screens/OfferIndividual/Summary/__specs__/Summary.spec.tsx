@@ -7,7 +7,12 @@ import { Provider } from 'react-redux'
 import { generatePath, MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { CancelablePromise, OfferStatus, ApiError } from 'apiClient/v1'
+import {
+  CancelablePromise,
+  OfferStatus,
+  ApiError,
+  GetIndividualOfferResponseModel,
+} from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
@@ -213,6 +218,7 @@ describe('Summary', () => {
 
     props = {
       offerId: offer.id,
+      nonHumanizedOfferId: offer.nonHumanizedId,
       providerName: 'Ciné Office',
       offer: offer,
       stockThing: stock,
@@ -226,6 +232,9 @@ describe('Summary', () => {
       setLogEvent: null,
     }))
     jest.spyOn(api, 'patchPublishOffer').mockResolvedValue()
+    jest.spyOn(api, 'getOffer').mockResolvedValue({
+      status: OfferStatus.ACTIVE,
+    } as GetIndividualOfferResponseModel)
   })
 
   describe('On edition', () => {
@@ -495,6 +504,9 @@ describe('Summary', () => {
           { offerId: 'AA' }
         ),
       })
+      const pageTitle = screen.getByRole('heading', {
+        name: /Détails de l’offre/,
+      })
       const buttonPublish = screen.getByRole('button', {
         name: /Publier l’offre/,
       })
@@ -509,10 +521,10 @@ describe('Summary', () => {
       await userEvent.click(buttonPublish)
       expect(api.patchPublishOffer).toHaveBeenCalled()
       expect(buttonPublish).toBeDisabled()
-
-      await waitFor(() => {
-        expect(buttonPublish).not.toBeDisabled()
-      })
+      await waitFor(() => expect(pageTitle).not.toBeInTheDocument())
+      expect(
+        await screen.getByText('Confirmation page: creation')
+      ).toBeInTheDocument()
     })
 
     it('should display notification on api error', async () => {

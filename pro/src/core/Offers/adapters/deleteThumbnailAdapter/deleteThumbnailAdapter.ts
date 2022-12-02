@@ -8,7 +8,8 @@ export type TDeleteThumbnailAdapter = Adapter<Params, null, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
-  message: 'Une erreur est survenue lors de la suppression de votre image',
+  message:
+    'Une erreur est survenue lors de la suppression de votre image. Merci de réessayer plus tard.',
   payload: null,
 }
 

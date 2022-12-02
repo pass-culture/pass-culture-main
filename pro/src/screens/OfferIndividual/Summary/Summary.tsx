@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
 
-import { api } from 'apiClient/api'
 import { BannerSummary } from 'components/Banner'
 import {
   IOfferAppPreviewProps,
@@ -10,15 +8,18 @@ import {
 import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { SummaryLayout } from 'components/SummaryLayout'
+import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
+import { getOfferIndividualAdapter } from 'core/Offers/adapters'
+import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOffer'
 import { IOfferSubCategory } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
-import { useOfferWizardMode } from 'hooks'
+import { useNavigate, useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
@@ -40,6 +41,7 @@ import styles from './Summary.module.scss'
 
 export interface ISummaryProps {
   offerId: string
+  nonHumanizedOfferId: number
   formOfferV2?: boolean
   providerName: string | null
   offer: IOfferSectionProps
@@ -55,6 +57,7 @@ const Summary = (
     formOfferV2 = false,
     providerName,
     offerId,
+    nonHumanizedOfferId,
     offer,
     stockThing,
     stockEventList,
@@ -66,47 +69,46 @@ const Summary = (
   const notification = useNotification()
   const mode = useOfferWizardMode()
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
+  const navigate = useNavigate()
+  const { setOffer } = useOfferIndividualContext()
 
   const { logEvent } = useAnalytics()
-  const publishOffer = () => {
+  const publishOffer = async () => {
     // edition mode offers are already publish
     /* istanbul ignore next: DEBT, TO FIX */
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       return
     }
     setIsDisabled(true)
-    api
-      // @ts-expect-error: type string is not assignable to type number
-      .patchPublishOffer({ id: offerId })
-      .then(() => {
-        setIsDisabled(false)
-        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-          from: OfferBreadcrumbStep.SUMMARY,
-          to: OfferBreadcrumbStep.CONFIRMATION,
-          used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-          isEdition: false,
-          isDraft: true,
-          offerId: offerId,
-        })
-        history.push(
-          getOfferIndividualUrl({
-            offerId,
-            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-            mode,
-            isV2: !isOfferFormV3,
-          })
-        )
+    const response = await publishIndividualOffer({
+      offerId: nonHumanizedOfferId,
+    })
+    if (response.isOk) {
+      const response = await getOfferIndividualAdapter(offerId)
+      if (response.isOk) {
+        setOffer && setOffer(response.payload)
+      }
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OfferBreadcrumbStep.SUMMARY,
+        to: OfferBreadcrumbStep.CONFIRMATION,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: false,
+        isDraft: true,
+        offerId: offerId,
       })
-      .catch(
-        /* istanbul ignore next: DEBT, TO FIX */
-        () => {
-          notification.error("Une erreur s'est produite, veuillez réessayer")
-          setIsDisabled(false)
-        }
+      navigate(
+        getOfferIndividualUrl({
+          offerId,
+          step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+          mode,
+          isV2: !isOfferFormV3,
+        })
       )
+    } else {
+      notification.error("Une erreur s'est produite, veuillez réessayer")
+    }
+    setIsDisabled(false)
   }
-
-  const history = useHistory()
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handlePreviousStep = () => {
@@ -119,7 +121,7 @@ const Summary = (
       offerId: offerId,
     })
 
-    history.push(
+    navigate(
       getOfferIndividualUrl({
         offerId,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,

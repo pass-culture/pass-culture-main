@@ -54,6 +54,7 @@ const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
       <PageTitle title="Récapitulatif" />
       <SummaryScreen
         offerId={offer.id}
+        nonHumanizedOfferId={offer.nonHumanizedId}
         providerName={providerName}
         offer={offerData}
         stockThing={stockThing}
