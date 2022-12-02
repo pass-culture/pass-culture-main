@@ -3,6 +3,8 @@
 import cn from 'classnames'
 import React, { useRef } from 'react'
 
+import { ReactComponent as IcoArrowRight } from 'icons/ico-mini-arrow-right.svg'
+
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 import useTooltipMargin from './useTooltipMargin'
@@ -53,11 +55,18 @@ const Button = ({
         >
           {children}
         </div>
+      ) : variant === ButtonVariant.BOX ? (
+        <div className={styles['button-arrow-content']}>{children}</div>
       ) : (
         children
       )}
       {Icon && iconPosition === IconPositionEnum.RIGHT && (
         <Icon className={styles['button-icon']} />
+      )}
+      {variant === ButtonVariant.BOX && (
+        <IcoArrowRight
+          className={cn(styles['button-icon'], styles['button-icon-arrow'])}
+        />
       )}
     </button>
   )
