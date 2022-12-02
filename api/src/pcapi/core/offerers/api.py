@@ -1394,8 +1394,8 @@ def _apply_query_filters(
     query: sa.orm.Query,
     tags: list[offerers_models.OffererTag] | None,
     status: list[offerers_models.ValidationStatus] | None,
-    from_date: datetime | None,
-    to_date: datetime | None,
+    from_datetime: datetime | None,
+    to_datetime: datetime | None,
     cls: typing.Type[offerers_models.Offerer | offerers_models.UserOfferer],
     offerer_id_column: sa.orm.InstrumentedAttribute,
 ) -> sa.orm.Query:
@@ -1425,13 +1425,11 @@ def _apply_query_filters(
             sa.and_(*(tagged_offerers.c.tags.any(tag.id) for tag in tags))
         )
 
-    if from_date:
-        min_datetime = datetime.combine(from_date, datetime.min.time())
-        query = query.filter(cls.dateCreated >= min_datetime)
+    if from_datetime:
+        query = query.filter(cls.dateCreated >= from_datetime)
 
-    if to_date:
-        max_datetime = datetime.combine(to_date, datetime.max.time())
-        query = query.filter(cls.dateCreated <= max_datetime)
+    if to_datetime:
+        query = query.filter(cls.dateCreated <= to_datetime)
 
     return query
 
@@ -1440,9 +1438,8 @@ def list_offerers_to_be_validated(
     q: str | None,  # search query
     tags: list[offerers_models.OffererTag] | None = None,
     status: list[offerers_models.ValidationStatus] | None = None,
-    from_date: datetime | None = None,
-    to_date: datetime | None = None,
-    **_: typing.Any,
+    from_datetime: datetime | None = None,
+    to_datetime: datetime | None = None,
 ) -> sa.orm.Query:
     query = offerers_models.Offerer.query.options(
         sa.orm.joinedload(offerers_models.Offerer.UserOfferers).joinedload(offerers_models.UserOfferer.user),
@@ -1461,7 +1458,7 @@ def list_offerers_to_be_validated(
             query = query.filter(sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{name}%"))
 
     return _apply_query_filters(
-        query, tags, status, from_date, to_date, offerers_models.Offerer, offerers_models.Offerer.id
+        query, tags, status, from_datetime, to_datetime, offerers_models.Offerer, offerers_models.Offerer.id
     )
 
 
@@ -1493,9 +1490,8 @@ def list_users_offerers_to_be_validated_legacy(filter_: list[dict[str, typing.An
 def list_users_offerers_to_be_validated(
     tags: list[offerers_models.OffererTag] | None = None,
     status: list[offerers_models.ValidationStatus] | None = None,
-    from_date: datetime | None = None,
-    to_date: datetime | None = None,
-    **_: typing.Any,
+    from_datetime: datetime | None = None,
+    to_datetime: datetime | None = None,
 ) -> sa.orm.Query:
     query = offerers_models.UserOfferer.query.options(
         sa.orm.joinedload(offerers_models.UserOfferer.user),
@@ -1508,7 +1504,13 @@ def list_users_offerers_to_be_validated(
     )
 
     return _apply_query_filters(
-        query, tags, status, from_date, to_date, offerers_models.UserOfferer, offerers_models.UserOfferer.offererId
+        query,
+        tags,
+        status,
+        from_datetime,
+        to_datetime,
+        offerers_models.UserOfferer,
+        offerers_models.UserOfferer.offererId,
     )
 
 
