@@ -27,15 +27,19 @@
         Adresse du lieu : {{ venue.city }} {{ venue.postalCode }}
     </p>
     <p id="pro_user_information">
-        Information de l'utilisateur pro ayant créé l'offre
-        <br>
-        Nom : {{ author.lastName }}
-        <br>
-        Prénom : {{ author.firstName }}
-        <br>
-        Téléphone : {{ author.phoneNumber }}
-        <br>
-        Email : {{ author.email }}
+        {% if author %}
+            Information de l'utilisateur pro ayant créé l'offre
+            <br>
+            Nom : {{ author.lastName }}
+            <br>
+            Prénom : {{ author.firstName }}
+            <br>
+            Téléphone : {{ author.phoneNumber }}
+            <br>
+            Email : {{ author.email }}
+        {% else %}
+            Aucun utilisateur pro n'est rattaché à la structure
+        {% endif %}
     </p>
 </body>
 

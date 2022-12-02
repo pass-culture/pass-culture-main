@@ -195,3 +195,17 @@ class MakeOfferRejectionNotificationEmailTest:
 
         # Then
         assert email.subject == "[Création d’offre : refus - numérique] Les lièvres pas malins"
+
+    def test_with_no_user_offerer(self):
+        # Given
+        offer = offers_factories.EventOfferFactory(
+            author=None,
+            product=offers_factories.DigitalProductFactory(name="Les lièvres pas malins"),
+            venue=offerers_factories.VirtualVenueFactory(),
+        )
+
+        # When
+        email = make_offer_rejection_notification_email(offer)
+
+        # Then
+        assert "Aucun utilisateur pro n'est rattaché à la structure" in email.html_content

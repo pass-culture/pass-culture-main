@@ -85,7 +85,7 @@ def make_offerer_internal_validation_email(
 def make_offer_creation_notification_email(
     offer: Offer | CollectiveOffer | CollectiveOfferTemplate,
 ) -> mails_models.TransactionalWithoutTemplateEmailData:
-    author = getattr(offer, "author", None) or offer.venue.managingOfferer.UserOfferers[0].user
+    author = getattr(offer, "author", None) or offer.venue.managingOfferer.first_user
     venue = offer.venue
     pro_link_to_offer = urls.build_pc_pro_offer_link(offer)
     pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
@@ -112,7 +112,7 @@ def make_offer_creation_notification_email(
 def make_offer_rejection_notification_email(
     offer: Offer | CollectiveOfferTemplate | CollectiveOffer,
 ) -> mails_models.TransactionalWithoutTemplateEmailData:
-    author = getattr(offer, "author", None) or offer.venue.managingOfferer.UserOfferers[0].user
+    author = getattr(offer, "author", None) or offer.venue.managingOfferer.first_user
     pro_link_to_offer = urls.build_pc_pro_offer_link(offer)
     venue = offer.venue
     pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
