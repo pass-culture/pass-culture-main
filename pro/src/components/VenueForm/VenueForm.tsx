@@ -12,6 +12,7 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { ButtonLink, SubmitButton } from 'ui-kit'
 
+import useActiveFeature from '../../hooks/useActiveFeature'
 import { ButtonVariant } from '../../ui-kit/Button/types'
 import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
@@ -72,6 +73,11 @@ const VenueForm = ({
       )
     )
   }, [])
+
+  const isNewOfferCreationJourney = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'
+  )
+
   const shouldBlockNavigation = useCallback(
     (nextLocation: Location): IShouldBlockNavigationReturnValue => {
       if (nextLocation.pathname.match(/\/structures\/([A-Z0-9]+)\/lieux/g)) {
@@ -117,14 +123,23 @@ const VenueForm = ({
           venueTypes={venueTypes}
           venueLabels={venueLabels}
           isVenueVirtual={initialIsVirtual}
+          isCreatingVenue={isCreatingVenue}
+          isNewOfferCreationJourney={isNewOfferCreationJourney}
         />
         {!initialIsVirtual && (
           <>
             <Accessibility isCreatingVenue={isCreatingVenue} />
-            <WithdrawalDetails isCreatedEntity={isCreatingVenue} />
+            {((isCreatingVenue && !isNewOfferCreationJourney) ||
+              !isCreatingVenue) && (
+              <WithdrawalDetails isCreatedEntity={isCreatingVenue} />
+            )}
           </>
         )}
-        <Contact isVenueVirtual={initialIsVirtual} />
+        <Contact
+          isVenueVirtual={initialIsVirtual}
+          isCreatingVenue={isCreatingVenue}
+          isNewOfferCreationJourney={isNewOfferCreationJourney}
+        />
         {
           /* istanbul ignore next: DEBT, TO FIX */ canOffererCreateCollectiveOffer &&
             ((isCreatingVenue && isSiretValued) || !isCreatingVenue) && (
