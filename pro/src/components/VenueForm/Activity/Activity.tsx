@@ -6,9 +6,16 @@ import { InfoBox, Select, TextArea } from 'ui-kit'
 export interface IActivity {
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
+  isCreatingVenue: boolean
+  isNewOfferCreationJourney: boolean
 }
 
-const Activity = ({ venueTypes, venueLabels }: IActivity) => {
+const Activity = ({
+  venueTypes,
+  venueLabels,
+  isCreatingVenue,
+  isNewOfferCreationJourney,
+}: IActivity) => {
   return (
     <>
       <FormLayout.Section
@@ -43,31 +50,35 @@ const Activity = ({ venueTypes, venueLabels }: IActivity) => {
             label="Type de lieu"
           />
         </FormLayout.Row>
-        <FormLayout.Row>
-          <TextArea
-            name="description"
-            label="Description"
-            placeholder="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
-            maxLength={1000}
-            countCharacters
-            isOptional
-          />
-        </FormLayout.Row>
-        <FormLayout.Row>
-          <Select
-            options={[
-              {
-                value: '',
-                label:
-                  'Si votre lieu est labellisé précisez-le en le sélectionnant',
-              },
-              ...venueLabels,
-            ]}
-            name="venueLabel"
-            label="Label du ministère de la Culture ou du CNC"
-            isOptional
-          />
-        </FormLayout.Row>
+        {!isCreatingVenue && !isNewOfferCreationJourney && (
+          <>
+            <FormLayout.Row>
+              <TextArea
+                name="description"
+                label="Description"
+                placeholder="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
+                maxLength={1000}
+                countCharacters
+                isOptional
+              />
+            </FormLayout.Row>
+            <FormLayout.Row>
+              <Select
+                options={[
+                  {
+                    value: '',
+                    label:
+                      'Si votre lieu est labellisé précisez-le en le sélectionnant',
+                  },
+                  ...venueLabels,
+                ]}
+                name="venueLabel"
+                label="Label du ministère de la Culture ou du CNC"
+                isOptional
+              />
+            </FormLayout.Row>
+          </>
+        )}
       </FormLayout.Section>
     </>
   )

@@ -12,6 +12,7 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { ButtonLink, SubmitButton } from 'ui-kit'
 
+import useActiveFeature from '../../hooks/useActiveFeature'
 import { ButtonVariant } from '../../ui-kit/Button/types'
 import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
@@ -70,6 +71,11 @@ const VenueForm = ({
       )
     )
   }, [])
+
+  const isNewOfferCreationJourney = useActiveFeature(
+    'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
+  )
+
   const shouldBlockNavigation = useCallback(
     (nextLocation: Location): IShouldBlockNavigationReturnValue => {
       if (nextLocation.pathname.match(/\/structures\/([A-Z0-9]+)\/lieux/g)) {
@@ -94,23 +100,30 @@ const VenueForm = ({
             venue={venue}
           />
         )}
-        <Informations
-          isCreatedEntity={isCreatingVenue}
-          readOnly={!isCreatingVenue}
-          updateIsSiretValued={updateIsSiretValued}
-          venueIsVirtual={false}
-          setIsSiretValued={setIsSiretValued}
-          siren={offerer.siren}
-        />
+        {!isCreatingVenue && !isNewOfferCreationJourney && (
+          <Informations
+            isCreatedEntity={isCreatingVenue}
+            readOnly={!isCreatingVenue}
+            updateIsSiretValued={updateIsSiretValued}
+            venueIsVirtual={false}
+            setIsSiretValued={setIsSiretValued}
+            siren={offerer.siren}
+          />
+        )}
         {
           /* istanbul ignore next: DEBT, TO FIX */
           !!shouldDisplayImageVenueUploaderSection && <ImageUploaderVenue />
         }
         <Address />
-        <Activity venueTypes={venueTypes} venueLabels={venueLabels} />
+        <Activity
+          venueTypes={venueTypes}
+          venueLabels={venueLabels}
+          isCreatingVenue={isCreatingVenue}
+          isNewOfferCreationJourney={isNewOfferCreationJourney}
+        />
         <Accessibility isCreatingVenue={isCreatingVenue} />
         <WithdrawalDetails isCreatedEntity={isCreatingVenue} />
-        <Contact />
+        {!isCreatingVenue && !isNewOfferCreationJourney && <Contact />}
         {canOffererCreateCollectiveOffer &&
           ((isCreatingVenue && isSiretValued) || !isCreatingVenue) && (
             <EACInformation isCreatingVenue={isCreatingVenue} venue={venue} />

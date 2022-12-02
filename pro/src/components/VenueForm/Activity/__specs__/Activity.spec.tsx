@@ -48,6 +48,8 @@ describe('components | Activity', () => {
     props = {
       venueLabels: [],
       venueTypes: [{ value: 'CINEMA', label: 'Cinéma, salle de projection' }],
+      isCreatingVenue: true,
+      isNewOfferCreationJourney: false,
     }
   })
 
