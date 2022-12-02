@@ -12,5 +12,9 @@ export const offerFormUrlRegex = new RegExp(
 
 export const GET_DATA_ERROR_MESSAGE =
   'Nous avons rencontré un problème lors de la récupération des données.'
+export const SENT_DATA_ERROR_MESSAGE =
+  'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'
+export const FORM_ERROR_MESSAGE =
+  'Une ou plusieurs erreurs sont présentes dans le formulaire'
 
 export const NBSP = '\u00a0'

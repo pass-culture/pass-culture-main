@@ -29,7 +29,9 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
 import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
+import { useNotifyFormError } from '../hooks/useNotifyFormErrors'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
+import { getSuccessMessage } from '../utils'
 import { logTo } from '../utils/logTo'
 
 import { upsertStocksEventAdapter } from './adapters'
@@ -70,16 +72,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
 
     /* istanbul ignore next: DEBT, TO FIX */
     if (isOk) {
-      notify.success(
-        {
-          [OFFER_WIZARD_MODE.CREATION]:
-            'Brouillon sauvegardé dans la liste des offres',
-          [OFFER_WIZARD_MODE.DRAFT]:
-            'Brouillon sauvegardé dans la liste des offres',
-          [OFFER_WIZARD_MODE.EDITION]:
-            'Vos modifications ont bien été enregistrées',
-        }[mode]
-      )
+      notify.success(getSuccessMessage(mode))
       const response = await getOfferIndividualAdapter(offer.id)
       if (response.isOk) {
         setOffer && setOffer(response.payload)
@@ -130,6 +123,11 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     validationSchema: getValidationSchema(),
     enableReinitialize: true,
   })
+  useNotifyFormError({
+    isSubmitting: formik.isSubmitting,
+    errors: formik.errors,
+  })
+
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     () => {
@@ -145,7 +143,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
           mode,
         })
       )
-      if (mode === OFFER_WIZARD_MODE.EDITION) {
+      if (mode !== OFFER_WIZARD_MODE.CREATION) {
         const changesOnStockWithBookings = formik.values.stocks.some(
           (stock, index) => {
             if (
@@ -180,9 +178,12 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         }
       }
 
-      if (!Object.keys(formik.touched).length) {
+      const hasSavedStock = formik.values.stocks.some(
+        stock => stock.stockId !== undefined
+      )
+      if (hasSavedStock && Object.keys(formik.touched).length === 0) {
         setIsClickingFromActionBar(false)
-        notify.success('Brouillon sauvegardé dans la liste des offres')
+        notify.success(getSuccessMessage(mode))
         if (!saveDraft) {
           navigate(
             getOfferIndividualUrl({
