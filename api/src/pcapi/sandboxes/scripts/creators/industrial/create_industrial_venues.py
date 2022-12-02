@@ -106,7 +106,6 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
                 pricing_point="self" if siret else None,
                 reimbursement_point="self" if siret else None,
             )
-            providers_factories.VenueProviderFactory(venue=venue, provider__name=f"API Provider for {venue_name}")
 
             if image_venue_counter < DEFAULT_VENUE_IMAGES:
                 add_default_image_to_venue(image_venue_counter, offerer, venue)
