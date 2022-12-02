@@ -7,12 +7,16 @@ export interface IActivity {
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
   isVenueVirtual?: boolean
+  isCreatingVenue: boolean
+  isNewOfferCreationJourney: boolean
 }
 
 const Activity = ({
   venueTypes,
   venueLabels,
+  isCreatingVenue,
   isVenueVirtual = false,
+  isNewOfferCreationJourney,
 }: IActivity) => {
   return (
     <>
@@ -55,35 +59,37 @@ const Activity = ({
             disabled={isVenueVirtual}
           />
         </FormLayout.Row>
-        {!isVenueVirtual && (
-          <>
-            <FormLayout.Row>
-              <TextArea
-                name="description"
-                label="Description"
-                placeholder="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
-                maxLength={1000}
-                countCharacters
-                isOptional
-              />
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <Select
-                options={[
-                  {
-                    value: '',
-                    label:
-                      'Si votre lieu est labellisé précisez-le en le sélectionnant',
-                  },
-                  ...venueLabels,
-                ]}
-                name="venueLabel"
-                label="Label du ministère de la Culture ou du CNC"
-                isOptional
-              />
-            </FormLayout.Row>
-          </>
-        )}
+        {((isCreatingVenue && !isNewOfferCreationJourney) ||
+          !isCreatingVenue) &&
+          !isVenueVirtual && (
+            <>
+              <FormLayout.Row>
+                <TextArea
+                  name="description"
+                  label="Description"
+                  placeholder="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
+                  maxLength={1000}
+                  countCharacters
+                  isOptional
+                />
+              </FormLayout.Row>
+              <FormLayout.Row>
+                <Select
+                  options={[
+                    {
+                      value: '',
+                      label:
+                        'Si votre lieu est labellisé précisez-le en le sélectionnant',
+                    },
+                    ...venueLabels,
+                  ]}
+                  name="venueLabel"
+                  label="Label du ministère de la Culture ou du CNC"
+                  isOptional
+                />
+              </FormLayout.Row>
+            </>
+          )}
       </FormLayout.Section>
     </>
   )
