@@ -2,6 +2,7 @@ import {
   EducationalInstitutionResponseModel,
   WithdrawalTypeEnum,
   OfferStatus,
+  CollectiveOffersBookingResponseModel,
 } from 'apiClient/v1'
 import { ICropParams } from 'components/ImageUploader'
 import { IAccessibiltyFormValues } from 'core/shared'
@@ -53,6 +54,7 @@ export type Offer = {
   isEditable: boolean
   isShowcase?: boolean | null
   educationalInstitution?: EducationalInstitutionResponseModel | null
+  educationalBooking?: CollectiveOffersBookingResponseModel | null
 }
 
 export type Option = {
