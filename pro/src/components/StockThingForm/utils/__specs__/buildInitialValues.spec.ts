@@ -6,7 +6,7 @@ import buildInitialValues from '../buildInitialValues'
 describe('StockThingForm::utils::buildInitialValues', () => {
   let offer: IOfferIndividual
   beforeEach(() => {
-    offer = {} as IOfferIndividual
+    offer = { venue: { departmentCode: '93' } } as IOfferIndividual
   })
 
   it('should return default values when offer have no stocks', () => {
@@ -32,8 +32,10 @@ describe('StockThingForm::utils::buildInitialValues', () => {
       remainingQuantity: '10',
       bookingsQuantity: '20',
       quantity: '40',
-      bookingLimitDatetime: new Date('2001-06-05'),
+      bookingLimitDatetime: new Date('2001-06-05T02:00:00.000Z'),
       price: '12',
+      activationCodes: undefined,
+      activationCodesExpirationDatetime: undefined,
     })
   })
 
