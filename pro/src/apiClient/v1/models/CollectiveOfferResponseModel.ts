@@ -2,12 +2,14 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { CollectiveOffersBookingResponseModel } from './CollectiveOffersBookingResponseModel';
 import type { CollectiveOffersStockResponseModel } from './CollectiveOffersStockResponseModel';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 
 export type CollectiveOfferResponseModel = {
+  booking?: CollectiveOffersBookingResponseModel | null;
   educationalInstitution?: EducationalInstitutionResponseModel | null;
   hasBookingLimitDatetimesPassed: boolean;
   id: string;

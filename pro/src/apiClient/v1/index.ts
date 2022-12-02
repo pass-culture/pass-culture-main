@@ -38,6 +38,7 @@ export { CollectiveBookingStatusFilter } from './models/CollectiveBookingStatusF
 export type { CollectiveOfferOfferVenueResponseModel } from './models/CollectiveOfferOfferVenueResponseModel';
 export type { CollectiveOfferResponseIdModel } from './models/CollectiveOfferResponseIdModel';
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
+export type { CollectiveOffersBookingResponseModel } from './models/CollectiveOffersBookingResponseModel';
 export type { CollectiveOffersStockResponseModel } from './models/CollectiveOffersStockResponseModel';
 export type { CollectiveOfferTemplateBodyModel } from './models/CollectiveOfferTemplateBodyModel';
 export type { CollectiveOfferTemplateResponseIdModel } from './models/CollectiveOfferTemplateResponseIdModel';
