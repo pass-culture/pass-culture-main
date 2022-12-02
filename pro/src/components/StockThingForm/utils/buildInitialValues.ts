@@ -3,6 +3,7 @@ import {
   IStockThingFormValues,
 } from 'components/StockThingForm'
 import { IOfferIndividual } from 'core/Offers/types'
+import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 export const buildInitialValues = (
   offer: IOfferIndividual
@@ -17,7 +18,10 @@ export const buildInitialValues = (
     bookingsQuantity: offer.stocks[0].bookingsQuantity.toString(),
     quantity: offer.stocks[0].quantity?.toString() || '',
     bookingLimitDatetime: offer.stocks[0].bookingLimitDatetime
-      ? new Date(offer.stocks[0].bookingLimitDatetime)
+      ? getLocalDepartementDateTimeFromUtc(
+          offer.stocks[0].bookingLimitDatetime,
+          offer.venue.departmentCode
+        )
       : null,
     price: offer.stocks[0].price.toString(),
     activationCodesExpirationDatetime:
