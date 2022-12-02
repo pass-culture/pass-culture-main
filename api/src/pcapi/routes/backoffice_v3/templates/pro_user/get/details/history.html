@@ -20,8 +20,18 @@
                 <th scope="row"></th>
                 <td>{{ action.actionType.value }}</td>
                 <td>{{ action.actionDate | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
-                <td class="px-4">
-                    <p>{{ action.comment | empty_string_if_null }}</p>
+                <td class="px-4 text-break">
+                    {% if action.actionType.name == "USER_INFO_MODIFIED" %}
+                        <p>Informations modifées :</p>
+                        {% for info_name, modified_info in action.extraData.get('modified_info', {}).items() %}
+                            <p>{{ info_name | i18n_column_name }}: 
+                                {{ modified_info['old_info'] | escape }} =&gt; {{ modified_info['new_info'] | escape }}</p>
+                        {% endfor %}
+                    {% elif action.actionType.name == "USER_SUSPENDED" %}
+                        <p>{{ action.extraData['reason']['full_reason'] }}</p>
+                    {% else %}
+                        <p>{{ action.comment | empty_string_if_null }}</p>
+                    {% endif %}
                 </td>
                 <td>{{ action.authorUser.full_name if action.authorUser else None | empty_string_if_null }}</td>
             </tr>

@@ -386,6 +386,14 @@ def suspend_account(user: models.User, reason: constants.SuspensionReason, actor
             "reason": str(reason),
         },
     )
+
+    history_api.log_action(
+        history_models.ActionType.USER_SUSPENDED,
+        author=actor,
+        user=user,
+        reason={"full_reason": dict(users_constants.SUSPENSION_REASON_CHOICES).get(reason, "Raison inconnue")},
+    )
+
     return {"cancelled_bookings": n_bookings}
 
 
@@ -407,6 +415,8 @@ def unsuspend_account(user: models.User, actor: models.User, send_email: bool = 
             "send_email": send_email,
         },
     )
+
+    history_api.log_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user)
 
     if send_email:
         transactional_mails.send_unsuspension_email(user)
@@ -521,8 +531,9 @@ def update_user_info(  # type: ignore [no-untyped-def]
     phone_number=UNCHANGED,
     public_name=UNCHANGED,
     postal_code=UNCHANGED,
-):
+) -> dict[str, dict[str, str]]:
     old_email = None
+    modified_info = {}
 
     if cultural_survey_filled_date is not UNCHANGED:
         user.culturalSurveyFilledDate = cultural_survey_filled_date
@@ -532,16 +543,24 @@ def update_user_info(  # type: ignore [no-untyped-def]
         old_email = user.email
         user.email = email_utils.sanitize_email(email)
     if first_name is not UNCHANGED:
+        if user.firstName != first_name:
+            modified_info["firstName"] = {"old_info": user.firstName, "new_info": first_name}
         user.firstName = first_name
     if last_name is not UNCHANGED:
+        if user.lastName != last_name:
+            modified_info["lastName"] = {"old_info": user.lastName, "new_info": last_name}
         user.lastName = last_name
     if needs_to_fill_cultural_survey is not UNCHANGED:
         user.needsToFillCulturalSurvey = needs_to_fill_cultural_survey
     if phone_number is not UNCHANGED:
+        if user.phoneNumber != phone_number:
+            modified_info["phoneNumber"] = {"old_info": user.phoneNumber, "new_info": phone_number}
         user.phoneNumber = phone_number
     if public_name is not UNCHANGED:
         user.publicName = public_name
     if postal_code is not UNCHANGED:
+        if user.postalCode != postal_code:
+            modified_info["postalCode"] = {"old_info": user.postalCode, "new_info": postal_code}
         user.postalCode = postal_code
         user.departementCode = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
 
@@ -551,6 +570,8 @@ def update_user_info(  # type: ignore [no-untyped-def]
     if old_email and user.has_pro_role:
         external_attributes_api.update_external_pro(old_email)
     external_attributes_api.update_external_user(user)
+
+    return modified_info
 
 
 def add_comment_to_user(user: models.User, author_user: models.User, comment: str) -> None:
@@ -666,6 +687,11 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
         objects_to_save.extend([digital_venue, offerer, user_offerer, action])
 
     new_pro_user = _set_offerer_departement_code(new_pro_user, offerer)
+
+    action = history_api.log_action(
+        history_models.ActionType.USER_CREATED, author=new_pro_user, user=new_pro_user, offerer=offerer, save=False
+    )
+    objects_to_save.append(action)
 
     repository.save(new_pro_user, user_offerer, *objects_to_save)
 

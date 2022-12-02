@@ -5,6 +5,8 @@ from flask import url_for
 from flask_login import current_user
 
 from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
 from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
@@ -65,7 +67,7 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
             400,
         )
 
-    users_api.update_user_info(
+    modified_info = users_api.update_user_info(
         user,
         first_name=form.first_name.data,
         last_name=form.last_name.data,
@@ -77,6 +79,7 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
         old_email = user.email
         try:
             email_update.request_email_update_from_admin(user, form.email.data)
+            modified_info["email"] = {"old_info": old_email, "new_info": user.email}
         except users_exceptions.EmailExistsError:
             form.email.errors.append("L'email est déjà associé à un autre utilisateur")
             dst = url_for(".update_pro_user", user_id=user.id)
@@ -84,6 +87,14 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
 
         external_attributes_api.update_external_pro(old_email)  # to delete previous user info from SendinBlue
         external_attributes_api.update_external_user(user)
+
+    if modified_info:
+        history_api.log_action(
+            history_models.ActionType.USER_INFO_MODIFIED,
+            current_user,
+            user=user,
+            modified_info=modified_info,
+        )
 
     flash("Informations mises à jour", "success")
     return redirect(url_for(".get", user_id=user_id), code=303)
