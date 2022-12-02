@@ -11,6 +11,7 @@ import werkzeug
 from werkzeug.wrappers import Response as WerkzeugResponse
 
 from pcapi import settings
+from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models.api_errors import ApiErrors
 
@@ -93,3 +94,17 @@ def custom_login_required(redirect_to: str) -> typing.Callable:
         return wrapped
 
     return wrapper
+
+
+def is_user_offerer_action_type(action: history_models.ActionHistory) -> bool:
+    user_offerer_action_types = {
+        history_models.ActionType.USER_OFFERER_NEW,
+        history_models.ActionType.USER_OFFERER_PENDING,
+        history_models.ActionType.USER_OFFERER_VALIDATED,
+        history_models.ActionType.USER_OFFERER_REJECTED,
+    }
+    return action.actionType in user_offerer_action_types
+
+
+def can_user_add_comment() -> bool:
+    return has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)

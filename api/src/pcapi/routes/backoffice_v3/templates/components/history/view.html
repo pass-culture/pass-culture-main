@@ -1,0 +1,13 @@
+{% from "components/history/comment.html" import build_comment_modal with context %}
+
+{% macro build_history_view(dst, form) %}
+    {% set modal_title %}
+        {{ caller() }}
+    {% endset %}
+
+    {% call build_comment_modal(dst, form) %}
+        {{ modal_title }}
+    {% endcall %}
+
+    {% include "components/history/actions.html" %}
+{% endmacro %}

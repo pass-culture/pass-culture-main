@@ -1,5 +1,6 @@
 import typing
 
+from flask_wtf import FlaskForm
 from wtforms import validators
 
 import pcapi.core.offerers.models as offerers_models
@@ -47,3 +48,7 @@ class EditVenueForm(EditVirtualVenueForm):
                 "Les 9 premiers caractères du SIRET doivent correspondre au SIREN de la structure"
             )
         return siret
+
+
+class CommentForm(FlaskForm):
+    comment = fields.PCCommentField("Commentaire interne pour la structure")
