@@ -721,13 +721,10 @@ def create_mediation(
         image_as_bytes, min_width=min_width, min_height=min_height, max_width=max_width, max_height=max_height
     )
 
-    mediation = Mediation(
-        author=user,
-        offer=offer,
-        credit=credit,
-    )
-    # `create_thumb()` requires the object to have an id, so we must save now.
-    repository.save(mediation)
+    mediation = Mediation(author=user, offer=offer, credit=credit)
+
+    repository.add_to_session(mediation)
+    db.session.flush()  # `create_thumb()` requires the object to have an id, so we must flush now.
 
     try:
         create_thumb(
@@ -742,23 +739,17 @@ def create_mediation(
         raise
     except Exception as exception:
         logger.exception("An unexpected error was encountered during the thumbnail creation: %s", exception)
-        # I could not use savepoints and rollbacks with SQLA
-        repository.delete(mediation)
         raise ThumbnailStorageError
 
-    else:
-        repository.save(mediation)
+    # cleanup former thumbnails and mediations
+    previous_mediations = (
+        Mediation.query.filter(Mediation.offerId == offer.id).filter(Mediation.id != mediation.id).all()
+    )
+    _delete_mediations_and_thumbs(previous_mediations)
 
-        # cleanup former thumbnails and mediations
-        previous_mediations = (
-            Mediation.query.filter(Mediation.offerId == offer.id).filter(Mediation.id != mediation.id).all()
-        )
+    search.async_index_offer_ids([offer.id])
 
-        _delete_mediations_and_thumbs(previous_mediations)
-
-        search.async_index_offer_ids([offer.id])
-
-        return mediation
+    return mediation
 
 
 def delete_mediation(offer: Offer) -> None:
@@ -782,7 +773,7 @@ def _delete_mediations_and_thumbs(mediations: list[Mediation]) -> None:
                 exception,
             )
         else:
-            repository.delete(mediation)
+            db.session.delete(mediation)
 
 
 def update_stock_id_at_providers(venue: Venue, old_siret: str) -> None:
