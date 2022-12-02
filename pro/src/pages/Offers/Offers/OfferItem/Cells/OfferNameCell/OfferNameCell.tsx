@@ -9,6 +9,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_DRAFT, OFFER_STATUS_SOLD_OUT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as WarningStocksIcon } from 'icons/ico-warning-stocks.svg'
 import { Tag } from 'ui-kit'
@@ -64,8 +65,14 @@ const OfferNameCell = ({ offer, editionOfferLink }: OfferNameCellProps) => {
   const computeNumberOfSoldOutStocks = () =>
     offer.stocks.filter(stock => stock.remainingQuantity === 0).length
 
+  const isImproveCollectiveStatusActive = useActiveFeature(
+    'WIP_IMPROVE_COLLECTIVE_STATUS'
+  )
+
   const shouldShowSoldOutWarning =
-    computeNumberOfSoldOutStocks() > 0 && offer.status !== OFFER_STATUS_SOLD_OUT
+    !isImproveCollectiveStatusActive &&
+    computeNumberOfSoldOutStocks() > 0 &&
+    offer.status !== OFFER_STATUS_SOLD_OUT
 
   return (
     <td className={styles['title-column']}>

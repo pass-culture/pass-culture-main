@@ -25,6 +25,7 @@ import { ReactComponent as IcoCaretRight } from 'icons/ico-caret-right.svg'
 import { ReactComponent as IcoCase } from 'icons/ico-case.svg'
 import { ReactComponent as IcoClear } from 'icons/ico-clear.svg'
 import { ReactComponent as IconDesk } from 'icons/ico-desk.svg'
+import { ReactComponent as DoubleCheckIcon } from 'icons/ico-double-check.svg'
 import { ReactComponent as IcoDownloadFilled } from 'icons/ico-download-filled.svg'
 import { ReactComponent as IcoDownload } from 'icons/ico-download.svg'
 import { ReactComponent as IcoDuo } from 'icons/ico-duo.svg'
@@ -39,6 +40,7 @@ import { ReactComponent as IcoEyeOpen } from 'icons/ico-eye-open.svg'
 import { ReactComponent as ExternalLinkIcon } from 'icons/ico-fill-external-link.svg'
 import { ReactComponent as GuichetFullIcon } from 'icons/ico-guichet-full.svg'
 import { ReactComponent as HomeIcon } from 'icons/ico-home.svg'
+import { ReactComponent as HourglassIcon } from 'icons/ico-hourglass.svg'
 import { ReactComponent as ListOffersIcon } from 'icons/ico-list-offers.svg'
 import { ReactComponent as IcoMail } from 'icons/ico-mail.svg'
 import { ReactComponent as IcoMiniArrowLeft } from 'icons/ico-mini-arrow-left.svg'
@@ -665,6 +667,18 @@ export const Icons = () => (
           <ExternalLinkIcon />
         </td>
         <td>ExternalLinkIcon</td>
+      </tr>
+      <tr>
+        <td>
+          <HourglassIcon />
+        </td>
+        <td>Hourglass icon</td>
+      </tr>
+      <tr>
+        <td>
+          <DoubleCheckIcon />
+        </td>
+        <td>DoubleCheck icon</td>
       </tr>
     </body>
   </table>
