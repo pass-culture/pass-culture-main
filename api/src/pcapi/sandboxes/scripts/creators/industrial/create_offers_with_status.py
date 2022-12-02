@@ -26,9 +26,7 @@ def create_offers_with_specific_status() -> None:
         managingOfferer=user_offerer.offerer,
     )
     # offerers have always a virtual venue so we have to create one to match reality
-    VirtualVenueFactory(
-        name="Lieu virtuel avec offres spécifiques", managingOfferer=user_offerer.offerer
-    )
+    VirtualVenueFactory(name="Lieu virtuel avec offres spécifiques", managingOfferer=user_offerer.offerer)
     user_bene = BeneficiaryGrant18Factory(email="jeune-has-specific-offers-external-bookings@example.com")
 
     create_offers_fully_booked(user_bene, venue)

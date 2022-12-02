@@ -8,6 +8,7 @@ from pydantic import validator
 from pydantic.types import constr
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
@@ -70,6 +71,11 @@ class CollectiveOffersStockResponseModel(BaseModel):
         return remainingQuantity
 
 
+class CollectiveOffersBookingResponseModel(BaseModel):
+    id: str
+    booking_status: str
+
+
 class CollectiveOfferResponseModel(BaseModel):
     hasBookingLimitDatetimesPassed: bool
     id: str
@@ -78,6 +84,7 @@ class CollectiveOfferResponseModel(BaseModel):
     isEducational: bool
     name: str
     stocks: list[CollectiveOffersStockResponseModel]
+    booking: CollectiveOffersBookingResponseModel | None
     subcategoryId: SubcategoryIdEnum
     isShowcase: bool
     venue: ListOffersVenueResponseModel
@@ -105,7 +112,11 @@ def serialize_collective_offers_capped(
 
 def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate) -> CollectiveOfferResponseModel:
     serialized_stock = _serialize_stock(offer.id, getattr(offer, "collectiveStock", None))
-
+    last_booking = (
+        _get_serialize_last_booking(offer.collectiveStock.collectiveBookings)
+        if isinstance(offer, CollectiveOffer) and offer.collectiveStock
+        else None
+    )
     serialized_stocks = [serialized_stock] if serialized_stock is not None else []
     is_offer_template = isinstance(offer, CollectiveOfferTemplate)
     institution = getattr(offer, "institution", None)
@@ -119,6 +130,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         isEducational=True,
         name=offer.name,
         stocks=serialized_stocks,
+        booking=last_booking,
         thumbUrl=None,
         subcategoryId=offer.subcategoryId,
         venue=_serialize_venue(offer.venue),
@@ -162,6 +174,16 @@ def _serialize_venue(venue: Venue) -> dict:
         "publicName": venue.publicName,
         "departementCode": venue.departementCode,
     }
+
+
+def _get_serialize_last_booking(bookings: list[CollectiveBooking]) -> CollectiveOffersBookingResponseModel | None:
+    if len(bookings) == 0:
+        return None
+    last_booking = sorted(bookings, key=lambda b: b.dateCreated, reverse=True)[0]
+    return CollectiveOffersBookingResponseModel(
+        id=last_booking.id,
+        booking_status=last_booking.status.value,
+    )
 
 
 class OfferDomain(BaseModel):
