@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import datetime
 from functools import partial
 import typing
 
@@ -8,6 +9,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
+import pytz
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -25,6 +27,18 @@ from . import search_utils
 from . import utils
 from .forms import offerer as offerer_forms
 from .serialization import offerers as serialization
+
+
+PARIS_TZ = pytz.timezone("Europe/Paris")
+
+
+def _date_to_localized_datetime(date_: datetime.date | None, time_: datetime.time) -> datetime.datetime | None:
+    # When min/max date filters are used in requests, backoffice user expect Metroplitan French time (CET),
+    # since date and time in the backoffice are formatted to show CET times.
+    if not date_:
+        return None
+    naive_utc_datetime = datetime.datetime.combine(date_, time_)
+    return PARIS_TZ.localize(naive_utc_datetime).astimezone(pytz.utc)
 
 
 offerer_blueprint = utils.child_backoffice_blueprint(
@@ -231,7 +245,13 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
     if not form.validate():
         return render_template("offerer/validation.html", rows=[], form=form, stats=stats), 400
 
-    offerers = offerers_api.list_offerers_to_be_validated(**form.data)
+    offerers = offerers_api.list_offerers_to_be_validated(
+        form.q.data,
+        form.tags.data,
+        form.status.data,
+        _date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time()),
+        _date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
+    )
 
     sorted_offerers = offerers.order_by(offerers_models.Offerer.dateCreated.desc())
 
@@ -362,7 +382,12 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
     if not form.validate():
         return render_template("offerer/user_offerer_validation.html", rows=[], form=form), 400
 
-    users_offerers = offerers_api.list_users_offerers_to_be_validated(**form.data)
+    users_offerers = offerers_api.list_users_offerers_to_be_validated(
+        form.tags.data,
+        form.status.data,
+        _date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time()),
+        _date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
+    )
 
     sorted_users_offerers = users_offerers.order_by(offerers_models.UserOfferer.id.desc())
 
