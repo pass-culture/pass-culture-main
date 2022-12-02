@@ -56,7 +56,7 @@ jobs:
       - uses: actions/setup-node@v2
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         with:
-          node-version: 16.17.x
+          node-version: 18.12.x
 
       - name: Install dockerize
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
