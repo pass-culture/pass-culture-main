@@ -13,8 +13,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.utils.human_ids import humanize
 
 import tests
-
-from . import image_data
+from tests.routes import image_data
 
 
 IMAGES_DIR = Path(tests.__path__[0]) / "files"
