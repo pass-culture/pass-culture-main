@@ -7,7 +7,9 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
+from pcapi.utils.urls import build_pc_pro_venue_link
 
+from . import utils
 from .forms import empty as empty_forms
 
 
@@ -47,5 +49,10 @@ def require_ff() -> None:
 
 
 @backoffice_v3_web.context_processor
-def add_csrf_token() -> dict:
-    return {"csrf_token": empty_forms.EmptyForm().csrf_token}
+def extra_funcs() -> dict:
+    return {
+        "csrf_token": empty_forms.EmptyForm().csrf_token,
+        "can_user_add_comment": utils.can_user_add_comment,
+        "is_user_offerer_action_type": utils.is_user_offerer_action_type,
+        "build_pc_pro_venue_link": build_pc_pro_venue_link,
+    }

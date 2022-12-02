@@ -23,7 +23,6 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 import pcapi.utils.regions as regions_utils
-from pcapi.utils.urls import build_pc_pro_venue_link
 
 from . import search_utils
 from . import utils
@@ -105,38 +104,13 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
     )
 
 
-def _is_user_offerer_action_type(historyItem: serialization.HistoryItem) -> bool:
-    user_offerer_action_types = [
-        history_models.ActionType.USER_OFFERER_NEW,
-        history_models.ActionType.USER_OFFERER_PENDING,
-        history_models.ActionType.USER_OFFERER_VALIDATED,
-        history_models.ActionType.USER_OFFERER_REJECTED,
-    ]
-    return history_models.ActionType(historyItem.type) in user_offerer_action_types
-
-
-def _is_offerer_new_action_type(historyItem: serialization.HistoryItem) -> bool:
-    return history_models.ActionType(historyItem.type) == history_models.ActionType.OFFERER_NEW
-
-
-def get_offerer_history_data(offerer: offerers_models.Offerer) -> typing.Sequence[serialization.HistoryItem]:
+def get_offerer_history_data(offerer: offerers_models.Offerer) -> typing.Sequence[history_models.ActionHistory]:
     # this should not be necessary but in case there is a huge amount
     # of actions, it is safer to set a limit
     max_actions_count = 50
 
     actions = sorted(offerer.action_history, key=lambda action: action.actionDate, reverse=True)
-    return [
-        serialization.HistoryItem(
-            type=action.actionType.value,
-            date=action.actionDate,
-            authorId=action.authorUserId,
-            authorName=action.authorUser.full_name if action.authorUser else None,
-            comment=action.comment,
-            accountId=action.userId,
-            accountName=action.user.full_name if action.user else None,
-        )
-        for action in actions[:max_actions_count]
-    ]
+    return actions[:max_actions_count]
 
 
 def get_offerer(offerer_id: int) -> offerers_models.Offerer:
@@ -166,15 +140,17 @@ def get_details(offerer_id: int) -> utils.BackofficeResponse:
 
     history = get_offerer_history_data(offerer)
 
+    form = offerer_forms.CommentForm()
+    dst = url_for("backoffice_v3_web.offerer_comment.comment_offerer", offerer_id=offerer.id)
+
     return render_template(
         "offerer/get/details.html",
         offerer=offerer,
-        history=history,
+        actions=history,
+        dst=dst,
+        form=form,
         users_offerer=offerer.UserOfferers,
         active_tab=request.args.get("active_tab", "history"),
-        is_user_offerer_action_type=_is_user_offerer_action_type,
-        is_offerer_new_action_type=_is_offerer_new_action_type,
-        build_pc_pro_venue_link=build_pc_pro_venue_link,
     )
 
 

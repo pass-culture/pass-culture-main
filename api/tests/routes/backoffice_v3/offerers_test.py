@@ -23,6 +23,7 @@ from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice_v3 import offerers
 
+from .helpers import comment as comment_helpers
 from .helpers import html_parser
 from .helpers import unauthorized as unauthorized_helpers
 
@@ -228,6 +229,14 @@ class GetOffererDetailsTest:
         endpoint_kwargs = {"offerer_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
+    class CommentButtonTest(comment_helpers.CommentButtonHelper):
+        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+        @property
+        def path(self):
+            offerer = offerers_factories.UserOffererFactory().offerer
+            return url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
+
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_history(self, authenticated_client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -376,9 +385,9 @@ class GetOffererHistoryDataTest:
 
         found_action = history[0]
 
-        assert found_action.type == action.actionType.value
-        assert found_action.date == action.actionDate
-        assert found_action.authorName == action.authorUser.full_name
+        assert found_action.actionType.value == action.actionType.value
+        assert found_action.actionDate == action.actionDate
+        assert found_action.authorUser.full_name == action.authorUser.full_name
 
     def test_no_action(self, offerer):
         assert not offerers.get_offerer_history_data(offerer)
