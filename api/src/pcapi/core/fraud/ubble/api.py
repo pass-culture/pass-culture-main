@@ -142,21 +142,20 @@ def does_match_ubble_test_email(email: str) -> re.Match | None:
 def is_user_allowed_to_perform_ubble_check(
     user: users_models.User, eligibility_type: users_models.EligibilityType | None
 ) -> bool:
-    from pcapi.core.subscription.ubble import api as ubble_subscription_api
-
     # Ubble check must be performed for an eligible credit
     if not eligibility_type:
         return False
 
-    fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter(
-        fraud_models.BeneficiaryFraudCheck.user == user,
-        fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
-        fraud_models.BeneficiaryFraudCheck.eligibilityType == eligibility_type,
-    ).all()
+    has_never_performed_ubble_check = not any(
+        check for check in user.beneficiaryFraudChecks if check.type == fraud_models.FraudCheckType.UBBLE
+        )
+    if has_never_performed_ubble_check:
+        return True
 
-    status = ubble_subscription_api.get_ubble_subscription_item_status(user, eligibility_type, fraud_checks)
-
-    return status == SubscriptionItemStatus.TODO
+    return (
+        subscription_api.get_subscription_item_status(user, eligibility_type, latest_ubble_fraud_check)
+        == SubscriptionItemStatus.TODO
+    )
 
 
 def get_restartable_identity_checks(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:

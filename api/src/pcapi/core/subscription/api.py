@@ -10,6 +10,7 @@ import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.common.models as common_fraud_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
+import pcapi.core.fraud.ubble.constants as ubble_constants
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.dms import api as dms_subscription_api
@@ -218,16 +219,6 @@ def get_profile_completion_subscription_item(
     return models.SubscriptionItem(type=models.SubscriptionStep.PROFILE_COMPLETION, status=status)
 
 
-def _get_identity_fraud_checks_for_eligibility(
-    user: users_models.User, eligibility: users_models.EligibilityType | None
-) -> list[fraud_models.BeneficiaryFraudCheck]:
-    return [
-        fraud_check
-        for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES and eligibility in fraud_check.applicable_eligibilities
-    ]
-
-
 def get_identity_check_subscription_status(
     user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItemStatus:
@@ -239,34 +230,37 @@ def get_identity_check_subscription_status(
     if eligibility is None:
         return models.SubscriptionItemStatus.VOID
 
-    identity_fraud_checks = _get_identity_fraud_checks_for_eligibility(user, eligibility)
+    relevant_fraud_check = get_relevant_identity_fraud_check(user, eligibility)
+    return get_subscription_item_status(user, eligibility, relevant_fraud_check)
 
-    dms_checks = [check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.DMS]
-    educonnect_checks = [
-        check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.EDUCONNECT
+
+def get_relevant_identity_fraud_check(
+    user: users_models.User, eligibility: users_models.EligibilityType | None
+) -> fraud_models.BeneficiaryFraudCheck | None:
+    identity_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if eligibility in fraud_check.applicable_eligibilities and fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
     ]
-    ubble_checks = [check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.UBBLE]
-    jouve_checks = [check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.JOUVE]
+    identity_fraud_checks.sort(key=lambda fraud_check: fraud_check.dateCreated, reverse=True)
 
-    statuses = [
-        dms_subscription_api.get_dms_subscription_item_status(user, eligibility, dms_checks),
-        educonnect_subscription_api.get_educonnect_subscription_item_status(user, eligibility, educonnect_checks),
-        ubble_subscription_api.get_ubble_subscription_item_status(user, eligibility, ubble_checks),
-        _get_jouve_subscription_item_status(user, eligibility, jouve_checks),
-    ]
+    if not identity_fraud_checks:
+        return None
 
-    if any(status == models.SubscriptionItemStatus.OK for status in statuses):
-        return models.SubscriptionItemStatus.OK
-    if any(status == models.SubscriptionItemStatus.PENDING for status in statuses):
-        return models.SubscriptionItemStatus.PENDING
-    if any(status == models.SubscriptionItemStatus.KO for status in statuses):
-        return models.SubscriptionItemStatus.KO
-    if any(status == models.SubscriptionItemStatus.SUSPICIOUS for status in statuses):
-        return models.SubscriptionItemStatus.SUSPICIOUS
-    if any(status == models.SubscriptionItemStatus.TODO for status in statuses):
-        return models.SubscriptionItemStatus.TODO
+    for status in (  # order matters here
+        fraud_models.FraudCheckStatus.OK,
+        fraud_models.FraudCheckStatus.PENDING,
+        fraud_models.FraudCheckStatus.STARTED,
+        fraud_models.FraudCheckStatus.KO,
+        fraud_models.FraudCheckStatus.SUSPICIOUS,
+    ):
+        relevant_fraud_check = next(
+            (fraud_check for fraud_check in identity_fraud_checks if fraud_check.status == status), None
+        )
+        if relevant_fraud_check:
+            return relevant_fraud_check
 
-    return models.SubscriptionItemStatus.VOID
+    return None
 
 
 def get_identity_check_subscription_item(
@@ -302,13 +296,6 @@ def get_next_subscription_step(user: users_models.User) -> models.SubscriptionSt
 
     if _should_validate_phone(user, user.eligibility):
         return models.SubscriptionStep.PHONE_VALIDATION
-
-    if user.eligibility == users_models.EligibilityType.AGE18:
-        if (
-            not (user.is_phone_validated or user.is_phone_validation_skipped)
-            and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active()
-        ):
-            return models.SubscriptionStep.PHONE_VALIDATION
 
     user_profiling_item = get_user_profiling_subscription_item(user, user.eligibility)
 
@@ -626,24 +613,53 @@ def update_user_birth_date_if_not_beneficiary(user: users_models.User, birth_dat
         pcapi_repository.repository.save(user)
 
 
-def _get_jouve_subscription_item_status(
+def get_subscription_item_status(
     user: users_models.User,
     eligibility: users_models.EligibilityType | None,
-    jouve_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
+    fraud_check: fraud_models.BeneficiaryFraudCheck | None,
 ) -> models.SubscriptionItemStatus:
-    if any(check.status == fraud_models.FraudCheckStatus.OK for check in jouve_fraud_checks):
-        return models.SubscriptionItemStatus.OK
-    if any(check.status == fraud_models.FraudCheckStatus.KO for check in jouve_fraud_checks):
-        return models.SubscriptionItemStatus.KO
-    if any(check.status == fraud_models.FraudCheckStatus.SUSPICIOUS for check in jouve_fraud_checks):
-        return models.SubscriptionItemStatus.SUSPICIOUS
-    if any(check.status == fraud_models.FraudCheckStatus.PENDING for check in jouve_fraud_checks):
-        return models.SubscriptionItemStatus.PENDING
+    if fraud_check:
+        if fraud_check.status == fraud_models.FraudCheckStatus.OK:
+            return models.SubscriptionItemStatus.OK
+        if fraud_check.status == fraud_models.FraudCheckStatus.KO and not _is_ubble_retryable(fraud_check):
+            return models.SubscriptionItemStatus.KO
+        if fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS and not _is_ubble_retryable(fraud_check):
+            return models.SubscriptionItemStatus.SUSPICIOUS
+        if fraud_check.status == fraud_models.FraudCheckStatus.PENDING:
+            return models.SubscriptionItemStatus.PENDING
+
+        match fraud_check.type:
+            case fraud_models.FraudCheckType.EDUCONNECT:
+                if (
+                    is_eligibility_activable(user, eligibility)
+                    and user.eligibility == users_models.EligibilityType.UNDERAGE
+                ):
+                    return models.SubscriptionItemStatus.TODO
+
+            case fraud_models.FraudCheckType.UBBLE:
+                user_ubble_checks_count = fraud_models.BeneficiaryFraudCheck.query.filter(
+                    fraud_models.BeneficiaryFraudCheck.userId == user.id,
+                    fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
+                ).count()
+                if user_ubble_checks_count >= ubble_constants.MAX_UBBLE_RETRIES:
+                    return models.SubscriptionItemStatus.KO
+
+            case fraud_models.FraudCheckType.DMS:
+                if fraud_check.status == fraud_models.FraudCheckStatus.STARTED:
+                    return models.SubscriptionItemStatus.PENDING
 
     if is_eligibility_activable(user, eligibility):
         return models.SubscriptionItemStatus.TODO
 
     return models.SubscriptionItemStatus.VOID
+
+
+def _is_ubble_retryable(fraud_check: fraud_models.BeneficiaryFraudCheck) -> bool:
+    if fraud_check.type != fraud_models.FraudCheckType.UBBLE:
+        return True
+    return fraud_check.reasonCodes and all(  # type: ignore [return-value]
+        code in ubble_constants.RESTARTABLE_FRAUD_CHECK_REASON_CODES for code in fraud_check.reasonCodes
+    )
 
 
 def get_first_registration_date(

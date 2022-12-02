@@ -38,29 +38,6 @@ FIELD_ERROR_LABELS = {
 }
 
 
-def get_dms_subscription_item_status(
-    user: users_models.User,
-    eligibility: users_models.EligibilityType | None,
-    dms_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
-) -> subscription_models.SubscriptionItemStatus:
-    if any(check.status == fraud_models.FraudCheckStatus.OK for check in dms_fraud_checks):
-        return subscription_models.SubscriptionItemStatus.OK
-    if any(
-        check.status in (fraud_models.FraudCheckStatus.STARTED, fraud_models.FraudCheckStatus.PENDING)
-        for check in dms_fraud_checks
-    ):
-        return subscription_models.SubscriptionItemStatus.PENDING
-    if any(check.status == fraud_models.FraudCheckStatus.KO for check in dms_fraud_checks):
-        return subscription_models.SubscriptionItemStatus.KO
-    if any(check.status == fraud_models.FraudCheckStatus.SUSPICIOUS for check in dms_fraud_checks):
-        return subscription_models.SubscriptionItemStatus.SUSPICIOUS
-
-    if subscription_api.is_eligibility_activable(user, eligibility):
-        return subscription_models.SubscriptionItemStatus.TODO
-
-    return subscription_models.SubscriptionItemStatus.VOID
-
-
 def try_dms_orphan_adoption(user: users_models.User) -> None:
     dms_orphan = fraud_models.OrphanDmsApplication.query.filter_by(email=user.email).first()
     if not dms_orphan:
