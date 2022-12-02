@@ -20,10 +20,10 @@ parameters:
     default: 'python-deps-v1-{{ checksum "/home/circleci/.pyenv/version" }}-{{ checksum "api/requirements.txt" }}'
   pro_cache_key:
     type: string
-    default: 'node_modules-16.17-{{ checksum "pro/yarn.lock" }}'
+    default: 'node_modules-18.12-{{ checksum "pro/yarn.lock" }}'
   pro_jest_cache_key:
     type: string
-    default: 'node-16.17-jest-cache-{{ epoch }}' # epoch is to ensure we store jest cache at each run (cf https://circleci.com/docs/2.0/caching/#using-keys-and-templates)
+    default: "node-18.12-jest-cache-{{ epoch }}" # epoch is to ensure we store jest cache at each run (cf https://circleci.com/docs/2.0/caching/#using-keys-and-templates)
   adage-front_cache_key:
     type: string
     default: 'node_modules-16.17-{{ checksum "adage-front/yarn.lock" }}'
@@ -580,7 +580,7 @@ jobs:
 
   type-checking-pro:
     docker:
-      - image: cimg/node:16.17
+      - image: cimg/node:18.12
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -619,7 +619,7 @@ jobs:
 
   quality-pro:
     docker:
-      - image: cimg/node:16.17
+      - image: cimg/node:18.12
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -658,7 +658,7 @@ jobs:
 
   tests-pro-unit-tests:
     docker:
-      - image: cimg/node:16.17
+      - image: cimg/node:18.12
     working_directory: ~/pass-culture
     steps:
       - checkout
