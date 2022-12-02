@@ -44,6 +44,20 @@ const getLegacyRedirect = ({
 
     legacyRedirect = [
       ...legacyRedirect,
+      {
+        redirectFrom: getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+          isV2: true,
+          isCreation: true,
+        }),
+        redirectTo: getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+          isV2: false,
+          isCreation: true,
+        }),
+      },
       ...redirectMap.map(({ step, mode }) => {
         return {
           redirectFrom: getOfferIndividualPath({

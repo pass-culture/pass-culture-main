@@ -70,7 +70,6 @@ const getOfferIndividualUrl = ({
   step,
   isV2 = false,
 }: IGetOfferIndividualUrlArgs) => {
-  // remove me when deleting OFFER_FORM_V3
   if (isV2) {
     return getOfferIndividualUrlV2({
       offerId,
