@@ -7,12 +7,12 @@ import { BUTTON_ACTION } from 'components/RouteLeavingGuard/RouteLeavingGuard'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 
 export enum ROUTE_LEAVING_GUARD_TYPE {
-  DEFAULT = 'DEFAULT',
+  NOT_VALID_DEFAULT = 'NOT_VALID_DEFAULT',
   CAN_CREATE_DRAFT = 'CAN_CREATE_DRAFT',
+  CANNOT_CREATE_DRAFT = 'CANNOT_CREATE_DRAFT',
   DRAFT = 'DRAFT',
   EDITION = 'EDITION',
   INTERNAL_VALID = 'INTERNAL_VALID',
-  INTERNAL_NOT_VALID = 'INTERNAL_NOT_VALID',
 }
 
 export const computeType = (
@@ -21,26 +21,29 @@ export const computeType = (
   hasOfferBeenCreated: boolean,
   isInsideOfferJourney: boolean
 ): ROUTE_LEAVING_GUARD_TYPE => {
-  if (
-    mode === OFFER_WIZARD_MODE.EDITION &&
-    isFormValid &&
-    !isInsideOfferJourney
-  ) {
-    return ROUTE_LEAVING_GUARD_TYPE.EDITION
-  } else if (isInsideOfferJourney && isFormValid) {
-    return ROUTE_LEAVING_GUARD_TYPE.INTERNAL_VALID
+  if (isFormValid) {
+    if (isInsideOfferJourney) {
+      return ROUTE_LEAVING_GUARD_TYPE.INTERNAL_VALID
+    }
+    if (mode === OFFER_WIZARD_MODE.EDITION) {
+      return ROUTE_LEAVING_GUARD_TYPE.EDITION
+    } else if (mode === OFFER_WIZARD_MODE.DRAFT) {
+      return ROUTE_LEAVING_GUARD_TYPE.DRAFT
+    } else if (mode === OFFER_WIZARD_MODE.CREATION && !hasOfferBeenCreated) {
+      return ROUTE_LEAVING_GUARD_TYPE.CAN_CREATE_DRAFT
+    } else if (mode === OFFER_WIZARD_MODE.CREATION && hasOfferBeenCreated) {
+      return ROUTE_LEAVING_GUARD_TYPE.DRAFT
+    }
   } else if (
     mode === OFFER_WIZARD_MODE.CREATION &&
-    isFormValid &&
-    !hasOfferBeenCreated
+    !isFormValid &&
+    !hasOfferBeenCreated &&
+    !isInsideOfferJourney
   ) {
-    return ROUTE_LEAVING_GUARD_TYPE.CAN_CREATE_DRAFT
-  } else if (isInsideOfferJourney) {
-    return ROUTE_LEAVING_GUARD_TYPE.INTERNAL_NOT_VALID
-  } else if (isFormValid) {
-    return ROUTE_LEAVING_GUARD_TYPE.DRAFT
+    return ROUTE_LEAVING_GUARD_TYPE.CANNOT_CREATE_DRAFT
   }
-  return ROUTE_LEAVING_GUARD_TYPE.DEFAULT
+
+  return ROUTE_LEAVING_GUARD_TYPE.NOT_VALID_DEFAULT
 }
 
 export interface IRouteLeavingGuardOfferIndividual {
@@ -63,8 +66,8 @@ const RouteLeavingGuardOfferIndividual = ({
   const [nextLocation, setNextLocation] = useState<string>('')
 
   const routeLeavingGuardTypes = {
-    // form dirty and mandatory fields not ok
-    [ROUTE_LEAVING_GUARD_TYPE.DEFAULT]: {
+    // mode creation + form dirty and mandatory fields not ok
+    [ROUTE_LEAVING_GUARD_TYPE.CANNOT_CREATE_DRAFT]: {
       dialogTitle: 'Souhaitez-vous quitter la création d’offre ?',
       description:
         'Votre offre ne sera pas sauvegardée et toutes les informations seront perdues.',
@@ -145,8 +148,8 @@ const RouteLeavingGuardOfferIndividual = ({
         },
       },
     },
-    // internal navigation, form dirty & not valid
-    [ROUTE_LEAVING_GUARD_TYPE.INTERNAL_NOT_VALID]: {
+    // form dirty & not valid
+    [ROUTE_LEAVING_GUARD_TYPE.NOT_VALID_DEFAULT]: {
       dialogTitle: 'Des erreurs sont présentes sur cette page',
       description:
         'En poursuivant la navigation, vos modifications ne seront pas sauvegardées.',

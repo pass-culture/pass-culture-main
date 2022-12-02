@@ -230,7 +230,7 @@ describe('screens:StocksEvent', () => {
 
     await userEvent.click(screen.getByText('Go outside !'))
 
-    await userEvent.click(screen.getByText('Annuler'))
+    await userEvent.click(screen.getByText('Rester sur cette page'))
 
     expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
   })
@@ -245,7 +245,7 @@ describe('screens:StocksEvent', () => {
 
     await userEvent.click(screen.getByText('Go outside !'))
 
-    await userEvent.click(screen.getByText('Quitter'))
+    await userEvent.click(screen.getByText('Poursuivre la navigation'))
 
     expect(api.upsertStocks).toHaveBeenCalledTimes(0)
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
