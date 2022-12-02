@@ -1,6 +1,7 @@
 import typing
 
 from pcapi.core.auth.utils import get_current_user
+from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.permissions import models as perm_models
@@ -11,7 +12,6 @@ from pcapi.core.subscription.phone_validation import exceptions as phone_validat
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
-from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users import utils as users_utils
@@ -114,7 +114,7 @@ def update_public_account(user_id: int, body: serialization.PublicAccountUpdateR
         except users_exceptions.EmailExistsError:
             raise ApiErrors(errors={"email": "L'email est déjà associé à un autre utilisateur"})
 
-    users_external.update_external_user(user)
+    external_attributes_api.update_external_user(user)
 
     return serialization.PublicAccount.from_orm(user)
 

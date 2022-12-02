@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.bookings.factories import IndividualBookingFactory
-from pcapi.core.users.external.batch import BATCH_DATETIME_FORMAT
+from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import UserRole
@@ -34,7 +34,7 @@ def test_get_users_chunks():
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+@patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
 def test_run(mock_import_contacts):
     """
     Test that two chunks of users are used and therefore two requests are sent.
@@ -58,7 +58,7 @@ def test_run_batch_only():
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+@patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
 def test_run_sendinblue_only(mock_import_contacts):
     """
     Test that two chunks of users are used and therefore two requests are sent.

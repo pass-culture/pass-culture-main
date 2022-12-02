@@ -1,48 +1,27 @@
 from collections import defaultdict
-from dataclasses import dataclass
 from datetime import datetime
 from typing import List
 
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.models import IndividualBooking
-from pcapi.core.bookings.repository import venues_have_bookings
-from pcapi.core.offerers.models import UserOfferer
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.repository import find_active_venues_by_booking_email
-from pcapi.core.offerers.repository import find_venues_by_offerers
-from pcapi.core.offerers.repository import offerer_has_venue_with_adage_id
-from pcapi.core.offerers.repository import venues_have_offers
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
-from pcapi.core.users.api import get_eligibility_at_date
-from pcapi.core.users.external.models import ProAttributes
-from pcapi.core.users.external.models import UserAttributes
-from pcapi.core.users.models import Favorite
-from pcapi.core.users.models import User
-from pcapi.core.users.repository import find_pro_user_by_email
+from pcapi.core.bookings import models as bookings_models
+from pcapi.core.bookings import repository as bookings_repository
+from pcapi.core.external.attributes import models
+from pcapi.core.external.batch import update_user_attributes as update_batch_user
+from pcapi.core.external.sendinblue import update_contact_attributes as update_sendinblue_user
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
+from pcapi.core.offers import models as offers_models
+from pcapi.core.users import models as users_models
+from pcapi.core.users import repository as users_repository
 from pcapi.models import db
-
-from .batch import update_user_attributes as update_batch_user
-from .sendinblue import update_contact_attributes as update_sendinblue_user
 
 
 # make sure values are in [a-z0-9_] (no uppercase characters, no '-')
 TRACKED_PRODUCT_IDS = {3084625: "brut_x"}
 
 
-@dataclass
-class BookingsAttributes:
-    """Attributes computed from bookings (values returned by _get_bookings_categories_and_subcategories)"""
-
-    booking_categories: list[str]
-    booking_subcategories: list[str]
-    most_booked_subcategory: str | None = None
-
-
-def update_external_user(user: User, skip_batch: bool = False, skip_sendinblue: bool = False) -> None:
+def update_external_user(user: users_models.User, skip_batch: bool = False, skip_sendinblue: bool = False) -> None:
     if user.has_pro_role:
         update_external_pro(user.email)
     else:
@@ -69,25 +48,25 @@ def update_external_pro(email: str | None) -> None:
         )
 
 
-def get_user_or_pro_attributes(user: User) -> UserAttributes | ProAttributes:
+def get_user_or_pro_attributes(user: users_models.User) -> models.UserAttributes | models.ProAttributes:
     if user.has_pro_role:
         return get_pro_attributes(user.email)
 
     return get_user_attributes(user)
 
 
-def get_pro_attributes(email: str) -> ProAttributes:
+def get_pro_attributes(email: str) -> models.ProAttributes:
     # Offerer name attribute is the list of all offerers either managed by the user account (associated in user_offerer)
     # or the parent offerer of the venue which bookingEmail is the requested email address.
     offerers_names = []
 
     # All venues which are either managed by offerers associated with user account or linked to the current email as
     # booking email. A venue can be part of both sets.
-    all_venues: list[Venue] = []
+    all_venues: list[offerers_models.Venue] = []
 
     attributes = {}
 
-    user = find_pro_user_by_email(email)
+    user = users_repository.find_pro_user_by_email(email)
     if user:
         offerers = [
             user_offerer.offerer
@@ -109,14 +88,16 @@ def get_pro_attributes(email: str) -> ProAttributes:
         is_eac = False
         if user and offerers:
             offerer_ids = [offerer.id for offerer in offerers]
-            user_offerers = UserOfferer.query.filter(UserOfferer.offererId.in_(offerer_ids)).all()
-            all_venues += find_venues_by_offerers(*offerers)
+            user_offerers = offerers_models.UserOfferer.query.filter(
+                offerers_models.UserOfferer.offererId.in_(offerer_ids)
+            ).all()
+            all_venues += offerers_repository.find_venues_by_offerers(*offerers)
             for offerer_id in offerer_ids:
                 if min((uo.id, uo.userId) for uo in user_offerers if uo.offererId == offerer_id)[1] == user.id:
                     user_is_creator = True
                 else:
                     user_is_attached = True
-                if not is_eac and offerer_has_venue_with_adage_id(offerer_id):
+                if not is_eac and offerers_repository.offerer_has_venue_with_adage_id(offerer_id):
                     is_eac = True
 
         attributes.update(
@@ -130,7 +111,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
             }
         )
 
-    venues = find_active_venues_by_booking_email(email)
+    venues = offerers_repository.find_active_venues_by_booking_email(email)
     if venues:
         offerers_names += [venue.managingOfferer.name for venue in venues if venue.managingOfferer]
         all_venues += venues
@@ -140,8 +121,8 @@ def get_pro_attributes(email: str) -> ProAttributes:
                 "dms_application_approved": all(venue.demarchesSimplifieesIsAccepted for venue in venues),
                 "isVirtual": any(venue.isVirtual for venue in venues),
                 "isPermanent": any(venue.isPermanent for venue in venues),
-                "has_offers": venues_have_offers(*venues),
-                "has_bookings": venues_have_bookings(*venues),
+                "has_offers": offerers_repository.venues_have_offers(*venues),
+                "has_bookings": bookings_repository.venues_have_bookings(*venues),
             }
         )
 
@@ -153,7 +134,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
         else bool(venues)
     )
 
-    return ProAttributes(
+    return models.ProAttributes(
         is_pro=True,
         is_user_email=bool(user),
         is_booking_email=bool(venues),
@@ -169,17 +150,22 @@ def get_pro_attributes(email: str) -> ProAttributes:
     )
 
 
-def get_user_attributes(user: User) -> UserAttributes:
+def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     from pcapi.core.fraud import api as fraud_api
     from pcapi.core.users.api import get_domains_credit
 
-    is_pro_user = user.has_pro_role or db.session.query(UserOfferer.query.filter_by(userId=user.id).exists()).scalar()
-    user_bookings: List[Booking] = _get_user_bookings(user) if not is_pro_user else []
+    is_pro_user = (
+        user.has_pro_role
+        or db.session.query(offerers_models.UserOfferer.query.filter_by(userId=user.id).exists()).scalar()
+    )
+    user_bookings: List[bookings_models.Booking] = get_user_bookings(user) if not is_pro_user else []
     last_favorite = (
-        Favorite.query.filter_by(userId=user.id).order_by(Favorite.id.desc()).first() if not is_pro_user else None
+        users_models.Favorite.query.filter_by(userId=user.id).order_by(users_models.Favorite.id.desc()).first()
+        if not is_pro_user
+        else None
     )
     domains_credit = get_domains_credit(user, user_bookings) if not is_pro_user else None
-    bookings_attributes = _get_bookings_categories_and_subcategories(user_bookings)
+    bookings_attributes = get_bookings_categories_and_subcategories(user_bookings)
 
     # Call only once to limit to one get_wallet_balance query
     has_remaining_credit = user.has_remaining_credit
@@ -190,7 +176,7 @@ def get_user_attributes(user: User) -> UserAttributes:
     )
     user_birth_date = datetime.combine(user.birth_date, datetime.min.time()) if user.birth_date else None
 
-    return UserAttributes(
+    return models.UserAttributes(
         booking_categories=bookings_attributes.booking_categories,
         booking_count=len(user_bookings),
         booking_subcategories=bookings_attributes.booking_subcategories,
@@ -233,7 +219,9 @@ def get_user_attributes(user: User) -> UserAttributes:
     )
 
 
-def _get_bookings_categories_and_subcategories(user_bookings: list[Booking]) -> BookingsAttributes:
+def get_bookings_categories_and_subcategories(
+    user_bookings: list[bookings_models.Booking],
+) -> models.BookingsAttributes:
     """
     Returns a tuple of three values:
     - the list of all distinct categories in user bookings (not canceled)
@@ -245,7 +233,7 @@ def _get_bookings_categories_and_subcategories(user_bookings: list[Booking]) -> 
     booking_categories = set()
     bookings_by_subcategories = defaultdict(list)
     for booking in user_bookings:
-        if booking.status != BookingStatus.CANCELLED:
+        if booking.status != bookings_models.BookingStatus.CANCELLED:
             booking_categories.add(booking.stock.offer.subcategory.category.id)
             bookings_by_subcategories[booking.stock.offer.subcategoryId].append(booking)
 
@@ -253,7 +241,7 @@ def _get_bookings_categories_and_subcategories(user_bookings: list[Booking]) -> 
         bookings_by_subcategories.items(),
         key=lambda key_value: (
             len(key_value[1]),
-            sum(booking.stock.price for booking in key_value[1]),
+            sum(booking_.stock.price for booking_ in key_value[1]),
         ),
         reverse=True,
     )
@@ -261,25 +249,31 @@ def _get_bookings_categories_and_subcategories(user_bookings: list[Booking]) -> 
     booking_subcategories_ids = [subcategory[0] for subcategory in sorted_subcategories_items]
     booking_categories_ids = list(booking_categories)
     most_booked_subcategory = sorted_subcategories_items[0][0] if sorted_subcategories_items else None
-    return BookingsAttributes(
+    return models.BookingsAttributes(
         booking_categories=booking_categories_ids,
         booking_subcategories=booking_subcategories_ids,
         most_booked_subcategory=most_booked_subcategory,
     )
 
 
-def _get_user_bookings(user: User) -> List[Booking]:
+def get_user_bookings(user: users_models.User) -> List[bookings_models.Booking]:
     return (
-        Booking.query.join(IndividualBooking, Booking.individualBookingId == IndividualBooking.id)
-        .options(joinedload(Booking.individualBooking))
-        .options(joinedload(Booking.venue).load_only(Venue.isVirtual))
-        .options(
-            joinedload(Booking.stock)
-            .joinedload(Stock.offer)
-            .load_only(Offer.url, Offer.productId, Offer.subcategoryId)
-            .joinedload(Offer.venue)
+        bookings_models.Booking.query.join(
+            bookings_models.IndividualBooking,
+            bookings_models.Booking.individualBookingId == bookings_models.IndividualBooking.id,
         )
-        .filter(IndividualBooking.userId == user.id, Booking.status != BookingStatus.CANCELLED)
-        .order_by(db.desc(Booking.dateCreated))
+        .options(joinedload(bookings_models.Booking.individualBooking))
+        .options(joinedload(bookings_models.Booking.venue).load_only(offerers_models.Venue.isVirtual))
+        .options(
+            joinedload(bookings_models.Booking.stock)
+            .joinedload(offers_models.Stock.offer)
+            .load_only(offers_models.Offer.url, offers_models.Offer.productId, offers_models.Offer.subcategoryId)
+            .joinedload(offers_models.Offer.venue)
+        )
+        .filter(
+            bookings_models.IndividualBooking.userId == user.id,
+            bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
+        )
+        .order_by(db.desc(bookings_models.Booking.dateCreated))
         .all()
     )

@@ -46,7 +46,7 @@ def _handle_venue(
     dry: bool,
     stats: ZSIStats,
 ) -> None:
-    from pcapi.core.users.external import zendesk_sell
+    from pcapi.core.external import zendesk_sell
 
     if venue.isVirtual or not venue.isPermanent:
         return
@@ -92,7 +92,7 @@ def _handle_venue(
 
 
 def _handle_offerer(offerer: offerers_models.Offerer, session: requests.Session, dry: bool, stats: ZSIStats) -> None:
-    from pcapi.core.users.external import zendesk_sell
+    from pcapi.core.external import zendesk_sell
 
     if zendesk_sell.is_offerer_only_virtual(offerer):
         return
@@ -150,7 +150,7 @@ def _handle_offerer(offerer: offerers_models.Offerer, session: requests.Session,
 # The DRY option is in order to test the script before making irreversible action to the CRM
 # By default, dry run mode is enabled so the function only prints information to the console
 def run_initialization(dry: bool = True, min_offerer_id: int = 0) -> None:
-    from pcapi.core.users.external import zendesk_sell
+    from pcapi.core.external import zendesk_sell
 
     session = zendesk_sell.configure_session()
 

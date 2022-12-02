@@ -7,9 +7,9 @@ Start index parameter enabled to stop and resume (emails are sorted alphabetical
 import sys
 import time
 
+from pcapi.core.external.attributes.api import get_pro_attributes
+from pcapi.core.external.sendinblue import update_contact_attributes
 from pcapi.core.offerers.models import Venue
-from pcapi.core.users.external import get_pro_attributes
-from pcapi.core.users.external.sendinblue import update_contact_attributes
 from pcapi.core.users.models import User
 from pcapi.models import db
 

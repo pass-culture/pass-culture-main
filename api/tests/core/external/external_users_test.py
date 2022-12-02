@@ -9,19 +9,19 @@ from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+from pcapi.core.external.attributes.api import TRACKED_PRODUCT_IDS
+from pcapi.core.external.attributes.api import get_bookings_categories_and_subcategories
+from pcapi.core.external.attributes.api import get_user_attributes
+from pcapi.core.external.attributes.api import get_user_bookings
+from pcapi.core.external.attributes.api import update_external_user
+from pcapi.core.external.attributes.models import BookingsAttributes
+from pcapi.core.external.attributes.models import UserAttributes
 import pcapi.core.finance.conf as finance_conf
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.users import testing as sendinblue_testing
-from pcapi.core.users.external import BookingsAttributes
-from pcapi.core.users.external import TRACKED_PRODUCT_IDS
-from pcapi.core.users.external import _get_bookings_categories_and_subcategories
-from pcapi.core.users.external import _get_user_bookings
-from pcapi.core.users.external import get_user_attributes
-from pcapi.core.users.external import update_external_user
-from pcapi.core.users.external.models import UserAttributes
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.factories import UnderageBeneficiaryFactory
@@ -364,7 +364,7 @@ def test_get_bookings_categories_and_subcategories():
     user = BeneficiaryGrant18Factory()
     offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
 
-    assert _get_bookings_categories_and_subcategories(_get_user_bookings(user)) == BookingsAttributes(
+    assert get_bookings_categories_and_subcategories(get_user_bookings(user)) == BookingsAttributes(
         booking_categories=[],
         booking_subcategories=[],
         most_booked_subcategory=None,
@@ -374,7 +374,7 @@ def test_get_bookings_categories_and_subcategories():
     IndividualBookingFactory(individualBooking__user=user, stock__offer=offer)
     CancelledIndividualBookingFactory(individualBooking__user=user)
 
-    assert _get_bookings_categories_and_subcategories(_get_user_bookings(user)) == BookingsAttributes(
+    assert get_bookings_categories_and_subcategories(get_user_bookings(user)) == BookingsAttributes(
         booking_categories=["FILM"],
         booking_subcategories=["SUPPORT_PHYSIQUE_FILM"],
         most_booked_subcategory="SUPPORT_PHYSIQUE_FILM",
@@ -390,7 +390,7 @@ def test_get_bookings_categories_and_subcategories_most_booked():
     offer2 = OfferFactory(subcategoryId=subcategories.CINE_PLEIN_AIR.id)
     IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2)
 
-    booking_attributes = _get_bookings_categories_and_subcategories(_get_user_bookings(user))
+    booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
 
     # 2xFILM, 1xCINE => FILM is the most booked
     assert set(booking_attributes.booking_categories) == {"FILM", "CINEMA"}
@@ -408,7 +408,7 @@ def test_get_bookings_categories_and_subcategories_most_booked_on_price():
     IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
     IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
 
-    booking_attributes = _get_bookings_categories_and_subcategories(_get_user_bookings(user))
+    booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
 
     # 2xFILM, 2xCINE, but FILM has the highest credit spent => FILM is the most booked
     assert set(booking_attributes.booking_categories) == {"FILM", "CINEMA"}
@@ -427,7 +427,7 @@ def test_get_bookings_categories_and_subcategories_most_booked_on_count():
     IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
     IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
 
-    booking_attributes = _get_bookings_categories_and_subcategories(_get_user_bookings(user))
+    booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
 
     # 2xFILM, 3xCINE => CINE is the most booked, even if the highest credit spent is still FILM
     assert set(booking_attributes.booking_categories) == {"FILM", "CINEMA"}

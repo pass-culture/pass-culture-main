@@ -3,6 +3,7 @@ import logging
 import typing
 
 from pcapi import settings
+from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.fraud.api as fraud_api
@@ -16,7 +17,6 @@ from pcapi.core.subscription.educonnect import api as educonnect_subscription_ap
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
-from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
@@ -76,7 +76,7 @@ def activate_beneficiary_for_eligibility(
     if not is_email_sent:
         logger.warning("Could not send accepted as beneficiary email to user", extra={"user": user.id})
 
-    users_external.update_external_user(user)
+    external_attributes_api.update_external_user(user)
 
     if "apps_flyer" in user.externalIds:  # type: ignore [operator]
         apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)

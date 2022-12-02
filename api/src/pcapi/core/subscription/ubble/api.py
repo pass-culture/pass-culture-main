@@ -11,6 +11,7 @@ from pydantic.networks import HttpUrl
 from pcapi import settings
 from pcapi.connectors.beneficiaries import outscale
 from pcapi.connectors.beneficiaries import ubble
+from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
@@ -20,7 +21,6 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
-from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 import pcapi.repository as pcapi_repository
 from pcapi.tasks import ubble_tasks
@@ -76,7 +76,7 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
             return
 
         if not is_activated:
-            users_external.update_external_user(user)
+            external_attributes_api.update_external_user(user)
 
     elif status in (
         ubble_fraud_models.UbbleIdentificationStatus.ABORTED,

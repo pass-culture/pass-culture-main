@@ -14,6 +14,7 @@ import sqlalchemy as sa
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
+from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.finance.api as finance_api
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.common.models as common_fraud_models
@@ -26,7 +27,6 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.email.update as email_update
-import pcapi.core.users.external as users_external
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
 from pcapi.domain.password import random_hashed_password
@@ -167,7 +167,7 @@ def create_account(
     delete_all_users_tokens(user)
 
     if remote_updates:
-        users_external.update_external_user(user)
+        external_attributes_api.update_external_user(user)
 
     if not user.isEmailValidated and send_activation_mail:
         request_email_confirmation(user)
@@ -505,7 +505,7 @@ def update_password_and_external_user(user, new_password):  # type: ignore [no-u
     user.setPassword(new_password)
     if not user.isEmailValidated:
         user.isEmailValidated = True
-        users_external.update_external_user(user)
+        external_attributes_api.update_external_user(user)
     repository.save(user)
 
 
@@ -548,8 +548,8 @@ def update_user_info(  # type: ignore [no-untyped-def]
 
     # TODO(prouzet) even for young users, we should probably remove contact with former email from sendinblue lists
     if old_email and user.has_pro_role:
-        users_external.update_external_pro(old_email)
-    users_external.update_external_user(user)
+        external_attributes_api.update_external_pro(old_email)
+    external_attributes_api.update_external_user(user)
 
 
 def add_comment_to_user(user: models.User, author_user: models.User, comment: str) -> None:
@@ -674,7 +674,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
             extra={"user": new_pro_user.id},
         )
 
-    users_external.update_external_pro(new_pro_user.email)
+    external_attributes_api.update_external_pro(new_pro_user.email)
 
     return new_pro_user
 
@@ -768,7 +768,7 @@ def update_last_connection_date(user):  # type: ignore [no-untyped-def]
         repository.save(user)
 
     if should_update_sendinblue_last_connection_date:
-        users_external.update_external_user(user, skip_batch=True)
+        external_attributes_api.update_external_user(user, skip_batch=True)
 
 
 def create_user_access_token(user: models.User) -> str:

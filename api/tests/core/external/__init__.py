@@ -1,14 +1,13 @@
 from datetime import datetime
 from decimal import Decimal
 
+from pcapi.core.external.attributes import models as attributes_models
 from pcapi.core.offerers.models import VenueTypeCode
-from pcapi.core.users.external.models import ProAttributes
-from pcapi.core.users.external.models import UserAttributes
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
 
 
-common_user_attributes = UserAttributes(
+common_user_attributes = attributes_models.UserAttributes(
     booking_count=4,
     booking_categories=["CINEMA", "LIVRE"],
     booking_subcategories=["ABO_LIVRE_NUMERIQUE", "CARTE_CINE_ILLIMITE", "CINE_PLEIN_AIR"],
@@ -51,7 +50,7 @@ common_user_attributes = UserAttributes(
 )
 
 
-common_pro_attributes = ProAttributes(
+common_pro_attributes = attributes_models.ProAttributes(
     is_pro=True,
     is_user_email=True,
     is_booking_email=True,

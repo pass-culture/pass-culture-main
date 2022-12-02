@@ -8,6 +8,7 @@ from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
 from pcapi.core import logging as core_logging
+from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.dms import api as fraud_dms_api
@@ -16,7 +17,6 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.dms import messages
-from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.demarches_simplifiees import update_demarches_simplifiees_text_annotations
@@ -469,7 +469,7 @@ def _process_accepted_application(
 
     if not has_completed_all_steps:
         transactional_mails.send_complete_subscription_after_dms_email(user.email)
-        users_external.update_external_user(user)
+        external_attributes_api.update_external_user(user)
 
 
 def _handle_validation_errors(

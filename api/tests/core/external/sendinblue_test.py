@@ -8,13 +8,13 @@ import pytest
 from sib_api_v3_sdk.models.request_contact_import import RequestContactImport
 
 from pcapi import settings
+from pcapi.core.external.sendinblue import SendinblueUserUpdateData
+from pcapi.core.external.sendinblue import add_contacts_to_list
+from pcapi.core.external.sendinblue import build_file_body
+from pcapi.core.external.sendinblue import format_user_attributes
+from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
+from pcapi.core.external.sendinblue import make_update_request
 from pcapi.core.testing import override_settings
-from pcapi.core.users.external.sendinblue import SendinblueUserUpdateData
-from pcapi.core.users.external.sendinblue import add_contacts_to_list
-from pcapi.core.users.external.sendinblue import build_file_body
-from pcapi.core.users.external.sendinblue import format_user_attributes
-from pcapi.core.users.external.sendinblue import import_contacts_in_sendinblue
-from pcapi.core.users.external.sendinblue import make_update_request
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
 
 from . import common_pro_attributes
@@ -173,7 +173,7 @@ class BulkImportUsersDataTest:
 
         assert result == expected
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
     def test_import_contacts_in_sendinblue(self, mock_import_contacts):
         import_contacts_in_sendinblue(self.users_data)
 
@@ -204,7 +204,7 @@ class BulkImportUsersDataTest:
 
         mock_import_contacts.assert_has_calls([call(expected_pro_call), call(expected_young_call)], any_order=True)
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
     def test_add_contacts_to_list(self, mock_import_contacts):
         result = add_contacts_to_list(
             ["eren.yeager@shinganshina.paradis", "armin.arlert@shinganshina.paradis"],

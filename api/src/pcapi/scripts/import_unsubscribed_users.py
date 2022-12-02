@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pcapi.core.users.external.sendinblue import import_contacts_in_sendinblue
+from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.users.models import User
 from pcapi.flask_app import app
 from pcapi.repository import repository

@@ -10,6 +10,7 @@ from flask_login import current_user
 from flask_sqlalchemy import Pagination
 import pydantic
 
+from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.permissions import models as perm_models
@@ -18,7 +19,6 @@ from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
-from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.email.update as email_update
@@ -167,7 +167,7 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
             return render_template("accounts/edit.html", form=form, dst=dst, user=user), 400
 
     db.session.commit()
-    users_external.update_external_user(user)
+    external_attributes_api.update_external_user(user)
 
     flash("Informations mises à jour", "success")
     return redirect(url_for(".get_public_account", user_id=user_id), code=303)
