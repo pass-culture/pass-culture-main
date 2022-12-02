@@ -124,8 +124,14 @@ else:
 
 
 class StockBody(serialization.BaseModel):
-    price: pydantic.PositiveInt = pydantic.Field(..., description="The price of the offer in cents", example=1000)
+    price: pydantic.StrictInt = pydantic.Field(..., description="The offer price in euro cents", example=1000)
     quantity: pydantic.PositiveInt | typing.Literal["unlimited"]
+
+    @pydantic.validator("price")
+    def price_must_be_positive(cls, value: int) -> int:
+        if value < 0:
+            raise ValueError("The value must be positive")
+        return value
 
 
 class ProductOfferCreationBody(OfferCreationBase):
