@@ -27,6 +27,7 @@ import { createThumbnailAdapter } from 'core/Offers/adapters/createThumbnailAdap
 import { deleteThumbnailAdapter } from 'core/Offers/adapters/deleteThumbnailAdapter'
 import { IOfferIndividualImage } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
+import { FORM_ERROR_MESSAGE, SENT_DATA_ERROR_MESSAGE } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useNavigate, useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
@@ -88,9 +89,7 @@ const Informations = ({
             'Des informations sont nécessaires pour sauvegarder le brouillon'
           )
         } else {
-          notify.error(
-            'Une ou plusieurs erreurs sont présentes dans le formulaire'
-          )
+          notify.error(FORM_ERROR_MESSAGE)
         }
       }
       formik.handleSubmit()
@@ -178,9 +177,7 @@ const Informations = ({
           })
         })
         .catch(() => {
-          notify.error(
-            'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'
-          )
+          notify.error(SENT_DATA_ERROR_MESSAGE)
         })
       return Promise.resolve()
     }
@@ -214,7 +211,7 @@ const Informations = ({
         })
         setImageOffer(undefined)
       } else {
-        notify.error('Une erreur est survenue. Merci de réessayer plus tard.')
+        notify.error(response.message)
       }
     }
     Promise.resolve()

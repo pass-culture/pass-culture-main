@@ -40,7 +40,9 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
 import { DialogStockDeleteConfirm } from '../DialogStockDeleteConfirm'
+import { useNotifyFormError } from '../hooks/useNotifyFormErrors'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
+import { getSuccessMessage } from '../utils'
 import { logTo } from '../utils/logTo'
 
 import { ActivationCodeFormDialog } from './ActivationCodeFormDialog'
@@ -128,6 +130,10 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     // enableReinitialize is needed to reset dirty after submit (and not block after saving a draft)
     enableReinitialize: true,
   })
+  useNotifyFormError({
+    isSubmitting: formik.isSubmitting,
+    errors: formik.errors,
+  })
 
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
@@ -135,18 +141,22 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       // tested but coverage don't see it.
       /* istanbul ignore next */
       setIsClickingFromActionBar(true)
-      setAfterSubmitUrl(
-        getOfferIndividualUrl({
-          offerId: offer.id,
-          step: saveDraft
-            ? OFFER_WIZARD_STEP_IDS.STOCKS
-            : OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode,
-        })
-      )
-      if (!Object.keys(formik.touched).length) {
+      const nextStepUrl = getOfferIndividualUrl({
+        offerId: offer.id,
+        step: saveDraft
+          ? OFFER_WIZARD_STEP_IDS.STOCKS
+          : OFFER_WIZARD_STEP_IDS.SUMMARY,
+        mode,
+      })
+      setAfterSubmitUrl(nextStepUrl)
+
+      const hasSavedStock = formik.values.stockId !== undefined
+      if (hasSavedStock && Object.keys(formik.touched).length === 0) {
         setIsClickingFromActionBar(false)
-        notify.success('Brouillon sauvegardé dans la liste des offres')
+        notify.success(getSuccessMessage(mode))
+        if (!saveDraft) {
+          navigate(nextStepUrl)
+        }
       } else {
         formik.handleSubmit()
       }

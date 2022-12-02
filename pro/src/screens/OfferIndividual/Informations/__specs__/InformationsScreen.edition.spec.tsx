@@ -457,7 +457,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     await userEvent.click(screen.getByTestId('confirm-dialog-button-confirm'))
     expect(
       await screen.findByText(
-        'Une erreur est survenue. Merci de réessayer plus tard.',
+        'Une erreur est survenue lors de la suppression de votre image.',
         { exact: false }
       )
     ).toBeInTheDocument()

@@ -22,7 +22,11 @@ import {
   IOfferIndividualStock,
   IOfferIndividualVenue,
 } from 'core/Offers/types'
-import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
+import {
+  getOfferIndividualPath,
+  getOfferIndividualUrl,
+} from 'core/Offers/utils/getOfferIndividualUrl'
+import { FORM_ERROR_MESSAGE } from 'core/shared'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
@@ -57,8 +61,21 @@ const renderStockThingScreen = ({
   const store = configureTestStore(storeOverride)
   return render(
     <Provider store={store}>
-      <MemoryRouter initialEntries={['/creation/stocks']}>
-        <Route path="/creation/stocks">
+      <MemoryRouter
+        initialEntries={[
+          getOfferIndividualUrl({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+            offerId: contextValue.offerId || undefined,
+          }),
+        ]}
+      >
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+        >
           <OfferIndividualContext.Provider value={contextValue}>
             <StocksThing {...props} />
           </OfferIndividualContext.Provider>
@@ -113,8 +130,8 @@ describe('screens:StocksThing', () => {
     }
     storeOverride = {}
     contextValue = {
-      offerId: null,
-      offer: null,
+      offerId: 'OFFER_ID',
+      offer: offer as IOfferIndividual,
       venueList: [],
       offererNames: [],
       categories: [],
@@ -403,15 +420,13 @@ describe('screens:StocksThing', () => {
       expect(expirationInput).toBeDisabled()
       expect(expirationInput).toHaveValue('15/12/2020')
     })
-    it('should show a success notification if nothing has been touched', async () => {
-      renderStockThingScreen({ props, storeOverride, contextValue })
 
+    it('should show a error notification if nothing has been touched', async () => {
+      renderStockThingScreen({ props, storeOverride, contextValue })
       await userEvent.click(
         screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
       )
-      expect(
-        screen.getByText('Brouillon sauvegardé dans la liste des offres')
-      ).toBeInTheDocument()
+      expect(screen.getByText(FORM_ERROR_MESSAGE)).toBeInTheDocument()
     })
   })
 })

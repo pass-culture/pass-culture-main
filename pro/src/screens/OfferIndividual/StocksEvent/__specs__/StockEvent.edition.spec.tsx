@@ -290,4 +290,19 @@ describe('screens:StocksEvent:Edition', () => {
     await userEvent.click(screen.getByText('Confirmer les modifications'))
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
   })
+
+  it('should show a success notification if nothing has been touched', async () => {
+    renderStockEventScreen({ props, storeOverride, contextValue })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+    )
+    expect(
+      screen.getByText('Vos modifications ont bien été enregistrées')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('heading', { name: /Stock & Prix/ })
+    ).not.toBeInTheDocument()
+    expect(screen.getByText(/Next page/)).toBeInTheDocument()
+  })
 })
