@@ -13,6 +13,7 @@ import pcapi.core.users.models as users_models
 from pcapi.routes.backoffice_v3.filters import format_date
 import pcapi.utils.email as email_utils
 
+from .helpers import comment as comment_helpers
 from .helpers import unauthorized as unauthorized_helpers
 
 
@@ -128,6 +129,14 @@ class GetProUserHistoryTest:
         endpoint = "backoffice_v3_web.pro_user.get_user_history"
         endpoint_kwargs = {"user_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    class CommentButtonTest(comment_helpers.CommentButtonHelper):
+        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+        @property
+        def path(self):
+            user = offerers_factories.UserOffererFactory().user
+            return url_for("backoffice_v3_web.pro_user.get_user_history", user_id=user.id)
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_history(self, authenticated_client, pro_user):

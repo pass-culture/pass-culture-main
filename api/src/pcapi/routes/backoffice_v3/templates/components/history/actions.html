@@ -1,0 +1,40 @@
+<table class="table table-hover my-4">
+    <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Type</th>
+            <th scope="col">Date/Heure</th>
+            <th scope="col">Commentaire</th>
+            <th scope="col" class="px-4">Auteur</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        {% for action in actions %}
+            <tr>
+                <th scope="row"></th>
+                <td>{{ action.actionType.value }}</td>
+                <td>{{ action.actionDate | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
+                <td class="px-4 text-break">
+                    {% if action.userId and action.user.full_name and is_user_offerer_action_type(action) %}
+                        <a href="{{ url_for("backoffice_v3_web.pro_user.get", user_id=action.userId) }}">
+                            <p>{{ action.user.full_name | empty_string_if_null }} - {{ action.userId }}</p>
+                        </a>
+
+                        <p>{{ action.comment | empty_string_if_null }}</p>
+                    {% elif action.actionType.name == "USER_INFO_MODIFIED" %}
+                        <p>Informations modifées :</p>
+                        {% for info_name, modified_info in action.extraData.get('modified_info', {}).items() %}
+                            <p>{{ info_name | i18n_column_name }}: 
+                                {{ modified_info['old_info'] | escape }} =&gt; {{ modified_info['new_info'] | escape }}</p>
+                        {% endfor %}
+                    {% elif action.actionType.name == "USER_SUSPENDED" %}
+                        <p>{{ action.extraData['reason'] | format_reason_label }}</p>
+                    {% else %}
+                        <p>{{ action.comment | empty_string_if_null }}</p>
+                    {% endif %}
+                </td>
+                <td>{{ action.authorUser.full_name if action.authorUser else None | empty_string_if_null }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

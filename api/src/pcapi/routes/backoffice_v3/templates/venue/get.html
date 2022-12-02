@@ -129,8 +129,8 @@
                             <span class="fw-bold">Structure :</span>
                             <a
                                 href="{{ url_for(
-                                    "backoffice_v3_web.offerer.get",
-                                    offerer_id=venue.managingOffererId
+                                    "backoffice_v3_web.venue.get",
+                                    venue_id=venue.managingOffererId
                                 )}}"
                                 class="fw-bold text-decoration-none"
                             >
@@ -185,6 +185,17 @@
 
         <div class="mt-4">
             <turbo-frame id="venue_total_revenue_frame" src="{{ url_for("backoffice_v3_web.venue.get_stats", venue_id=venue.id) }}">
+                <p class="text-center">
+                    <span class="spinner-grow spinner-grow-sm" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </span>
+                    Chargement...
+                </p>
+            </turbo-frame>
+        </div>
+
+        <div class="mt-4">
+            <turbo-frame id="venue_details_frame" src="{{ url_for("backoffice_v3_web.venue.get_details", venue_id=venue.id) }}">
                 <p class="text-center">
                     <span class="spinner-grow spinner-grow-sm" role="status">
                         <span class="visually-hidden">Chargement...</span>

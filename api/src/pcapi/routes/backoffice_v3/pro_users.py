@@ -104,13 +104,16 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
 def get_user_history(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
     actions = history_repository.find_all_actions_by_user(user_id)
-    can_add_comment = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
 
     form = pro_user_forms.CommentForm()
     dst = url_for("backoffice_v3_web.pro_user.comment_pro_user", user_id=user.id)
 
     return render_template(
-        "pro_user/get/details.html", user=user, form=form, dst=dst, actions=actions, can_add_comment=can_add_comment
+        "pro_user/get/details.html",
+        user=user,
+        form=form,
+        dst=dst,
+        actions=actions,
     )
 
 

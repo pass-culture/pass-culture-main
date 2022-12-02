@@ -671,6 +671,10 @@ def add_comment_to_offerer(offerer: offerers_models.Offerer, author_user: users_
     history_api.log_action(history_models.ActionType.COMMENT, author_user, offerer=offerer, comment=comment)
 
 
+def add_comment_to_venue(venue: offerers_models.Venue, author_user: users_models.User, comment: str) -> None:
+    history_api.log_action(history_models.ActionType.COMMENT, author_user, venue=venue, comment=comment)
+
+
 def add_comment_to_offerer_attachment(
     user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str
 ) -> None:

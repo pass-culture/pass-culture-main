@@ -128,6 +128,12 @@ class Role(PcObject, Base, Model):
     )
     profiles = sa.orm.relationship("BackOfficeUserProfile", secondary=role_backoffice_profile_table, back_populates="roles")  # type: ignore
 
+    def has_permission(self, needed_permission: Permissions) -> bool:
+        for permission in self.permissions:
+            if permission.name == needed_permission.name:
+                return True
+        return False
+
 
 class BackOfficeUserProfile(Base, Model):
     __tablename__ = "backoffice_user_profile"

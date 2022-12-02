@@ -9,6 +9,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+import pcapi.core.history.factories as history_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -17,6 +18,7 @@ from pcapi.core.testing import override_features
 from pcapi.models import db
 from pcapi.routes.backoffice_v3 import venues
 
+from .helpers import comment as comment_helpers
 from .helpers import html_parser
 from .helpers import unauthorized as unauthorized_helpers
 
@@ -261,3 +263,63 @@ def send_request(authenticated_client, venue_id, url, form_data=None):
     form = {"csrf_token": g.get("csrf_token", ""), **form_data}
 
     return authenticated_client.post(url, form=form)
+
+
+class GetVenueDetailsTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+        endpoint = "backoffice_v3_web.venue.get_details"
+        endpoint_kwargs = {"venue_id": 1}
+        needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    class CommentButtonTest(comment_helpers.CommentButtonHelper):
+        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+        @property
+        def path(self):
+            venue = offerers_factories.VenueFactory()
+            return url_for("backoffice_v3_web.venue.get_details", venue_id=venue.id)
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_venue_history(self, authenticated_client, legit_user):
+        venue = offerers_factories.VenueFactory()
+
+        comment = "test comment"
+        history_factories.ActionHistoryFactory(authorUser=legit_user, venue=venue, comment=comment)
+
+        url = url_for("backoffice_v3_web.venue.get_details", venue_id=venue.id)
+
+        # if venue is not removed from the current session, any get
+        # query won't be executed because of this specific testing
+        # environment. this would tamper the real database queries
+        # count.
+        db.session.expire(venue)
+
+        # get session (1 query)
+        # get user with profile and permissions (1 query)
+        # get FF (1 query)
+        # get venue details (1 query)
+        with assert_num_queries(4):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert comment in response.data.decode("utf-8")
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_venue_without_history(self, authenticated_client, legit_user):
+        venue = offerers_factories.VenueFactory()
+
+        url = url_for("backoffice_v3_web.venue.get_details", venue_id=venue.id)
+
+        # if venue is not removed from the current session, any get
+        # query won't be executed because of this specific testing
+        # environment. this would tamper the real database queries
+        # count.
+        db.session.expire(venue)
+
+        # get session (1 query)
+        # get user with profile and permissions (1 query)
+        # get FF (1 query)
+        # get venue details (1 query)
+        with assert_num_queries(4):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200

@@ -4,12 +4,14 @@ from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import url_for
+from flask_login import current_user
 import gql.transport.exceptions as gql_exceptions
 from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
 from pcapi.connectors.dms.api import DMSGraphQLClient
+import pcapi.core.history.models as history_models
 from pcapi.core.offerers import api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.permissions.models as perm_models
@@ -161,6 +163,39 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
     )
 
 
+def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
+    venue = (
+        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        .options(
+            sa.orm.joinedload(offerers_models.Venue.action_history).joinedload(history_models.ActionHistory.user),
+            sa.orm.joinedload(offerers_models.Venue.action_history).joinedload(history_models.ActionHistory.authorUser),
+        )
+        .one_or_none()
+    )
+
+    if not venue:
+        raise NotFound()
+
+    return venue
+
+
+@venue_blueprint.route("/details", methods=["GET"])
+def get_details(venue_id: int) -> utils.BackofficeResponse:
+    venue = get_venue_with_history(venue_id)
+    actions = sorted(venue.action_history, key=lambda action: action.actionDate, reverse=True)
+
+    form = forms.CommentForm()
+    dst = url_for("backoffice_v3_web.manage_venue.comment", venue_id=venue.id)
+
+    return render_template(
+        "venue/get/details.html",
+        venue=venue,
+        actions=actions,
+        dst=dst,
+        form=form,
+    )
+
+
 manage_venue_blueprint = utils.child_backoffice_blueprint(
     "manage_venue",
     __name__,
@@ -207,3 +242,18 @@ def update(venue_id: int) -> utils.BackofficeResponse:
 
     flash("Les informations ont bien été mises à jour", "success")
     return redirect(url_for("backoffice_v3_web.venue.get", venue_id=venue.id), code=303)
+
+
+@manage_venue_blueprint.route("", methods=["POST"])
+def comment(venue_id: int) -> utils.BackofficeResponse:
+    venue = offerers_models.Venue.query.get_or_404(venue_id)
+
+    form = forms.CommentForm()
+    if not form.validate():
+        flash("Les données envoyées comportent des erreurs", "warning")
+        return render_template("venue/comment.html", form=form, venue=venue), 400
+
+    offerers_api.add_comment_to_venue(venue, current_user, comment=form.comment.data)
+    flash("Commentaire enregistré", "success")
+
+    return redirect(url_for("backoffice_v3_web.venue.get", venue_id=venue_id), code=303)
