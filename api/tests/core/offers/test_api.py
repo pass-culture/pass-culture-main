@@ -831,6 +831,24 @@ class CreateOfferTest:
 
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
 
+    def test_cannot_create_activation_offer(self):
+        venue = offerers_factories.VenueFactory()
+        with pytest.raises(exceptions.SubCategoryIsInactive) as error:
+
+            api.create_offer(
+                venue=venue,
+                name="An offer he can't refuse",
+                subcategory_id=subcategories.ACTIVATION_EVENT.id,
+                audio_disability_compliant=True,
+                mental_disability_compliant=True,
+                motor_disability_compliant=True,
+                visual_disability_compliant=True,
+            )
+
+        assert error.value.errors["subcategory"] == [
+            "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
+        ]
+
     def test_cannot_create_offer_when_invalid_subcategory(self):
         venue = offerers_factories.VenueFactory()
         with pytest.raises(exceptions.UnknownOfferSubCategory) as error:

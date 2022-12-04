@@ -594,6 +594,20 @@ MATERIEL_ART_CREATIF = Subcategory.from_new(
 )
 # endregion
 # region TECHNICAL
+ACTIVATION_EVENT = Subcategory.from_new(
+    subcategories_v2.ACTIVATION_EVENT,
+    {
+        "search_group_name": SearchGroups.NONE.name,
+        "homepage_label_name": HomepageLabels.NONE.name,
+    },
+)
+ACTIVATION_THING = Subcategory.from_new(
+    subcategories_v2.ACTIVATION_THING,
+    {
+        "search_group_name": SearchGroups.NONE.name,
+        "homepage_label_name": HomepageLabels.NONE.name,
+    },
+)
 JEU_SUPPORT_PHYSIQUE = Subcategory.from_new(
     subcategories_v2.JEU_SUPPORT_PHYSIQUE,
     {
@@ -625,6 +639,8 @@ ALL_SUBCATEGORIES = (
     ABO_PRESSE_EN_LIGNE,
     ABO_SPECTACLE,
     ACHAT_INSTRUMENT,
+    ACTIVATION_EVENT,
+    ACTIVATION_THING,
     APP_CULTURELLE,
     ATELIER_PRATIQUE_ART,
     AUTRE_SUPPORT_NUMERIQUE,
@@ -692,6 +708,7 @@ PERMANENT_SUBCATEGORIES = {
 }
 EXPIRABLE_SUBCATEGORIES = {subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.can_expire}
 EVENT_SUBCATEGORIES = {subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.is_event}
+ACTIVATION_SUBCATEGORIES = (ACTIVATION_EVENT.id, ACTIVATION_THING.id)
 BOOK_WITH_ISBN = (LIVRE_PAPIER.id, LIVRE_AUDIO_PHYSIQUE.id, LIVRE_NUMERIQUE.id)
 
 COLLECTIVE_SUBCATEGORIES = {
