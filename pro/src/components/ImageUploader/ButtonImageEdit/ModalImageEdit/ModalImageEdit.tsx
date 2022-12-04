@@ -19,7 +19,7 @@ import { ModalImageUploadConfirm } from './ModalImageUploadConfirm'
 export interface IOnImageUploadArgs {
   imageFile: File
   imageCroppedDataUrl?: string
-  credit: string
+  credit: string | null
   cropParams?: CroppedRect
 }
 
