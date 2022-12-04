@@ -152,7 +152,7 @@ export interface IOfferCollectiveImage {
 export interface IOfferIndividualImage {
   originalUrl: string
   url: string
-  credit: string
+  credit: string | null
   cropParams?: ICropParams
 }
 

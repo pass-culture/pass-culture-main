@@ -19,7 +19,7 @@ import { stringify } from 'utils/query-string'
 export const postImageToVenue = async (
   venueId: string,
   banner: File,
-  imageCredit?: string,
+  imageCredit: string | null,
   xCropPercent?: number,
   yCropPercent?: number,
   heightCropPercent?: number,
@@ -55,7 +55,7 @@ export const postImageToVenue = async (
 type PostImageMethodType<T> = (
   offerId: string,
   thumb: File,
-  credit?: string,
+  credit: string | null,
   thumbUrl?: string,
   x?: number,
   y?: number,
@@ -67,7 +67,7 @@ export const postImage = (
   url: string,
   offerId: string,
   thumb: File,
-  credit?: string,
+  credit?: string | null,
   thumbUrl?: string,
   x?: number,
   y?: number,

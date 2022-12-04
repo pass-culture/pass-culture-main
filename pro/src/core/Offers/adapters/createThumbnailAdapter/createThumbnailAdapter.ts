@@ -42,7 +42,7 @@ const createThumbnailAdapter: TCreateThumbnailAdapter = async ({
       payload: {
         originalUrl: response.url,
         url: response.url,
-        credit: response.credit,
+        credit: response.credit ?? null,
       },
     }
   } catch {

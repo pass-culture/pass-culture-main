@@ -47,6 +47,6 @@ class CreateThumbnailBodyModel(BaseModel):
 class CreateThumbnailResponseModel(BaseModel):
     id: str
     url: str
-    credit: str
+    credit: str | None
 
     _humanize_id = humanize_field("id")
