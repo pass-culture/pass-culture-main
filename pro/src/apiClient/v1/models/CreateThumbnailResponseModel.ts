@@ -3,8 +3,7 @@
 /* eslint-disable */
 
 export type CreateThumbnailResponseModel = {
-  credit: string;
-  id: string;
-  url: string;
-};
-
+  credit?: string | null
+  id: string
+  url: string
+}
