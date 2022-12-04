@@ -104,6 +104,7 @@ class NativeCategory(Enum):
     ARTS_VISUELS = "Arts visuels"
     FESTIVAL_DU_LIVRE = "Festivals du livre"
     PRATIQUE_ARTISTIQUE_EN_LIGNE = "Pratique artistique en ligne"
+    DEPRECIEE = "Dépréciée"
 
 
 class GenreType(Enum):
@@ -1518,6 +1519,46 @@ MATERIEL_ART_CREATIF = Subcategory(
 )
 # endregion
 # region TECHNICAL
+ACTIVATION_EVENT = Subcategory(
+    id="ACTIVATION_EVENT",
+    category=categories.TECHNIQUE,
+    pro_label="Catégorie technique d'évènement d'activation ",
+    app_label="Catégorie technique d'évènement d'activation ",
+    search_group_name=SearchGroups.NONE.name,
+    homepage_label_name=HomepageLabels.NONE.name,
+    is_event=True,
+    conditional_fields=[],
+    can_expire=False,
+    can_be_duo=False,
+    can_be_educational=False,
+    online_offline_platform=OnlineOfflinePlatformChoices.ONLINE_OR_OFFLINE.value,
+    is_digital_deposit=False,
+    is_physical_deposit=False,
+    reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_selectable=False,
+    is_bookable_by_underage_when_not_free=False,
+    native_category=NativeCategory.DEPRECIEE,
+)
+ACTIVATION_THING = Subcategory(
+    id="ACTIVATION_THING",
+    category=categories.TECHNIQUE,
+    pro_label="Catégorie technique de thing d'activation",
+    app_label="Catégorie technique de thing d'activation",
+    search_group_name=SearchGroups.NONE.name,
+    homepage_label_name=HomepageLabels.NONE.name,
+    is_event=False,
+    conditional_fields=[],
+    can_expire=False,
+    can_be_duo=False,
+    can_be_educational=False,
+    online_offline_platform=OnlineOfflinePlatformChoices.ONLINE_OR_OFFLINE.value,
+    is_digital_deposit=False,
+    is_physical_deposit=True,
+    reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_selectable=False,
+    is_bookable_by_underage_when_not_free=False,
+    native_category=NativeCategory.DEPRECIEE,
+)
 JEU_SUPPORT_PHYSIQUE = Subcategory(
     id="JEU_SUPPORT_PHYSIQUE",
     category=categories.TECHNIQUE,
@@ -1576,6 +1617,8 @@ ALL_SUBCATEGORIES = (
     ABO_PRESSE_EN_LIGNE,
     ABO_SPECTACLE,
     ACHAT_INSTRUMENT,
+    ACTIVATION_EVENT,
+    ACTIVATION_THING,
     APP_CULTURELLE,
     ATELIER_PRATIQUE_ART,
     AUTRE_SUPPORT_NUMERIQUE,
@@ -1643,6 +1686,7 @@ PERMANENT_SUBCATEGORIES = {
 }
 EXPIRABLE_SUBCATEGORIES = {subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.can_expire}
 EVENT_SUBCATEGORIES = {subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.is_event}
+ACTIVATION_SUBCATEGORIES = (ACTIVATION_EVENT.id, ACTIVATION_THING.id)
 BOOK_WITH_ISBN = (LIVRE_PAPIER.id, LIVRE_AUDIO_PHYSIQUE.id, LIVRE_NUMERIQUE.id)
 
 COLLECTIVE_SUBCATEGORIES = {
