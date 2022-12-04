@@ -1,5 +1,7 @@
+from decimal import Decimal
 import logging
 
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import EventOccurrence
@@ -37,6 +39,9 @@ def create_industrial_event_stocks(event_occurrences_by_name: dict[str, EventOcc
         if price_counter > 2:
             price = price + price_counter
         short_names_to_increase_price.append(short_name)
+
+        if event_occurrence_with_stocks.offer.product.subcategoryId in subcategories.ACTIVATION_SUBCATEGORIES:
+            price = Decimal(0)
 
         name = event_occurrence_with_stocks_name + " / " + str(available) + " / " + str(price)
 
