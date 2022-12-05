@@ -13,6 +13,7 @@ interface IShowTypesProps {
   readOnly?: boolean
 }
 
+/* istanbul ignore next: DEBT, TO FIX */
 const ShowTypes = ({ readOnly = false }: IShowTypesProps): JSX.Element => {
   const {
     initialValues,
@@ -40,6 +41,7 @@ const ShowTypes = ({ readOnly = false }: IShowTypesProps): JSX.Element => {
         showTypeOption => showTypeOption.code === parseInt(showType)
       )?.children
 
+      /* istanbul ignore next: DEBT, TO FIX */
       if (selectedShowTypeChildren) {
         newShowSubTypeOptions = selectedShowTypeChildren
           .map(data => ({
@@ -75,7 +77,7 @@ const ShowTypes = ({ readOnly = false }: IShowTypesProps): JSX.Element => {
       {showTypesOptions.showSubType.length > 0 && (
         <FormLayout.Row>
           <Select
-            label="Sous type"
+            label="Sous-type"
             name="showSubType"
             options={showTypesOptions.showSubType}
             defaultOption={{
