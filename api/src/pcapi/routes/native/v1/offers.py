@@ -138,6 +138,10 @@ def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponse
             subcategories_v2_serializers.HomepageLabelResponseModelv2.from_orm(homepage_label_name)
             for homepage_label_name in subcategories_v2.HomepageLabels
         ],
+        nativeCategories=[
+            subcategories_v2_serializers.NativeCategoryResponseModelv2.from_orm(native_category)
+            for native_category in subcategories_v2.NativeCategory
+        ],
         genreTypes=[
             subcategories_v2_serializers.GenreTypeModel.from_orm(genre_type)
             for genre_type in subcategories_v2.GenreType
