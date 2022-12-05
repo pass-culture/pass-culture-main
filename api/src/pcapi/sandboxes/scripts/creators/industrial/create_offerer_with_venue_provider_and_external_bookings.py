@@ -42,9 +42,7 @@ def _create_offers(provider_name: str, provider: Provider, provider_type: str = 
             idAtProviders=factory.Sequence("idAtProviders{}".format),
         )
         # offerers have always a virtual venue so we have to create one to match reality
-        VirtualVenueFactory(
-            name=f"Cinéma - {provider_name} Lieu Virtuel", managingOfferer=cinema_user_offerer.offerer, isVirtual=True
-        )
+        VirtualVenueFactory(name=f"Cinéma - {provider_name} Lieu Virtuel", managingOfferer=cinema_user_offerer.offerer)
     else:
         book_user_offerer = UserOffererFactory(offerer__name=f"Structure du Livre {provider_name}")
         venue = VenueFactory(
@@ -54,9 +52,7 @@ def _create_offers(provider_name: str, provider: Provider, provider_type: str = 
             idAtProviders=factory.Sequence("idAtProviders{}".format),
         )
         # offerers have always a virtual venue so we have to create one to match reality
-        VirtualVenueFactory(
-            name=f"Livre - {provider_name} Lieu Virtuel", managingOfferer=book_user_offerer.offerer, isVirtual=True
-        )
+        VirtualVenueFactory(name=f"Livre - {provider_name} Lieu Virtuel", managingOfferer=book_user_offerer.offerer)
 
     user_bene = BeneficiaryGrant18Factory(email=f"jeune-has-{provider_name}-external-bookings@example.com")
     if provider_type != "book":

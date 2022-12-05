@@ -19,7 +19,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 logger = logging.getLogger(__name__)
 
 
-def create_specific_offers() -> None:
+def create_offers_with_specific_status() -> None:
     user_offerer = UserOffererFactory(offerer__name="Offerer avec offres spécifiques")
     venue = VenueFactory(
         name="Lieu avec offres spécifiques",
@@ -27,7 +27,7 @@ def create_specific_offers() -> None:
     )
     # offerers have always a virtual venue so we have to create one to match reality
     VirtualVenueFactory(
-        name="Lieu virtuel avec offres spécifiques", managingOfferer=user_offerer.offerer, isVirtual=True
+        name="Lieu virtuel avec offres spécifiques", managingOfferer=user_offerer.offerer
     )
     user_bene = BeneficiaryGrant18Factory(email="jeune-has-specific-offers-external-bookings@example.com")
 
@@ -86,7 +86,7 @@ def create_offers_expired(venue: Venue) -> None:
 
 def create_offers_pending_and_refused(venue: Venue) -> None:
     offer_event = EventOfferFactory(
-        name="Séance ciné pending",
+        name="Séance ciné en attente de validation",
         venue=venue,
         subcategoryId=subcategories.SEANCE_CINE.id,
         validation=OfferValidationStatus.PENDING,
@@ -96,13 +96,11 @@ def create_offers_pending_and_refused(venue: Venue) -> None:
     )
 
     offer_event = EventOfferFactory(
-        name="Séance ciné rejected",
+        name="Séance ciné rejetée",
         venue=venue,
         subcategoryId=subcategories.SEANCE_CINE.id,
         validation=OfferValidationStatus.REJECTED,
     )
-    EventStockFactory(
-        offer=offer_event,
-    )
+    EventStockFactory(offer=offer_event)
 
     logger.info("create_offers_pending_refused")
