@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
 
+import { IcoEyeClose, IcoEyeOpen } from 'icons'
 import { TextInputWithIcon } from 'ui-kit/form_raw/TextInputWithIcon'
 import Icon from 'ui-kit/Icon/Icon'
 
@@ -69,12 +70,7 @@ class PasswordField extends PureComponent {
             ? this.getErrorMessage(errors)
             : null
         }
-        icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
-        iconAlt={
-          isPasswordHidden
-            ? 'Afficher le mot de passe'
-            : 'Cacher le mot de passe'
-        }
+        icon={isPasswordHidden ? <IcoEyeClose /> : <IcoEyeOpen />}
         label={label}
         name={name}
         onChange={input.onChange}

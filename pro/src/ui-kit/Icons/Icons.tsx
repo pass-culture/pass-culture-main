@@ -42,6 +42,7 @@ import { ReactComponent as GeolocSolidIcon } from 'icons/ico-geoloc-solid.svg'
 import { ReactComponent as GuichetFullIcon } from 'icons/ico-guichet-full.svg'
 import { ReactComponent as HomeIcon } from 'icons/ico-home.svg'
 import { ReactComponent as HourglassIcon } from 'icons/ico-hourglass.svg'
+import { ReactComponent as IcoKey } from 'icons/ico-key.svg'
 import { ReactComponent as ListOffersIcon } from 'icons/ico-list-offers.svg'
 import { ReactComponent as IcoMail } from 'icons/ico-mail.svg'
 import { ReactComponent as IcoMiniArrowLeft } from 'icons/ico-mini-arrow-left.svg'
@@ -707,6 +708,12 @@ export const Icons = () => (
           <DoubleCheckIcon />
         </td>
         <td>DoubleCheck icon</td>
+      </tr>
+      <tr>
+        <td>
+          <IcoKey />
+        </td>
+        <td>IcoKey</td>
       </tr>
     </body>
   </table>
