@@ -8,12 +8,9 @@ import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapte
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
-import useCurrentUser from 'hooks/useCurrentUser'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
-import { ButtonLink, SubmitButton } from 'ui-kit'
 
 import useActiveFeature from '../../hooks/useActiveFeature'
-import { ButtonVariant } from '../../ui-kit/Button/types'
 import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
 } from '../RouteLeavingGuard'
@@ -26,6 +23,7 @@ import { EACInformation } from './EACInformation'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
 import { Informations } from './Informations'
 import { OffersSynchronization } from './OffersSynchronization'
+import { VenueFormActionBar } from './VenueFormActionBar'
 import { WithdrawalDetails } from './WithdrawalDetails'
 
 import { IVenueFormValues } from '.'
@@ -54,12 +52,10 @@ const VenueForm = ({
   initialIsVirtual = false,
 }: IVenueForm) => {
   const {
-    isSubmitting,
     values: { isPermanent },
   } = useFormikContext<IVenueFormValues>()
   const shouldDisplayImageVenueUploaderSection = isPermanent
   useScrollToFirstErrorAfterSubmit()
-  const { currentUser } = useCurrentUser()
   const location = useLocation()
 
   const [canOffererCreateCollectiveOffer, setCanOffererCreateCollectiveOffer] =
@@ -161,22 +157,10 @@ const VenueForm = ({
         >
           <p>Les informations non enregistrées seront perdues.</p>
         </RouteLeavingGuard>
-        <FormLayout.Actions>
-          <ButtonLink
-            variant={ButtonVariant.SECONDARY}
-            link={{
-              to: currentUser.isAdmin
-                ? `/structures/${offerer.id}`
-                : '/accueil',
-              isExternal: false,
-            }}
-          >
-            Annuler et quitter
-          </ButtonLink>
-          <SubmitButton isLoading={isSubmitting}>
-            Enregistrer et {isCreatingVenue ? 'continuer' : 'quitter'}
-          </SubmitButton>
-        </FormLayout.Actions>
+        <VenueFormActionBar
+          offererId={offerer.id}
+          isCreatingVenue={isCreatingVenue}
+        />
       </FormLayout>
     </div>
   )
