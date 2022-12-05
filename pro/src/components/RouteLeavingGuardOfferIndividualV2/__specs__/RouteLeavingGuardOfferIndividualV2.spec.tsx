@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom'
 
 import { configureTestStore } from 'store/testUtils'
 
-import RouteLeavingGuardOfferIndividual, {
+import RouteLeavingGuardOfferIndividualV2, {
   RouteLeavingGuardOfferIndividualV2Props,
 } from '../RouteLeavingGuardOfferIndividualV2'
 
@@ -38,13 +38,13 @@ const renderRouteLeavingGuard = async (
         <Link to={stepsUrls['stocks']}>Stocks</Link>
         <Link to={stepsUrls['summary']}>Récapitulatif</Link>
         <Link to={stepsUrls['confirmation']}>Confirmation</Link>
-        <RouteLeavingGuardOfferIndividual {...props} />
+        <RouteLeavingGuardOfferIndividualV2 {...props} />
       </Router>
     </Provider>
   )
 }
 
-describe('components | RouteLeavingGuardOfferIndividual', () => {
+describe('components | RouteLeavingGuardOfferIndividualV2', () => {
   let props: RouteLeavingGuardOfferIndividualV2Props
   let history: History
 

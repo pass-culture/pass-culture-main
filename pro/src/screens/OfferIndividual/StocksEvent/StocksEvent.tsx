@@ -263,27 +263,27 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
           </form>
         </FormLayout.Section>
       </FormLayout>
-      {formik.dirty && !isClickingFromActionBar && (
-        <RouteLeavingGuardOfferIndividual
-          saveForm={formik.handleSubmit}
-          setIsSubmittingFromRouteLeavingGuard={
-            setIsSubmittingFromRouteLeavingGuard
-          }
-          mode={mode}
-          isFormValid={formik.isValid}
-          tracking={nextLocation =>
-            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-              from: OFFER_WIZARD_STEP_IDS.STOCKS,
-              to: logTo(nextLocation),
-              used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
-              isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-              isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-              offerId: offer?.id,
-            })
-          }
-          hasOfferBeenCreated
-        />
-      )}
+
+      <RouteLeavingGuardOfferIndividual
+        when={formik.dirty && !isClickingFromActionBar}
+        saveForm={formik.submitForm}
+        setIsSubmittingFromRouteLeavingGuard={
+          setIsSubmittingFromRouteLeavingGuard
+        }
+        mode={mode}
+        isFormValid={formik.isValid}
+        tracking={nextLocation =>
+          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            from: OFFER_WIZARD_STEP_IDS.STOCKS,
+            to: logTo(nextLocation),
+            used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
+            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+            isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+            offerId: offer?.id,
+          })
+        }
+        hasOfferBeenCreated
+      />
     </FormikProvider>
   )
 }
