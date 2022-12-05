@@ -170,7 +170,7 @@ describe('src | components | pages | SignIn', () => {
       renderSignIn(store)
 
       const email = screen.getByLabelText('Adresse e-mail')
-      await userEvent.type(email, 'MonPetitEmail')
+      await userEvent.type(email, 'MonPetitEmail@exemple.com')
       const password = screen.getByLabelText('Mot de passe')
       await userEvent.type(password, 'MCSolar85')
       await userEvent.click(
@@ -180,7 +180,7 @@ describe('src | components | pages | SignIn', () => {
       )
 
       expect(api.signin).toHaveBeenCalledWith({
-        identifier: 'MonPetitEmail',
+        identifier: 'MonPetitEmail@exemple.com',
         password: 'MCSolar85',
       })
     })
@@ -222,7 +222,7 @@ describe('src | components | pages | SignIn', () => {
         renderSignIn(store)
 
         const email = screen.getByLabelText('Adresse e-mail')
-        await userEvent.type(email, 'MonPetitEmail')
+        await userEvent.type(email, 'MonPetitEmail@exemple.com')
         const password = screen.getByLabelText('Mot de passe')
         await userEvent.type(password, 'MCSolar85')
 
@@ -253,7 +253,7 @@ describe('src | components | pages | SignIn', () => {
         renderSignIn(store)
 
         const email = screen.getByLabelText('Adresse e-mail')
-        await userEvent.type(email, 'MonPetitEmail')
+        await userEvent.type(email, 'MonPetitEmail@exemple.com')
         const password = screen.getByLabelText('Mot de passe')
         await userEvent.type(password, 'MCSolar85')
 

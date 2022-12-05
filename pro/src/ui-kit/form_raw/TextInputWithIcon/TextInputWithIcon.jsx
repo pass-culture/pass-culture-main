@@ -1,15 +1,12 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { ROOT_PATH } from 'utils/config'
-
 import InputError from '../Errors/InputError'
 
 const TextInputWithIcon = ({
   disabled,
   error,
   icon,
-  iconAlt,
   label,
   name,
   onChange,
@@ -41,7 +38,7 @@ const TextInputWithIcon = ({
         value={value}
       />
       <button className="it-icon" onClick={onIconClick} type="button">
-        <img alt={iconAlt} src={`${ROOT_PATH}/icons/${icon}.svg`} />
+        {icon}
       </button>
     </div>
     {error && <InputError>{error}</InputError>}
@@ -60,8 +57,7 @@ TextInputWithIcon.defaultProps = {
 TextInputWithIcon.propTypes = {
   disabled: PropTypes.bool,
   error: PropTypes.string,
-  icon: PropTypes.string.isRequired,
-  iconAlt: PropTypes.string.isRequired,
+  icon: PropTypes.element.isRequired,
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func,
