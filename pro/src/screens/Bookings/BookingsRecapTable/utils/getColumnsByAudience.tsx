@@ -19,6 +19,7 @@ import {
   DetailsButtonCell,
   InstitutionCell,
 } from '../components'
+import BookingIdCell from '../components/CellsFormatter/BookingIdCell'
 import { BookingsFilters } from '../types'
 
 import {
@@ -43,6 +44,14 @@ export const getColumnsByAudience = <
   }
   type CollectiveColumnType = Column<CollectiveBookingResponseModel> & {
     className?: string
+  }
+
+  const bookingIdColumn: CollectiveColumnType = {
+    id: 'booking_id',
+    accessor: 'booking_id',
+    Cell: ({ value }) => <BookingIdCell id={value} />,
+    Header: 'N° de réservation',
+    className: 'column-booking-id',
   }
 
   const offerColumn: IndividualColumnType = {
@@ -157,6 +166,7 @@ export const getColumnsByAudience = <
   ]
 
   const collectiveBookingsColumns = [
+    bookingIdColumn,
     offerColumn,
     institutionColumn,
     numberOfTicketsAndPriceColumn,
