@@ -51,9 +51,8 @@ export const serializeVenueApi = (
 export const serializeStockApi = (
   apiStock: GetOfferStockResponseModel
 ): IOfferIndividualStock => {
-  const remainingQuantity = apiStock.remainingQuantity
-    ? apiStock.remainingQuantity
-    : 'unlimited'
+  // null or undefined -> 'unlimited', 0 -> 0
+  const remainingQuantity = apiStock.remainingQuantity ?? 'unlimited'
 
   return {
     beginningDatetime: apiStock.beginningDatetime ?? null,
