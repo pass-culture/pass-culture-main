@@ -705,8 +705,8 @@ def add_comment_to_offerer_attachment(
     )
 
 
-def get_timestamp_from_url(image_url: str) -> int:
-    return int(image_url.split("_")[-1])
+def get_timestamp_from_url(image_url: str) -> str:
+    return image_url.split("_")[-1]
 
 
 def rm_previous_venue_thumbs(venue: models.Venue) -> None:
@@ -714,18 +714,19 @@ def rm_previous_venue_thumbs(venue: models.Venue) -> None:
         return
 
     # handle old banner urls that did not have a timestamp
-    timestamp = get_timestamp_from_url(venue.bannerUrl) if "_" in venue.bannerUrl else 0
-    storage.remove_thumb(venue, image_index=timestamp)
+    timestamp = get_timestamp_from_url(venue.bannerUrl) if "_" in venue.bannerUrl else ""
+    storage.remove_thumb(venue, storage_id_suffix=str(timestamp), ignore_thumb_count=True)
 
     # some older venues might have a banner but not the original file
     # note: if bannerUrl is not None, bannerMeta should not be either.
     assert venue.bannerMeta is not None
     if original_image_url := venue.bannerMeta.get("original_image_url"):
         original_image_timestamp = get_timestamp_from_url(original_image_url)
-        storage.remove_thumb(venue, image_index=original_image_timestamp)
+        storage.remove_thumb(venue, storage_id_suffix=original_image_timestamp)
 
     venue.bannerUrl = None
     venue.bannerMeta = None
+    venue.thumbCount = 1
 
 
 def save_venue_banner(
@@ -748,18 +749,18 @@ def save_venue_banner(
     rm_previous_venue_thumbs(venue)
 
     updated_at = datetime.utcnow()
-    banner_timestamp = int(updated_at.timestamp())
+    banner_timestamp = str(int(updated_at.timestamp()))
     storage.create_thumb(
         model_with_thumb=venue,
         image_as_bytes=content,
-        image_index=banner_timestamp,
+        storage_id_suffix_str=banner_timestamp,
         crop_params=crop_params,
         ratio=image_conversion.ImageRatio.LANDSCAPE,
     )
 
-    original_image_timestamp = banner_timestamp + 1
+    original_image_timestamp = str(int(updated_at.timestamp() + 1))
     storage.create_thumb(
-        model_with_thumb=venue, image_as_bytes=content, image_index=original_image_timestamp, keep_ratio=True
+        model_with_thumb=venue, image_as_bytes=content, storage_id_suffix_str=original_image_timestamp, keep_ratio=True
     )
 
     venue.bannerUrl = f"{venue.thumbUrl}_{banner_timestamp}"

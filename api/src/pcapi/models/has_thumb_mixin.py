@@ -27,11 +27,33 @@ class HasThumbMixin:
         """
         raise NotImplementedError()
 
-    def get_thumb_storage_id(self, index: int) -> str:
+    def get_thumb_storage_id(self, suffix_str: str = "", ignore_thumb_count: bool = False) -> str:
+        """
+        Used when uploading a thumb.
+        The thumbCount must be incremented before calling this function.
+        It is by default based on the thumbCount, but a specific `suffix_str` can be used.
+        For example, a Venue uses a timestamp.
+        Also, ignore_thumb_count can be set to True to specifically ignore the thumb_count
+        """
         if self.id is None:
             raise ValueError("Trying to get thumb_storage_id for an unsaved object")
-        suffix = f"_{index}" if index > 0 else ""
-        return f"{self.thumb_path_component}/{humanize(self.id)}{suffix}"
+
+        if suffix_str:
+            return f"{self.thumb_path_component}/{humanize(self.id)}_{suffix_str}"
+
+        return f"{self.thumb_path_component}/{humanize(self.id)}{self.get_thumb_storage_id_suffix(ignore_thumb_count)}"
+
+    def get_thumb_storage_id_suffix(self, ignore_thumb_count: bool = False) -> str:
+        """
+        To keep compatibility with all the already uploaded assets, we use "" instead of "_0" for the first thumb
+        """
+        if ignore_thumb_count or self.thumbCount == 1:
+            return ""
+
+        if self.thumbCount < 1:
+            raise ValueError("This object has no thumb")
+
+        return f"_{self.thumbCount - 1}"
 
     @property
     def thumb_base_url(self) -> str:
@@ -39,7 +61,14 @@ class HasThumbMixin:
 
     @property
     def thumbUrl(self) -> str | None:
+        """
+        Build the url where to read a thumb
+        Override if the thumb is uploaded to a customized storage id
+        """
         assert hasattr(self, "id")  # helps mypy
         if self.thumbCount == 0:
             return None
-        return "{}/{}/{}".format(self.thumb_base_url, self.thumb_path_component, humanize(self.id))
+
+        return (
+            f"{self.thumb_base_url}/{self.thumb_path_component}/{humanize(self.id)}{self.get_thumb_storage_id_suffix()}"
+        )

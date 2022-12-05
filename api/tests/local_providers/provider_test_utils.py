@@ -70,8 +70,8 @@ class TestLocalProviderWithThumb(LocalProvider):
         with open(file_path, "rb") as f:
             return f.read()
 
-    def get_object_thumb_index(self) -> int:
-        return 1
+    def shall_synchronize_thumbs(self) -> bool:
+        return True
 
     def fill_object_attributes(self, pc_object: Model):
         pc_object.name = "New Product"
@@ -94,8 +94,8 @@ class TestLocalProviderWithThumbIndexAt4(LocalProvider):
         with open(file_path, "rb") as f:
             return f.read()
 
-    def get_object_thumb_index(self) -> int:
-        return 4
+    def shall_synchronize_thumbs(self) -> bool:
+        return True
 
     def fill_object_attributes(self, pc_object):
         pc_object.name = "New Product"

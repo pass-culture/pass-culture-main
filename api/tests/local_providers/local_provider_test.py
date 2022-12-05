@@ -8,10 +8,11 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
-from pcapi.local_providers.local_provider import _save_same_thumb_from_thumb_count_to_index
+from pcapi.local_providers.local_provider import _upload_thumb
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
+from pcapi.utils.human_ids import humanize
 
 from . import provider_test_utils
 
@@ -255,7 +256,7 @@ class HandleUpdateTest:
 
 @pytest.mark.usefixtures("db_session")
 class HandleThumbTest:
-    def test_call_save_thumb_should_increase_thumbCount_by_1(self):
+    def test_handle_thumb_increments_thumbCount(self):
         # Given
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
         providable_info = ProvidableInfo()
@@ -275,30 +276,10 @@ class HandleThumbTest:
         assert local_provider.createdThumbs == 1
         assert product.thumbCount == 1
 
-    def test_create_several_thumbs_when_thumb_index_is_4_and_current_thumbCount_is_0(self):
-        # Given
-        provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumbIndexAt4")
-        providable_info = ProvidableInfo()
-        product = offers_factories.ThingProductFactory(
-            idAtProviders=providable_info.id_at_providers,
-            lastProvider=provider,
-        )
-        local_provider = provider_test_utils.TestLocalProviderWithThumbIndexAt4()
-
-        # When
-        local_provider._handle_thumb(product)
-        repository.save(product)
-
-        # Then
-        assert local_provider.checkedThumbs == 1
-        assert local_provider.updatedThumbs == 0
-        assert local_provider.createdThumbs == 4
-        assert product.thumbCount == 4
-
 
 @pytest.mark.usefixtures("db_session")
-class SaveThumbFromThumbCountToIndexTest:
-    def test_should_iterate_from_current_thumbCount_to_thumbIndex_when_thumbCount_is_0(self, app):
+class UploadThumbTest:
+    def test_first_thumb(self, app):
         # Given
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
         providable_info = ProvidableInfo()
@@ -311,14 +292,15 @@ class SaveThumbFromThumbCountToIndexTest:
         thumb = local_provider.get_object_thumb()
 
         # When
-        thumb_index = 4
-        _save_same_thumb_from_thumb_count_to_index(product, thumb_index, thumb)
+        _upload_thumb(product, thumb)
         repository.save(product)
 
         # Then
-        assert product.thumbCount == 4
+        assert product.thumbCount == 1
+        assert product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(product.id)}"
 
-    def test_should_only_replace_image_at_specific_thumb_index_when_thumbCount_is_superior_to_thumbIndex(self):
+    @patch("pcapi.core.object_storage.store_public_object")
+    def test_fifth_thumb(self, mock_store_public_object):
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
         providable_info = ProvidableInfo()
         product = offers_factories.ThingProductFactory(
@@ -330,9 +312,13 @@ class SaveThumbFromThumbCountToIndexTest:
         thumb = local_provider.get_object_thumb()
 
         # When
-        thumb_index = 1
-        _save_same_thumb_from_thumb_count_to_index(product, thumb_index, thumb)
+        _upload_thumb(product, thumb)
         repository.save(product)
 
         # Then
-        assert product.thumbCount == 4
+        assert product.thumbCount == 5
+        assert product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(product.id)}_4"
+        mock_store_public_object.assert_called_once()
+        assert mock_store_public_object.call_args.kwargs["folder"] == "thumbs"
+        assert mock_store_public_object.call_args.kwargs["object_id"] == f"products/{humanize(product.id)}_4"
+        assert mock_store_public_object.call_args.kwargs["content_type"] == "image/jpeg"
