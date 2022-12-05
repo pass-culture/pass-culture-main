@@ -1145,7 +1145,6 @@ class VenueBannerTest:
             with freeze_time("2020-10-15 00:00:00"):
                 offerers_api.save_venue_banner(user, venue, first_image_content, image_credit="first_image")
                 move_venue_banner_to_legacy_location(venue, directory, "1602720000")
-
             with freeze_time("2020-10-15 00:00:01"):
                 offerers_api.save_venue_banner(user, venue, second_image_content, image_credit="second_image")
 
