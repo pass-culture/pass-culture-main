@@ -1,3 +1,4 @@
+name: Tests backoffice
 on: workflow_call
 
 env:

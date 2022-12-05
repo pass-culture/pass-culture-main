@@ -1,3 +1,4 @@
+name: Node type check
 on:
   workflow_call:
     inputs:

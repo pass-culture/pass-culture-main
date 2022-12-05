@@ -1,3 +1,4 @@
+name: Tests main
 on:
   push:
     branches-ignore:
@@ -7,23 +8,24 @@ on:
       - staging
 
 jobs:
-  test-pro:
-    name: "[pro] Tests"
-    uses: ./.github/workflows/tests-pro.yml
-
   test-adage:
-    name: "[adage] Tests"
+    name: Tests adage
     uses: ./.github/workflows/tests-adage.yml
 
   test-api:
-    name: "[api] Tests"
+    name: Tests api
     uses: ./.github/workflows/tests-api.yml
     secrets: inherit
 
   test-backoffice:
-    name: "[backoffice] Tests"
+    name: Tests backoffice
     uses: ./.github/workflows/tests-backoffice.yml
     secrets: inherit
+
+  test-pro:
+    name: Tests pro
+    uses: ./.github/workflows/tests-pro.yml
+
 
   deploy-testing:
     name: "[testing] Deployment"

@@ -1,3 +1,4 @@
+name: Tests api
 on: workflow_call
 
 env:

@@ -1,4 +1,4 @@
-name: Update jira issues for release selection
+name: Update jira issues
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 on:
   push:

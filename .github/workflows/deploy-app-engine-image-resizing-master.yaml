@@ -1,3 +1,4 @@
+name: Deploy app engine image resizing
 on:
   push:
     branches: ['PC-17138-import-app-engine-image-resizing']
