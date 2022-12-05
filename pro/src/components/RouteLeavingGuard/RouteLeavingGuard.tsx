@@ -18,11 +18,18 @@ interface IButtonDefault {
   actionType?: BUTTON_ACTION.CANCEL | BUTTON_ACTION.QUIT_WITHOUT_SAVING
   action?: never
 }
+
+const isIButtonWithCustomAction = (
+  buttonData: IButtonDefault | IButtonWithCustomAction
+): buttonData is IButtonWithCustomAction => {
+  return buttonData.action !== undefined
+}
 interface IButtonWithCustomAction {
   text: string
-  action: () => void
+  action?: () => void | Promise<void>
   actionType?: never
 }
+
 export interface IRouteLeavingGuardProps {
   children?: ReactNode | ReactNode[]
   extraClassNames?: string
@@ -91,9 +98,9 @@ const RouteLeavingGuard = ({
   }, [isConfirmedNavigation, nextLocation])
 
   const rightButtonAction = () => {
-    if (typeof rightButton.action === 'function') {
-      return () => {
-        rightButton.action && rightButton.action()
+    if (isIButtonWithCustomAction(rightButton)) {
+      return async () => {
+        rightButton.action && (await rightButton.action())
         handleConfirmNavigationClick()
         trackWhenQuit()
       }
@@ -107,9 +114,9 @@ const RouteLeavingGuard = ({
   }
 
   const leftButtonAction = () => {
-    if (typeof leftButton.action === 'function') {
-      return () => {
-        leftButton.action && leftButton.action()
+    if (isIButtonWithCustomAction(leftButton)) {
+      return async () => {
+        leftButton.action && (await leftButton.action())
         handleConfirmNavigationClick()
         trackWhenQuit()
       }

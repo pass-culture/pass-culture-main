@@ -48,11 +48,12 @@ export const computeType = (
 
 export interface IRouteLeavingGuardOfferIndividual {
   mode: OFFER_WIZARD_MODE
-  saveForm: () => void
+  saveForm: () => Promise<void>
   isFormValid: boolean
   setIsSubmittingFromRouteLeavingGuard: (p: boolean) => void
   tracking?: (p: string) => void
   hasOfferBeenCreated: boolean
+  when: boolean
 }
 
 const RouteLeavingGuardOfferIndividual = ({
@@ -62,6 +63,7 @@ const RouteLeavingGuardOfferIndividual = ({
   setIsSubmittingFromRouteLeavingGuard,
   tracking,
   hasOfferBeenCreated,
+  when,
 }: IRouteLeavingGuardOfferIndividual): JSX.Element => {
   const [nextLocation, setNextLocation] = useState<string>('')
 
@@ -90,9 +92,9 @@ const RouteLeavingGuardOfferIndividual = ({
       },
       rightButton: {
         text: 'Sauvegarder le brouillon et quitter',
-        action: () => {
+        action: async () => {
           setIsSubmittingFromRouteLeavingGuard(true)
-          return saveForm()
+          return await saveForm()
         },
       },
     },
@@ -108,9 +110,9 @@ const RouteLeavingGuardOfferIndividual = ({
       },
       rightButton: {
         text: 'Enregistrer les modifications',
-        action: () => {
+        action: async () => {
           setIsSubmittingFromRouteLeavingGuard(true)
-          return saveForm()
+          return await saveForm()
         },
       },
     },
@@ -126,9 +128,9 @@ const RouteLeavingGuardOfferIndividual = ({
       },
       rightButton: {
         text: 'Enregistrer les modifications',
-        action: () => {
+        action: async () => {
           setIsSubmittingFromRouteLeavingGuard(true)
-          return saveForm()
+          return await saveForm()
         },
       },
     },
@@ -142,9 +144,9 @@ const RouteLeavingGuardOfferIndividual = ({
       },
       rightButton: {
         text: 'Enregistrer les modifications',
-        action: () => {
+        action: async () => {
           setIsSubmittingFromRouteLeavingGuard(true)
-          return saveForm()
+          return await saveForm()
         },
       },
     },
@@ -190,7 +192,7 @@ const RouteLeavingGuardOfferIndividual = ({
   return (
     <RouteLeavingGuard
       shouldBlockNavigation={shouldBlockNavigation}
-      when
+      when={when}
       dialogTitle={routeLeavingGuardTypes[type].dialogTitle}
       leftButton={routeLeavingGuardTypes[type].leftButton}
       rightButton={routeLeavingGuardTypes[type].rightButton}
