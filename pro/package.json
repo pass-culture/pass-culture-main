@@ -140,10 +140,10 @@
     "source-map-explorer": "^2.5.0",
     "storybook": "^6.5.13",
     "storybook-svgr-react-component": "^1.0.1",
-    "stylelint": "^13.13.1",
+    "stylelint": "^14.16.0",
     "stylelint-a11y": "^1.2.3",
-    "stylelint-config-standard": "^20.0.0",
-    "stylelint-order": "^4.1.0",
+    "stylelint-config-standard": "^29.0.0",
+    "stylelint-order": "^5.0.0",
     "testcafe": "^2.0.1",
     "ts-pnp": "^1.2.0",
     "url-loader": "^4.1.1"
