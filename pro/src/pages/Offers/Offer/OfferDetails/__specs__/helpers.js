@@ -32,7 +32,7 @@ export const fieldLabels = {
     label: 'Être notifié par email des réservations',
     exact: true,
   },
-  showSubType: { label: 'Sous type', exact: false },
+  showSubType: { label: 'Sous-type', exact: false },
   showType: { label: 'Type de spectacle', exact: false },
   stageDirector: { label: 'Metteur en scène', exact: false },
   speaker: { label: 'Intervenant', exact: false },

@@ -168,7 +168,7 @@ export const SubtypeSelects = ({
             error={getErrorMessage('showSubType')}
             handleSelection={handleSelection}
             isDisabled={readOnlyFields.includes('showSubType')}
-            label="Sous type"
+            label="Sous-type"
             name="showSubType"
             options={subTypesOptions.showSubType}
             required

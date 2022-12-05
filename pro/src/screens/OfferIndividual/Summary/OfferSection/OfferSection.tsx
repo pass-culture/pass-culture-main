@@ -282,7 +282,7 @@ const OfferSummary = ({
 
       <SummaryLayout.SubSection title="Lien pour le grand public">
         <SummaryLayout.Row
-          title="URL de votre site ou billeterie"
+          title="URL de votre site ou billetterie"
           description={
             /* istanbul ignore next: DEBT, TO FIX */
             offer.externalTicketOfficeUrl || ' - '
