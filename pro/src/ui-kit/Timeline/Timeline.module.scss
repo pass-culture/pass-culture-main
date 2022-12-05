@@ -1,0 +1,58 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+
+$margin-between-steps: rem.torem(32px);
+$margin-between-content-and-time-line: rem.torem(16px);
+$vertical-offset-icon-from-step: rem.torem(2px);
+$icon-size: rem.torem(16px);
+$time-line-width: rem.torem(2px);
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.icon {
+  position: absolute;
+  z-index: 1;
+  width: $icon-size;
+  height: $icon-size;
+  background-color: colors.$white;
+  top: $vertical-offset-icon-from-step;
+  left: -($margin-between-content-and-time-line + $icon-size / 2);
+}
+
+.step {
+  position: relative;
+  margin-bottom: $margin-between-steps;
+  transform: translateX($icon-size / 2 + $margin-between-content-and-time-line);
+
+  &::after {
+    content: '';
+    border-width: 0 0 0 $time-line-width;
+    position: absolute;
+    top: $vertical-offset-icon-from-step;
+    left: -($margin-between-content-and-time-line + $time-line-width / 2);
+    height: calc(100% + $margin-between-steps);
+  }
+}
+
+.line-success::after {
+  border-style: solid;
+  border-color: colors.$green-valid-light;
+}
+
+.line-error::after {
+  border-style: solid;
+  border-color: colors.$black;
+}
+
+.line-waiting::after {
+  border-style: dashed;
+  border-color: colors.$black;
+}
+
+.line-disabled::after {
+  border-style: dashed;
+  border-color: colors.$grey-medium;
+}
