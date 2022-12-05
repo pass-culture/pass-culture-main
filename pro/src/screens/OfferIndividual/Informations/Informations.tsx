@@ -78,7 +78,7 @@ const Informations = ({
 
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
-    () => {
+    async () => {
       setIsClickingFromActionBar(true)
       setIsSubmittingDraft(saveDraft)
       if (Object.keys(formik.errors).length !== 0) {
@@ -92,7 +92,7 @@ const Informations = ({
           notify.error(FORM_ERROR_MESSAGE)
         }
       }
-      formik.handleSubmit()
+      await formik.submitForm()
     }
 
   // FIXME: find a way to test FileReader
@@ -217,7 +217,9 @@ const Informations = ({
     Promise.resolve()
   }
 
-  const onSubmitOffer = async (formValues: IOfferIndividualFormValues) => {
+  const onSubmitOffer = async (
+    formValues: IOfferIndividualFormValues
+  ): Promise<void> => {
     const { isOk, payload } = !offer
       ? await createIndividualOffer(formValues)
       : await updateIndividualOffer({ offer, formValues })
@@ -329,28 +331,27 @@ const Informations = ({
           />
         </form>
       </FormLayout>
-      {formik.dirty && !isClickingFromActionBar && (
-        <RouteLeavingGuardOfferIndividual
-          saveForm={formik.handleSubmit}
-          setIsSubmittingFromRouteLeavingGuard={
-            setIsSubmittingFromRouteLeavingGuard
-          }
-          mode={mode}
-          isFormValid={formik.isValid}
-          tracking={nextLocation =>
-            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-              from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-              to: logTo(nextLocation),
-              used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
-              isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-              isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-              // FIX ME: it is always undefined at first creation (not sure it is possible)
-              offerId: offer?.id,
-            })
-          }
-          hasOfferBeenCreated={!!offer?.id}
-        />
-      )}
+      <RouteLeavingGuardOfferIndividual
+        when={formik.dirty && !isClickingFromActionBar}
+        saveForm={formik.submitForm}
+        setIsSubmittingFromRouteLeavingGuard={
+          setIsSubmittingFromRouteLeavingGuard
+        }
+        mode={mode}
+        isFormValid={formik.isValid}
+        tracking={nextLocation =>
+          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            to: logTo(nextLocation),
+            used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
+            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+            isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+            // FIX ME: it is always undefined at first creation (not sure it is possible)
+            offerId: offer?.id,
+          })
+        }
+        hasOfferBeenCreated={!!offer?.id}
+      />
     </FormikProvider>
   )
 }
