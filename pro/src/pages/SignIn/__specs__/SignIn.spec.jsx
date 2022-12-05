@@ -178,7 +178,6 @@ describe('src | components | pages | SignIn', () => {
           name: 'Se connecter',
         })
       )
-
       expect(api.signin).toHaveBeenCalledWith({
         identifier: 'MonPetitEmail@exemple.com',
         password: 'MCSolar85',
