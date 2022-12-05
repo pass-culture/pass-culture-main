@@ -117,6 +117,16 @@ const Informations = ({
         url: response.payload.url,
         credit: response.payload.credit,
       })
+      if (setOffer && offer) {
+        setOffer({
+          ...offer,
+          image: {
+            originalUrl: response.payload.url,
+            url: response.payload.url,
+            credit: response.payload.credit,
+          },
+        })
+      }
       return Promise.resolve()
     }
     return Promise.reject()
@@ -154,7 +164,7 @@ const Informations = ({
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_DELETE,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_CREATION,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
         offerId: undefined,
@@ -171,7 +181,7 @@ const Informations = ({
           logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
             from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
             to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_DELETE,
+            used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_CREATION,
             isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
             isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
             offerId: offerId,
