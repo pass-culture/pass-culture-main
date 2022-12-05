@@ -591,7 +591,13 @@ class SubcategoriesTest:
 
         assert response.status_code == 200
 
-        assert set(response.json.keys()) == {"subcategories", "searchGroups", "homepageLabels", "genreTypes"}
+        assert set(response.json.keys()) == {
+            "subcategories",
+            "searchGroups",
+            "homepageLabels",
+            "nativeCategories",
+            "genreTypes",
+        }
 
         found_subcategory_ids = {x["id"] for x in response.json["subcategories"]}
         expected_subcategory_ids = {x.id for x in subcategories_v2.ALL_SUBCATEGORIES}
@@ -604,6 +610,10 @@ class SubcategoriesTest:
         found_home_labels = {x["name"] for x in response.json["homepageLabels"]}
         expected_home_labels = {x.homepage_label_name for x in subcategories_v2.ALL_SUBCATEGORIES}
         assert found_home_labels == expected_home_labels
+
+        found_native_categories = {x["name"] for x in response.json["nativeCategories"]}
+        expected_native_categories = {x.native_category.name for x in subcategories_v2.ALL_SUBCATEGORIES}
+        assert found_native_categories == expected_native_categories
 
         found_genre_types = {x["name"] for x in response.json["genreTypes"]}
         expected_genre_types = {x.name for x in subcategories_v2.GenreType}
