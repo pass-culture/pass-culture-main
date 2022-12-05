@@ -69,6 +69,51 @@ describe('serializer', () => {
 
     expect(serializeStockApi(stock)).toEqual(stockSerialized)
   })
+  it('serializeStockApi with 0 remainingQuantity', async () => {
+    const stock: GetOfferStockResponseModel = {
+      beginningDatetime: '01-01-2001',
+      bookingLimitDatetime: '01-10-2001',
+      bookingsQuantity: 10,
+      cancellationLimitDate: '01-05-2001',
+      dateCreated: '01-01-1999',
+      dateModified: '01-12-1999',
+      dateModifiedAtLastProvider: null,
+      fieldsUpdated: [],
+      hasActivationCode: false,
+      id: 'stock_id',
+      idAtProviders: null,
+      isBookable: true,
+      isEventDeletable: false,
+      isEventExpired: false,
+      isSoftDeleted: false,
+      lastProviderId: null,
+      offerId: 'offer_id',
+      price: 150,
+      quantity: 20,
+      remainingQuantity: 0,
+    }
+
+    const stockSerialized: IOfferIndividualStock = {
+      beginningDatetime: '01-01-2001',
+      bookingLimitDatetime: '01-10-2001',
+      bookingsQuantity: 10,
+      dateCreated: new Date('01-01-1999'),
+      hasActivationCode: false,
+      id: 'stock_id',
+      isEventDeletable: false,
+      isEventExpired: false,
+      isSoftDeleted: false,
+      offerId: 'offer_id',
+      price: 150,
+      quantity: 20,
+      remainingQuantity: 0,
+      activationCodesExpirationDatetime: null,
+      activationCodes: [],
+    }
+
+    expect(serializeStockApi(stock)).toEqual(stockSerialized)
+  })
+
   it('serializeStockApi product', async () => {
     const stock: GetOfferStockResponseModel = {
       bookingsQuantity: 10,
