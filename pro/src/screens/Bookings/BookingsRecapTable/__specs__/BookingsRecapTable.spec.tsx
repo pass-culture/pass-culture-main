@@ -105,6 +105,7 @@ const collectiveBookingsRecap: CollectiveBookingResponseModel[] = [
       phoneNumber: '',
       institutionId: 'ABCDEF11',
     },
+    booking_id: '1',
     booking_identifier: 'A1',
     booking_amount: 10,
     booking_date: '2020-04-03T12:00:00Z',
@@ -264,11 +265,12 @@ describe('components | BookingsRecapTable', () => {
     // Then
     // 1 line = 6 cells
     const cells = screen.getAllByRole('columnheader')
-    expect(cells).toHaveLength(5)
-    expect(cells[0]).toHaveTextContent('Nom de l’offre')
-    expect(cells[1]).toHaveTextContent('Établissement')
-    expect(cells[2]).toHaveTextContent('Places et prix')
-    expect(cells[3]).toHaveTextContent('Statut')
-    expect(cells[4]).toHaveTextContent('')
+    expect(cells).toHaveLength(6)
+    expect(cells[0]).toHaveTextContent('N° de réservation')
+    expect(cells[1]).toHaveTextContent('Nom de l’offre')
+    expect(cells[2]).toHaveTextContent('Établissement')
+    expect(cells[3]).toHaveTextContent('Places et prix')
+    expect(cells[4]).toHaveTextContent('Statut')
+    expect(cells[5]).toHaveTextContent('')
   })
 })

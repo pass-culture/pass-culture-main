@@ -9,12 +9,18 @@
     flex-direction: column;
     margin-bottom: rem.torem(10px);
 
+    .column-booking-id {
+      width: rem.torem(110px);
+      display: flex;
+      align-items: center;
+    }
+
     .column-offer-name {
       width: rem.torem(160px);
     }
 
     .column-collective-offer-name {
-      width: rem.torem(192px);
+      width: rem.torem(180px);
     }
 
     .column-booking-duo {
@@ -30,7 +36,7 @@
     }
 
     .column-institution {
-      width: rem.torem(260px);
+      width: rem.torem(160px);
       word-break: break-word;
     }
 

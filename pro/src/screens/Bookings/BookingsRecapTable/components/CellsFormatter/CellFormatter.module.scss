@@ -4,11 +4,15 @@
 .details-dropdown-icon {
   margin-left: rem.torem(8px);
 
-    &-up {
-        transform: rotate(180deg);
-    }
+  &-up {
+    transform: rotate(180deg);
+  }
 }
 
 .institution-cell-subtitle {
   color: colors.$grey-dark;
+}
+
+.booking-id {
+  font-weight: bold;
 }

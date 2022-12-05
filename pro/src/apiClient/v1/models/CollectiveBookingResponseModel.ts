@@ -9,6 +9,7 @@ import type { EducationalInstitutionResponseModel } from './EducationalInstituti
 export type CollectiveBookingResponseModel = {
   booking_amount: number;
   booking_date: string;
+  booking_id: string;
   booking_identifier: string;
   booking_is_duo?: boolean;
   booking_status: string;
