@@ -190,6 +190,10 @@ class Subcategory:
         return self.category.id
 
     @property
+    def native_category_id(self) -> str:
+        return self.native_category.name
+
+    @property
     def is_offline_only(self) -> bool:
         return self.online_offline_platform == OnlineOfflinePlatformChoices.OFFLINE.value
 
@@ -1715,4 +1719,8 @@ HomepageLabelNameEnumv2 = Enum(  # type: ignore [misc]
 OnlineOfflinePlatformChoicesEnumv2 = Enum(  # type: ignore [misc]
     "OnlineOfflinePlatformChoicesEnumv2",
     {choice: choice for choice in [c.value for c in OnlineOfflinePlatformChoices]},
+)
+NativeCategoryIdEnumv2 = Enum(  # type: ignore [misc]
+    "NativeCategoryIdEnumv2",
+    {native_category.name: native_category.name for native_category in NativeCategory},
 )

@@ -9,7 +9,7 @@ from pcapi.serialization.utils import to_camel
 class SubcategoryResponseModelv2(BaseModel):
     id: subcategories_v2.SubcategoryIdEnumv2
     category_id: categories.CategoryIdEnum
-    native_category: subcategories_v2.NativeCategory
+    native_category_id: subcategories_v2.NativeCategoryIdEnumv2
     app_label: str
     search_group_name: subcategories_v2.SearchGroupNameEnumv2
     homepage_label_name: subcategories_v2.HomepageLabelNameEnumv2
@@ -43,6 +43,16 @@ class HomepageLabelResponseModelv2(BaseModel):
         orm_mode = True
 
 
+class NativeCategoryResponseModelv2(BaseModel):
+    name: subcategories_v2.NativeCategoryIdEnumv2
+    value: Optional[str]
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
+
+
 class GenreTypeModel(BaseModel):
     name: subcategories_v2.GenreType
     values: list[str]
@@ -57,4 +67,5 @@ class SubcategoriesResponseModelv2(BaseModel):
     subcategories: list[SubcategoryResponseModelv2]
     searchGroups: list[SearchGroupResponseModelv2]
     homepageLabels: list[HomepageLabelResponseModelv2]
+    nativeCategories: list[NativeCategoryResponseModelv2]
     genreTypes: list[GenreTypeModel]
