@@ -7,6 +7,7 @@ const TextInputWithIcon = ({
   disabled,
   error,
   icon,
+  iconAlt,
   label,
   name,
   onChange,
@@ -38,7 +39,7 @@ const TextInputWithIcon = ({
         value={value}
       />
       <button className="it-icon" onClick={onIconClick} type="button">
-        {icon}
+        <img alt={iconAlt} src={`${icon}`} />
       </button>
     </div>
     {error && <InputError>{error}</InputError>}
@@ -58,6 +59,7 @@ TextInputWithIcon.propTypes = {
   disabled: PropTypes.bool,
   error: PropTypes.string,
   icon: PropTypes.element.isRequired,
+  iconAlt: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func,

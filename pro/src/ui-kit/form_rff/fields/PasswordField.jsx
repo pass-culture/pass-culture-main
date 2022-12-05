@@ -71,6 +71,11 @@ class PasswordField extends PureComponent {
             : null
         }
         icon={isPasswordHidden ? <IcoEyeClose /> : <IcoEyeOpen />}
+        iconAlt={
+          isPasswordHidden
+            ? 'Afficher le mot de passe'
+            : 'Cacher le mot de passe'
+        }
         label={label}
         name={name}
         onChange={input.onChange}

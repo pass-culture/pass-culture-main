@@ -1,5 +1,5 @@
-import { Form, FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useRef } from 'react'
+import { Form, Formik } from 'formik'
+import React from 'react'
 import { useDispatch } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -17,8 +17,19 @@ import { PasswordInput, SubmitButton, TextInput } from 'ui-kit'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
-import { ISigninApiErrorResponse, ISigninFormValues } from './types'
 import { validationSchema } from './validationSchema'
+
+interface ISigninFormValues {
+  email: string
+  password: string
+}
+
+interface ISigninApiErrorResponse {
+  status: number
+  errors: {
+    [key: string]: string
+  }
+}
 
 const SigninForm = (): JSX.Element => {
   const notification = useNotification()
@@ -31,7 +42,10 @@ const SigninForm = (): JSX.Element => {
     ? '/inscription'
     : UNAVAILABLE_ERROR_PAGE
 
-  const onSubmit = (values: ISigninFormValues) => {
+  const onSubmit = (
+    values: ISigninFormValues,
+    submitting: (x: boolean) => void
+  ) => {
     const { email, password } = values
     api
       .signin({ identifier: email, password })
@@ -40,11 +54,17 @@ const SigninForm = (): JSX.Element => {
       })
       .catch(payload => {
         setCurrentUser(null)
-        onHandleFail({ status: payload.status, errors: payload.body })
+        onHandleFail(
+          { status: payload.status, errors: payload.body },
+          submitting
+        )
       })
   }
 
-  const onHandleFail = (payload: ISigninApiErrorResponse) => {
+  const onHandleFail = (
+    payload: ISigninApiErrorResponse,
+    submitting: (x: boolean) => void
+  ) => {
     const { errors, status } = payload
     if (status === HTTP_STATUS.TOO_MANY_REQUESTS) {
       notification.error(
@@ -53,82 +73,75 @@ const SigninForm = (): JSX.Element => {
     } else if (errors && Object.values(errors).length > 0) {
       notification.error('Identifiant ou mot de passe incorrect.')
     }
-    formik.setSubmitting(false)
+    submitting(false)
   }
-
-  const formik = useFormik({
-    initialValues: SIGNIN_FORM_DEFAULT_VALUES,
-    onSubmit: onSubmit,
-    validationSchema,
-    validateOnChange: false,
-  })
-
-  // Track the state of the form when the user gives up
-  const touchedRef = useRef(formik.touched)
-  const errorsRef = useRef(formik.errors)
-
-  useEffect(() => {
-    touchedRef.current = formik.touched
-    errorsRef.current = formik.errors
-  }, [formik.touched, formik.errors])
 
   return (
     <>
-      <FormikProvider value={formik}>
-        <Form onSubmit={formik.handleSubmit}>
-          <FormLayout>
-            <div className="sign-up-form">
-              <FormLayout.Row>
-                <TextInput
-                  label="Adresse e-mail"
-                  name="email"
-                  placeholder="email@exemple.com"
-                />
-              </FormLayout.Row>
-              <FormLayout.Row>
-                <PasswordInput
-                  name="password"
-                  label="Mot de passe"
-                  placeholder="Mon mot de passe"
-                />
-              </FormLayout.Row>
-            </div>
-            <Link
-              className="tertiary-link"
-              id="lostPasswordLink"
-              onClick={() =>
-                logEvent?.(Events.CLICKED_FORGOTTEN_PASSWORD, {
-                  from: location.pathname,
-                })
-              }
-              to="/mot-de-passe-perdu"
-            >
-              <IcoKey className="ico-key" /> Mot de passe égaré ?
-            </Link>
-            <div className="field buttons-field">
+      <Formik
+        initialValues={SIGNIN_FORM_DEFAULT_VALUES}
+        onSubmit={(values, { setSubmitting }) =>
+          onSubmit(values, setSubmitting)
+        }
+        validationSchema={validationSchema}
+        validateOnChange
+      >
+        {({ dirty, isValid, isSubmitting }) => (
+          <Form>
+            <FormLayout>
+              <div className="sign-up-form">
+                <FormLayout.Row>
+                  <TextInput
+                    label="Adresse e-mail"
+                    name="email"
+                    placeholder="email@exemple.com"
+                  />
+                </FormLayout.Row>
+                <FormLayout.Row>
+                  <PasswordInput
+                    name="password"
+                    label="Mot de passe"
+                    placeholder="Mon mot de passe"
+                  />
+                </FormLayout.Row>
+              </div>
               <Link
-                className="secondary-link"
+                className="tertiary-link"
+                id="lostPasswordLink"
                 onClick={() =>
-                  logEvent?.(Events.CLICKED_CREATE_ACCOUNT, {
+                  logEvent?.(Events.CLICKED_FORGOTTEN_PASSWORD, {
                     from: location.pathname,
                   })
                 }
-                to={accountCreationUrl}
+                to="/mot-de-passe-perdu"
               >
-                Créer un compte
+                <IcoKey className="ico-key" /> Mot de passe égaré ?
               </Link>
-              <SubmitButton
-                className="primary-button"
-                isLoading={formik.isSubmitting}
-                disabled={!formik.dirty || !formik.isValid}
-              >
-                Se connecter
-              </SubmitButton>
-            </div>
-            <BannerRGS />
-          </FormLayout>
-        </Form>
-      </FormikProvider>
+              <div className="field buttons-field">
+                <Link
+                  className="secondary-link"
+                  onClick={() =>
+                    logEvent?.(Events.CLICKED_CREATE_ACCOUNT, {
+                      from: location.pathname,
+                    })
+                  }
+                  to={accountCreationUrl}
+                >
+                  Créer un compte
+                </Link>
+                <SubmitButton
+                  className="primary-button"
+                  isLoading={isSubmitting}
+                  disabled={!dirty || !isValid}
+                >
+                  Se connecter
+                </SubmitButton>
+              </div>
+              <BannerRGS />
+            </FormLayout>
+          </Form>
+        )}
+      </Formik>
     </>
   )
 }
