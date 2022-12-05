@@ -105,8 +105,8 @@ WithTooltip.args = {
   hasTooltip: true,
 }
 
-export const ArrowButtonWithIcon = Template.bind({})
-ArrowButtonWithIcon.args = {
+export const BoxButtonWithIcon = Template.bind({})
+BoxButtonWithIcon.args = {
   children: 'Hello world',
   disabled: false,
   variant: ButtonVariant.BOX,
