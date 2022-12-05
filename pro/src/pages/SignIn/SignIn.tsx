@@ -1,3 +1,5 @@
+import React from 'react'
+
 import PageTitle from 'components/PageTitle/PageTitle'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Logo from 'ui-kit/Logo/Logo'

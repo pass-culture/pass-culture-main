@@ -6,7 +6,7 @@ import { getPathname } from './helpers/location'
 import { HOME_URL } from './helpers/navigations'
 import { fetchSandbox } from './helpers/sandboxes'
 
-const inputUserIdentifier = Selector('input[name="identifier"]')
+const inputUserIdentifier = Selector('input[name="email"]')
 const inputUserPassword = Selector('input[name="password"]')
 const signInButton = Selector('button').withText('Se connecter')
 
