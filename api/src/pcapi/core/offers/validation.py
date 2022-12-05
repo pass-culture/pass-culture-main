@@ -371,15 +371,16 @@ def check_booking_limit_datetime(
     booking_limit_datetime: datetime | None,
 ) -> None:
     if stock:
-        if beginning is None:
-            beginning = stock.beginningDatetime
-        if booking_limit_datetime is None:
-            booking_limit_datetime = stock.bookingLimitDatetime
-
         if isinstance(stock, CollectiveStock):
+            if beginning is None:
+                beginning = stock.beginningDatetime
+            if booking_limit_datetime is None:
+                booking_limit_datetime = stock.bookingLimitDatetime
             offer = stock.collectiveOffer
         else:
             offer = stock.offer
+            if booking_limit_datetime is None and stock.offer.isEvent:
+                booking_limit_datetime = stock.bookingLimitDatetime
 
         if beginning and booking_limit_datetime and offer and offer.venue.departementCode is not None:
             beginning_tz = date.utc_datetime_to_department_timezone(beginning, offer.venue.departementCode)

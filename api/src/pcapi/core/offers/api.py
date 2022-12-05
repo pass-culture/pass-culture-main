@@ -556,10 +556,13 @@ def edit_stock(
         errors.status_code = 403
         raise errors
 
-    validation.check_booking_limit_datetime(stock, beginning_datetime, booking_limit_datetime)
-
-    new_booking_limit_datetime = booking_limit_datetime or stock.bookingLimitDatetime
+    new_booking_limit_datetime = booking_limit_datetime
     new_beginning_datetime = beginning_datetime or stock.beginningDatetime
+
+    if booking_limit_datetime is None and stock.offer.isEvent:
+        new_booking_limit_datetime = stock.bookingLimitDatetime
+
+    validation.check_booking_limit_datetime(stock, new_beginning_datetime, new_booking_limit_datetime)
 
     if new_beginning_datetime and new_booking_limit_datetime and new_beginning_datetime < new_booking_limit_datetime:
         new_booking_limit_datetime = new_beginning_datetime

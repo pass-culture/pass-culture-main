@@ -58,8 +58,11 @@ class Returns201Test:
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_edit_one_stock(self, mocked_async_index_offer_ids, client):
+        booking_limit_datetime = datetime(2019, 2, 14)
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
-        existing_stock = offers_factories.StockFactory(offer=offer, price=10)
+        existing_stock = offers_factories.StockFactory(
+            offer=offer, price=10, bookingLimitDatetime=serialize(booking_limit_datetime)
+        )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -68,13 +71,44 @@ class Returns201Test:
         # When
         stock_data = {
             "humanizedOfferId": humanize(offer.id),
-            "stocks": [{"humanizedId": humanize(existing_stock.id), "price": 20}],
+            "stocks": [{"humanizedId": humanize(existing_stock.id), "price": 20, "bookingLimitDatetime": None}],
         }
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
         created_stock = Stock.query.get(dehumanize(response.json["stockIds"][0]["id"]))
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
+        assert created_stock.bookingLimitDatetime == None
         assert len(Stock.query.all()) == 1
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_edit_booking_limit_datetime(self, mocked_async_index_offer_ids, client):
+        booking_limit_datetime = datetime(2019, 2, 14)
+        new_booking_limit_datetime = datetime(2019, 2, 15)
+        offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        existing_stock = offers_factories.StockFactory(
+            offer=offer, price=10, bookingLimitDatetime=serialize(booking_limit_datetime)
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [
+                {
+                    "humanizedId": humanize(existing_stock.id),
+                    "price": 10,
+                    "bookingLimitDatetime": serialize(new_booking_limit_datetime),
+                }
+            ],
+        }
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        created_stock = Stock.query.get(dehumanize(response.json["stockIds"][0]["id"]))
+        assert offer.id == created_stock.offerId
+        assert created_stock.bookingLimitDatetime == new_booking_limit_datetime
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     def test_create_one_stock_with_activation_codes(self, app):
