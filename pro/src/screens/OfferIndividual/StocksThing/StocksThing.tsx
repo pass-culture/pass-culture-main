@@ -151,6 +151,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       ) {
         setIsClickingFromActionBar(false)
         notify.success('Brouillon sauvegardé dans la liste des offres')
+        /* istanbul ignore next: DEBT, TO FIX */
         if (!saveDraft) {
           navigate(
             getOfferIndividualUrl({
@@ -254,6 +255,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
   actions.push({
     callback:
+      /* istanbul ignore next: DEBT, TO FIX */
       formik.values.bookingsQuantity !== '0'
         ? deleteConfirmShow
         : onConfirmDeleteStock,

@@ -158,6 +158,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
               return false
             }
             const stockTouched = formik.touched.stocks[index]
+            /* istanbul ignore next: DEBT, TO FIX */
             if (stockTouched === undefined) {
               return false
             }
@@ -184,6 +185,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       if (!Object.keys(formik.touched).length && !formik.errors.stocks) {
         setIsClickingFromActionBar(false)
         notify.success('Brouillon sauvegardé dans la liste des offres')
+        /* istanbul ignore next: DEBT, TO FIX */
         if (!saveDraft) {
           navigate(
             getOfferIndividualUrl({

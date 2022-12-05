@@ -18,6 +18,8 @@ export const getToday = () => new Date()
 
 export const formatBrowserTimezonedDateAsUTC = (
   date: Date | string,
+  // tested but coverage don't see it.
+  /* istanbul ignore next */
   dateFormat = FORMAT_ISO
 ) => format(date, dateFormat, { timeZone: 'UTC' })
 
