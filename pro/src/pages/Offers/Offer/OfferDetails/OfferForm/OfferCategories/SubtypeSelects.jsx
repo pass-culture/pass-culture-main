@@ -162,7 +162,7 @@ export const SubtypeSelects = ({
         <div className="form-row">
           <Select
             defaultOption={{
-              displayName: 'Choisir un sous type',
+              displayName: 'Choisir un sous-type',
               id: DEFAULT_FORM_VALUES.showSubType,
             }}
             error={getErrorMessage('showSubType')}
