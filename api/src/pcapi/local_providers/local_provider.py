@@ -70,8 +70,8 @@ class LocalProvider(Iterator):
     def get_object_thumb(self) -> bytes:
         return bytes()
 
-    def get_object_thumb_index(self) -> int:
-        return 0
+    def shall_synchronize_thumbs(self) -> bool:
+        return False
 
     def get_keep_poster_ratio(self) -> bool:
         return True
@@ -81,9 +81,8 @@ class LocalProvider(Iterator):
     def name(self):  # type: ignore [no-untyped-def]
         pass
 
-    def _handle_thumb(self, pc_object: Model) -> None:
-        new_thumb_index = self.get_object_thumb_index()
-        if new_thumb_index == 0:
+    def _handle_thumb(self, pc_object: HasThumbMixin) -> None:
+        if not self.shall_synchronize_thumbs():
             return
         self.checkedThumbs += 1
 
@@ -91,8 +90,13 @@ class LocalProvider(Iterator):
         if not new_thumb:
             return
 
-        _save_same_thumb_from_thumb_count_to_index(pc_object, new_thumb_index, new_thumb, self.get_keep_poster_ratio())
-        self.createdThumbs += new_thumb_index
+        _upload_thumb(
+            pc_object=pc_object,
+            image_as_bytes=new_thumb,
+            keep_poster_ratio=self.get_keep_poster_ratio(),
+        )
+
+        self.createdThumbs += 1
 
     def _create_object(self, providable_info: ProvidableInfo) -> Model:
         pc_object = providable_info.type()
@@ -253,22 +257,20 @@ class LocalProvider(Iterator):
             repository.save(self.venue_provider)
 
 
-def _save_same_thumb_from_thumb_count_to_index(
-    pc_object: Model,
-    thumb_index: int,
+def _upload_thumb(
+    pc_object: HasThumbMixin,
     image_as_bytes: bytes,
     keep_poster_ratio: bool = False,
 ) -> None:
     if pc_object.thumbCount is None:
         pc_object.thumbCount = 0
-    if thumb_index <= pc_object.thumbCount:
-        # replace existing thumb
-        create_thumb(pc_object, image_as_bytes, thumb_index, keep_ratio=keep_poster_ratio)
-    else:
-        # add new thumb
-        for index in range(pc_object.thumbCount, thumb_index):
-            create_thumb(pc_object, image_as_bytes, index, keep_ratio=keep_poster_ratio)
-            pc_object.thumbCount += 1
+
+    create_thumb(
+        model_with_thumb=pc_object,
+        image_as_bytes=image_as_bytes,
+        storage_id_suffix_str="",
+        keep_ratio=keep_poster_ratio,
+    )
 
 
 def _reindex_offers(created_or_updated_objects):  # type: ignore [no-untyped-def]

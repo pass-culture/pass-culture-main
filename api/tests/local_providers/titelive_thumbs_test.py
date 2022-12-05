@@ -7,48 +7,26 @@ import pytest
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Product
 from pcapi.local_providers import TiteLiveThingThumbs
-from pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs import extract_thumb_index
 from pcapi.repository import repository
 import pcapi.sandboxes
+from pcapi.utils.human_ids import humanize
 
 
 class TiteliveThingThumbsTest:
-    class ExtractThumbIndexTest:
-        def test_return_0_for_filename_with_1_75(self):
-            # Given
-            filename = "9780847858903_1_75.jpg"
-
-            # When
-            thumb_index = extract_thumb_index(filename)
-
-            # Then
-            assert thumb_index == 1
-
-        def test_return_4_for_filename_with_4(self):
-            # Given
-            filename = "9780847858903_4_75.jpg"
-
-            # When
-            thumb_index = extract_thumb_index(filename)
-
-            # Then
-            assert thumb_index == 4
-
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_zip_file_from_ftp")
-    def test_compute_first_thumb_dominant_color_even_if_not_first_file(
-        self, get_thumbs_zip_file_from_ftp, get_ordered_thumbs_zip_files, app
+    @patch("pcapi.core.object_storage.store_public_object")
+    def test_handle_only_relevant_thumb_files(
+        self, mock_store_public_object, get_thumbs_zip_file_from_ftp, get_ordered_thumbs_zip_files, app
     ):
-        # given
-        product1 = offers_factories.ProductFactory(idAtProviders="9780847858903")
-        product2 = offers_factories.ProductFactory(idAtProviders="9782016261903")
-        repository.save(product1, product2)
-        zip_thumb_file = get_zip_with_2_usable_thumb_files()
+        product_with_new_thumbs = offers_factories.ProductFactory(idAtProviders="9782957799015")
+        assert product_with_new_thumbs.thumbCount == 0
+        _product_without_new_thumbs = offers_factories.ProductFactory(idAtProviders="9782016200000")
+        zip_thumb_file = get_zip_with_1_relevant_thumb_file()
         get_ordered_thumbs_zip_files.return_value = [zip_thumb_file]
         get_thumbs_zip_file_from_ftp.side_effect = [get_zip_file_from_sandbox(zip_thumb_file)]
-
-        # Import thumbs for existing things
+        # Import thumb for existing things
         provider_object = TiteLiveThingThumbs()
         provider_object.provider.isActive = True
         repository.save(provider_object.provider)
@@ -58,46 +36,34 @@ class TiteliveThingThumbsTest:
         provider_object.updateObjects()
 
         assert Product.query.count() == 2  # same count as before calling `updateObjects()`
-        assert provider_object.checkedObjects == 2
+        assert provider_object.checkedObjects == 1
         assert provider_object.createdObjects == 0
-        assert provider_object.updatedObjects == 2
+        assert provider_object.updatedObjects == 1
         assert provider_object.erroredObjects == 0
-        assert provider_object.checkedThumbs == 2
-        assert provider_object.createdThumbs == 5
+        assert provider_object.checkedThumbs == 1
+        assert provider_object.createdThumbs == 1
         assert provider_object.updatedThumbs == 0
         assert provider_object.erroredThumbs == 0
-
-    @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp")
-    @patch("pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_zip_file_from_ftp")
-    def test_updates_thumb_count_for_product_when_new_thumbs_added(
-        self, get_thumbs_zip_file_from_ftp, get_ordered_thumbs_zip_files, app
-    ):
-        # Given
-        product = offers_factories.ProductFactory(idAtProviders="9780847858903")
-        zip_thumb_file = get_zip_with_1_usable_thumb_file()
-        get_ordered_thumbs_zip_files.return_value = [zip_thumb_file]
-        get_thumbs_zip_file_from_ftp.side_effect = [get_zip_file_from_sandbox(zip_thumb_file)]
-
-        provider_object = TiteLiveThingThumbs()
-        provider_object.provider.isActive = True
-        repository.save(provider_object.provider)
-
-        # When
-        provider_object.updateObjects()
-
-        # Then
-        new_product = Product.query.one()
-        assert new_product.name == product.name
-        assert new_product.thumbCount == 1
+        assert product_with_new_thumbs.thumbCount == 1
+        mock_store_public_object.assert_called_once()
+        assert mock_store_public_object.call_args.kwargs["folder"] == "thumbs"
+        assert (
+            mock_store_public_object.call_args.kwargs["object_id"] == f"products/{humanize(product_with_new_thumbs.id)}"
+        )
+        assert mock_store_public_object.call_args.kwargs["content_type"] == "image/jpeg"
+        # no assert on the blob since it is very slow to compare the content of files
 
 
-def get_zip_with_2_usable_thumb_files():
-    return get_zip_thumbs_file_from_named_sandbox_file("test_livres_tl20190505.zip")
-
-
-def get_zip_with_1_usable_thumb_file():
-    return get_zip_thumbs_file_from_named_sandbox_file("test_livres_tl20191104.zip")
+def get_zip_with_1_relevant_thumb_file():
+    """
+    The zip file contains
+    9780847858903_1_75.jpg
+    9780847858903_1_v.jpg
+    9782957799015_1_75.jpg <- This is the relevant file for our test
+    9782957799015_1_v.jpg
+    9782957799015_4_75.jpg
+    """
+    return get_zip_thumbs_file_from_named_sandbox_file("test_livres_tl20221128.zip")
 
 
 def get_zip_thumbs_file_from_named_sandbox_file(file_name):

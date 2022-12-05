@@ -14,7 +14,7 @@ from pcapi.local_providers.providable_info import ProvidableInfo
 
 DATE_REGEXP = re.compile(r"livres_tl(\d+).zip")
 THUMB_FOLDER_NAME_TITELIVE = "Atoo"
-SYNCHONISABLE_FILE_EXTENSION = "_75.jpg"
+SYNCHONISABLE_FILE_EXTENSION = "_1_75.jpg"
 
 
 class TiteLiveThingThumbs(LocalProvider):
@@ -68,8 +68,8 @@ class TiteLiveThingThumbs(LocalProvider):
             )
         )
 
-    def get_object_thumb_index(self) -> int:
-        return extract_thumb_index(self.thumb_zipinfo.filename)
+    def shall_synchronize_thumbs(self) -> bool:
+        return True
 
     def get_object_thumb(self) -> bytes:
         with self.zip.open(self.thumb_zipinfo) as f:

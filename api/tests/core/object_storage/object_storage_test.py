@@ -9,8 +9,8 @@ from pcapi.core.object_storage import _check_backend_setting
 from pcapi.core.object_storage import _check_backends_module_paths
 from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
-from pcapi.core.offers.models import Mediation
-from pcapi.core.offers.models import Product
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_settings
 
 
@@ -104,15 +104,35 @@ class DeletePublicObjectTest:
         mock_gcp_delete_public_object.assert_called_once_with("bucket", "object_id")
 
 
+@pytest.mark.usefixtures("db_session")
 class GetThumbStorageIdTest:
-    def test_with_mediation(self):
-        obj = Mediation(id=123)
-        assert obj.get_thumb_storage_id(0) == "mediations/PM"
+    def test_mediation(self):
+        mediation = offers_factories.MediationFactory(id=123, thumbCount=1)
 
-    def test_with_product(self):
-        obj = Product(id=123)
-        assert obj.get_thumb_storage_id(0) == "products/PM"
+        assert mediation.get_thumb_storage_id() == "mediations/PM"
 
-    def test_with_index_above_0(self):
-        obj = Product(id=123)
-        assert obj.get_thumb_storage_id(3) == "products/PM_3"
+    def test_product(self):
+        product = offers_factories.ProductFactory(id=123, thumbCount=1)
+
+        assert product.get_thumb_storage_id() == "products/PM"
+
+    def test_product_with_4_thumbs(self):
+        product_with_4_thumbs = offers_factories.ProductFactory(id=123, thumbCount=4)
+
+        assert product_with_4_thumbs.get_thumb_storage_id() == "products/PM_3"
+
+    def test_venue_custom_suffix_str(self):
+        venue = offerers_factories.VenueFactory(id=123, thumbCount=1)
+
+        assert venue.get_thumb_storage_id("opposable_thumbs_22") == "venues/PM_opposable_thumbs_22"
+
+    def test_venue_ignore_thumb_count(self):
+        venue = offerers_factories.VenueFactory(id=123, thumbCount=5)
+
+        assert venue.get_thumb_storage_id(suffix_str="", ignore_thumb_count=True) == "venues/PM"
+
+    def test_no_thumb(self):
+        product_with_no_thumb = offers_factories.ProductFactory(id=123)
+
+        with pytest.raises(ValueError):
+            product_with_no_thumb.get_thumb_storage_id()

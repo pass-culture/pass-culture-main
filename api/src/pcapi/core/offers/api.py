@@ -723,7 +723,9 @@ def create_mediation(
     repository.save(mediation)
 
     try:
-        create_thumb(mediation, image_as_bytes, image_index=0, crop_params=crop_params, keep_ratio=keep_ratio)
+        create_thumb(
+            mediation, image_as_bytes, storage_id_suffix_str="", crop_params=crop_params, keep_ratio=keep_ratio
+        )
     except image_conversion.ImageRatioError:
         raise
     except Exception as exception:
@@ -733,25 +735,14 @@ def create_mediation(
         raise ThumbnailStorageError
 
     else:
-        mediation.thumbCount = 1
         repository.save(mediation)
-        # cleanup former thumbnails and mediations
 
+        # cleanup former thumbnails and mediations
         previous_mediations = (
             Mediation.query.filter(Mediation.offerId == offer.id).filter(Mediation.id != mediation.id).all()
         )
-        for previous_mediation in previous_mediations:
-            try:
-                for thumb_index in range(0, previous_mediation.thumbCount):
-                    remove_thumb(previous_mediation, image_index=thumb_index)
-            except Exception as exception:  # pylint: disable=broad-except
-                logger.exception(
-                    "An unexpected error was encountered during the thumbnails deletion for %s: %s",
-                    mediation,
-                    exception,
-                )
-            else:
-                repository.delete(previous_mediation)
+
+        _delete_mediations_and_thumbs(previous_mediations)
 
         search.async_index_offer_ids([offer.id])
 
@@ -760,10 +751,18 @@ def create_mediation(
 
 def delete_mediation(offer: Offer) -> None:
     mediations = Mediation.query.filter(Mediation.offerId == offer.id).all()
+
+    _delete_mediations_and_thumbs(mediations)
+
+    search.async_index_offer_ids([offer.id])
+
+
+def _delete_mediations_and_thumbs(mediations: list[Mediation]) -> None:
     for mediation in mediations:
         try:
-            for thumb_index in range(0, mediation.thumbCount):
-                remove_thumb(mediation, image_index=thumb_index)
+            for thumb_index in range(1, mediation.thumbCount + 1):
+                suffix = str(thumb_index - 1) if thumb_index > 1 else ""
+                remove_thumb(mediation, storage_id_suffix=suffix)
         except Exception as exception:  # pylint: disable=broad-except
             logger.exception(
                 "An unexpected error was encountered during the thumbnails deletion for %s: %s",
@@ -772,8 +771,6 @@ def delete_mediation(offer: Offer) -> None:
             )
         else:
             repository.delete(mediation)
-
-    search.async_index_offer_ids([offer.id])
 
 
 def update_stock_id_at_providers(venue: Venue, old_siret: str) -> None:

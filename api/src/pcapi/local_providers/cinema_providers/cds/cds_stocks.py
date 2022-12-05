@@ -163,8 +163,8 @@ class CDSStocks(LocalProvider):
             return self._get_cds_movie_poster(image_url)
         return bytes()
 
-    def get_object_thumb_index(self) -> int:
-        return 1
+    def shall_synchronize_thumbs(self) -> bool:
+        return True
 
     def get_keep_poster_ratio(self) -> bool:
         return True
