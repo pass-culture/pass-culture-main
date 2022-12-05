@@ -1,3 +1,4 @@
+name: Node run
 on:
   workflow_call:
     inputs:

@@ -1,3 +1,4 @@
+name: Check folder changes
 on:
   workflow_call:
     outputs:
