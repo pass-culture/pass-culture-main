@@ -13,6 +13,7 @@ from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.models import User
+from pcapi.models.offer_mixin import OfferValidationStatus
 
 
 logger = logging.getLogger(__name__)
@@ -32,6 +33,7 @@ def create_specific_offers() -> None:
 
     create_offers_fully_booked(user_bene, venue)
     create_offers_expired(venue)
+    create_offers_pending_and_refused(venue)
     logger.info("create_offers")
 
 
@@ -80,3 +82,27 @@ def create_offers_expired(venue: Venue) -> None:
     )
 
     logger.info("create_offers_expired")
+
+
+def create_offers_pending_and_refused(venue: Venue) -> None:
+    offer_event = EventOfferFactory(
+        name="Séance ciné pending",
+        venue=venue,
+        subcategoryId=subcategories.SEANCE_CINE.id,
+        validation=OfferValidationStatus.PENDING,
+    )
+    EventStockFactory(
+        offer=offer_event,
+    )
+
+    offer_event = EventOfferFactory(
+        name="Séance ciné rejected",
+        venue=venue,
+        subcategoryId=subcategories.SEANCE_CINE.id,
+        validation=OfferValidationStatus.REJECTED,
+    )
+    EventStockFactory(
+        offer=offer_event,
+    )
+
+    logger.info("create_offers_pending_refused")
