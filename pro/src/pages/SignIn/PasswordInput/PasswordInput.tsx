@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 
+import { IcoEyeClose, IcoEyeOpen } from 'icons'
 import TextInputWithIcon from 'ui-kit/form_raw/TextInputWithIcon/TextInputWithIcon'
 
 interface IPasswordInputProps {
@@ -23,15 +24,12 @@ const PasswordInput = ({
 
   return (
     <TextInputWithIcon
-      icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
-      iconAlt={
-        isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'
-      }
+      icon={isPasswordHidden ? <IcoEyeClose /> : <IcoEyeOpen />}
       label="Mot de passe"
       name="password"
       onChange={handleOnChange}
       onIconClick={handleToggleHidden}
-      placeholder="Mot de passe"
+      placeholder="Votre mot de passe"
       required
       type={isPasswordHidden ? 'password' : 'text'}
       value={value}
