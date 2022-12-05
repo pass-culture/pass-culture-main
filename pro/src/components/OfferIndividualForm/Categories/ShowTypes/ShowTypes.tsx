@@ -81,7 +81,7 @@ const ShowTypes = ({ readOnly = false }: IShowTypesProps): JSX.Element => {
             name="showSubType"
             options={showTypesOptions.showSubType}
             defaultOption={{
-              label: 'Choisir un sous type',
+              label: 'Choisir un sous-type',
               value: FORM_DEFAULT_VALUES.showSubType,
             }}
             disabled={readOnly}
