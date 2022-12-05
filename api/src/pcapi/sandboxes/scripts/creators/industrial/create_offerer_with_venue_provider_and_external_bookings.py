@@ -12,6 +12,7 @@ from pcapi.core.offerers.factories import VirtualVenueFactory
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.factories import CinemaStockProviderFactory
 from pcapi.core.offers.factories import EventOfferFactory
+from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingStockFactory
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import Provider
@@ -79,7 +80,7 @@ def _create_offers(provider_name: str, provider: Provider, provider_type: str = 
         ExternalBookingFactory(booking=booking_duo, seat="A_1")
         ExternalBookingFactory(booking=booking_duo, seat="A_2")
     else:
-        offer_solo = EventOfferFactory(
+        offer_solo = ThingOfferFactory(
             name=f"Livre ({provider_name})",
             venue=venue,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
