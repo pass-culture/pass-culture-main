@@ -217,7 +217,9 @@ def find_educational_institution_by_uai_code(uai_code: str) -> educational_model
 
 
 def find_all_educational_institution() -> list[educational_models.EducationalInstitution]:
-    return educational_models.EducationalInstitution.query.all()
+    return educational_models.EducationalInstitution.query.filter(
+        educational_models.EducationalInstitution.isActive == True,
+    ).all()
 
 
 def find_educational_deposit_by_institution_id_and_year(
@@ -995,7 +997,10 @@ def search_educational_institution(
             sa.func.unaccent(educational_models.EducationalInstitution.postalCode).ilike(f"%{postal_code}%"),
         )
     return (
-        educational_models.EducationalInstitution.query.filter(*filters)
+        educational_models.EducationalInstitution.query.filter(
+            *filters,
+            educational_models.EducationalInstitution.isActive == True,
+        )
         .order_by(educational_models.EducationalInstitution.id)
         .limit(limit)
         .all()
