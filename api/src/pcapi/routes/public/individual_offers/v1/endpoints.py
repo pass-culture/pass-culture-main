@@ -8,6 +8,8 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
+from pcapi.domain import music_types
+from pcapi.domain import show_types
 from pcapi.models import api_errors
 from pcapi.routes.public import utils as public_utils
 from pcapi.serialization.decorator import spectree_serialize
@@ -66,7 +68,12 @@ def _compute_extra_data(body: serialization.ProductOfferCreationBody) -> dict[st
     for extra_data_field in serialization.ExtraDataModel.__fields__:
         field_value = getattr(body.category_related_fields, extra_data_field, None)
         if field_value:
-            extra_data[extra_data_field] = field_value
+            if extra_data_field == "musicType":
+                extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[field_value].code)
+            elif extra_data_field == "showType":
+                extra_data["showSubType"] = str(show_types.SHOW_SUB_TYPES_BY_SLUG[field_value].code)
+            else:
+                extra_data[extra_data_field] = field_value
 
     return extra_data
 

@@ -68,7 +68,7 @@ class PostProductTest:
                 "categoryRelatedFields": {
                     "author": "Maurice",
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "musicType": "100",
+                    "musicType": "JAZZ-FUSION",
                     "performer": "Pink Pâtisserie",
                     "stageDirector": "Alfred",  # field not applicable
                 },
@@ -106,7 +106,7 @@ class PostProductTest:
         assert created_offer.isDuo is False
         assert created_offer.extraData == {
             "author": "Maurice",
-            "musicType": "100",
+            "musicSubType": "511",
             "performer": "Pink Pâtisserie",
         }
         assert created_offer.bookingEmail == "spam@example.com"
@@ -208,7 +208,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "acceptDoubleBookings": True,
-                "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "100"},
+                "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "HUMOUR-VENTRILOQUE"},
                 "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -298,7 +298,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_MUSIQUE", "musicType": "100"},
+                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_MUSIQUE", "musicType": "CHANSON_VARIETE-OTHER"},
                 "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -504,3 +504,22 @@ class PostProductTest:
         assert response.json == {
             "stock.bookingLimitDatetime": ["The value must be a timezone-aware datetime or null"],
         }
+
+    @pytest.mark.usefixtures("db_session")
+    def test_show_type_deserialization(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        offerers_factories.VirtualVenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products",
+            json={
+                "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "OPERA-GRAND_OPERA"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "digital", "url": "https://la-flute-en-chantier.fr"},
+                "name": "La flûte en chantier",
+            },
+        )
+
+        assert response.status_code == 200
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.extraData == {"showSubType": "1512"}

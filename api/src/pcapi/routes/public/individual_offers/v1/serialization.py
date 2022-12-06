@@ -1,4 +1,5 @@
 import datetime
+import enum
 import typing
 
 import pydantic
@@ -6,8 +7,36 @@ import pytz
 import typing_extensions
 
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.domain import music_types
+from pcapi.domain import show_types
 from pcapi.routes import serialization
 from pcapi.serialization.utils import to_camel
+
+
+class StrEnum(str, enum.Enum):
+    # StrEnum is needed so that swagger ui displays the enum values
+    # see https://github.com/swagger-api/swagger-ui/issues/6906
+    pass
+
+
+MusicTypeEnum = StrEnum(  # type: ignore [call-overload]
+    "MusicTypeEnum",
+    {
+        music_sub_type.slug: music_sub_type.slug
+        for music_type in music_types.music_types
+        for music_sub_type in music_type.children
+    },
+)
+
+
+ShowTypeEnum = StrEnum(  # type: ignore [call-overload]
+    "ShowTypeEnum",
+    {
+        show_sub_type.slug: show_sub_type.slug
+        for show_type in show_types.show_types
+        for show_sub_type in show_type.children
+    },
+)
 
 
 class DisabilityCompliance(serialization.BaseModel):
@@ -77,10 +106,10 @@ class OfferCreationBase(serialization.BaseModel):
 class ExtraDataModel(pydantic.BaseModel):
     author: str | None
     isbn: str | None = pydantic.Field(None, regex=r"^(\d){13}$", example="9783140464079")
-    musicType: str | None
+    musicType: MusicTypeEnum | None  # type: ignore [valid-type]
     performer: str | None
     stageDirector: str | None
-    showType: str | None
+    showType: ShowTypeEnum | None  # type: ignore [valid-type]
     speaker: str | None
     visa: str | None
 
