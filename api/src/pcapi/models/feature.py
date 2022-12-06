@@ -24,6 +24,9 @@ class DisabledFeatureError(Exception):
 
 
 class FeatureToggle(enum.Enum):
+    ALGOLIA_BOOKINGS_NUMBER_COMPUTATION = (
+        "Active le calcul du nombre des réservations lors de l'indexation des offres sur Algolia"
+    )
     ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs de 18 ans à suivre le parcours d inscription ID Check"
     ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE = (
         "Autoriser la redirection vers Ubble (en backup) pour les utilisateurs éligibles à éduconnect"
