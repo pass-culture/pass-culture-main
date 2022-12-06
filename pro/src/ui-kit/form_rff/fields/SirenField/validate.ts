@@ -6,7 +6,7 @@ const required = (value: string) => {
 }
 
 const mustHaveTheProperLength = (value: string) => {
-  return value.length < 9 ? 'SIREN trop court' : undefined
+  return value.length < 9 ? 'Le SIREN doit comporter 9 caractères.' : undefined
 }
 
 export const existsInINSEERegistry = async (
