@@ -118,6 +118,8 @@ describe('screens:OfferIndividual::Informations', () => {
       categories,
       subCategories,
       setOffer: () => {},
+      setShouldTrack: () => {},
+      shouldTrack: true,
     }
 
     jest

@@ -23,6 +23,8 @@ export interface IOfferIndividualContext {
   subCategories: IOfferSubCategory[]
   offererNames: TOffererName[]
   venueList: TOfferIndividualVenue[]
+  shouldTrack: boolean
+  setShouldTrack: (p: boolean) => void
 }
 
 export const OfferIndividualContext = createContext<IOfferIndividualContext>({
@@ -33,6 +35,8 @@ export const OfferIndividualContext = createContext<IOfferIndividualContext>({
   subCategories: [],
   offererNames: [],
   venueList: [],
+  shouldTrack: true,
+  setShouldTrack: () => {},
 })
 
 export const useOfferIndividualContext = () => {
@@ -57,6 +61,7 @@ export function OfferIndividualContextProvider({
   const navigate = useNavigate()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [shouldTrack, setShouldTrack] = useState<boolean>(true)
   const [offerOfferer, setOfferOfferer] = useState<TOffererName | null>(null)
 
   const [offer, setOfferState] = useState<IOfferIndividual | null>(null)
@@ -132,6 +137,8 @@ export function OfferIndividualContextProvider({
         subCategories,
         offererNames,
         venueList,
+        shouldTrack,
+        setShouldTrack,
       }}
     >
       {children}

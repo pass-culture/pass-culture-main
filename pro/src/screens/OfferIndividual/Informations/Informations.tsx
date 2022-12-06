@@ -1,6 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useState } from 'react'
-import { useLocation } from 'react-router'
+import React, { useState, useEffect } from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
@@ -50,7 +49,6 @@ const Informations = ({
 }: IInformationsProps): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
-  const location = useLocation()
   const mode = useOfferWizardMode()
   const { logEvent } = useAnalytics()
   const {
@@ -61,6 +59,8 @@ const Informations = ({
     offererNames,
     venueList,
     setOffer,
+    shouldTrack,
+    setShouldTrack,
   } = useOfferIndividualContext()
   const [imageOfferCreationArgs, setImageOfferCreationArgs] = useState<
     IOnImageUploadArgs | undefined
@@ -281,7 +281,7 @@ const Informations = ({
         )
         logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
           from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          to: isSubmittingFromRouteLeavingGuard ? location.pathname : nextStep,
+          to: nextStep,
           used: isSubmittingDraft
             ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
             : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
@@ -303,6 +303,11 @@ const Informations = ({
     // enableReinitialize is needed to reset dirty after submit (and not block after saving a draft)
     enableReinitialize: true,
   })
+
+  useEffect(() => {
+    // when form is dirty it's tracked by RouteLeavingGuard
+    setShouldTrack(!formik.dirty)
+  }, [formik.dirty])
 
   const initialVenue: TOfferIndividualVenue | undefined = venueList.find(
     venue => venue.id === initialValues.venueId
@@ -338,6 +343,7 @@ const Informations = ({
             step={OFFER_WIZARD_STEP_IDS.INFORMATIONS}
             isDisabled={formik.isSubmitting}
             offerId={offer?.id}
+            shouldTrack={shouldTrack}
           />
         </form>
       </FormLayout>

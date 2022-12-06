@@ -24,6 +24,7 @@ export interface IActionBarProps {
   isDisabled: boolean
   step: OFFER_WIZARD_STEP_IDS
   offerId?: string
+  shouldTrack?: boolean
 }
 
 const ActionBar = ({
@@ -33,6 +34,7 @@ const ActionBar = ({
   isDisabled,
   step,
   offerId,
+  shouldTrack = true,
 }: IActionBarProps) => {
   const offersSearchFilters = useSelector(
     (state: RootState) => state.offers.searchFilters
@@ -44,11 +46,23 @@ const ActionBar = ({
   const backOfferUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
   const { logEvent } = useAnalytics()
 
-  const onCancelLog = () => {
+  const logCancel = () => {
+    shouldTrack &&
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: step,
+        to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        offerId: offerId,
+      })
+  }
+
+  const logDraft = () => {
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: step,
       to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
       offerId: offerId,
@@ -63,7 +77,7 @@ const ActionBar = ({
             <ButtonLink
               link={{ to: '/offres', isExternal: false }}
               variant={ButtonVariant.SECONDARY}
-              onClick={onCancelLog}
+              onClick={logCancel}
             >
               Annuler et quitter
             </ButtonLink>
@@ -86,7 +100,7 @@ const ActionBar = ({
           <ButtonLink
             link={{ to: backOfferUrl, isExternal: false }}
             variant={ButtonVariant.PRIMARY}
-            onClick={onCancelLog}
+            onClick={logCancel}
           >
             Retour à la liste des offres
           </ButtonLink>
@@ -95,7 +109,7 @@ const ActionBar = ({
             <ButtonLink
               link={{ to: backOfferUrl, isExternal: false }}
               variant={ButtonVariant.SECONDARY}
-              onClick={onCancelLog}
+              onClick={logCancel}
             >
               Annuler et quitter
             </ButtonLink>
@@ -117,7 +131,7 @@ const ActionBar = ({
               <ButtonLink
                 link={{ to: '/offres', isExternal: false }}
                 variant={ButtonVariant.SECONDARY}
-                onClick={onCancelLog}
+                onClick={logDraft}
               >
                 Sauvegarder le brouillon et quitter
               </ButtonLink>
