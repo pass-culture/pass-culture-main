@@ -22,6 +22,10 @@ $time-line-width: rem.torem(2px);
   left: -($margin-between-content-and-time-line + $icon-size / 2);
 }
 
+.icon-error path {
+  fill: colors.$primary;
+}
+
 .step {
   position: relative;
   margin-bottom: $margin-between-steps;
