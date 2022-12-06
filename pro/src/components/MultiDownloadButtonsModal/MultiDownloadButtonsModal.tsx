@@ -40,7 +40,7 @@ const MultiDownloadButtonsModal = ({
 
   return (
     <div ref={containerRef} className={style['download-button-box']}>
-      <div className={style['downloadModalButton']}>
+      <div className={style['download-modal-button']}>
         <button
           className="primary-button"
           disabled={isDownloading || isLocalLoading || isFiltersDisabled}
@@ -54,16 +54,16 @@ const MultiDownloadButtonsModal = ({
         >
           Télécharger
           {isDownloadModalOptionOpen ? (
-            <DropUpIcon className={style['dropIcon']} />
+            <DropUpIcon className={style['drop-icon']} />
           ) : (
-            <DropDownIcon className={style['dropIcon']} />
+            <DropDownIcon className={style['drop-icon']} />
           )}
         </button>
       </div>
       {isDownloadModalOptionOpen && (
-        <div className={style['downloadModalOption']}>
+        <div className={style['download-modal-option']}>
           <button
-            className={style['insideModalButton']}
+            className={style['inside-modal-button']}
             onClick={() => {
               logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_XLS, {
                 from: location.pathname,
@@ -77,7 +77,7 @@ const MultiDownloadButtonsModal = ({
             Microsoft Excel (.xls)
           </button>
           <button
-            className={style['insideModalButton']}
+            className={style['inside-modal-button']}
             onClick={() => {
               logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_CSV, {
                 from: location.pathname,
@@ -92,7 +92,7 @@ const MultiDownloadButtonsModal = ({
           </button>
           <Icon className={style['separator']} svg="ico-separator" />
           <a
-            className={style['insideModalButton']}
+            className={style['inside-modal-button']}
             onClick={() => {
               logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_OTHER_FORMAT, {
                 from: location.pathname,

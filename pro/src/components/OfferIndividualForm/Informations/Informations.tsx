@@ -121,7 +121,7 @@ const Informations = ({
             isOptional
             label={'Durée'}
             name="durationMinutes"
-            className={styles['input-durationMinutes']}
+            className={styles['input-duration-minutes']}
             disabled={readOnlyFields.includes('durationMinutes')}
           />
         </FormLayout.Row>

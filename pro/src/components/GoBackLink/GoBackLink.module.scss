@@ -1,10 +1,10 @@
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .go-back {
   &-button {
-    @include fonts.button();
+    @include fonts.button;
 
     color: colors.$primary;
     align-items: center;

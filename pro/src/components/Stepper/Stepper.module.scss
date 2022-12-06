@@ -1,17 +1,17 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
-$step_label_height: rem.torem(12px);
+$step-label-height: rem.torem(12px);
 $number-size: rem.torem(30px);
 
 .stepper {
-  @include fonts.caption();
+  @include fonts.caption;
 
   color: colors.$grey-semi-dark;
   display: flex;
   justify-content: space-between;
-  padding-bottom: $step_label_height;
+  padding-bottom: $step-label-height;
 
   li:last-child {
     flex: 0;
@@ -30,7 +30,7 @@ $number-size: rem.torem(30px);
         margin-left: 50%;
         position: absolute;
         white-space: nowrap;
-        line-height: $step_label_height;
+        line-height: $step-label-height;
         bottom: rem.torem(-17.274px);
         text-decoration: underline transparent;
         transition: text-decoration 250ms;
@@ -50,7 +50,7 @@ $number-size: rem.torem(30px);
       &::after {
         border-radius: rem.torem(2px);
         background-color: colors.$grey-semi-dark;
-        content: '';
+        content: "";
         width: 100%;
         height: rem.torem(2px);
       }
@@ -66,7 +66,7 @@ $number-size: rem.torem(30px);
       padding: 0 rem.torem(16px);
 
       .inner {
-        @include fonts.button();
+        @include fonts.button;
 
         border: solid 1px colors.$grey-semi-dark;
         border-radius: 50%;
@@ -98,8 +98,9 @@ $number-size: rem.torem(30px);
 
         .number {
           .inner {
-            box-shadow: inset $number-size $number-size $number-size
-                colors.$light-purple-with-transparency,
+            box-shadow:
+              inset $number-size $number-size $number-size
+              colors.$light-purple-with-transparency,
               0 0 0 rem.torem(4px) colors.$light-purple-with-transparency;
           }
         }

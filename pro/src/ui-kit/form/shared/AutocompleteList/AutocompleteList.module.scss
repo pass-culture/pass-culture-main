@@ -1,5 +1,5 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
 
 .field-overlay {
   position: relative;
@@ -49,7 +49,7 @@
 
 .menu {
   border-radius: rem.torem(6px);
-  box-shadow: 0 rem.torem(3px) rem.torem(4px) rgba(103, 104, 107, 0.1);
+  box-shadow: 0 rem.torem(3px) rem.torem(4px) rgb(103 104 107 / 10%);
   font-size: rem.torem(15px);
   margin: 0 rem.torem(1.6px);
   max-height: rem.torem(296px);

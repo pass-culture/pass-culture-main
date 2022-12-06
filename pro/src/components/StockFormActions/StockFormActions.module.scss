@@ -1,9 +1,9 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .menu-button {
-  @include fonts.title2();
+  @include fonts.title2;
 
   background-color: transparent;
   border: none;
@@ -24,7 +24,7 @@
 }
 
 .menu-item-text {
-  @include fonts.button();
+  @include fonts.button;
 
   color: colors.$black;
 
@@ -41,7 +41,7 @@
 }
 
 .menu-item {
-  @include fonts.button();
+  @include fonts.button;
 
   cursor: pointer;
   align-items: center;
@@ -86,8 +86,9 @@
 
   .menu-item {
     &:hover {
-        background: colors.$grey-medium;
+      background: colors.$grey-medium;
     }
+
     &.menu-item-disabled {
       svg {
         path {
@@ -101,7 +102,7 @@
 [data-reach-menu-popover] {
   z-index: 3;
   border: rem.torem(1px) solid #f1f1f4;
-  box-shadow: 0 rem.torem(3px) rem.torem(4px) rgba(103, 104, 107, 0.1);
+  box-shadow: 0 rem.torem(3px) rem.torem(4px) rgb(103 104 107 / 10%);
   border-radius: rem.torem(6px);
   overflow: hidden;
 }

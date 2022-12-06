@@ -1,4 +1,4 @@
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/mixins/_rem.scss" as rem;
 
 .category-row {
   padding-bottom: rem.torem(8px);
@@ -14,6 +14,6 @@
   margin-bottom: rem.torem(24px);
 }
 
-.input-durationMinutes {
-  width: rem.torem(150px)
+.input-duration-minutes {
+  width: rem.torem(150px);
 }

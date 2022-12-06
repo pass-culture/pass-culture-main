@@ -185,7 +185,7 @@ const VenueFormScreen = ({
             </a>
           )}
         </div>
-        <Title level={2} className={style['venueName']}>
+        <Title level={2} className={style['venue-name']}>
           {
             /* istanbul ignore next: DEBT, TO FIX */ initialIsVirtual
               ? `${offerer.name} (Offre numérique)`

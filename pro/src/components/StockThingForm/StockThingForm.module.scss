@@ -1,6 +1,7 @@
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/mixins/_rem.scss" as rem;
 
-.input-price, .input-quantity {
+.input-price,
+.input-quantity {
   width: rem.torem(146px);
 }
 

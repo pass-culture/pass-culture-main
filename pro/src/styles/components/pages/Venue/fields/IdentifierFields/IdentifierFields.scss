@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .identifier-field-section {
   .field {
@@ -9,7 +9,7 @@
   }
 
   .field-label {
-    @include fonts.body();
+    @include fonts.body;
 
     color: colors.$black;
     flex: 1;
@@ -36,7 +36,7 @@
 
   .select {
     select {
-      @include fonts.body-important();
+      @include fonts.body-important;
 
       appearance: none;
       background-color: colors.$white;
@@ -53,7 +53,7 @@
       border-radius: rem.torem(2px);
       border-right: 0;
       border-top: 0;
-      content: '';
+      content: "";
       height: rem.torem(10px);
       margin-top: rem.torem(-7px);
       pointer-events: none;

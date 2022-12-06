@@ -1,4 +1,4 @@
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/mixins/_rem.scss" as rem;
 
 .field-layout-footer {
   min-height: rem.torem(32px);
@@ -11,9 +11,11 @@
 .input-beginning-time {
   flex: 1 0 rem.torem(90px);
 }
+
 .input-quantity {
   flex: 1 0 rem.torem(85px);
 }
+
 .input-price {
   flex: 1 0 rem.torem(90px);
 }

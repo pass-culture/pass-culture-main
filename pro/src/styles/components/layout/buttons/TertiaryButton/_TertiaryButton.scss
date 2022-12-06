@@ -1,9 +1,9 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 @mixin tertiary {
-  @include fonts.button();
+  @include fonts.button;
 
   color: colors.$black;
   line-height: rem.torem(20px);
@@ -25,11 +25,11 @@
 }
 
 .tertiary-link {
-  @include tertiary();
+  @include tertiary;
 }
 
 .tertiary-button {
-  @include tertiary();
+  @include tertiary;
 
   background: none;
   border: none;
