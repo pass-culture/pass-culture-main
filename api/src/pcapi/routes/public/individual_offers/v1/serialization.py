@@ -7,6 +7,7 @@ import pytz
 import typing_extensions
 
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.offers import validation as offers_validation
 from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.routes import serialization
@@ -133,7 +134,8 @@ def get_category_fields_model(subcategory: subcategories.Subcategory) -> pydanti
     specific_fields: dict[typing.Any, typing.Any] = {}
     for field_name, model_field in ExtraDataModel.__fields__.items():
         if field_name in subcategory.conditional_fields:
-            specific_fields[field_name] = (model_field.type_, model_field.default)
+            is_required = field_name in offers_validation.OFFER_EXTRA_DATA_MANDATORY_FIELDS
+            specific_fields[field_name] = (model_field.type_, ... if is_required else model_field.default)
 
     specific_fields["subcategory_id"] = (
         typing.Literal[subcategory.id],  # pyright: ignore (pylance error message)
