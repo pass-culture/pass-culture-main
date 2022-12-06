@@ -25,21 +25,20 @@ then
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",lint," ]]
   then
     echo "Running Linter..."
-    yarn lint:js $STAGED_FILES
+    yarn lint:js:fix $STAGED_FILES
     LINTER_EXIT_CODE=$?
-
-    # check linter exit code
-    if [ $LINTER_EXIT_CODE -ne 0 ]; then
-        echo "❌ Please fix lint errors first "
-        exit 1
-    else
-        echo "✅ lint all good"
-    fi
 
     # add files auto-fixed by the linter
     git add -f $STAGED_FILES
-  fi
 
+    # check linter exit code
+    if [ $LINTER_EXIT_CODE -ne 0 ]; then
+        echo "❌ Please fix js lint errors first "
+        exit 1
+    else
+        echo "✅ js lint all good"
+    fi
+  fi
 
   # run tests related to staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",test," ]]
@@ -64,6 +63,29 @@ then
         echo "🙏 Please help us fix test coverage"
     else
         echo "✅ coverage 100 %"
+    fi
+  fi
+fi
+
+STAGED_SCSS_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '^pro/src/*'| grep 'css' | sed 's|^pro\/||g')
+if [[ ! -z "$STAGED_SCSS_FILES" ]]
+then
+  # run stylelint on staged files
+  if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",stylelint," ]]
+  then
+    echo "Running style Linter..."
+    yarn lint:scss:hook:fix $STAGED_SCSS_FILES 
+    LINTER_EXIT_CODE=$?
+
+    # add files auto-fixed by the linter
+    git add -f $STAGED_SCSS_FILES
+
+    # check linter exit code
+    if [ $LINTER_EXIT_CODE -ne 0 ]; then
+        echo "❌ Please fix style lint errors first "
+        exit 1
+    else
+        echo "✅ stylelint all good"
     fi
   fi
 fi

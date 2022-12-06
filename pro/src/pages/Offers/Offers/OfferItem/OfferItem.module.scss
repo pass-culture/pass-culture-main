@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .offer-item {
   grid-template-rows: auto auto;
@@ -22,7 +22,7 @@
 }
 
 .name {
-  @include fonts.button();
+  @include fonts.button;
 
   display: block;
   margin-bottom: rem.torem(4px);
@@ -80,6 +80,7 @@
 
 .button {
   padding: 0 0.5rem;
+
   &-icon {
     width: rem.torem(20px);
     height: rem.torem(20px);
@@ -105,7 +106,7 @@
   .sold-out-dates {
     background-color: colors.$white;
     border-radius: rem.torem(4px);
-    box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 rgb(0 0 0 / 30%);
     display: none;
     margin-left: rem.torem(8px);
     padding: rem.torem(16px);

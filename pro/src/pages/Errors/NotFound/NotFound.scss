@@ -1,6 +1,6 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .no-match {
   align-items: center;
@@ -11,7 +11,7 @@
   justify-content: center;
 
   h1 {
-    @include fonts.hero();
+    @include fonts.hero;
 
     color: colors.$white;
     line-height: normal;
@@ -19,7 +19,7 @@
   }
 
   p {
-    @include fonts.title2();
+    @include fonts.title2;
   }
 
   img {
@@ -27,7 +27,7 @@
   }
 
   .nm-redirection-link {
-    @include fonts.button();
+    @include fonts.button;
 
     align-items: center;
     background-color: transparent;

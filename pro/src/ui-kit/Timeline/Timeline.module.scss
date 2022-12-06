@@ -1,5 +1,5 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
 
 $margin-between-steps: rem.torem(32px);
 $margin-between-content-and-time-line: rem.torem(16px);
@@ -32,7 +32,7 @@ $time-line-width: rem.torem(2px);
   transform: translateX($icon-size / 2 + $margin-between-content-and-time-line);
 
   &::after {
-    content: '';
+    content: "";
     border-width: 0 0 0 $time-line-width;
     position: absolute;
     top: $vertical-offset-icon-from-step;

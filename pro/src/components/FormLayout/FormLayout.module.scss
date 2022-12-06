@@ -1,6 +1,6 @@
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 $info-box-width: rem.torem(316px);
 $info-box-margin-left: rem.torem(24px);
@@ -92,9 +92,10 @@ $info-box-margin-left: rem.torem(24px);
       width: $info-box-width;
       position: absolute;
       top: 0;
-      right: calc(
-        -#{$info-box-margin-left} - #{$info-box-width}
-      ); // calc(-margin-left - width)
+      right:
+        calc(
+          -#{$info-box-margin-left} - #{$info-box-width}
+        ); // calc(-margin-left - width)
 
       &-inner {
         background: colors.$white;
@@ -105,7 +106,7 @@ $info-box-margin-left: rem.torem(24px);
 }
 
 .mandatory-info {
-  @include fonts.caption();
+  @include fonts.caption;
 
   margin-bottom: rem.torem(32px);
   color: colors.$grey-dark;

@@ -8,6 +8,8 @@ const TextInput = ({
   disabled,
   error,
   extraClassName,
+  inputExtraClassName,
+  labelExtraClassName,
   inputRef,
   label,
   longDescription,
@@ -23,13 +25,13 @@ const TextInput = ({
   value,
 }) => (
   <label className={`input-text ${extraClassName}`}>
-    <div className="labels">
+    <div className={`labels ${labelExtraClassName}`}>
       {label}
       {subLabel && <span className="it-sub-label">{subLabel}</span>}
     </div>
     {longDescription && <div className="description">{longDescription}</div>}
     <input
-      className={`it-input ${error ? 'error' : ''}`}
+      className={`it-input ${inputExtraClassName} ${error ? 'error' : ''}`}
       disabled={disabled}
       id={name}
       maxLength={maxLength}
@@ -57,6 +59,8 @@ TextInput.defaultProps = {
   disabled: false,
   error: null,
   extraClassName: '',
+  inputExtraClassName: '',
+  labelExtraClassName: '',
   inputRef: null,
   longDescription: null,
   maxLength: null,
@@ -75,6 +79,8 @@ TextInput.propTypes = {
   disabled: PropTypes.bool,
   error: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]),
   extraClassName: PropTypes.string,
+  inputExtraClassName: PropTypes.string,
+  labelExtraClassName: PropTypes.string,
   inputRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape()]),
   label: PropTypes.string.isRequired,
   longDescription: PropTypes.string,

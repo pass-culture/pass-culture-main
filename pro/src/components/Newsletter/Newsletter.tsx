@@ -9,9 +9,9 @@ import styles from './Newsletter.module.scss'
 
 const Newsletter = () => {
   return (
-    <div className={styles['newsletterContainer']}>
-      <NewsletterImg className={styles['newsletterImg']} />
-      <div className={styles['newsletterLink']}>
+    <div className={styles['newsletter-container']}>
+      <NewsletterImg className={styles['newsletter-img']} />
+      <div className={styles['newsletter-link']}>
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           link={{

@@ -1,6 +1,6 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .options-container {
   display: flex;
@@ -28,7 +28,7 @@
     }
 
     .text {
-      @include fonts.mini-highlight();
+      @include fonts.mini-highlight;
 
       flex: 1;
       margin-bottom: rem.torem(-9px);

@@ -1,8 +1,9 @@
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/mixins/_rem.scss" as rem;
 
 .satus-period-filter {
   display: flex;
 
+  /* stylelint-disable selector-pseudo-class-no-unknown */
   select,
   :global(.period-filter-inputs) {
     margin-top: 0 !important;
@@ -16,4 +17,5 @@
   :global(.period-filter .field-date-begin) {
     border-radius: 0;
   }
+  /* stylelint-enable selector-pseudo-class-no-unknown */
 }

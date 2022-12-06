@@ -29,14 +29,14 @@ const Toggle = ({
 
   return (
     <button
-      className={cn(styles['Toggle'])}
+      className={cn(styles['toggle'])}
       type="button"
       disabled={isDisabled}
       aria-pressed={isActive}
       onClick={onClick}
     >
       {label}
-      <span className={cn(styles['ToggleDisplay'])} hidden />
+      <span className={cn(styles['toggle-display'])} hidden />
     </button>
   )
 }
