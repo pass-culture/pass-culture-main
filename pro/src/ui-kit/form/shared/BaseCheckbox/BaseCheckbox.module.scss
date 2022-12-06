@@ -35,7 +35,7 @@
     flex-direction: column;
 
     &-svg {
-      fill: forms.$input-text-color;
+      fill: colors.$input-text-color;
       :disabled + & {
         fill: forms.$input-text-color-disabled;
       }
