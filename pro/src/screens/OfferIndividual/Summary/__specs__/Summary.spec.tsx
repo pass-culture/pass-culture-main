@@ -598,6 +598,25 @@ describe('Summary', () => {
       }
     )
 
+    it('should display a notification when saving as draft', async () => {
+      // when
+      renderSummary({
+        props,
+        url: generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+      })
+      await userEvent.click(
+        screen.getByText('Sauvegarder le brouillon et quitter')
+      )
+      expect(
+        screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      ).toBeInTheDocument()
+    })
     it('should not display pre publishing banner in edition mode', () => {
       // when
       renderSummary({

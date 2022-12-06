@@ -11,6 +11,7 @@ import {
 import { computeOffersUrl, OFFER_WIZARD_MODE } from 'core/Offers'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
+import useNotification from 'hooks/useNotification'
 import { ReactComponent as IcoMiniArrowLeft } from 'icons/ico-mini-arrow-left.svg'
 import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.svg'
 import { RootState } from 'store/reducers'
@@ -45,6 +46,7 @@ const ActionBar = ({
   const mode = useOfferWizardMode()
   const backOfferUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
   const { logEvent } = useAnalytics()
+  const notify = useNotification()
 
   const logCancel = () => {
     shouldTrack &&
@@ -131,7 +133,12 @@ const ActionBar = ({
               <ButtonLink
                 link={{ to: '/offres', isExternal: false }}
                 variant={ButtonVariant.SECONDARY}
-                onClick={logDraft}
+                onClick={() => {
+                  notify.success(
+                    'Brouillon sauvegardé dans la liste des offres'
+                  )
+                  logDraft()
+                }}
               >
                 Sauvegarder le brouillon et quitter
               </ButtonLink>
