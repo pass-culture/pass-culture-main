@@ -34,11 +34,14 @@ const StockThingForm = ({
         smallLabel
         name="price"
         label="Prix"
-        type="number"
         placeholder="Ex: 20€"
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('price')}
-        rightIcon={values.price.length > 0 ? () => <IconEuroGrey /> : undefined}
+        rightIcon={() =>
+          values.price.toString().length > 0 ? <IconEuroGrey /> : null
+        }
+        onlyNumbers
+        type="number"
       />
       <DatePicker
         smallLabel
@@ -68,6 +71,7 @@ const StockThingForm = ({
         className={styles['input-quantity']}
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('quantity')}
+        onlyNumbers
       />
     </>
   )

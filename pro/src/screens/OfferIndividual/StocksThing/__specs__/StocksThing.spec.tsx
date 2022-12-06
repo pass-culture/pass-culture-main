@@ -340,7 +340,7 @@ describe('screens:StocksThing', () => {
 
       const priceInput = screen.getByLabelText('Prix')
       await userEvent.clear(priceInput)
-      await userEvent.type(priceInput, '14.01')
+      await userEvent.type(priceInput, '14')
       const expirationInput = screen.getByLabelText("Date d'expiration")
       expect(expirationInput).toBeDisabled()
       const date = new Date()
@@ -431,4 +431,44 @@ describe('screens:StocksThing', () => {
       expect(screen.getByText(FORM_ERROR_MESSAGE)).toBeInTheDocument()
     })
   })
+
+  const setNumberPriceValue = [
+    { value: '20', expectedNumber: 20 },
+    { value: 'azer', expectedNumber: null },
+    { value: 'AZER', expectedNumber: null },
+    { value: '2fsqjk', expectedNumber: 2 },
+    { value: '2fsqm0', expectedNumber: 20 },
+  ]
+  it.each(setNumberPriceValue)(
+    'should only type numbers for price input',
+    async ({ value, expectedNumber }) => {
+      renderStockThingScreen({ props, storeOverride, contextValue })
+
+      const priceInput = screen.getByLabelText('Prix', {
+        exact: false,
+      })
+      await userEvent.type(priceInput, value)
+      expect(priceInput).toHaveValue(expectedNumber)
+    }
+  )
+
+  const setNumberQuantityValue = [
+    { value: '20', expectedNumber: '20' },
+    { value: 'azer', expectedNumber: '' },
+    { value: 'AZER', expectedNumber: '' },
+    { value: '2fsqjk', expectedNumber: '2' },
+    { value: '2fsqm0', expectedNumber: '20' },
+  ]
+  it.each(setNumberQuantityValue)(
+    'should only type numbers for quantity input',
+    async ({ value, expectedNumber }) => {
+      renderStockThingScreen({ props, storeOverride, contextValue })
+
+      const quantityInput = screen.getByLabelText('Quantité', {
+        exact: false,
+      })
+      await userEvent.type(quantityInput, value)
+      expect(quantityInput).toHaveValue(expectedNumber)
+    }
+  )
 })

@@ -98,4 +98,29 @@ describe('StockEventForm', () => {
       '27/12/2022'
     )
   })
+
+  const setNumberValue = [
+    { value: '20', expectedNumber: '20' },
+    { value: 'azer', expectedNumber: '' },
+    { value: 'AZER', expectedNumber: '' },
+    { value: '2fsqjk', expectedNumber: '2' },
+    { value: '2fsqm0', expectedNumber: '20' },
+  ]
+  it.each(setNumberValue)(
+    'should only type numbers for price, quantity',
+    async ({ value, expectedNumber }) => {
+      renderStockEventForm(props)
+
+      const priceInput = screen.getByLabelText('Prix', {
+        exact: false,
+      })
+      const quantityInput = screen.getByLabelText('Quantité', {
+        exact: false,
+      })
+      await userEvent.type(priceInput, value)
+      await userEvent.type(quantityInput, value)
+      expect(priceInput).toHaveValue(expectedNumber)
+      expect(quantityInput).toHaveValue(expectedNumber)
+    }
+  )
 })

@@ -27,7 +27,7 @@ const StockEventForm = ({
   const { readOnlyFields } = stockFormValues
 
   const [showCurrencyIcon, showShowCurrencyIcon] = useState<boolean>(
-    stockFormValues.price.length > 0
+    stockFormValues.price.toString().length > 0
   )
   useEffect(() => {
     showShowCurrencyIcon(stockFormValues.price.length > 0)
@@ -38,6 +38,8 @@ const StockEventForm = ({
     if (stockBookingLimitDatetime === null) {
       return
     }
+    // tested but coverage don't see it.
+    /* istanbul ignore next */
     if (date && isAfter(stockBookingLimitDatetime, date)) {
       setTouched({
         [`stocks[${stockIndex}]bookingLimitDatetime`]: true,
@@ -86,6 +88,7 @@ const StockEventForm = ({
         placeholder="Ex: 20€"
         disabled={readOnlyFields.includes('price')}
         rightIcon={() => (showCurrencyIcon ? <IconEuroGrey /> : null)}
+        onlyNumbers
       />
       <DatePicker
         smallLabel
@@ -116,6 +119,7 @@ const StockEventForm = ({
         classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('quantity')}
+        onlyNumbers
       />
     </>
   )
