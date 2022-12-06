@@ -20,7 +20,13 @@ import { OFFER_WIZARD_STEP_IDS } from './constants'
 import { useActiveStep } from './hooks'
 import styles from './OfferIndividualStepper.module.scss'
 
-const OfferIndividualStepper = () => {
+interface IOfferIndividualStepper {
+  shouldTrack?: boolean
+}
+
+const OfferIndividualStepper = ({
+  shouldTrack = true,
+}: IOfferIndividualStepper) => {
   const { offer } = useOfferIndividualContext()
   const activeStep = useActiveStep()
   const { logEvent } = useAnalytics()
@@ -98,14 +104,15 @@ const OfferIndividualStepper = () => {
       id: stepPattern.id,
       label: stepPattern.label,
       onClick: () => {
-        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-          from: activeStep,
-          to: step.id,
-          used: OFFER_FORM_NAVIGATION_MEDIUM.BREADCRUMB,
-          isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-          isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-          offerId: offer?.id,
-        })
+        shouldTrack &&
+          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            from: activeStep,
+            to: step.id,
+            used: OFFER_FORM_NAVIGATION_MEDIUM.BREADCRUMB,
+            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+            isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+            offerId: offer?.id,
+          })
       },
     }
     if (stepPattern.isActive && stepPattern.path && offer) {

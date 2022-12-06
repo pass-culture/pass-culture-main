@@ -31,6 +31,8 @@ const renderStocksScreen = ({
     categories: [],
     subCategories: [],
     setOffer: () => {},
+    shouldTrack: true,
+    setShouldTrack: () => {},
     ...contextOverride,
   }
   return render(

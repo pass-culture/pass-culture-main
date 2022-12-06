@@ -40,6 +40,8 @@ const renderOffer = (
     categories: [],
     subCategories: [],
     setOffer: () => {},
+    setShouldTrack: () => {},
+    shouldTrack: true,
     ...contextOverride,
   }
   const store = configureTestStore({

@@ -92,7 +92,7 @@ const Summary = (
         from: OfferBreadcrumbStep.SUMMARY,
         to: OfferBreadcrumbStep.CONFIRMATION,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: false,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: true,
         offerId: offerId,
       })
