@@ -121,8 +121,9 @@ class GetTest:
             assert favorites[4]["offer"]["date"] == tomorow.isoformat() + "Z"
             assert favorites[4]["offer"]["startDate"] is None
             assert favorites[4]["offer"]["image"]["credit"] is None
-            assert favorites[4]["offer"]["image"]["url"] == "http://localhost/storage/thumbs/products/%s" % (
-                humanize(offer2.product.id)
+            assert (
+                favorites[4]["offer"]["image"]["url"]
+                == f"http://localhost/storage/thumbs/products/{humanize(offer2.product.id)}_665"
             )
             assert favorites[4]["offer"]["expenseDomains"] == ["all"]
             assert favorites[4]["offer"]["subcategoryId"] == "SEANCE_CINE"
@@ -143,7 +144,10 @@ class GetTest:
             assert favorites[2]["offer"]["startPrice"] is None
             assert favorites[2]["offer"]["date"] is None
             assert favorites[2]["offer"]["startDate"] is None
-            assert favorites[2]["offer"]["image"] is None
+            assert (
+                favorites[2]["offer"]["image"]["url"]
+                == f"http://localhost/storage/thumbs/mediations/{humanize(offer4.activeMediation.id)}"
+            )
             assert favorites[2]["offer"]["expenseDomains"] == ["all"]
             assert favorites[2]["offer"]["subcategoryId"] == "SEANCE_CINE"
 
@@ -153,7 +157,10 @@ class GetTest:
             assert favorites[1]["offer"]["startPrice"] is None
             assert favorites[1]["offer"]["date"] is None
             assert favorites[1]["offer"]["startDate"] is None
-            assert favorites[1]["offer"]["image"] is None
+            assert (
+                favorites[1]["offer"]["image"]["url"]
+                == f"http://localhost/storage/thumbs/mediations/{humanize(offer5.activeMediation.id)}"
+            )
             assert favorites[1]["offer"]["expenseDomains"] == ["all"]
             assert favorites[1]["offer"]["subcategoryId"] == "SEANCE_CINE"
 

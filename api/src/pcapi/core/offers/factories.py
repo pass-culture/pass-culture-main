@@ -152,6 +152,7 @@ class MediationFactory(BaseFactory):
 
     offer = factory.SubFactory(OfferFactory)
     isActive = True
+    thumbCount = 1
 
 
 class OfferReportFactory(BaseFactory):
