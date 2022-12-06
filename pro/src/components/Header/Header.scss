@@ -1,13 +1,11 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 header.menu-v2 {
   background-image: colors.$linear-gradient-to-right;
-  grid-column-end: end-line;
-  grid-column-start: col-start;
-  grid-row-end: row-main;
-  grid-row-start: row-nav;
+  grid-column: col-start / end-line;
+  grid-row: row-nav / row-main;
 
   nav {
     display: grid;
@@ -32,7 +30,7 @@ header.menu-v2 {
 
       button.nav-item,
       a.nav-item {
-        @include fonts.button();
+        @include fonts.button;
 
         align-items: center;
         color: colors.$white;

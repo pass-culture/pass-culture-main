@@ -1,5 +1,5 @@
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .confirmation {
   text-align: center;
@@ -41,7 +41,8 @@
   margin-top: rem.torem(45px);
 
   &-title {
-    @include fonts.button();
+    @include fonts.button;
+
     margin-bottom: rem.torem(4px);
     line-height: normal;
   }

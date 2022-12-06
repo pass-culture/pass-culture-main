@@ -1,6 +1,6 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
 
 .stepper {
   margin-top: rem.torem(32px);
@@ -11,7 +11,7 @@
 }
 
 h4 {
-  @include fonts.title4();
+  @include fonts.title4;
 
   font-weight: 500;
 }

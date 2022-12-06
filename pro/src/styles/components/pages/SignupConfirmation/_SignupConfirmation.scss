@@ -1,6 +1,7 @@
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as sizes;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .sign-up-confirmation-page {
   min-height: rem.torem(600px);
@@ -9,7 +10,7 @@
   width: 100%;
 
   .content {
-    margin-left: calc(rem.torem(30px) + 15%);
+    margin-left: calc(sizes.$signup-content-margin + 15%);
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -32,7 +33,7 @@
       }
 
       p {
-        @include fonts.caption();
+        @include fonts.caption;
 
         color: colors.$grey-dark;
         text-align: justify;

@@ -1,11 +1,12 @@
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .collective-data-row:not(:last-of-type) {
   margin-bottom: rem.torem(16px);
 }
 
-.collective-data-description, .collective-data-term {
+.collective-data-description,
+.collective-data-term {
   display: inline;
   font-size: rem.torem(15px);
   font-style: normal;

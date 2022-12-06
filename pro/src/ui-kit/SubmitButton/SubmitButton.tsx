@@ -27,7 +27,7 @@ const SubmitButton = ({
     className={cx(
       'primary-button',
       'loading-spinner',
-      styles.submitButton,
+      styles['submit-button'],
       className
     )}
     disabled={disabled || isLoading}

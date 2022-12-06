@@ -1,12 +1,14 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
 
 $arrow-triangle-height: rem.torem(4px);
 
 .tooltip {
   visibility: hidden;
-  @include fonts.caption();
+
+  @include fonts.caption;
+
   align-self: start;
   color: white;
   padding: rem.torem(4px);
@@ -24,15 +26,16 @@ $arrow-triangle-height: rem.torem(4px);
   &:hover,
   &:focus {
     cursor: pointer;
+
     .tooltip {
       visibility: visible;
       top: 0;
       left: 50%;
       transform: translate(-50%, calc(-100% - #{$arrow-triangle-height}));
-
       background-color: colors.$dark-blue;
+
       &::after {
-        content: '';
+        content: "";
         position: absolute;
         width: 0;
         height: 0;

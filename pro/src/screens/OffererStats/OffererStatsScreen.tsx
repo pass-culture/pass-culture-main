@@ -105,7 +105,7 @@ const OffererStatsScreen = ({ offererOptions }: IOffererStatsScreenProps) => {
             isDisabled={venueOptions.length <= 1}
             className={styles['offerer-stats-select-venue']}
           />
-          <div className={styles['iframeContainer']}>
+          <div className={styles['iframe-container']}>
             <iframe
               title="Tableau des statistiques"
               className={styles['dashboard-iframe']}

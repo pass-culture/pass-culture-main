@@ -141,6 +141,8 @@ const Desk = ({
           placeholder="ex : AZE123"
           type="text"
           value={token}
+          labelExtraClassName={styles['desk-form-label']}
+          inputExtraClassName={styles['desk-form-input']}
         />
 
         <BookingDetails booking={booking} />

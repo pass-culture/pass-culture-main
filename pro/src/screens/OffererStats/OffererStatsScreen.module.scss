@@ -1,4 +1,4 @@
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/mixins/_rem.scss" as rem;
 
 .dashboard-iframe {
   width: 100%;
@@ -10,19 +10,22 @@
   &-description {
     margin-bottom: rem.torem(32px);
   }
+
   &-select-offerer {
     width: rem.torem(486px);
     margin-bottom: rem.torem(32px);
   }
+
   &-select-venue {
     width: rem.torem(486px);
   }
-
 }
+
 .no-result-section {
   margin-top: rem.torem(60px);
 }
-.iframeContainer {
+
+.iframe-container {
   margin-top: rem.torem(44px);
   height: rem.torem(3500px);
 }
