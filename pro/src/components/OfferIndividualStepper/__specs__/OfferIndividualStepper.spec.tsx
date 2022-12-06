@@ -31,6 +31,8 @@ const renderOfferIndividualStepper = (
     categories: [],
     subCategories: [],
     setOffer: () => {},
+    setShouldTrack: () => {},
+    shouldTrack: true,
     ...contextOverride,
   }
   const rtlReturns = render(

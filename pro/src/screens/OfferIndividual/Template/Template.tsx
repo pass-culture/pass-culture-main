@@ -26,7 +26,7 @@ const Template = ({
   withStepper = true,
   withStatus = true,
 }: ITemplateProps) => {
-  const { offer, setOffer } = useOfferIndividualContext()
+  const { offer, setOffer, shouldTrack } = useOfferIndividualContext()
   const mode = useOfferWizardMode()
   const notify = useNotification()
 
@@ -72,7 +72,7 @@ const Template = ({
 
       {withStepper && (
         <OfferFormLayout.Stepper>
-          <OfferIndividualStepper />
+          <OfferIndividualStepper shouldTrack={shouldTrack} />
         </OfferFormLayout.Stepper>
       )}
 

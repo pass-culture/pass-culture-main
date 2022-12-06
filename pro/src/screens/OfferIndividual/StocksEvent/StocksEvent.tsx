@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'
@@ -56,10 +56,11 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   ] = useState<boolean>(false)
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
+  const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
   const notify = useNotification()
-  const { setOffer } = useOfferIndividualContext()
+  const { setOffer, shouldTrack, setShouldTrack } = useOfferIndividualContext()
   const providerName = offer?.lastProviderName
   const { visible, showModal, hideModal } = useModal()
 
@@ -79,6 +80,18 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       }
       if (!isSubmittingFromRouteLeavingGuard) {
         navigate(afterSubmitUrl)
+        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+          from: OFFER_WIZARD_STEP_IDS.STOCKS,
+          to: isSubmittingDraft
+            ? OFFER_WIZARD_STEP_IDS.STOCKS
+            : OFFER_WIZARD_STEP_IDS.SUMMARY,
+          used: isSubmittingDraft
+            ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
+            : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+          isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+          isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+          offerId: offer.id,
+        })
       }
     } else {
       /* istanbul ignore next: DEBT, TO FIX */
@@ -128,11 +141,17 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     errors: formik.errors,
   })
 
+  useEffect(() => {
+    // when form is dirty it's tracked by RouteLeavingGuard
+    setShouldTrack(!formik.dirty)
+  }, [formik.dirty])
+
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     () => {
       // tested but coverage don't see it.
       /* istanbul ignore next */
+      setIsSubmittingDraft(saveDraft)
       setIsClickingFromActionBar(true)
       setAfterSubmitUrl(
         getOfferIndividualUrl({
@@ -198,18 +217,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       } else {
         formik.handleSubmit()
       }
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.STOCKS,
-        to: saveDraft
-          ? OFFER_WIZARD_STEP_IDS.STOCKS
-          : OFFER_WIZARD_STEP_IDS.SUMMARY,
-        used: saveDraft
-          ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
-          : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-        offerId: offer.id,
-      })
     }
 
   const handlePreviousStep = () => {
@@ -260,6 +267,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
               onClickSaveDraft={handleNextStep({ saveDraft: true })}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
               offerId={offer.id}
+              shouldTrack={shouldTrack}
             />
           </form>
         </FormLayout.Section>

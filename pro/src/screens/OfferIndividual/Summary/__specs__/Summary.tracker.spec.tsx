@@ -509,7 +509,7 @@ describe('Summary trackers', () => {
         Events.CLICKED_OFFER_FORM_NAVIGATION,
         {
           from: 'recapitulatif',
-          isEdition: false,
+          isEdition: true,
           to: 'confirmation',
           used: 'StickyButtons',
           isDraft: true,

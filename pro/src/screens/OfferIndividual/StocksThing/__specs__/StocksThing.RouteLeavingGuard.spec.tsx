@@ -137,6 +137,8 @@ describe('screens:StocksThing', () => {
       categories: [],
       subCategories: [],
       setOffer: () => {},
+      setShouldTrack: () => {},
+      shouldTrack: false,
     }
     jest
       .spyOn(api, 'getOffer')

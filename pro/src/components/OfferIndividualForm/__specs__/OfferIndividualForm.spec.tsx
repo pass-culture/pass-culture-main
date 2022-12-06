@@ -54,7 +54,8 @@ const renderOfferIndividualForm = ({
     categories: [],
     subCategories: [],
     setOffer: () => {},
-
+    setShouldTrack: () => {},
+    shouldTrack: true,
     ...contextOverride,
   }
   return render(
