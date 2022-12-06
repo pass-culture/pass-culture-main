@@ -17,7 +17,7 @@
   border-radius: rem.torem(forms.$input-border-radius);
   background-color: forms.$input-bg-color;
   padding: 0 rem.torem(16px);
-  color: forms.$input-text-color;
+  color: colors.$input-text-color;
   box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   transition: border 150ms ease, background 150ms ease, box-shadow 150ms ease;
 
@@ -47,7 +47,7 @@
   &:-webkit-autofill,
   &:-internal-autofill-selected {
     background-color: forms.$input-bg-color !important;
-    color: forms.$input-text-color !important;
+    color: colors.$input-text-color !important;
   }
 }
 
@@ -65,7 +65,7 @@
   pointer-events: none;
   align-items: center;
   justify-content: center;
-  color: forms.$input-text-color;
+  color: colors.$input-text-color;
 
   svg {
     width: $icon-width;

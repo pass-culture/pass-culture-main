@@ -170,15 +170,16 @@
   }
 
   &-box {
-    background-color: #E5E5E5;
+    background-color: colors.$white;
     justify-content: flex-start;
     width: 100%;
     padding: rem.torem(12px) rem.torem(4px) rem.torem(12px) rem.torem(8px);
     border: rem.torem(1px) solid colors.$grey-dark;
     border-radius: rem.torem(6px);
+    height: rem.torem(44px);
+    max-width: rem.torem(400px);
 
     &:hover:not(:disabled):not(.button-disabled) {
-      background-color: colors.$white;
       box-shadow: rem.torem(0px) rem.torem(3px) rem.torem(4px) colors.$grey-medium-shadow;
     }
 
@@ -187,17 +188,18 @@
       outline: 0;
       position: relative;
       border-color: colors.$black;
+      background-color: #E5E5E5;
 
       &::before {
         display: block;
         content: '';
         position: absolute;
-        left: rem.torem(2px);
-        right: rem.torem(2px);
-        top: rem.torem(2px);
-        bottom: rem.torem(2px);
-        border: 1px solid colors.$grey-dark;;
-        border-radius: rem.torem(4px);
+        left: rem.torem(-4px);
+        right: rem.torem(-4px);
+        top: rem.torem(-4px);
+        bottom: rem.torem(-4px);
+        border: 1px solid colors.$input-text-color;
+        border-radius: rem.torem(8px);
       }
     }
 
@@ -217,7 +219,7 @@
 
     &:disabled, &.button-disabled {
       background: colors.$grey-light;
-      border: none;
+      border-color: colors.$grey-light;
       color: colors.$grey-dark;
 
       .button-icon {
