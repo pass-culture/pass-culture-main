@@ -1,6 +1,6 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .homepage {
   .pc-breadcrumb {
@@ -31,6 +31,7 @@
   .h-card {
     border: rem.torem(1px) solid colors.$grey-medium;
     border-radius: rem.torem(8px);
+    /* stylelint-disable-next-line color-function-notation */
     box-shadow: 0 rem.torem(2px) rem.torem(6px) 0 rgba(colors.$black, 0.15);
     overflow: hidden;
 
@@ -73,9 +74,8 @@
       }
     }
 
-
     .h-card-title {
-      @include fonts.title4();
+      @include fonts.title4;
 
       align-items: center;
       display: flex;
@@ -83,7 +83,7 @@
     }
 
     .h-card-secondary-title {
-      @include fonts.body();
+      @include fonts.body;
 
       .ico-bank-warning {
         margin-left: rem.torem(8px);
@@ -131,7 +131,7 @@
     }
 
     .h-section-title {
-      @include fonts.title3();
+      @include fonts.title3;
     }
 
     > .h-card,

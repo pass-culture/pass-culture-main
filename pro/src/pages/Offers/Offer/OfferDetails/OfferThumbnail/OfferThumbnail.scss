@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .of-placeholder {
   @include fonts.button;
@@ -33,7 +33,7 @@
   }
 
   .of-error-message {
-    @include fonts.highlight();
+    @include fonts.highlight;
 
     color: colors.$primary-dark;
     display: flex;
@@ -64,15 +64,16 @@
   }
 
   &::after {
+    /* stylelint-disable-next-line color-function-notation */
     background: rgba(colors.$black, 0.6);
     border-radius: rem.torem(4px);
-    content: '';
+    content: "";
     height: 100%;
     width: 100%;
   }
 
   &::before {
-    background: url('assets/edit-thumbnail.svg') no-repeat center 0;
+    background: url("assets/edit-thumbnail.svg") no-repeat center 0;
     box-sizing: border-box;
     color: colors.$white;
     content: attr(title);

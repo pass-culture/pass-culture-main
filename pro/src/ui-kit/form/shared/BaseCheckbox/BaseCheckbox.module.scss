@@ -1,7 +1,7 @@
-@use 'styles/variables/_forms.scss' as forms;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_colors.scss" as colors;
 
 .base-checkbox {
   &-label-row {
@@ -9,11 +9,13 @@
     cursor: pointer;
     align-items: center;
   }
-  &-description {
-    @include fonts.caption();
-    margin-left: rem.torem(28px);
 
+  &-description {
+    @include fonts.caption;
+
+    margin-left: rem.torem(28px);
     color: colors.$grey-dark;
+
     &.disabled {
       color: colors.$grey-medium;
     }
@@ -36,6 +38,7 @@
 
     &-svg {
       fill: colors.$input-text-color;
+
       :disabled + & {
         fill: forms.$input-text-color-disabled;
       }
@@ -43,7 +46,6 @@
   }
 
   &-input {
-    -webkit-appearance: none;
     appearance: none;
     background-color: forms.$input-bg-color;
     border: rem.torem(2px) solid forms.$input-border-color;

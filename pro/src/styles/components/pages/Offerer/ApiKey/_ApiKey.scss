@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .api-key {
   .title {
@@ -10,11 +10,11 @@
     margin-top: rem.torem(32px);
 
     .text {
-      @include fonts.title3();
+      @include fonts.title3;
     }
 
     .counter {
-      @include fonts.title4();
+      @include fonts.title4;
 
       &--error {
         color: colors.$red-error;
@@ -52,7 +52,7 @@
         &--new-key {
           color: colors.$primary;
 
-          @include fonts.button();
+          @include fonts.button;
         }
       }
 
@@ -77,7 +77,7 @@
   text-align: center;
 
   .title {
-    @include fonts.gabarit();
+    @include fonts.gabarit;
 
     margin-top: rem.torem(24px);
   }

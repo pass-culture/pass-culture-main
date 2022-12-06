@@ -1,13 +1,14 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .activation-codes-upload {
   text-align: center;
   width: rem.torem(540px);
 
   .activation-codes-upload-title {
-    @include fonts.title4();
+    @include fonts.title4;
+
     margin-top: rem.torem(8px);
     margin-bottom: rem.torem(8px);
   }
@@ -15,8 +16,9 @@
   .activation-codes-errors {
     margin-top: rem.torem(8px);
     margin-bottom: rem.torem(16px);
+
     p {
-        margin-bottom: rem.torem(8px);
+      margin-bottom: rem.torem(8px);
     }
   }
 
@@ -31,7 +33,8 @@
   }
 
   .activation-codes-upload-button-caption {
-    @include fonts.caption();
+    @include fonts.caption;
+
     margin-top: rem.torem(16px);
     color: colors.$grey-dark;
   }
@@ -56,7 +59,7 @@
 
   .activation-codes-form {
     p {
-        margin-bottom: rem.torem(8px);
+      margin-bottom: rem.torem(8px);
     }
   }
 
@@ -69,6 +72,6 @@
     display: flex;
     justify-content: space-between;
     text-align: center;
-    margin-top: rem.torem(16px)
+    margin-top: rem.torem(16px);
   }
 }

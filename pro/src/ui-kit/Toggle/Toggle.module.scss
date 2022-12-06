@@ -1,9 +1,9 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
 
-.Toggle {
-  @include fonts.title4();
+.toggle {
+  @include fonts.title4;
 
   display: flex;
   flex-wrap: wrap;
@@ -17,11 +17,11 @@
   background-color: transparent;
 }
 
-.Toggle:active:not([disabled]) {
+.toggle:active:not([disabled]) {
   opacity: 0.64;
 }
 
-.ToggleDisplay {
+.toggle-display {
   --offset: 2px;
   --diameter: 28px;
 
@@ -37,7 +37,7 @@
   transform: inherit;
 }
 
-.ToggleDisplay::before {
+.toggle-display::before {
   content: "";
   z-index: 2;
   position: absolute;
@@ -53,33 +53,33 @@
   transition: inherit;
 }
 
-.Toggle:focus .ToggleDisplay {
+.toggle:focus .toggle-display {
   outline: rem.torem(1px) dotted colors.$black;
   outline-offset: rem.torem(2px);
 }
 
-.Toggle:focus,
-.Toggle:focus:not(:focus-visible) .ToggleDisplay {
+.toggle:focus,
+.toggle:focus:not(:focus-visible) .toggle-display {
   outline: 0;
 }
 
-.Toggle[aria-pressed="true"] .ToggleDisplay {
+.toggle[aria-pressed="true"] .toggle-display {
   background-color: colors.$green-valid;
 }
 
-.Toggle[aria-pressed="true"] .ToggleDisplay::before {
+.toggle[aria-pressed="true"] .toggle-display::before {
   background: center / contain no-repeat url("./assets/check.png") white;
   background-size: rem.torem(16px);
   left: rem.torem(-2px);
   transform: translate(100%, -50%);
 }
 
-.Toggle[disabled] {
+.toggle[disabled] {
   color: colors.$black;
   cursor: not-allowed;
 }
 
-.Toggle[disabled] .ToggleDisplay::before {
+.toggle[disabled] .toggle-display::before {
   background: center / contain no-repeat url("./assets/lock.png") white;
   background-size: rem.torem(16px);
 }

@@ -1,6 +1,6 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/variables/_forms.scss' as forms;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_rem.scss" as rem;
 
 .base-radio {
   display: inline-flex;
@@ -18,7 +18,6 @@
   }
 
   &-input {
-    -webkit-appearance: none;
     appearance: none;
     border: rem.torem(2px) solid forms.$input-border-color;
     border-radius: 50%;
@@ -33,12 +32,13 @@
 
     &:checked {
       box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
-      background: radial-gradient(
-        colors.$primary 0%,
-        colors.$primary 40%,
-        transparent 50%,
-        transparent
-      );
+      background:
+        radial-gradient(
+          colors.$primary 0%,
+          colors.$primary 40%,
+          transparent 50%,
+          transparent
+        );
     }
 
     &:hover:checked,
@@ -70,12 +70,13 @@
   .base-radio-input {
     &:checked {
       border-color: colors.$primary;
-      background: radial-gradient(
-        colors.$primary 0%,
-        colors.$primary 40%,
-        transparent 50%,
-        transparent
-      );
+      background:
+        radial-gradient(
+          colors.$primary 0%,
+          colors.$primary 40%,
+          transparent 50%,
+          transparent
+        );
     }
   }
 }

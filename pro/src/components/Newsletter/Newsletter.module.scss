@@ -1,15 +1,15 @@
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/mixins/_rem.scss" as rem;
 
-.newsletterContainer {
+.newsletter-container {
   display: flex;
   min-height: rem.torem(53px);
 
-  .newsletterImg {
+  .newsletter-img {
     position: absolute;
     width: 100%;
   }
 
-  .newsletterLink {
+  .newsletter-link {
     position: relative;
     display: flex;
     justify-content: center;

@@ -1,6 +1,6 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
 
 .dialog {
   align-items: center;
@@ -12,7 +12,8 @@
 
   &-title {
     max-width: rem.torem(532px);
-    @include fonts.title3();
+
+    @include fonts.title3;
 
     margin-top: rem.torem(32px);
 

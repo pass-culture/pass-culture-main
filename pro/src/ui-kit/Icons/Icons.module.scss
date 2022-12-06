@@ -1,5 +1,5 @@
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .table {
   tr > td {
@@ -13,15 +13,16 @@
       height: rem.torem(50px);
       fill: black;
     }
-
   }
 }
 
-.table, .table tr, .table td {
-    border: 1px solid black;
-    border-collapse: collapse
+.table,
+.table tr,
+.table td {
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 
 .with-background {
-    background-color: colors.$grey-medium;
+  background-color: colors.$grey-medium;
 }

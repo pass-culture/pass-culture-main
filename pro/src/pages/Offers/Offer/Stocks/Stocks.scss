@@ -1,14 +1,14 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
-$actionsPaddingTop: rem.torem(20px);
-$actionsPaddingBottom: rem.torem(20px);
-$buttonHeight: rem.torem(40px);
+$actions-padding-top: rem.torem(20px);
+$actions-padding-bottom: rem.torem(20px);
+$button-height: rem.torem(40px);
 
 .stocks-page {
   h2 {
-    @include fonts.title3();
+    @include fonts.title3;
   }
 
   .add-first-stock-button {
@@ -43,7 +43,7 @@ $buttonHeight: rem.torem(40px);
   }
 
   th {
-    @include fonts.caption();
+    @include fonts.caption;
 
     text-align: left;
   }
@@ -66,12 +66,13 @@ $buttonHeight: rem.torem(40px);
     }
 
     &.shadow {
-      background-image: radial-gradient(
-        ellipse at bottom,
-        colors.$black-shadow,
-        transparent 75%
-      );
-      bottom: $actionsPaddingBottom + $actionsPaddingTop + $buttonHeight;
+      background-image:
+        radial-gradient(
+          ellipse at bottom,
+          colors.$black-shadow,
+          transparent 75%
+        );
+      bottom: $actions-padding-bottom + $actions-padding-top + $button-height;
       position: sticky;
     }
   }
@@ -84,8 +85,8 @@ $buttonHeight: rem.torem(40px);
     background: colors.$white;
     bottom: 0;
     margin-top: rem.torem(60px);
-    padding-bottom: $actionsPaddingBottom;
-    padding-top: $actionsPaddingTop;
+    padding-bottom: $actions-padding-bottom;
+    padding-top: $actions-padding-top;
     position: sticky;
     z-index: 2;
     justify-content: space-between;

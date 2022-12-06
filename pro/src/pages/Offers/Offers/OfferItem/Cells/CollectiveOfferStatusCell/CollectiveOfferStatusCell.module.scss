@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .status-label-icon {
   fill: white;
@@ -9,38 +9,40 @@
   width: rem.torem(16px);
 }
 
-.status- {
-  &expired,
-  &pending,
-  &inactive {
+.status {
+  &-expired,
+  &-pending,
+  &-inactive {
     background-color: colors.$grey-dark;
   }
 
-  &ended {
+  &-ended {
     background-color: colors.$blue;
   }
 
-  &rejected {
+  &-rejected {
     background-color: colors.$black;
   }
-  &pre-booked {
+
+  &-pre-booked {
     background-color: colors.$booking-pending-status;
     color: colors.$black;
+
     &-icon {
       fill: colors.$black;
     }
   }
 
-  &booked {
+  &-booked {
     background-color: colors.$secondary;
   }
 
-  &active,
-  &validated {
+  &-active,
+  &-validated {
     background-color: colors.$green-valid;
   }
 
-  &draft {
+  &-draft {
     background-color: colors.$secondary;
   }
 }
