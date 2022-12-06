@@ -21,8 +21,8 @@ const MaybeAppUserDialog = ({ onCancel }: { onCancel: () => void }) => {
     >
       <p>
         Tu essayes de t’inscrire sur l’espace pass Culture Pro dédié aux
-        professionnels de la culture. Pour t’inscrire, rends-toi sur
-        l’application pass Culture ou sur l’application web.
+        professionnels de la culture. Pour créer ton compte, rends-toi sur
+        l’application pass Culture.
       </p>
     </RedirectDialog>
   )

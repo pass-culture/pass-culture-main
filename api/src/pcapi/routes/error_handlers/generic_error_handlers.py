@@ -162,7 +162,7 @@ def handle_ratio_error(error: ImageRatioError) -> ApiErrorResponse:
 
 @app.errorhandler(sirene.UnknownEntityException)
 def handle_unknown_entity_exception(error: sirene.UnknownEntityException) -> ApiErrorResponse:
-    msg = "Ce SIREN ou SIRET n'existe pas."
+    msg = "Le SIREN n’existe pas."
     err = {"global": [msg]}
     return generate_error_response(err), 400
 
