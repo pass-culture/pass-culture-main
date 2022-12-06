@@ -1,11 +1,12 @@
 import cn from 'classnames'
 import React, { ReactNode } from 'react'
 
-import DisabledSvg from './disabled.svg'
-import ErrorSvg from './error.svg'
-import SuccessSvg from './success.svg'
+import { ReactComponent as ErrorSvg } from 'icons/ico-clear.svg'
+import { ReactComponent as SuccessSvg } from 'icons/ico-notification-success-green.svg'
+
+import { ReactComponent as DisabledSvg } from './disabled.svg'
 import styles from './Timeline.module.scss'
-import WaitingSvg from './waiting.svg'
+import { ReactComponent as WaitingSvg } from './waiting.svg'
 
 export enum TimelineStepType {
   SUCCESS = 'SUCCESS',
@@ -23,28 +24,23 @@ export interface ITimelineProps {
   steps: ITimelineStep[]
 }
 
-const getIconProps = (type: TimelineStepType) => {
+const getIconComponent = (type: TimelineStepType) => {
   switch (type) {
     case TimelineStepType.SUCCESS:
-      return {
-        src: SuccessSvg,
-        alt: 'Étape en succès',
-      }
+      return <SuccessSvg title="Étape en succès" className={styles.icon} />
     case TimelineStepType.ERROR:
-      return {
-        src: ErrorSvg,
-        alt: 'Étape en erreur',
-      }
+      return (
+        <ErrorSvg
+          title="Étape en erreur"
+          className={cn(styles.icon, styles['icon-error'])}
+        />
+      )
     case TimelineStepType.WAITING:
-      return {
-        src: WaitingSvg,
-        alt: 'Étape en attente',
-      }
+      return <WaitingSvg title="Étape en attente" className={styles.icon} />
     case TimelineStepType.DISABLED:
-      return {
-        src: DisabledSvg,
-        alt: 'Étape non disponible',
-      }
+      return (
+        <DisabledSvg title="Étape non disponible" className={styles.icon} />
+      )
     default:
       throw new Error(`Unsupported step type: ${type}`)
   }
@@ -91,7 +87,7 @@ const Timeline = ({ steps }: ITimelineProps): JSX.Element => {
               getLineStyle(step.type, steps[index + 1]?.type)
             )}
           >
-            <img {...getIconProps(step.type)} className={styles.icon} />
+            {getIconComponent(step.type)}
             {step.content}
           </div>
         )

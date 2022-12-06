@@ -46,6 +46,7 @@ import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.
 import { ReactComponent as IcoMoreCircle } from 'icons/ico-more-circle.svg'
 import { ReactComponent as IcoMoreHoriz } from 'icons/ico-more-horiz.svg'
 import { ReactComponent as IcoNext } from 'icons/ico-next-S.svg'
+import { ReactComponent as NotificationSuccessGreenIcon } from 'icons/ico-notification-success-green.svg'
 import { ReactComponent as OffersIcon } from 'icons/ico-offers.svg'
 import { ReactComponent as IcoOuterPen } from 'icons/ico-outer-pen.svg'
 import { ReactComponent as IcoPassculture } from 'icons/ico-passculture.svg'
@@ -250,6 +251,12 @@ export const Icons = () => (
           <IcoClear />
         </td>
         <td>ico-clear</td>
+      </tr>
+      <tr>
+        <td>
+          <NotificationSuccessGreenIcon />
+        </td>
+        <td>ico-notification-success-green</td>
       </tr>
       <tr>
         <td>
