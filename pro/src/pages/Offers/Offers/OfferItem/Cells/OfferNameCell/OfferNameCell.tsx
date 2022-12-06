@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
@@ -9,6 +10,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_DRAFT, OFFER_STATUS_SOLD_OUT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as WarningStocksIcon } from 'icons/ico-warning-stocks.svg'
 import { Tag } from 'ui-kit'
@@ -25,12 +27,17 @@ interface OfferNameCellProps {
 
 const OfferNameCell = ({ offer, editionOfferLink }: OfferNameCellProps) => {
   const { logEvent } = useAnalytics()
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   const onOfferNameClick = () => {
     const isDraft = offer.status === OFFER_STATUS_DRAFT
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OFFER_FORM_NAVIGATION_IN.OFFERS,
-      to: isDraft ? OfferBreadcrumbStep.DETAILS : OfferBreadcrumbStep.SUMMARY,
+      to: !isDraft
+        ? OfferBreadcrumbStep.SUMMARY
+        : isOfferFormV3
+        ? OFFER_WIZARD_STEP_IDS.INFORMATIONS
+        : OfferBreadcrumbStep.DETAILS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TITLE,
       isEdition: true,
       isDraft: isDraft,

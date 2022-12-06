@@ -79,7 +79,9 @@ const OfferSummary = ({
   const logEditEvent = () => {
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.SUMMARY,
-      to: OfferBreadcrumbStep.DETAILS,
+      to: isOfferFormV3
+        ? OFFER_WIZARD_STEP_IDS.INFORMATIONS
+        : OfferBreadcrumbStep.DETAILS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
       offerId: offer.id,
