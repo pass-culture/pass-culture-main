@@ -371,6 +371,10 @@ def update_collective_offer_educational_institution(
     if offer.collectiveStock and not offer.collectiveStock.isEditable:
         raise exceptions.CollectiveOfferNotEditable()
     offer.institutionId = educational_institution_id
+
+    if offer.institutionId is not None:
+        if not offer.institution.isActive:
+            raise exceptions.EducationalInstitutionIsNotActive()
     db.session.commit()
 
     search.async_index_collective_offer_ids([offer_id])
@@ -400,10 +404,13 @@ def create_collective_offer_public(
     educational_domains = educational_repository.get_educational_domains_from_ids(body.domains)
 
     if body.educational_institution_id:
-        if not educational_models.EducationalInstitution.query.filter_by(
+        institution = educational_models.EducationalInstitution.query.filter_by(
             id=body.educational_institution_id
-        ).one_or_none():
+        ).one_or_none()
+        if not institution:
             raise exceptions.EducationalInstitutionUnknown()
+        if not institution.isActive:
+            raise exceptions.EducationalInstitutionIsNotActive()
 
     if body.offer_venue.venueId:
         query = db.session.query(sa.func.count(offerers_models.Venue.id))
@@ -504,8 +511,11 @@ def edit_collective_offer_public(
                 raise exceptions.EducationalDomainsNotFound()
             offer.domains = domains
         elif key == "educationalInstitutionId":
-            if value:
-                if not educational_models.EducationalInstitution.query.filter_by(id=value).one_or_none():
+            if value is not None:
+                institution = educational_models.EducationalInstitution.query.filter_by(id=value).one_or_none()
+                if not institution.isActive:
+                    raise exceptions.EducationalInstitutionIsNotActive()
+                if not institution:
                     raise exceptions.EducationalInstitutionUnknown()
             offer.institutionId = value
         elif key == "offerVenue":

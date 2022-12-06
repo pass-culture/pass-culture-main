@@ -194,3 +194,18 @@ class Returns403Test:
         assert offer_db.institution == None
 
         assert len(adage_api_testing.adage_requests) == 0
+
+    def test_offer_institution_link_institution_not_active(self, client: Any) -> None:
+        # Given
+        institution = EducationalInstitutionFactory(isActive=False)
+        stock = CollectiveStockFactory()
+        offer = stock.collectiveOffer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
+
+        # When
+        client = client.with_session_auth("pro@example.com")
+        data = {"educationalInstitutionId": institution.id}
+        response = client.patch(f"/collective/offers/{humanize(offer.id)}/educational_institution", json=data)
+
+        # Then
+        assert response.status_code == 403

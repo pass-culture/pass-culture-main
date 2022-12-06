@@ -95,6 +95,10 @@ class EducationalInstitutionNotFound(Exception):
     pass
 
 
+class EducationalInstitutionIsNotActive(Exception):
+    pass
+
+
 class CollectiveOfferNotEditable(Exception):
     pass
 

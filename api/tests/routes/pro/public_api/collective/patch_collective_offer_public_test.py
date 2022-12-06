@@ -121,6 +121,7 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.collectiveStock.priceDetail == payload["educationalPriceDetail"]
 
         assert offer.institutionId == educational_institution.id
+        assert educational_institution.isActive == True
 
     def test_change_venue(self, client):
         # Given
@@ -182,6 +183,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
         assert offer.institutionId == educational_institution.id
+        assert educational_institution.isActive == True
 
     def test_patch_offer_invalid_domain(self, client):
         # Given
@@ -336,6 +338,62 @@ class CollectiveOffersPublicPatchOfferTest:
 
         # Then
         assert response.status_code == 400
+
+    def test_patch_offer_institution_not_active(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        domain = educational_factories.EducationalDomainFactory()
+        educational_institution = educational_factories.EducationalInstitutionFactory(isActive=False)
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__imageCredit="pouet",
+            collectiveOffer__imageCrop={"crop_data": 12},
+            collectiveOffer__venue=venue,
+        )
+
+        payload = {
+            "name": "Un nom en français ævœc des diàcrtîtïqués",
+            "description": "une description d'offre",
+            "subcategoryId": "EVENEMENT_CINE",
+            "venueId": venue2.id,
+            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
+            "contactEmail": "offerer-contact@example.com",
+            "contactPhone": "01 00 99 27.98",
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": True,
+            "domains": [domain.id],
+            "durationMinutes": 183,
+            "students": [educational_models.StudentLevels.COLLEGE4.name],
+            "offerVenue": {
+                "venueId": None,
+                "addressType": "school",
+                "otherAddress": None,
+            },
+            "interventionArea": ["44"],
+            "isActive": False,
+            "imageCredit": "a great artist",
+            # stock part
+            "beginningDatetime": "2022-09-25T11:00",
+            "bookingLimitDatetime": "2022-09-15T11:00",
+            "totalPrice": 216.25,
+            "numberOfTickets": 30,
+            "educationalPriceDetail": "Justification du prix",
+            # link to educational institution
+            "educationalInstitutionId": educational_institution.id,
+        }
+        # when
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+            )
+
+        # then
+        assert response.status_code == 403
 
     def test_add_valid_image(self, client):
         # Given

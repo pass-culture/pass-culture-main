@@ -371,6 +371,8 @@ def patch_collective_offers_educational_institution(
         )
     except educational_exceptions.EducationalInstitutionNotFound:
         raise ApiErrors({"educationalInstitution": ["Aucune institution trouvée à partir de cet id"]}, status_code=404)
+    except educational_exceptions.EducationalInstitutionIsNotActive:
+        raise ApiErrors({"educationalInstitution": ["l'institution n'est pas active"]}, status_code=403)
 
     except educational_exceptions.CollectiveOfferNotEditable:
         raise ApiErrors({"offer": ["L'offre n'est plus modifiable"]}, status_code=403)
