@@ -106,6 +106,7 @@ class PostProductTest:
         assert created_offer.isDuo is False
         assert created_offer.extraData == {
             "author": "Maurice",
+            "musicType": "501",
             "musicSubType": "511",
             "performer": "Pink Pâtisserie",
         }
@@ -522,4 +523,4 @@ class PostProductTest:
 
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
-        assert created_offer.extraData == {"showSubType": "1512"}
+        assert created_offer.extraData == {"showSubType": "1512", "showType": "1510"}

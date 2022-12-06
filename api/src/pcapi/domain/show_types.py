@@ -183,3 +183,5 @@ SHOW_SUB_TYPES_DICT = {
 SHOW_SUB_TYPES_BY_SLUG = {
     show_sub_type.slug: show_sub_type for show_type in show_types for show_sub_type in show_type.children
 }
+
+SHOW_TYPES_BY_SLUG = {show_sub_type.slug: show_type for show_type in show_types for show_sub_type in show_type.children}
