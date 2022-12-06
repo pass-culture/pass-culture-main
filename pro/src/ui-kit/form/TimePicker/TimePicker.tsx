@@ -9,7 +9,7 @@ import { BaseInput, FieldLayout } from '../shared'
 
 registerLocale('fr', fr)
 
-interface ITimePickerProps {
+export interface ITimePickerProps {
   name: string
   className?: string
   disabled?: boolean
@@ -69,6 +69,9 @@ const TimePicker = ({
         timeCaption="Horaire"
         timeFormat={FORMAT_HH_mm}
         timeIntervals={15}
+        onKeyDown={event => {
+          !/[0-9:]|Backspace|Tab/.test(event.key) && event.preventDefault()
+        }}
       />
     </FieldLayout>
   )

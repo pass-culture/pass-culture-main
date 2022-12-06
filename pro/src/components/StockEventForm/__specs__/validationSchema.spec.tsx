@@ -97,67 +97,27 @@ describe('StockEventForm:validationSchema', () => {
     }
   )
 
-  const dataSetPriceErrors = [
-    {
-      price: 'ABCD',
-      error: 'Doit être un nombre',
-    },
-    {
-      price: '-5',
-      error: 'Doit être positif',
-    },
-    {
-      price: '301',
-      error: 'Veuillez renseigner un prix inférieur à 300€',
-    },
-  ]
-  it.each(dataSetPriceErrors)(
-    'should display price error %s',
-    async ({ price, error }) => {
-      renderStockEventForm()
+  it('should display price error %s', async () => {
+    renderStockEventForm()
 
-      const inputPrice = screen.getByLabelText('Prix')
-      await userEvent.type(inputPrice, price)
-      await userEvent.tab()
-      const errorPrice = screen.queryByTestId('error-stocks[0]price')
-      expect(errorPrice).toBeInTheDocument()
-      expect(errorPrice).toHaveTextContent(error)
-    }
-  )
+    const inputPrice = screen.getByLabelText('Prix')
+    await userEvent.type(inputPrice, '301')
+    await userEvent.tab()
+    const errorPrice = screen.queryByTestId('error-stocks[0]price')
+    expect(errorPrice).toBeInTheDocument()
+    expect(errorPrice).toHaveTextContent(
+      'Veuillez renseigner un prix inférieur à 300€'
+    )
+  })
 
   const dataSetPrice = ['0', '100', '299']
   it.each(dataSetPrice)('should not display price error', async price => {
     renderStockEventForm()
-
     const inputPrice = screen.getByLabelText('Prix')
     await userEvent.type(inputPrice, price)
     await userEvent.tab()
     expect(screen.queryByTestId('error-stocks[0]price')).not.toBeInTheDocument()
   })
-
-  const dataSetQuantityErrors = [
-    {
-      quantity: 'ABCD',
-      error: 'Doit être un nombre',
-    },
-    {
-      quantity: '-5',
-      error: 'Doit être positif',
-    },
-  ]
-  it.each(dataSetQuantityErrors)(
-    'should display quantity error',
-    async ({ quantity, error }) => {
-      renderStockEventForm()
-
-      const inputQuantity = screen.getByLabelText('Quantité')
-      await userEvent.type(inputQuantity, quantity)
-      await userEvent.tab()
-      const errorquantity = screen.queryByTestId('error-stocks[0]quantity')
-      expect(errorquantity).toBeInTheDocument()
-      expect(errorquantity).toHaveTextContent(error)
-    }
-  )
 
   it('should display quantity error when min quantity is given', async () => {
     renderStockEventForm({
