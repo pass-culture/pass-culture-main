@@ -439,9 +439,12 @@ def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
     last_30_days_bookings_query = get_base_query_for_last_30_days_bookings().filter(
         offers_models.Offer.id.in_(offer_ids)
     )
-    last_30_days_bookings = {
-        row.offer_id: row.bookings_number for row in db.session.execute(last_30_days_bookings_query).all()
-    }
+    if FeatureToggle.ALGOLIA_BOOKINGS_NUMBER_COMPUTATION.is_active():
+        last_30_days_bookings = {
+            row.offer_id: row.bookings_number for row in db.session.execute(last_30_days_bookings_query).all()
+        }
+    else:
+        last_30_days_bookings = {}
 
     for offer in offers:
         if offer and offer.is_eligible_for_search:
