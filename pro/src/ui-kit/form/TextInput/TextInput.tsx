@@ -5,7 +5,7 @@ import { BaseInput, FieldLayout } from '../shared'
 
 import styles from './TextInput.module.scss'
 
-interface ITextInputProps
+export interface ITextInputProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   name: string
   className?: string
@@ -27,6 +27,7 @@ interface ITextInputProps
   step?: number | string
   inline?: boolean
   refForInput?: ForwardedRef<HTMLInputElement>
+  onlyNumbers?: boolean
 }
 
 const TextInput = ({
@@ -50,6 +51,7 @@ const TextInput = ({
   rightIcon,
   step,
   inline = false,
+  onlyNumbers = false,
   ...props
 }: ITextInputProps): JSX.Element => {
   const [field, meta] = useField({
@@ -94,6 +96,11 @@ const TextInput = ({
           rightButton={rightButton}
           ref={refForInput}
           rightIcon={rightIcon}
+          onKeyPress={event => {
+            if (onlyNumbers) {
+              !/[0-9]|Backspace/.test(event.key) && event.preventDefault()
+            }
+          }}
           {...field}
           {...props}
         />
