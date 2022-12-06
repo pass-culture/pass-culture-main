@@ -217,6 +217,11 @@ def post_collective_offer_public(
             },
             status_code=404,
         )
+    except educational_exceptions.EducationalInstitutionIsNotActive:
+        raise ApiErrors(
+            errors={"global": ["l'institution n'est pas active"]},
+            status_code=403,
+        )
 
     if image_as_bytes and body.image_credit is not None:
         educational_api_offer.attach_image(
@@ -420,6 +425,13 @@ def patch_collective_offer_public(
             offerer_id=current_api_key.offererId,  # type: ignore [attr-defined]
             new_values=new_values,
             offer=offer,
+        )
+    except educational_exceptions.EducationalInstitutionIsNotActive:
+        raise ApiErrors(
+            errors={
+                "global": ["cet institution est expiré."],
+            },
+            status_code=403,
         )
     except educational_exceptions.CulturalPartnerNotFoundException:
         raise ApiErrors(

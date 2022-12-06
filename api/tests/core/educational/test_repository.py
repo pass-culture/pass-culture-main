@@ -426,3 +426,16 @@ class FindByProUserTest:
         assert len(collective_bookings) == 2
         collective_bookings_ids = {booking.collectiveBookingId for booking in collective_bookings}
         assert {cayenne_booking.id, mayotte_booking.id} == collective_bookings_ids
+
+    def should_return_educational_institution_if_is_active(self, app):
+        # given
+        institution = [educational_factories.EducationalInstitutionFactory()]
+        institution2 = [educational_factories.EducationalInstitutionFactory(isActive=False)]
+        institution3 = [educational_factories.EducationalInstitutionFactory()]
+        total_active_institution = institution + institution3
+        total_institution = institution + institution2 + institution3
+        # when
+        total_educational_institution = educational_repository.find_all_educational_institution()
+        # then
+        assert total_educational_institution == total_active_institution
+        assert total_educational_institution != total_institution
