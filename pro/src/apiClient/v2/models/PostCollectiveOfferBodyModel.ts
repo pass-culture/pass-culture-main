@@ -14,11 +14,10 @@ export type PostCollectiveOfferBodyModel = {
   description: string;
   domains: Array<number>;
   durationMinutes?: number | null;
-  educationalInstitutionId?: number | null;
+  educationalInstitutionId: number;
   educationalPriceDetail?: string | null;
   imageCredit?: string | null;
   imageFile?: string | null;
-  interventionArea: Array<string>;
   isActive: boolean;
   mentalDisabilityCompliant?: boolean;
   motorDisabilityCompliant?: boolean;
