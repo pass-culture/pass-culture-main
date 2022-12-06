@@ -23,6 +23,7 @@ const getSingleValidationSchema = () => {
       .nullable()
       .required('Champ obligatoire')
       .when(['readOnlyFields'], (readOnlyFields, schema) => {
+        /* istanbul ignore next: DEBT, TO FIX */
         if (readOnlyFields.includes('beginningDate')) {
           return schema
         }
