@@ -174,14 +174,12 @@ show_types = [
     ),
 ]
 
-SHOW_TYPES_DICT = {show_type.code: show_type.label for show_type in show_types}
+SHOW_TYPES_LABEL_BY_CODE = {show_type.code: show_type.label for show_type in show_types}
+SHOW_TYPES_BY_SLUG = {show_sub_type.slug: show_type for show_type in show_types for show_sub_type in show_type.children}
 
-SHOW_SUB_TYPES_DICT = {
+SHOW_SUB_TYPES_LABEL_BY_CODE = {
     show_sub_type.code: show_sub_type.label for show_type in show_types for show_sub_type in show_type.children
 }
-
 SHOW_SUB_TYPES_BY_SLUG = {
     show_sub_type.slug: show_sub_type for show_type in show_types for show_sub_type in show_type.children
 }
-
-SHOW_TYPES_BY_SLUG = {show_sub_type.slug: show_type for show_type in show_types for show_sub_type in show_type.children}
