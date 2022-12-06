@@ -70,8 +70,10 @@ def _compute_extra_data(body: serialization.ProductOfferCreationBody) -> dict[st
         if field_value:
             if extra_data_field == "musicType":
                 extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[field_value].code)
+                extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[field_value].code)
             elif extra_data_field == "showType":
                 extra_data["showSubType"] = str(show_types.SHOW_SUB_TYPES_BY_SLUG[field_value].code)
+                extra_data["showType"] = str(show_types.SHOW_TYPES_BY_SLUG[field_value].code)
             else:
                 extra_data[extra_data_field] = field_value
 
