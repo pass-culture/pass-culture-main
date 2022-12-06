@@ -41,5 +41,5 @@ test('en étant sur la page de création d’une structure', async t => {
     .typeText(sirenInput, '000000000', { paste: true })
     .click(submitButton)
     .expect(sirenErrorInput.innerText)
-    .contains("Ce SIREN ou SIRET n'existe pas")
+    .contains('Le SIREN n’existe pas.')
 })
