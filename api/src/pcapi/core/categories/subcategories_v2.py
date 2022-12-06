@@ -4,8 +4,8 @@ from enum import Enum
 from pcapi.core.categories import categories
 from pcapi.domain.book_types import BOOK_MACRO_SECTIONS
 from pcapi.domain.movie_types import MOVIE_TYPES
-from pcapi.domain.music_types import MUSIC_TYPES_DICT
-from pcapi.domain.show_types import SHOW_TYPES_DICT
+from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
+from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
 
 
 class OnlineOfflinePlatformChoices(Enum):
@@ -126,10 +126,10 @@ class GenreType(Enum):
         return sorted(BOOK_MACRO_SECTIONS)
 
     def music_values(self) -> list[str]:
-        return sorted(MUSIC_TYPES_DICT.values())
+        return sorted(MUSIC_TYPES_LABEL_BY_CODE.values())
 
     def show_values(self) -> list[str]:
-        return sorted(SHOW_TYPES_DICT.values())
+        return sorted(SHOW_TYPES_LABEL_BY_CODE.values())
 
     def movie_values(self) -> list[str]:
         return sorted(MOVIE_TYPES)
