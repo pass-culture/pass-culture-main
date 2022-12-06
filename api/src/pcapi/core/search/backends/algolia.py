@@ -14,8 +14,8 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import base
-from pcapi.domain.music_types import MUSIC_TYPES_DICT
-from pcapi.domain.show_types import SHOW_TYPES_DICT
+from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
+from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
 import pcapi.utils.date as date_utils
 from pcapi.utils.stopwords import STOPWORDS
 
@@ -365,7 +365,7 @@ class AlgoliaBackend(base.SearchBackend):
         music_type = (extra_data.get("musicType") or "").strip()
         if music_type:
             try:
-                music_type_label = MUSIC_TYPES_DICT[int(music_type)]
+                music_type_label = MUSIC_TYPES_LABEL_BY_CODE[int(music_type)]
             except (ValueError, KeyError, TypeError):
                 logger.warning("bad music type encountered", extra={"offer": offer.id, "music_type": music_type})
 
@@ -373,7 +373,7 @@ class AlgoliaBackend(base.SearchBackend):
         show_type = (extra_data.get("showType") or "").strip()
         if show_type:
             try:
-                show_type_label = SHOW_TYPES_DICT[int(show_type)]
+                show_type_label = SHOW_TYPES_LABEL_BY_CODE[int(show_type)]
             except (ValueError, KeyError, TypeError):
                 logger.warning("bad show type encountered", extra={"offer": offer.id, "show_type": show_type})
 

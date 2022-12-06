@@ -16,10 +16,10 @@ from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import ReasonMeta
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import ExpenseDomain
-from pcapi.domain.music_types import MUSIC_SUB_TYPES_DICT
-from pcapi.domain.music_types import MUSIC_TYPES_DICT
-from pcapi.domain.show_types import SHOW_SUB_TYPES_DICT
-from pcapi.domain.show_types import SHOW_TYPES_DICT
+from pcapi.domain.music_types import MUSIC_SUB_TYPES_LABEL_BY_CODE
+from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
+from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
+from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.serialization import BaseModel
@@ -137,16 +137,16 @@ class OfferExtraData(BaseModel):
     visa: str | None
 
     _convert_music_sub_type = validator("musicSubType", pre=True, allow_reuse=True)(
-        get_id_converter(MUSIC_SUB_TYPES_DICT, "musicSubType")
+        get_id_converter(MUSIC_SUB_TYPES_LABEL_BY_CODE, "musicSubType")
     )
     _convert_music_type = validator("musicType", pre=True, allow_reuse=True)(
-        get_id_converter(MUSIC_TYPES_DICT, "musicType")
+        get_id_converter(MUSIC_TYPES_LABEL_BY_CODE, "musicType")
     )
     _convert_show_sub_type = validator("showSubType", pre=True, allow_reuse=True)(
-        get_id_converter(SHOW_SUB_TYPES_DICT, "showSubType")
+        get_id_converter(SHOW_SUB_TYPES_LABEL_BY_CODE, "showSubType")
     )
     _convert_show_type = validator("showType", pre=True, allow_reuse=True)(
-        get_id_converter(SHOW_TYPES_DICT, "showType")
+        get_id_converter(SHOW_TYPES_LABEL_BY_CODE, "showType")
     )
 
 
