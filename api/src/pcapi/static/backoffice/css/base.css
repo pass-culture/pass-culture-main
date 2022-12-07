@@ -19,3 +19,7 @@ select.dropdown-menu option.dropdown-item:checked {
     background-color: rgb(var(--bs-primary-rgb));
     color: white;
 }
+
+a.hover-text-underline:hover {
+    text-decoration: underline !important;
+}

@@ -7,6 +7,7 @@ from flask import Flask
 import pytz
 
 from pcapi.core.users import models as users_models
+from pcapi.utils import urls
 
 
 PARIS_TZ = pytz.timezone("Europe/Paris")
@@ -102,3 +103,5 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_bool"] = format_bool
     app.jinja_env.filters["format_string_list"] = format_string_list
     app.jinja_env.filters["parse_referrer"] = parse_referrer
+    app.jinja_env.filters["pc_pro_offerer_link"] = urls.build_pc_pro_offerer_link
+    app.jinja_env.filters["pc_pro_venue_link"] = urls.build_pc_pro_venue_link
