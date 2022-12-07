@@ -142,9 +142,11 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: ${{ env.tests_docker_image }}
+          shell: bash
           run: |
-            LINE_COUNT=$(wc -l \<<< "$(alembic heads)")
-            if [${LINE_COUNT} -ne 2 ]; then echo "There must be two heads";exit 1;fi
+            LINE_COUNT=$(wc -l <<< "$(alembic heads)")
+            echo "Found "$LINE_COUNT" head(s)"
+            if [ ${LINE_COUNT} -ne 2 ]; then echo "There must be two heads";exit 1;fi
       - name: Check database and model are aligned
         uses: addnab/docker-run-action@v3
         with:

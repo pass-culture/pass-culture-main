@@ -379,7 +379,8 @@ jobs:
           name: Check for alembic multiple heads
           command: |
             LINE_COUNT=$(wc -l \<<< "$(alembic heads)")
-            if [${LINE_COUNT} -ne 2 ]; then echo "There must be two heads";exit 1;fi
+            echo "Found "$LINE_COUNT" head(s)"
+            if [ ${LINE_COUNT} -ne 2 ]; then echo "There must be two heads";exit 1;fi
           working_directory: /usr/src/app
       - run:
           name: Check database and model are aligned
