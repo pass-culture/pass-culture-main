@@ -208,7 +208,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         "CollectiveOfferTemplate", back_populates="venue"
     )
 
-    venueTypeCode = Column(sa.Enum(VenueTypeCode, create_constraint=False), nullable=True, default=VenueTypeCode.OTHER)
+    venueTypeCode: VenueTypeCode = Column(
+        sa.Enum(VenueTypeCode, create_constraint=False), nullable=False, default=VenueTypeCode.OTHER
+    )
 
     venueLabelId = Column(Integer, ForeignKey("venue_label.id"), nullable=True)
 

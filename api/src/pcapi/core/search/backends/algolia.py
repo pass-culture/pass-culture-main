@@ -476,8 +476,7 @@ class AlgoliaBackend(base.SearchBackend):
             "city": venue.city,
             "name": venue.publicName or venue.name,
             "offerer_name": venue.managingOfferer.name,
-            # FIXME (dbaty, 2022-07-13): remove "type: ignore" once column has been set to NOT NULL
-            "venue_type": venue.venueTypeCode.name,  # type: ignore [union-attr]
+            "venue_type": venue.venueTypeCode.name,
             "description": venue.description,
             "audio_disability": venue.audioDisabilityCompliant,
             "mental_disability": venue.mentalDisabilityCompliant,

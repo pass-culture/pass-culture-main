@@ -69,7 +69,7 @@ def _format_venue_provider(view: BaseAdminView, context: Context, model: Venue, 
 
 
 def _format_venue_type_code(view: BaseAdminView, context: Context, model: Venue, name: str) -> Markup:
-    return Markup("<span>{text}</span>").format(text=model.venueTypeCode.value if model.venueTypeCode else "")
+    return Markup("<span>{text}</span>").format(text=model.venueTypeCode.value)
 
 
 def _format_venue_name(view: BaseAdminView, context: Context, model: Venue, name: str) -> Markup:
