@@ -39,3 +39,5 @@ if __name__ == "__main__":
 
     set_tag("pcapi.app_type", "app")
     app.run(host="0.0.0.0", port=port, debug=True, use_reloader=True)
+
+    # welp
