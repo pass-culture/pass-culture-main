@@ -1,6 +1,8 @@
+import datetime
 import typing
 
 import pydantic
+import pytz
 import typing_extensions
 
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -124,14 +126,30 @@ else:
 
 
 class StockBody(serialization.BaseModel):
+    booking_limit_datetime: datetime.datetime | None = pydantic.Field(
+        None,
+        description="The timezone aware datetime after which the offer can no longer be booked",
+        example="2023-01-01T00:00:00+01:00",
+    )
     price: pydantic.StrictInt = pydantic.Field(..., description="The offer price in euro cents", example=1000)
     quantity: pydantic.PositiveInt | typing.Literal["unlimited"]
+
+    @pydantic.validator("booking_limit_datetime")
+    def check_booking_limit_timezone(cls, value: datetime.datetime) -> datetime.datetime | None:
+        if not value:
+            return None
+        if value.tzinfo is None:
+            raise ValueError("The value must be a timezone-aware datetime or null")
+        return value.astimezone(pytz.utc).replace(tzinfo=None)
 
     @pydantic.validator("price")
     def price_must_be_positive(cls, value: int) -> int:
         if value < 0:
             raise ValueError("The value must be positive")
         return value
+
+    class Config:
+        alias_generator = to_camel
 
 
 class ProductOfferCreationBody(OfferCreationBase):

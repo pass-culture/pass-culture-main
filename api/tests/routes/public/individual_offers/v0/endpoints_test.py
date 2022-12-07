@@ -1,4 +1,5 @@
 import base64
+import datetime
 import decimal
 import pathlib
 from unittest import mock
@@ -86,6 +87,7 @@ class PostProductTest:
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "stock": {
+                    "bookingLimitDatetime": "2022-01-01T00:00:00+04:00",
                     "price": 1234,
                     "quantity": 3,
                 },
@@ -115,6 +117,7 @@ class PostProductTest:
         assert created_stock.price == decimal.Decimal("12.34")
         assert created_stock.quantity == 3
         assert created_stock.offer == created_offer
+        assert created_stock.bookingLimitDatetime == datetime.datetime(2021, 12, 31, 20, 0, 0)
 
         created_mediation = offers_models.Mediation.query.one()
         assert created_mediation.offer == created_offer
@@ -479,3 +482,25 @@ class PostProductTest:
 
         assert offers_models.Offer.query.first() is None
         assert offers_models.Stock.query.first() is None
+
+    @pytest.mark.usefixtures("db_session")
+    def test_stock_booking_limit_without_timezone(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products",
+            json={
+                "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "stock": {"bookingLimitDatetime": "2021-01-01T00:00:00", "price": 10, "quantity": 10},
+            },
+        )
+
+        assert response.status_code == 400
+
+        assert response.json == {
+            "stock.bookingLimitDatetime": ["The value must be a timezone-aware datetime or null"],
+        }
