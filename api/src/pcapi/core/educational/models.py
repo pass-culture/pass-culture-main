@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 import enum
+import random
 import typing
 
 import sqlalchemy as sa
@@ -89,6 +90,7 @@ class HasImageMixin:
     FOLDER = settings.THUMBS_FOLDER_NAME
 
     id: sa.orm.Mapped[int]
+    imageId = sa.Column(sa.Text, nullable=True)
     imageCrop: dict | None = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True)
     imageCredit = sa.Column(sa.Text, nullable=True)
     # Whether or not we also stored the original image in the storage bucket.
@@ -96,17 +98,30 @@ class HasImageMixin:
 
     @sa.ext.hybrid.hybrid_property
     def hasImage(self) -> bool:
-        return self.imageCrop is not None
+        return self.imageId is not None
 
     @hasImage.expression  # type: ignore[no-redef]
     def hasImage(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.imageCrop != None
+        return cls.imageId != None
 
     def _get_image_storage_id(self, original: bool = False) -> str:
         original_suffix = "_original" if original else ""
         if self.id is None:
             raise ValueError("Trying to get image_storage_id for an unsaved object")
-        return f"{type(self).__name__.lower()}/{self.id}{original_suffix}.jpg"
+        return f"{type(self).__name__.lower()}/{self.imageId}{original_suffix}.jpg"
+
+    def _generate_new_image_id(self, old_id: str | None) -> str:
+        """Generate a unique id for the image. The generated id is a string like:
+        "xxxxxxxxxxyyyyyyy" where "xxxxxxxxxx" part is the 10 digit, zero paded, object id and the "yyyyyyy" part is a
+        7 digit random number.
+
+        The object id part is there to simplify imageId collision avoidance.
+        The method avoid collision on random number.
+        """
+        new_id = old_id
+        while new_id == old_id:
+            new_id = str(self.id).zfill(10) + str(random.randrange(1_000_000, 10_000_000))
+        return typing.cast(str, new_id)
 
     @property
     def imageUrl(self) -> str | None:
@@ -129,9 +144,12 @@ class HasImageMixin:
         ratio: ImageRatio = ImageRatio.PORTRAIT,
         keep_original: bool = False,
     ) -> None:
+        old_id = self.imageId
         if self.hasImage:  # pylint: disable=using-constant-test
             self.delete_image()
-        self.imageCrop = crop_params.__dict__
+
+        self.imageId = self._generate_new_image_id(old_id)
+        self.imageCrop = crop_params.__dict__ if keep_original else None
         self.imageCredit = credit
         self.imageHasOriginal = keep_original
 
@@ -162,6 +180,7 @@ class HasImageMixin:
         self.imageCrop = None
         self.imageCredit = None
         self.imageHasOriginal = None
+        self.imageId = None
 
 
 class CollectiveOffer(

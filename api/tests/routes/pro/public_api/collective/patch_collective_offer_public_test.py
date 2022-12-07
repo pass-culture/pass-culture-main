@@ -43,7 +43,7 @@ class CollectiveOffersPublicPatchOfferTest:
         educational_institution = educational_factories.EducationalInstitutionFactory()
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__imageCredit="pouet",
-            collectiveOffer__imageCrop={"crop_data": 12},
+            collectiveOffer__imageId="123456789",
             collectiveOffer__venue=venue,
         )
 
