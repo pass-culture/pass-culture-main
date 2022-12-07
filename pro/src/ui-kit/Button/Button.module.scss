@@ -173,7 +173,7 @@
     background-color: colors.$white;
     justify-content: flex-start;
     width: 100%;
-    padding: rem.torem(12px) rem.torem(4px) rem.torem(12px) rem.torem(8px);
+    padding: rem.torem(12px) rem.torem(8px);
     border: rem.torem(1px) solid colors.$grey-dark;
     border-radius: rem.torem(6px);
     height: rem.torem(44px);
@@ -188,7 +188,6 @@
       outline: 0;
       position: relative;
       border-color: colors.$black;
-      background-color: #E5E5E5;
 
       &::before {
         display: block;
