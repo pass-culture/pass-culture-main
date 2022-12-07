@@ -240,7 +240,7 @@ class VenueContactFactory(BaseFactory):
 
     venue = factory.SubFactory(VenueFactory)
     email = "contact@venue.com"
-    website = "https://my@website.com"
+    website = "https://my.website.com"
     phone_number = "+33102030405"
     social_medias = {"instagram": "http://instagram.com/@venue"}
 
