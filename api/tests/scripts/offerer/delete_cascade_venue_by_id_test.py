@@ -19,6 +19,7 @@ from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers.models import AllocinePivot
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
@@ -248,6 +249,8 @@ def test_delete_cascade_venue_should_remove_synchronization_to_allocine_provider
     venue_to_delete = offerers_factories.VenueFactory()
     providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue_to_delete)
     providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue)
+    providers_factories.AllocinePivotFactory(venue=venue_to_delete)
+    providers_factories.AllocinePivotFactory(venue=venue, theaterId="ABCDEFGHIJKLMNOPQR==", internalId="PABCDE")
 
     # When
     delete_cascade_venue_by_id(venue_to_delete.id)
@@ -257,4 +260,5 @@ def test_delete_cascade_venue_should_remove_synchronization_to_allocine_provider
     assert VenueProvider.query.count() == 1
     assert AllocineVenueProvider.query.count() == 1
     assert AllocineVenueProviderPriceRule.query.count() == 1
+    assert AllocinePivot.query.count() == 1
     assert Provider.query.count() > 0

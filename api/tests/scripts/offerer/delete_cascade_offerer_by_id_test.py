@@ -21,6 +21,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers.models import AllocinePivot
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
@@ -308,10 +309,12 @@ def test_delete_cascade_offerer_should_remove_venue_synchronization_to_provider(
 def test_delete_cascade_offerer_should_remove_venue_synchronization_to_allocine_provider():
     # Given
     offerer_to_delete = offerers_factories.OffererFactory()
-    providers_factories.AllocineVenueProviderPriceRuleFactory(
-        allocineVenueProvider__venue__managingOfferer=offerer_to_delete
-    )
-    providers_factories.AllocineVenueProviderPriceRuleFactory()
+    venue_to_delete = offerers_factories.VenueFactory(managingOfferer=offerer_to_delete)
+    other_venue = offerers_factories.VenueFactory()
+    providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue_to_delete)
+    providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=other_venue)
+    providers_factories.AllocinePivotFactory(venue=venue_to_delete)
+    providers_factories.AllocinePivotFactory(venue=other_venue, theaterId="ABCDEFGHIJKLMNOPQR==", internalId="PABCDE")
 
     # When
     delete_cascade_offerer_by_id(offerer_to_delete.id)
@@ -322,4 +325,5 @@ def test_delete_cascade_offerer_should_remove_venue_synchronization_to_allocine_
     assert VenueProvider.query.count() == 1
     assert AllocineVenueProvider.query.count() == 1
     assert AllocineVenueProviderPriceRule.query.count() == 1
+    assert AllocinePivot.query.count() == 1
     assert Provider.query.count() > 0
