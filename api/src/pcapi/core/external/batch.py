@@ -41,7 +41,12 @@ def format_user_attributes(user_attributes: attributes_models.UserAttributes) ->
         "u.marketing_push_subscription": user_attributes.marketing_push_subscription,
         "u.postal_code": user_attributes.postal_code,
         "ut.roles": user_attributes.roles if user_attributes.roles else None,
+        "u.booking_count": user_attributes.booking_count,
+        "u.booking_venues_count": user_attributes.booking_venues_count,
+        "u.booked_offer_categories_count": len(user_attributes.booking_categories),
         "u.most_booked_subcategory": user_attributes.most_booked_subcategory,
+        "u.most_booked_movie_genre": user_attributes.most_booked_movie_genre,
+        "u.most_booked_music_type": user_attributes.most_booked_music_type,
     }
 
     for product_use_date_key, product_use_date_value in user_attributes.products_use_date.items():

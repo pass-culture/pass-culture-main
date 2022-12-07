@@ -1,11 +1,14 @@
 from collections import defaultdict
 from datetime import datetime
+from decimal import Decimal
+from operator import attrgetter
 from typing import List
 
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
+from pcapi.core.categories import categories
 from pcapi.core.external.attributes import models
 from pcapi.core.external.batch import update_user_attributes as update_batch_user
 from pcapi.core.external.sendinblue import update_contact_attributes as update_sendinblue_user
@@ -166,6 +169,9 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     )
     domains_credit = get_domains_credit(user, user_bookings) if not is_pro_user else None
     bookings_attributes = get_bookings_categories_and_subcategories(user_bookings)
+    booking_venues_count = len({booking.venueId for booking in user_bookings})
+
+    amount_spent_2022, first_booked_offer_2022, last_booked_offer_2022 = get_booking_attributes_2022(user_bookings)
 
     # Call only once to limit to one get_wallet_balance query
     has_remaining_credit = user.has_remaining_credit
@@ -180,6 +186,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         booking_categories=bookings_attributes.booking_categories,
         booking_count=len(user_bookings),
         booking_subcategories=bookings_attributes.booking_subcategories,
+        booking_venues_count=booking_venues_count,
         city=user.city,
         date_created=user.dateCreated,
         date_of_birth=user_birth_date,  # type: ignore [arg-type]
@@ -206,6 +213,8 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         marketing_email_subscription=user.get_notification_subscriptions().marketing_email,
         marketing_push_subscription=user.get_notification_subscriptions().marketing_push,
         most_booked_subcategory=bookings_attributes.most_booked_subcategory,
+        most_booked_movie_genre=bookings_attributes.most_booked_movie_genre,
+        most_booked_music_type=bookings_attributes.most_booked_music_type,
         phone_number=user.phoneNumber,  # type: ignore [arg-type]
         postal_code=user.postalCode,
         products_use_date={
@@ -216,7 +225,26 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         roles=[role.value for role in user.roles],
         suspension_date=user.suspension_date,
         suspension_reason=user.suspension_reason,
+        amount_spent_2022=amount_spent_2022,
+        first_booked_offer_2022=first_booked_offer_2022,
+        last_booked_offer_2022=last_booked_offer_2022,
     )
+
+
+def _get_most_booked(grouped_bookings: defaultdict[str, list[bookings_models.Booking]]) -> str | None:
+    """
+    Most booked group (category, subcategory, genre, musicType) is:
+    - the group in which the user has the highest number of bookings,
+    - in case of several most booked groups with the same length, the one with the highest credit spent by the user
+    """
+    if not grouped_bookings:
+        return None
+
+    return sorted(
+        grouped_bookings.items(),
+        key=lambda kv: (len(kv[1]), sum(booking.amount * booking.quantity for booking in kv[1])),
+        reverse=True,
+    )[0][0]
 
 
 def get_bookings_categories_and_subcategories(
@@ -226,34 +254,70 @@ def get_bookings_categories_and_subcategories(
     Returns a tuple of three values:
     - the list of all distinct categories in user bookings (not canceled)
     - the list of all distinct subcategories in user bookings (not canceled)
-    - the single most booked subcategory in user bookings:
-       * category in which the user has the highest number of bookings
-       * in case of several most booked subcategories, the one with the highest credit spent by the user
+    - the single most booked subcategory in user bookings
+    - the single most booked movie genre when most booked category is 'CINEMA'
+    - the single most booked musicType when most booked category is about music
     """
-    booking_categories = set()
+    bookings_by_categories = defaultdict(list)
     bookings_by_subcategories = defaultdict(list)
     for booking in user_bookings:
         if booking.status != bookings_models.BookingStatus.CANCELLED:
-            booking_categories.add(booking.stock.offer.subcategory.category.id)
+            bookings_by_categories[booking.stock.offer.subcategory.category.id].append(booking)
             bookings_by_subcategories[booking.stock.offer.subcategoryId].append(booking)
 
-    sorted_subcategories_items = sorted(
-        bookings_by_subcategories.items(),
-        key=lambda key_value: (
-            len(key_value[1]),
-            sum(booking_.stock.price for booking_ in key_value[1]),
-        ),
-        reverse=True,
+    most_booked_category = _get_most_booked(bookings_by_categories)
+    most_booked_subcategory = _get_most_booked(bookings_by_subcategories)
+
+    most_booked_movie_genre = None
+    if most_booked_category == categories.CINEMA.id:
+        cinema_bookings_by_genre = defaultdict(list)
+        for booking in bookings_by_categories[categories.CINEMA.id]:
+            if extra_data := booking.stock.offer.extraData:
+                for genre in extra_data.get("genres") or []:
+                    cinema_bookings_by_genre[genre].append(booking)
+        most_booked_movie_genre = _get_most_booked(cinema_bookings_by_genre)
+
+    most_booked_music_type = None
+    music_categories = (categories.MUSIQUE_ENREGISTREE.id, categories.MUSIQUE_LIVE.id)
+    if most_booked_category in music_categories:
+        music_bookings_by_type = defaultdict(list)
+        for category in music_categories:
+            for booking in bookings_by_categories[category]:
+                if extra_data := booking.stock.offer.extraData:
+                    if music_type := extra_data.get("musicType"):
+                        music_bookings_by_type[music_type].append(booking)
+        most_booked_music_type = _get_most_booked(music_bookings_by_type)
+
+    return models.BookingsAttributes(
+        # sorted alphabetically to be deterministic and avoid useless changes in external data
+        booking_categories=sorted(bookings_by_categories.keys()),
+        booking_subcategories=sorted(bookings_by_subcategories.keys()),
+        most_booked_subcategory=most_booked_subcategory,
+        most_booked_movie_genre=most_booked_movie_genre,
+        most_booked_music_type=most_booked_music_type,
     )
 
-    booking_subcategories_ids = [subcategory[0] for subcategory in sorted_subcategories_items]
-    booking_categories_ids = list(booking_categories)
-    most_booked_subcategory = sorted_subcategories_items[0][0] if sorted_subcategories_items else None
-    return models.BookingsAttributes(
-        booking_categories=booking_categories_ids,
-        booking_subcategories=booking_subcategories_ids,
-        most_booked_subcategory=most_booked_subcategory,
+
+# Specific for "Retro" campaign in December 2022 - may become deprecated in 2023
+def get_booking_attributes_2022(
+    user_bookings: list[bookings_models.Booking],
+) -> tuple[Decimal, str | None, str | None]:
+    bookings_2022 = sorted(
+        filter(
+            lambda booking: booking.dateCreated.year == 2022 and not booking.is_cancelled,
+            user_bookings,
+        ),
+        key=attrgetter("dateCreated"),
     )
+
+    if not bookings_2022:
+        return Decimal("0.00"), None, None
+
+    amount_spent: Decimal = sum(booking.amount for booking in bookings_2022)  # type: ignore [assignment]
+    first_booked_offer: str = bookings_2022[0].stock.offer.name
+    last_booked_offer: str = bookings_2022[-1].stock.offer.name
+
+    return amount_spent, first_booked_offer, last_booked_offer
 
 
 def get_user_bookings(user: users_models.User) -> List[bookings_models.Booking]:
@@ -267,8 +331,13 @@ def get_user_bookings(user: users_models.User) -> List[bookings_models.Booking]:
         .options(
             joinedload(bookings_models.Booking.stock)
             .joinedload(offers_models.Stock.offer)
-            .load_only(offers_models.Offer.url, offers_models.Offer.productId, offers_models.Offer.subcategoryId)
-            .joinedload(offers_models.Offer.venue)
+            .load_only(
+                offers_models.Offer.url,
+                offers_models.Offer.productId,
+                offers_models.Offer.subcategoryId,
+                offers_models.Offer.name,
+                offers_models.Offer.extraData,
+            )
         )
         .filter(
             bookings_models.IndividualBooking.userId == user.id,
