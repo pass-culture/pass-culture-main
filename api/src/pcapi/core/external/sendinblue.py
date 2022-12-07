@@ -33,8 +33,10 @@ class SendinblueUserUpdateData:
 
 class SendinblueAttributes(Enum):
     BOOKED_OFFER_CATEGORIES = "BOOKED_OFFER_CATEGORIES"
+    BOOKED_OFFER_CATEGORIES_COUNT = "BOOKED_OFFER_CATEGORIES_COUNT"
     BOOKED_OFFER_SUBCATEGORIES = "BOOKED_OFFER_SUBCATEGORIES"
     BOOKING_COUNT = "BOOKING_COUNT"
+    BOOKING_VENUES_COUNT = "BOOKING_VENUES_COUNT"
     CREDIT = "CREDIT"
     DATE_CREATED = "DATE_CREATED"
     DATE_OF_BIRTH = "DATE_OF_BIRTH"
@@ -67,6 +69,8 @@ class SendinblueAttributes(Enum):
     LASTNAME = "LASTNAME"
     MARKETING_EMAIL_SUBSCRIPTION = "MARKETING_EMAIL_SUBSCRIPTION"
     MOST_BOOKED_OFFER_SUBCATEGORY = "MOST_BOOKED_OFFER_SUBCATEGORY"
+    MOST_BOOKED_MOVIE_GENRE = "MOST_BOOKED_MOVIE_GENRE"
+    MOST_BOOKED_MUSIC_TYPE = "MOST_BOOKED_MUSIC_TYPE"
     OFFERER_NAME = "OFFERER_NAME"
     POSTAL_CODE = "POSTAL_CODE"
     PRODUCT_BRUT_X_USE_DATE = "PRODUCT_BRUT_X_USE_DATE"
@@ -78,6 +82,9 @@ class SendinblueAttributes(Enum):
     VENUE_NAME = "VENUE_NAME"
     VENUE_TYPE = "VENUE_TYPE"
     IS_EAC = "IS_EAC"
+    AMOUNT_SPENT_2022 = "AMOUNT_SPENT_2022"
+    FIRST_BOOKED_OFFER_2022 = "FIRST_BOOKED_OFFER_2022"
+    LAST_BOOKED_OFFER_2022 = "LAST_BOOKED_OFFER_2022"
 
     @classmethod
     def list(cls):  # type: ignore [no-untyped-def]
@@ -132,10 +139,12 @@ def _get_attr(
 def format_user_attributes(attributes: attributes_models.UserAttributes | attributes_models.ProAttributes) -> dict:
     return {
         SendinblueAttributes.BOOKED_OFFER_CATEGORIES.value: _get_attr(attributes, "booking_categories", format_list),
+        SendinblueAttributes.BOOKED_OFFER_CATEGORIES_COUNT.value: _get_attr(attributes, "booking_categories", len),
         SendinblueAttributes.BOOKED_OFFER_SUBCATEGORIES.value: _get_attr(
             attributes, "booking_subcategories", format_list
         ),
         SendinblueAttributes.BOOKING_COUNT.value: _get_attr(attributes, "booking_count"),
+        SendinblueAttributes.BOOKING_VENUES_COUNT.value: _get_attr(attributes, "booking_venues_count"),
         SendinblueAttributes.CREDIT.value: _get_attr(attributes, "domains_credit", lambda v: v.all.remaining),
         SendinblueAttributes.DATE_CREATED.value: _get_attr(attributes, "date_created"),
         SendinblueAttributes.DATE_OF_BIRTH.value: _get_attr(attributes, "date_of_birth"),
@@ -172,6 +181,8 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.LASTNAME.value: _get_attr(attributes, "last_name"),
         SendinblueAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: _get_attr(attributes, "marketing_email_subscription"),
         SendinblueAttributes.MOST_BOOKED_OFFER_SUBCATEGORY.value: _get_attr(attributes, "most_booked_subcategory"),
+        SendinblueAttributes.MOST_BOOKED_MOVIE_GENRE.value: _get_attr(attributes, "most_booked_movie_genre"),
+        SendinblueAttributes.MOST_BOOKED_MUSIC_TYPE.value: _get_attr(attributes, "most_booked_music_type"),
         SendinblueAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerers_names", format_list),
         SendinblueAttributes.POSTAL_CODE.value: _get_attr(attributes, "postal_code", format_list_or_str),
         SendinblueAttributes.PRODUCT_BRUT_X_USE_DATE.value: _get_attr(
@@ -185,6 +196,9 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.VENUE_NAME.value: _get_attr(attributes, "venues_names", format_list),
         SendinblueAttributes.VENUE_TYPE.value: _get_attr(attributes, "venues_types", format_list),
         SendinblueAttributes.IS_EAC.value: _get_attr(attributes, "is_eac"),
+        SendinblueAttributes.AMOUNT_SPENT_2022.value: _get_attr(attributes, "amount_spent_2022"),
+        SendinblueAttributes.FIRST_BOOKED_OFFER_2022.value: _get_attr(attributes, "first_booked_offer_2022"),
+        SendinblueAttributes.LAST_BOOKED_OFFER_2022.value: _get_attr(attributes, "last_booked_offer_2022"),
     }
 
 

@@ -34,8 +34,10 @@ class FormatUserAttributesTest:
 
         assert formatted_attributes == {
             "BOOKED_OFFER_CATEGORIES": "CINEMA,LIVRE",
+            "BOOKED_OFFER_CATEGORIES_COUNT": 2,
             "BOOKED_OFFER_SUBCATEGORIES": "ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR",
             "BOOKING_COUNT": 4,
+            "BOOKING_VENUES_COUNT": 3,
             "DATE_CREATED": datetime(2021, 2, 6),
             "DATE_OF_BIRTH": datetime(2003, 5, 6),
             "DEPARTMENT_CODE": "12",
@@ -60,6 +62,8 @@ class FormatUserAttributesTest:
             "LASTNAME": "Last name",
             "MARKETING_EMAIL_SUBSCRIPTION": True,
             "MOST_BOOKED_OFFER_SUBCATEGORY": "CINE_PLEIN_AIR",
+            "MOST_BOOKED_MOVIE_GENRE": "COMEDY",
+            "MOST_BOOKED_MUSIC_TYPE": "900",
             "POSTAL_CODE": None,
             "PRODUCT_BRUT_X_USE_DATE": datetime(2021, 5, 6),
             "USER_ID": 1,
@@ -79,6 +83,9 @@ class FormatUserAttributesTest:
             "VENUE_NAME": None,
             "VENUE_TYPE": None,
             "IS_EAC": None,
+            "AMOUNT_SPENT_2022": 20.0,
+            "FIRST_BOOKED_OFFER_2022": "Première réservation",
+            "LAST_BOOKED_OFFER_2022": "Dernière réservation",
         }
 
     def test_format_pro_attributes(self):
@@ -86,8 +93,10 @@ class FormatUserAttributesTest:
 
         assert formatted_attributes == {
             "BOOKED_OFFER_CATEGORIES": None,
+            "BOOKED_OFFER_CATEGORIES_COUNT": None,
             "BOOKED_OFFER_SUBCATEGORIES": None,
             "BOOKING_COUNT": None,
+            "BOOKING_VENUES_COUNT": None,
             "DATE_CREATED": None,
             "DATE_OF_BIRTH": None,
             "DEPARTMENT_CODE": "04,06",
@@ -112,6 +121,8 @@ class FormatUserAttributesTest:
             "LASTNAME": "Last name",
             "MARKETING_EMAIL_SUBSCRIPTION": True,
             "MOST_BOOKED_OFFER_SUBCATEGORY": None,
+            "MOST_BOOKED_MOVIE_GENRE": None,
+            "MOST_BOOKED_MUSIC_TYPE": None,
             "POSTAL_CODE": "04000,06400",
             "PRODUCT_BRUT_X_USE_DATE": None,
             "USER_ID": 2,
@@ -131,6 +142,9 @@ class FormatUserAttributesTest:
             "VENUE_NAME": "Venue Name 1,Venue Name 2",
             "VENUE_TYPE": "BOOKSTORE,MOVIE",
             "IS_EAC": False,
+            "AMOUNT_SPENT_2022": None,
+            "FIRST_BOOKED_OFFER_2022": None,
+            "LAST_BOOKED_OFFER_2022": None,
         }
 
 
@@ -157,10 +171,10 @@ class BulkImportUsersDataTest:
             ),
         ]
 
-        self.expected_header = "BOOKED_OFFER_CATEGORIES;BOOKED_OFFER_SUBCATEGORIES;BOOKING_COUNT;CREDIT;DATE_CREATED;DATE_OF_BIRTH;DEPARTMENT_CODE;DEPOSIT_ACTIVATION_DATE;DEPOSIT_EXPIRATION_DATE;DMS_APPLICATION_APPROVED;DMS_APPLICATION_SUBMITTED;ELIGIBILITY;FIRSTNAME;HAS_BOOKINGS;HAS_COMPLETED_ID_CHECK;HAS_OFFERS;INITIAL_CREDIT;IS_BENEFICIARY;IS_BENEFICIARY_18;IS_BOOKING_EMAIL;IS_CURRENT_BENEFICIARY;IS_EAC;IS_ELIGIBLE;IS_EMAIL_VALIDATED;IS_FORMER_BENEFICIARY;IS_PERMANENT;IS_PRO;IS_UNDERAGE_BENEFICIARY;IS_USER_EMAIL;IS_VIRTUAL;LASTNAME;LAST_BOOKING_DATE;LAST_FAVORITE_CREATION_DATE;LAST_VISIT_DATE;MARKETING_EMAIL_SUBSCRIPTION;MOST_BOOKED_OFFER_SUBCATEGORY;OFFERER_NAME;POSTAL_CODE;PRODUCT_BRUT_X_USE_DATE;USER_ID;USER_IS_ATTACHED;USER_IS_CREATOR;VENUE_COUNT;VENUE_LABEL;VENUE_NAME;VENUE_TYPE;EMAIL"
-        self.eren_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;;Yes;;500;Yes;Yes;;Yes;;Yes;Yes;No;;No;No;;;Last name;06-05-2021;;;Yes;CINE_PLEIN_AIR;;;06-05-2021;1;;;;;;;eren.yeager@shinganshina.paradis"
-        self.mikasa_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;;Yes;;500;Yes;Yes;;Yes;;Yes;Yes;No;;Yes;No;;;Last name;06-05-2021;;;Yes;CINE_PLEIN_AIR;;;06-05-2021;2;;;;;;;mikasa.ackerman@shinganshina.paradis"
-        self.armin_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;;Yes;;500;Yes;Yes;;Yes;;Yes;Yes;No;;No;No;;;Last name;06-05-2021;;;Yes;CINE_PLEIN_AIR;;;06-05-2021;3;;;;;;;armin.arlert@shinganshina.paradis"
+        self.expected_header = "AMOUNT_SPENT_2022;BOOKED_OFFER_CATEGORIES;BOOKED_OFFER_CATEGORIES_COUNT;BOOKED_OFFER_SUBCATEGORIES;BOOKING_COUNT;BOOKING_VENUES_COUNT;CREDIT;DATE_CREATED;DATE_OF_BIRTH;DEPARTMENT_CODE;DEPOSIT_ACTIVATION_DATE;DEPOSIT_EXPIRATION_DATE;DMS_APPLICATION_APPROVED;DMS_APPLICATION_SUBMITTED;ELIGIBILITY;FIRSTNAME;FIRST_BOOKED_OFFER_2022;HAS_BOOKINGS;HAS_COMPLETED_ID_CHECK;HAS_OFFERS;INITIAL_CREDIT;IS_BENEFICIARY;IS_BENEFICIARY_18;IS_BOOKING_EMAIL;IS_CURRENT_BENEFICIARY;IS_EAC;IS_ELIGIBLE;IS_EMAIL_VALIDATED;IS_FORMER_BENEFICIARY;IS_PERMANENT;IS_PRO;IS_UNDERAGE_BENEFICIARY;IS_USER_EMAIL;IS_VIRTUAL;LASTNAME;LAST_BOOKED_OFFER_2022;LAST_BOOKING_DATE;LAST_FAVORITE_CREATION_DATE;LAST_VISIT_DATE;MARKETING_EMAIL_SUBSCRIPTION;MOST_BOOKED_MOVIE_GENRE;MOST_BOOKED_MUSIC_TYPE;MOST_BOOKED_OFFER_SUBCATEGORY;OFFERER_NAME;POSTAL_CODE;PRODUCT_BRUT_X_USE_DATE;USER_ID;USER_IS_ATTACHED;USER_IS_CREATOR;VENUE_COUNT;VENUE_LABEL;VENUE_NAME;VENUE_TYPE;EMAIL"
+        self.eren_expected_file_body = "20.0;CINEMA,LIVRE;2;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;3;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;Première réservation;;Yes;;500;Yes;Yes;;Yes;;Yes;Yes;No;;No;No;;;Last name;Dernière réservation;06-05-2021;;;Yes;COMEDY;900;CINE_PLEIN_AIR;;;06-05-2021;1;;;;;;;eren.yeager@shinganshina.paradis"
+        self.mikasa_expected_file_body = "20.0;CINEMA,LIVRE;2;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;3;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;Première réservation;;Yes;;500;Yes;Yes;;Yes;;Yes;Yes;No;;Yes;No;;;Last name;Dernière réservation;06-05-2021;;;Yes;COMEDY;900;CINE_PLEIN_AIR;;;06-05-2021;2;;;;;;;mikasa.ackerman@shinganshina.paradis"
+        self.armin_expected_file_body = "20.0;CINEMA,LIVRE;2;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;3;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;Première réservation;;Yes;;500;Yes;Yes;;Yes;;Yes;Yes;No;;No;No;;;Last name;Dernière réservation;06-05-2021;;;Yes;COMEDY;900;CINE_PLEIN_AIR;;;06-05-2021;3;;;;;;;armin.arlert@shinganshina.paradis"
 
     def test_build_file_body(self):
         expected = (

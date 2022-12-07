@@ -11,6 +11,7 @@ common_user_attributes = attributes_models.UserAttributes(
     booking_count=4,
     booking_categories=["CINEMA", "LIVRE"],
     booking_subcategories=["ABO_LIVRE_NUMERIQUE", "CARTE_CINE_ILLIMITE", "CINE_PLEIN_AIR"],
+    booking_venues_count=3,
     city="Rodez",
     date_created=datetime(2021, 2, 6),
     date_of_birth=datetime(2003, 5, 6),
@@ -40,6 +41,8 @@ common_user_attributes = attributes_models.UserAttributes(
     marketing_email_subscription=True,
     marketing_push_subscription=True,
     most_booked_subcategory="CINE_PLEIN_AIR",
+    most_booked_movie_genre="COMEDY",
+    most_booked_music_type="900",
     phone_number="0706050403",
     postal_code=None,
     products_use_date={"product_brut_x_use": datetime(2021, 5, 6)},
@@ -47,6 +50,9 @@ common_user_attributes = attributes_models.UserAttributes(
     roles=["BENEFICIARY"],
     suspension_date=None,
     suspension_reason=None,
+    amount_spent_2022=20.0,
+    first_booked_offer_2022="Première réservation",
+    last_booked_offer_2022="Dernière réservation",
 )
 
 

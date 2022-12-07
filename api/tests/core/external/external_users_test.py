@@ -80,6 +80,7 @@ def test_update_external_pro_user():
     assert len(sendinblue_testing.sendinblue_requests) == 1
 
 
+@freeze_time("2022-12-06 10:00:00")  # Keep time frozen in 2022 as long as we send *_2022 attributes
 def test_get_user_attributes_beneficiary_with_v1_deposit():
     user = BeneficiaryGrant18Factory(
         deposit__version=1,
@@ -88,10 +89,14 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         phoneNumber="0746050403",
         phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
     )
-    offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
+    offer = OfferFactory(
+        product__id=list(TRACKED_PRODUCT_IDS.keys())[0],
+        subcategoryId=subcategories.SEANCE_CINE.id,
+        extraData={"genres": ["THRILLER"]},
+    )
     b1 = IndividualBookingFactory(individualBooking__user=user, amount=10, stock__offer=offer)
     b2 = IndividualBookingFactory(
-        individualBooking__user=user, amount=10, dateUsed=datetime(2021, 5, 6), stock__offer=offer
+        individualBooking__user=user, amount=10, dateUsed=datetime(2022, 12, 7), stock__offer=offer
     )
     IndividualBookingFactory(
         individualBooking__user=user, amount=100, status=BookingStatus.CANCELLED
@@ -106,9 +111,10 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         domains_credit=DomainsCredit(
             all=Credit(initial=Decimal("500"), remaining=Decimal("480.00")),
             digital=Credit(initial=Decimal("200"), remaining=Decimal("200")),
-            physical=Credit(initial=200, remaining=Decimal("180.00")),
+            physical=Credit(initial=200, remaining=Decimal("200.00")),
         ),
-        booking_categories=["FILM"],
+        booking_categories=["CINEMA"],
+        booking_venues_count=1,  # twice the same offer, same venue
         city="Paris",
         date_created=user.dateCreated,
         date_of_birth=user.dateOfBirth,
@@ -126,9 +132,9 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         marketing_push_subscription=True,
         phone_number="+33746050403",
         postal_code=None,
-        products_use_date={"product_brut_x_use": datetime(2021, 5, 6, 0, 0)},
+        products_use_date={"product_brut_x_use": datetime(2022, 12, 7, 0, 0)},
         booking_count=2,
-        booking_subcategories=["SUPPORT_PHYSIQUE_FILM"],
+        booking_subcategories=["SEANCE_CINE"],
         deposit_activation_date=user.deposit_activation_date,
         has_completed_id_check=True,
         user_id=user.id,
@@ -138,10 +144,15 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         last_favorite_creation_date=None,
         last_visit_date=None,
         marketing_email_subscription=True,
-        most_booked_subcategory="SUPPORT_PHYSIQUE_FILM",
+        most_booked_subcategory="SEANCE_CINE",
+        most_booked_movie_genre="THRILLER",
+        most_booked_music_type=None,
         roles=[UserRole.BENEFICIARY.value],
         suspension_date=None,
         suspension_reason=None,
+        amount_spent_2022=Decimal("20.00"),
+        first_booked_offer_2022=offer.name,
+        last_booked_offer_2022=offer.name,
     )
 
 
@@ -163,6 +174,7 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
             physical=None,
         ),
         booking_categories=[],
+        booking_venues_count=0,
         city=user.city,
         date_created=user.dateCreated,
         date_of_birth=user.dateOfBirth,
@@ -193,20 +205,30 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
         last_visit_date=None,
         marketing_email_subscription=True,
         most_booked_subcategory=None,
+        most_booked_movie_genre=None,
+        most_booked_music_type=None,
         roles=[UserRole.BENEFICIARY.value],
         suspension_date=None,
         suspension_reason=None,
+        amount_spent_2022=0.0,
+        first_booked_offer_2022=None,
+        last_booked_offer_2022=None,
     )
 
 
+@freeze_time("2022-12-06 10:00:00")  # Keep time frozen in 2022 as long as we send *_2022 attributes
 def test_get_user_attributes_beneficiary_because_of_credit():
     user = BeneficiaryGrant18Factory(
         departementCode="75",
         phoneNumber="+33607080901",
         phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
     )
-    offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
-    booking = IndividualBookingFactory(individualBooking__user=user, amount=300, stock__offer=offer)
+    offer1 = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
+    offer2 = OfferFactory(venue=offer1.venue)
+    offer3 = OfferFactory()
+    IndividualBookingFactory(individualBooking__user=user, amount=100, stock__offer=offer1)
+    IndividualBookingFactory(individualBooking__user=user, amount=120, stock__offer=offer2)
+    last_booking = IndividualBookingFactory(individualBooking__user=user, amount=80, stock__offer=offer3)
 
     with assert_no_duplicated_queries():
         attributes = get_user_attributes(user)
@@ -218,6 +240,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
             physical=None,
         ),
         booking_categories=["FILM"],
+        booking_venues_count=2,
         city=user.city,
         date_created=user.dateCreated,
         date_of_birth=user.dateOfBirth,
@@ -230,13 +253,13 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         is_current_beneficiary=False,
         is_former_beneficiary=True,
         is_pro=False,
-        last_booking_date=booking.dateCreated,
+        last_booking_date=last_booking.dateCreated,
         last_name=user.lastName,
         marketing_push_subscription=True,
         phone_number=user.phoneNumber,
         postal_code=None,
         products_use_date={},
-        booking_count=1,
+        booking_count=3,
         booking_subcategories=["SUPPORT_PHYSIQUE_FILM"],
         deposit_activation_date=user.deposit_activation_date,
         has_completed_id_check=True,
@@ -248,9 +271,14 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         last_visit_date=None,
         marketing_email_subscription=True,
         most_booked_subcategory="SUPPORT_PHYSIQUE_FILM",
+        most_booked_movie_genre=None,
+        most_booked_music_type=None,
         roles=[UserRole.BENEFICIARY.value],
         suspension_date=None,
         suspension_reason=None,
+        amount_spent_2022=Decimal("300.00"),
+        first_booked_offer_2022=offer1.name,
+        last_booked_offer_2022=offer3.name,
     )
 
 
@@ -323,6 +351,7 @@ def test_get_user_attributes_not_beneficiary():
 
     assert attributes == UserAttributes(
         booking_categories=[],
+        booking_venues_count=0,
         city="Nice",
         date_created=user.dateCreated,
         date_of_birth=datetime.combine(user.birth_date, datetime.min.time()),
@@ -354,9 +383,14 @@ def test_get_user_attributes_not_beneficiary():
         last_visit_date=None,
         marketing_email_subscription=True,
         most_booked_subcategory=None,
+        most_booked_movie_genre=None,
+        most_booked_music_type=None,
         roles=[],
         suspension_date=None,
         suspension_reason=None,
+        amount_spent_2022=0.0,
+        first_booked_offer_2022=None,
+        last_booked_offer_2022=None,
     )
 
 
@@ -393,9 +427,11 @@ def test_get_bookings_categories_and_subcategories_most_booked():
     booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
 
     # 2xFILM, 1xCINE => FILM is the most booked
-    assert set(booking_attributes.booking_categories) == {"FILM", "CINEMA"}
-    assert set(booking_attributes.booking_subcategories) == {"SUPPORT_PHYSIQUE_FILM", "CINE_PLEIN_AIR"}
+    assert booking_attributes.booking_categories == ["CINEMA", "FILM"]
+    assert booking_attributes.booking_subcategories == ["CINE_PLEIN_AIR", "SUPPORT_PHYSIQUE_FILM"]
     assert booking_attributes.most_booked_subcategory == "SUPPORT_PHYSIQUE_FILM"
+    assert booking_attributes.most_booked_movie_genre is None
+    assert booking_attributes.most_booked_music_type is None
 
 
 def test_get_bookings_categories_and_subcategories_most_booked_on_price():
@@ -411,9 +447,11 @@ def test_get_bookings_categories_and_subcategories_most_booked_on_price():
     booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
 
     # 2xFILM, 2xCINE, but FILM has the highest credit spent => FILM is the most booked
-    assert set(booking_attributes.booking_categories) == {"FILM", "CINEMA"}
-    assert set(booking_attributes.booking_subcategories) == {"SUPPORT_PHYSIQUE_FILM", "CINE_PLEIN_AIR"}
+    assert booking_attributes.booking_categories == ["CINEMA", "FILM"]
+    assert booking_attributes.booking_subcategories == ["CINE_PLEIN_AIR", "SUPPORT_PHYSIQUE_FILM"]
     assert booking_attributes.most_booked_subcategory == "SUPPORT_PHYSIQUE_FILM"
+    assert booking_attributes.most_booked_movie_genre is None
+    assert booking_attributes.most_booked_music_type is None
 
 
 def test_get_bookings_categories_and_subcategories_most_booked_on_count():
@@ -422,14 +460,53 @@ def test_get_bookings_categories_and_subcategories_most_booked_on_count():
     IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1, stock__price=15.00)
     IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1, stock__price=15.00)
     CancelledIndividualBookingFactory(individualBooking__user=user)
-    offer2 = OfferFactory(subcategoryId=subcategories.CINE_PLEIN_AIR.id)
+    offer2 = OfferFactory(subcategoryId=subcategories.CINE_PLEIN_AIR.id, extraData={"genres": ["COMEDY"]})
+    offer3 = OfferFactory(subcategoryId=subcategories.CINE_PLEIN_AIR.id, extraData={"genres": ["DRAMA", "HISTORICAL"]})
+    offer4 = OfferFactory(subcategoryId=subcategories.CINE_PLEIN_AIR.id, extraData={"genres": ["DRAMA", "THRILLER"]})
     IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer3, stock__price=8.00)
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer4, stock__price=8.00)
 
     booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
 
     # 2xFILM, 3xCINE => CINE is the most booked, even if the highest credit spent is still FILM
-    assert set(booking_attributes.booking_categories) == {"FILM", "CINEMA"}
-    assert set(booking_attributes.booking_subcategories) == {"SUPPORT_PHYSIQUE_FILM", "CINE_PLEIN_AIR"}
+    assert booking_attributes.booking_categories == ["CINEMA", "FILM"]
+    assert booking_attributes.booking_subcategories == ["CINE_PLEIN_AIR", "SUPPORT_PHYSIQUE_FILM"]
     assert booking_attributes.most_booked_subcategory == "CINE_PLEIN_AIR"
+    assert booking_attributes.most_booked_movie_genre == "DRAMA"
+    assert booking_attributes.most_booked_music_type is None
+
+
+def test_get_bookings_categories_and_subcategories_music_first():
+    user = BeneficiaryGrant18Factory()
+    offer1 = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1, stock__price=15.00)
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1, stock__price=15.00)
+    CancelledIndividualBookingFactory(individualBooking__user=user)
+    offer2 = OfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"musicType": "600"})
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=10.00)
+    offer3 = OfferFactory(subcategoryId=subcategories.TELECHARGEMENT_MUSIQUE.id, extraData={"musicType": "800"})
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer3, stock__price=5.00)
+    offer4 = OfferFactory(subcategoryId=subcategories.CAPTATION_MUSIQUE.id, extraData={"musicType": "900"})
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer4, stock__price=12.00)
+    offer5 = OfferFactory(subcategoryId=subcategories.CONCERT.id, extraData={"musicType": "800"})
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer5, stock__price=35.00)
+    offer6 = OfferFactory(subcategoryId=subcategories.EVENEMENT_MUSIQUE.id, extraData={"musicType": "800"})
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer6, stock__price=25.00)
+
+    booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
+
+    # most booked subcategory is SUPPORT_PHYSIQUE_FILM, which category is FILM
+    # but most booked category is MUSIQUE_ENREGISTREE, so most_booked_music_type is computed among 2 categories
+    assert booking_attributes.booking_categories == ["FILM", "MUSIQUE_ENREGISTREE", "MUSIQUE_LIVE"]
+    assert booking_attributes.booking_subcategories == [
+        "CAPTATION_MUSIQUE",
+        "CONCERT",
+        "EVENEMENT_MUSIQUE",
+        "SUPPORT_PHYSIQUE_FILM",
+        "SUPPORT_PHYSIQUE_MUSIQUE",
+        "TELECHARGEMENT_MUSIQUE",
+    ]
+    assert booking_attributes.most_booked_subcategory == "SUPPORT_PHYSIQUE_FILM"
+    assert booking_attributes.most_booked_movie_genre is None
+    assert booking_attributes.most_booked_music_type == "800"

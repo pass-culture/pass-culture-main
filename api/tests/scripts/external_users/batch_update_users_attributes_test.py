@@ -1,6 +1,7 @@
 from decimal import Decimal
 from unittest.mock import patch
 
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings.factories import IndividualBookingFactory
@@ -83,6 +84,9 @@ def test_format_batch_user():
         "date(u.deposit_activation_date)": user.deposit_activation_date.strftime(BATCH_DATETIME_FORMAT),
         "date(u.deposit_expiration_date)": user.deposit_expiration_date.strftime(BATCH_DATETIME_FORMAT),
         "date(u.last_booking_date)": booking.dateCreated.strftime(BATCH_DATETIME_FORMAT),
+        "u.booked_offer_categories_count": 1,
+        "u.booking_count": 1,
+        "u.booking_venues_count": 1,
         "u.city": "Paris",
         "u.credit": 29000,
         "u.departement_code": "75",
@@ -93,6 +97,8 @@ def test_format_batch_user():
         "u.has_completed_id_check": True,
         "u.last_name": "Doux",
         "u.marketing_push_subscription": True,
+        "u.most_booked_movie_genre": None,
+        "u.most_booked_music_type": None,
         "u.most_booked_subcategory": "SUPPORT_PHYSIQUE_FILM",
         "u.postal_code": None,
         "ut.booking_categories": ["FILM"],
@@ -102,6 +108,7 @@ def test_format_batch_user():
 
 
 @pytest.mark.usefixtures("db_session")
+@freeze_time("2022-12-06 10:00:00")  # Keep time frozen in 2022 as long as we send *_2022 attributes
 def test_format_sendinblue_user():
     user = BeneficiaryGrant18Factory(departementCode="75")
     booking = IndividualBookingFactory(individualBooking__user=user)
@@ -112,8 +119,10 @@ def test_format_sendinblue_user():
     assert res[0].email == user.email
     assert res[0].attributes == {
         "BOOKED_OFFER_CATEGORIES": "FILM",
+        "BOOKED_OFFER_CATEGORIES_COUNT": 1,
         "BOOKED_OFFER_SUBCATEGORIES": "SUPPORT_PHYSIQUE_FILM",
         "BOOKING_COUNT": 1,
+        "BOOKING_VENUES_COUNT": 1,
         "CREDIT": Decimal("290.00"),
         "DATE_CREATED": user.dateCreated,
         "DATE_OF_BIRTH": user.dateOfBirth,
@@ -147,6 +156,8 @@ def test_format_sendinblue_user():
         "LAST_VISIT_DATE": None,
         "MARKETING_EMAIL_SUBSCRIPTION": True,
         "MOST_BOOKED_OFFER_SUBCATEGORY": "SUPPORT_PHYSIQUE_FILM",
+        "MOST_BOOKED_MOVIE_GENRE": None,
+        "MOST_BOOKED_MUSIC_TYPE": None,
         "OFFERER_NAME": None,
         "POSTAL_CODE": None,
         "PRODUCT_BRUT_X_USE_DATE": None,
@@ -157,4 +168,7 @@ def test_format_sendinblue_user():
         "VENUE_LABEL": None,
         "VENUE_NAME": None,
         "VENUE_TYPE": None,
+        "AMOUNT_SPENT_2022": Decimal("10.00"),
+        "FIRST_BOOKED_OFFER_2022": booking.stock.offer.name,
+        "LAST_BOOKED_OFFER_2022": booking.stock.offer.name,
     }
