@@ -21,4 +21,5 @@ export type SharedButtonProps = {
   >
   variant?: ButtonVariant
   iconPosition?: IconPositionEnum
+  testId?: string
 }

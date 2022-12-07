@@ -5,8 +5,8 @@ import { api } from 'apiClient/api'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
+import { ReactComponent as SpinnerIcon } from 'icons/loader.svg'
 import { Banner } from 'ui-kit'
-import { ReactComponent as SpinnerIcon } from 'ui-kit/SubmitButton/assets/loader.svg'
 import { ENV_WORDING } from 'utils/config'
 
 /* @debt duplicated "Gaël: regroup buttons within one component"*/
