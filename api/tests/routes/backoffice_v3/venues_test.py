@@ -10,11 +10,13 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.permissions.models as perm_models
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.models import db
 from pcapi.routes.backoffice_v3 import venues
 
+from .helpers import html_parser
 from .helpers import unauthorized as unauthorized_helpers
 
 
@@ -64,6 +66,21 @@ class GetVenueTest:
             assert response.status_code == 200
 
         assert venue.name in response.data.decode("utf-8")
+        response_text = html_parser.content_as_text(response.data)
+        assert "Éligible EAC : Non" in response_text
+        assert "ID Adage" not in response_text
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_get_venue_with_adage_id(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(adageId="7122022")
+
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url_for("backoffice_v3_web.venue.get", venue_id=venue.id))
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert "Éligible EAC : Oui" in response_text
+        assert "ID Adage : 7122022" in response_text
 
 
 class GetVenueStatsDataTest:

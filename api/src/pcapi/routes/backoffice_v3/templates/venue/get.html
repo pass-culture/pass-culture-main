@@ -85,9 +85,9 @@
                     <div class="col-lg-4">
                         <p class="mb-1">
                             <span class="fw-bold">Éligible EAC :
-                                {% if is_collective_eligible %}
-                                    <span class="mx-4 pb-1 badge rounded-pill text-bg-success">
-                                    <i class="bi bi-check-circle"></i> Oui
+                                {% if venue.adageId %}
+                                    <span class="mx-2 pb-1 badge rounded-pill text-bg-success">
+                                        <i class="bi bi-check-circle"></i> Oui
                                     </span>
                                 {% else %}
                                     <span class="mx-2 pb-1 badge rounded-pill text-bg-dark">
@@ -96,6 +96,13 @@
                                 {% endif %}
                             </span>
                         </p>
+
+                        {% if venue.adageId %}
+                            <p class="mb-1">
+                                <span class="fw-bold">ID Adage :</span>
+                                {{ venue.adageId }}
+                            </p>
+                        {% endif %}
 
                         {% if venue.venueTypeCode %}
                             <p class="mb-1">
