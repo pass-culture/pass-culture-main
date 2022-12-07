@@ -95,10 +95,7 @@ jobs:
     needs:
       - check-api-folder-changes
       - build-tests-docker-image
-#  FIXME: this job fails since dbb3f7e8ec16ca66af88a0320ea83aae61d0cc8e on GitHub Action (but
-#  not on CircleCI). It blocks deployment on testing. Restore it when fixed.
-#    if: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }}
-    if: ${{ 1 == 2 }}
+    if: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }}
     permissions:
       id-token: write
       contents: read
