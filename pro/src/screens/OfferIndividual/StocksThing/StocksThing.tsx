@@ -149,6 +149,10 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     setShouldTrack(!formik.dirty)
   }, [formik.dirty])
 
+  const isFormEmpty = () => {
+    return formik.values === STOCK_THING_FORM_DEFAULT_VALUES
+  }
+
   useNotifyFormError({
     isSubmitting: formik.isSubmitting,
     errors: formik.errors,
@@ -157,6 +161,12 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     () => {
+      // When saving draft with an empty form
+      // we display a success notification even if nothing is done
+      if (saveDraft && isFormEmpty()) {
+        notify.success('Brouillon sauvegardé dans la liste des offres')
+        return
+      }
       // tested but coverage don't see it.
       /* istanbul ignore next */
       setIsSubmittingDraft(saveDraft)

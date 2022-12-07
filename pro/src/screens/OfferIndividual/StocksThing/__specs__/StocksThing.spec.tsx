@@ -26,7 +26,6 @@ import {
   getOfferIndividualPath,
   getOfferIndividualUrl,
 } from 'core/Offers/utils/getOfferIndividualUrl'
-import { FORM_ERROR_MESSAGE } from 'core/shared'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
@@ -423,12 +422,14 @@ describe('screens:StocksThing', () => {
       expect(expirationInput).toHaveValue('15/12/2020')
     })
 
-    it('should show a error notification if nothing has been touched', async () => {
+    it('should show a success notification if nothing has been touched', async () => {
       renderStockThingScreen({ props, storeOverride, contextValue })
       await userEvent.click(
         screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
       )
-      expect(screen.getByText(FORM_ERROR_MESSAGE)).toBeInTheDocument()
+      expect(
+        screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      ).toBeInTheDocument()
     })
   })
 })
