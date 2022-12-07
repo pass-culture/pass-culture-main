@@ -23,7 +23,6 @@ import {
   IOfferIndividualVenue,
 } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
-import { FORM_ERROR_MESSAGE } from 'core/shared'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 import { getToday } from 'utils/date'
@@ -286,12 +285,14 @@ describe('screens:StocksEvent', () => {
     //   screen.getByText('API bookingLimitDatetime ERROR')
     // ).toBeInTheDocument()
   })
-  it('should show a error notification if nothing has been touched', async () => {
+  it('should show a success notification if nothing has been touched', async () => {
     renderStockEventScreen({ props, storeOverride, contextValue })
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
     )
-    expect(screen.getByText(FORM_ERROR_MESSAGE)).toBeInTheDocument()
+    expect(
+      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+    ).toBeInTheDocument()
   })
 })

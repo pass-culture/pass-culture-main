@@ -9,6 +9,7 @@ import {
   getValidationSchema,
   buildInitialValues,
   IStockEventFormValues,
+  STOCK_EVENT_FORM_DEFAULT_VALUES,
 } from 'components/StockEventForm'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
@@ -127,6 +128,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     lastProviderName: offer.lastProviderName,
     offerStatus: offer.status,
   })
+
   const formik = useFormik<{ stocks: IStockEventFormValues[] }>({
     initialValues,
     onSubmit,
@@ -136,6 +138,13 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     validationSchema: getValidationSchema(),
     enableReinitialize: true,
   })
+
+  const isFormEmpty = () => {
+    return formik.values.stocks.every(
+      val => val === STOCK_EVENT_FORM_DEFAULT_VALUES
+    )
+  }
+
   useNotifyFormError({
     isSubmitting: formik.isSubmitting,
     errors: formik.errors,
@@ -149,6 +158,12 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     () => {
+      // When saving draft with an empty form
+      // we display a success notification even if nothing is done
+      if (saveDraft && isFormEmpty()) {
+        notify.success('Brouillon sauvegardé dans la liste des offres')
+        return
+      }
       // tested but coverage don't see it.
       /* istanbul ignore next */
       setIsSubmittingDraft(saveDraft)
