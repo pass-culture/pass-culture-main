@@ -69,10 +69,11 @@ class GetVenueTest:
         response_text = html_parser.content_as_text(response.data)
         assert "Éligible EAC : Non" in response_text
         assert "ID Adage" not in response_text
+        assert f"Site web : {venue.contact.website}" in response_text
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_venue_with_adage_id(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(adageId="7122022")
+        venue = offerers_factories.VenueFactory(adageId="7122022", contact=None)
 
         with assert_no_duplicated_queries():
             response = authenticated_client.get(url_for("backoffice_v3_web.venue.get", venue_id=venue.id))
