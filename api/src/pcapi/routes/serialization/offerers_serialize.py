@@ -128,9 +128,15 @@ class GetOffererResponseModel(BaseModel):
 
 class GetOffererNameResponseModel(BaseModel):
     id: str
+    nonHumanizedId: int
     name: str
 
     _humanize_id = humanize_field("id")
+
+    @classmethod
+    def from_orm(cls, venue: offerers_models.Venue) -> "GetOffererNameResponseModel":
+        venue.nonHumanizedId = venue.id
+        return super().from_orm(venue)
 
     class Config:
         orm_mode = True

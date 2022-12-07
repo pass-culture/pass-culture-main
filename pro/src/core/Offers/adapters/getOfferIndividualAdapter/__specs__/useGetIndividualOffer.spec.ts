@@ -127,6 +127,7 @@ describe('useGetOfferIndividual', () => {
         latitude: 48.87004,
         longitude: 2.3785,
         managingOfferer: {
+          nonHumanizedId: 1,
           address: '1 boulevard Poissonnière',
           city: 'Paris',
           dateCreated: '2022-05-18T08:25:30.891369Z',
@@ -250,6 +251,7 @@ describe('useGetOfferIndividual', () => {
         name: 'Cinéma synchro avec booking provider',
         offerer: {
           id: 'CU',
+          nonHumanizedId: 1,
           name: 'Le Petit Rintintin Management 6',
         },
         postalCode: '75000',

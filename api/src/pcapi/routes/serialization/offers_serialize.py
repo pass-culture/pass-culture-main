@@ -12,6 +12,7 @@ from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.serialize import CollectiveOfferType
 from pcapi.models.feature import FeatureToggle
@@ -334,6 +335,7 @@ class GetOfferManagingOffererResponseModel(BaseModel):
     dateModifiedAtLastProvider: datetime | None
     fieldsUpdated: list[str]
     id: str
+    nonHumanizedId: int
     idAtProviders: str | None
     isActive: bool
     isValidated: bool
@@ -349,6 +351,11 @@ class GetOfferManagingOffererResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+    @classmethod
+    def from_orm(cls, offerer: offerers_models.Offerer) -> "GetOfferManagingOffererResponseModel":
+        offerer.nonHumanizedId = offerer.id
+        return super().from_orm(offerer)
 
 
 class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):

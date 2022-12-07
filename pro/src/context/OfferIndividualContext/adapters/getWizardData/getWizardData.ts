@@ -82,6 +82,7 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
     successPayload.offererNames = [
       {
         id: offerer.id,
+        nonHumanizedId: 1,
         name: offerer.name,
       },
     ]
