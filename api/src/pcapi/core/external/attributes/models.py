@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import datetime
+from decimal import Decimal
 import typing
 
 from pcapi.core.users import models as users_models
@@ -8,8 +9,9 @@ from pcapi.core.users import models as users_models
 @dataclass
 class UserAttributes:
     booking_categories: list[str]
-    booking_count: int
+    booking_count: int  # count non-canceled bookings from user
     booking_subcategories: list[str]
+    booking_venues_count: int  # count unique venues in which user has made at least one non-canceled booking
     city: str | None
     date_created: datetime.datetime
     date_of_birth: datetime.datetime
@@ -36,12 +38,18 @@ class UserAttributes:
     marketing_email_subscription: bool
     marketing_push_subscription: bool
     most_booked_subcategory: str | None  # Single subcategory most frequently booked by the user
+    most_booked_movie_genre: str | None
+    most_booked_music_type: str | None
     phone_number: str | None  # Added for Zendesk, type: ignore [arg-type]
     postal_code: str | None
     products_use_date: dict
     roles: list[str]
     suspension_date: datetime.datetime | None  # Added for Zendesk
     suspension_reason: str | None  # Added for Zendesk
+    # Specific for Dec 2022 emailing campaign:
+    amount_spent_2022: Decimal  # Amount of credit spent in year 2022 (non-canceled offers)
+    first_booked_offer_2022: str | None  # First booked offer name in 2022 (non-canceled)
+    last_booked_offer_2022: str | None  # Last booked offer name in 2022 (non-canceled)
 
 
 @dataclass
@@ -86,3 +94,5 @@ class BookingsAttributes:
     booking_categories: list[str]
     booking_subcategories: list[str]
     most_booked_subcategory: str | None = None
+    most_booked_movie_genre: str | None = None
+    most_booked_music_type: str | None = None
