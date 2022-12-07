@@ -13,6 +13,7 @@ from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.models import AllocinePivot
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import VenueProvider
@@ -83,6 +84,7 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
         VenueProvider.venueId == venue_id,
         Venue.id == venue_id,
     ).delete(synchronize_session=False)
+    deleted_allocine_pivot_count = AllocinePivot.query.filter_by(venueId=venue_id).delete(synchronize_session=False)
 
     offer_ids_to_delete = [id[0] for id in db.session.query(Offer.id).filter(Offer.venueId == venue_id).all()]
     collective_offer_ids_to_delete = [
@@ -150,6 +152,7 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
         "deleted_venues_count": deleted_venues_count,
         "deleted_venue_providers_count": deleted_venue_providers_count,
         "deleted_allocine_venue_providers_count": deleted_allocine_venue_providers_count,
+        "deleted_allocine_pivot_count": deleted_allocine_pivot_count,
         "deleted_business_unit_venue_links": deleted_business_unit_venue_links_count,
         "deleted_offers_count": deleted_offers_count,
         "deleted_collective_offers_count": deleted_collective_offers_count,
