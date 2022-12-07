@@ -110,7 +110,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       postgres:
-        image: postgis/postgis:12-3.3-alpine
+        image: cimg/postgres:12.9-postgis
         ports:
           - 5432:5432
         options: >-
