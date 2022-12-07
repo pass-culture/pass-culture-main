@@ -142,6 +142,7 @@ def post_product_offer(body: serialization.ProductOfferCreationBody) -> serializ
                     offer=created_offer,
                     price=finance_utils.to_euros(body.stock.price),
                     quantity=body.stock.quantity if body.stock.quantity != "unlimited" else None,
+                    booking_limit_datetime=body.stock.booking_limit_datetime,
                 )
             if body.image:
                 _save_image(body.image, created_offer)
