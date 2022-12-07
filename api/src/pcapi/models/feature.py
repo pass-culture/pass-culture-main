@@ -103,8 +103,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_VENUE_STRICT_SEARCH = (
         "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
     )
-    # FIXME (dbaty, 2022-09-14): remove USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS flag after v207 is deployed.
-    USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS = "Utilise le modèle VenueReimbursementPointLink pour les cashflows"
     ENABLE_EAC_FINANCIAL_PROTECTION = (
         "Protege le pass culture contre les ministeres qui dépenseraient plus que leur budget sur les 4 derniers mois "
         "de l'année"
@@ -179,7 +177,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.OFFER_FORM_V3,
     FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
-    FeatureToggle.USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS,
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
     FeatureToggle.APP_ENABLE_COOKIES_V2,
     FeatureToggle.VENUE_FORM_V2,
