@@ -355,7 +355,7 @@ jobs:
           RUN_ENV: tests
           DATABASE_URL_TEST: postgresql://pytest:pytest@localhost:5432/pass_culture
           REDIS_URL: redis://localhost:6379
-      - image: cimg/postgres:12.9-postgis
+      - image: cimg/postgres:12.12-postgis
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -430,7 +430,7 @@ jobs:
           DATABASE_URL: postgresql://pytest:pytest@localhost:5432/pass_culture
           DATABASE_URL_TEST: postgresql://pytest:pytest@localhost:5432/pass_culture
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_infra_key.json
-      - image: cimg/postgres:12.9-postgis
+      - image: cimg/postgres:12.12-postgis
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
