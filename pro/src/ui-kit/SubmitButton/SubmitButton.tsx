@@ -1,17 +1,15 @@
-import cx from 'classnames'
 import React, { ForwardedRef } from 'react'
 
-import { ReactComponent as SpinnerIcon } from './assets/loader.svg'
-import styles from './SubmitButton.module.scss'
+import { Button } from 'ui-kit/Button'
+import { ButtonVariant, SharedButtonProps } from 'ui-kit/Button/types'
 
-export interface ISubmitButtonProps {
+export interface ISubmitButtonProps extends SharedButtonProps {
   className?: string
   disabled?: boolean
   isLoading?: boolean
   buttonRef?: ForwardedRef<HTMLButtonElement | null>
   onClick?(): void
   children?: React.ReactNode
-  testId?: string
 }
 
 const SubmitButton = ({
@@ -21,23 +19,20 @@ const SubmitButton = ({
   isLoading = false,
   buttonRef,
   onClick,
-  testId,
+  ...buttonAttrs
 }: ISubmitButtonProps): JSX.Element => (
-  <button
-    className={cx(
-      'primary-button',
-      'loading-spinner',
-      styles['submit-button'],
-      className
-    )}
+  <Button
+    className={className}
     disabled={disabled || isLoading}
     onClick={onClick}
     ref={buttonRef}
     type="submit"
-    data-testid={testId ?? null}
+    variant={ButtonVariant.PRIMARY}
+    isLoading={isLoading}
+    {...buttonAttrs}
   >
-    {isLoading ? <SpinnerIcon /> : children}
-  </button>
+    {children}
+  </Button>
 )
 
 export default SubmitButton

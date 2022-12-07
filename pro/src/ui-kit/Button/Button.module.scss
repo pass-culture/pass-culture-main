@@ -150,8 +150,7 @@
     max-width: rem.torem(400px);
 
     &:hover:not(:disabled, .button-disabled) {
-      box-shadow:
-        rem.torem(0) rem.torem(3px) rem.torem(4px)
+      box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
         colors.$grey-medium-shadow;
     }
 
@@ -199,6 +198,28 @@
         fill: colors.$grey-dark;
       }
     }
+  }
+}
+
+.loading-spinner {
+  @media screen and (prefers-reduced-motion: reduce) {
+    svg {
+      animation: none;
+    }
+  }
+
+  svg {
+    animation: rotation 3s infinite linear;
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
   }
 }
 
