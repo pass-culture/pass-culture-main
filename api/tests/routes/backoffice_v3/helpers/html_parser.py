@@ -7,6 +7,11 @@ def _filter_whitespaces(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip())
 
 
+def content_as_text(html_content: str) -> str:
+    soup = BeautifulSoup(html_content, features="html5lib", from_encoding="utf-8")
+    return _filter_whitespaces(soup.text)
+
+
 def extract_table_rows(html_content: str) -> list[dict[str, str]]:
     """
     Extract data from html table (thead + tbody), so that we can compare with expected data when testing routes.

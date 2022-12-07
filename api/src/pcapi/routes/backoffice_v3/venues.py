@@ -89,7 +89,6 @@ def get(venue_id: int) -> utils.BackofficeResponse:
         region=region,
         has_reimbursement_point=has_reimbursement_point(venue),
         dms_stats=dms_stats,
-        is_collective_eligible=venue.venueEducationalStatusId is not None,
     )
 
 
