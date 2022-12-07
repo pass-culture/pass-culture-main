@@ -131,6 +131,16 @@
                             <span class="fw-bold">Présence de CB :</span>
                             {{ has_reimbursement_point | format_bool }}
                         </p>
+
+                        {% if venue.contact and venue.contact.website %}
+                            <p class="mb-1">
+                                <span class="fw-bold">Site web :</span>
+                                <a href="{{ venue.contact.website | escape }}" target="_blank"
+                                   class="text-decoration-none">
+                                    {{ venue.contact.website | escape }}
+                                </a>
+                            </p>
+                        {% endif %}
                     </div>
 
                     <div class="col-lg-4">
