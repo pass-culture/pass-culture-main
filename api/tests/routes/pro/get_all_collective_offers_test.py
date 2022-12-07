@@ -72,19 +72,22 @@ class Returns200Test:
 
     def test_mix_collective_offer_and_template(self, app):
         # Given
-        image_crop = {}
         user = users_factories.UserFactory()
         offerer = offerer_factories.OffererFactory()
         offerer_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1, imageCrop=image_crop, imageCredit="offer"
+            venue=venue,
+            dateCreated=datetime.datetime.utcnow(),
+            offerId=1,
+            imageId="00000125999998",
+            imageCredit="offer",
         )
         template = educational_factories.CollectiveOfferTemplateFactory(
             venue=venue,
             dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=10),
             offerId=2,
-            imageCrop=image_crop,
+            imageId="00000125999999",
             imageCredit="template",
         )
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
@@ -105,7 +108,8 @@ class Returns200Test:
         assert response_json[0]["isShowcase"] == True
         assert response_json[0]["imageCredit"] == "template"
         assert (
-            response_json[0]["imageUrl"] == f"http://localhost/storage/thumbs/collectiveoffertemplate/{template.id}.jpg"
+            response_json[0]["imageUrl"]
+            == f"http://localhost/storage/thumbs/collectiveoffertemplate/{template.imageId}.jpg"
         )
         assert response_json[1]["venueId"] == humanize(venue.id)
         assert response_json[1]["id"] == humanize(offer.id)
@@ -113,7 +117,7 @@ class Returns200Test:
         assert response_json[1]["stocks"][0]["id"] == humanize(stock.id)
         assert response_json[1]["isShowcase"] == False
         assert response_json[1]["imageCredit"] == "offer"
-        assert response_json[1]["imageUrl"] == f"http://localhost/storage/thumbs/collectiveoffer/{offer.id}.jpg"
+        assert response_json[1]["imageUrl"] == f"http://localhost/storage/thumbs/collectiveoffer/{offer.imageId}.jpg"
 
     def test_one_collective_offer_with_template_id(self, client):
         # Given

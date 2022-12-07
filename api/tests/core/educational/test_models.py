@@ -323,12 +323,13 @@ class HasImageMixinTest:
         image.id = 1
         image.imageCrop = {}
         image.imageCredit = "toto"
+        image.imageId = "123654789654"
         image.imageHasOriginal = True
 
-        assert image.imageUrl == "http://localhost/storage/thumbs/image/1.jpg"
-        assert image.imageOriginalUrl == "http://localhost/storage/thumbs/image/1_original.jpg"
-        assert image._get_image_storage_id() == "image/1.jpg"
-        assert image._get_image_storage_id(original=True) == "image/1_original.jpg"
+        assert image.imageUrl == "http://localhost/storage/thumbs/image/123654789654.jpg"
+        assert image.imageOriginalUrl == "http://localhost/storage/thumbs/image/123654789654_original.jpg"
+        assert image._get_image_storage_id() == "image/123654789654.jpg"
+        assert image._get_image_storage_id(original=True) == "image/123654789654_original.jpg"
 
     @mock.patch("pcapi.core.educational.models.store_public_object")
     @mock.patch("pcapi.core.educational.models.delete_public_object")
@@ -344,6 +345,7 @@ class HasImageMixinTest:
         image.id = 1
         image.imageHasOriginal = False
         image.imageCrop = None
+        image.imageId = None
         image_data = b"unprocessed image"
         ratio = ImageRatio.PORTRAIT
         credit = "credit on image"
@@ -360,7 +362,8 @@ class HasImageMixinTest:
             ratio=ratio,
             keep_original=False,
         )
-        assert image.imageCrop == crop_data.__dict__
+        assert image.imageCrop == None
+        assert image.imageId.startswith(str(image.id).zfill(10))
         assert image.imageCredit == credit
         assert image.imageHasOriginal == False
         standardize_image.assert_called_once_with(content=image_data, ratio=ratio, crop_params=crop_data)
@@ -395,6 +398,7 @@ class HasImageMixinTest:
         }
         image.imageCredit = "toto"
         image.imageHasOriginal = True
+        image.imageId = "123456"
 
         image_data = b"unprocessed image"
         ratio = ImageRatio.PORTRAIT
@@ -412,8 +416,10 @@ class HasImageMixinTest:
             ratio=ratio,
             keep_original=False,
         )
-        assert image.imageCrop == crop_data.__dict__
+        assert image.imageCrop == None
         assert image.imageCredit == credit
+        assert image.imageId != "123"
+        assert image.imageId.startswith(str(image.id).zfill(10))
         assert image.imageHasOriginal == False
         standardize_image.assert_called_once_with(content=image_data, ratio=ratio, crop_params=crop_data)
         process_original_image.assert_not_called()
@@ -424,8 +430,8 @@ class HasImageMixinTest:
             content_type="image/jpeg",
         )
         assert delete_public_object.call_count == 2
-        delete_public_object.assert_any_call(folder=image.FOLDER, object_id=image._get_image_storage_id())
-        delete_public_object.assert_any_call(folder=image.FOLDER, object_id=image._get_image_storage_id(original=True))
+        delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/123456.jpg")
+        delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/123456_original.jpg")
 
     @mock.patch("pcapi.core.educational.models.store_public_object")
     @mock.patch("pcapi.core.educational.models.delete_public_object")
@@ -443,6 +449,7 @@ class HasImageMixinTest:
         image.id = 1
         image.imageCrop = None
         image_data = b"unprocessed image"
+        image.imageId = None
         ratio = ImageRatio.PORTRAIT
         credit = "credit on image"
         crop_data = CropParams(
@@ -460,6 +467,7 @@ class HasImageMixinTest:
         )
         assert image.imageCrop == crop_data.__dict__
         assert image.imageCredit == credit
+        assert image.imageId.startswith(str(image.id).zfill(10))
         assert image.imageHasOriginal == True
         standardize_image.assert_called_once_with(content=image_data, ratio=ratio, crop_params=crop_data)
         process_original_image.assert_called_once_with(content=image_data, resize=False)
@@ -486,19 +494,15 @@ class HasImageMixinTest:
 
         image = Image()
         image.id = 1
-        image.imageCrop = {
-            "x_crop_percent": 0.1,
-            "y_crop_percent": 0.5,
-            "height_crop_percent": 0.12,
-            "width_crop_percent": 0.97,
-        }
+        image.imageId = "456789"
         image.imageCredit = "toto"
         image.imageHasOriginal = False
         image.delete_image()
         assert image.imageCrop == None
         assert image.imageCredit == None
         assert image.imageHasOriginal == None
-        delete_public_object.assert_called_once_with(folder=image.FOLDER, object_id="image/1.jpg")
+        assert image.imageId == None
+        delete_public_object.assert_called_once_with(folder=image.FOLDER, object_id="image/456789.jpg")
 
     @mock.patch("pcapi.core.educational.models.delete_public_object")
     def test_delete_image_with_original(self, delete_public_object):
@@ -507,6 +511,7 @@ class HasImageMixinTest:
 
         image = Image()
         image.id = 1
+        image.imageId = "123456"
         image.imageCrop = {
             "x_crop_percent": 0.1,
             "y_crop_percent": 0.5,
@@ -519,6 +524,7 @@ class HasImageMixinTest:
         assert image.imageCrop == None
         assert image.imageCredit == None
         assert image.imageHasOriginal == None
+        assert image.imageId == None
         assert delete_public_object.call_count == 2
-        delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/1.jpg")
-        delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/1_original.jpg")
+        delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/123456.jpg")
+        delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/123456_original.jpg")
