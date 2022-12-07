@@ -18,6 +18,7 @@ from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.models import AllocinePivot
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import VenueProvider
@@ -84,6 +85,10 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
     deleted_allocine_venue_providers_count = AllocineVenueProvider.query.filter(
         AllocineVenueProvider.id == VenueProvider.id,
         VenueProvider.venueId == Venue.id,
+        Venue.managingOffererId == offerer_id,
+    ).delete(synchronize_session=False)
+    deleted_allocine_pivot_count = AllocinePivot.query.filter(
+        AllocinePivot.venueId == Venue.id,
         Venue.managingOffererId == offerer_id,
     ).delete(synchronize_session=False)
 
@@ -193,6 +198,7 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         "deleted_venues_count": deleted_venues_count,
         "deleted_venue_providers_count": deleted_venue_providers_count,
         "deleted_allocine_venue_providers_count": deleted_allocine_venue_providers_count,
+        "deleted_allocine_pivot_count": deleted_allocine_pivot_count,
         "deleted_offers_count": deleted_offers_count,
         "deleted_mediations_count": deleted_mediations_count,
         "deleted_favorites_count": deleted_favorites_count,
