@@ -19,5 +19,5 @@ class VenueAccessibilityModel(BaseModel):
 class VenueResponse(base.BaseVenueResponse):
     id: int
     accessibility: VenueAccessibilityModel
-    venueTypeCode: offerers_models.VenueTypeCodeKey | None
+    venueTypeCode: offerers_models.VenueTypeCodeKey
     bannerMeta: BannerMetaModel | None

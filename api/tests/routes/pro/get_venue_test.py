@@ -112,7 +112,7 @@ class Returns200Test:
             "publicName": venue.publicName,
             "siret": venue.siret,
             "venueLabelId": humanize(venue.venueLabelId),
-            "venueTypeCode": venue.venueTypeCode.name if venue.venueTypeCode else None,
+            "venueTypeCode": venue.venueTypeCode.name,
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "withdrawalDetails": None,
             "bannerUrl": venue.bannerUrl,

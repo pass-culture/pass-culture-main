@@ -24,7 +24,7 @@ export type GetOffererVenueResponseModel = {
   publicName?: string | null;
   siret?: string | null;
   venueLabelId?: string | null;
-  venueTypeCode?: VenueTypeCode | null;
+  venueTypeCode: VenueTypeCode;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;
 };

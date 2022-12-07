@@ -152,7 +152,7 @@ def _get_venue_data(venue: offerers_models.Venue, parent_organization_id: int | 
             "parent_organization_id": parent_organization_id,  # if None, then it will send null on the request
             "last_name": "",  # leave that empty for the Zendesk api
             "description": venue.description,
-            "industry": venue.venueTypeCode.value if venue.venueTypeCode else None,
+            "industry": venue.venueTypeCode.value,
             "website": venue.contact.website if venue.contact else None,
             "email": venue.bookingEmail,
             "phone": venue.contact.phone_number if venue.contact else None,

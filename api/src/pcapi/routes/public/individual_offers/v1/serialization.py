@@ -847,7 +847,7 @@ class VenueResponse(serialization.ConfiguredBaseModel):
     name: str = pydantic.Field(alias="legalName")
     publicName: str | None = pydantic.Field(..., description="If null, legalName is used")
     siret: str | None = pydantic.Field(description="Null when venue is digital or when siretComment field is not null.")
-    venueTypeCode: offerers_models.VenueTypeCode | None = pydantic.Field(alias="activityDomain")
+    venueTypeCode: offerers_models.VenueTypeCode = pydantic.Field(alias="activityDomain")
 
     @classmethod
     def build_model(cls, venue: offerers_models.Venue) -> "VenueResponse":

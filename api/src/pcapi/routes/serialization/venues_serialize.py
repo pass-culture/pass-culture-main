@@ -195,7 +195,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     reimbursementPointId: int | None
     siret: str | None
     venueLabelId: str | None
-    venueTypeCode: offerers_models.VenueTypeCode | None
+    venueTypeCode: offerers_models.VenueTypeCode
     collectiveDescription: str | None
     collectiveStudents: list[educational_models.StudentLevels] | None
     collectiveWebsite: str | None
