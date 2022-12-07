@@ -17,12 +17,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 
--- Manually added, for Alembic
-
-CREATE TABLE IF NOT EXISTS public.alembic_version (version_num character varying(32) NOT NULL);
-ALTER TABLE ONLY public.alembic_version ADD CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num);
-
-
 --
 -- Name: tiger; Type: SCHEMA; Schema: -; Owner: pass_culture
 --
@@ -9722,3 +9716,4 @@ ALTER TABLE ONLY public.venue
 -- PostgreSQL database dump complete
 --
 
+RESET search_path;
