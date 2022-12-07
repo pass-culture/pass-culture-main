@@ -19,7 +19,10 @@
         <div class="card">
             <div class="card-body">
                 <h2 class="card-title mb-3">
-                    {{ offerer.name }}
+                    <a href="{{ offerer | pc_pro_offerer_link }}" target="_blank"
+                       class="text-decoration-none hover-text-underline">
+                        {{ offerer.name | escape }}
+                    </a>
 
                     <span class="fs-5 ps-4 mb-3 align-middle">
                         {{ build_offerer_badges(offerer) }}
