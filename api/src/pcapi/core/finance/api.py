@@ -37,6 +37,7 @@ import math
 import pathlib
 import secrets
 import tempfile
+import time
 import typing
 import zipfile
 
@@ -836,6 +837,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
             "batch": batch_id,
             "reimbursement_point": reimbursement_point_id,
         }
+        start = time.perf_counter()
         logger.info("Generating cashflow", extra=log_extra)
         try:
             with transaction():
@@ -911,12 +913,13 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 _mark_as_processed(pricings)
                 db.session.bulk_save_objects(links)
                 db.session.commit()
-                logger.info("Generated cashflow", extra=log_extra)
+                elapsed = time.perf_counter() - start
+                logger.info("Generated cashflow", extra=log_extra | {"elapsed": elapsed})
         except Exception:  # pylint: disable=broad-except
             if settings.IS_RUNNING_TESTS:
                 raise
             logger.exception(
-                "Could not generate cashflows for reimbursement point %d",
+                "Could not generate cashflow for reimbursement point %d",
                 reimbursement_point_id,
                 extra=log_extra,
             )
