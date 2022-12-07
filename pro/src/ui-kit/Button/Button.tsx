@@ -4,6 +4,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import { ReactComponent as IcoArrowRight } from 'icons/ico-mini-arrow-right.svg'
+import { ReactComponent as SpinnerIcon } from 'icons/loader.svg'
 import Tooltip from 'ui-kit/Tooltip'
 import { uniqId } from 'utils/uniqId'
 
@@ -17,6 +18,7 @@ interface IButtonProps
   innerRef?: React.RefObject<HTMLButtonElement>
   className?: string
   hasTooltip?: boolean
+  isLoading?: boolean
 }
 
 const Button = ({
@@ -28,6 +30,8 @@ const Button = ({
   type = 'button',
   innerRef,
   hasTooltip,
+  testId,
+  isLoading = false,
   ...buttonAttrs
 }: IButtonProps): JSX.Element => {
   const tooltipId = uniqId()
@@ -38,10 +42,12 @@ const Button = ({
         styles['button'],
         styles[`button-${variant}`],
         styles[`button-${iconPosition}`],
+        { [styles['loading-spinner']]: isLoading },
         className
       )}
       ref={innerRef}
       type={type}
+      data-testid={testId}
       {...(hasTooltip ? { 'aria-describedBy': tooltipId } : {})}
       {...buttonAttrs}
     >
@@ -49,9 +55,15 @@ const Button = ({
         <Icon className={styles['button-icon']} />
       )}
       {hasTooltip ? (
-        <div className={styles['visually-hidden']}>{children}</div>
+        <div className={styles['visually-hidden']}>
+          {isLoading ? <SpinnerIcon /> : children}
+        </div>
       ) : variant === ButtonVariant.BOX ? (
-        <div className={styles['button-arrow-content']}>{children}</div>
+        <div className={styles['button-arrow-content']}>
+          {isLoading ? <SpinnerIcon /> : children}
+        </div>
+      ) : isLoading ? (
+        <SpinnerIcon />
       ) : (
         children
       )}
