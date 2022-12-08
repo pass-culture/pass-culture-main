@@ -39,26 +39,6 @@ class AdageCollectiveOffer(AdageBaseResponseModel):
     withdrawalDetails: str | None
 
 
-def _get_collective_offer_address(offer: models.CollectiveOffer) -> str:
-    default_address = f"{offer.venue.address}, {offer.venue.postalCode} {offer.venue.city}"
-
-    if offer.offerVenue is None:
-        return default_address
-
-    address_type = offer.offerVenue["addressType"]
-
-    if address_type == "offererVenue":
-        return default_address
-
-    if address_type == "other":
-        return offer.offerVenue["otherAddress"]
-
-    if address_type == "school":
-        return "Dans l’établissement scolaire"
-
-    return default_address
-
-
 def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> AdageCollectiveOffer:
     stock = collective_offer.collectiveStock
     venue = collective_offer.venue
@@ -91,3 +71,33 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
         isDigital=False,
         withdrawalDetails=None,
     )
+
+
+def _get_collective_offer_address(offer: models.CollectiveOffer) -> str:
+    default_address = f"{offer.venue.address}, {offer.venue.postalCode} {offer.venue.city}"
+
+    if offer.offerVenue is None:
+        return default_address
+
+    address_type = offer.offerVenue["addressType"]
+
+    if address_type == "offererVenue":
+        return default_address
+
+    if address_type == "other":
+        return offer.offerVenue["otherAddress"]
+
+    if address_type == "school":
+        return "Dans l’établissement scolaire"
+
+    return default_address
+
+
+class AdageEducationalInstitution(AdageBaseResponseModel):
+    uai: str
+    sigle: str
+    libelle: str
+    communeLibelle: str
+    courriel: str
+    telephone: str
+    codePostal: str
