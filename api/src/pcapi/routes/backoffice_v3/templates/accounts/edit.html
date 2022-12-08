@@ -9,7 +9,7 @@
             <h5 class="lead fs-1 my-4">Éditer les informations</h5>
 
             <div class="mt-5 text-center">
-                <form action="{{ dst }}" method="PATCH">
+                <form action="{{ dst }}" method="POST">
                     {% for form_field in form %}
                         <div class="w-100 my-4">
                             {% for error in form_field.errors %}
