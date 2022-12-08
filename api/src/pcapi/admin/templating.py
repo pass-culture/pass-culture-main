@@ -4,6 +4,7 @@ import typing
 from markupsafe import Markup
 
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.history import models as history_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import models as users_models
 import pcapi.core.users.constants as users_constants
@@ -96,8 +97,8 @@ def eligibility_format(eligibility_type: users_models.EligibilityType) -> str:
     )
 
 
-def suspension_event_format(event_type: users_constants.SuspensionEventType) -> str:
-    return Markup("<span>{text}</span>").format(text=dict(users_constants.SUSPENSION_EVENT_TYPE_CHOICES)[event_type])
+def suspension_action_format(action_type: history_models.ActionType) -> str:
+    return Markup("<span>{text}</span>").format(text=action_type.value)
 
 
 def suspension_reason_format(suspension_reason: users_constants.SuspensionReason | None) -> str:

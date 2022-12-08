@@ -1,3 +1,5 @@
+import typing
+
 from pcapi.core.history import models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
@@ -12,7 +14,7 @@ def log_action(
     venue: offerers_models.Venue | None = None,
     comment: str | None = None,
     save: bool = True,
-    **extra_data: dict,
+    **extra_data: typing.Any,
 ) -> models.ActionHistory:
     """
     Set save parameter to False if you want to save the returned object at the same time as modified resources.

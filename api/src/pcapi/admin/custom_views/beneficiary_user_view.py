@@ -330,7 +330,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
             User.query.filter(User.has_pro_role.is_(False))  # type: ignore [attr-defined]
             .filter(User.is_beneficiary.is_(True))  # type: ignore [attr-defined]
             .options(joinedload(User.deposits))
-            .options(joinedload(User.suspension_history))
+            .options(joinedload(User.action_history))
         )
 
     def get_count_query(self) -> BaseQuery:

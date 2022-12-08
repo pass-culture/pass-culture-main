@@ -28,7 +28,7 @@
                                 {{ modified_info['old_info'] | escape }} =&gt; {{ modified_info['new_info'] | escape }}</p>
                         {% endfor %}
                     {% elif action.actionType.name == "USER_SUSPENDED" %}
-                        <p>{{ action.extraData['reason']['full_reason'] }}</p>
+                        <p>{{ action.extraData['reason'] | format_reason_label }}</p>
                     {% else %}
                         <p>{{ action.comment | empty_string_if_null }}</p>
                     {% endif %}
