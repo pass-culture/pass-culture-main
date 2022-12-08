@@ -4,19 +4,27 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
+import { Audience } from 'core/shared'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import Icon from 'ui-kit/Icon/Icon'
 
 import { BookingsFilters } from '../../../types'
-import { getBookingStatusDisplayInformations } from '../../../utils/bookingStatusConverter'
+import {
+  getBookingStatusDisplayInformations,
+  getCollectiveBookingStatusDisplayInformations,
+} from '../../../utils/bookingStatusConverter'
 
 function getAvailableBookingStatuses<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
->(bookingsRecap: T[]) {
+>(audience: Audience, bookingsRecap: T[]) {
+  const titleFormatter =
+    audience === Audience.INDIVIDUAL
+      ? getBookingStatusDisplayInformations
+      : getCollectiveBookingStatusDisplayInformations
   const presentBookingStatues = Array.from(
     new Set(bookingsRecap.map(bookingRecap => bookingRecap.booking_status))
   ).map(bookingStatus => ({
-    title: getBookingStatusDisplayInformations(bookingStatus)?.status ?? '',
+    title: titleFormatter(bookingStatus)?.status ?? '',
     value: bookingStatus,
   }))
 
@@ -38,6 +46,7 @@ interface FilterByBookingStatusProps<
   bookingStatuses: string[]
   bookingsRecap: T[]
   updateGlobalFilters: (filters: Partial<BookingsFilters>) => void
+  audience: Audience
 }
 
 const FilterByBookingStatus = <
@@ -46,6 +55,7 @@ const FilterByBookingStatus = <
   bookingStatuses,
   bookingsRecap,
   updateGlobalFilters,
+  audience,
 }: FilterByBookingStatusProps<T>) => {
   const [bookingStatusFilters, setBookingStatusFilters] =
     useState(bookingStatuses)
@@ -91,7 +101,10 @@ const FilterByBookingStatus = <
     }
   }
 
-  const filteredBookingStatuses = getAvailableBookingStatuses(bookingsRecap)
+  const filteredBookingStatuses = getAvailableBookingStatuses(
+    audience,
+    bookingsRecap
+  )
 
   return (
     <div ref={containerRef}>

@@ -9,6 +9,7 @@
     border-radius: rem.torem(5px);
     color: colors.$white;
     padding: rem.torem(5px) rem.torem(7px);
+    white-space: nowrap;
   }
 
   .booking-status-booked {
