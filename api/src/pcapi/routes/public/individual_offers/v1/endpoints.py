@@ -144,6 +144,7 @@ def post_product_offer(body: serialization.ProductOfferCreationBody) -> serializ
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                 venue=venue,
                 visual_disability_compliant=body.disability_compliance.visual_disability_compliant,
+                withdrawal_details=body.item_collection.details if body.item_collection else None,
             )
 
             if body.stock:

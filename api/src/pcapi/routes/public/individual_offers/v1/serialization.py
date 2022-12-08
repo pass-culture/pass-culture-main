@@ -183,8 +183,17 @@ class StockBody(serialization.BaseModel):
         alias_generator = to_camel
 
 
+class ItemCollection(serialization.BaseModel):
+    details: str | None = pydantic.Field(
+        None,
+        description="Further information that will be provided to the beneficiary to ease the offer collection.",
+        example="Opening hours, specific office, collection period, access code, email annoucement...",
+    )
+
+
 class ProductOfferCreationBody(OfferCreationBase):
     category_related_fields: category_related_fields
+    item_collection: ItemCollection | None
     stock: StockBody | None
 
 
