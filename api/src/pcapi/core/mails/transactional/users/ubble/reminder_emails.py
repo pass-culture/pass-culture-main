@@ -87,7 +87,7 @@ def _find_users_to_remind(
     for user in users:
         if not (
             users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
-            and subscription_api.get_identity_check_subscription_status(user, user.eligibility)
+            and subscription_api.get_identity_check_subscription_status(user, user.eligibility).admin_status
             == subscription_models.SubscriptionItemStatus.TODO
         ):
             continue

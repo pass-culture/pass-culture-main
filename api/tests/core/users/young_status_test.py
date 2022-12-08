@@ -44,15 +44,9 @@ class YoungStatusTest:
             )
             assert young_status.young_status(user).status_type == young_status.YoungStatusType.ELIGIBLE
 
-        @pytest.mark.parametrize(
-            "fraud_status", [fraud_models.FraudCheckStatus.STARTED, fraud_models.FraudCheckStatus.PENDING]
-        )
-        def should_be_eligible_when_subscription_is_pending(self, fraud_status):
-            user = users_factories.UserFactory(dateOfBirth=_with_age(18))
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                status=fraud_models.FraudCheckStatus.OK,
-                type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-                user=user,
+        def should_be_eligible_when_subscription_is_pending(self):
+            user = users_factories.UserFactory(
+                dateOfBirth=_with_age(18), phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
                 status=fraud_models.FraudCheckStatus.OK,
@@ -60,7 +54,7 @@ class YoungStatusTest:
                 user=user,
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
-                status=fraud_status,
+                status=fraud_models.FraudCheckStatus.PENDING,
                 type=fraud_models.FraudCheckType.DMS,
                 user=user,
             )
@@ -74,11 +68,32 @@ class YoungStatusTest:
                 subscription_status=young_status.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
             )
 
-        @pytest.mark.parametrize(
-            "fraud_status", [fraud_models.FraudCheckStatus.STARTED, fraud_models.FraudCheckStatus.PENDING]
-        )
+        def should_have_to_complete_when_dms_is_started(self):
+            user = users_factories.UserFactory(
+                dateOfBirth=_with_age(18), phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                status=fraud_models.FraudCheckStatus.OK,
+                type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+                user=user,
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                status=fraud_models.FraudCheckStatus.STARTED,
+                type=fraud_models.FraudCheckType.DMS,
+                user=user,
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                status=fraud_models.FraudCheckStatus.OK,
+                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+                user=user,
+            )
+
+            assert young_status.young_status(user) == young_status.Eligible(
+                subscription_status=young_status.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
+            )
+
         @pytest.mark.parametrize("age", [15, 16, 17])
-        def should_be_eligible_when_subscription_is_pending_for_an_underage_user(self, fraud_status, age):
+        def should_be_eligible_when_subscription_is_pending_for_an_underage_user(self, age):
             user = users_factories.UserFactory(dateOfBirth=_with_age(age))
             fraud_factories.BeneficiaryFraudCheckFactory(
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
@@ -88,7 +103,7 @@ class YoungStatusTest:
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
-                status=fraud_status,
+                status=fraud_models.FraudCheckStatus.PENDING,
                 type=fraud_models.FraudCheckType.DMS,
                 user=user,
             )

@@ -182,6 +182,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         )
         display_beneficiary_imports = has_jouve_or_dms_beneficiary_import and not has_id_check_fraud_checks_with_status
         # End of logic to choose if we display the BeneficiaryImport details or not
+        user_subscription_state = subscription_api.get_user_subscription_state(user)
 
         return self.render(
             template,
@@ -192,7 +193,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             has_filled_identity_check=bool(fraud_api.get_last_filled_identity_fraud_check(user)),
             enum_update_request_value=users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value,
             subscription_items=support_api.get_subscription_items_by_eligibility(user),
-            next_subscription_step=subscription_api.get_next_subscription_step(user),
+            next_subscription_step=user_subscription_state.next_step,
             display_beneficiary_imports=display_beneficiary_imports,
         )
 

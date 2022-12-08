@@ -148,12 +148,12 @@ def is_user_allowed_to_perform_ubble_check(
 
     has_never_performed_ubble_check = not any(
         check for check in user.beneficiaryFraudChecks if check.type == fraud_models.FraudCheckType.UBBLE
-        )
+    )
     if has_never_performed_ubble_check:
         return True
 
     return (
-        subscription_api.get_subscription_item_status(user, eligibility_type, latest_ubble_fraud_check)
+        subscription_api.get_identity_check_subscription_status(user, eligibility_type).admin_status
         == SubscriptionItemStatus.TODO
     )
 

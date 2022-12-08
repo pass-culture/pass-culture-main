@@ -7,8 +7,6 @@ from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
-from pcapi.core.users import factories as users_factories
-from pcapi.core.users import models as users_models
 
 
 @pytest.mark.usefixtures("db_session")
