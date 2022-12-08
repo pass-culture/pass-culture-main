@@ -13,6 +13,15 @@ def widget(field: wtforms.Field, template: str, *args: typing.Any, **kwargs: typ
     return render_template(template, field=field)
 
 
+class PostalCodeValidator:
+    def __init__(self, message: str) -> None:
+        self.message = message
+
+    def __call__(self, form: wtforms.Form, postal_code: wtforms.Field) -> None:
+        if not postal_code.data.isnumeric() or len(postal_code.data) != 5:
+            raise validators.ValidationError(self.message)
+
+
 class PCOptStringField(wtforms.StringField):
     widget = partial(widget, template="components/forms/string_field.html")
     validators = [
@@ -28,10 +37,17 @@ class PCStringField(PCOptStringField):
     ]
 
 
-class PCPostalCodeField(PCStringField):
+class PCOptPostalCodeField(PCStringField):
     validators = [
         validators.Optional(""),
-        validators.Length(min=5, max=5, message="Le code postal doit contenir %(max)d caractères"),
+        PostalCodeValidator("Le code postal doit contenir 5 caractères"),
+    ]
+
+
+class PCPostalCodeField(PCStringField):
+    validators = [
+        validators.InputRequired("Information obligatoire"),
+        PostalCodeValidator("Le code postal doit contenir 5 caractères"),
     ]
 
 

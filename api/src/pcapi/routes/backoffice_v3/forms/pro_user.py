@@ -14,12 +14,7 @@ class EditProUserForm(FlaskForm):
     phone_number = fields.PCPhoneNumberField(
         "Téléphone",
     )
-    postal_code = fields.PCPostalCodeField("Code postal")
-
-    def validate_postal_code(self, postal_code: fields.PCPostalCodeField) -> fields.PCPostalCodeField:
-        if not postal_code.data.isnumeric() and len(postal_code.data) == 5:
-            raise validators.ValidationError("Un code postal doit être composé de 5 chiffres")
-        return postal_code
+    postal_code = fields.PCOptPostalCodeField("Code postal")
 
     def validate_phone_number(self, phone_number: fields.PCPhoneNumberField) -> fields.PCPhoneNumberField:
         if not phone_utils.ParsedPhoneNumber(phone_number.data):
