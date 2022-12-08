@@ -88,6 +88,7 @@ class PostProductTest:
                     "credit": "Jean-Crédit Photo",
                     "file": image_data.GOOD_IMAGE,
                 },
+                "itemCollection": {"details": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"},
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "stock": {
@@ -118,6 +119,7 @@ class PostProductTest:
         assert created_offer.description == "Enregistrement pour la nuit des temps"
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
         assert created_offer.status == offer_mixin.OfferStatus.EXPIRED
+        assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
 
         created_stock = offers_models.Stock.query.one()
         assert created_stock.price == decimal.Decimal("12.34")
