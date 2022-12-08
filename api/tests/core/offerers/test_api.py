@@ -31,6 +31,7 @@ from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryMode
 from pcapi.utils.human_ids import humanize
 
 import tests
+from tests.test_utils import gen_offerer_tags
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -434,10 +435,6 @@ class ApiKeyTest:
 
 
 class CreateOffererTest:
-    def _gen_offerer_tags(self):
-        tags = [offerers_factories.OffererTagFactory(label=label) for label in ("Collectivité", "Établissement public")]
-        return tags
-
     @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
     def test_create_new_offerer_with_validation_token_if_siren_is_not_already_registered(
         self, mock_maybe_send_offerer_validation_email
@@ -622,16 +619,16 @@ class CreateOffererTest:
         assert actions_list[0].comment == "Nouvelle demande sur un SIREN précédemment rejeté"
 
     @pytest.mark.parametrize(
-        "siren, expected_ape, expected_tag",
+        "siren, expected_tag",
         (
-            ("777084112", "84.11Z", "Collectivité"),
-            ("777084122", "84.12Z", "Établissement public"),
-            ("777091032", "91.03Z", "Établissement public"),
+            ("777084112", "Collectivité"),
+            ("777084122", "Établissement public"),
+            ("777091032", "Établissement public"),
         ),
     )
-    def test_create_offerer_auto_tagging(self, siren, expected_ape, expected_tag):
+    def test_create_offerer_auto_tagging(self, siren, expected_tag):
         # Given
-        self._gen_offerer_tags()
+        gen_offerer_tags()
         offerers_factories.VirtualVenueTypeFactory()
         user = users_factories.UserFactory()
         offerer_informations = CreateOffererQueryModel(
