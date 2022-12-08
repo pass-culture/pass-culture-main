@@ -157,7 +157,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
 
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
-    () => {
+    async () => {
       // When saving draft with an empty form
       // we display a success notification even if nothing is done
       if (saveDraft && isFormEmpty()) {
@@ -230,7 +230,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
           )
         }
       } else {
-        formik.handleSubmit()
+        await formik.submitForm()
       }
     }
 
