@@ -1,7 +1,11 @@
 from datetime import datetime
 
+from flask import flash
+from flask import redirect
 from flask import render_template
+from flask import url_for
 import gql.transport.exceptions as gql_exceptions
+from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -9,9 +13,12 @@ from pcapi.connectors.dms.api import DMSGraphQLClient
 from pcapi.core.offerers import api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.permissions.models as perm_models
+from pcapi.models.api_errors import ApiErrors
+import pcapi.routes.serialization.base as serialize_base
 import pcapi.utils.regions as regions_utils
 
 from . import utils
+from .forms import venue as forms
 from .serialization import offerers as offerers_serialization
 from .serialization import venues as serialization
 
@@ -75,21 +82,44 @@ def has_reimbursement_point(
     return False
 
 
-@venue_blueprint.route("", methods=["GET"])
-def get(venue_id: int) -> utils.BackofficeResponse:
-    venue = get_venue(venue_id)
-
+def render_venue_details(
+    venue: offerers_models.Venue, form: forms.EditVirtualVenueForm | None = None
+) -> utils.BackofficeResponse:
     dms_application_id = venue.bankInformation.applicationId if venue.bankInformation else None
     dms_stats = get_dms_stats(dms_application_id)
     region = regions_utils.get_region_name_from_postal_code(venue.postalCode) if venue.postalCode else ""
 
+    if not form:
+        if venue.isVirtual:
+            form = forms.EditVirtualVenueForm(
+                email=venue.contact.email if venue.contact else None,
+                phone_number=venue.contact.phone_number if venue.contact else None,
+            )
+        else:
+            form = forms.EditVenueForm(
+                venue=venue,
+                siret=venue.siret,
+                city=venue.city,
+                postalCode=venue.postalCode,
+                address=venue.address,
+                email=venue.contact.email if venue.contact else None,
+                phone_number=venue.contact.phone_number if venue.contact else None,
+            )
+
     return render_template(
         "venue/get.html",
         venue=venue,
+        form=form,
         region=region,
         has_reimbursement_point=has_reimbursement_point(venue),
         dms_stats=dms_stats,
     )
+
+
+@venue_blueprint.route("", methods=["GET"])
+def get(venue_id: int) -> utils.BackofficeResponse:
+    venue = get_venue(venue_id)
+    return render_venue_details(venue)
 
 
 def get_stats_data(venue_id: int) -> serialization.VenueStats:
@@ -129,3 +159,51 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
         stats=data.stats,
         total_revenue=data.total_revenue,
     )
+
+
+manage_venue_blueprint = utils.child_backoffice_blueprint(
+    "manage_venue",
+    __name__,
+    url_prefix="/pro/venue/<int:venue_id>/",
+    permission=perm_models.Permissions.MANAGE_PRO_ENTITY,
+)
+
+
+@manage_venue_blueprint.route("/update", methods=["POST"])
+def update(venue_id: int) -> utils.BackofficeResponse:
+    venue = get_venue(venue_id)
+
+    if venue.isVirtual:
+        form = forms.EditVirtualVenueForm()
+    else:
+        form = forms.EditVenueForm(venue)
+
+    if not form.validate():
+        msg = Markup(
+            """
+            <button type="button"
+                    class="btn"
+                    data-bs-toggle="modal"
+                    data-bs-target="#venue-edit-details">
+                Les données envoyées comportent des erreurs. Afficher
+            </button>
+        """
+        ).format()
+        flash(msg, "warning")
+        return render_venue_details(venue, form)
+
+    attrs = {field.name: field.data for field in form if field.name and hasattr(venue, field.name)}
+    contact_attrs = {"email": form.email.data, "phone_number": form.phone_number.data}
+
+    contact_data = serialize_base.VenueContactModel(**contact_attrs)
+
+    try:
+        offerers_api.update_venue(venue, contact_data, admin_update=True, **attrs)
+    except ApiErrors as api_errors:
+        for error_key, error_details in api_errors.errors.items():
+            for error_detail in error_details:
+                flash(f"[{error_key}] {error_detail}", "warning")
+        return render_venue_details(venue, form)
+
+    flash("Les informations ont bien été mises à jour", "success")
+    return redirect(url_for("backoffice_v3_web.venue.get", venue_id=venue.id), code=303)

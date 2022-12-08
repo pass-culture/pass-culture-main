@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
+from flask import g
 from flask import url_for
 import pytest
 
@@ -183,3 +184,80 @@ class HasReimbursementPointTest:
     def test_venue_with_no_reimbursement_point_links(self):
         venue = offerers_factories.VenueFactory()
         assert not venues.has_reimbursement_point(venue)
+
+
+class UpdateVenueTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        endpoint = "backoffice_v3_web.manage_venue.update"
+        endpoint_kwargs = {"venue_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_update_venue(self, authenticated_client, offerer):
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        url = url_for("backoffice_v3_web.manage_venue.update", venue_id=venue.id)
+        data = {
+            "siret": venue.managingOfferer.siren + "98765",
+            "city": "Umeå",
+            "postalCode": "90325",
+            "address": "Skolgatan 31A",
+            "email": venue.contact.email + ".update",
+            "phone_number": "+33102030456",
+        }
+
+        response = send_request(authenticated_client, venue.id, url, data)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_v3_web.venue.get", venue_id=venue.id, _external=True)
+
+        db.session.refresh(venue)
+
+        assert venue.siret == data["siret"]
+        assert venue.city == data["city"]
+        assert venue.postalCode == data["postalCode"]
+        assert venue.address == data["address"]
+        assert venue.contact.email == data["email"]
+        assert venue.contact.phone_number == data["phone_number"]
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_update_virtual_venue(self, authenticated_client, offerer):
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+
+        url = url_for("backoffice_v3_web.manage_venue.update", venue_id=venue.id)
+        data = {
+            "email": venue.contact.email + ".update",
+            "phone_number": "+33102030456",
+        }
+
+        response = send_request(authenticated_client, venue.id, url, data)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_v3_web.venue.get", venue_id=venue.id, _external=True)
+
+        db.session.refresh(venue)
+
+        assert venue.contact.email == data["email"]
+        assert venue.contact.phone_number == data["phone_number"]
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_update_with_missing_data(self, authenticated_client, venue):
+        url = url_for("backoffice_v3_web.manage_venue.update", venue_id=venue.id)
+        data = {"email": venue.contact.email + ".update"}
+
+        response = authenticated_client.post(url, json=data)
+        response = send_request(authenticated_client, venue.id, url, data)
+
+        assert response.status_code == 200
+        assert "Les données envoyées comportent des erreurs" in response.data.decode("utf-8")
+
+
+def send_request(authenticated_client, venue_id, url, form_data=None):
+    # generate and fetch (inside g) csrf token
+    venue_detail_url = url_for("backoffice_v3_web.venue.get", venue_id=venue_id)
+    authenticated_client.get(venue_detail_url)
+
+    form_data = form_data if form_data else {}
+    form = {"csrf_token": g.get("csrf_token", ""), **form_data}
+
+    return authenticated_client.post(url, form=form)
