@@ -228,6 +228,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   const onConfirmDeleteStock = () => {
     onDeleteStock()
     deleteConfirmHide()
+    formik.resetForm({ values: STOCK_THING_FORM_DEFAULT_VALUES })
   }
 
   let actions: IStockFormRowAction[] = []
@@ -254,13 +255,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     ]
   }
 
-  // On DRAFT and CREATION mode we can edit the unique
-  // stock so there is no need to delete it
-  const cannotDeleteStock =
-    isDisabled ||
-    isSynchronized ||
-    mode !== OFFER_WIZARD_MODE.EDITION ||
-    !formik.values.stockId
+  const cannotDeleteStock = isDisabled || isSynchronized
 
   actions.push({
     callback:
