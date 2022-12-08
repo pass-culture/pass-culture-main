@@ -327,20 +327,17 @@ class AccountTest:
         response = client.get("/native/v1/me")
         assert response.status_code == 200
         client.with_token(user.email)
-
         n_queries = 1  # get user
-        n_queries += 1  # get bookings
-        n_queries += 1  # has beneficiary_fraud_review (from get_next_subsciption_step)
+        n_queries += 1  # has beneficiary_fraud_review
         n_queries += 1  # get user_profiling fraud_check
         n_queries += 1  # get feature enable_user_profiling
         n_queries += 1  # get profile completion fraud_check
+        n_queries += 1  # count ubble beneficiary_fraud_checks
         n_queries += 1  # get feature allow_id_check_registration
         n_queries += 1  # get feature enable_ubble
-        n_queries += 1  # get feature enable_subscription_limitatin
-        n_queries += 1  # has beneficiary_fraud_review (from get_subscription_message)
-        n_queries += 1  # check pending status get_identity_check_subscription_status
-        n_queries += 1  # check issues has_subscription_issues
-        n_queries += 1  # check has to complete step get_next_subscription_step
+        n_queries += 1  # get feature enable_subscription_limitation
+        n_queries += 1  # count ubble beneficiary_fraud_checks
+        n_queries += 1  # get bookings
         n_queries += 1  # get feature enable_native_cultural_survey
 
         with testing.assert_num_queries(n_queries):
@@ -1558,8 +1555,10 @@ class ProfilingFraudScoreTest:
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
 
+        subscription_state = subscription_api.get_user_subscription_state(user)
+
         assert (
-            subscription_api.get_subscription_message(user).user_message
+            subscription_state.subscription_message.user_message
             == "Ton inscription n'a pas pu aboutir. Contacte le support pour plus d'informations"
         )
 
@@ -1595,7 +1594,7 @@ class ProfilingFraudScoreTest:
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
         assert fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
 
-        assert subscription_api.get_subscription_message(user) is None
+        assert subscription_api.get_user_subscription_state(user).subscription_message is None
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     @override_features(ENABLE_USER_PROFILING=True)

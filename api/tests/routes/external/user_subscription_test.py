@@ -1145,7 +1145,9 @@ class UbbleWebhookTest:
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
         assert (
-            subscription_api.get_identity_check_subscription_status(fraud_check.user, fraud_check.user.eligibility)
+            subscription_api.get_identity_check_subscription_status(
+                fraud_check.user, fraud_check.user.eligibility
+            ).admin_status
             == subscription_models.SubscriptionItemStatus.PENDING
         )
         content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)

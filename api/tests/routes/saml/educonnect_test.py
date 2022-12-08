@@ -160,7 +160,9 @@ class EduconnectTest:
             "student_level": "2212",
         }
         assert (
-            subscription_api.get_identity_check_subscription_status(user, user_models.EligibilityType.UNDERAGE)
+            subscription_api.get_identity_check_subscription_status(
+                user, user_models.EligibilityType.UNDERAGE
+            ).admin_status
             == subscription_status.SubscriptionItemStatus.OK
         )
         assert user.firstName == "ProfileFirstName"
