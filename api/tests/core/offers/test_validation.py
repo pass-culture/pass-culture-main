@@ -269,6 +269,13 @@ class CheckStockIsUpdatableTest:
 
         assert error.value.errors["global"] == ["Les évènements passés ne sont pas modifiables"]
 
+    def test_past_event_draft_stock(self):
+        recently = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
+        stock = offers_factories.EventStockFactory(
+            beginningDatetime=recently, offer__validation=OfferValidationStatus.DRAFT
+        )
+        validation.check_stock_is_updatable(stock)
+
 
 class CheckImageTest:
     def test_ok(self):

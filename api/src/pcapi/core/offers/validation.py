@@ -184,6 +184,8 @@ def check_stock_can_be_created_for_offer(offer: Offer) -> None:
 
 
 def check_stock_is_updatable(stock: Stock) -> None:
+    if stock.offer.validation == OfferValidationStatus.DRAFT:
+        return
     check_offer_existing_stocks_are_editable(stock.offer)
     check_event_expiration(stock)
 
