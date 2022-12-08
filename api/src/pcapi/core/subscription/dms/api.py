@@ -503,9 +503,6 @@ def get_dms_subscription_message(
             )
         return messages.get_application_received_message(dms_fraud_check)
 
-    if dms_fraud_check.status == fraud_models.FraudCheckStatus.OK:
-        return None
-
     if dms_fraud_check.status in (
         fraud_models.FraudCheckStatus.SUSPICIOUS,
         fraud_models.FraudCheckStatus.KO,
@@ -519,9 +516,7 @@ def get_dms_subscription_message(
             dms_fraud_check.updatedAt,
         )
 
-    if dms_fraud_check.status == fraud_models.FraudCheckStatus.CANCELED:
-        return None
-
+    # Status is OK or CANCELED. We don't want to display a subscription message
     return None
 
 
