@@ -222,7 +222,7 @@
     {% endif %}
 </div>
 
-{% if model.suspension_history|length > 0 %}
+{% if model.suspension_action_history|length > 0 %}
 <div class="section">
     <h3>Historique des suspensions de compte</h3>
     <table class="table table-striped table-hover">
@@ -235,24 +235,30 @@
         </tr>
         </thead>
         <tbody>
-        {% for suspension_event in model.suspension_history %}
+        {% for suspension_action in model.suspension_action_history %}
         <tr>
-            <td>{{ suspension_event.eventType|suspension_event_format }}</td>
+            <td>{{ suspension_action.actionType|suspension_action_format }}</td>
             <td>
-                {% if suspension_event.eventDate %}
-                {{ suspension_event.eventDate.strftime('le %d/%m/%Y à %H:%M:%S') }}
+                {% if suspension_action.actionDate %}
+                {{ suspension_action.actionDate.strftime('le %d/%m/%Y à %H:%M:%S') }}
                 {% else %}
                 -
                 {% endif %}
             </td>
             <td>
-                {% if suspension_event.actorUser %}
-                {{ suspension_event.actorUser.firstName }} {{ suspension_event.actorUser.lastName }}
+                {% if suspension_action.authorUser %}
+                {{ suspension_action.authorUser.full_name }}
                 {% else %}
                 -
                 {% endif %}
             </td>
-            <td>{{ suspension_event.reasonCode|suspension_reason_format }}</td>
+            <td>
+                {% if suspension_action.extraData %}
+                {{ suspension_action.extraData["reason"] | format_reason_label }}
+                {% else %}
+                -
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
         </tbody>

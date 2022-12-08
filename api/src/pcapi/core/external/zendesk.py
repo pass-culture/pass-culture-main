@@ -96,16 +96,17 @@ def _format_user_attributes(email: str, attributes: attributes_models.UserAttrib
     except phone_validation_exceptions.InvalidPhoneNumber:
         phone_number = None
 
-    suspended = (
-        "Non"
-        if attributes.is_active
-        else "Oui - {} ({})".format(
-            dict(users_constants.SUSPENSION_REASON_CHOICES).get(attributes.suspension_reason, "raison inconnue"),  # type: ignore [call-overload]
-            datetime.strftime(attributes.suspension_date, "le %d/%m/%Y à %H:%M")
-            if attributes.suspension_date and attributes.suspension_reason
-            else "date inconnue",
+    if attributes.is_active:
+        suspended = "Non"
+    else:
+        suspension_reason = attributes.suspension_reason
+        suspension_date = attributes.suspension_date
+        suspended = "Oui - {} ({})".format(
+            dict(users_constants.SUSPENSION_REASON_CHOICES)[suspension_reason]
+            if suspension_reason
+            else "raison inconnue",
+            datetime.strftime(suspension_date, "le %d/%m/%Y à %H:%M") if suspension_date else "date inconnue",
         )
-    )
 
     tags = attributes.roles.copy()
     tags.append(ZENDESK_TAG_ACTIVE if attributes.is_active else ZENDESK_TAG_SUSPENDED)

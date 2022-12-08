@@ -408,46 +408,71 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return max(0, balance)
 
     @property
-    def suspension_reason(self) -> str | None:
+    # list[history_models.ActionHistory] -> None, untyped due to import loop
+    def suspension_action_history(self):  # type: ignore [no-untyped-def]
+        import pcapi.core.history.models as history_models
+
+        return sorted(
+            [
+                action
+                for action in self.action_history
+                if action.actionType
+                in (
+                    history_models.ActionType.USER_SUSPENDED,
+                    history_models.ActionType.USER_UNSUSPENDED,
+                )
+            ],
+            key=lambda action: action.actionDate,
+        )
+
+    @property
+    def suspension_reason(self) -> constants.SuspensionReason | None:
         """
         Reason for the active suspension.
-        suspension_history is sorted by ascending date so the last item is the most recent (see UserSuspension).
         """
+        import pcapi.core.history.models as history_models
+
+        suspension_action_history = self.suspension_action_history
         if (
             not self.isActive
-            and self.suspension_history
-            and self.suspension_history[-1].eventType == constants.SuspensionEventType.SUSPENDED
+            and suspension_action_history
+            and suspension_action_history[-1].actionType == history_models.ActionType.USER_SUSPENDED
         ):
-            return self.suspension_history[-1].reasonCode
+            return constants.SuspensionReason(suspension_action_history[-1].extraData["reason"])
         return None
 
     @property
     def suspension_date(self) -> datetime | None:
         """
         Date and time when the inactive account was suspended for the last time.
-        suspension_history is sorted by ascending date so the last item is the most recent (see UserSuspension).
         """
+        import pcapi.core.history.models as history_models
+
+        suspension_action_history = self.suspension_action_history
         if (
             not self.isActive
-            and self.suspension_history
-            and self.suspension_history[-1].eventType == constants.SuspensionEventType.SUSPENDED
+            and suspension_action_history
+            and suspension_action_history[-1].actionType == history_models.ActionType.USER_SUSPENDED
         ):
-            return self.suspension_history[-1].eventDate
+            return suspension_action_history[-1].actionDate
         return None
 
     @property
     def account_state(self) -> AccountState:
+        import pcapi.core.history.models as history_models
+
         if self.isActive:
             return AccountState.ACTIVE
 
-        if self.suspension_history:
-            suspension_event = self.suspension_history[-1]
+        suspension_action_history = self.suspension_action_history
+        if suspension_action_history:
+            last_suspension_action = suspension_action_history[-1]
 
-            if suspension_event.eventType == constants.SuspensionEventType.SUSPENDED:
+            if last_suspension_action.actionType == history_models.ActionType.USER_SUSPENDED:
 
-                if suspension_event.reasonCode == constants.SuspensionReason.DELETED:
+                if self.suspension_reason == constants.SuspensionReason.DELETED:
                     return AccountState.DELETED
-                if suspension_event.reasonCode == constants.SuspensionReason.UPON_USER_REQUEST:
+                if self.suspension_reason == constants.SuspensionReason.UPON_USER_REQUEST:
                     return AccountState.SUSPENDED_UPON_USER_REQUEST
 
                 return AccountState.SUSPENDED

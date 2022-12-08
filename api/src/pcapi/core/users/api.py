@@ -339,16 +339,15 @@ def suspend_account(user: models.User, reason: constants.SuspensionReason, actor
     import pcapi.core.bookings.api as bookings_api  # avoid import loop
 
     user.isActive = False
-    user_suspension = models.UserSuspension(
+    history_api.log_action(
+        history_models.ActionType.USER_SUSPENDED,
+        author=actor,
         user=user,
-        eventType=constants.SuspensionEventType.SUSPENDED,
-        actorUser=actor,  # type: ignore [arg-type]
-        reasonCode=reason,
+        reason=reason.value,
     )
     user.remove_admin_role()
 
     repository.save(user)
-    repository.save(user_suspension)
 
     sessions = models.UserSession.query.filter_by(userId=user.id)
     repository.delete(*sessions)
@@ -387,25 +386,14 @@ def suspend_account(user: models.User, reason: constants.SuspensionReason, actor
         },
     )
 
-    history_api.log_action(
-        history_models.ActionType.USER_SUSPENDED,
-        author=actor,
-        user=user,
-        reason={"full_reason": dict(users_constants.SUSPENSION_REASON_CHOICES).get(reason, "Raison inconnue")},
-    )
-
     return {"cancelled_bookings": n_bookings}
 
 
 def unsuspend_account(user: models.User, actor: models.User, send_email: bool = False) -> None:
     user.isActive = True
-    user_suspension = models.UserSuspension(
-        user=user,
-        eventType=constants.SuspensionEventType.UNSUSPENDED,
-        actorUser=actor,
-    )
+
     repository.save(user)
-    repository.save(user_suspension)
+    history_api.log_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user)
 
     logger.info(
         "Account has been unsuspended",
@@ -416,8 +404,6 @@ def unsuspend_account(user: models.User, actor: models.User, send_email: bool = 
         },
     )
 
-    history_api.log_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user)
-
     if send_email:
         transactional_mails.send_unsuspension_email(user)
 
@@ -427,14 +413,10 @@ def bulk_unsuspend_account(user_ids: list[int], actor: models.User) -> None:
         values={"isActive": True},
         synchronize_session=False,
     )
-    for user_id in user_ids:
-        db.session.add(
-            models.UserSuspension(
-                userId=user_id,
-                eventType=constants.SuspensionEventType.UNSUSPENDED,
-                actorUser=actor,
-            )
-        )
+    users = models.User.query.filter(models.User.id.in_(user_ids)).all()
+    for user in users:
+        history_api.log_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user)
+
     db.session.commit()
 
     logger.info(
@@ -1011,7 +993,6 @@ def public_account_history(user: models.User) -> list[dict]:
     #  - l'horodatage et l'attribution de chaque modification de donnée utilisateur
     #    (pas possible en l'état car on ne garde pas de trace de ces changements à part pour l'email)
     email_changes = models.UserEmailHistory.query.filter_by(userId=user.id).all()
-    suspensions = models.UserSuspension.query.filter_by(userId=user.id).all()
     fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).all()
     reviews = fraud_models.BeneficiaryFraudReview.query.filter_by(userId=user.id).all()
     imports = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).join(BeneficiaryImportStatus).all()
@@ -1023,18 +1004,6 @@ def public_account_history(user: models.User) -> list[dict]:
             "message": f"de {change.oldUserEmail}@{change.oldDomainEmail} à {change.newUserEmail}@{change.newDomainEmail}",
         }
         for change in email_changes
-    ]
-
-    suspensions_history = [
-        {
-            "action": SUSPENSION_ACTIONS[suspension.eventType],
-            "datetime": suspension.eventDate,
-            "message": (
-                f"par {suspension.actorUser.publicName}: "
-                f"{getattr(suspension.reasonCode, 'value', '[aucun motif renseigné]')}"
-            ),
-        }
-        for suspension in suspensions
     ]
 
     fraud_checks_history = [
@@ -1070,7 +1039,7 @@ def public_account_history(user: models.User) -> list[dict]:
     ]
 
     history = sorted(
-        email_changes_history + suspensions_history + fraud_checks_history + reviews_history + imports_history,
+        email_changes_history + fraud_checks_history + reviews_history + imports_history,
         key=lambda item: item["datetime"],
         reverse=True,
     )

@@ -3,6 +3,7 @@ import datetime
 from decimal import Decimal
 import typing
 
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 
 
@@ -45,7 +46,7 @@ class UserAttributes:
     products_use_date: dict
     roles: list[str]
     suspension_date: datetime.datetime | None  # Added for Zendesk
-    suspension_reason: str | None  # Added for Zendesk
+    suspension_reason: users_constants.SuspensionReason | None  # Added for Zendesk
     # Specific for Dec 2022 emailing campaign:
     amount_spent_2022: Decimal  # Amount of credit spent in year 2022 (non-canceled offers)
     first_booked_offer_2022: str | None  # First booked offer name in 2022 (non-canceled)

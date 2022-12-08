@@ -24,6 +24,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
+from pcapi.core.history import factories as history_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.subscription.api as subscription_api
@@ -476,21 +477,25 @@ class AccountCreationEmailExistsTest:
 
     def test_suspended_by_fraud_account(self, client):
         user = users_factories.UserFactory(email=self.identifier, isActive=False)
-        users_factories.UserSuspensionByFraudFactory(user=user)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
+        )
 
         response = client.post("/native/v1/account", json=self.data)
         self.assert_email_sent(response, user)
 
     def test_suspended_upon_user_request_account(self, client):
         user = users_factories.UserFactory(email=self.identifier, isActive=False)
-        users_factories.SuspendedUponUserRequestFactory(user=user)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+        )
 
         response = client.post("/native/v1/account", json=self.data)
         self.assert_email_sent(response, user)
 
     def test_deleted_account(self, client):
         user = users_factories.UserFactory(email=self.identifier, isActive=False)
-        users_factories.DeletedAccountSuspensionFactory(user=user)
+        history_factories.SuspendedUserActionHistoryFactory(user=user, reason=users_constants.SuspensionReason.DELETED)
 
         response = client.post("/native/v1/account", json=self.data)
         self.assert_email_sent(response, user)
@@ -1398,14 +1403,15 @@ class SuspendAccountTest:
         assert not user.isActive
         assert user.suspension_reason == users_constants.SuspensionReason.UPON_USER_REQUEST
         assert user.suspension_date
-        assert len(user.suspension_history) == 1
-        assert user.suspension_history[0].userId == user.id
-        assert user.suspension_history[0].actorUserId == user.id
+        assert len(user.suspension_action_history) == 1
+        assert user.suspension_action_history[0].userId == user.id
+        assert user.suspension_action_history[0].authorUserId == user.id
 
     def test_suspend_suspended_account(self, client, app):
         # Ensure that a beneficiary user can't change the reason for being suspended
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
-        user_suspension = users_factories.UserSuspensionByFraudFactory(user=user)
+        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
+        history_factories.SuspendedUserActionHistoryFactory(user=user, reason=reason)
 
         client.with_token(email=user.email)
         response = client.post("/native/v1/account/suspend")
@@ -1414,8 +1420,8 @@ class SuspendAccountTest:
         assert response.status_code == 403
         db.session.refresh(user)
         assert not user.isActive
-        assert user.suspension_reason == user_suspension.reasonCode
-        assert len(user.suspension_history) == 1
+        assert user.suspension_reason == reason
+        assert len(user.suspension_action_history) == 1
 
 
 class ProfilingFraudScoreTest:
@@ -1986,7 +1992,9 @@ class GetAccountSuspendedDateTest:
         date
         """
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
-        users_factories.SuspendedUponUserRequestFactory(user=user)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+        )
 
         client.with_token(email=user.email)
         response = client.get("/native/v1/account/suspension_date")
@@ -2000,9 +2008,10 @@ class GetAccountSuspendedDateTest:
             Test that a call for a unsuspended account returns no date
             """
             user = users_factories.BeneficiaryGrant18Factory(isActive=False)
-
-            users_factories.SuspendedUponUserRequestFactory(user=user)
-            users_factories.UnsuspendedSuspensionFactory(user=user)
+            history_factories.SuspendedUserActionHistoryFactory(
+                user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+            )
+            history_factories.UnsuspendedUserActionHistoryFactory(user=user)
 
             self.assert_no_suspension_date_returned(client, user)
 
@@ -2020,7 +2029,9 @@ class GetAccountSuspendedDateTest:
             of fraud suspicion returns no date
             """
             user = users_factories.BeneficiaryGrant18Factory(isActive=False)
-            users_factories.UserSuspensionByFraudFactory(user=user)
+            history_factories.SuspendedUserActionHistoryFactory(
+                user=user, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
+            )
 
             self.assert_no_suspension_date_returned(client, user)
 
@@ -2034,19 +2045,23 @@ class GetAccountSuspendedDateTest:
 class SuspensionStatusTest:
     def test_fraud_suspicion_account_status(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
-        users_factories.UserSuspensionByFraudFactory(user=user)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
+        )
 
         self.assert_status(client, user, "SUSPENDED")
 
     def test_suspended_upon_user_request_status(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
-        users_factories.SuspendedUponUserRequestFactory(user=user)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+        )
 
         self.assert_status(client, user, "SUSPENDED_UPON_USER_REQUEST")
 
     def test_deleted_account_status(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
-        users_factories.DeletedAccountSuspensionFactory(user=user)
+        history_factories.SuspendedUserActionHistoryFactory(user=user, reason=users_constants.SuspensionReason.DELETED)
 
         self.assert_status(client, user, "DELETED")
 
@@ -2065,7 +2080,9 @@ class SuspensionStatusTest:
 class UnsuspendAccountTest:
     def test_suspended_upon_user_request(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
-        users_factories.SuspendedUponUserRequestFactory(user=user)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+        )
 
         client.with_token(email=user.email)
         response = client.post("/native/v1/account/unsuspend")
@@ -2089,7 +2106,9 @@ class UnsuspendAccountTest:
 
     def test_error_when_not_suspended_upon_user_request(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
-        users_factories.UserSuspensionByFraudFactory(user=user)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
+        )
 
         response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
         self.assert_code_and_not_active(response, user, "UNSUSPENSION_NOT_ALLOWED")
@@ -2098,7 +2117,9 @@ class UnsuspendAccountTest:
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
 
         suspension_date = date.today() - timedelta(days=users_constants.ACCOUNT_UNSUSPENSION_DELAY + 1)
-        users_factories.SuspendedUponUserRequestFactory(user=user, eventDate=suspension_date)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, actionDate=suspension_date, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+        )
 
         response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
         self.assert_code_and_not_active(response, user, "UNSUSPENSION_LIMIT_REACHED")
