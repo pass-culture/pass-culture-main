@@ -2,7 +2,13 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import RedirectDialog from 'components/Dialog/RedirectDialog'
 import SoftDeletedOffererWarning from 'components/SoftDeletedOffererWarning'
+import { Events } from 'core/FirebaseEvents/constants'
+import { useNewOfferCreationJourney } from 'hooks'
+import useAnalytics from 'hooks/useAnalytics'
+import { ReactComponent as StatusPendingFullIcon } from 'icons/ico-status-pending-full.svg'
+import { ReactComponent as SuccessIcon } from 'icons/ico-success.svg'
 import {
   INITIAL_PHYSICAL_VENUES,
   INITIAL_VIRTUAL_VENUE,
@@ -27,8 +33,11 @@ const Offerers = () => {
   const [virtualVenue, setVirtualVenue] = useState(INITIAL_VIRTUAL_VENUE)
   const [isLoading, setIsLoading] = useState(true)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
+  const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
   const location = useLocation()
   const history = useHistory()
+
+  const hasNewOfferCreationJourney = useNewOfferCreationJourney()
 
   const { structure: offererId } = Object.fromEntries(
     new URLSearchParams(location.search)
@@ -67,6 +76,12 @@ const Offerers = () => {
     },
     [offererId]
   )
+
+  useEffect(() => {
+    if (hasNewOfferCreationJourney) {
+      location.search === '?success' && setOpenSuccessDialog(true)
+    }
+  }, [hasNewOfferCreationJourney])
 
   useEffect(() => {
     async function loadOfferer(offererId) {
@@ -122,6 +137,18 @@ const Offerers = () => {
     )
   }
 
+  const removeSuccessParams = () => {
+    if (hasNewOfferCreationJourney) {
+      const queryParams = new URLSearchParams(location.search)
+      if (queryParams.has('success')) {
+        queryParams.delete('success')
+        history.replace({
+          search: queryParams.toString(),
+        })
+      }
+    }
+  }
+  const { logEvent } = useAnalytics()
   const isOffererSoftDeleted =
     selectedOfferer && selectedOfferer.isActive === false
   const userHasOfferers = offererOptions.length > 0
@@ -129,6 +156,41 @@ const Offerers = () => {
     <>
       {userHasOfferers && selectedOfferer && (
         <>
+          {openSuccessDialog && (
+            <RedirectDialog
+              icon={SuccessIcon}
+              redirectText="Créer une offre"
+              redirectLink={{
+                to: `/offre/creation?structure=${selectedOfferer.id}`,
+                isExternal: false,
+              }}
+              cancelText="Plus tard"
+              withRedirectLinkIcon={false}
+              title="Félicitations,"
+              secondTitle="vous avez créé votre lieu !"
+              onRedirect={() =>
+                logEvent?.(
+                  Events.CLICKED_CREATE_OFFER_FROM_SUCCESS_VENUE_CREATION_MODAL,
+                  {
+                    from: location.pathname,
+                  }
+                )
+              }
+              onCancel={() => {
+                removeSuccessParams()
+                logEvent?.(
+                  Events.CLICKED_SEE_LATER_FROM_SUCCESS_VENUE_CREATION_MODAL,
+                  {
+                    from: location.pathname,
+                  }
+                )
+                setOpenSuccessDialog(false)
+              }}
+              cancelIcon={StatusPendingFullIcon}
+            >
+              <p>Vous pouvez dès à présent créer une offre.</p>
+            </RedirectDialog>
+          )}
           <h2 className="h-section-title">Structures et lieux</h2>
           <OffererDetails
             businessUnitList={businessUnitList}

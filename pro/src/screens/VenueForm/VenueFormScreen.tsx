@@ -4,11 +4,7 @@ import { useHistory } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import {
-  GetVenueResponseModel,
-  VenueProviderResponse,
-  VenueResponseModel,
-} from 'apiClient/v1'
+import { VenueProviderResponse } from 'apiClient/v1'
 import {
   IVenueFormValues,
   validationSchema,
@@ -23,6 +19,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
+import { useNewOfferCreationJourney } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -66,6 +63,9 @@ const VenueFormScreen = ({
   const isNewBankInformationCreation = useActiveFeature(
     'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
   )
+
+  const hasNewOfferCreationJourney = useNewOfferCreationJourney()
+
   const { currentUser } = useCurrentUser()
 
   const onSubmit = async (value: IVenueFormValues) => {
@@ -89,18 +89,17 @@ const VenueFormScreen = ({
     })
 
     request
-      .then((response: VenueResponseModel | GetVenueResponseModel) => {
+      .then(() => {
         notify.success('Vos modifications ont bien été enregistrées')
 
         const venuesUrl = currentUser.isAdmin
           ? `/structures/${offerer.id}`
-          : '/accueil'
-        history.push(
-          isCreatingVenue
-            ? `/structures/${offerer.id}/lieux/${response.id}`
-            : venuesUrl,
-          isNewBankInformationCreation
-        )
+          : `${
+              hasNewOfferCreationJourney && isCreatingVenue
+                ? '/accueil?success'
+                : '/accueil'
+            }`
+        history.push(venuesUrl, isNewBankInformationCreation)
       })
       .catch(error => {
         let formErrors

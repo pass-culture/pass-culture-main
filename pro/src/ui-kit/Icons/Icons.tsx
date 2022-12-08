@@ -68,11 +68,13 @@ import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
 import { ReactComponent as StatusDraftIcon } from 'icons/ico-status-draft.svg'
 import { ReactComponent as StatusExpiredIcon } from 'icons/ico-status-expired.svg'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
-import { ReactComponent as StatusPendingIcon } from 'icons/ico-status-pending.svg'
+import { ReactComponent as StatusPendingIcon } from 'icons/ico-status-pending-full.svg'
+import { ReactComponent as StatusPendingFullIcon } from 'icons/ico-status-pending.svg'
 import { ReactComponent as StatusRejectedIcon } from 'icons/ico-status-rejected.svg'
 import { ReactComponent as StatusSoldOutIcon } from 'icons/ico-status-sold-out.svg'
 import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
 import { ReactComponent as IcoStructure } from 'icons/ico-structure.svg'
+import { ReactComponent as SuccessIcon } from 'icons/ico-success.svg'
 import { ReactComponent as IcoTag } from 'icons/ico-tag.svg'
 import { ReactComponent as TemplateOfferIcon } from 'icons/ico-template-offer.svg'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
@@ -457,6 +459,12 @@ export const Icons = () => (
       </tr>
       <tr>
         <td>
+          <SuccessIcon />
+        </td>
+        <td>success</td>
+      </tr>
+      <tr>
+        <td>
           <InfoPhoneIcon />
         </td>
         <td>info-phone</td>
@@ -659,6 +667,12 @@ export const Icons = () => (
           <StatusPendingIcon />
         </td>
         <td>StatusPending</td>
+      </tr>
+      <tr>
+        <td className={styles['with-background']}>
+          <StatusPendingFullIcon />
+        </td>
+        <td>StatusPendingFull</td>
       </tr>
       <tr>
         <td className={styles['with-background']}>
