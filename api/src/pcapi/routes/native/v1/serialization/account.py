@@ -201,6 +201,8 @@ class UserProfileResponse(BaseModel):
 
     @classmethod
     def from_orm(cls, user: users_models.User) -> "UserProfileResponse":
+        user_subscription_state = subscription_api.get_user_subscription_state(user)
+
         user.show_eligible_card = cls._show_eligible_card(user)
         user.subscriptions = user.get_notification_subscriptions()
         user.domains_credit = users_api.get_domains_credit(user)
@@ -209,8 +211,8 @@ class UserProfileResponse(BaseModel):
         user.eligibility_end_datetime = users_api.get_eligibility_end_datetime(user.birth_date)
         user.eligibility_start_datetime = users_api.get_eligibility_start_datetime(user.birth_date)
         user.isBeneficiary = user.is_beneficiary
-        user.subscriptionMessage = subscription_api.get_subscription_message(user)
-        user.status = young_status.young_status(user)
+        user.subscriptionMessage = user_subscription_state.subscription_message
+        user.status = user_subscription_state.young_status
 
         if _should_prevent_from_filling_cultural_survey(user):
             user.needsToFillCulturalSurvey = False

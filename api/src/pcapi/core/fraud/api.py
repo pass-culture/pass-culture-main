@@ -489,10 +489,8 @@ def has_user_performed_identity_check(user: users_models.User) -> bool:
     if user.is_beneficiary and not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
         return True
 
-    status = subscription_api.get_identity_check_subscription_status(
-        user, user.eligibility or users_models.EligibilityType.AGE18
-    )
-    return status not in (
+    user_subscription_state = subscription_api.get_user_subscription_state(user)
+    return user_subscription_state.fraud_status not in (
         subscription_models.SubscriptionItemStatus.TODO,
         subscription_models.SubscriptionItemStatus.VOID,
     )

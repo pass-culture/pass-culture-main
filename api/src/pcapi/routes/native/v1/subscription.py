@@ -29,15 +29,19 @@ logger = logging.getLogger(__name__)
 def next_subscription_step(
     user: users_models.User,
 ) -> serializers.NextSubscriptionStepResponse | None:
-    next_step = subscription_api.get_next_subscription_step(user)
-    logger.info("next_subscription_step: %s", next_step.value if next_step else None, extra={"user_id": user.id})
+    user_subscription_state = subscription_api.get_user_subscription_state(user)
+    logger.info(
+        "next_subscription_step: %s",
+        user_subscription_state.next_step.value if user_subscription_state.next_step else None,
+        extra={"user_id": user.id},
+    )
     return serializers.NextSubscriptionStepResponse(
-        next_subscription_step=next_step,
+        next_subscription_step=user_subscription_state.next_step,
         stepper_includes_phone_validation=subscription_api.is_phone_validation_in_stepper(user),
         allowed_identity_check_methods=subscription_api.get_allowed_identity_check_methods(user),
         maintenance_page_type=subscription_api.get_maintenance_page_type(user),
         has_identity_check_pending=fraud_api.has_user_pending_identity_check(user),
-        subscription_message=subscription_api.get_subscription_message(user),
+        subscription_message=user_subscription_state.subscription_message,
     )
 
 

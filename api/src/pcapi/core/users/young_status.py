@@ -1,8 +1,10 @@
+import dataclasses
 from datetime import datetime
 import enum
 
 import attrs
 
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import models
@@ -53,6 +55,29 @@ class Suspended(YoungStatus):
     status_type: YoungStatusType = YoungStatusType.SUSPENDED
 
 
+@dataclasses.dataclass
+class UserSubscriptionState:
+    # fraud_status holds the user status relative to its fraud checks. It is mainly used in the admin interface.
+    fraud_status: subscription_models.SubscriptionItemStatus
+
+    # next_step holds the next step to be done by the user to complete its subscription.
+    # In the frontend, each enum value corresponds to a call to action.
+    next_step: subscription_models.SubscriptionStep | None
+
+    # young_status holds the user status relative to its subscription. It is mainly used in the frontend.
+    young_status: YoungStatus
+
+    # identity_fraud_check is the relevant identity fraud check used to calculate their status.
+    fraud_check: fraud_models.BeneficiaryFraudCheck | None = None  # identity fraud check (a renommer)
+
+    # is_activable is True if beneficiary role can be upgraded.
+    is_activable: bool = False
+
+    # subscription_message is the message to display to the user.
+    # Be careful : in the frontend, this message is displayed with higher priority than next_step call to action
+    subscription_message: subscription_models.SubscriptionMessage | None = None
+
+
 def young_status(user: models.User) -> YoungStatus:
     if not user.isActive:
         return Suspended()
@@ -63,19 +88,4 @@ def young_status(user: models.User) -> YoungStatus:
 
         return Beneficiary()
 
-    if user.eligibility is not None:
-        if (
-            subscription_api.get_identity_check_subscription_status(user, user.eligibility)
-            == subscription_models.SubscriptionItemStatus.PENDING
-        ):
-            return Eligible(subscription_status=SubscriptionStatus.HAS_SUBSCRIPTION_PENDING)
-
-        if subscription_api.has_subscription_issues(user):
-            return Eligible(subscription_status=SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES)
-
-        if subscription_api.get_next_subscription_step(user) is not None:
-            return Eligible(subscription_status=SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION)
-
-        # should never happen
-
-    return NonEligible()
+    return subscription_api.get_user_subscription_state(user).young_status
