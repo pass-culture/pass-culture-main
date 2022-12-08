@@ -24,6 +24,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.models import api_errors
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.serialization import base as serialize_base
 from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
@@ -458,12 +459,10 @@ class CreateOffererTest:
         assert created_offerer.address == offerer_informations.address
         assert created_offerer.postalCode == offerer_informations.postalCode
         assert created_offerer.city == offerer_informations.city
-        assert created_offerer.validationToken is not None
-        assert created_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert created_offerer.validationStatus == ValidationStatus.NEW
 
         assert created_user_offerer.userId == user.id
-        assert created_user_offerer.validationToken is None
-        assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
+        assert created_user_offerer.validationStatus == ValidationStatus.VALIDATED
         assert created_user_offerer.dateCreated is not None
 
         assert not created_user_offerer.user.has_pro_role
@@ -516,12 +515,10 @@ class CreateOffererTest:
         # Then
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == offerer.name
-        assert created_offerer.validationToken is None
         assert created_offerer.isValidated
 
         assert created_user_offerer.userId == user.id
-        assert created_user_offerer.validationToken is not None
-        assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert created_user_offerer.validationStatus == ValidationStatus.NEW
         assert created_user_offerer.dateCreated is not None
 
         assert not created_user_offerer.user.has_pro_role
@@ -550,7 +547,7 @@ class CreateOffererTest:
             name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
         )
         offerer = offerers_factories.NotValidatedOffererFactory(
-            siren=offerer_informations.siren, validationStatus=offerers_models.ValidationStatus.PENDING
+            siren=offerer_informations.siren, validationStatus=ValidationStatus.PENDING
         )
 
         # When
@@ -559,13 +556,11 @@ class CreateOffererTest:
         # Then
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == offerer.name
-        assert created_offerer.validationToken == offerer.validationToken
-        assert created_offerer.validationStatus == offerers_models.ValidationStatus.PENDING
+        assert created_offerer.validationStatus == ValidationStatus.PENDING
         assert not created_offerer.isValidated
 
         assert created_user_offerer.userId == user.id
-        assert created_user_offerer.validationToken is not None
-        assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert created_user_offerer.validationStatus == ValidationStatus.NEW
         assert created_user_offerer.dateCreated is not None
 
     @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
@@ -581,7 +576,7 @@ class CreateOffererTest:
         offerer = offerers_factories.OffererFactory(
             name="Rejected Offerer",
             siren=offerer_informations.siren,
-            validationStatus=offerers_models.ValidationStatus.REJECTED,
+            validationStatus=ValidationStatus.REJECTED,
         )
         first_creation_date = offerer.dateCreated
 
@@ -596,13 +591,11 @@ class CreateOffererTest:
         assert created_offerer.address == offerer_informations.address
         assert created_offerer.postalCode == offerer_informations.postalCode
         assert created_offerer.city == offerer_informations.city
-        assert created_offerer.validationToken is not None
-        assert created_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert created_offerer.validationStatus == ValidationStatus.NEW
         assert created_offerer.dateCreated > first_creation_date
 
         assert created_user_offerer.userId == user.id
-        assert created_user_offerer.validationToken is None
-        assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
+        assert created_user_offerer.validationStatus == ValidationStatus.VALIDATED
         assert created_user_offerer.dateCreated is not None
 
         assert not created_user_offerer.user.has_pro_role
@@ -672,23 +665,24 @@ class CreateOffererTest:
 class ValidateOffererAttachmentTest:
     def test_offerer_attachment_is_validated(self):
         # Given
+        admin = users_factories.AdminFactory()
         applicant = users_factories.UserFactory()
         user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=applicant)
 
         # When
-        offerers_api.validate_offerer_attachment_by_token(user_offerer.validationToken)
+        offerers_api.validate_offerer_attachment(user_offerer, admin)
 
         # Then
-        assert user_offerer.validationToken is None
-        assert user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
+        assert user_offerer.validationStatus == ValidationStatus.VALIDATED
 
     def test_pro_role_is_added_to_user(self):
         # Given
+        admin = users_factories.AdminFactory()
         applicant = users_factories.UserFactory()
         user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=applicant)
 
         # When
-        offerers_api.validate_offerer_attachment_by_token(user_offerer.validationToken)
+        offerers_api.validate_offerer_attachment(user_offerer, admin)
 
         # Then
         assert applicant.has_pro_role
@@ -696,27 +690,15 @@ class ValidateOffererAttachmentTest:
     @patch("pcapi.core.mails.transactional.send_offerer_attachment_validation_email_to_pro")
     def test_send_validation_confirmation_email(self, mocked_send_validation_confirmation_email_to_pro):
         # Given
+        admin = users_factories.AdminFactory()
         applicant = users_factories.UserFactory()
         user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=applicant)
 
         # When
-        offerers_api.validate_offerer_attachment_by_token(user_offerer.validationToken)
+        offerers_api.validate_offerer_attachment(user_offerer, admin)
 
         # Then
         mocked_send_validation_confirmation_email_to_pro.assert_called_once_with(user_offerer)
-
-    def test_do_not_validate_attachment_if_token_does_not_exist(self):
-        # Given
-        applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=applicant, validationToken="TOKEN")
-
-        # When
-        with pytest.raises(offerers_exceptions.ValidationTokenNotFoundError):
-            offerers_api.validate_offerer_attachment_by_token("OTHER TOKEN")
-
-        # Then
-        assert not applicant.has_pro_role
-        assert user_offerer.validationToken == "TOKEN"
 
 
 @freeze_time("2020-10-15 00:00:00")
@@ -789,103 +771,6 @@ class RejectOffererAttachementTest:
 
 
 @freeze_time("2020-10-15 00:00:00")
-class ValidateOffererByTokenTest:
-    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def test_offerer_is_validated(self, mocked_async_index_offers_of_venue_ids):
-        # Given
-        applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=applicant)
-
-        # When
-        offerers_api.validate_offerer_by_token(user_offerer.offerer.validationToken)
-
-        # Then
-        assert user_offerer.offerer.validationToken is None
-        assert user_offerer.offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
-        assert user_offerer.offerer.dateValidated == datetime.datetime.utcnow()
-
-    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def test_pro_role_is_added_to_user(self, mocked_async_index_offers_of_venue_ids):
-        # Given
-        applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=applicant)
-        another_applicant = users_factories.UserFactory()
-        another_user_on_same_offerer = offerers_factories.NotValidatedUserOffererFactory(user=another_applicant)
-
-        # When
-        offerers_api.validate_offerer_by_token(user_offerer.offerer.validationToken)
-
-        # Then
-        assert applicant.has_pro_role
-        assert not another_applicant.has_pro_role
-        assert another_user_on_same_offerer.validationToken is not None
-
-    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def test_managed_venues_are_reindexed(self, mocked_async_index_offers_of_venue_ids):
-        # Given
-        applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=applicant)
-        venue_1 = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        venue_2 = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-
-        # When
-        offerers_api.validate_offerer_by_token(user_offerer.offerer.validationToken)
-
-        # Then
-        mocked_async_index_offers_of_venue_ids.assert_called_once()
-        called_args, _ = mocked_async_index_offers_of_venue_ids.call_args
-        assert set(called_args[0]) == {venue_1.id, venue_2.id}
-
-    @patch("pcapi.core.mails.transactional.send_new_offerer_validation_email_to_pro", return_value=True)
-    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def test_send_validation_confirmation_email(
-        self, mocked_async_index_offers_of_venue_ids, mocked_send_new_offerer_validation_email_to_pro
-    ):
-        # Given
-        applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=applicant)
-
-        # When
-        offerers_api.validate_offerer_by_token(user_offerer.offerer.validationToken)
-
-        # Then
-        mocked_send_new_offerer_validation_email_to_pro.assert_called_once_with(user_offerer.offerer)
-
-    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def test_action_is_logged(self, mocked_async_index_offers_of_venue_ids):
-        # Given
-        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
-
-        # When
-        offerers_api.validate_offerer_by_token(user_offerer.offerer.validationToken)
-
-        # Then
-        action = history_models.ActionHistory.query.one()
-        assert action.actionType == history_models.ActionType.OFFERER_VALIDATED
-        assert action.actionDate is not None
-        assert action.authorUserId is None
-        assert action.userId == user_offerer.user.id
-        assert action.offererId == user_offerer.offerer.id
-
-    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def test_do_not_validate_attachment_if_token_does_not_exist(self, mocked_async_index_offers_of_venue_ids):
-        # Given
-        applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.UserNotValidatedOffererFactory(
-            user=applicant, offerer__validationToken="TOKEN"
-        )
-
-        # When
-        with pytest.raises(offerers_exceptions.ValidationTokenNotFoundError):
-            offerers_api.validate_offerer_by_token("OTHER TOKEN")
-
-        # Then
-        assert not applicant.has_pro_role
-        assert user_offerer.offerer.validationToken == "TOKEN"
-        assert history_models.ActionHistory.query.count() == 0
-
-
-@freeze_time("2020-10-15 00:00:00")
 class ValidateOffererTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_offerer_is_validated(self, mocked_async_index_offers_of_venue_ids):
@@ -899,7 +784,7 @@ class ValidateOffererTest:
         # Then
         assert user_offerer.offerer.isValidated
         assert user_offerer.offerer.dateValidated == datetime.datetime.utcnow()
-        assert user_offerer.offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
+        assert user_offerer.offerer.validationStatus == ValidationStatus.VALIDATED
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_pro_role_is_added_to_user(self, mocked_async_index_offers_of_venue_ids):
@@ -981,7 +866,7 @@ class RejectOffererTest:
         # Then
         assert not offerer.isValidated
         assert offerer.dateValidated is None
-        assert offerer.validationStatus == offerers_models.ValidationStatus.REJECTED
+        assert offerer.validationStatus == ValidationStatus.REJECTED
 
     def test_pro_role_is_not_added_to_user(self):
         # Given
@@ -1051,7 +936,7 @@ class RejectOffererTest:
         offerer = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # removed in reject_offerer()
         offerers_factories.UserOffererFactory(
-            offerer=offerer, validationStatus=offerers_models.ValidationStatus.NEW
+            offerer=offerer, validationStatus=ValidationStatus.NEW
         )  # another applicant
 
         # When
@@ -1075,7 +960,7 @@ def test_grant_user_offerer_access():
 
     assert user_offerer.user == user
     assert user_offerer.offerer == offerer
-    assert user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
+    assert user_offerer.validationStatus == ValidationStatus.VALIDATED
     assert not user.has_pro_role
 
 
@@ -1444,16 +1329,10 @@ class CountOfferersByValidationStatusTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_offerer_stats(self, client):
         # given
-        offerers_factories.UserOffererFactory(offerer__validationStatus=offerers_models.ValidationStatus.NEW)
-        offerers_factories.UserOffererFactory.create_batch(
-            2, offerer__validationStatus=offerers_models.ValidationStatus.PENDING
-        )
-        offerers_factories.UserOffererFactory.create_batch(
-            3, offerer__validationStatus=offerers_models.ValidationStatus.VALIDATED
-        )
-        offerers_factories.UserOffererFactory.create_batch(
-            4, offerer__validationStatus=offerers_models.ValidationStatus.REJECTED
-        )
+        offerers_factories.UserOffererFactory(offerer__validationStatus=ValidationStatus.NEW)
+        offerers_factories.UserOffererFactory.create_batch(2, offerer__validationStatus=ValidationStatus.PENDING)
+        offerers_factories.UserOffererFactory.create_batch(3, offerer__validationStatus=ValidationStatus.VALIDATED)
+        offerers_factories.UserOffererFactory.create_batch(4, offerer__validationStatus=ValidationStatus.REJECTED)
 
         # when
         with assert_num_queries(1):

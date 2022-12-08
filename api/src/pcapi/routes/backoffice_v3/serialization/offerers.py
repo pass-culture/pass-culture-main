@@ -1,7 +1,7 @@
 import datetime
 
 import pcapi.core.history.models as history_models
-import pcapi.core.offerers.models as offerers_models
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.serialization import BaseModel
 
 
@@ -20,7 +20,7 @@ class OffererBasicInfo(BaseModel):
 
     id: int
     name: str
-    validation_status: offerers_models.ValidationStatus
+    validation_status: ValidationStatus
     isActive: bool
     siren: str | None
     region: str

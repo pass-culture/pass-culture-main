@@ -6,6 +6,7 @@ import factory
 import pcapi.core.finance.models as finance_models
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
 
 from . import api
@@ -22,16 +23,15 @@ class OffererFactory(BaseFactory):
     city = "Paris"
     siren = factory.Sequence(lambda n: f"{n + 1:09}")
     isActive = True
-    validationStatus = models.ValidationStatus.VALIDATED
+    validationStatus = ValidationStatus.VALIDATED
 
 
 class NotValidatedOffererFactory(OffererFactory):
-    validationToken = factory.Sequence(lambda n: f"offerer-not-validated-{n}")
-    validationStatus = models.ValidationStatus.NEW
+    validationStatus = ValidationStatus.NEW
 
 
 class RejectedOffererFactory(OffererFactory):
-    validationStatus = models.ValidationStatus.REJECTED
+    validationStatus = ValidationStatus.REJECTED
 
 
 class CollectiveOffererFactory(OffererFactory):
@@ -196,12 +196,11 @@ class UserOffererFactory(BaseFactory):
 
     user = factory.SubFactory(users_factories.ProFactory)
     offerer = factory.SubFactory(OffererFactory)
-    validationStatus = models.ValidationStatus.VALIDATED
+    validationStatus = ValidationStatus.VALIDATED
 
 
 class NotValidatedUserOffererFactory(UserOffererFactory):
-    validationToken = factory.Sequence(lambda n: f"uo-not-validated-{n}")
-    validationStatus = models.ValidationStatus.NEW
+    validationStatus = ValidationStatus.NEW
 
 
 class UserNotValidatedOffererFactory(BaseFactory):
@@ -210,6 +209,7 @@ class UserNotValidatedOffererFactory(BaseFactory):
 
     user = factory.SubFactory(users_factories.UserFactory)
     offerer = factory.SubFactory(NotValidatedOffererFactory)
+    validationStatus = ValidationStatus.VALIDATED
 
 
 class VirtualVenueTypeFactory(BaseFactory):

@@ -5,11 +5,7 @@ from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
 
 
 def get_existing_pro_validated_user_with_at_least_one_visible_activated_offer():  # type: ignore [no-untyped-def]
-    user_offerer = offerers_factories.UserOffererFactory(
-        validationToken=None,
-        offerer__validationToken=None,
-        user__validationToken=None,
-    )
+    user_offerer = offerers_factories.UserOffererFactory(user__validationToken=None)
     venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
     offer = offers_factories.OfferFactory(venue=venue, isActive=True)
 
@@ -17,11 +13,7 @@ def get_existing_pro_validated_user_with_at_least_one_visible_activated_offer():
 
 
 def get_existing_pro_validated_user_with_at_least_one_offer_with_at_least_one_thumbnail():  # type: ignore [no-untyped-def]
-    user_offerer = offerers_factories.UserOffererFactory(
-        validationToken=None,
-        offerer__validationToken=None,
-        user__validationToken=None,
-    )
+    user_offerer = offerers_factories.UserOffererFactory(user__validationToken=None)
     venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
     offer = offers_factories.OfferFactory(venue=venue, isActive=True)
     offers_factories.MediationFactory(offer=offer, thumbCount=1)

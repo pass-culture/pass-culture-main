@@ -7,6 +7,7 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import User
+from pcapi.models.validation_status_mixin import ValidationStatus
 
 
 BASE_DATA_PRO = {
@@ -54,15 +55,13 @@ class Returns204Test:
         assert user.notificationSubscriptions == {"marketing_push": True, "marketing_email": False}
         offerer = Offerer.query.filter_by(siren="349974931").first()
         assert offerer is not None
-        assert offerer.validationToken is not None
-        assert offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert offerer.validationStatus == ValidationStatus.NEW
         assert len(offerer.managedVenues) == 1
         assert offerer.managedVenues[0].isVirtual
         assert offerer.managedVenues[0].venueTypeCode == offerers_models.VenueTypeCode.DIGITAL
         user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).first()
         assert user_offerer is not None
-        assert user_offerer.validationToken is None
-        assert user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
+        assert user_offerer.validationStatus == ValidationStatus.VALIDATED
         assert user_offerer.dateCreated is not None
 
         actions_list = history_models.ActionHistory.query.all()
@@ -88,14 +87,13 @@ class Returns204Test:
         assert user.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
         offerer = Offerer.query.filter_by(siren="349974931").first()
         assert offerer is not None
-        assert offerer.validationToken is not None
-        assert offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert offerer.validationStatus == ValidationStatus.NEW
         assert len(offerer.managedVenues) == 1
         assert offerer.managedVenues[0].isVirtual
         assert offerer.managedVenues[0].venueTypeCode == offerers_models.VenueTypeCode.DIGITAL
         user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).first()
         assert user_offerer is not None
-        assert user_offerer.validationToken is None
+        assert user_offerer.validationStatus == ValidationStatus.VALIDATED
 
     def when_successful_and_existing_offerer_creates_editor_user_offerer_and_does_not_log_in(self, client):
         # Given
@@ -117,8 +115,7 @@ class Returns204Test:
         assert offerer is not None
         user_offerer = UserOfferer.query.filter_by(user=pro, offerer=offerer).first()
         assert user_offerer is not None
-        assert user_offerer.validationToken is not None
-        assert user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert user_offerer.validationStatus == ValidationStatus.NEW
 
         actions_list = history_models.ActionHistory.query.all()
         assert len(actions_list) == 1
@@ -145,7 +142,7 @@ class Returns204Test:
         assert offerer is not None
         user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).first()
         assert user_offerer is not None
-        assert user_offerer.validationToken is not None
+        assert user_offerer.validationStatus == ValidationStatus.NEW
 
     def when_successful_and_mark_pro_user_as_no_cultural_survey_needed(self, client):
         # Given
@@ -166,7 +163,7 @@ class Returns204Test:
         offerer = offerers_factories.OffererFactory(
             name="Rejected Offerer",
             siren=BASE_DATA_PRO["siren"],
-            validationStatus=offerers_models.ValidationStatus.REJECTED,
+            validationStatus=ValidationStatus.REJECTED,
         )
 
         first_creation_date = offerer.dateCreated
@@ -183,11 +180,10 @@ class Returns204Test:
         user = User.query.filter_by(email="toto_pro@example.com").first()
         offerer = Offerer.query.filter_by(siren="349974931").one()
         assert offerer.name == BASE_DATA_PRO["name"]
-        assert offerer.validationToken is not None
-        assert offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert offerer.validationStatus == ValidationStatus.NEW
         assert offerer.dateCreated > first_creation_date
         user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).one()
-        assert user_offerer.validationToken is None
+        assert user_offerer.validationStatus == ValidationStatus.VALIDATED
         assert user_offerer.dateCreated is not None
 
         actions_list = history_models.ActionHistory.query.all()

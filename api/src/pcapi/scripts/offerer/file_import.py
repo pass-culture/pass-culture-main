@@ -10,6 +10,7 @@ from pcapi.core.offerers.repository import find_venue_by_managing_offerer_id
 from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.utils.email import sanitize_email
 
@@ -83,6 +84,7 @@ def fill_user_offerer_from(user_offerer: UserOfferer, created_user: User, create
 
     user_offerer.user = created_user
     user_offerer.offerer = created_offerer
+    user_offerer.validationStatus = ValidationStatus.VALIDATED
     return user_offerer
 
 
@@ -106,6 +108,7 @@ def fill_offerer_from(csv_row: list[str], offerer: Offerer) -> Offerer:
     offerer.postalCode = csv_row[OFFERER_POSTAL_CODE_COLUMN_INDEX]
     offerer.city = csv_row[OFFERER_CITY_COLUMN_INDEX]
     offerer.dateCreated = datetime.utcnow()
+    offerer.validationStatus = ValidationStatus.VALIDATED
     return offerer
 
 

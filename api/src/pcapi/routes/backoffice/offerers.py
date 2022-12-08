@@ -14,6 +14,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.permissions import utils as perm_utils
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import db as db_utils
@@ -333,8 +334,8 @@ def _get_validation_status(obj: offerers_models.ValidationStatusMixin) -> str:
     if obj.validationStatus is not None:
         return obj.validationStatus.value
     if obj.isValidated:  # validationToken is None
-        return offerers_models.ValidationStatus.VALIDATED.value
-    return offerers_models.ValidationStatus.NEW.value
+        return ValidationStatus.VALIDATED.value
+    return ValidationStatus.NEW.value
 
 
 @blueprint.backoffice_blueprint.route("offerers/to_be_validated", methods=["GET"])
