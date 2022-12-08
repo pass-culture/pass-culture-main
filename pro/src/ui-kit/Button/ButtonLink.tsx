@@ -1,12 +1,13 @@
 import cn from 'classnames'
-import React, { MouseEventHandler, useRef } from 'react'
+import React, { MouseEventHandler } from 'react'
 import { Link } from 'react-router-dom'
 
 import { ReactComponent as IcoArrowRight } from 'icons/ico-mini-arrow-right.svg'
+import Tooltip from 'ui-kit/Tooltip'
+import { uniqId } from 'utils/uniqId'
 
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
-import useTooltipMargin from './useTooltipMargin'
 
 export type LinkProps = {
   isExternal: boolean
@@ -36,9 +37,6 @@ const ButtonLink = ({
   iconPosition = IconPositionEnum.LEFT,
   hasTooltip = false,
 }: IButtonProps): JSX.Element => {
-  const tooltipRef = useRef<HTMLDivElement>(null)
-  const tooltipMargin = useTooltipMargin(tooltipRef, children)
-
   const classNames = cn(
     styles['button'],
     styles[`button-${variant}`],
@@ -46,7 +44,8 @@ const ButtonLink = ({
     { [styles[`button-disabled`]]: isDisabled },
     className
   )
-  const renderBody = () => (
+
+  let body = (
     <>
       {
         /* istanbul ignore next: graphic variation */
@@ -55,14 +54,7 @@ const ButtonLink = ({
         )
       }
       {hasTooltip ? (
-        <div
-          className={styles.tooltip}
-          data-testid="tooltip"
-          ref={tooltipRef}
-          style={{ marginTop: tooltipMargin }}
-        >
-          {children}
-        </div>
+        <div className={styles['visually-hidden']}>{children}</div>
       ) : /* istanbul ignore next: graphic variation */ variant ===
         ButtonVariant.BOX ? (
         <div className={styles['button-arrow-content']}>{children}</div>
@@ -85,6 +77,7 @@ const ButtonLink = ({
       }
     </>
   )
+
   const { to, isExternal, ...linkProps } = link
 
   const callback: MouseEventHandler<HTMLAnchorElement> = e =>
@@ -96,15 +89,19 @@ const ButtonLink = ({
       }
     : {}
 
-  return isExternal ? (
+  const tooltipId = uniqId()
+  const tooltipProps = hasTooltip ? { 'aria-describedBy': tooltipId } : {}
+
+  body = isExternal ? (
     <a
       className={classNames}
       href={to}
       onClick={callback}
       {...disabled}
       {...linkProps}
+      {...tooltipProps}
     >
-      {renderBody()}
+      {body}
     </a>
   ) : (
     /* istanbul ignore next: graphic variation */ <Link
@@ -112,10 +109,21 @@ const ButtonLink = ({
       onClick={callback}
       to={to}
       {...disabled}
+      {...tooltipProps}
     >
-      {renderBody()}
+      {body}
     </Link>
   )
+
+  if (hasTooltip) {
+    body = (
+      <Tooltip id={tooltipId} content={children}>
+        {body}
+      </Tooltip>
+    )
+  }
+
+  return body
 }
 
 ButtonLink.variant = ButtonVariant
