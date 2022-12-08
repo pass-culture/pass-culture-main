@@ -5,19 +5,49 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
+import useActiveFeature from 'hooks/useActiveFeature'
 import Icon from 'ui-kit/Icon/Icon'
+import Tooltip from 'ui-kit/Tooltip'
 
-import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'
+import {
+  getBookingStatusDisplayInformations,
+  getCollectiveBookingStatusDisplayInformations,
+} from '../../utils/bookingStatusConverter'
 
 import BookingStatusCellHistory from './BookingStatusCellHistory'
 
 const BookingStatusCell = ({
   bookingRecapInfo,
+  isCollectiveStatus,
 }: {
   bookingRecapInfo:
     | Row<BookingRecapResponseModel>
     | Row<CollectiveBookingResponseModel>
+  isCollectiveStatus: boolean
 }) => {
+  const isImproveCollectiveStatusActive = useActiveFeature(
+    'WIP_IMPROVE_COLLECTIVE_STATUS'
+  )
+
+  if (isImproveCollectiveStatusActive && isCollectiveStatus) {
+    const bookingDisplayInfo = getCollectiveBookingStatusDisplayInformations(
+      bookingRecapInfo.original.booking_status
+    )
+    const tooltipId = `tooltip-${bookingRecapInfo.id}`
+
+    return (
+      <Tooltip content={bookingDisplayInfo?.label} id={tooltipId}>
+        <div
+          className={`booking-status-label booking-status-wrapper ${bookingDisplayInfo?.statusClassName}`}
+          aria-describedby={tooltipId}
+        >
+          <Icon svg={bookingDisplayInfo?.svgIconFilename} />
+          <span>{bookingDisplayInfo?.status}</span>
+        </div>
+      </Tooltip>
+    )
+  }
+
   const bookingDisplayInfo = getBookingStatusDisplayInformations(
     bookingRecapInfo.original.booking_status
   )
