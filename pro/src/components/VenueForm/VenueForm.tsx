@@ -76,7 +76,10 @@ const VenueForm = ({
 
   const shouldBlockNavigation = useCallback(
     (nextLocation: Location): IShouldBlockNavigationReturnValue => {
-      if (nextLocation.pathname.match(/\/structures\/([A-Z0-9]+)\/lieux/g)) {
+      if (
+        nextLocation.pathname + nextLocation.search === '/accueil?success' ||
+        nextLocation.pathname.match(/\/structures\/([A-Z0-9]+)/g)
+      ) {
         return {
           shouldBlock: false,
         }

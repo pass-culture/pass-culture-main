@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FunctionComponent, SVGProps } from 'react'
 
 import { ExternalLinkIcon } from 'icons'
 import { ReactComponent as AlertSvg } from 'icons/ico-alert-grey.svg'
@@ -16,6 +16,13 @@ type IRedirectDialogProps = IDialogProps & {
   redirectLink: LinkProps
   cancelText: string
   onCancel: () => void
+  onRedirect?: () => void
+  withRedirectLinkIcon?: boolean
+  cancelIcon?: FunctionComponent<
+    SVGProps<SVGSVGElement> & {
+      title?: string | undefined
+    }
+  >
 }
 
 const RedirectDialog = ({
@@ -27,6 +34,9 @@ const RedirectDialog = ({
   extraClassNames,
   redirectText,
   redirectLink,
+  withRedirectLinkIcon = true,
+  cancelIcon,
+  onRedirect,
   cancelText,
   onCancel,
 }: IRedirectDialogProps): JSX.Element => {
@@ -45,14 +55,17 @@ const RedirectDialog = ({
           data-testid="redirect-dialog-link"
           link={redirectLink}
           variant={ButtonVariant.PRIMARY}
-          Icon={ExternalLinkIcon}
+          onClick={onRedirect}
+          Icon={withRedirectLinkIcon ? ExternalLinkIcon : undefined}
         >
           {redirectText}
         </ButtonLink>
 
         <Button
-          Icon={ArrowIcon}
-          onClick={onCancel}
+          Icon={cancelIcon || ArrowIcon}
+          onClick={() => {
+            onCancel()
+          }}
           data-testid="redirect-dialog-button-cancel"
           variant={ButtonVariant.TERNARY}
           className={styles['redirect-dialog-cancel-button']}
