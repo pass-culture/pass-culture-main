@@ -1,13 +1,14 @@
 /* istanbul ignore file : no need to test styled html tag  */
 
 import cn from 'classnames'
-import React, { useRef } from 'react'
+import React from 'react'
 
 import { ReactComponent as IcoArrowRight } from 'icons/ico-mini-arrow-right.svg'
+import Tooltip from 'ui-kit/Tooltip'
+import { uniqId } from 'utils/uniqId'
 
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
-import useTooltipMargin from './useTooltipMargin'
 
 interface IButtonProps
   extends SharedButtonProps,
@@ -29,10 +30,9 @@ const Button = ({
   hasTooltip,
   ...buttonAttrs
 }: IButtonProps): JSX.Element => {
-  const tooltipRef = useRef<HTMLDivElement>(null)
-  const tooltipMargin = useTooltipMargin(tooltipRef, children)
+  const tooltipId = uniqId()
 
-  return (
+  const button = (
     <button
       className={cn(
         styles['button'],
@@ -42,19 +42,14 @@ const Button = ({
       )}
       ref={innerRef}
       type={type}
+      {...(hasTooltip ? { 'aria-describedBy': tooltipId } : {})}
       {...buttonAttrs}
     >
       {Icon && iconPosition !== IconPositionEnum.RIGHT && (
         <Icon className={styles['button-icon']} />
       )}
       {hasTooltip ? (
-        <div
-          className={styles.tooltip}
-          ref={tooltipRef}
-          style={{ marginTop: tooltipMargin }}
-        >
-          {children}
-        </div>
+        <div className={styles['visually-hidden']}>{children}</div>
       ) : variant === ButtonVariant.BOX ? (
         <div className={styles['button-arrow-content']}>{children}</div>
       ) : (
@@ -70,6 +65,16 @@ const Button = ({
       )}
     </button>
   )
+
+  if (hasTooltip) {
+    return (
+      <Tooltip id={tooltipId} content={children}>
+        {button}
+      </Tooltip>
+    )
+  }
+
+  return button
 }
 
 export default Button

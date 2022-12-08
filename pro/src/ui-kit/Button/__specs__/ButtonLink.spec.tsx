@@ -43,6 +43,6 @@ describe('ButtonLink', () => {
         test
       </ButtonLink>
     )
-    expect(screen.getByTestId('tooltip')).toBeInTheDocument()
+    expect(screen.getByRole('tooltip', { name: 'test' })).toBeInTheDocument()
   })
 })
