@@ -24,10 +24,6 @@ export const ticketWithdrawalTypeRadios = [
 
 export const ticketSentDateOptions = [
   {
-    label: 'Date indéterminée',
-    value: (0).toString(),
-  },
-  {
     label: '24 heures',
     value: (60 * 60 * 24).toString(),
   },

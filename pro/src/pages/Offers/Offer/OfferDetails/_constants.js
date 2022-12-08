@@ -87,7 +87,6 @@ export const WITHDRAWAL_ON_SITE_DELAY_OPTIONS = [
 ]
 
 export const WITHDRAWAL_BY_EMAIL_DELAY_OPTIONS = [
-  { displayName: 'Date indéterminée', id: (0).toString() },
   { displayName: '24 heures', id: (60 * 60 * 24).toString() },
   { displayName: '48 heures', id: (60 * 60 * 24 * 2).toString() },
   { displayName: '3 jours', id: (60 * 60 * 24 * 3).toString() },
