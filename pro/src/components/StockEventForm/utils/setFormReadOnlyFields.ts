@@ -1,7 +1,11 @@
 import { isBefore } from 'date-fns'
 
 import { OfferStatus } from 'apiClient/v1'
-import { OFFER_STATUS_PENDING, OFFER_STATUS_REJECTED } from 'core/Offers'
+import {
+  OFFER_STATUS_DRAFT,
+  OFFER_STATUS_PENDING,
+  OFFER_STATUS_REJECTED,
+} from 'core/Offers'
 import { isAllocineProviderName } from 'core/Providers'
 import { removeTime } from 'utils/date'
 
@@ -23,6 +27,10 @@ const setFormReadOnlyFields = ({
   lastProviderName,
   offerStatus,
 }: ISetReadOnlyFieldsArgs) => {
+  if (offerStatus === OFFER_STATUS_DRAFT) {
+    return []
+  }
+
   const isDisabledStatus = offerStatus
     ? [OFFER_STATUS_REJECTED, OFFER_STATUS_PENDING].includes(offerStatus)
     : false
