@@ -4,12 +4,14 @@ import decimal
 import pathlib
 from unittest import mock
 
+import freezegun
 import pytest
 
 from pcapi import settings
 from pcapi.core import testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.models import offer_mixin
 from pcapi.utils import human_ids
 
 import tests
@@ -54,8 +56,10 @@ class PostProductTest:
         assert created_offer.extraData == {}
         assert created_offer.bookingEmail is None
         assert created_offer.description is None
+        assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
 
     @pytest.mark.usefixtures("db_session")
+    @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_offer_creation_with_full_body(self, client, clear_tests_assets_bucket):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -113,6 +117,7 @@ class PostProductTest:
         assert created_offer.bookingEmail == "spam@example.com"
         assert created_offer.description == "Enregistrement pour la nuit des temps"
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
+        assert created_offer.status == offer_mixin.OfferStatus.EXPIRED
 
         created_stock = offers_models.Stock.query.one()
         assert created_stock.price == decimal.Decimal("12.34")
@@ -150,6 +155,7 @@ class PostProductTest:
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
         assert created_offer.name == "Le champ des possibles"
+        assert created_offer.status == offer_mixin.OfferStatus.ACTIVE
 
         created_stock = offers_models.Stock.query.one()
         assert created_stock.price == decimal.Decimal("0.01")
