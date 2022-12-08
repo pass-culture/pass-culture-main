@@ -32,7 +32,8 @@ const FormVenue = ({
     ]
   }
 
-  const { values } = useFormikContext<IOfferEducationalFormValues>()
+  const { values, setFieldValue } =
+    useFormikContext<IOfferEducationalFormValues>()
 
   return (
     <FormLayout.Section
@@ -41,6 +42,7 @@ const FormVenue = ({
     >
       <FormLayout.Row>
         <Select
+          onChange={() => setFieldValue('venueId', '')}
           disabled={offerersOptions.length === 1 || disableForm}
           label={OFFERER_LABEL}
           name="offererId"
@@ -66,20 +68,6 @@ const FormVenue = ({
           du ministère de la Culture.
         </Banner>
       )}
-
-      {venuesOptions.length === 0 && offerersOptions.length !== 0 && (
-        <Banner
-          links={[
-            {
-              href: `/structures/${values.offererId}/lieux/creation`,
-              linkTitle: 'Renseigner un lieu',
-            },
-          ]}
-        >
-          Pour proposer des offres à destination d’un groupe scolaire, vous
-          devez renseigner un lieu pour pouvoir être remboursé.
-        </Banner>
-      )}
       {offerersOptions.length === 0 && (
         <Banner>
           Vous ne pouvez pas créer d’offre collective tant que votre structure
@@ -95,6 +83,19 @@ const FormVenue = ({
             options={venuesOptions}
           />
         </FormLayout.Row>
+      )}
+      {values.venueId.length === 0 && values.offererId.length !== 0 && (
+        <Banner
+          links={[
+            {
+              href: `/structures/${values.offererId}/lieux/creation`,
+              linkTitle: 'Renseigner un lieu',
+            },
+          ]}
+        >
+          Pour proposer des offres à destination d’un groupe scolaire, vous
+          devez renseigner un lieu pour pouvoir être remboursé.
+        </Banner>
       )}
     </FormLayout.Section>
   )
