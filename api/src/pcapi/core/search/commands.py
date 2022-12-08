@@ -25,13 +25,13 @@ class AlgoliaIndexError(Exception):
 
 
 class IndexTypes(enum.Enum):
-    OFFERS = settings.ALGOLIA_OFFERS_INDEX_NAME
-    COLLECTIVE_OFFERS = settings.ALGOLIA_COLLECTIVE_OFFERS_INDEX_NAME
-    VENUES = settings.ALGOLIA_VENUES_INDEX_NAME
+    offers = settings.ALGOLIA_OFFERS_INDEX_NAME
+    collective_offers = settings.ALGOLIA_COLLECTIVE_OFFERS_INDEX_NAME
+    venues = settings.ALGOLIA_VENUES_INDEX_NAME
 
 
 def _get_index_default_file(index_type: IndexTypes) -> str:
-    return os.path.join(ALGOLIA_SETTINGS_DIR, f"algolia_settings_{index_type.name}.json")
+    return os.path.join(ALGOLIA_SETTINGS_DIR, f"algolia_settings_{index_type.name.lower()}.json")
 
 
 def _get_index_client(index_type: IndexTypes) -> SearchIndex:
@@ -82,7 +82,7 @@ def _set_settings(index: SearchIndex, path: str, dry: bool = True) -> list[str]:
 
 
 @blueprint.cli.command("get_algolia_settings")
-@click.argument("index_type_name", type=click.Choice([it.name for it in IndexTypes]))
+@click.argument("index_type_name", type=click.Choice([it.name for it in IndexTypes], case_sensitive=False))
 def get_settings(index_type_name: str) -> None:
     try:
         index_type: IndexTypes = IndexTypes[index_type_name]
@@ -96,7 +96,7 @@ def get_settings(index_type_name: str) -> None:
 
 
 @blueprint.cli.command("set_algolia_settings")
-@click.argument("index_type_name", type=click.Choice([it.name for it in IndexTypes]))
+@click.argument("index_type_name", type=click.Choice([it.name for it in IndexTypes], case_sensitive=False))
 @click.option(
     "--path",
     help="the path of a file to be used as input",
