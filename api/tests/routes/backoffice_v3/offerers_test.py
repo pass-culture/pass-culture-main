@@ -20,6 +20,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice_v3 import offerers
 
 from .helpers import html_parser
@@ -456,9 +457,8 @@ class ListOfferersToValidateTest:
         @pytest.mark.parametrize(
             "validation_status,expected_status",
             [
-                (None, "Nouvelle"),
-                (offerers_models.ValidationStatus.NEW, "Nouvelle"),
-                (offerers_models.ValidationStatus.PENDING, "En attente"),
+                (ValidationStatus.NEW, "Nouvelle"),
+                (ValidationStatus.PENDING, "En attente"),
             ],
         )
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
@@ -880,7 +880,7 @@ class RejectOffererTest:
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_cannot_reject_offerer_already_rejected(self, authenticated_client):
         # given
-        offerer = offerers_factories.OffererFactory(validationStatus=offerers_models.ValidationStatus.REJECTED)
+        offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.REJECTED)
 
         # when
         response = authenticated_client.post(url_for("backoffice_v3_web.offerer.reject", offerer_id=offerer.id))
@@ -916,7 +916,7 @@ class SetOffererPendingTest:
 
         db.session.refresh(offerer)
         assert not offerer.isValidated
-        assert offerer.validationStatus == offerers_models.ValidationStatus.PENDING
+        assert offerer.validationStatus == ValidationStatus.PENDING
         action = history_models.ActionHistory.query.one()
 
         assert action.actionType == history_models.ActionType.OFFERER_PENDING
@@ -1022,7 +1022,7 @@ class ListUserOffererToValidateTest:
             new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(offerer=validated_user_offerer.offerer)
             to_be_validated.append(new_user_offerer)
             pending_user_offerer = offerers_factories.NotValidatedUserOffererFactory(
-                offerer=validated_user_offerer.offerer, validationStatus=offerers_models.ValidationStatus.PENDING
+                offerer=validated_user_offerer.offerer, validationStatus=ValidationStatus.PENDING
             )
             to_be_validated.append(pending_user_offerer)
             for action_type in (
@@ -1051,8 +1051,8 @@ class ListUserOffererToValidateTest:
     @pytest.mark.parametrize(
         "validation_status,expected_status",
         [
-            (offerers_models.ValidationStatus.NEW, "Nouveau"),
-            (offerers_models.ValidationStatus.PENDING, "En attente"),
+            (ValidationStatus.NEW, "Nouveau"),
+            (ValidationStatus.PENDING, "En attente"),
         ],
     )
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
@@ -1083,9 +1083,9 @@ class ListUserOffererToValidateTest:
             authorUser=commenter,
             offerer=new_user_offerer.offerer,
             user=new_user_offerer.user,
-            comment="Bla blabla" if validation_status == offerers_models.ValidationStatus.NEW else "Premier",
+            comment="Bla blabla" if validation_status == ValidationStatus.NEW else "Premier",
         )
-        if validation_status == offerers_models.ValidationStatus.PENDING:
+        if validation_status == ValidationStatus.PENDING:
             history_factories.ActionHistoryFactory(
                 actionDate=datetime.datetime(2022, 11, 5, 14, 2),
                 actionType=history_models.ActionType.USER_OFFERER_PENDING,
@@ -1415,7 +1415,7 @@ class SetOffererAttachmentPendingTest:
 
         db.session.refresh(user_offerer)
         assert not user_offerer.isValidated
-        assert user_offerer.validationStatus == offerers_models.ValidationStatus.PENDING
+        assert user_offerer.validationStatus == ValidationStatus.PENDING
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.USER_OFFERER_PENDING
         assert action.actionDate is not None

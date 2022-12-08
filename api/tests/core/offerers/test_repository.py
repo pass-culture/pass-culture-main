@@ -156,50 +156,6 @@ class GetAllOfferersForUserTest:
             assert pro_attachment_to_unvalidated_offerer.offerer.id in offerers_ids
 
 
-class FindUserOffererByValidationTokenTest:
-    def test_return_user_offerer_given_validation_token(self):
-        # Given
-        user_offerer_expected = offerers_factories.NotValidatedUserOffererFactory()
-
-        # When
-        user_offerer_received = repository.find_user_offerer_by_validation_token(user_offerer_expected.validationToken)
-
-        # Then
-        assert user_offerer_received.id == user_offerer_expected.id
-
-    def test_return_nothing_when_validation_token_does_not_exist(self):
-        # Given
-        offerers_factories.NotValidatedUserOffererFactory()
-
-        # When
-        user_offerer_received = repository.find_user_offerer_by_validation_token("ANOTHER TOKEN")
-
-        # Then
-        assert user_offerer_received is None
-
-
-class FindOffererByValidationTokenTest:
-    def test_return_offerer_given_validation_token(self):
-        # Given
-        user_offerer_expected = offerers_factories.UserNotValidatedOffererFactory()
-
-        # When
-        offerer_received = repository.find_offerer_by_validation_token(user_offerer_expected.offerer.validationToken)
-
-        # Then
-        assert offerer_received.id == user_offerer_expected.offerer.id
-
-    def test_return_nothing_when_validation_token_does_not_exist(self):
-        # Given
-        offerers_factories.UserNotValidatedOffererFactory()
-
-        # When
-        offerer_received = repository.find_offerer_by_validation_token("ANOTHER TOKEN")
-
-        # Then
-        assert offerer_received is None
-
-
 class FindNewOffererUserEmailTest:
     def test_find_existing_email(self):
         offerer = offerers_factories.OffererFactory()

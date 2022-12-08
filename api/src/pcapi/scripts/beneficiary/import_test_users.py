@@ -14,12 +14,12 @@ from pcapi.connectors.googledrive import GoogleDriveBackend
 import pcapi.core.finance.api as finance_api
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
-from pcapi.core.offerers.models import ValidationStatus
 import pcapi.core.users.api as users_api
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.utils.email import sanitize_email
@@ -82,7 +82,6 @@ def _create_pro_user(row: dict) -> User:
 
     # Validate offerer
     offerer = user.UserOfferers[0].offerer
-    offerer.validationToken = None
     offerer.validationStatus = ValidationStatus.VALIDATED
     offerer.dateValidated = datetime.utcnow()
     action = history_api.log_action(

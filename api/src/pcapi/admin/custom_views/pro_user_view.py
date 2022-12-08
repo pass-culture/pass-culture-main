@@ -26,6 +26,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.api as users_api
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.core.users.models import User
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils.email import sanitize_email
 from pcapi.utils.mailing import build_pc_pro_create_password_link
 import pcapi.utils.postal_code as postal_code_utils
@@ -50,7 +51,7 @@ def create_offerer(form: Form) -> offerers_models.Offerer:
     offerer.name = form.offererName.data
     offerer.postalCode = form.offererPostalCode.data
     offerer.city = form.offererCity.data
-    offerer.validationStatus = offerers_models.ValidationStatus.VALIDATED
+    offerer.validationStatus = ValidationStatus.VALIDATED
 
     return offerer
 
@@ -59,6 +60,7 @@ def create_user_offerer(user: User, offerer: offerers_models.Offerer) -> offerer
     user_offerer = offerers_models.UserOfferer()
     user_offerer.user = user
     user_offerer.offerer = offerer
+    user_offerer.validationStatus = ValidationStatus.VALIDATED
 
     return user_offerer
 

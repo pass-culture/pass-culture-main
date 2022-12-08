@@ -60,8 +60,6 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
-UPDATE offerer SET "validationToken" = pg_temp.random_text(27) WHERE "validationToken" is not null;
-
 BEGIN;
   -- Temporarily disable trigger to speed up updates.
   ALTER TABLE booking DISABLE TRIGGER stock_update_cancellation_date;
@@ -129,8 +127,6 @@ SET
     "newUserEmail" = 'user' || "id",
     "newDomainEmail" = 'anonymized.email'
 ;
-
-UPDATE user_offerer SET "validationToken" = pg_temp.random_text(27) WHERE "validationToken" IS NOT NULL;
 
 
 UPDATE venue SET "validationToken" = pg_temp.random_text(27) WHERE "validationToken" IS NOT NULL;

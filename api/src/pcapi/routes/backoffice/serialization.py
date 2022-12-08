@@ -9,6 +9,7 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import models as users_models
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.email import sanitize_email
@@ -255,7 +256,7 @@ class ProUserPayload(ProResultPayload):
 class OffererPayload(ProResultPayload):
     name: str | None
     siren: str | None
-    validationStatus: offerers_models.ValidationStatus
+    validationStatus: ValidationStatus
     isActive: bool
 
 
@@ -264,7 +265,7 @@ class VenuePayload(ProResultPayload):
     email: str | None
     siret: str | None
     permanent: bool
-    validationStatus: offerers_models.ValidationStatus
+    validationStatus: ValidationStatus
     isActive: bool
 
     @classmethod
@@ -300,7 +301,7 @@ class OffererAttachedUser(BaseModel):
     email: str
     phoneNumber: str | None
     user_offerer_id: int
-    validationStatus: offerers_models.ValidationStatus
+    validationStatus: ValidationStatus
 
 
 class OffererAttachedUsersResponseModel(BaseModel):
@@ -338,7 +339,7 @@ class OffererBasicInfo(BaseModel):
 
     id: int
     name: str
-    validationStatus: offerers_models.ValidationStatus
+    validationStatus: ValidationStatus
     isActive: bool
     siren: str | None
     region: str

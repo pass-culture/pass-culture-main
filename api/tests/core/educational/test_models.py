@@ -11,9 +11,9 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import HasImageMixin
-import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.image_conversion import ImageRatio
 
@@ -61,7 +61,7 @@ class CollectiveStockIsBookableTest:
 
     def test_not_bookable_if_offerer_is_not_validated(self) -> None:
         collective_stock = factories.CollectiveStockFactory(
-            collectiveOffer__venue__managingOfferer__validationStatus=offerers_models.ValidationStatus.NEW
+            collectiveOffer__venue__managingOfferer__validationStatus=ValidationStatus.NEW
         )
         assert not collective_stock.isBookable
 

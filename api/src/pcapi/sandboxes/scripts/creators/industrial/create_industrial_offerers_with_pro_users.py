@@ -4,11 +4,11 @@ import logging
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import ValidationStatus
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offerers.repository import check_if_siren_already_exists
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
 from pcapi.sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
@@ -118,7 +118,6 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
     starting_index = 0
     iban_prefix = "FR7630001007941234567890185"
     bic_prefix, bic_suffix = "QSDFGH8Z", 555
-    user_offerer_validation_prefix, user_offerer_validation_suffix = "AZERTY", 123
     application_id_prefix = "23"
 
     for location_index, location in enumerate(OFFERER_LOCATIONS):
@@ -179,7 +178,9 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
             user_validation_token = "{}{}".format(user_validation_prefix, user_validation_suffix)
 
         if location_index % VALIDATED_OFFERERS_REMOVE_MODULO == 0 and create_educational_offerer == False:
-            offerer.generate_validation_token()
+            offerer.validationStatus = ValidationStatus.NEW
+        else:
+            offerer.validationStatus = ValidationStatus.VALIDATED
 
         pro = users_factories.ProFactory(
             departementCode=departement_code,
@@ -230,17 +231,14 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
             user_validation_suffix += 1
 
             if location_index % VALIDATED_USER_OFFERER_REMOVE_MODULO:
-                user_offerer_validation_token = None
+                user_offerer_validation_status = ValidationStatus.VALIDATED
             else:
-                user_offerer_validation_token = "{}{}".format(
-                    user_offerer_validation_prefix, user_offerer_validation_suffix
-                )
+                user_offerer_validation_status = ValidationStatus.NEW
             user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = offerers_factories.UserOffererFactory(
                 offerer=offerer,
                 user=pro,
-                validationToken=user_offerer_validation_token,
+                validationStatus=user_offerer_validation_status,
             )
-            user_offerer_validation_suffix += 1
 
     # loop on users to make some of them with several attached offerers
     user_items_with_several_offerers = pick_every(users_by_name.items(), USERS_WITH_SEVERAL_OFFERERS_PICK_MODULO)
@@ -257,21 +255,15 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
                 continue
 
             if offerer.isValidated and user_offerer_index % VALIDATED_USER_OFFERER_REMOVE_MODULO == 0:
-                user_offerer_validation_token = None
                 user_offerer_validation_status = ValidationStatus.VALIDATED
             else:
-                user_offerer_validation_token = "{}{}".format(
-                    user_offerer_validation_prefix, user_offerer_validation_suffix
-                )
                 user_offerer_validation_status = ValidationStatus.NEW
             user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = offerers_factories.UserOffererFactory(
                 offerer=offerer,
                 user=pro,
-                validationToken=user_offerer_validation_token,
                 validationStatus=user_offerer_validation_status,
             )
             user_offerer_index += 1
-            user_offerer_validation_suffix += 1
 
     objects_to_save = (
         list(offerers_by_name.values()) + list(users_by_name.values()) + list(user_offerers_by_name.values())
