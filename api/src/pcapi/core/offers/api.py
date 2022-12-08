@@ -625,7 +625,7 @@ def handle_stocks_edition(offer_id: int, edited_stocks: list[typing.Tuple[Stock,
             _notify_beneficiaries_upon_stock_edit(stock, bookings)
 
 
-def publish_offer(offer: Offer, user: User) -> Offer:
+def publish_offer(offer: Offer, user: User | None) -> Offer:
     offer.isActive = True
     update_offer_fraud_information(offer, user)
     search.async_index_offer_ids([offer.id])
