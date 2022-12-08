@@ -403,19 +403,11 @@ def get_base_query_for_last_30_days_bookings() -> BaseQuery:
             offers_models.Offer.id.label("offer_id"), sa.func.count(bookings_models.Booking.id).label("bookings_number")
         )
         .select_from(offers_models.Offer)
-        .join(offers_models.Stock, offers_models.Stock.offerId == offers_models.Offer.id)
-        .join(bookings_models.Booking, bookings_models.Booking.stockId == offers_models.Stock.id)
+        .join(offers_models.Offer.stocks)
+        .join(offers_models.Stock.bookings)
         .where(
             bookings_models.Booking.dateCreated >= datetime.datetime.utcnow() - datetime.timedelta(days=30),
-            sa.or_(
-                bookings_models.Booking.status.notin_(
-                    (
-                        bookings_models.BookingStatus.PENDING,
-                        bookings_models.BookingStatus.CANCELLED,
-                    )
-                ),
-                bookings_models.Booking.status.is_(None),
-            ),
+            bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
         )
         .group_by(offers_models.Offer.id)
     )
