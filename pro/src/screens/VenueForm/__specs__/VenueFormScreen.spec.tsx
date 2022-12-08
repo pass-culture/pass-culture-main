@@ -17,6 +17,7 @@ import Notification from 'components/Notification/Notification'
 import { IVenueFormValues } from 'components/VenueForm'
 import { IOfferer } from 'core/Offerers/types'
 import { IVenue } from 'core/Venue'
+import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { configureTestStore } from 'store/testUtils'
 
 import { VenueFormScreen } from '../index'
@@ -270,6 +271,34 @@ const venue: IVenue = {
 
 describe('screen | VenueForm', () => {
   describe('Navigation', () => {
+    describe('With new offer creation journey', () => {
+      beforeEach(() => {
+        jest.spyOn(useNewOfferCreationJourney, 'default').mockReturnValue(true)
+      })
+
+      it('User should be redirected with the creation popin displayed', async () => {
+        const { history } = renderForm(
+          {
+            id: 'EY',
+            isAdmin: false,
+            publicName: 'USER',
+          } as SharedCurrentUserResponseModel,
+          formValues,
+          true,
+          undefined
+        )
+        jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: '56' })
+
+        await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
+
+        await waitFor(() => {
+          expect(history.location.pathname + history.location.search).toEqual(
+            '/accueil?success'
+          )
+        })
+      })
+    })
+
     it('User should be redirected to the edit page after creating a venue', async () => {
       const { history } = renderForm(
         {
@@ -286,7 +315,7 @@ describe('screen | VenueForm', () => {
       await userEvent.click(screen.getByText(/Enregistrer et continuer/))
 
       await waitFor(() => {
-        expect(history.location.pathname).toMatch(/\/structures\/.*\/lieux\/.*/)
+        expect(history.location.pathname).toMatch(/\bstructures\b/)
       })
     })
 
