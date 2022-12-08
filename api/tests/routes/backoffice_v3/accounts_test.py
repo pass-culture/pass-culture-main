@@ -158,7 +158,6 @@ class UpdatePublicAccountTest:
         }
 
         response = self.update_account(authenticated_client, user_to_edit, base_form)
-        print(response)
         assert response.status_code == 303
 
         user_to_edit = users_models.User.query.get(user_to_edit.id)

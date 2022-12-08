@@ -76,13 +76,19 @@ def create_digital_venue(offerer: models.Offerer) -> models.Venue:
 def update_venue(
     venue: models.Venue,
     contact_data: serialize_base.VenueContactModel = None,
+    admin_update: bool = False,
     **attrs: typing.Any,
 ) -> models.Venue:
     validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))  # type: ignore [arg-type]
     reimbursement_point_id = attrs.pop("reimbursementPointId", None)
 
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
-    validation.check_venue_edition(modifications, venue)
+
+    if not admin_update:
+        # run validation when the venue update is triggered by a pro
+        # user. This can be bypassed when done by and admin/backoffice
+        # user.
+        validation.check_venue_edition(modifications, venue)
 
     if contact_data:
         upsert_venue_contact(venue, contact_data)
