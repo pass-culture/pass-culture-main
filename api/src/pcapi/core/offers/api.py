@@ -625,8 +625,7 @@ def handle_stocks_edition(offer_id: int, edited_stocks: list[typing.Tuple[Stock,
             _notify_beneficiaries_upon_stock_edit(stock, bookings)
 
 
-def publish_offer(offer_id: int, user: User) -> Offer:
-    offer = offers_repository.get_offer_by_id(offer_id)
+def publish_offer(offer: Offer, user: User) -> Offer:
     offer.isActive = True
     update_offer_fraud_information(offer, user)
     search.async_index_offer_ids([offer.id])
@@ -654,7 +653,9 @@ def update_offer_fraud_information(
 
     if offer.validation in (OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED):
         offer.isActive = False
-    repository.save(offer)
+
+    db.session.add(offer)
+
     if offer.validation == OfferValidationStatus.APPROVED and not silent:
         admin_emails.send_offer_creation_notification_to_administration(offer)
 

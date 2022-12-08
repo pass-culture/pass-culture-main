@@ -161,7 +161,10 @@ def patch_publish_offer(body: offers_serialize.PatchOfferPublishBodyModel) -> No
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
 
     rest.check_user_has_access_to_offerer(current_user, offerer.id)
-    offers_api.publish_offer(body.id, current_user)
+
+    offer = offers_repository.get_offer_by_id(body.id)
+    with repository.transaction():
+        offers_api.publish_offer(offer, current_user)
 
 
 @private_api.route("/offers/active-status", methods=["PATCH"])
