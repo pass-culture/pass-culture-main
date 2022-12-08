@@ -156,6 +156,8 @@ def post_product_offer(body: serialization.ProductOfferCreationBody) -> serializ
             if body.image:
                 _save_image(body.image, created_offer)
 
+            offers_api.publish_offer(created_offer, user=None)
+
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
