@@ -111,7 +111,12 @@ export const getColumnsByAudience = <
     id: 'booking_status',
     accessor: 'booking_status',
     Cell: ({ row }) => {
-      return <BookingStatusCell bookingRecapInfo={row} />
+      return (
+        <BookingStatusCell
+          bookingRecapInfo={row}
+          isCollectiveStatus={audience !== Audience.INDIVIDUAL}
+        />
+      )
     },
     disableSortBy: true,
     Header: () => (
@@ -119,6 +124,7 @@ export const getColumnsByAudience = <
         bookingStatuses={bookingStatus}
         bookingsRecap={bookingsRecap}
         updateGlobalFilters={updateGlobalFilters}
+        audience={audience}
       />
     ),
     className: 'column-booking-status',

@@ -59,8 +59,62 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   },
 ]
 
+const COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
+  {
+    id: BOOKING_STATUS.VALIDATED,
+    status: 'terminée',
+    label: 'Votre évènement a eu lieu',
+    statusClassName: 'booking-status-validated',
+    svgIconFilename: 'ico-status-double-validated',
+  },
+  {
+    id: BOOKING_STATUS.CANCELLED,
+    status: 'annulée',
+    label: 'Réservation annulée',
+    statusClassName: 'booking-status-cancelled',
+    icon: 'ico-status-cancelled',
+    svgIconFilename: 'ico-status-cancelled',
+  },
+  {
+    id: BOOKING_STATUS.BOOKED,
+    status: 'réservée',
+    label: 'Le chef d’établissement scolaire a réservé.',
+    statusClassName: 'booking-status-booked',
+    svgIconFilename: 'ico-status-booked',
+  },
+  {
+    id: BOOKING_STATUS.PENDING,
+    status: 'pré-réservée',
+    label: 'L’enseignant a pré-réservé.',
+    statusClassName: 'booking-status-pending',
+    svgIconFilename: 'ico-status-pending-tag',
+  },
+  {
+    id: BOOKING_STATUS.REIMBURSED,
+    status: 'remboursée',
+    label: 'La réservation a été remboursée',
+    statusClassName: 'booking-status-reimbursed',
+    svgIconFilename: 'ico-status-reimbursed',
+  },
+  {
+    id: BOOKING_STATUS.CONFIRMED,
+    status: 'confirmée',
+    label: 'L’établissement scolaire ne peut plus annuler la réservation',
+    statusClassName: 'booking-status-confirmed',
+    svgIconFilename: 'ico-status-validated',
+  },
+]
+
 export function getBookingStatusDisplayInformations(bookingStatus: string) {
   return BOOKING_STATUS_DISPLAY_INFORMATIONS.find(
+    ({ id }) => bookingStatus.toLowerCase() === id
+  )
+}
+
+export function getCollectiveBookingStatusDisplayInformations(
+  bookingStatus: string
+) {
+  return COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS.find(
     ({ id }) => bookingStatus.toLowerCase() === id
   )
 }
