@@ -67,7 +67,7 @@ class UpdatePublicAccountTest:
     class UnauthorizedTest(unauthorized_helpers.MissingCSRFHelper):
         endpoint = "backoffice_v3_web.update_public_account"
         endpoint_kwargs = {"user_id": 1}
-        method = "patch"
+        method = "post"
         form = {"first_name": "aaaaaaaaaaaaaaaaaaa"}
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
@@ -148,7 +148,7 @@ class UpdatePublicAccountTest:
         url = url_for("backoffice_v3_web.update_public_account", user_id=user_to_edit.id)
 
         form["csrf_token"] = g.get("csrf_token", "")
-        return client.with_session_auth(legit_user.email).patch(url, form=form)
+        return client.with_session_auth(legit_user.email).post(url, form=form)
 
 
 class ResendValidationEmailTest:

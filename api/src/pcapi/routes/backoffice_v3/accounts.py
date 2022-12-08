@@ -137,7 +137,7 @@ def edit_public_account(user_id: int) -> utils.BackofficeResponse:
     return render_template("accounts/edit.html", form=form, dst=dst, user=user)
 
 
-@blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>", methods=["PATCH"])
+@blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def update_public_account(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
