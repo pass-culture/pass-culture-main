@@ -12,6 +12,7 @@ from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 
 from pcapi import settings
+from pcapi.connectors import sirene
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -631,6 +632,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
     new_pro_user = create_pro_user(pro_user)
 
     existing_offerer = offerers_models.Offerer.query.filter_by(siren=pro_user.siren).one_or_none()
+    is_new_offerer = False
 
     if existing_offerer:
         if existing_offerer.isRejected:
@@ -663,6 +665,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
             ]
         offerer = existing_offerer
     else:
+        is_new_offerer = True
         offerer = _generate_offerer(pro_user.dict(by_alias=True))
         user_offerer = offerers_api.grant_user_offerer_access(offerer, new_pro_user)
         digital_venue = offerers_api.create_digital_venue(offerer)
@@ -679,6 +682,15 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
     objects_to_save.append(action)
 
     repository.save(new_pro_user, user_offerer, *objects_to_save)
+
+    try:
+        siren_info = sirene.get_siren(offerer.siren)
+    except sirene.SireneException as exc:
+        logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
+        siren_info = None
+
+    if is_new_offerer and siren_info:
+        offerers_api.auto_tag_new_offerer(offerer, siren_info)
 
     if not transactional_mails.send_email_validation_to_pro_email(new_pro_user):
         logger.warning(

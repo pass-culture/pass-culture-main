@@ -3,6 +3,8 @@ import enum
 import operator
 import uuid
 
+from pcapi.core.offerers import factories as offerers_factories
+
 
 def json_default(data):
     conversions = {
@@ -15,3 +17,8 @@ def json_default(data):
             return func(data)
 
     return data
+
+
+def gen_offerer_tags():
+    tags = [offerers_factories.OffererTagFactory(label=label) for label in ("Collectivité", "Établissement public")]
+    return tags

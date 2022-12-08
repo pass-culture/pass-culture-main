@@ -32,6 +32,8 @@ from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 
+from tests.test_utils import gen_offerer_tags
+
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
@@ -740,6 +742,43 @@ class CreateProUserTest:
         assert not pro_user.has_admin_role
         assert pro_user.has_beneficiary_role
         assert pro_user.deposits
+
+
+class CreateProUserAndOffererTest:
+    @pytest.mark.parametrize(
+        "siren, expected_tag",
+        (
+            ("777084112", "Collectivité"),
+            ("777084122", "Établissement public"),
+            ("777091032", "Établissement public"),
+        ),
+    )
+    def test_offerer_auto_tagging(self, siren, expected_tag):
+        # Given
+        gen_offerer_tags()
+        offerers_factories.VirtualVenueTypeFactory()
+        user_info = ProUserCreationBodyModel(
+            address="1 rue des polissons",
+            city="Paris",
+            email="user@example.com",
+            firstName="Jerry",
+            lastName="khan",
+            name="The best name",
+            password="The p@ssw0rd",
+            phoneNumber="0607080910",
+            postalCode="75017",
+            publicName="The public name",
+            siren=siren,
+            contactOk=True,
+        )
+
+        # When
+        user = users_api.create_pro_user_and_offerer(user_info)
+
+        # Then
+        offerer = user.UserOfferers[0].offerer
+        assert offerer.name == user_info.name
+        assert expected_tag in (tag.label for tag in offerer.tags)
 
 
 class BeneficiaryInformationUpdateTest:
