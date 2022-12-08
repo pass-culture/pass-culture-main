@@ -1,6 +1,7 @@
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
+from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.serialization import venues_serialize
 
@@ -28,4 +29,7 @@ class AdageClient:
         raise NotImplementedError()
 
     def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
+        raise NotImplementedError()
+
+    def get_adage_educational_institution(self, Ansco: str) -> list[AdageEducationalInstitution]:
         raise NotImplementedError()
