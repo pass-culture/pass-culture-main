@@ -27,6 +27,7 @@ jobs:
         run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_OUTPUT
 
   tests-backoffice-front-unit-tests:
+    continue-on-error: true
     name: "Unit tests"
     runs-on: ubuntu-latest
     needs: read-node-version
