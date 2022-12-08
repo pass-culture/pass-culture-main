@@ -198,8 +198,8 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         return sa.or_(cls.isEventExpired, cls.hasBookingLimitDatetimePassed)
 
     @property
-    def isEventDeletable(self):  # type: ignore [no-untyped-def]
-        if not self.beginningDatetime:
+    def isEventDeletable(self) -> bool:
+        if not self.beginningDatetime or self.offer.validation == OfferValidationStatus.DRAFT:
             return True
         limit_date_for_stock_deletion = self.beginningDatetime + bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
         return limit_date_for_stock_deletion >= datetime.utcnow()
