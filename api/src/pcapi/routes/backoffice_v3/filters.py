@@ -6,6 +6,7 @@ from urllib.parse import urlunparse
 from flask import Flask
 import pytz
 
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.utils import urls
 
@@ -81,6 +82,12 @@ def format_string_list(data: list[str] | None) -> str:
     return ", ".join(data)
 
 
+def format_reason_label(reason: str) -> str:
+    return dict(users_constants.SUSPENSION_REASON_CHOICES).get(
+        users_constants.SuspensionReason(reason), "Raison inconnue"
+    )
+
+
 def parse_referrer(url: str) -> str:
     """
     Ensure that a relative path is used, which will be understood.
@@ -102,6 +109,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_phone_number"] = format_phone_number
     app.jinja_env.filters["format_role"] = format_role
     app.jinja_env.filters["format_state"] = format_state
+    app.jinja_env.filters["format_reason_label"] = format_reason_label
     app.jinja_env.filters["parse_referrer"] = parse_referrer
     app.jinja_env.filters["pc_pro_offerer_link"] = urls.build_pc_pro_offerer_link
     app.jinja_env.filters["pc_pro_venue_link"] = urls.build_pc_pro_venue_link

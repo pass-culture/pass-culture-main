@@ -1,6 +1,5 @@
 import datetime
 from decimal import Decimal
-from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
@@ -13,6 +12,7 @@ from pcapi.core.categories import subcategories
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
@@ -182,24 +182,20 @@ def _datetime_within_last_5sec(when: datetime.datetime) -> bool:
     return datetime.datetime.utcnow() - relativedelta(seconds=5) < when < datetime.datetime.utcnow()
 
 
-def _assert_user_suspension_history(
+def _assert_user_action_history_as_expected(
+    action: history_models.ActionHistory,
     user: users_models.User,
-    event_type: users_constants.SuspensionEventType,
-    reason: Optional[users_constants.SuspensionReason],
-    actor: users_models.User,
-    expected_history_length: int = 1,
+    author: users_models.User,
+    actionType: history_models.ActionType,
+    reason: users_constants.SuspensionReason,
 ):
-    assert len(user.suspension_history) == expected_history_length
-    # suspension_history is sorted by ascending date, check the most recent event
-    last_suspension_event = user.suspension_history[-1]
-    assert last_suspension_event.userId == user.id
-    assert last_suspension_event.actorUserId == actor.id
-    assert last_suspension_event.eventType == event_type
-    assert _datetime_within_last_5sec(last_suspension_event.eventDate)
+    assert action.user == user
+    assert action.authorUser == author
+    assert action.actionType == actionType
     if reason:
-        assert last_suspension_event.reasonCode == reason
+        assert action.extraData["reason"] == reason.value
     else:
-        assert not last_suspension_event.reasonCode
+        assert action.extraData == {}
 
 
 @pytest.mark.usefixtures("db_session")
@@ -208,19 +204,22 @@ class SuspendAccountTest:
         user = users_factories.AdminFactory()
         users_factories.UserSessionFactory(user=user)
         reason = users_constants.SuspensionReason.FRAUD_SUSPICION
-        actor = users_factories.AdminFactory()
+        author = users_factories.AdminFactory()
 
-        users_api.suspend_account(user, reason, actor)
+        users_api.suspend_account(user, reason, author)
 
         assert user.suspension_reason == reason
         assert _datetime_within_last_5sec(user.suspension_date)
         assert not user.isActive
         assert not user.has_admin_role
-        assert not user.has_admin_role
         assert not users_models.UserSession.query.filter_by(userId=user.id).first()
-        assert actor.isActive
+        assert author.isActive
 
-        _assert_user_suspension_history(user, users_constants.SuspensionEventType.SUSPENDED, reason, actor)
+        history = history_models.ActionHistory.query.filter_by(userId=user.id).all()
+        assert len(history) == 1
+        _assert_user_action_history_as_expected(
+            history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason
+        )
 
     def test_suspend_beneficiary(self):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -230,11 +229,11 @@ class SuspendAccountTest:
             individualBooking__user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
         )
         used_booking = bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user)
-        actor = users_factories.AdminFactory()
+        author = users_factories.AdminFactory()
         reason = users_constants.SuspensionReason.FRAUD_SUSPICION
         old_password_hash = user.password
 
-        users_api.suspend_account(user, reason, actor)
+        users_api.suspend_account(user, reason, author)
 
         db.session.refresh(user)
 
@@ -247,77 +246,84 @@ class SuspendAccountTest:
         assert confirmed_booking.status is BookingStatus.CANCELLED
         assert used_booking.status is BookingStatus.USED
 
-        _assert_user_suspension_history(user, users_constants.SuspensionEventType.SUSPENDED, reason, actor)
+        history = history_models.ActionHistory.query.filter_by(userId=user.id).all()
+        assert len(history) == 1
+        _assert_user_action_history_as_expected(
+            history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason
+        )
 
     def test_suspend_pro(self):
         booking = bookings_factories.IndividualBookingFactory()
         pro = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
-        actor = users_factories.AdminFactory()
+        author = users_factories.AdminFactory()
         reason = users_constants.SuspensionReason.FRAUD_SUSPICION
 
-        users_api.suspend_account(pro, reason, actor)
+        users_api.suspend_account(pro, reason, author)
 
         assert not pro.isActive
         assert booking.status is BookingStatus.CANCELLED
 
-        _assert_user_suspension_history(pro, users_constants.SuspensionEventType.SUSPENDED, reason, actor)
+        history = history_models.ActionHistory.query.filter_by(userId=pro.id).all()
+        assert len(history) == 1
+        _assert_user_action_history_as_expected(
+            history[0], pro, author, history_models.ActionType.USER_SUSPENDED, reason
+        )
 
     def test_suspend_pro_with_other_offerer_users(self):
         booking = bookings_factories.IndividualBookingFactory()
         pro = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
         offerers_factories.UserOffererFactory(offerer=booking.offerer)
-        actor = users_factories.AdminFactory()
+        author = users_factories.AdminFactory()
         reason = users_constants.SuspensionReason.FRAUD_SUSPICION
 
-        users_api.suspend_account(pro, reason, actor)
+        users_api.suspend_account(pro, reason, author)
 
         assert not pro.isActive
         assert booking.status is not BookingStatus.CANCELLED
 
-        _assert_user_suspension_history(pro, users_constants.SuspensionEventType.SUSPENDED, reason, actor)
+        history = history_models.ActionHistory.query.filter_by(userId=pro.id).all()
+        assert len(history) == 1
+        _assert_user_action_history_as_expected(
+            history[0], pro, author, history_models.ActionType.USER_SUSPENDED, reason
+        )
 
 
 class UnsuspendAccountTest:
     def test_unsuspend_account(self):
-        suspension = users_factories.UserSuspensionByFraudFactory()
-        user = suspension.user
+        user = users_factories.UserFactory(isActive=False)
+        author = users_factories.AdminFactory()
 
-        users_api.unsuspend_account(user, suspension.actorUser)
+        users_api.unsuspend_account(user, author)
 
         assert not user.suspension_reason
         assert not user.suspension_date
         assert user.isActive
 
-        _assert_user_suspension_history(
-            user, users_constants.SuspensionEventType.UNSUSPENDED, None, suspension.actorUser, expected_history_length=2
+        history = history_models.ActionHistory.query.filter_by(userId=user.id).all()
+        assert len(history) == 1
+        _assert_user_action_history_as_expected(
+            history[0], user, author, history_models.ActionType.USER_UNSUSPENDED, reason=None
         )
 
     def test_bulk_unsuspend_account(self):
-        actor = users_factories.AdminFactory()
-        suspension1 = users_factories.UserSuspensionByFraudFactory(actorUser=actor)
-        suspension2 = users_factories.UserSuspensionByFraudFactory(actorUser=actor)
-        suspension3 = users_factories.UserSuspensionByFraudFactory(actorUser=actor)
+        author = users_factories.AdminFactory()
+        user1 = users_factories.UserFactory(isActive=False)
+        user2 = users_factories.UserFactory(isActive=False)
+        user3 = users_factories.UserFactory(isActive=False)
 
-        users_api.bulk_unsuspend_account([suspension1.user.id, suspension2.user.id, suspension3.user.id], actor)
+        users_api.bulk_unsuspend_account([user1.id, user2.id, user3.id], author)
 
-        for user in [suspension1.user, suspension2.user, suspension3.user]:
+        for user in [user1, user2, user3]:
             assert not user.suspension_reason
             assert not user.suspension_date
             assert user.isActive
 
-        user_suspensions = users_models.UserSuspension.query.order_by(users_models.UserSuspension.id.asc()).all()
-        assert len(user_suspensions) == 6
-
-        user_unsuspensions = user_suspensions[3:]
-        assert {event.userId for event in user_unsuspensions} == {
-            suspension1.user.id,
-            suspension2.user.id,
-            suspension3.user.id,
-        }
-        for event in user_unsuspensions:
-            assert event.actorUserId == actor.id
-            assert event.eventType == users_constants.SuspensionEventType.UNSUSPENDED
-            assert _datetime_within_last_5sec(event.eventDate)
+            history = history_models.ActionHistory.query.filter_by(userId=user.id).all()
+            assert len(history) == 1
+            _assert_user_action_history_as_expected(
+                history[0], user, author, history_models.ActionType.USER_UNSUSPENDED, reason=None
+            )
+            assert _datetime_within_last_5sec(history[0].actionDate)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -980,38 +986,6 @@ class PublicAccountHistoryTest:
             ),
         } in history
 
-    def test_history_contains_suspensions(self):
-        # given
-        user = users_factories.UserFactory()
-        actor_user = users_factories.UserFactory()
-        deactivation = users_factories.UserSuspensionByFraudFactory(
-            user=user,
-            actorUser=actor_user,
-            eventDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
-            reasonCode=users_constants.SuspensionReason.FRAUD_SUSPICION,
-        )
-        reactivation = users_factories.UnsuspendedSuspensionFactory(
-            user=user,
-            actorUser=actor_user,
-            eventDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
-        )
-
-        # when
-        history = users_api.public_account_history(user)
-
-        # then
-        assert len(history) == 2
-        assert {
-            "action": "désactivation de compte",
-            "datetime": deactivation.eventDate,
-            "message": f"par {deactivation.actorUser.publicName}: fraud suspicion",
-        } in history
-        assert {
-            "action": "réactivation de compte",
-            "datetime": reactivation.eventDate,
-            "message": f"par {deactivation.actorUser.publicName}: [aucun motif renseigné]",
-        } in history
-
     def test_history_contains_fraud_checks(self):
         # given
         user = users_factories.UserFactory()
@@ -1162,7 +1136,6 @@ class PublicAccountHistoryTest:
         # given
         user = users_factories.UserFactory()
         author_user = users_factories.UserFactory()
-        actor_user = users_factories.UserFactory()
 
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -1206,19 +1179,8 @@ class PublicAccountHistoryTest:
         users_factories.EmailUpdateEntryFactory(
             user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=30)
         )
-        users_factories.UserSuspensionByFraudFactory(
-            user=user,
-            actorUser=actor_user,
-            eventDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=25),
-            reasonCode=users_constants.SuspensionReason.FRAUD_SUSPICION,
-        )
         users_factories.EmailValidationEntryFactory(
             user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=15)
-        )
-        users_factories.UnsuspendedSuspensionFactory(
-            user=user,
-            actorUser=actor_user,
-            eventDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
         )
         fraud_factories.BeneficiaryFraudReviewFactory(
             user=user,
@@ -1231,6 +1193,6 @@ class PublicAccountHistoryTest:
         history = users_api.public_account_history(user)
 
         # then
-        assert len(history) == 11
+        assert len(history) == 9
         datetimes = [item["datetime"] for item in history]
         assert datetimes == sorted(datetimes, reverse=True)

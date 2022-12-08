@@ -12,9 +12,11 @@ from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import factories as fraud_factories
+from pcapi.core.history import factories as history_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import override_features
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
@@ -43,7 +45,9 @@ def test_account_is_active_account_state(client):
 def test_account_suspended_upon_user_request_account_state(client):
     data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
     user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
-    users_factories.SuspendedUponUserRequestFactory(user=user)
+    history_factories.SuspendedUserActionHistoryFactory(
+        user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+    )
 
     response = client.post("/native/v1/signin", json=data)
     assert response.status_code == 200
@@ -53,7 +57,7 @@ def test_account_suspended_upon_user_request_account_state(client):
 def test_account_deleted_account_state(client):
     data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
     user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
-    users_factories.DeletedAccountSuspensionFactory(user=user)
+    history_factories.SuspendedUserActionHistoryFactory(user=user, reason=users_constants.SuspensionReason.DELETED)
 
     response = client.post("/native/v1/signin", json=data)
     assert response.status_code == 400
@@ -199,21 +203,25 @@ def test_request_reset_password_for_existing_email(client):
 class InactiveAccountRequestResetPasswordTest:
     def test_suspended_upon_user_request(self, client):
         user = users_factories.UserFactory(email="existing_user@example.com", isActive=False)
-        users_factories.SuspendedUponUserRequestFactory(user=user)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+        )
 
         response = client.post("/native/v1/request_password_reset", json={"email": user.email})
         self.assert_email_is_sent(response, user)
 
     def test_suspended_account(self, client):
         user = users_factories.UserFactory(email="existing_user@example.com", isActive=False)
-        users_factories.UserSuspensionByFraudFactory(user=user)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
+        )
 
         response = client.post("/native/v1/request_password_reset", json={"email": user.email})
         self.assert_email_is_sent(response, user)
 
     def test_deleted_account(self, client):
         user = users_factories.UserFactory(email="existing_user@example.com", isActive=False)
-        users_factories.DeletedAccountSuspensionFactory(user=user)
+        history_factories.SuspendedUserActionHistoryFactory(user=user, reason=users_constants.SuspensionReason.DELETED)
 
         response = client.post("/native/v1/request_password_reset", json={"email": user.email})
         self.assert_email_is_sent(response, user)

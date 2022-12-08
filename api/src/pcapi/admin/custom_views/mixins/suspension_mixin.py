@@ -13,6 +13,7 @@ import wtforms.validators
 
 from pcapi import settings
 import pcapi.core.bookings.exceptions as bookings_exceptions
+import pcapi.core.history.models as history_models
 import pcapi.core.users.api as users_api
 import pcapi.core.users.constants as users_constants
 from pcapi.core.users.models import User
@@ -64,21 +65,24 @@ def beneficiary_suspension_history_formatter(view, context, model, name) -> Mark
     Bullet list of suspension events which affected any user account (beneficiary, pro, admin).
     Formatting must take old suspensions into account (migrated from user table, without date and author).
     """
-    suspension_history = model.suspension_history
+    suspension_history = model.suspension_action_history
     html = Markup("<ul>")
 
-    for suspension_event in suspension_history:
-        author_text = f"par {suspension_event.actorUser.full_name}" if suspension_event.actorUser else ""
+    for suspension_action in suspension_history:
+        author_text = f"par {suspension_action.authorUser.full_name}" if suspension_action.authorUser else ""
 
         reason_text = (
-            " : " + dict(users_constants.SUSPENSION_REASON_CHOICES)[suspension_event.reasonCode]
-            if suspension_event.reasonCode
+            " : "
+            + dict(users_constants.SUSPENSION_REASON_CHOICES)[
+                users_constants.SuspensionReason(suspension_action.extraData["reason"])
+            ]
+            if suspension_action.actionType == history_models.ActionType.USER_SUSPENDED and suspension_action.extraData
             else ""
         )
 
         html += Markup("<li>{} {} {} {}</li>").format(
-            dict(users_constants.SUSPENSION_EVENT_TYPE_CHOICES)[suspension_event.eventType],
-            suspension_event.eventDate.strftime("le %d/%m/%Y à %H:%M:%S") if suspension_event.eventDate else "",
+            suspension_action.actionType.value,
+            suspension_action.actionDate.strftime("le %d/%m/%Y à %H:%M:%S") if suspension_action.actionDate else "",
             author_text,
             reason_text,
         )

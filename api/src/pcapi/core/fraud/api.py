@@ -2,11 +2,13 @@ import datetime
 import logging
 import re
 
+import sqlalchemy as sa
 from sqlalchemy.orm import Query
 
 from pcapi import settings
 import pcapi.core.finance.exceptions as finance_exceptions
 from pcapi.core.fraud.utils import is_latin
+from pcapi.core.history import models as history_models
 import pcapi.core.mails.transactional as transaction_mails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
@@ -583,26 +585,32 @@ def get_suspended_upon_user_request_accounts_since(expiration_delta_in_days: int
     # distinct keeps the first row if duplicates are found. Since rows
     # are ordered by userId and eventDate, this query will fetch the
     # latest event for each userId.
-    user_ids_and_latest_events = (
-        users_models.User.query.distinct(users_models.UserSuspension.userId)
-        .join(users_models.User.suspension_history)
-        .order_by(users_models.UserSuspension.userId, users_models.UserSuspension.eventDate.desc())
+    user_ids_and_latest_action = (
+        users_models.User.query.distinct(history_models.ActionHistory.userId)
+        .join(users_models.User.action_history)
+        .filter(
+            sa.or_(
+                history_models.ActionHistory.actionType == history_models.ActionType.USER_SUSPENDED,
+                history_models.ActionHistory.actionType == history_models.ActionType.USER_UNSUSPENDED,
+            )
+        )
+        .order_by(history_models.ActionHistory.userId, history_models.ActionHistory.actionDate.desc())
         .with_entities(
             users_models.User.id,
-            users_models.UserSuspension.eventDate,
-            users_models.UserSuspension.eventType,
-            users_models.UserSuspension.reasonCode,
+            history_models.ActionHistory.actionDate,
+            history_models.ActionHistory.actionType,
+            history_models.ActionHistory.extraData["reason"].astext.label("reason"),
         )
     ).subquery()
 
     # Deletion is a special case of suspension, no need to delete again
     # an already deleted account.
     query = users_models.User.query.join(
-        user_ids_and_latest_events, users_models.User.id == user_ids_and_latest_events.c.id
+        user_ids_and_latest_action, users_models.User.id == user_ids_and_latest_action.c.id
     ).filter(
-        user_ids_and_latest_events.c.eventDate <= start,
-        user_ids_and_latest_events.c.eventType == constants.SuspensionEventType.SUSPENDED,
-        user_ids_and_latest_events.c.reasonCode == constants.SuspensionReason.UPON_USER_REQUEST,
+        user_ids_and_latest_action.c.actionDate <= start,
+        user_ids_and_latest_action.c.actionType == history_models.ActionType.USER_SUSPENDED,
+        user_ids_and_latest_action.c.reason == constants.SuspensionReason.UPON_USER_REQUEST.value,
     )
 
     return query
