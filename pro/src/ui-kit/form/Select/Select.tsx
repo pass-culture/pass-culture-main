@@ -1,5 +1,5 @@
 import { useField } from 'formik'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 
 import { SelectOption } from 'custom_types/form'
 
@@ -33,6 +33,7 @@ const Select = ({
   hideFooter,
   description,
   inline,
+  onChange,
   ...selectAttributes
 }: ISelectProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'select' })
@@ -46,6 +47,16 @@ const Select = ({
       helpers.setValue(options[0].value)
     }
   }, [options, helpers, field, isOptional])
+
+  const onCustomChange = useCallback(
+    async (e: React.ChangeEvent<HTMLSelectElement>) => {
+      field.onChange(e)
+      if (onChange) {
+        onChange(e)
+      }
+    },
+    [field, onChange]
+  )
 
   return (
     <FieldLayout
@@ -65,8 +76,9 @@ const Select = ({
         hasDescription={description !== undefined}
         options={options}
         defaultOption={defaultOption}
-        {...selectAttributes}
         {...field}
+        {...selectAttributes}
+        onChange={e => onCustomChange(e)}
       />
 
       {description && <span>{description}</span>}

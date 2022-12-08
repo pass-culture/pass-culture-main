@@ -1,16 +1,15 @@
 import cn from 'classnames'
-import React from 'react'
+import React, { ComponentProps } from 'react'
 
 import { SelectOption } from 'custom_types/form'
 
 import { ReactComponent as Down } from './assets/down.svg'
 import styles from './Select.module.scss'
 
-interface ISelectInputProps {
+interface ISelectInputProps extends ComponentProps<'select'> {
   name: string
   defaultOption?: SelectOption | null
   options: SelectOption[]
-  disabled?: boolean
   hasError?: boolean
   hasDescription?: boolean
   value: string
