@@ -407,7 +407,7 @@ def _fill_in_offerer(
     offerer.dateCreated = datetime.utcnow()
 
 
-def _auto_tag_new_offerer(offerer: offerers_models.Offerer, siren_info: sirene.SirenInfo) -> None:
+def auto_tag_new_offerer(offerer: offerers_models.Offerer, siren_info: sirene.SirenInfo) -> None:
     tag_label = APE_TAG_MAPPING.get(siren_info.ape_code)
 
     if tag_label:
@@ -480,7 +480,7 @@ def create_offerer(
     if is_new:
         extra_data = {}
         if siren_info:
-            _auto_tag_new_offerer(offerer, siren_info)
+            auto_tag_new_offerer(offerer, siren_info)
             extra_data = {"sirene_info": dict(siren_info)}
 
         history_api.log_action(
