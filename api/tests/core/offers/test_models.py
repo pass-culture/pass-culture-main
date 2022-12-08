@@ -6,13 +6,13 @@ import pytest
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
-import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.models import offer_mixin
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.pc_object import DeletedRecordException
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.utils import human_ids
 
@@ -511,9 +511,7 @@ class StockIsBookableTest:
         assert not stock.isBookable
 
     def test_not_bookable_if_offerer_is_not_validated(self):
-        stock = factories.StockFactory(
-            offer__venue__managingOfferer__validationStatus=offerers_models.ValidationStatus.NEW
-        )
+        stock = factories.StockFactory(offer__venue__managingOfferer__validationStatus=ValidationStatus.NEW)
         assert not stock.isBookable
 
     def test_not_bookable_if_offerer_is_not_active(self):

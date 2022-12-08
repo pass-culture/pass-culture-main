@@ -443,7 +443,7 @@ def create_industrial_educational_bookings() -> None:
         )
 
     for venue in venues:
-        offerers_factories.UserOffererFactory(validationToken=None, offerer=venue.managingOfferer)
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
 
     deposits = []
     for educational_institution in educational_institutions:

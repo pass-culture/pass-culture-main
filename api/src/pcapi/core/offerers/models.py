@@ -33,7 +33,6 @@ from sqlalchemy.orm import aliased
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
-from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import Case
 from sqlalchemy.sql.sqltypes import LargeBinary
 from werkzeug.utils import cached_property
@@ -49,10 +48,8 @@ from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
-from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
-from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatusMixin
 from pcapi.utils import crypto
 from pcapi.utils.date import CUSTOM_TIMEZONES
@@ -605,7 +602,6 @@ class Offerer(
     HasThumbMixin,
     HasAddressMixin,
     ProvidableMixin,
-    NeedsValidationMixin,  # TODO (prouzet): remove when validation by token is stopped and data is migrated
     ValidationStatusMixin,
     DeactivableMixin,
 ):
@@ -691,70 +687,6 @@ class Offerer(
             return None
         return self.UserOfferers[0].user
 
-    @hybrid_property
-    def isValidated(self) -> bool:
-        # Keep compatibility with validation by token until production data has been migrated
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        return (
-            self.validationStatus is None and self.validationToken is None
-        ) or self.validationStatus == ValidationStatus.VALIDATED
-
-    @isValidated.expression  # type: ignore [no-redef]
-    def isValidated(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
-        # Keep compatibility with validation by token until production data has been migrated
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        return sa.or_(
-            sa.and_(cls.validationStatus.is_(None), cls.validationToken.is_(None)),
-            cls.validationStatus == ValidationStatus.VALIDATED,
-        ).is_(True)
-
-    @hybrid_property
-    def isWaitingForValidation(self) -> bool:
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        return (self.validationStatus is None and self.validationToken is not None) or self.validationStatus in (
-            ValidationStatus.NEW,
-            ValidationStatus.PENDING,
-        )
-
-    @isWaitingForValidation.expression  # type: ignore [no-redef]
-    def isWaitingForValidation(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        return sa.or_(
-            sa.and_(cls.validationStatus.is_(None), cls.validationToken.is_not(None)),
-            cls.validationStatus == ValidationStatus.NEW,
-            cls.validationStatus == ValidationStatus.PENDING,
-        ).is_(True)
-
-    @hybrid_property
-    def isNew(self) -> bool:
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        if self.validationStatus is None and self.validationToken is not None:
-            return True
-        return self.validationStatus == ValidationStatus.NEW
-
-    @isNew.expression  # type: ignore [no-redef]
-    def isNew(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        return sa.or_(
-            sa.and_(cls.validationStatus.is_(None), cls.validationToken.is_not(None)),
-            cls.validationStatus == ValidationStatus.NEW,
-        ).is_(True)
-
-    @hybrid_property
-    def isPending(self) -> bool:
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        if self.validationStatus is None and self.validationToken is not None:
-            return True
-        return self.validationStatus == ValidationStatus.PENDING
-
-    @isPending.expression  # type: ignore [no-redef]
-    def isPending(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        return sa.or_(
-            sa.and_(cls.validationStatus.is_(None), cls.validationToken.is_not(None)),
-            cls.validationStatus == ValidationStatus.PENDING,
-        ).is_(True)
-
 
 offerer_ts_indexes = [
     ("idx_offerer_fts_name", Offerer.name),
@@ -765,7 +697,7 @@ offerer_ts_indexes = [
 (Offerer.__ts_vectors__, Offerer.__table_args__) = create_ts_vector_and_table_args(offerer_ts_indexes)
 
 
-class UserOfferer(PcObject, Base, Model, NeedsValidationMixin, ValidationStatusMixin):
+class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
     __table_name__ = "user_offerer"
     userId: int = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
     user: sa_orm.Mapped["users_models.User"] = relationship(
@@ -784,70 +716,6 @@ class UserOfferer(PcObject, Base, Model, NeedsValidationMixin, ValidationStatusM
 
     # dateCreated will remain null for all rows already in this table before this field was added
     dateCreated: datetime = Column(DateTime, nullable=True, default=datetime.utcnow)
-
-    @hybrid_property
-    def isValidated(self) -> bool:
-        # Keep compatibility with validation by token until production data has been migrated
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        return (
-            self.validationStatus is None and self.validationToken is None
-        ) or self.validationStatus == ValidationStatus.VALIDATED
-
-    @isValidated.expression  # type: ignore [no-redef]
-    def isValidated(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
-        # Keep compatibility with validation by token until production data has been migrated
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        return sa.or_(
-            sa.and_(cls.validationStatus.is_(None), cls.validationToken.is_(None)),
-            cls.validationStatus == ValidationStatus.VALIDATED,
-        ).is_(True)
-
-    @hybrid_property
-    def isWaitingForValidation(self) -> bool:
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        return (self.validationStatus is None and self.validationToken is not None) or self.validationStatus in (
-            ValidationStatus.NEW,
-            ValidationStatus.PENDING,
-        )
-
-    @isWaitingForValidation.expression  # type: ignore [no-redef]
-    def isWaitingForValidation(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        return sa.or_(
-            sa.and_(cls.validationStatus.is_(None), cls.validationToken.is_not(None)),
-            cls.validationStatus == ValidationStatus.NEW,
-            cls.validationStatus == ValidationStatus.PENDING,
-        ).is_(True)
-
-    @hybrid_property
-    def isNew(self) -> bool:
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        if self.validationStatus is None and self.validationToken is not None:
-            return True
-        return self.validationStatus == ValidationStatus.NEW
-
-    @isNew.expression  # type: ignore [no-redef]
-    def isNew(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        return sa.or_(
-            sa.and_(cls.validationStatus.is_(None), cls.validationToken.is_not(None)),
-            cls.validationStatus == ValidationStatus.NEW,
-        ).is_(True)
-
-    @hybrid_property
-    def isPending(self) -> bool:
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        if self.validationStatus is None and self.validationToken is not None:
-            return True
-        return self.validationStatus == ValidationStatus.PENDING
-
-    @isPending.expression  # type: ignore [no-redef]
-    def isPending(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
-        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
-        return sa.or_(
-            sa.and_(cls.validationStatus.is_(None), cls.validationToken.is_not(None)),
-            cls.validationStatus == ValidationStatus.PENDING,
-        ).is_(True)
 
 
 class ApiKey(PcObject, Base, Model):

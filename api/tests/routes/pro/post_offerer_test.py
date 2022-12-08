@@ -5,6 +5,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.testing as users_testing
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils.human_ids import dehumanize
 
 
@@ -99,7 +100,7 @@ def test_current_user_has_access_to_created_offerer(client):
     assert offerer.UserOfferers[0].user == pro
 
 
-def test_new_user_offerer_has_validation_token(client):
+def test_new_user_offerer_has_validation_status_new(client):
     # Given
     pro = users_factories.ProFactory()
     offerer = offerers_factories.OffererFactory()
@@ -121,7 +122,7 @@ def test_new_user_offerer_has_validation_token(client):
     assert response.status_code == 201
     offerer = offerers_models.Offerer.query.one()
     created_user_offerer = offerers_models.UserOfferer.query.filter_by(offerer=offerer, user=pro).one()
-    assert created_user_offerer.validationToken is not None
+    assert created_user_offerer.validationStatus == ValidationStatus.NEW
 
 
 def test_create_offerer_action_is_logged(client):

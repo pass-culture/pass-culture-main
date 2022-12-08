@@ -12,14 +12,14 @@
             {% if not user_offerer.isValidated %}
             <h2>Nouveau rattachement :</h2>
             <strong class="validation">
-                Pour valider, <a href="{{ api_url }}/validate/user-offerer/{{ user_offerer.validationToken }}">cliquez ici</a>
+                Pour valider, rendez vous dans le backoffice, section "Rattachements à valider".
             </strong>
             {% endif %}
 
             {% if not offerer.isValidated %}
             <h2>Nouvelle structure :</h2>
             <strong class="validation">
-                Pour valider, <a href="{{ api_url }}/validate/offerer/{{ offerer.validationToken }}">cliquez ici</a>
+                Pour valider, rendez vous dans le backoffice, section "Structures à valider".
             </strong>
             {% endif %}
         </section>

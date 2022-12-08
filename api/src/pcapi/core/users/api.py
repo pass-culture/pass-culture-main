@@ -34,6 +34,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks import batch_tasks
@@ -707,8 +708,7 @@ def _generate_user_offerer_when_existing_offerer(
 ) -> offerers_models.UserOfferer:
     user_offerer = offerers_api.grant_user_offerer_access(offerer, new_user)
     if not settings.IS_INTEGRATION:
-        user_offerer.generate_validation_token()
-        user_offerer.validationStatus = offerers_models.ValidationStatus.NEW
+        user_offerer.validationStatus = ValidationStatus.NEW
     return user_offerer
 
 
@@ -725,10 +725,9 @@ def _generate_offerer(data: dict, existing_offerer: offerers_models.Offerer | No
     offerer.dateCreated = datetime.datetime.utcnow()
 
     if not settings.IS_INTEGRATION:
-        offerer.generate_validation_token()
-        offerer.validationStatus = offerers_models.ValidationStatus.NEW
+        offerer.validationStatus = ValidationStatus.NEW
     else:
-        offerer.validationStatus = offerers_models.ValidationStatus.VALIDATED
+        offerer.validationStatus = ValidationStatus.VALIDATED
 
     return offerer
 

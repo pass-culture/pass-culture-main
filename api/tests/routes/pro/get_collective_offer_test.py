@@ -26,7 +26,7 @@ class Returns200Test:
         assert "bic" not in response_json["venue"]
         assert "iban" not in response_json["venue"]["managingOfferer"]
         assert "bic" not in response_json["venue"]["managingOfferer"]
-        assert "validationToken" not in response_json["venue"]["managingOfferer"]
+        assert "validationStatus" not in response_json["venue"]["managingOfferer"]
         assert response_json["imageCredit"] == None
         assert response_json["imageUrl"] == None
         assert "dateCreated" in response_json

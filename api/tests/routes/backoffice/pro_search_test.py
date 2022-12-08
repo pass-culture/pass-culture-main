@@ -8,6 +8,7 @@ from pcapi.core.permissions.models import Permissions
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models.validation_status_mixin import ValidationStatus
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -220,7 +221,7 @@ class ProSearchOffererTest:
         name_part1: list[str] = ("Librairie", "Cinéma", "Théâtre"),
         name_part2: list[str] = ("de la Gare", "de la Plage", "du Centre", "du Centaure"),
     ) -> None:
-        validation_statuses = list(offerers_models.ValidationStatus)
+        validation_statuses = list(ValidationStatus)
         self.offerers = []
         for i in range(number):
             offerer = offerers_factories.OffererFactory(
@@ -353,7 +354,7 @@ class ProSearchVenueTest:
         name_part2_public: list[str] = ("de la Gare", "de la Plage", "du Centre", "du Centaure"),
         domains: list[str] = ("librairie.fr", "cinema.com", "theatre.net"),
     ) -> None:
-        validation_statuses = list(offerers_models.ValidationStatus)
+        validation_statuses = list(ValidationStatus)
         self.venues = []
         for i in range(number):
             venue = offerers_factories.VenueFactory(

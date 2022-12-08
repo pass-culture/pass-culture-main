@@ -8,7 +8,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
@@ -17,6 +16,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
+from pcapi.models.validation_status_mixin import ValidationStatus
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -84,9 +84,7 @@ def authenticated_client_fixture(client, legit_user):  # type: ignore
 
 @pytest.fixture(name="offerer")
 def offerer_fixture():
-    offerer = offerers_factories.OffererFactory(
-        postalCode="46150", validationStatus=offerers_models.ValidationStatus.VALIDATED
-    )
+    offerer = offerers_factories.OffererFactory(postalCode="46150", validationStatus=ValidationStatus.VALIDATED)
     return offerer
 
 
@@ -373,15 +371,15 @@ def offerers_to_be_validated_fixture(offerer_tags):
 
     no_tag = offerers_factories.NotValidatedOffererFactory(name="A", siren="123001001", address=None)
     top = offerers_factories.NotValidatedOffererFactory(
-        name="B", siren="123002002", validationStatus=offerers_models.ValidationStatus.PENDING
+        name="B", siren="123002002", validationStatus=ValidationStatus.PENDING
     )
     collec = offerers_factories.NotValidatedOffererFactory(name="C", siren="123003003")
     public = offerers_factories.NotValidatedOffererFactory(
-        name="D", siren="123004004", validationStatus=offerers_models.ValidationStatus.PENDING
+        name="D", siren="123004004", validationStatus=ValidationStatus.PENDING
     )
     top_collec = offerers_factories.NotValidatedOffererFactory(name="E", siren="123005005")
     top_public = offerers_factories.NotValidatedOffererFactory(
-        name="F", siren="123006006", validationStatus=offerers_models.ValidationStatus.PENDING
+        name="F", siren="123006006", validationStatus=ValidationStatus.PENDING
     )
 
     for offerer in (top, top_collec, top_public):
@@ -393,7 +391,7 @@ def offerers_to_be_validated_fixture(offerer_tags):
 
     # Other statuses
     offerers_factories.OffererFactory(name="G")
-    offerers_factories.NotValidatedOffererFactory(name="H", validationStatus=offerers_models.ValidationStatus.REJECTED)
+    offerers_factories.NotValidatedOffererFactory(name="H", validationStatus=ValidationStatus.REJECTED)
 
     return (no_tag, top, collec, public, top_collec, top_public)
 
@@ -404,15 +402,15 @@ def user_offerer_to_be_validated_fixture(offerer_tags):
 
     no_tag = offerers_factories.NotValidatedUserOffererFactory(user__email="a@example.com")
     top = offerers_factories.NotValidatedUserOffererFactory(
-        user__email="b@example.com", validationStatus=offerers_models.ValidationStatus.PENDING
+        user__email="b@example.com", validationStatus=ValidationStatus.PENDING
     )
     collec = offerers_factories.NotValidatedUserOffererFactory(user__email="c@example.com")
     public = offerers_factories.NotValidatedUserOffererFactory(
-        user__email="d@example.com", validationStatus=offerers_models.ValidationStatus.PENDING
+        user__email="d@example.com", validationStatus=ValidationStatus.PENDING
     )
     top_collec = offerers_factories.NotValidatedUserOffererFactory(user__email="e@example.com")
     top_public = offerers_factories.NotValidatedUserOffererFactory(
-        user__email="f@example.com", validationStatus=offerers_models.ValidationStatus.PENDING
+        user__email="f@example.com", validationStatus=ValidationStatus.PENDING
     )
 
     for user_offerer in (top, top_collec, top_public):

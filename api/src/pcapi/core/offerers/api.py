@@ -33,6 +33,7 @@ from pcapi.domain import admin_emails
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
@@ -402,8 +403,7 @@ def _fill_in_offerer(
     offerer.name = offerer_informations.name
     offerer.postalCode = offerer_informations.postalCode
     offerer.siren = offerer_informations.siren
-    offerer.generate_validation_token()
-    offerer.validationStatus = models.ValidationStatus.NEW
+    offerer.validationStatus = ValidationStatus.NEW
     offerer.dateCreated = datetime.utcnow()
 
 
@@ -454,8 +454,7 @@ def create_offerer(
                 ),
             ]
         else:
-            user_offerer.generate_validation_token()
-            user_offerer.validationStatus = offerers_models.ValidationStatus.NEW
+            user_offerer.validationStatus = ValidationStatus.NEW
             objects_to_save += [
                 history_api.log_action(
                     history_models.ActionType.USER_OFFERER_NEW, user, user=user, offerer=offerer, save=False
@@ -505,14 +504,15 @@ def create_offerer(
 
 
 def grant_user_offerer_access(offerer: models.Offerer, user: users_models.User) -> models.UserOfferer:
-    return models.UserOfferer(offerer=offerer, user=user, validationStatus=models.ValidationStatus.VALIDATED)
+    return models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.VALIDATED)
 
 
-# TODO (vroullier): author_user should not be None, remove None option when validation by token is no longer used
-def _validate_offerer_attachment(user_offerer: models.UserOfferer, author_user: users_models.User | None) -> None:
+def validate_offerer_attachment(user_offerer: offerers_models.UserOfferer, author_user: users_models.User) -> None:
+    if user_offerer.isValidated:
+        raise exceptions.UserOffererAlreadyValidatedException()
+
     user_offerer.user.add_pro_role()
-    user_offerer.validationToken = None
-    user_offerer.validationStatus = models.ValidationStatus.VALIDATED
+    user_offerer.validationStatus = ValidationStatus.VALIDATED
 
     action = history_api.log_action(
         history_models.ActionType.USER_OFFERER_VALIDATED,
@@ -533,25 +533,10 @@ def _validate_offerer_attachment(user_offerer: models.UserOfferer, author_user: 
         )
 
 
-def validate_offerer_attachment_by_token(token: str) -> None:
-    user_offerer = offerers_repository.find_user_offerer_by_validation_token(token)
-    if user_offerer is None:
-        raise exceptions.ValidationTokenNotFoundError()
-
-    _validate_offerer_attachment(user_offerer, None)
-
-
-def validate_offerer_attachment(user_offerer: offerers_models.UserOfferer, author_user: users_models.User) -> None:
-    if user_offerer.isValidated:
-        raise exceptions.UserOffererAlreadyValidatedException()
-
-    _validate_offerer_attachment(user_offerer, author_user)
-
-
 def set_offerer_attachment_pending(
     user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str | None = None
 ) -> None:
-    user_offerer.validationStatus = models.ValidationStatus.PENDING
+    user_offerer.validationStatus = ValidationStatus.PENDING
     action = history_api.log_action(
         history_models.ActionType.USER_OFFERER_PENDING,
         author_user,
@@ -587,14 +572,12 @@ def reject_offerer_attachment(
     db.session.commit()
 
 
-# TODO (prouzet): author_user should not be None, remove None option when validation by token is no longer used
-def validate_offerer(offerer: models.Offerer, author_user: users_models.User | None) -> None:
+def validate_offerer(offerer: models.Offerer, author_user: users_models.User) -> None:
     if offerer.isValidated:
         raise exceptions.OffererAlreadyValidatedException()
 
     applicants = users_repository.get_users_with_validated_attachment_by_offerer(offerer)
-    offerer.validationStatus = models.ValidationStatus.VALIDATED
-    offerer.validationToken = None
+    offerer.validationStatus = ValidationStatus.VALIDATED
     offerer.dateValidated = datetime.utcnow()
     for applicant in applicants:
         applicant.add_pro_role()
@@ -624,17 +607,6 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User | N
             )
 
 
-def validate_offerer_by_token(token: str) -> None:
-    offerer = offerers_repository.find_offerer_by_validation_token(token)
-    if offerer is None:
-        raise exceptions.ValidationTokenNotFoundError()
-
-    try:
-        validate_offerer(offerer, author_user=None)
-    except exceptions.OffererAlreadyValidatedException:
-        pass
-
-
 def reject_offerer(
     offerer: offerers_models.Offerer, author_user: users_models.User, comment: str | None = None
 ) -> None:
@@ -645,7 +617,7 @@ def reject_offerer(
     first_user_to_register_offerer = applicants[0] if applicants else None
 
     was_validated = offerer.isValidated
-    offerer.validationStatus = models.ValidationStatus.REJECTED
+    offerer.validationStatus = ValidationStatus.REJECTED
     offerer.dateValidated = None
     db.session.add(offerer)
     db.session.add(
@@ -682,7 +654,7 @@ def reject_offerer(
 def set_offerer_pending(
     offerer: offerers_models.Offerer, author_user: users_models.User, comment: str | None = None
 ) -> None:
-    offerer.validationStatus = models.ValidationStatus.PENDING
+    offerer.validationStatus = ValidationStatus.PENDING
     action = history_api.log_action(
         history_models.ActionType.OFFERER_PENDING, author_user, offerer=offerer, comment=comment, save=False
     )
@@ -1304,7 +1276,7 @@ def count_offerers_by_validation_status() -> dict[str, int]:
     )
 
     # Ensure that the result includes every status, even if no offerer has this status
-    return {status.name: stats.get(status, 0) for status in offerers_models.ValidationStatus}
+    return {status.name: stats.get(status, 0) for status in ValidationStatus}
 
 
 def _filter_on_validation_status_legacy(
@@ -1316,7 +1288,7 @@ def _filter_on_validation_status_legacy(
         statuses = []
         for status in status_list:
             try:
-                statuses.append(offerers_models.ValidationStatus(status))
+                statuses.append(ValidationStatus(status))
             except ValueError:
                 pass  # ignore wrong value
         query = query.filter(cls.validationStatus.in_(statuses))
@@ -1394,7 +1366,7 @@ def list_offerers_to_be_validated_legacy(
 def _apply_query_filters(
     query: sa.orm.Query,
     tags: list[offerers_models.OffererTag] | None,
-    status: list[offerers_models.ValidationStatus] | None,
+    status: list[ValidationStatus] | None,
     from_datetime: datetime | None,
     to_datetime: datetime | None,
     cls: typing.Type[offerers_models.Offerer | offerers_models.UserOfferer],
@@ -1438,7 +1410,7 @@ def _apply_query_filters(
 def list_offerers_to_be_validated(
     q: str | None,  # search query
     tags: list[offerers_models.OffererTag] | None = None,
-    status: list[offerers_models.ValidationStatus] | None = None,
+    status: list[ValidationStatus] | None = None,
     from_datetime: datetime | None = None,
     to_datetime: datetime | None = None,
 ) -> sa.orm.Query:
@@ -1490,7 +1462,7 @@ def list_users_offerers_to_be_validated_legacy(filter_: list[dict[str, typing.An
 
 def list_users_offerers_to_be_validated(
     tags: list[offerers_models.OffererTag] | None = None,
-    status: list[offerers_models.ValidationStatus] | None = None,
+    status: list[ValidationStatus] | None = None,
     from_datetime: datetime | None = None,
     to_datetime: datetime | None = None,
 ) -> sa.orm.Query:

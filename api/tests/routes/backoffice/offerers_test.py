@@ -15,6 +15,7 @@ from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.models.validation_status_mixin import ValidationStatus
 
 from .fixtures import *  # pylint: disable=wildcard-import, unused-wildcard-import
 
@@ -168,7 +169,7 @@ class GetOffererBasicInfoTest:
         payload = response.json["data"]
         assert payload["id"] == offerer.id
         assert payload["name"] == offerer.name
-        assert payload["validationStatus"] == offerers_models.ValidationStatus.VALIDATED.value
+        assert payload["validationStatus"] == ValidationStatus.VALIDATED.value
         assert payload["isActive"] == offerer.isActive
         assert payload["siren"] == offerer.siren
         assert payload["region"] == "Occitanie"
@@ -857,7 +858,7 @@ class RejectOffererTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_reject_offerer_already_rejected(self, client):
         # given
-        offerer = offerers_factories.OffererFactory(validationStatus=offerers_models.ValidationStatus.REJECTED)
+        offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.REJECTED)
         auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
 
         # when
@@ -925,7 +926,7 @@ class SetOffererPendingTest:
         assert response.status_code == 204
         db.session.refresh(offerer)
         assert not offerer.isValidated
-        assert offerer.validationStatus == offerers_models.ValidationStatus.PENDING
+        assert offerer.validationStatus == ValidationStatus.PENDING
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.OFFERER_PENDING
         assert action.actionDate is not None
@@ -950,7 +951,7 @@ class SetOffererPendingTest:
 
         # then
         assert response.status_code == 403
-        assert offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert offerer.validationStatus == ValidationStatus.NEW
         assert history_models.ActionHistory.query.count() == 0
 
     @override_features(ENABLE_BACKOFFICE_API=True)
@@ -965,7 +966,7 @@ class SetOffererPendingTest:
 
         # then
         assert response.status_code == 403
-        assert offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert offerer.validationStatus == ValidationStatus.NEW
         assert history_models.ActionHistory.query.count() == 0
 
 
@@ -1284,16 +1285,10 @@ class OfferersStatsTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_offerer_stats(self, client):
         # given
-        offerers_factories.UserOffererFactory(offerer__validationStatus=offerers_models.ValidationStatus.NEW)
-        offerers_factories.UserOffererFactory.create_batch(
-            2, offerer__validationStatus=offerers_models.ValidationStatus.PENDING
-        )
-        offerers_factories.UserOffererFactory.create_batch(
-            3, offerer__validationStatus=offerers_models.ValidationStatus.VALIDATED
-        )
-        offerers_factories.UserOffererFactory.create_batch(
-            4, offerer__validationStatus=offerers_models.ValidationStatus.REJECTED
-        )
+        offerers_factories.UserOffererFactory(offerer__validationStatus=ValidationStatus.NEW)
+        offerers_factories.UserOffererFactory.create_batch(2, offerer__validationStatus=ValidationStatus.PENDING)
+        offerers_factories.UserOffererFactory.create_batch(3, offerer__validationStatus=ValidationStatus.VALIDATED)
+        offerers_factories.UserOffererFactory.create_batch(4, offerer__validationStatus=ValidationStatus.REJECTED)
         auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
 
         # when
@@ -1377,9 +1372,8 @@ class ListOfferersToBeValidatedTest:
     @pytest.mark.parametrize(
         "validation_status,expected_status",
         [
-            (None, offerers_models.ValidationStatus.NEW.value),
-            (offerers_models.ValidationStatus.NEW, offerers_models.ValidationStatus.NEW.value),
-            (offerers_models.ValidationStatus.PENDING, offerers_models.ValidationStatus.PENDING.value),
+            (ValidationStatus.NEW, ValidationStatus.NEW.value),
+            (ValidationStatus.PENDING, ValidationStatus.PENDING.value),
         ],
     )
     @override_features(ENABLE_BACKOFFICE_API=True)
@@ -2057,7 +2051,7 @@ class SetOffererAttachmentPendingTest:
         assert response.status_code == 204
         db.session.refresh(user_offerer)
         assert not user_offerer.isValidated
-        assert user_offerer.validationStatus == offerers_models.ValidationStatus.PENDING
+        assert user_offerer.validationStatus == ValidationStatus.PENDING
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.USER_OFFERER_PENDING
         assert action.actionDate is not None
@@ -2083,7 +2077,7 @@ class SetOffererAttachmentPendingTest:
 
         # then
         assert response.status_code == 403
-        assert user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert user_offerer.validationStatus == ValidationStatus.NEW
         assert history_models.ActionHistory.query.count() == 0
 
     @override_features(ENABLE_BACKOFFICE_API=True)
@@ -2099,7 +2093,7 @@ class SetOffererAttachmentPendingTest:
 
         # then
         assert response.status_code == 403
-        assert user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert user_offerer.validationStatus == ValidationStatus.NEW
         assert history_models.ActionHistory.query.count() == 0
 
 
@@ -2228,7 +2222,7 @@ class ListUserOffererToBeValidatedTest:
             new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(offerer=validated_user_offerer.offerer)
             to_be_validated.append(new_user_offerer)
             pending_user_offerer = offerers_factories.NotValidatedUserOffererFactory(
-                offerer=validated_user_offerer.offerer, validationStatus=offerers_models.ValidationStatus.PENDING
+                offerer=validated_user_offerer.offerer, validationStatus=ValidationStatus.PENDING
             )
             to_be_validated.append(pending_user_offerer)
             for action_type in (
@@ -2260,8 +2254,8 @@ class ListUserOffererToBeValidatedTest:
     @pytest.mark.parametrize(
         "validation_status,expected_status",
         [
-            (offerers_models.ValidationStatus.NEW, offerers_models.ValidationStatus.NEW.value),
-            (offerers_models.ValidationStatus.PENDING, offerers_models.ValidationStatus.PENDING.value),
+            (ValidationStatus.NEW, ValidationStatus.NEW.value),
+            (ValidationStatus.PENDING, ValidationStatus.PENDING.value),
         ],
     )
     @override_features(ENABLE_BACKOFFICE_API=True)
@@ -2292,7 +2286,7 @@ class ListUserOffererToBeValidatedTest:
             user=new_user_offerer.user,
             comment="Bla blabla",
         )
-        if validation_status == offerers_models.ValidationStatus.PENDING:
+        if validation_status == ValidationStatus.PENDING:
             history_factories.ActionHistoryFactory(
                 actionDate=datetime.datetime(2022, 11, 3, 14, 2),
                 actionType=history_models.ActionType.USER_OFFERER_PENDING,
@@ -2358,7 +2352,7 @@ class ListUserOffererToBeValidatedTest:
         assert payload["userId"] == new_user_offerer.userId
         assert payload["email"] == new_user_offerer.user.email
         assert payload["userName"] == new_user_offerer.user.full_name
-        assert payload["status"] == offerers_models.ValidationStatus.NEW.value
+        assert payload["status"] == ValidationStatus.NEW.value
         assert payload["dateCreated"] == "2022-11-25T12:34:00+00:00"
         assert payload["lastComment"] is None
         assert payload["phoneNumber"] == new_user_offerer.user.phoneNumber
