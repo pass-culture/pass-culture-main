@@ -165,6 +165,7 @@ describe('screens:StocksThing', () => {
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
+    expect(screen.getByLabelText('Prix')).toHaveValue(null)
     expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
