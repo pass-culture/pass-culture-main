@@ -15,6 +15,7 @@ def _serialize_offer_paginated(offer: OfferRecap) -> dict:
     return {
         "hasBookingLimitDatetimesPassed": offer.has_booking_limit_datetimes_passed,
         "id": humanize(offer.id),
+        "nonHumanizedId": offer.id,
         "isActive": offer.is_active,
         "isEditable": offer.is_editable,
         "isEvent": offer.is_event,

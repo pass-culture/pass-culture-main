@@ -50,6 +50,7 @@ def should_return_serialized_offers_with_relevant_informations():
         {
             "hasBookingLimitDatetimesPassed": False,
             "id": humanize(offer_id),
+            "nonHumanizedId": offer_id,
             "isActive": True,
             "isEditable": True,
             "isEvent": False,

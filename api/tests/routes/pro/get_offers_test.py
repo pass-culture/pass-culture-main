@@ -43,6 +43,7 @@ class Returns200Test:
             {
                 "hasBookingLimitDatetimesPassed": False,
                 "id": humanize(offer_on_requested_venue.id),
+                "nonHumanizedId": offer_on_requested_venue.id,
                 "isActive": True,
                 "isEditable": True,
                 "isEvent": False,
