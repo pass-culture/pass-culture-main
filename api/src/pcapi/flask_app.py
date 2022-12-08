@@ -53,73 +53,73 @@ app = Flask(__name__, static_url_path="/static")
 # called in reverse order of registration.
 @app.before_request
 def before_request() -> None:
-    if current_user and current_user.is_authenticated:
-        sentry_sdk.set_user(
-            {
-                "id": current_user.id,
-            }
-        )
-    sentry_sdk.set_tag("correlation-id", get_or_set_correlation_id())
-    g.request_start = time.perf_counter()
+if current_user and current_user.is_authenticated:
+sentry_sdk.set_user(
+    {
+        "id": current_user.id,
+    }
+)
+sentry_sdk.set_tag("correlation-id", get_or_set_correlation_id())
+g.request_start = time.perf_counter()
 
 
 @app.after_request
 def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Response:
-    extra = {
-        "statusCode": response.status_code,
-        "method": request.method,
-        "route": str(request.url_rule),  # e.g "/offers/<offer_id>"
-        "path": request.path,
-        "queryParams": request.query_string.decode(request.url_charset, errors="backslashreplace"),
-        "size": response.headers.get("Content-Length", type=int),
-        "deviceId": request.headers.get("device-id"),
-        "sourceIp": request.headers.get("X-Forwarded-For"),
-        "requestId": request.headers.get("request-id"),
-    }
-    try:
-        duration = round((time.perf_counter() - g.request_start) * 1000)  # milliseconds
-    except AttributeError:
-        # If an error occurs in any "before request" function before
-        # our `before_request()` above is called, `g.request_start`
-        # will not be set. It is unlikely since our callback should be
-        # the first, but it warrants an analysis.
-        logger.warning("g.request_start was not available in log_request_details", exc_info=True)
-    else:
-        extra["duration"] = duration
+extra = {
+"statusCode": response.status_code,
+"method": request.method,
+"route": str(request.url_rule),  # e.g "/offers/<offer_id>"
+"path": request.path,
+"queryParams": request.query_string.decode(request.url_charset, errors="backslashreplace"),
+"size": response.headers.get("Content-Length", type=int),
+"deviceId": request.headers.get("device-id"),
+"sourceIp": request.headers.get("X-Forwarded-For"),
+"requestId": request.headers.get("request-id"),
+}
+try:
+duration = round((time.perf_counter() - g.request_start) * 1000)  # milliseconds
+except AttributeError:
+# If an error occurs in any "before request" function before
+# our `before_request()` above is called, `g.request_start`
+# will not be set. It is unlikely since our callback should be
+# the first, but it warrants an analysis.
+logger.warning("g.request_start was not available in log_request_details", exc_info=True)
+else:
+extra["duration"] = duration
 
-    logger.info("HTTP request at %s", request.path, extra=extra)
+logger.info("HTTP request at %s", request.path, extra=extra)
 
-    return response
+return response
 
 
 @app.after_request
 def add_security_headers(response: flask.wrappers.Response) -> flask.wrappers.Response:
-    response.headers["X-Frame-Options"] = "SAMEORIGIN"
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-XSS-Protection"] = "1; mode=block"
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+response.headers["X-Frame-Options"] = "SAMEORIGIN"
+response.headers["X-Content-Type-Options"] = "nosniff"
+response.headers["X-XSS-Protection"] = "1; mode=block"
+response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
 
-    return response
+return response
 
 
 if not settings.IS_DEV or settings.IS_RUNNING_TESTS:
-    # Remove default logger/handler, since we use our own (see pcapi.core.logging)
-    app.logger.removeHandler(default_handler)
+# Remove default logger/handler, since we use our own (see pcapi.core.logging)
+app.logger.removeHandler(default_handler)
 
 login_manager = LoginManager()
 
 if settings.PROFILE_REQUESTS:
-    profiling_restrictions = [settings.PROFILE_REQUESTS_LINES_LIMIT]
-    app.config["PROFILE"] = True
-    app.wsgi_app = ProfilerMiddleware(  # type: ignore [assignment]
-        app.wsgi_app,
-        restrictions=profiling_restrictions,
-    )
+profiling_restrictions = [settings.PROFILE_REQUESTS_LINES_LIMIT]
+app.config["PROFILE"] = True
+app.wsgi_app = ProfilerMiddleware(  # type: ignore [assignment]
+app.wsgi_app,
+restrictions=profiling_restrictions,
+)
 
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)  # type: ignore [assignment]
 
 if not settings.JWT_SECRET_KEY:
-    raise Exception("JWT_SECRET_KEY not found in env")
+raise Exception("JWT_SECRET_KEY not found in env")
 
 app.secret_key = settings.FLASK_SECRET
 app.json_encoder = EnumJSONEncoder
@@ -144,9 +144,9 @@ app.config["WTF_CSRF_ENABLED"] = False
 
 oauth = OAuth(app)
 oauth.register(
-    name="google",
-    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
-    client_kwargs={"scope": "openid email profile"},
+name="google",
+server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+client_kwargs={"scope": "openid email profile"},
 )
 
 jwt = JWTManager(app)
@@ -156,12 +156,12 @@ rate_limiter.init_app(app)
 
 @app.teardown_request  # type: ignore [arg-type]
 def remove_db_session(
-    exc: Exception | None = None,  # pylint: disable=unused-argument
+exc: Exception | None = None,  # pylint: disable=unused-argument
 ) -> None:
-    try:
-        db.session.remove()
-    except AttributeError:
-        pass
+try:
+db.session.remove()
+except AttributeError:
+pass
 
 
 install_models()
@@ -174,34 +174,34 @@ finance_utils.install_template_filters(app)
 app.url_map.strict_slashes = False
 
 with app.app_context():
-    app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)  # type: ignore [attr-defined]
+app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)  # type: ignore [attr-defined]
 
 
 @app.shell_context_processor
 def get_shell_extra_context():  # type: ignore [no-untyped-def]
-    # We abuse `shell_context_processor` to call custom code when
-    # `flask shell` is run.
-    _set_python_prompt()
-    return {}
+# We abuse `shell_context_processor` to call custom code when
+# `flask shell` is run.
+_set_python_prompt()
+return {}
 
 
 def _non_printable(seq):  # type: ignore [no-untyped-def]
-    return f"\001{seq}\002"
+return f"\001{seq}\002"
 
 
 def _set_python_prompt():  # type: ignore [no-untyped-def]
-    env = settings.ENV
-    if env in "production":
-        color = "\x1b[1;49;31m"  # red
-    elif env == "staging":
-        color = "\x1b[1;49;35m"  # purple
-    elif env == "testing":
-        color = "\x1b[1;49;36m"  # cyan
-    else:
-        color = None
+env = settings.ENV
+if env in "production":
+color = "\x1b[1;49;31m"  # red
+elif env == "staging":
+color = "\x1b[1;49;35m"  # purple
+elif env == "testing":
+color = "\x1b[1;49;36m"  # cyan
+else:
+color = None
 
-    if color:
-        color = _non_printable(color)
-        reset = _non_printable("\x1b[0m")
+if color:
+color = _non_printable(color)
+reset = _non_printable("\x1b[0m")
 
-        sys.ps1 = f"{color}{env} >>> {reset}"
+sys.ps1 = f"{color}{env} >>> {reset}"
