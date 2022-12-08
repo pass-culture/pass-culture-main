@@ -595,3 +595,8 @@ class StockIsEventDeletableTest:
         dt = datetime.datetime.utcnow() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
         stock = factories.EventStockFactory(beginningDatetime=dt)
         assert not stock.isEventDeletable
+
+    def test_is_deletable_when_stock_is_expired_since_more_than_event_automatic_refund_delay_but_is_draft(self):
+        dt = datetime.datetime.utcnow() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
+        stock = factories.EventStockFactory(beginningDatetime=dt, offer__validation=models.OfferValidationStatus.DRAFT)
+        assert stock.isEventDeletable
