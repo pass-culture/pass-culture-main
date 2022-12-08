@@ -160,9 +160,10 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
-    () => {
+    async () => {
       // When saving draft with an empty form
       // we display a success notification even if nothing is done
+      setIsClickingFromActionBar(true)
       if (saveDraft && isFormEmpty()) {
         notify.success('Brouillon sauvegardé dans la liste des offres')
         return
@@ -170,7 +171,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       // tested but coverage don't see it.
       /* istanbul ignore next */
       setIsSubmittingDraft(saveDraft)
-      setIsClickingFromActionBar(true)
       const nextStepUrl = getOfferIndividualUrl({
         offerId: offer.id,
         step: saveDraft
@@ -182,13 +182,12 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
       const hasSavedStock = formik.values.stockId !== undefined
       if (hasSavedStock && Object.keys(formik.touched).length === 0) {
-        setIsClickingFromActionBar(false)
         notify.success(getSuccessMessage(mode))
         if (!saveDraft) {
           navigate(nextStepUrl)
         }
       } else {
-        formik.handleSubmit()
+        await formik.submitForm()
       }
     }
 
