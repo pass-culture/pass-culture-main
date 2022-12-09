@@ -47,6 +47,7 @@ const getSingleValidationSchema = () => {
     bookingsQuantity: yup.number(),
     quantity: yup
       .number()
+      .nullable()
       .typeError('Doit être un nombre')
       .moreThan(-1, 'Doit être positif')
       .when(['bookingsQuantity'], (bookingsQuantity, schema) => {
