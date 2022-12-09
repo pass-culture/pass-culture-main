@@ -63,7 +63,6 @@ export const useCollectiveOfferImageUpload = (
       const adapter = isTemplate
         ? postCollectiveOfferTemplateImageAdapter
         : postCollectiveOfferImageAdapter
-
       const { isOk, message, payload } = await adapter({
         offerId,
         imageFile: imageToUpload?.imageFile,

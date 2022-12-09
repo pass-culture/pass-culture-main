@@ -78,5 +78,7 @@ export const computeInitialValuesFromOffer = (
       offer.isTemplate && offer.educationalPriceDetail
         ? offer.educationalPriceDetail
         : DEFAULT_EAC_FORM_VALUES.priceDetail,
+    imageUrl: offer.imageUrl || DEFAULT_EAC_FORM_VALUES.imageUrl,
+    imageCredit: offer.imageCredit || DEFAULT_EAC_FORM_VALUES.imageCredit,
   }
 }
