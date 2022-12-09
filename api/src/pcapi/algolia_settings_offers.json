@@ -40,6 +40,7 @@
         "filterOnly(offer.isEvent)",
         "filterOnly(offer.isForbiddenToUnderage)",
         "filterOnly(offer.isThing)",
+        "filterOnly(offer.last30DaysBookings)",
         "filterOnly(offer.movieGenres)",
         "filterOnly(offer.musicType)",
         "filterOnly(offer.prices)",
