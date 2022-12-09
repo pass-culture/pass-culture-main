@@ -4,10 +4,12 @@ import type { Row } from 'react-table'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
 import { Events } from 'core/FirebaseEvents/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import CollectiveBookingDetails from '../OldCollectiveBookingDetails'
+import CollectiveBookingDetails from '../CollectiveBookingDetails'
+import OldCollectiveBookingDetails from '../OldCollectiveBookingDetails'
 
 import getCollectiveBookingAdapter from './adapters/getCollectiveBookingAdapter'
 import TableRow from './TableRow'
@@ -23,6 +25,9 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
     useState<CollectiveBookingByIdResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
+  const isImproveCollectiveStatusActive = useActiveFeature(
+    'WIP_IMPROVE_COLLECTIVE_STATUS'
+  )
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
@@ -66,12 +71,16 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
             ) : (
               bookingDetails && (
                 <td className={styles['details-content']}>
-                  <CollectiveBookingDetails
-                    bookingDetails={bookingDetails}
-                    offerId={row.original.stock.offer_identifier}
-                    canCancelBooking={bookingDetails.isCancellable}
-                    reloadBookings={reloadBookings}
-                  />
+                  {isImproveCollectiveStatusActive ? (
+                    <CollectiveBookingDetails bookingDetails={bookingDetails} />
+                  ) : (
+                    <OldCollectiveBookingDetails
+                      bookingDetails={bookingDetails}
+                      offerId={row.original.stock.offer_identifier}
+                      canCancelBooking={bookingDetails.isCancellable}
+                      reloadBookings={reloadBookings}
+                    />
+                  )}
                 </td>
               )
             )}
