@@ -1351,7 +1351,8 @@ def invoice_test_data():
     }
     offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
     venue = offerers_factories.VenueFactory(
-        name="Coiffeur justificaTIF",
+        publicName="Coiffeur justificaTIF",
+        name="Coiffeur explicaTIF",
         siret="85331845900023",
         bookingEmail="pro@example.com",
         managingOfferer=offerer,
