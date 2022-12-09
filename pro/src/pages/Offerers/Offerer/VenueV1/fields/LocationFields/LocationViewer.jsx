@@ -7,7 +7,7 @@ import React, { Fragment, PureComponent } from 'react'
 import Autocomplete from 'react-autocomplete'
 import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet'
 
-import { ROOT_PATH } from 'utils/config'
+import geolocIcon from 'icons/ico-geoloc-solid.svg'
 
 import getSuggestionsFromAddressAndMaxSuggestions from './selectors/getSuggestionsFromAddressAndMaxSuggestions'
 import getSuggestionsFromLatitudeAndLongitude from './selectors/getSuggestionsFromLatitudeAndLongitude'
@@ -15,8 +15,8 @@ import { FRANCE_POSITION } from './utils/positions'
 import sanitizeCoordinates from './utils/sanitizeCoordinates'
 
 const markerIcon = new LeafletIcon({
-  iconUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,
-  iconRetinaUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,
+  iconUrl: geolocIcon,
+  iconRetinaUrl: geolocIcon,
   iconSize: [21, 30],
   iconAnchor: [10, 30],
   popupAnchor: null,

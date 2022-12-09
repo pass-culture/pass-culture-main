@@ -38,6 +38,7 @@ import { ReactComponent as IcoEyeClose } from 'icons/ico-eye-close.svg'
 import { ReactComponent as IcoEyeHidden } from 'icons/ico-eye-hidden.svg'
 import { ReactComponent as IcoEyeOpen } from 'icons/ico-eye-open.svg'
 import { ReactComponent as ExternalLinkIcon } from 'icons/ico-fill-external-link.svg'
+import { ReactComponent as GeolocSolidIcon } from 'icons/ico-geoloc-solid.svg'
 import { ReactComponent as GuichetFullIcon } from 'icons/ico-guichet-full.svg'
 import { ReactComponent as HomeIcon } from 'icons/ico-home.svg'
 import { ReactComponent as HourglassIcon } from 'icons/ico-hourglass.svg'
@@ -54,6 +55,7 @@ import { ReactComponent as IcoOuterPen } from 'icons/ico-outer-pen.svg'
 import { ReactComponent as IcoPassculture } from 'icons/ico-passculture.svg'
 import { ReactComponent as IcoPenBlack } from 'icons/ico-pen-black.svg'
 import { ReactComponent as IcoPen } from 'icons/ico-pen.svg'
+import { ReactComponent as PhoneIcon } from 'icons/ico-phone.svg'
 import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
 import { ReactComponent as IcoRadioOff } from 'icons/ico-radio-off.svg'
@@ -78,6 +80,7 @@ import { ReactComponent as IcoTrash } from 'icons/ico-trash.svg'
 import { ReactComponent as TropheeIcon } from 'icons/ico-trophee.svg'
 import { ReactComponent as IcoUnavailableGradient } from 'icons/ico-unavailable-gradient.svg'
 import { ReactComponent as IcoUnavailablePage } from 'icons/ico-unavailable-page.svg'
+import { ReactComponent as UserSolidIcon } from 'icons/ico-user-solid.svg'
 import { ReactComponent as ValidCircleIcon } from 'icons/ico-valid.svg'
 import { ReactComponent as IcoValideCercle } from 'icons/ico-valide-cercle.svg'
 import { ReactComponent as IcoVenue } from 'icons/ico-venue.svg'
@@ -608,6 +611,24 @@ export const Icons = () => (
           <GuichetFullIcon />
         </td>
         <td>ico-guichet-full</td>
+      </tr>
+      <tr>
+        <td>
+          <GeolocSolidIcon />
+        </td>
+        <td>ico-geoloc-solid</td>
+      </tr>
+      <tr>
+        <td>
+          <UserSolidIcon />
+        </td>
+        <td>ico-user-solid</td>
+      </tr>
+      <tr>
+        <td>
+          <PhoneIcon />
+        </td>
+        <td>ico-phone</td>
       </tr>
       <tr>
         <td>
