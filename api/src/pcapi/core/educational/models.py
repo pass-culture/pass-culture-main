@@ -603,7 +603,7 @@ class EducationalInstitution(PcObject, Base, Model):
 
     collectiveOffers: list["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="institution")
 
-    isActive: bool = sa.Column(sa.Boolean, nullable=False, default=True)
+    isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
 
 
 class EducationalYear(PcObject, Base, Model):
