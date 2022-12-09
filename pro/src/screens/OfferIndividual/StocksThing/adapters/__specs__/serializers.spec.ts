@@ -14,9 +14,9 @@ describe('screens::StockThing::serializers:serializeStockThingList', () => {
     formValues = {
       remainingQuantity: STOCK_THING_FORM_DEFAULT_VALUES.remainingQuantity,
       bookingsQuantity: STOCK_THING_FORM_DEFAULT_VALUES.bookingsQuantity,
-      quantity: '12',
+      quantity: 12,
       bookingLimitDatetime: new Date('2022-10-26T23:00:00+0200'),
-      price: '10',
+      price: 10,
       activationCodesExpirationDatetime: null,
       activationCodes: [],
     }
@@ -74,7 +74,7 @@ describe('screens::StockThing::serializers:serializeStockThingList', () => {
       {
         stockId: 'STOCK_ID',
         ...formValues,
-        quantity: '0',
+        quantity: 0,
       },
       departementCode
     )
@@ -86,10 +86,24 @@ describe('screens::StockThing::serializers:serializeStockThingList', () => {
       {
         stockId: 'STOCK_ID',
         ...formValues,
+        quantity: null,
+      },
+      departementCode
+    )
+    // null is set in unlimited in api
+    expect(serializedData[0].quantity).toStrictEqual(null)
+  })
+
+  it('should set null when quantity field is ""', async () => {
+    const serializedData = serializeStockThingList(
+      {
+        stockId: 'STOCK_ID',
+        ...formValues,
         quantity: '',
       },
       departementCode
     )
+    // null is set in unlimited in api
     expect(serializedData[0].quantity).toStrictEqual(null)
   })
 })

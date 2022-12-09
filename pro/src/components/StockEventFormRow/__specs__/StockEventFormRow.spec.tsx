@@ -48,9 +48,9 @@ describe('StockFormRow', () => {
     }
     initialValues = {
       ...STOCK_EVENT_FORM_DEFAULT_VALUES,
-      price: '12',
+      price: 12,
       stockId: 'STOCK_ID',
-      quantity: '10',
+      quantity: 10,
       bookingsQuantity: '4',
       remainingQuantity: '6',
     }

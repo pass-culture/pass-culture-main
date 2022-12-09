@@ -23,11 +23,11 @@ export interface ITextInputProps
   isOptional?: boolean
   smallLabel?: boolean
   rightButton?: () => JSX.Element
-  rightIcon?: () => JSX.Element | null
+  rightIcon?: () => JSX.Element
   step?: number | string
   inline?: boolean
+  hasDecimal?: boolean
   refForInput?: ForwardedRef<HTMLInputElement>
-  onlyNumbers?: boolean
 }
 
 const TextInput = ({
@@ -50,14 +50,17 @@ const TextInput = ({
   rightButton,
   rightIcon,
   step,
+  hasDecimal = true,
   inline = false,
-  onlyNumbers = false,
   ...props
 }: ITextInputProps): JSX.Element => {
   const [field, meta] = useField({
     name,
     type,
   })
+
+  const regexHasDecimal = /[0-9,.]|Backspace/
+  const regexHasNotDecimal = /[0-9]|Backspace/
 
   return (
     <FieldLayout
@@ -97,8 +100,11 @@ const TextInput = ({
           ref={refForInput}
           rightIcon={rightIcon}
           onKeyPress={event => {
-            if (onlyNumbers) {
-              !/[0-9]|Backspace/.test(event.key) && event.preventDefault()
+            if (type === 'number') {
+              const testInput = hasDecimal
+                ? !regexHasDecimal.test(event.key)
+                : !regexHasNotDecimal.test(event.key)
+              testInput && event.preventDefault()
             }
           }}
           {...field}

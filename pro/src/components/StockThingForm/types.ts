@@ -2,9 +2,9 @@ export interface IStockThingFormValues {
   stockId?: string
   remainingQuantity: string
   bookingsQuantity: string
-  quantity: string
+  quantity: number | null | ''
   bookingLimitDatetime: Date | null
-  price: string
+  price: number | ''
   activationCodes: string[]
   activationCodesExpirationDatetime: Date | null
 }

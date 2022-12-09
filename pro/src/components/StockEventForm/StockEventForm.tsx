@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { isAfter } from 'date-fns'
 import { useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
 import formRowStyles from 'components/StockEventFormRow/SharedStockEventFormRow.module.scss'
 import { IconEuroGrey } from 'icons'
@@ -25,13 +25,6 @@ const StockEventForm = ({
 
   const stockFormValues = values.stocks[stockIndex]
   const { readOnlyFields } = stockFormValues
-
-  const [showCurrencyIcon, showShowCurrencyIcon] = useState<boolean>(
-    stockFormValues.price.toString().length > 0
-  )
-  useEffect(() => {
-    showShowCurrencyIcon(stockFormValues.price.length > 0)
-  }, [stockFormValues.price])
 
   const onChangeBeginningDate = (_name: string, date: Date | null) => {
     const stockBookingLimitDatetime = stockFormValues.bookingLimitDatetime
@@ -87,8 +80,8 @@ const StockEventForm = ({
         classNameFooter={styles['field-layout-footer']}
         placeholder="Ex: 20€"
         disabled={readOnlyFields.includes('price')}
-        rightIcon={() => (showCurrencyIcon ? <IconEuroGrey /> : null)}
-        onlyNumbers
+        rightIcon={() => (stockFormValues.price ? <IconEuroGrey /> : <></>)}
+        type="number"
       />
       <DatePicker
         smallLabel
@@ -119,7 +112,8 @@ const StockEventForm = ({
         classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('quantity')}
-        onlyNumbers
+        type="number"
+        hasDecimal={false}
       />
     </>
   )

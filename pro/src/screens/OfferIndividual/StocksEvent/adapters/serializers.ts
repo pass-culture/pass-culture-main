@@ -52,7 +52,7 @@ export const serializeStockEvent = (
   if (!(formValues.beginningTime instanceof Date)) {
     throw Error("L'heure de début d'évenement est invalide")
   }
-  const serializedQuantity = parseInt(formValues.quantity, 10)
+
   const serializedbeginningDatetime = serializeBeginningDateTime(
     formValues.beginningDate,
     formValues.beginningTime,
@@ -66,8 +66,11 @@ export const serializeStockEvent = (
           departementCode
         )
       : serializedbeginningDatetime,
-    price: parseInt(formValues.price, 10),
-    quantity: isNaN(serializedQuantity) ? null : serializedQuantity,
+    price: formValues.price || 0,
+    quantity:
+      formValues.quantity === null || formValues.quantity === ''
+        ? null
+        : formValues.quantity,
   }
   if (formValues.stockId) {
     return {
