@@ -11,6 +11,7 @@ export type PostOfferBodyModel = {
   durationMinutes?: number | null;
   externalTicketOfficeUrl?: string | null;
   extraData?: any;
+  hasChangedWithdrawalDelay: boolean;
   isDuo?: boolean | null;
   isNational?: boolean | null;
   mentalDisabilityCompliant: boolean;
