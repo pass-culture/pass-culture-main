@@ -19,11 +19,13 @@ def test_public_api(client, app):
                     "description": "An enumeration.",
                     "enum": ["PLACE", "ABO"],
                     "title": "BookingFormula",
+                    "type": "string",
                 },
                 "BookingOfferType": {
                     "description": "An enumeration.",
                     "enum": ["BIEN", "EVENEMENT"],
                     "title": "BookingOfferType",
+                    "type": "string",
                 },
                 "CollectiveOffersCategoryResponseModel": {
                     "properties": {
@@ -151,7 +153,11 @@ def test_public_api(client, app):
                         "datetime": {"title": "Datetime", "type": "string"},
                         "ean13": {"nullable": True, "title": "Ean13", "type": "string"},
                         "email": {"title": "Email", "type": "string"},
-                        "formula": {"anyOf": [{"$ref": "#/components/schemas/BookingFormula"}], "nullable": True},
+                        "formula": {
+                            "allOf": [{"$ref": "#/components/schemas/BookingFormula"}],
+                            "nullable": True,
+                            "description": "S'applique uniquement aux offres de catégorie Cinéma. Abonnement (ABO) ou place (PLACE).",
+                        },
                         "isUsed": {"title": "Isused", "type": "boolean"},
                         "offerId": {"title": "Offerid", "type": "integer"},
                         "offerName": {"title": "Offername", "type": "string"},
@@ -160,7 +166,12 @@ def test_public_api(client, app):
                         "price": {"title": "Price", "type": "number"},
                         "publicOfferId": {"title": "Publicofferid", "type": "string"},
                         "quantity": {"title": "Quantity", "type": "integer"},
-                        "theater": {"title": "Theater", "type": "object"},
+                        "theater": {
+                            "title": "Theater",
+                            "type": "object",
+                            "description": "Identifiant du film et de la salle dans le cas d’une offre synchronisée par Allociné.",
+                            "example": {"film_id": "...", "salle_id": "..."},
+                        },
                         "userName": {"title": "Username", "type": "string"},
                         "venueAddress": {"nullable": True, "title": "Venueaddress", "type": "string"},
                         "venueDepartmentCode": {"nullable": True, "title": "Venuedepartmentcode", "type": "string"},

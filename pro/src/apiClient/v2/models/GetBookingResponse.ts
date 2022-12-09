@@ -11,6 +11,9 @@ export type GetBookingResponse = {
   datetime: string;
   ean13?: string | null;
   email: string;
+  /**
+   * S'applique uniquement aux offres de catégorie Cinéma. Abonnement (ABO) ou place (PLACE).
+   */
   formula?: BookingFormula | null;
   isUsed: boolean;
   offerId: number;
@@ -20,6 +23,9 @@ export type GetBookingResponse = {
   price: number;
   publicOfferId: string;
   quantity: number;
+  /**
+   * Identifiant du film et de la salle dans le cas d’une offre synchronisée par Allociné.
+   */
   theater: any;
   userName: string;
   venueAddress?: string | null;
