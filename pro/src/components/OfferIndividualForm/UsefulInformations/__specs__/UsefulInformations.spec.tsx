@@ -152,7 +152,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
         url: '',
         subcategoryId: 'CONCERT',
         venueId: 'AAAA',
-        withdrawalDelay: undefined,
+        withdrawalDelay: '0',
         withdrawalDetails: '',
         withdrawalType: 'by_email',
       },
