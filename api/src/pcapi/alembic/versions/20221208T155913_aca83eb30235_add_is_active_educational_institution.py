@@ -13,7 +13,10 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column("educational_institution", sa.Column("isActive", sa.Boolean(), nullable=False))
+    op.add_column(
+        "educational_institution",
+        sa.Column("isActive", sa.Boolean(), server_default=sa.text("true"), nullable=False),
+    )
 
 
 def downgrade() -> None:
