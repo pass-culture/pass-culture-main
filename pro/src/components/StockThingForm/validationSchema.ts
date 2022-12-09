@@ -14,6 +14,7 @@ export const getValidationSchema = (
     bookingLimitDatetime: yup.date().nullable(),
     quantity: yup
       .number()
+      .nullable()
       .typeError('Doit être un nombre')
       .moreThan(-1, 'Doit être positif'),
     activationCodes: yup.array(),

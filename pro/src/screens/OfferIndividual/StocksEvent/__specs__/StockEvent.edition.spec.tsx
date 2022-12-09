@@ -187,7 +187,7 @@ describe('screens:StocksEvent:Edition', () => {
     expect(deleteButton).toHaveAttribute('aria-disabled', 'true')
     await deleteButton.click()
     expect(api.deleteStock).not.toHaveBeenCalled()
-    expect(screen.getByLabelText('Prix')).toHaveValue('10.01')
+    expect(screen.getByLabelText('Prix')).toHaveValue(10.01)
   })
 
   it('should not allow user to delete stock from a synchronized offer', async () => {
