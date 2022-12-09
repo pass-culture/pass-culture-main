@@ -9,6 +9,21 @@
     display: none;
   }
 
+  // we don't want little arrow for input number
+  /* Chrome, Safari, Edge, Opera */
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: textfield;
+    margin: 0;
+  }
+
+  /* Firefox */
+  &[type='number'] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
   &.has-error {
     @include forms.input-theme-error();
   }

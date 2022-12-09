@@ -82,9 +82,9 @@ describe('StockEventForm', () => {
       beginningTime: new Date('2022-12-29T00:00:00Z'),
       remainingQuantity: '11',
       bookingsQuantity: '1',
-      quantity: '12',
+      quantity: 12,
       bookingLimitDatetime: new Date('2022-12-28T00:00:00Z'),
-      price: '10',
+      price: 10,
       isDeletable: true,
       readOnlyFields: [],
     }
@@ -99,14 +99,15 @@ describe('StockEventForm', () => {
     )
   })
 
-  const setNumberValue = [
-    { value: '20', expectedNumber: '20' },
-    { value: 'azer', expectedNumber: '' },
-    { value: 'AZER', expectedNumber: '' },
-    { value: '2fsqjk', expectedNumber: '2' },
-    { value: '2fsqm0', expectedNumber: '20' },
+  const setNumberValueForPrice = [
+    { value: '20', expectedNumber: 20 },
+    { value: '20.37', expectedNumber: 20.37 },
+    { value: 'azer', expectedNumber: null },
+    { value: 'AZER', expectedNumber: null },
+    { value: '2fsqjk', expectedNumber: 2 },
+    { value: '2fsqm0', expectedNumber: 20 },
   ]
-  it.each(setNumberValue)(
+  it.each(setNumberValueForPrice)(
     'should only type numbers for price, quantity',
     async ({ value, expectedNumber }) => {
       renderStockEventForm(props)
@@ -114,12 +115,25 @@ describe('StockEventForm', () => {
       const priceInput = screen.getByLabelText('Prix', {
         exact: false,
       })
+      await userEvent.type(priceInput, value)
+      expect(priceInput).toHaveValue(expectedNumber)
+    }
+  )
+
+  const setNumberValueForQuantity = [
+    { value: '20', expectedNumber: 20 },
+    { value: '20.37', expectedNumber: 2037 },
+    { value: '2fsqm0', expectedNumber: 20 },
+  ]
+  it.each(setNumberValueForQuantity)(
+    'should only type numbers for price, quantity',
+    async ({ value, expectedNumber }) => {
+      renderStockEventForm(props)
+
       const quantityInput = screen.getByLabelText('Quantité', {
         exact: false,
       })
-      await userEvent.type(priceInput, value)
       await userEvent.type(quantityInput, value)
-      expect(priceInput).toHaveValue(expectedNumber)
       expect(quantityInput).toHaveValue(expectedNumber)
     }
   )

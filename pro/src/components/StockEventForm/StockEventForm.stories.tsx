@@ -78,12 +78,12 @@ const TemplateWithInitialValues: ComponentStory<typeof StockEventForm> =
       stockId: 'STOCK_ID',
       remainingQuantity: '7',
       bookingsQuantity: '5',
-      price: '5',
+      price: 5,
       bookingLimitDatetime: getLocalDepartementDateTimeFromUtc(
         new Date().toISOString(),
         '75'
       ),
-      quantity: '10',
+      quantity: 10,
       isDeletable: true,
       readOnlyFields: [],
     },
@@ -102,12 +102,12 @@ const TemplateDisabled: ComponentStory<typeof StockEventForm> =
       stockId: 'STOCK_ID',
       remainingQuantity: '7',
       bookingsQuantity: '5',
-      price: '5',
+      price: 5,
       bookingLimitDatetime: getLocalDepartementDateTimeFromUtc(
         new Date().toISOString(),
         '75'
       ),
-      quantity: '10',
+      quantity: 10,
       isDeletable: true,
       readOnlyFields: [
         'eventDatetime',

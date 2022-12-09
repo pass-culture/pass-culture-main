@@ -7,9 +7,9 @@ export interface IStockEventFormHiddenValues {
 export interface IStockEventFormValues extends IStockEventFormHiddenValues {
   remainingQuantity: string
   bookingsQuantity: string
-  quantity: string
+  quantity: number | '' | null
   bookingLimitDatetime: Date | null
-  price: string
+  price: number | ''
   beginningDate: Date | '' | null
   beginningTime: Date | '' | null
 }

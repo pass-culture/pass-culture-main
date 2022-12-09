@@ -31,9 +31,9 @@ describe('StockThingForm::utils::buildInitialValues', () => {
       stockId: 'STOCK_ID',
       remainingQuantity: '10',
       bookingsQuantity: '20',
-      quantity: '40',
+      quantity: 40,
       bookingLimitDatetime: new Date('2001-06-05T02:00:00.000Z'),
-      price: '12',
+      price: 12,
       activationCodes: undefined,
       activationCodesExpirationDatetime: undefined,
     })
@@ -56,7 +56,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
       bookingsQuantity: '20',
       quantity: '',
       bookingLimitDatetime: null,
-      price: '12',
+      price: 12,
     })
   })
 })
