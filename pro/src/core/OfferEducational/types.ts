@@ -50,6 +50,8 @@ export type IOfferEducationalFormValues = {
   'search-domains'?: string
   'search-interventionArea'?: string
   priceDetail?: string
+  imageUrl?: string
+  imageCredit?: string
 }
 
 export type CanOffererCreateCollectiveOffer = Adapter<
