@@ -51,10 +51,12 @@ describe('StockThingForm::utils::buildInitialValues', () => {
     ]
     const initialValues = buildInitialValues(offer)
     expect(initialValues).toEqual({
+      activationCodes: undefined,
+      activationCodesExpirationDatetime: undefined,
       stockId: 'STOCK_ID',
       remainingQuantity: 'unlimited',
       bookingsQuantity: '20',
-      quantity: '',
+      quantity: null,
       bookingLimitDatetime: null,
       price: 12,
     })
