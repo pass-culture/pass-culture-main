@@ -80,11 +80,17 @@ class PostOfferBodyModel(BaseModel):
     withdrawal_delay: int | None
     withdrawal_details: str | None
     withdrawal_type: offers_models.WithdrawalTypeEnum | None
+    has_changed_withdrawal_delay: bool
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
         check_offer_name_length_is_valid(name)
         return name
+
+    @root_validator(pre=True)
+    def validate_has_changed_withdrawal_delay(cls, values: dict) -> dict:
+        values["hasChangedWithdrawalDelay"] = bool(values.get("hasChangedWithdrawalDelay"))
+        return values
 
     @root_validator()
     def validate_isbn(cls, values: dict) -> dict:

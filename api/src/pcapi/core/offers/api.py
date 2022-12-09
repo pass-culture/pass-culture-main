@@ -290,6 +290,8 @@ def update_offer(
         return offer
 
     if (UNCHANGED, UNCHANGED) != (withdrawalType, withdrawalDelay):
+        # if UNCHANGED != withdrawalDelay:
+        #     offer.hasChangedWithdrawalDelay = True
         try:
             changed_withdrawalType = withdrawalType if withdrawalType != UNCHANGED else offer.withdrawalType
             changed_withdrawalDelay = withdrawalDelay if withdrawalDelay != UNCHANGED else offer.withdrawalDelay

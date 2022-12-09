@@ -349,6 +349,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
 
     withdrawalType = sa.Column(sa.Enum(WithdrawalTypeEnum), nullable=True)
     withdrawalDelay = sa.Column(sa.BigInteger, nullable=True)
+    hasChangedWithdrawalDelay = sa.Column(sa.Boolean, default=False, nullable=False)
 
     conditions = sa.Column(sa.String(120), nullable=True)
 
