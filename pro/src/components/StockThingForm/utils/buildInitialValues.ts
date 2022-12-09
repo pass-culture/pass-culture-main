@@ -16,14 +16,15 @@ export const buildInitialValues = (
     remainingQuantity:
       offer.stocks[0].remainingQuantity?.toString() || 'unlimited',
     bookingsQuantity: offer.stocks[0].bookingsQuantity.toString(),
-    quantity: offer.stocks[0].quantity?.toString() || '',
+    quantity:
+      offer.stocks[0].quantity === undefined ? '' : offer.stocks[0].quantity,
     bookingLimitDatetime: offer.stocks[0].bookingLimitDatetime
       ? getLocalDepartementDateTimeFromUtc(
           offer.stocks[0].bookingLimitDatetime,
           offer.venue.departmentCode
         )
       : null,
-    price: offer.stocks[0].price.toString(),
+    price: offer.stocks[0].price,
     activationCodesExpirationDatetime:
       offer.stocks[0].activationCodesExpirationDatetime,
     activationCodes: offer.stocks[0].activationCodes,

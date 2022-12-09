@@ -158,6 +158,12 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     async () => {
+      setIsClickingFromActionBar(true)
+      if (Object.keys(formik.errors).length !== 0) {
+        /* istanbul ignore next: DEBT, TO FIX */
+        setIsClickingFromActionBar(false)
+      }
+
       // When saving draft with an empty form
       // we display a success notification even if nothing is done
       if (saveDraft && isFormEmpty()) {
@@ -167,7 +173,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       // tested but coverage don't see it.
       /* istanbul ignore next */
       setIsSubmittingDraft(saveDraft)
-      setIsClickingFromActionBar(true)
       setAfterSubmitUrl(
         getOfferIndividualUrl({
           offerId: offer.id,
@@ -216,7 +221,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         stock => stock.stockId !== undefined
       )
       if (hasSavedStock && Object.keys(formik.touched).length === 0) {
-        setIsClickingFromActionBar(false)
         notify.success(getSuccessMessage(mode))
         if (!saveDraft) {
           navigate(

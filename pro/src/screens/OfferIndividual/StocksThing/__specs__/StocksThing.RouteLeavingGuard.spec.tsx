@@ -89,6 +89,14 @@ const renderStockThingScreen = ({
         </Route>
         <Route
           path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.DRAFT,
+          })}
+        >
+          <div>Next page draft</div>
+        </Route>
+        <Route
+          path={getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.STOCKS,
             mode: OFFER_WIZARD_MODE.CREATION,
           })}
@@ -383,5 +391,58 @@ describe('screens:StocksThing', () => {
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
 
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
+  })
+
+  it('should be able to submit from Action Bar without Guard after changing price in draft', async () => {
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stockIds: [{ id: 'STOCK_ID' }],
+    })
+    const stock = {
+      id: 'STOCK_ID',
+      quantity: 10,
+      price: 17.11,
+      remainingQuantity: 6,
+      bookingsQuantity: 0,
+      hasActivationCode: false,
+      activationCodesExpirationDatetime: null,
+      activationCodes: [],
+      beginningDatetime: null,
+      bookingLimitDatetime: null,
+      isSoftDeleted: false,
+      isEventExpired: false,
+      offerId: 'OFFER_ID',
+      isEventDeletable: false,
+      dateCreated: new Date(),
+    }
+
+    offer = {
+      id: 'OFFER_ID',
+      venue: {
+        departmentCode: '75',
+      } as IOfferIndividualVenue,
+      stocks: [stock],
+    }
+
+    props.offer = offer as IOfferIndividual
+    contextValue.offer = offer as IOfferIndividual
+    renderStockThingScreen({
+      props,
+      storeOverride,
+      contextValue,
+      url: generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        }),
+        { offerId: 'AA' }
+      ),
+    })
+    await userEvent.type(screen.getByLabelText('Prix'), '20')
+
+    await userEvent.click(screen.getByText('Étape suivante'))
+    screen.debug(undefined, 20000)
+    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+
+    expect(screen.getByText('Next page draft')).toBeInTheDocument()
   })
 })

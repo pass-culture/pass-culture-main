@@ -161,9 +161,14 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     async () => {
+      setIsClickingFromActionBar(true)
+      if (Object.keys(formik.errors).length !== 0) {
+        /* istanbul ignore next: DEBT, TO FIX */
+        setIsClickingFromActionBar(false)
+      }
+
       // When saving draft with an empty form
       // we display a success notification even if nothing is done
-      setIsClickingFromActionBar(true)
       if (saveDraft && isFormEmpty()) {
         notify.success('Brouillon sauvegardé dans la liste des offres')
         return

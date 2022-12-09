@@ -226,7 +226,6 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
     await userEvent.type(screen.getByLabelText('Prix'), '20')
-    await userEvent.tab()
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )

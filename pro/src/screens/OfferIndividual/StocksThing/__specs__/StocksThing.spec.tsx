@@ -339,7 +339,7 @@ describe('screens:StocksThing', () => {
 
       const priceInput = screen.getByLabelText('Prix')
       await userEvent.clear(priceInput)
-      await userEvent.type(priceInput, '14')
+      await userEvent.type(priceInput, '14.01')
       const expirationInput = screen.getByLabelText("Date d'expiration")
       expect(expirationInput).toBeDisabled()
       const date = new Date()
@@ -353,7 +353,7 @@ describe('screens:StocksThing', () => {
         stocks: [
           {
             bookingLimitDatetime: null,
-            price: 14,
+            price: 14.01,
             quantity: 5,
             activationCodes: ['ABH', 'JHB', 'IOP', 'KLM', 'MLK'],
             activationCodesExpirationDatetime:
@@ -454,11 +454,11 @@ describe('screens:StocksThing', () => {
   )
 
   const setNumberQuantityValue = [
-    { value: '20', expectedNumber: '20' },
-    { value: 'azer', expectedNumber: '' },
-    { value: 'AZER', expectedNumber: '' },
-    { value: '2fsqjk', expectedNumber: '2' },
-    { value: '2fsqm0', expectedNumber: '20' },
+    { value: '20', expectedNumber: 20 },
+    { value: '20.37', expectedNumber: 2037 },
+    { value: 'AZER', expectedNumber: null },
+    { value: '2fsqjk', expectedNumber: 2 },
+    { value: '2fsqm0', expectedNumber: 20 },
   ]
   it.each(setNumberQuantityValue)(
     'should only type numbers for quantity input',

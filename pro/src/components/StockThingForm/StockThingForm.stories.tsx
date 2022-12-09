@@ -75,12 +75,12 @@ const TemplateWithInitialValues: ComponentStory<typeof StockThingForm> =
       stockId: 'STOCK_ID',
       remainingQuantity: '7',
       bookingsQuantity: '5',
-      price: '10',
+      price: 10,
       bookingLimitDatetime: getLocalDepartementDateTimeFromUtc(
         new Date().toISOString(),
         '75'
       ),
-      quantity: '12',
+      quantity: 12,
     },
   })
 
