@@ -70,7 +70,7 @@ class DigitalLocation(serialization.BaseModel):
 
 
 class ImageBody(serialization.BaseModel):
-    credit: str | None
+    credit: str | None = pydantic.Field(None, description="The image owner or author.")
     file: str = pydantic.Field(
         ...,
         description="The image file encoded in base64 string. The image format must be PNG or JPEG. The size must be between 400x600 and 800x1200 pixels. The aspect ratio must be 2:3 (portrait format).",
