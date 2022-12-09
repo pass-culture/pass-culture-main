@@ -2,6 +2,8 @@ from datetime import datetime
 from decimal import Decimal
 from enum import Enum
 
+import pydantic
+
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
 from pcapi.routes.serialization import BaseModel
@@ -10,12 +12,12 @@ from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
 
-class BookingOfferType(Enum):
+class BookingOfferType(str, Enum):
     BIEN = "BIEN"
     EVENEMENT = "EVENEMENT"
 
 
-class BookingFormula(Enum):
+class BookingFormula(str, Enum):
     PLACE = "PLACE"
     ABO = "ABO"
 
@@ -36,7 +38,9 @@ class GetBookingResponse(BaseModel):
     datetime: str  # avoid breaking legacy value "" returned for void date
     ean13: str | None
     email: str
-    formula: BookingFormula | None
+    formula: BookingFormula | None = pydantic.Field(
+        description="S'applique uniquement aux offres de catégorie Cinéma. Abonnement (ABO) ou place (PLACE)."
+    )
     isUsed: bool
     offerId: int
     publicOfferId: str
@@ -45,7 +49,10 @@ class GetBookingResponse(BaseModel):
     phoneNumber: str
     price: Decimal
     quantity: int
-    theater: dict
+    theater: dict = pydantic.Field(
+        description="Identifiant du film et de la salle dans le cas d’une offre synchronisée par Allociné.",
+        example={"film_id": "...", "salle_id": "..."},
+    )
     userName: str
     venueAddress: str | None
     venueDepartmentCode: str | None
