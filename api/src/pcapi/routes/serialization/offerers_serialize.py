@@ -221,15 +221,22 @@ class CreateOffererQueryModel(BaseModel):
 
 class GetOfferersVenueResponseModel(BaseModel):
     id: str
+    nonHumanizedId: int
     isVirtual: bool
     _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True
 
+    @classmethod
+    def from_orm(cls, venue: offerers_models.Venue) -> "GetOfferersVenueResponseModel":
+        venue.nonHumanizedId = venue.id
+        return super().from_orm(venue)
+
 
 class GetOfferersResponseModel(BaseModel):
     id: str
+    nonHumanizedId: int
     name: str
     # FIXME (mageoffray, 2021-12-27): optional until we populate the database (PC-5693)
     siren: str | None
@@ -255,6 +262,7 @@ class GetOfferersResponseModel(BaseModel):
         )
         venue_ids = (venue.id for venue in offerer.managedVenues)
         offerer.nOffers = sum((offer_counts.get(venue_id, 0) for venue_id in venue_ids), 0)
+        offerer.nonHumanizedId = offerer.id
         return super().from_orm(offerer)
 
 
