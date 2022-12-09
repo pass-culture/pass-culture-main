@@ -6,6 +6,7 @@ import flask
 def install_commands(app: flask.Flask) -> None:
     module_paths = (
         "pcapi.core.educational.commands",
+        "pcapi.core.external.commands.update_sendinblue_batch_attributes",
         "pcapi.core.finance.commands",
         "pcapi.core.providers.commands",
         "pcapi.core.search.commands",
