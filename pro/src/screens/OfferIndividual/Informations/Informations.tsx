@@ -176,7 +176,6 @@ const Informations = ({
         cropParams,
       })
         .then(() => {
-          notify.success('Brouillon sauvegardé dans la liste des offres')
           logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
             from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
             to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
