@@ -163,7 +163,7 @@ class StockBody(serialization.BaseModel):
         example="2023-01-01T00:00:00+01:00",
     )
     price: pydantic.StrictInt = pydantic.Field(..., description="The offer price in euro cents", example=1000)
-    quantity: pydantic.PositiveInt | typing.Literal["unlimited"]
+    quantity: pydantic.StrictInt | typing.Literal["unlimited"]
 
     @pydantic.validator("booking_limit_datetime")
     def check_booking_limit_timezone(cls, value: datetime.datetime) -> datetime.datetime | None:
