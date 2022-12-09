@@ -7,7 +7,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import CollectiveBookingDetails from '../CollectiveBookingDetails'
+import CollectiveBookingDetails from '../OldCollectiveBookingDetails'
 
 import getCollectiveBookingAdapter from './adapters/getCollectiveBookingAdapter'
 import TableRow from './TableRow'
