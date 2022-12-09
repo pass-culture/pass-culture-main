@@ -13,8 +13,6 @@ import {
   ticketWithdrawalTypeRadios,
 } from './constants'
 
-import { TICKET_WITHDRAWAL_DEFAULT_VALUES } from '.'
-
 export interface ITicketWithdrawalProps {
   readOnlyFields?: string[]
 }
@@ -33,11 +31,11 @@ const TicketWithdrawal = ({
       if (dirty) {
         setFieldValue(
           'withdrawalDelay',
-          TICKET_WITHDRAWAL_DEFAULT_VALUES['withdrawalDelay']
+          withdrawalType === WithdrawalTypeEnum.NO_TICKET ? undefined : '0'
         )
       }
     },
-    [withdrawalType, dirty]
+    [withdrawalType]
   )
 
   return (
