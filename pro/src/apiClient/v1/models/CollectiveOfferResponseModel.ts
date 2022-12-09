@@ -21,6 +21,7 @@ export type CollectiveOfferResponseModel = {
   isEducational: boolean;
   isShowcase: boolean;
   name: string;
+  nonHumanizedId: number;
   status: string;
   stocks: Array<CollectiveOffersStockResponseModel>;
   subcategoryId: SubcategoryIdEnum;
