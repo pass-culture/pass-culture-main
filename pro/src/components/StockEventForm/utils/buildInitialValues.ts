@@ -76,18 +76,26 @@ export const buildInitialValues = ({
   lastProviderName,
   offerStatus,
 }: IBuildInitialValuesArgs): { stocks: IStockEventFormValues[] } => {
+  if (offerStocks.length === 0) {
+    return {
+      stocks: [STOCK_EVENT_FORM_DEFAULT_VALUES],
+    }
+  }
+
   return {
-    stocks:
-      offerStocks.length > 0
-        ? offerStocks.map(stock =>
-            buildSingleInitialValues({
-              departmentCode,
-              stock,
-              today,
-              lastProviderName,
-              offerStatus,
-            })
-          )
-        : [STOCK_EVENT_FORM_DEFAULT_VALUES],
+    stocks: offerStocks
+      .map(stock =>
+        buildSingleInitialValues({
+          departmentCode,
+          stock,
+          today,
+          lastProviderName,
+          offerStatus,
+        })
+      )
+      .sort(
+        (firstStock, secondStock) =>
+          Number(secondStock.beginningDate) - Number(firstStock.beginningDate)
+      ),
   }
 }
