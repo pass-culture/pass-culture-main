@@ -29,7 +29,7 @@ class BoostStocks(LocalProvider):
         self.venue = venue_provider.venue
         self.cinema_id = venue_provider.venueIdAtOfferProvider
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
-        self.showtimes: Iterator[boost_serializers.ShowTime3] = iter(self._get_showtimes())
+        self.showtimes: Iterator[boost_serializers.ShowTime4] = iter(self._get_showtimes())
         self.last_offer_id: int | None = None
 
     def __next__(self) -> list[ProvidableInfo]:
@@ -145,7 +145,7 @@ class BoostStocks(LocalProvider):
     def get_keep_poster_ratio(self) -> bool:
         return True
 
-    def _get_showtimes(self) -> list[boost_serializers.ShowTime3]:
+    def _get_showtimes(self) -> list[boost_serializers.ShowTime4]:
         client_boost = BoostClientAPI(self.cinema_id)
         return client_boost.get_showtimes()
 

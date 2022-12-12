@@ -56,12 +56,12 @@ def _convert_to_utc_datetime(datetime_with_tz_offset: datetime.datetime) -> date
     return datetime_with_tz_offset.astimezone(tz=datetime.timezone.utc)
 
 
-class ShowTime3(BaseModel):
+class ShowTime4(BaseModel):
     id: int
 
 
 class ShowTimeCollection(Collection):
-    data: list[ShowTime3]
+    data: list[ShowTime4]
 
 
 class ShowtimePricing(BaseModel):
