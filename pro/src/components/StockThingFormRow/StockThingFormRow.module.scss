@@ -2,11 +2,10 @@
 
 .stock-form-row {
   display: flex;
-  align-items: center;
 
   .stock-form {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     > *:not(:last-child) {
       margin-right: rem.torem(16px);
     }
@@ -21,6 +20,9 @@
   }
 
   .stock-actions {
-    margin-top: rem.torem(-17px);
+    display: flex;
+    align-items: flex-end;
+    height: rem.torem(66px);
+    margin-left: auto;
   }
 }
