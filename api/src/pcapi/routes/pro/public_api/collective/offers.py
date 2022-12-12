@@ -151,6 +151,7 @@ def post_collective_offer_public(
 ) -> public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Création d'une offre collective."""
+    image_as_bytes = None
     if body.image_file:
         try:
             image_as_bytes = utils.get_bytes_from_base64_string(body.image_file)
