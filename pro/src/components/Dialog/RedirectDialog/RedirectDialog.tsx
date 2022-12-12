@@ -34,11 +34,11 @@ const RedirectDialog = ({
   extraClassNames,
   redirectText,
   redirectLink,
-  withRedirectLinkIcon = true,
   cancelIcon,
   onRedirect,
   cancelText,
   onCancel,
+  withRedirectLinkIcon = true,
 }: IRedirectDialogProps): JSX.Element => {
   return (
     <Dialog

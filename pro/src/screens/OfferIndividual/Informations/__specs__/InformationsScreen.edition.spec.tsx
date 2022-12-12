@@ -66,6 +66,8 @@ const renderInformationsScreen = (
     setOffer: () => {},
     setShouldTrack: () => {},
     shouldTrack: true,
+    setVenueId: () => {},
+    isFirstOffer: false,
     ...contextOverride,
   }
   return render(
