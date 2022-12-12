@@ -11,7 +11,6 @@ from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.search.backends import algolia
 import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
@@ -176,33 +175,20 @@ class ReindexOfferIdsTest:
         assert venue_ids == {offer.venueId}
 
     @override_features(ALGOLIA_BOOKINGS_NUMBER_COMPUTATION=True)
-    @override_settings(
-        ALGOLIA_LAST_30_DAYS_BOOKINGS_LOW_THRESHOLD=0,
-        ALGOLIA_LAST_30_DAYS_BOOKINGS_MEDIUM_THRESHOLD=5,
-        ALGOLIA_LAST_30_DAYS_BOOKINGS_HIGH_THRESHOLD=20,
-    )
     def test_index_last_30_days_bookings(self, app):
         offer = make_booked_offer()
         assert search_testing.search_store["offers"] == {}
         search.reindex_offer_ids([offer.id])
         assert offer.id in search_testing.search_store["offers"]
-        assert (
-            search_testing.search_store["offers"][offer.id]["offer"]["last30DaysBookings"]
-            == algolia.Last30DaysBookingsRange.MEDIUM.value
-        )
+        assert search_testing.search_store["offers"][offer.id]["offer"]["last30DaysBookings"] == 6
 
     @override_features(ALGOLIA_BOOKINGS_NUMBER_COMPUTATION=False)
-    @override_settings(
-        ALGOLIA_LAST_30_DAYS_BOOKINGS_LOW_THRESHOLD=0,
-        ALGOLIA_LAST_30_DAYS_BOOKINGS_MEDIUM_THRESHOLD=5,
-        ALGOLIA_LAST_30_DAYS_BOOKINGS_HIGH_THRESHOLD=20,
-    )
     def test_last_30_days_bookings_computation_feature_toggle(self, app):
         offer = make_booked_offer()
         assert search_testing.search_store["offers"] == {}
         search.reindex_offer_ids([offer.id])
         assert offer.id in search_testing.search_store["offers"]
-        assert search_testing.search_store["offers"][offer.id]["offer"]["last30DaysBookings"] == None
+        assert search_testing.search_store["offers"][offer.id]["offer"]["last30DaysBookings"] == 0
 
 
 class ReindexVenueIdsTest:
