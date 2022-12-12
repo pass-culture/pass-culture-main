@@ -179,33 +179,12 @@ jobs:
 
   deploy-image-resizing:
     name: "[image-resizing] Deployment"
-    runs-on: ubuntu-latest
     permissions:
       contents: 'read'
       id-token: 'write'
-    environment: ${{ inputs.environment }}
-    steps:
-      - name: "Check if folder changed"
-        uses: ./.github/workflows/check-folder-changes.yml
-        with:
-          folder: app-engine/image-resizing
-
-      - name: "Deploy image-resizing on ehp"
-        if: steps.step1.outputs.folder_changed == 'true' && inputs.environment != 'production'
-        uses: ./.github/workflows/deploy-app-engine-image-resizing.yaml
-        with:
-          environment: testing
-          google_project: passculture-metier-ehp
-          base_ref: ${{ github.ref }}
-          workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }}
-
-      - name: "Deploy image-resizing on production"
-        if: inputs.environment == 'production'
-        uses: ./.github/workflows/deploy-app-engine-image-resizing.yaml
-        with:
-          environment: production
-          google_project: passculture-metier-prod
-          base_ref: ${{ inputs.ref }}
-          workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }}
+    uses: ./.github/workflows/deploy-app-engine-image-resizing.yaml
+    with:
+      environment: ${{ inputs.environment == 'production' && 'production' || 'testing' }}
+      google_project: ${{ inputs.environment == 'production' && 'passculture-metier-prod' || 'passculture-metier-ehp' }}
+      base_ref: ${{ github.ref }}
+    secrets: inherit
