@@ -78,32 +78,6 @@ class ImageBody(serialization.BaseModel):
     )
 
 
-class OfferCreationBase(serialization.BaseModel):
-    accept_double_bookings: bool | None = pydantic.Field(
-        None,
-        description="If set to true, the user may book the offer for two persons. The second item will be delivered at the same price as the first one. The category must be compatible with this feature.",
-    )
-    booking_email: pydantic.EmailStr | None = pydantic.Field(
-        None, description="The recipient email for notifications about bookings, cancellations, etc."
-    )
-    description: str | None = pydantic.Field(
-        None, description="The offer description", example="A great book for kids and old kids.", max_length=1000
-    )
-    disability_compliance: DisabilityCompliance
-    external_ticket_office_url: pydantic.HttpUrl | None = pydantic.Field(
-        None,
-        description="This link is displayed to users wishing to book the offer but who do not have (anymore) credit.",
-    )
-    image: ImageBody | None
-    location: PhysicalLocation | DigitalLocation = pydantic.Field(
-        ..., discriminator="type", description="The location where the offer will be available or will take place."
-    )
-    name: str = pydantic.Field(description="The offer title", example="Le Petit Prince", max_length=90)
-
-    class Config:
-        alias_generator = to_camel
-
-
 class ExtraDataModel(pydantic.BaseModel):
     author: str | None
     isbn: str | None = pydantic.Field(None, regex=r"^(\d){13}$", example="9783140464079")
@@ -116,13 +90,48 @@ class ExtraDataModel(pydantic.BaseModel):
 
 
 class CategoryRelatedFields(ExtraDataModel):
-    subcategory_id: str = pydantic.Field(alias="category")  # pyright: ignore (pylance error message)
+    subcategory_id: str = pydantic.Field(alias="category")
+
+
+class OfferCreationBase(serialization.BaseModel):
+    accept_double_bookings: bool | None = pydantic.Field(
+        None,
+        description="If set to true, the user may book the offer for two persons. The second item will be delivered at the same price as the first one. The category must be compatible with this feature.",
+    )
+    booking_email: pydantic.EmailStr | None = pydantic.Field(
+        None, description="The recipient email for notifications about bookings, cancellations, etc."
+    )
+    category_related_fields: CategoryRelatedFields
+    description: str | None = pydantic.Field(
+        None, description="The offer description", example="A great book for kids and old kids.", max_length=1000
+    )
+    disability_compliance: DisabilityCompliance
+    external_ticket_office_url: pydantic.HttpUrl | None = pydantic.Field(
+        None,
+        description="This link is displayed to users wishing to book the offer but who do not have (anymore) credit.",
+    )
+    image: ImageBody | None
+    item_collection_details: str | None = pydantic.Field(
+        None,
+        description="Further information that will be provided to the beneficiary to ease the offer collection.",
+        example="Opening hours, specific office, collection period, access code, email annoucement...",
+    )
+    location: PhysicalLocation | DigitalLocation = pydantic.Field(
+        ..., discriminator="type", description="The location where the offer will be available or will take place."
+    )
+    name: str = pydantic.Field(description="The offer title", example="Le Petit Prince", max_length=90)
+
+    class Config:
+        alias_generator = to_camel
 
 
 PRODUCT_SELECTABLE_SUBCATEGORIES = [
     subcategory
     for subcategory in subcategories.ALL_SUBCATEGORIES
     if subcategory.is_selectable and not subcategory.is_event
+]
+EVENT_SELECTABLE_SUBCATEGORIES = [
+    subcategory for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.is_selectable and subcategory.is_event
 ]
 
 
@@ -148,10 +157,15 @@ def get_category_fields_model(subcategory: subcategories.Subcategory) -> pydanti
 
 
 if typing.TYPE_CHECKING:
-    category_related_fields = CategoryRelatedFields
+    product_category_fields = CategoryRelatedFields
+    event_category_fields = CategoryRelatedFields
 else:
-    category_related_fields = typing_extensions.Annotated[
+    product_category_fields = typing_extensions.Annotated[
         typing.Union[tuple(get_category_fields_model(subcategory) for subcategory in PRODUCT_SELECTABLE_SUBCATEGORIES)],
+        pydantic.Field(discriminator="subcategory_id"),
+    ]
+    event_category_fields = typing_extensions.Annotated[
+        typing.Union[tuple(get_category_fields_model(subcategory) for subcategory in EVENT_SELECTABLE_SUBCATEGORIES)],
         pydantic.Field(discriminator="subcategory_id"),
     ]
 
@@ -183,18 +197,41 @@ class StockBody(serialization.BaseModel):
         alias_generator = to_camel
 
 
-class ItemCollection(serialization.BaseModel):
-    details: str | None = pydantic.Field(
-        None,
-        description="Further information that will be provided to the beneficiary to ease the offer collection.",
-        example="Opening hours, specific office, collection period, access code, email annoucement...",
+ON_SITE_MINUTES_BEFORE_EVENT = typing.Literal[0, 15, 30, 60, 120, 240, 1440, 2880]
+BY_EMAIL_DAYS_BEFORE_EVENT = typing.Literal[1, 2, 3, 4, 5, 6, 7]
+
+
+class OnSiteCollectionDetails(serialization.BaseModel):
+    minutesBeforeEvent: ON_SITE_MINUTES_BEFORE_EVENT = pydantic.Field(
+        ...,
+        description="The number of minutes before the event when the ticket may be collected. Only some values are accepted (between 0 minutes and 48 hours).",
+        example=0,
     )
+    way: typing.Literal["on_site"]
+
+
+class SentByEmailDetails(serialization.BaseModel):
+    daysBeforeEvent: BY_EMAIL_DAYS_BEFORE_EVENT = pydantic.Field(
+        ...,
+        description="The number of days before the event when the ticket will be sent. Only some values are accepted (1 to 7).",
+        example=1,
+    )
+    way: typing.Literal["by_email"]
 
 
 class ProductOfferCreationBody(OfferCreationBase):
-    category_related_fields: category_related_fields
-    item_collection: ItemCollection | None
+    category_related_fields: product_category_fields
     stock: StockBody | None
+
+
+class EventOfferCreationBody(OfferCreationBase):
+    category_related_fields: event_category_fields
+    event_duration: int | None = pydantic.Field(description="The event duration in minutes", example=60)
+    ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = pydantic.Field(
+        None,
+        description="The way the ticket will be collected. Leave empty if there is no ticket. Only some categories are compatible with tickets",
+        discriminator="way",
+    )
 
 
 class OfferResponse(serialization.BaseModel):

@@ -88,7 +88,7 @@ class PostProductTest:
                     "credit": "Jean-Crédit Photo",
                     "file": image_data.GOOD_IMAGE,
                 },
-                "itemCollection": {"details": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"},
+                "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "stock": {
@@ -532,3 +532,191 @@ class PostProductTest:
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
         assert created_offer.extraData == {"showSubType": "1512", "showType": "1510"}
+
+
+class PostEventTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_event_minimal_body(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "RENCONTRE"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+            },
+        )
+
+        assert response.status_code == 200
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.name == "Le champ des possibles"
+        assert created_offer.venue == venue
+        assert created_offer.subcategoryId == "RENCONTRE"
+        assert created_offer.audioDisabilityCompliant is True
+        assert created_offer.mentalDisabilityCompliant is True
+        assert created_offer.motorDisabilityCompliant is True
+        assert created_offer.visualDisabilityCompliant is True
+        assert not created_offer.isDuo
+        assert created_offer.extraData == {}
+        assert created_offer.bookingEmail is None
+        assert created_offer.description is None
+        assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
+        assert created_offer.withdrawalDetails is None
+        assert created_offer.withdrawalType is None
+        assert created_offer.withdrawalDelay is None
+
+    @pytest.mark.usefixtures("db_session")
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "acceptDoubleBookings": True,
+                "bookingEmail": "nicoj@example.com",
+                "categoryRelatedFields": {
+                    "author": "Ray Charles",
+                    "category": "CONCERT",
+                    "musicType": "ELECTRO-HOUSE",
+                    "performer": "Nicolas Jaar",
+                    "stageDirector": "Alfred",  # field not applicable
+                },
+                "description": "Space is only noise if you can see",
+                "disabilityCompliance": {
+                    "audioDisabilityCompliant": False,
+                    "mentalDisabilityCompliant": True,
+                    "motorDisabilityCompliant": True,
+                    "visualDisabilityCompliant": True,
+                },
+                "externalTicketOfficeUrl": "https://maposaic.com",
+                "image": {
+                    "credit": "Jean-Crédit Photo",
+                    "file": image_data.GOOD_IMAGE,
+                },
+                "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Nicolas Jaar dans ton salon",
+                "ticketCollection": {"way": "by_email", "daysBeforeEvent": 1},
+            },
+        )
+
+        assert response.status_code == 200
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.name == "Nicolas Jaar dans ton salon"
+        assert created_offer.venue == venue
+        assert created_offer.subcategoryId == "CONCERT"
+        assert created_offer.audioDisabilityCompliant is False
+        assert created_offer.mentalDisabilityCompliant is True
+        assert created_offer.motorDisabilityCompliant is True
+        assert created_offer.visualDisabilityCompliant is True
+        assert created_offer.isDuo is True
+        assert created_offer.extraData == {
+            "author": "Ray Charles",
+            "musicType": "880",
+            "musicSubType": "894",
+            "performer": "Nicolas Jaar",
+        }
+        assert created_offer.bookingEmail == "nicoj@example.com"
+        assert created_offer.description == "Space is only noise if you can see"
+        assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
+        assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
+        assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
+        assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.BY_EMAIL
+        assert created_offer.withdrawalDelay == 86400
+
+        created_mediation = offers_models.Mediation.query.one()
+        assert created_mediation.offer == created_offer
+        assert created_offer.image.url == created_mediation.thumbUrl
+        assert (
+            created_offer.image.url
+            == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(created_mediation.id)}"
+        )
+
+    @pytest.mark.usefixtures("db_session")
+    def test_event_without_ticket(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "ticketCollection": None,
+            },
+        )
+
+        assert response.status_code == 200
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET
+
+    @pytest.mark.usefixtures("db_session")
+    def test_event_with_on_site_ticket(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 30},
+            },
+        )
+
+        assert response.status_code == 200
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.ON_SITE
+        assert created_offer.withdrawalDelay == 30 * 60
+
+    @pytest.mark.usefixtures("db_session")
+    def test_event_with_email_ticket(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "ticketCollection": {"way": "by_email", "daysBeforeEvent": 3},
+            },
+        )
+
+        assert response.status_code == 200
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.BY_EMAIL
+        assert created_offer.withdrawalDelay == 3 * 24 * 3600
+
+    @pytest.mark.usefixtures("db_session")
+    def test_error_when_ticket_specified_but_not_applicable(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "EVENEMENT_PATRIMOINE"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 30},
+            },
+        )
+
+        assert response.status_code == 400
+        assert offers_models.Offer.query.count() == 0
+        assert response.json == {
+            "offer": ["Une offre qui n'a pas de ticket retirable ne peut pas avoir un type de retrait renseigné"]
+        }

@@ -2,6 +2,7 @@ import logging
 
 from pcapi import repository
 from pcapi import settings
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
@@ -24,6 +25,7 @@ from . import serialization
 logger = logging.getLogger(__name__)
 
 PRODUCT_OFFERS_TAG = "Product offers"
+EVENT_OFFERS_TAG = "Event offers"
 
 MIN_IMAGE_WIDTH = 400
 MAX_IMAGE_WIDTH = 800
@@ -63,7 +65,7 @@ def _retrieve_venue_from_location(
     return venue
 
 
-def _compute_extra_data(body: serialization.ProductOfferCreationBody) -> dict[str, str]:
+def _compute_extra_data(body: serialization.OfferCreationBase) -> dict[str, str]:
     extra_data = {}
     for extra_data_field in serialization.ExtraDataModel.__fields__:
         field_value = getattr(body.category_related_fields, extra_data_field, None)
@@ -144,7 +146,7 @@ def post_product_offer(body: serialization.ProductOfferCreationBody) -> serializ
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                 venue=venue,
                 visual_disability_compliant=body.disability_compliance.visual_disability_compliant,
-                withdrawal_details=body.item_collection.details if body.item_collection else None,
+                withdrawal_details=body.item_collection_details,
             )
 
             if body.stock:
@@ -154,6 +156,63 @@ def post_product_offer(body: serialization.ProductOfferCreationBody) -> serializ
                     quantity=body.stock.quantity if body.stock.quantity != "unlimited" else None,
                     booking_limit_datetime=body.stock.booking_limit_datetime,
                 )
+            if body.image:
+                _save_image(body.image, created_offer)
+
+            offers_api.publish_offer(created_offer, user=None)
+
+    except offers_exceptions.OfferCreationBaseException as error:
+        raise api_errors.ApiErrors(error.errors, status_code=400)
+
+    return serialization.OfferResponse.from_orm(created_offer)
+
+
+def _deserialize_ticket_collection(
+    ticket_collection: serialization.SentByEmailDetails | serialization.OnSiteCollectionDetails | None,
+    subcategory_id: str,
+) -> tuple[offers_models.WithdrawalTypeEnum | None, int | None]:
+    if not ticket_collection:
+        if subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].can_be_withdrawable:
+            return offers_models.WithdrawalTypeEnum.NO_TICKET, None
+        return None, None
+    if isinstance(ticket_collection, serialization.SentByEmailDetails):
+        return offers_models.WithdrawalTypeEnum.BY_EMAIL, ticket_collection.daysBeforeEvent * 24 * 3600
+    return offers_models.WithdrawalTypeEnum.ON_SITE, ticket_collection.minutesBeforeEvent * 60
+
+
+@blueprint.v1_blueprint.route("/events", methods=["POST"])
+@spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG])
+@api_key_required
+def post_event_offer(body: serialization.EventOfferCreationBody) -> serialization.OfferResponse:
+    """
+    Post an event offer.
+    """
+    venue = _retrieve_venue_from_location(body.location)
+    withdrawal_type, withdrawal_delay = _deserialize_ticket_collection(
+        body.ticket_collection, body.category_related_fields.subcategory_id
+    )
+    try:
+        with repository.transaction():
+            created_offer = offers_api.create_offer(
+                audio_disability_compliant=body.disability_compliance.audio_disability_compliant,
+                booking_email=body.booking_email,
+                description=body.description,
+                duration_minutes=body.event_duration,
+                external_ticket_office_url=body.external_ticket_office_url,
+                extra_data=_compute_extra_data(body),
+                is_duo=body.accept_double_bookings,
+                mental_disability_compliant=body.disability_compliance.mental_disability_compliant,
+                motor_disability_compliant=body.disability_compliance.motor_disability_compliant,
+                name=body.name,
+                subcategory_id=body.category_related_fields.subcategory_id,
+                url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
+                venue=venue,
+                visual_disability_compliant=body.disability_compliance.visual_disability_compliant,
+                withdrawal_delay=withdrawal_delay,
+                withdrawal_details=body.item_collection_details,
+                withdrawal_type=withdrawal_type,
+            )
+
             if body.image:
                 _save_image(body.image, created_offer)
 
