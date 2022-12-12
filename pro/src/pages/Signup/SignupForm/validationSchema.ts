@@ -47,6 +47,6 @@ export const validationSchema = yup.object().shape({
   siren: yup
     .string()
     .required('Veuillez renseigner le siren de votre entreprise')
-    .min(9, 'Veuillez saisir 9 chiffres')
-    .max(11, 'Veuillez saisir 9 chiffres'),
+    .min(9, 'Le SIREN doit comporter 9 caractères.')
+    .max(11, 'Le SIREN doit comporter 9 caractères.'),
 })
