@@ -21,3 +21,13 @@ function rebuild_backend {
     sudo rm -rf $ROOT_PATH/api/static/object_store_data;
     docker-compose -f "$ROOT_PATH"/docker-compose-app.yml down --volumes'
 }
+
+function start_backoffice {
+    docker_compose_major=$(docker-compose -v 2>&1 | sed "s/.*version \([0-9]\).\([0-9]*\).\([0-9]*\).*/\1/");
+    docker_compose_minor=$(docker-compose -v 2>&1 | sed "s/.*version \([0-9]\).\([0-9]*\).\([0-9]*\).*/\2/");
+    if [ "$docker_compose_major" -le "1" ] && [ "$docker_compose_minor" -le "23" ]; then
+        echo "This script requires docker-compose 1.24 or greater"
+        exit 1
+    fi
+    RUN='cd $ROOT_PATH && docker-compose -f "$ROOT_PATH"/docker-compose-backoffice.yml build && docker-compose -f "$ROOT_PATH"/docker-compose-backoffice.yml up'
+}
