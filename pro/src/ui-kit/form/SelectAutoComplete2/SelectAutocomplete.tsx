@@ -209,7 +209,7 @@ const SelectAutocomplete = ({
     <FieldLayout
       className={className}
       error={meta.error}
-      hideFooter={!hideTags && field.value.length > 0 ? true : hideFooter}
+      hideFooter={!hideTags && hideFooter}
       isOptional={isOptional}
       label={label}
       name={`search-${fieldName}`}
