@@ -253,6 +253,30 @@ describe('screens:StocksEvent:Edition', () => {
       .spyOn(api, 'listOfferersNames')
       .mockResolvedValue({ offerersNames: [] })
     jest.spyOn(api, 'upsertStocks')
+    jest.spyOn(api, 'listOffers').mockResolvedValue([
+      {
+        id: 'id',
+        status: 'ACTIVE',
+        isActive: true,
+        hasBookingLimitDatetimesPassed: false,
+        isEducational: false,
+        name: 'name',
+        isEvent: false,
+        venue: {
+          name: 'venue',
+          offererName: 'offerer',
+          isVirtual: false,
+          id: 'venueid',
+          managingOffererId: '',
+        },
+        stocks: [],
+        isEditable: true,
+        isShowcase: false,
+        isThing: false,
+        subcategoryId: SubcategoryIdEnum.VOD,
+        venueId: 'venueid',
+      },
+    ])
   })
 
   it('should allow user to delete a stock', async () => {

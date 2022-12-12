@@ -97,6 +97,8 @@ describe('screens:StocksEvent', () => {
       setOffer: () => {},
       setShouldTrack: () => {},
       shouldTrack: true,
+      isFirstOffer: false,
+      setVenueId: () => {},
     }
     jest
       .spyOn(api, 'getOffer')

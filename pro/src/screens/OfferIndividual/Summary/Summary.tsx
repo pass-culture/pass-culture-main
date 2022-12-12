@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import { BannerSummary } from 'components/Banner'
+import RedirectDialog from 'components/Dialog/RedirectDialog'
 import {
   IOfferAppPreviewProps,
   OfferAppPreview,
@@ -23,12 +24,14 @@ import { useNavigate, useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
+import { IcoParty } from 'icons'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
 import { DisplayOfferInAppLink } from 'pages/Offers/Offer/DisplayOfferInAppLink'
 import OfferStatusBanner from 'pages/Offers/Offer/OfferDetails/OfferStatusBanner'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 
+import useNewOfferCreationJourney from '../../../hooks/useNewOfferCreationJourney'
 import { ActionBar } from '../ActionBar'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 
@@ -66,11 +69,14 @@ const Summary = (
   }: ISummaryProps
 ): JSX.Element => {
   const [isDisabled, setIsDisabled] = useState(false)
+  const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
   const mode = useOfferWizardMode()
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const navigate = useNavigate()
-  const { setOffer } = useOfferIndividualContext()
+  const { setOffer, isFirstOffer, venueId, offerOfferer } =
+    useOfferIndividualContext()
+  const newOfferCreation = useNewOfferCreationJourney()
 
   const { logEvent } = useAnalytics()
   const publishOffer = async () => {
@@ -79,6 +85,7 @@ const Summary = (
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       return
     }
+
     setIsDisabled(true)
     const response = await publishIndividualOffer({
       offerId: nonHumanizedOfferId,
@@ -96,14 +103,18 @@ const Summary = (
         isDraft: true,
         offerId: offerId,
       })
-      navigate(
-        getOfferIndividualUrl({
-          offerId,
-          step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-          mode,
-          isV2: !isOfferFormV3,
-        })
-      )
+      if (newOfferCreation && isFirstOffer) {
+        setDisplayRedirectDialog(true)
+      } else {
+        navigate(
+          getOfferIndividualUrl({
+            offerId,
+            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+            mode,
+            isV2: !isOfferFormV3,
+          })
+        )
+      }
     } else {
       notification.error("Une erreur s'est produite, veuillez réessayer")
     }
@@ -227,6 +238,28 @@ const Summary = (
           )}
         </SummaryLayout.Side>
       </SummaryLayout>
+      {newOfferCreation && displayRedirectDialog && (
+        <RedirectDialog
+          icon={IcoParty}
+          onCancel={() => {
+            navigate('/accueil')
+          }}
+          title="Félicitations, vous avez créé votre offre !"
+          redirectText="Renseigner des coordonnées bancaires"
+          redirectLink={{
+            to: `/structures/${offerOfferer?.id}/lieux/${venueId}?modification#remboursement`,
+            isExternal: false,
+          }}
+          cancelText="Plus tard"
+          withRedirectLinkIcon={false}
+        >
+          <p>Vous pouvez dès à présent renseigner des coordonnées bancaires.</p>
+          <p>
+            Vos remboursement seront rétroactifs une fois vos coordonnées
+            bancaires ajoutées.
+          </p>
+        </RedirectDialog>
+      )}
     </>
   )
 }

@@ -42,6 +42,8 @@ const renderOffer = (
     setOffer: () => {},
     setShouldTrack: () => {},
     shouldTrack: true,
+    setVenueId: () => {},
+    isFirstOffer: false,
     ...contextOverride,
   }
   const store = configureTestStore({

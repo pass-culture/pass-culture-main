@@ -1,10 +1,12 @@
 import { getOffererNamesAdapter } from 'core/Offerers/adapters'
 import { TOffererName } from 'core/Offerers/types'
+import { DEFAULT_SEARCH_FILTERS } from 'core/Offers'
 import { getCategoriesAdapter } from 'core/Offers/adapters'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { getOfferIndividualVenuesAdapter } from 'core/Venue/adapters/getOfferIndividualVenuesAdapter'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import { getFilteredOffersAdapter } from 'pages/Offers/adapters'
 
 interface IGetWizardDataArgs {
   offerOffererId?: string
@@ -21,6 +23,7 @@ export interface IOfferWizardData {
     categories: IOfferCategory[]
     subCategories: IOfferSubCategory[]
   }
+  isFirstOffer: boolean
 }
 
 export type TGetOfferIndividualAdapter = Adapter<
@@ -48,6 +51,7 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
       categories: [],
       subCategories: [],
     },
+    isFirstOffer: false,
   }
 
   if (isAdmin && !offerer && !queryOffererId) {
@@ -92,6 +96,13 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
       /* istanbul ignore next: DEBT, TO FIX */
       return Promise.resolve(FAILING_RESPONSE)
     }
+  }
+  const offersResponse = await getFilteredOffersAdapter(DEFAULT_SEARCH_FILTERS)
+  if (offersResponse.isOk) {
+    successPayload.isFirstOffer = offersResponse.payload.offers.length === 0
+  } else {
+    /* istanbul ignore next: DEBT, TO FIX */
+    return Promise.resolve(FAILING_RESPONSE)
   }
 
   return Promise.resolve({

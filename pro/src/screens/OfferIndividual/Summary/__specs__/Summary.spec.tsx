@@ -17,10 +17,15 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import {
+  IOfferIndividualContext,
+  OfferIndividualContext,
+} from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
+import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
@@ -33,6 +38,20 @@ jest.mock('core/Notification/constants', () => ({
   NOTIFICATION_SHOW_DURATION: 10,
 }))
 
+const contextValues: IOfferIndividualContext = {
+  offerId: null,
+  offer: null,
+  venueList: [],
+  offererNames: [],
+  categories: [],
+  subCategories: [],
+  setOffer: () => {},
+  setShouldTrack: () => {},
+  shouldTrack: true,
+  setVenueId: () => {},
+  isFirstOffer: false,
+}
+
 const renderSummary = ({
   props,
   storeOverride = {},
@@ -40,10 +59,12 @@ const renderSummary = ({
     step: OFFER_WIZARD_STEP_IDS.SUMMARY,
     mode: OFFER_WIZARD_MODE.EDITION,
   }),
+  context = contextValues,
 }: {
   props: ISummaryProps
   storeOverride?: Partial<RootState>
   url?: string
+  context?: IOfferIndividualContext
 }) => {
   const store = configureTestStore({
     user: {
@@ -59,69 +80,76 @@ const renderSummary = ({
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[url]}>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-        >
-          <Summary {...props} />
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <Summary {...props} />
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          })}
-        >
-          <Summary {...props} />
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          })}
-        >
-          <div>Confirmation page: draft</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>Confirmation page: creation</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-            isV2: true,
-          })}
-        >
-          <div>Confirmation page: draft V2</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-            mode: OFFER_WIZARD_MODE.CREATION,
-            isV2: true,
-          })}
-        >
-          <div>Confirmation page: creation V2</div>
-        </Route>
+        <OfferIndividualContext.Provider value={context}>
+          <Route
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode: OFFER_WIZARD_MODE.EDITION,
+            })}
+          >
+            <Summary {...props} />
+          </Route>
+          <Route
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            })}
+          >
+            <Summary {...props} />
+          </Route>
+          <Route
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode: OFFER_WIZARD_MODE.DRAFT,
+            })}
+          >
+            <Summary {...props} />
+          </Route>
+          <Route
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+              mode: OFFER_WIZARD_MODE.DRAFT,
+            })}
+          >
+            <div>Confirmation page: draft</div>
+          </Route>
+          <Route
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            })}
+          >
+            <div>Confirmation page: creation</div>
+          </Route>
+          <Route
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+              mode: OFFER_WIZARD_MODE.DRAFT,
+              isV2: true,
+            })}
+          >
+            <div>Confirmation page: draft V2</div>
+          </Route>
+          <Route
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+              mode: OFFER_WIZARD_MODE.CREATION,
+              isV2: true,
+            })}
+          >
+            <div>Confirmation page: creation V2</div>
+          </Route>
+        </OfferIndividualContext.Provider>
       </MemoryRouter>
       <Notification />
     </Provider>
   )
 }
+
+jest.mock('hooks/useNewOfferCreationJourney', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue(false),
+}))
 
 describe('Summary', () => {
   let props: ISummaryProps
@@ -568,6 +596,46 @@ describe('Summary', () => {
       expect(notificationError.textContent).toBe(
         "Une erreur s'est produite, veuillez réessayer"
       )
+    })
+
+    it('should display redirect modal if first offer', async () => {
+      jest.spyOn(useNewOfferCreationJourney, 'default').mockReturnValue(true)
+
+      const context = contextValues
+      context.isFirstOffer = true
+      const storeOverride = {
+        features: {
+          initialized: true,
+          list: [
+            { isActive: true, nameKey: 'OFFER_FORM_V3' },
+            {
+              isActive: true,
+              nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
+            },
+          ],
+        },
+      }
+
+      renderSummary({
+        props,
+        storeOverride,
+        url: generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+        context,
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: /Publier l’offre/ })
+      )
+
+      expect(
+        await screen.getByText('Félicitations, vous avez créé votre offre !')
+      ).toBeInTheDocument()
     })
   })
 

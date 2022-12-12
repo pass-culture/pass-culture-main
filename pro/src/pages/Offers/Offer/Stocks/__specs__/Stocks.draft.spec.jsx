@@ -6,6 +6,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
+import { SubcategoryIdEnum } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { configureTestStore } from 'store/testUtils'
@@ -22,6 +23,7 @@ jest.mock('apiClient/api', () => ({
     getVenues: jest.fn(),
     upsertStocks: jest.fn(),
     listOfferersNames: jest.fn(),
+    listOffers: jest.fn(),
   },
 }))
 jest.mock('utils/date', () => ({
@@ -144,6 +146,30 @@ describe('stocks page - Brouillon', () => {
         },
       ],
     })
+    jest.spyOn(api, 'listOffers').mockResolvedValue([
+      {
+        id: 'id',
+        status: 'ACTIVE',
+        isActive: true,
+        hasBookingLimitDatetimesPassed: false,
+        isEducational: false,
+        name: 'name',
+        isEvent: false,
+        venue: {
+          name: 'venue',
+          offererName: 'offerer',
+          isVirtual: false,
+          id: 'id',
+          managingOffererId: '',
+        },
+        stocks: [],
+        isEditable: true,
+        isShowcase: false,
+        isThing: false,
+        subcategoryId: SubcategoryIdEnum.VOD,
+        venueId: 'venueid',
+      },
+    ])
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
