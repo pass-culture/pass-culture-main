@@ -92,6 +92,7 @@
                                                     offerer_id=offerer.id
                                                 ) }}"
                                                     method="POST">
+                                                {{ csrf_token }}
                                                 <button type="submit" class="btn btn-sm">
                                                     Valider
                                                 </button>
@@ -132,6 +133,8 @@
                                                 offerer_id=offerer.id
                                             ) }}"
                                             method="POST">
+                                        {{ csrf_token }}
+
                                         <input class="form-check-input" type="checkbox" role="switch"
                                                 name="is_top_actor"
                                                 id="top-switch-{{ offerer.id }}"
