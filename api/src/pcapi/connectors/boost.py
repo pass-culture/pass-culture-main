@@ -24,7 +24,7 @@ class ResourceBoost(enum.Enum):
         EXAMPLE = "example"
         EXAMPLE_WITH_PATTERNS = "example/{start}/{end}"
     FILMS = "api/films"
-    SHOWTIMES = "api/showtimes"
+    SHOWTIMES = "api/showtimes/between/{dateStart}/{dateEnd}"
     SHOWTIME = "api/showtimes/{id}"
     COMPLETE_SALE = "api/sale/complete"
     CANCEL_ORDER_SALE = "api/sale/orderCancel"
