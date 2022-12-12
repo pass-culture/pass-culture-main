@@ -38,6 +38,7 @@ Commands:
   set-git-config        Define a local Git configuration
   start-adage-front     Start the adage frontend on localhost
   start-backend         Start the API on localhost
+  start-backffice       Start the backoffice on localhost
   start-pro             Start the pro frontend on localhost
   symlink               Create symlink to use \"pc\" command (admin rights may be needed)
   test-backend          Run tests for the API
@@ -205,6 +206,11 @@ elif [[ "$CMD" == "restore-db-intact" ]]; then
 elif [[ "$CMD" == "start-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
   start_backend
+
+# Start API server with database and nginx server
+elif [[ "$CMD" == "start-backoffice" ]]; then
+  source "$INFRA_SCRIPTS_PATH"/start_backend.sh
+  start_backoffice
 
 # Start pro or adage application
 elif [[ "$CMD" == "start-pro" ]] || [[ "$CMD" == "start-adage-front" ]]; then
