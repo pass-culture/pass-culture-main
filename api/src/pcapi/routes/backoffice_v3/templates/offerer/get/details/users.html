@@ -30,7 +30,7 @@
                                     user_offerer_id=user_offerer.id,
                                 ) }}"
                                 method="POST">
-                                {{ validate_user_offerer_form.csrf_token }}
+                                {{ csrf_token }}
 
                                 <button type="submit" class="btn btn-sm">
                                     Valider
