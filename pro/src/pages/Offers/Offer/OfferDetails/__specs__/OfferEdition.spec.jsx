@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
+import { ApiError, SubcategoryIdEnum } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import * as computeUrl from 'core/Offers/utils'
 import { getProviderInfo } from 'core/Providers/utils'
@@ -33,6 +33,7 @@ jest.mock('apiClient/api', () => ({
   api: {
     patchOffer: jest.fn(),
     getOffer: jest.fn(),
+    listOffers: jest.fn(),
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
     getVenue: jest.fn(),
@@ -220,6 +221,30 @@ describe('offerDetails - Edition', () => {
             status: 'ACTIVE',
           }
           jest.spyOn(api, 'getOffer').mockResolvedValue(editedOffer)
+          jest.spyOn(api, 'listOffers').mockResolvedValue([
+            {
+              id: 'id',
+              status: 'ACTIVE',
+              isActive: true,
+              hasBookingLimitDatetimesPassed: false,
+              isEducational: false,
+              name: 'name',
+              isEvent: false,
+              venue: {
+                name: 'venue',
+                offererName: 'offerer',
+                isVirtual: false,
+                id: 'venueid',
+                managingOffererId: '',
+              },
+              stocks: [],
+              isEditable: true,
+              isShowcase: false,
+              isThing: false,
+              subcategoryId: SubcategoryIdEnum.VOD,
+              venueId: 'venueid',
+            },
+          ])
 
           // When
           await renderOffers(props, store)

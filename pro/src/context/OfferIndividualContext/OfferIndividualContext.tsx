@@ -25,6 +25,10 @@ export interface IOfferIndividualContext {
   venueList: TOfferIndividualVenue[]
   shouldTrack: boolean
   setShouldTrack: (p: boolean) => void
+  isFirstOffer: boolean
+  venueId?: string | undefined
+  setVenueId: (venueId: string) => void
+  offerOfferer?: TOffererName | null
 }
 
 export const OfferIndividualContext = createContext<IOfferIndividualContext>({
@@ -37,6 +41,8 @@ export const OfferIndividualContext = createContext<IOfferIndividualContext>({
   venueList: [],
   shouldTrack: true,
   setShouldTrack: () => {},
+  isFirstOffer: false,
+  setVenueId: () => {},
 })
 
 export const useOfferIndividualContext = () => {
@@ -63,6 +69,8 @@ export function OfferIndividualContextProvider({
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [shouldTrack, setShouldTrack] = useState<boolean>(true)
   const [offerOfferer, setOfferOfferer] = useState<TOffererName | null>(null)
+  const [isFirstOffer, setIsFirstOffer] = useState<boolean>(false)
+  const [venueId, setVenueId] = useState<string>()
 
   const [offer, setOfferState] = useState<IOfferIndividual | null>(null)
   const [categories, setCategories] = useState<IOfferCategory[]>([])
@@ -87,6 +95,7 @@ export function OfferIndividualContextProvider({
       const response = await getOfferIndividualAdapter(offerId)
       if (response.isOk) {
         setOffer(response.payload)
+        setVenueId(response.payload.venueId)
       } else {
         notify.error(
           'Une erreur est survenue lors de la récupération de votre offre'
@@ -110,6 +119,7 @@ export function OfferIndividualContextProvider({
         setSubCategories(response.payload.categoriesData.subCategories)
         setOffererNames(response.payload.offererNames)
         setVenueList(response.payload.venueList)
+        setIsFirstOffer(response.payload.isFirstOffer)
       } else {
         setCategories([])
         setSubCategories([])
@@ -139,6 +149,10 @@ export function OfferIndividualContextProvider({
         venueList,
         shouldTrack,
         setShouldTrack,
+        isFirstOffer,
+        venueId,
+        setVenueId,
+        offerOfferer,
       }}
     >
       {children}

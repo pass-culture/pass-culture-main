@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 import React from 'react'
 
+import { IcoParty } from 'icons'
 import { ReactComponent as ActivationCodeErrorIcon } from 'icons/add-activation-code-error.svg'
 import { ReactComponent as AddActivationCodeIcon } from 'icons/add-activation-code-light.svg'
 import { ReactComponent as AudioDisabilityIcon } from 'icons/audio-disability.svg'
@@ -728,6 +729,12 @@ export const Icons = () => (
           <IcoKey />
         </td>
         <td>IcoKey</td>
+      </tr>
+      <tr>
+        <td>
+          <IcoParty />
+        </td>
+        <td>IcoParty</td>
       </tr>
     </body>
   </table>

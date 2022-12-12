@@ -203,6 +203,30 @@ describe('test OfferIndividualWisard', () => {
       .spyOn(api, 'getCategories')
       .mockResolvedValue({ categories: [], subcategories: [] })
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    jest.spyOn(api, 'listOffers').mockResolvedValue([
+      {
+        id: 'id',
+        status: 'ACTIVE',
+        isActive: true,
+        hasBookingLimitDatetimesPassed: false,
+        isEducational: false,
+        name: 'name',
+        isEvent: false,
+        venue: {
+          name: 'venue',
+          offererName: 'offerer',
+          isVirtual: false,
+          id: 'venueid',
+          managingOffererId: '',
+        },
+        stocks: [],
+        isEditable: true,
+        isShowcase: false,
+        isThing: false,
+        subcategoryId: SubcategoryIdEnum.VOD,
+        venueId: 'venueid',
+      },
+    ])
   })
 
   it('should display an error when unable to load offer', async () => {

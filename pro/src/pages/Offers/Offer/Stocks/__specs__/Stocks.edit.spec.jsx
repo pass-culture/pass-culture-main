@@ -7,6 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
+import { SubcategoryIdEnum } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import OfferLayout from 'pages/Offers/Offer/OfferLayout'
 import { configureTestStore } from 'store/testUtils'
@@ -24,6 +25,7 @@ jest.mock('apiClient/api', () => ({
     getOffer: jest.fn(),
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
+    listOffers: jest.fn(),
     getStocks: jest.fn(),
     upsertStocks: jest.fn(),
     deleteStock: jest.fn(),
@@ -129,6 +131,30 @@ describe('stocks page', () => {
         },
       ],
     })
+    jest.spyOn(api, 'listOffers').mockResolvedValue([
+      {
+        id: 'id',
+        status: 'ACTIVE',
+        isActive: true,
+        hasBookingLimitDatetimesPassed: false,
+        isEducational: false,
+        name: 'name',
+        isEvent: false,
+        venue: {
+          name: 'venue',
+          offererName: 'offerer',
+          isVirtual: false,
+          id: 'venueid',
+          managingOffererId: '',
+        },
+        stocks: [],
+        isEditable: true,
+        isShowcase: false,
+        isThing: false,
+        subcategoryId: SubcategoryIdEnum.VOD,
+        venueId: 'venueid',
+      },
+    ])
   })
 
   describe('edit', () => {

@@ -33,6 +33,8 @@ const renderOfferIndividualStepper = (
     setOffer: () => {},
     setShouldTrack: () => {},
     shouldTrack: true,
+    setVenueId: () => {},
+    isFirstOffer: false,
     ...contextOverride,
   }
   const rtlReturns = render(
