@@ -170,6 +170,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       // When saving draft with an empty form
       // we display a success notification even if nothing is done
       if (saveDraft && isFormEmpty()) {
+        setIsClickingFromActionBar(false)
         notify.success('Brouillon sauvegardé dans la liste des offres')
         return
       }
@@ -191,6 +192,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         if (!saveDraft) {
           navigate(nextStepUrl)
         }
+        setIsClickingFromActionBar(false)
       } else {
         await formik.submitForm()
       }
