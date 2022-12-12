@@ -82,6 +82,16 @@ def synchronize_cine_office_stocks() -> None:
     synchronize_venue_providers(venue_providers)
 
 
+@blueprint.cli.command("synchronize_boost_stocks")
+@log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_BOOST_API_INTEGRATION)
+def synchronize_boost_stocks() -> None:
+    """Launch Boost synchronization."""
+    cine_office_stocks_provider_id = get_provider_by_local_class("BoostStocks").id
+    venue_providers = providers_repository.get_active_venue_providers_by_provider(cine_office_stocks_provider_id)
+    synchronize_venue_providers(venue_providers)
+
+
 @blueprint.cli.command("import_beneficiaries_from_dms_v4")
 @log_cron_with_transaction
 def import_beneficiaries_from_dms_legacy() -> None:
