@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
@@ -92,7 +92,9 @@ const Informations = ({
           notify.error(FORM_ERROR_MESSAGE)
         }
       }
-      await formik.submitForm()
+      if (saveDraft) {
+        await formik.submitForm()
+      }
     }
 
   // FIXME: find a way to test FileReader
