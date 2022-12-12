@@ -47,5 +47,5 @@ def require_ff() -> None:
 
 
 @backoffice_v3_web.context_processor
-def add_logout_csrf_token() -> dict:
-    return {"logout_csrf_token": empty_forms.EmptyForm().csrf_token}
+def add_csrf_token() -> dict:
+    return {"csrf_token": empty_forms.EmptyForm().csrf_token}
