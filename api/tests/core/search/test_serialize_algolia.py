@@ -65,6 +65,7 @@ def test_serialize_offer():
             "movieGenres": None,
             "musicType": None,
             "name": "Titre formidable",
+            "nativeCategoryId": offer.subcategory.native_category_id,
             "prices": [decimal.Decimal("10.00")],
             "rankingWeight": 2,
             "searchGroupName": "LIVRE",
