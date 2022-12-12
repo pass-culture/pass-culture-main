@@ -67,7 +67,6 @@ class CollectiveOffersPublicPatchOfferTest:
                 "addressType": "school",
                 "otherAddress": None,
             },
-            "interventionArea": ["44"],
             "isActive": False,
             "imageCredit": "a great artist",
             # stock part
@@ -106,7 +105,6 @@ class CollectiveOffersPublicPatchOfferTest:
             "addressType": "school",
             "otherAddress": "",
         }
-        assert offer.interventionArea == ["44"]
         assert offer.audioDisabilityCompliant == True
         assert offer.mentalDisabilityCompliant == True
         assert offer.motorDisabilityCompliant == True
@@ -209,7 +207,6 @@ class CollectiveOffersPublicPatchOfferTest:
                 "addressType": "school",
                 "otherAddress": None,
             },
-            "interventionArea": ["44"],
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
@@ -253,7 +250,6 @@ class CollectiveOffersPublicPatchOfferTest:
                 "addressType": "school",
                 "otherAddress": None,
             },
-            "interventionArea": ["44"],
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
@@ -298,7 +294,6 @@ class CollectiveOffersPublicPatchOfferTest:
                 "addressType": "school",
                 "otherAddress": None,
             },
-            "interventionArea": ["44"],
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
@@ -374,7 +369,6 @@ class CollectiveOffersPublicPatchOfferTest:
                 "addressType": "school",
                 "otherAddress": None,
             },
-            "interventionArea": ["44"],
             "isActive": False,
             "imageCredit": "a great artist",
             # stock part
