@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useFormikContext } from 'formik'
 import React from 'react'
 
@@ -30,11 +31,13 @@ const StockThingForm = ({
   return (
     <>
       <TextInput
-        className={styles['price-field']}
         smallLabel
         name="price"
         label="Prix"
         placeholder="Ex: 20€"
+        className={cn({
+          [styles['input-price']]: !showExpirationDate,
+        })}
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('price')}
         type="number"
@@ -46,6 +49,9 @@ const StockThingForm = ({
         smallLabel
         name="bookingLimitDatetime"
         label="Date limite de réservation"
+        className={cn({
+          [styles['input-booking-limit-datetime']]: !showExpirationDate,
+        })}
         classNameFooter={styles['field-layout-footer']}
         minDateTime={today}
         maxDateTime={getMaximumBookingDatetime(maxDateTime)}
@@ -58,6 +64,7 @@ const StockThingForm = ({
           smallLabel
           name="activationCodesExpirationDatetime"
           label="Date d'expiration"
+          className={styles['input-activation-code']}
           classNameFooter={styles['field-layout-footer']}
           disabled={true}
         />
@@ -67,7 +74,9 @@ const StockThingForm = ({
         name="quantity"
         label="Quantité"
         placeholder="Illimité"
-        className={styles['input-quantity']}
+        className={cn({
+          [styles['input-quantity']]: !showExpirationDate,
+        })}
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('quantity')}
         type="number"

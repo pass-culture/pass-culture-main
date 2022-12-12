@@ -2,7 +2,6 @@
 
 .stock-form-row {
   display: flex;
-  align-items: center;
 
   .stock-form {
     display: flex;
@@ -20,9 +19,10 @@
   }
 
   .stock-actions {
+    display: flex;
+    align-self: flex-start;
     &.stock-first-action {
-      margin-top: rem.torem(-6px);
+      margin-top: rem.torem(40px);
     }
-    margin-top: rem.torem(-40px);
   }
 }
