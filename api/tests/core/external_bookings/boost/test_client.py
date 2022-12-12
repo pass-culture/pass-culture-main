@@ -5,6 +5,7 @@ from pcapi.core.external_bookings.boost.client import BoostClientAPI
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
+from pcapi.utils import date
 
 from tests.local_providers.cinema_providers.boost import fixtures
 
@@ -60,19 +61,19 @@ class GetShowtimesTest:
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes?page=1&per_page=2",
+            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?page=1&per_page=2",
             json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes?page=2&per_page=2",
+            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?page=2&per_page=2",
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
         )
         boost = BoostClientAPI(cinema_str_id)
-        showtimes = boost.get_showtimes(per_page=2)
+        showtimes = boost.get_showtimes(per_page=2, start_date=date.date(2022, 10, 10), interval_days=10)
         assert showtimes == [
-            boost_serializers.ShowTime3(id=36683),
-            boost_serializers.ShowTime3(id=36848),
-            boost_serializers.ShowTime3(id=36932),
+            boost_serializers.ShowTime4(id=36683),
+            boost_serializers.ShowTime4(id=36848),
+            boost_serializers.ShowTime4(id=36932),
         ]
 
 
