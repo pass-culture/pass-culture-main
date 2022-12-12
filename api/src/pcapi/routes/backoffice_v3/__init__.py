@@ -7,6 +7,7 @@ def install_routes(app: Flask) -> None:
     from . import admin
     from . import auth
     from . import filters
+    from . import health_check
     from . import home
     from . import i18n
     from . import offerers
