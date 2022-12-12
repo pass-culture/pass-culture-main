@@ -15,7 +15,7 @@ import useNotification from 'hooks/useNotification'
 import { ReactComponent as IcoMiniArrowLeft } from 'icons/ico-mini-arrow-left.svg'
 import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.svg'
 import { RootState } from 'store/reducers'
-import { Button, ButtonLink } from 'ui-kit'
+import { Button, ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 export interface IActionBarProps {
@@ -115,9 +115,9 @@ const ActionBar = ({
             >
               Annuler et quitter
             </ButtonLink>
-            <Button onClick={onClickNext} disabled={isDisabled}>
+            <SubmitButton onClick={onClickNext} disabled={isDisabled}>
               Enregistrer les modifications
-            </Button>
+            </SubmitButton>
           </>
         )}
       </>
@@ -155,14 +155,14 @@ const ActionBar = ({
               >
                 Sauvegarder le brouillon
               </Button>
-              <Button
+              <SubmitButton
                 Icon={IcoMiniArrowRight}
                 iconPosition={IconPositionEnum.RIGHT}
-                onClick={onClickNext}
                 disabled={isDisabled}
+                onClick={onClickNext}
               >
                 Étape suivante
-              </Button>
+              </SubmitButton>
             </>
           )}
         </>
