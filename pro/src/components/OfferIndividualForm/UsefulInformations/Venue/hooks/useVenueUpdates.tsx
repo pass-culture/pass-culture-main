@@ -22,6 +22,7 @@ const useVenueUpdates = (venueList: TOfferIndividualVenue[]): void => {
           setFieldValue('accessibility', venue.accessibility)
 
         setFieldValue('isVenueVirtual', venue.isVirtual)
+        setFieldValue('withdrawalDetails', venue?.withdrawalDetails || '')
       }
       setPrevValue(venueId)
     }
