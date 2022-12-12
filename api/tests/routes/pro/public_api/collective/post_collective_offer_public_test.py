@@ -425,7 +425,6 @@ class CollectiveOffersPublicPostOfferTest:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
-            "interventionArea": ["44"],
             "isActive": True,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
