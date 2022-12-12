@@ -1,0 +1,91 @@
+version: "3.7"
+
+services:
+  postgres:
+    image: cimg/postgres:12.9-postgis
+    container_name: pc-postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - env_file
+    networks:
+      - db_nw
+    ports:
+      - 5434:5432 # This port is used outside docker-compose network (E2E tests and developers launching flask api on their local machines)
+    command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
+
+  postgres-test:
+    image: cimg/postgres:12.9-postgis
+    container_name: pc-postgres-pytest
+    volumes:
+      - postgres_data_test:/var/lib/postgresql-test/data
+    environment:
+      - POSTGRES_DB=pass_culture
+      - POSTGRES_USER=pytest
+      - POSTGRES_PASSWORD=pytest
+    command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
+    ports:
+      - 5433:5432
+    networks:
+      - db_nw
+
+  flask:
+    build:
+      context: ./api
+      target: api-flask
+    working_dir: /usr/src/app
+    container_name: pc-backoffice
+    command: ["./start-backoffice-when-database-is-ready.sh"]
+    volumes:
+      - ./api:/usr/src/app
+    env_file:
+      - env_file
+    networks:
+      - db_nw
+      - web_nw
+    depends_on:
+      - postgres
+      - redis
+      - postgres-test
+    ports:
+      - 5001:5001
+      - 10003:10003 # debugger port
+    stdin_open: true
+    tty: true
+
+  redis:
+    image: scalingo/redis
+    container_name: pc-redis
+    command: redis-server
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+    networks:
+      - db_nw
+
+  nginx:
+    build: nginx
+    container_name: pc-nginx-backoffice
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certs:/etc/letsencrypt
+      - ./certs-data:/data/letsencrypt
+    networks:
+      - web_nw
+    depends_on:
+      - flask
+
+networks:
+  db_nw:
+    driver: bridge
+  web_nw:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  postgres_data_test:
+  redis_data:
