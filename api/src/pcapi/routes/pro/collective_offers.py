@@ -11,6 +11,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_offers_serialize
@@ -525,6 +526,32 @@ def attach_offer_image(
         check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     image_as_bytes = form.get_image_as_bytes(request)
+
+    try:
+        offers_validation.check_image(
+            image_as_bytes=image_as_bytes,
+            accepted_types=offers_validation.ACCEPTED_THUMBNAIL_FORMATS,
+            min_width=offers_validation.STANDARD_THUMBNAIL_WIDTH,
+            min_height=offers_validation.STANDARD_THUMBNAIL_HEIGHT,
+        )
+    except offers_exceptions.UnacceptedFileType:
+        raise ApiErrors(
+            errors={
+                "imageFile": [f"Les formats acceptés sont:  {', '.join(offers_validation.ACCEPTED_THUMBNAIL_FORMATS)}"],
+            },
+            status_code=400,
+        )
+    except offers_exceptions.ImageTooSmall:
+        raise ApiErrors(
+            errors={
+                "imageFile": [
+                    f"L'image doit faire au moins {offers_validation.STANDARD_THUMBNAIL_WIDTH} x "
+                    f"{offers_validation.STANDARD_THUMBNAIL_HEIGHT} pixels"
+                ],
+            },
+            status_code=400,
+        )
+
     educational_api_offer.attach_image(
         obj=offer,
         image=image_as_bytes,
