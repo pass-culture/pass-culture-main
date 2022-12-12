@@ -2,6 +2,8 @@
 <div class="modal fade" id="{{ div_id }}" tabindex="-1" aria-labelledby="{{ div_id }}-label" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <form action="{{ dst }}" method="POST" class="modal-content" data-turbo="false">
+            {{ csrf_token }}
+
             <div class="modal-header">
                 <h5 class="modal-title">{{ caller() }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>

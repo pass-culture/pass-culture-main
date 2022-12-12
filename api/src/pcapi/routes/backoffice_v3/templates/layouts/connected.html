@@ -98,7 +98,7 @@
                     </p>
 
                     <form action="{{ url_for('backoffice_v3_web.logout') }}" method="POST">
-                        {{ logout_csrf_token }}
+                        {{ csrf_token }}
 
                         <button type="submit" class="btn btn-link text-white">
                             <i class="bi bi-box-arrow-right fs-5 me-2"></i>

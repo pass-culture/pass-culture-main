@@ -24,7 +24,6 @@ import pcapi.utils.regions as regions_utils
 
 from . import search_utils
 from . import utils
-from .forms import empty as empty_forms
 from .forms import offerer as offerer_forms
 from .serialization import offerers as serialization
 
@@ -164,14 +163,11 @@ def get_details(offerer_id: int) -> utils.BackofficeResponse:
 
     history = get_offerer_history_data(offerer)
 
-    validate_user_offerer_form = empty_forms.EmptyForm()
-
     return render_template(
         "offerer/get/details.html",
         offerer=offerer,
         history=history,
         users_offerer=offerer.UserOfferers,
-        validate_user_offerer_form=validate_user_offerer_form,
         active_tab=request.args.get("active_tab", "history"),
         is_user_offerer_action_type=_is_user_offerer_action_type,
         is_offerer_new_action_type=_is_offerer_new_action_type,
