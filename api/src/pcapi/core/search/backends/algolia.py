@@ -405,6 +405,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "movieGenres": extra_data.get("genres"),
                 "musicType": music_type_label,
                 "name": offer.name,
+                "nativeCategoryId": offer.subcategory.native_category_id,
                 "prices": prices_sorted,
                 # TODO(jeremieb): keep searchGroupNamev2 and remove
                 # remove searchGroupName once the search group name &
