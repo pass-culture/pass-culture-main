@@ -1,8 +1,6 @@
 export const validateSiren = (siren: string): string => {
-  if (siren.length < 9) {
-    return 'SIREN trop court'
-  } else if (siren.length > 9) {
-    return 'SIREN trop long'
+  if (siren.length !== 9) {
+    return 'Le SIREN doit comporter 9 caractères.'
   }
   return ''
 }
