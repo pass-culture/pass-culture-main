@@ -3,6 +3,7 @@ import enum
 import typing
 
 import flask
+from pydantic import EmailStr
 from pydantic import Field
 from pydantic import validator
 from pydantic.types import constr
@@ -395,7 +396,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     visual_disability_compliant: bool = False
     students: list[StudentLevels]
     offer_venue: CollectiveOfferVenueBodyModel
-    contact_email: str
+    contact_email: EmailStr
     contact_phone: str
     intervention_area: list[str] | None
     template_id: str | None
@@ -474,7 +475,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     name: str | None
     students: list[StudentLevels] | None
     offerVenue: CollectiveOfferVenueBodyModel | None
-    contactEmail: str | None
+    contactEmail: EmailStr | None
     contactPhone: str | None
     durationMinutes: int | None
     subcategoryId: SubcategoryIdEnum | None
