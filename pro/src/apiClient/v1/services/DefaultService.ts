@@ -1250,12 +1250,12 @@ export class DefaultService {
   /**
    * post_offer <POST>
    * @param requestBody
-   * @returns OfferResponseIdModel Created
+   * @returns GetIndividualOfferResponseModel Created
    * @throws ApiError
    */
   public postOffer(
     requestBody?: PostOfferBodyModel,
-  ): CancelablePromise<OfferResponseIdModel> {
+  ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/offers',
