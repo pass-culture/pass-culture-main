@@ -136,7 +136,8 @@ class BoostStocks(LocalProvider):
         obj.extraData = {"visa": movie_information.visa}
 
     def get_object_thumb(self) -> bytes:
-        return bytes()
+        image_url = self.showtime_details.film.posterUrl
+        return self._get_boost_movie_poster(image_url) if image_url else bytes()
 
     def shall_synchronize_thumbs(self) -> bool:
         return True
@@ -151,6 +152,10 @@ class BoostStocks(LocalProvider):
     def _get_showtime_details(self, showtime_id: int) -> boost_serializers.ShowTime:
         client_boost = BoostClientAPI(self.cinema_id)
         return client_boost.get_showtime(showtime_id)
+
+    def _get_boost_movie_poster(self, image_url: str) -> bytes:
+        client_boost = BoostClientAPI(self.cinema_id)
+        return client_boost.get_movie_poster(image_url)
 
 
 def get_next_product_id_from_database() -> int:
