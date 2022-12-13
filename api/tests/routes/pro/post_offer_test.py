@@ -31,6 +31,7 @@ class Returns200Test:
         offer_id = dehumanize(response.json["id"])
         offer = Offer.query.get(offer_id)
         assert offer.isActive == False
+        assert response.json["venueId"] == humanize(venue.id)
 
     def test_create_event_offer(self, client):
         # Given

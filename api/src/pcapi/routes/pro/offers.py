@@ -98,11 +98,11 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
 @private_api.route("/offers", methods=["POST"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.OfferResponseIdModel,
+    response_model=offers_serialize.GetIndividualOfferResponseModel,
     on_success_status=201,
     api=blueprint.pro_private_schema,
 )
-def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
+def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
     venue_id = human_ids.dehumanize(body.venue_humanized_id)
     if not venue_id:
         raise ApiErrors(errors={"venueId": ["L'id n'est pas au bon format"]}, status_code=404)
@@ -144,7 +144,7 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
             status_code=400,
         )
 
-    return offers_serialize.OfferResponseIdModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/offers/publish", methods=["PATCH"])
