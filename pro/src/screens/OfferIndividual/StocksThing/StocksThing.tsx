@@ -231,10 +231,23 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     )
   }
 
-  const onConfirmDeleteStock = () => {
-    onDeleteStock()
+  const onConfirmDeleteStock = async () => {
+    if (formik.values.stockId === undefined) {
+      deleteConfirmHide()
+      return
+    }
+    try {
+      await api.deleteStock(formik.values.stockId)
+      const response = await getOfferIndividualAdapter(offer.id)
+      if (response.isOk) {
+        setOffer && setOffer(response.payload)
+      }
+      formik.resetForm({ values: STOCK_THING_FORM_DEFAULT_VALUES })
+      notify.success('Le stock a été supprimé.')
+    } catch {
+      notify.error('Une erreur est survenue lors de la suppression du stock.')
+    }
     deleteConfirmHide()
-    formik.resetForm({ values: STOCK_THING_FORM_DEFAULT_VALUES })
   }
 
   let actions: IStockFormRowAction[] = []
@@ -288,21 +301,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     },
     [activationCodeFormHide]
   )
-
-  const onDeleteStock = async () => {
-    formik.values.stockId &&
-      api
-        .deleteStock(formik.values.stockId)
-        .then(() => {
-          notify.success('Le stock a été supprimé.')
-          formik.setValues(STOCK_THING_FORM_DEFAULT_VALUES)
-        })
-        .catch(() =>
-          notify.error(
-            'Une erreur est survenue lors de la suppression du stock.'
-          )
-        )
-  }
 
   return (
     <FormikProvider value={formik}>
