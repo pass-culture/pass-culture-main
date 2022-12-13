@@ -4,6 +4,7 @@ from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
+from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.serialization import venues_serialize
 
@@ -130,3 +131,19 @@ class AdageLoggerClient(AdageClient):
                 synchroPass=0,
             )
         raise exceptions.CulturalPartnerNotFoundException("Requested cultural partner not found for Adage")
+
+    def get_adage_educational_institutions(self, ansco: str) -> list[AdageEducationalInstitution]:
+        logger.info("Adage has been called at %s", f"{self.base_url}/v1/etablissement-culturel/?ansco={ansco}")
+        if ansco == "6":
+            return [
+                AdageEducationalInstitution(
+                    uai="0470009E",
+                    sigle="COLLEGE",
+                    libelle="DE LA TOUR0",
+                    communeLibelle="PARIS",
+                    courriel="contact+collegelatour@example.com",
+                    telephone="0600000000",
+                    codePostal="75000",
+                )
+            ]
+        raise exceptions.AdageEducationalInstitutionNotFound("Requested educational institution not found for Adage")

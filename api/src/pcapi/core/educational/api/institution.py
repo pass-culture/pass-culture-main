@@ -1,7 +1,12 @@
 import typing
 
+from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
+from pcapi.core.educational.constants import INSTITUTION_TYPES
+from pcapi.core.educational.models import EducationalInstitution
+from pcapi.models import db
 from pcapi.repository import repository
 import pcapi.utils.postal_code as postal_code_utils
 
@@ -57,3 +62,32 @@ def update_educational_institution_data(
     for key, value in institution_data.items():
         setattr(educational_institution, key, value)
     return educational_institution
+
+
+def compare_adage_and_institution(ansco: str) -> None:
+    institutions = educational_models.EducationalInstitution.query.all()
+    adage_institutions = adage_client.get_adage_educational_institutions(ansco=ansco)
+
+    synchronise_adage_and_institution(institutions=institutions, adage_institutions=adage_institutions)
+
+
+def synchronise_adage_and_institution(
+    institutions: list[EducationalInstitution], adage_institutions: list[AdageEducationalInstitution]
+) -> None:
+    adage_institution_dict = {adage_institution.uai: adage_institution for adage_institution in adage_institutions}
+
+    for institution in institutions:
+        if institution.institutionId in adage_institution_dict:
+            institution.isActive = True
+            adage_institution = adage_institution_dict[institution.institutionId]
+
+            institution.name = adage_institution.libelle
+            institution.city = adage_institution.communeLibelle
+            institution.postalCode = adage_institution.codePostal
+            institution.email = adage_institution.courriel
+            institution.phoneNumber = adage_institution.telephone
+            institution.institutionType = INSTITUTION_TYPES.get(adage_institution.sigle, institution.institutionType)
+        else:
+            institution.isActive = False
+        repository.save(institution)
+    db.session.commit()
