@@ -76,7 +76,10 @@ export const serializePostOffer = (
     venueId: formValues.venueId,
     visualDisabilityCompliant:
       formValues.accessibility[AccessiblityEnum.VISUAL],
-    withdrawalDelay: formValues.withdrawalDelay || null,
+    withdrawalDelay:
+      formValues.withdrawalDelay === undefined
+        ? null
+        : formValues.withdrawalDelay,
     withdrawalDetails: formValues.withdrawalDetails || null,
     withdrawalType: formValues.withdrawalType || null,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes || ''),
