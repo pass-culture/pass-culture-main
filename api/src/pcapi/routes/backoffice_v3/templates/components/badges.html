@@ -48,3 +48,19 @@
 {% macro build_user_offerer_badges(user_offerer) %}
     {{  build_badges(user_offerer, "Nouveau", "En attente", "Validé", "Rejeté") }}
 {% endmacro %}
+
+{% macro build_pro_user_badges(pro_user) %}
+    {% if pro_user.proValidationStatus.value == "VALIDATED" %}
+        <span class="badge rounded-pill text-bg-success align-middle">
+            Validé
+        </span>
+    {% elif pro_user.proValidationStatus.value == "PENDING" %}
+        <span class="badge rounded-pill text-bg-warning align-middle">
+            En attente
+        </span>
+    {% elif pro_user.proValidationStatus.value == "NEW" %}
+        <span class="badge rounded-pill text-bg-info align-middle">
+            Nouveau
+        </span>
+    {% endif %}
+{% endmacro %}

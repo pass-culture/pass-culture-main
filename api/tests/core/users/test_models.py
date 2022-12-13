@@ -20,6 +20,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
 from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models import db
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 
 
@@ -285,6 +286,23 @@ class UserTest:
 
         no_name_user = users_factories.UserFactory(firstName="", lastName="")
         assert no_name_user.full_name == ""
+
+    def test_pro_validation_status(self):
+        user = users_factories.UserFactory()
+        assert user.proValidationStatus is None
+
+        offerers_factories.UserOffererFactory(user=user, validationStatus=ValidationStatus.NEW)
+        assert user.proValidationStatus == ValidationStatus.NEW
+
+        offerers_factories.UserOffererFactory(user=user, validationStatus=ValidationStatus.PENDING)
+        assert user.proValidationStatus == ValidationStatus.PENDING
+
+        offerers_factories.UserOffererFactory(user=user, validationStatus=ValidationStatus.VALIDATED)
+        assert user.proValidationStatus == ValidationStatus.VALIDATED
+
+        offerers_factories.UserOffererFactory(user=user, validationStatus=ValidationStatus.NEW)
+        offerers_factories.UserOffererFactory(user=user, validationStatus=ValidationStatus.PENDING)
+        assert user.proValidationStatus == ValidationStatus.VALIDATED
 
 
 class HasAccessTest:
