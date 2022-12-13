@@ -99,9 +99,8 @@ def start_ubble_workflow(user: users_models.User, first_name: str, last_name: st
 
 
 def get_most_relevant_ubble_error(
-    fraud_check: fraud_models.BeneficiaryFraudCheck,
+    reason_codes: list[fraud_models.FraudReasonCode],
 ) -> fraud_models.FraudReasonCode | None:
-    reason_codes = fraud_check.reasonCodes or []
 
     if fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in reason_codes:
         return fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
@@ -125,7 +124,7 @@ def handle_validation_errors(  # type: ignore [no-untyped-def]
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
 ):
-    error_code = get_most_relevant_ubble_error(fraud_check)
+    error_code = get_most_relevant_ubble_error(fraud_check.reasonCodes if fraud_check.reasonCodes else [])
     if error_code:
         transactional_mails.send_subscription_document_error_email(user.email, error_code)
     else:

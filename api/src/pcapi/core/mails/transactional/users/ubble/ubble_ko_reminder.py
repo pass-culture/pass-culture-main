@@ -19,29 +19,41 @@ from . import constants
 logger = logging.getLogger(__name__)
 
 
-def send_ubble_ko_reminder_emails() -> None:
-    users_with_fraud_check = _find_users_that_failed_ubble_check(days_ago=settings.UBBLE_KO_REMINDER_DELAY)
-    for user, fraud_check in users_with_fraud_check:
-        if fraud_check is None:
-            continue
+def send_reminder_emails() -> None:
+    users_with_quick_actions = _find_users_to_remind(
+        days_ago=settings.DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER,
+        reason_codes_filter=[
+            fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
+            fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH,
+            fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,
+        ],
+    )
+    users_with_long_actions = _find_users_to_remind(
+        days_ago=settings.DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER,
+        reason_codes_filter=[
+            fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
+            fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
+        ],
+    )
 
-        reason_code = ubble_subscription.get_most_relevant_ubble_error(fraud_check)
-        if not reason_code:
-            logger.warning(
-                "Could not find reason code for a user who failed ubble check",
+    for user, fraud_check_reason_codes in users_with_quick_actions + users_with_long_actions:
+        relevant_reason_code = ubble_subscription.get_most_relevant_ubble_error(fraud_check_reason_codes)
+        if not relevant_reason_code:
+            logger.error(
+                "Could not find reason code for a user who failed ubble check, to send reminder email",
                 extra={"user_id": user.id},
             )
             continue
 
-        data = _get_ubble_ko_reminder_email_data(reason_code)
-        if not data:
-            logger.warning("Could not find email template for reason code %s", reason_code)
+        email_data = _get_reminder_email_data(relevant_reason_code)
+        if not email_data:
+            logger.error("Could not find reminder email template for reason code %s", relevant_reason_code)
             continue
 
-        mails.send(recipients=[user.email], data=data)
+        mails.send(recipients=[user.email], data=email_data)
 
 
-def _get_ubble_ko_reminder_email_data(code: fraud_models.FraudReasonCode) -> mails_models.TransactionalEmailData | None:
+def _get_reminder_email_data(code: fraud_models.FraudReasonCode) -> mails_models.TransactionalEmailData | None:
     mapping = constants.ubble_error_to_email_mapping.get(code.value)
     if not mapping:
         return None
@@ -53,10 +65,10 @@ def _get_ubble_ko_reminder_email_data(code: fraud_models.FraudReasonCode) -> mai
     return mails_models.TransactionalEmailData(template=template.value)
 
 
-def _find_users_that_failed_ubble_check(
-    days_ago: int = 7,
-) -> list[tuple[users_models.User, fraud_models.BeneficiaryFraudCheck | None]]:
-    users = (
+def _find_users_to_remind(
+    days_ago: int, reason_codes_filter: list[fraud_models.FraudReasonCode]
+) -> list[tuple[users_models.User, list[fraud_models.FraudReasonCode]]]:
+    users: list[users_models.User] = (
         users_models.User.query.join(users_models.User.beneficiaryFraudChecks)
         .filter(
             users_models.User.is_beneficiary == False,
@@ -71,21 +83,30 @@ def _find_users_that_failed_ubble_check(
         .all()
     )
 
-    return [
-        (user, _get_latest_failed_fraud_check(user))
-        for user in users
-        if users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
-        and subscription_api.get_identity_check_subscription_status(user, user.eligibility)
-        == subscription_models.SubscriptionItemStatus.TODO
-    ]
+    users_with_reasons: list[tuple[users_models.User, list[fraud_models.FraudReasonCode]]] = []
+    for user in users:
+        if not (
+            users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
+            and subscription_api.get_identity_check_subscription_status(user, user.eligibility)
+            == subscription_models.SubscriptionItemStatus.TODO
+        ):
+            continue
+        latest_fraud_check_reason_codes = _get_latest_failed_ubble_fraud_check(user).reasonCodes or []
+
+        if set(latest_fraud_check_reason_codes) & set(reason_codes_filter):
+            users_with_reasons.append((user, latest_fraud_check_reason_codes))
+
+    return users_with_reasons
 
 
-def _get_latest_failed_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
+def _get_latest_failed_ubble_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck:
     ubble_ko_checks = [
         check
         for check in user.beneficiaryFraudChecks
         if check.type == fraud_models.FraudCheckType.UBBLE
         and check.status in [fraud_models.FraudCheckStatus.KO, fraud_models.FraudCheckStatus.SUSPICIOUS]
     ]
+    if not ubble_ko_checks:
+        raise ValueError("User has no failed ubble fraud check")
 
-    return max(ubble_ko_checks, key=lambda fraud_check: fraud_check.dateCreated) if ubble_ko_checks else None
+    return max(ubble_ko_checks, key=lambda fraud_check: fraud_check.dateCreated)

@@ -234,7 +234,8 @@ UBBLE_CLIENT_ID = secrets_utils.get("UBBLE_CLIENT_ID", "")
 UBBLE_CLIENT_SECRET = secrets_utils.get("UBBLE_CLIENT_SECRET", "")
 UBBLE_WEBHOOK_SECRET = secrets_utils.get("UBBLE_WEBHOOK_SECRET")
 UBBLE_SUBSCRIPTION_LIMITATION_DAYS = os.environ.get("UBBLE_SUBSCRIPTION_LIMITATION_DAYS", 90)
-UBBLE_KO_REMINDER_DELAY = 7 if IS_PROD else 0
+DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER = 7 if IS_PROD else 0
+DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER = 21 if IS_PROD else 0
 
 # Sandbox users and unit tests default password - overridden by a secret password on cloud environments
 TEST_DEFAULT_PASSWORD = secrets_utils.get("TEST_DEFAULT_PASSWORD", "user@AZERTY123")
