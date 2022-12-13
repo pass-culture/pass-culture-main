@@ -57,7 +57,10 @@ export const serializePatchOffer = (
     formValues.accessibility[AccessiblityEnum.MOTOR],
   name: formValues.name,
   venueId: formValues.venueId,
-  withdrawalDelay: formValues.withdrawalDelay || null,
+  withdrawalDelay:
+    formValues.withdrawalDelay === undefined
+      ? null
+      : formValues.withdrawalDelay,
   withdrawalDetails: formValues.withdrawalDetails || null,
   visualDisabilityCompliant:
     formValues.accessibility &&

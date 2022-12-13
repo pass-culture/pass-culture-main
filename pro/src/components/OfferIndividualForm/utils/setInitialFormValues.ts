@@ -46,7 +46,8 @@ const setInitialFormValues = (
     musicSubType: offer.musicSubType,
     withdrawalDetails:
       offer.withdrawalDetails || FORM_DEFAULT_VALUES['withdrawalDetails'],
-    withdrawalDelay: offer.withdrawalDelay || undefined,
+    withdrawalDelay:
+      offer.withdrawalDelay === null ? undefined : offer.withdrawalDelay,
     withdrawalType: offer.withdrawalType || undefined,
     accessibility: offer.accessibility,
     bookingEmail: offer.bookingEmail,
