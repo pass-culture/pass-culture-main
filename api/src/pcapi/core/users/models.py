@@ -29,6 +29,7 @@ from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
 from pcapi.utils.phone_number import ParsedPhoneNumber
 
@@ -461,6 +462,14 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     @property
     def is_account_suspended_upon_user_request(self) -> bool:
         return self.account_state == AccountState.SUSPENDED_UPON_USER_REQUEST
+
+    @property
+    def proValidationStatus(self) -> ValidationStatus | None:
+        validation_statuses = [user_offerer.validationStatus for user_offerer in self.UserOfferers]
+        for status in (ValidationStatus.VALIDATED, ValidationStatus.PENDING, ValidationStatus.NEW):  # by priority
+            if status in validation_statuses:
+                return status
+        return None
 
     @hybrid_property
     def is_beneficiary(self) -> bool:
