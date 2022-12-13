@@ -6,6 +6,7 @@
   .stock-form {
     display: flex;
     align-items: flex-start;
+    width: 100%;
 
     > *:not(:last-child) {
       margin-right: rem.torem(16px);
