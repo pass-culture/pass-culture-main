@@ -110,6 +110,12 @@ class TransactionalEmail(Enum):
     UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE = models.Template(
         id_prod=823, id_not_prod=115, tags=["jeunes_relance_ubble_ko_video_illisible"], use_priority_queue=False
     )
+    UBBLE_KO_REMINDER_ID_CHECK_EXPIRED = models.Template(
+        id_prod=831, id_not_prod=118, tags=["jeunes_relance_ubble_ko_document_expire"], use_priority_queue=False
+    )
+    UBBLE_KO_REMINDER_ID_CHECK_NOT_SUPPORTED = models.Template(
+        id_prod=825, id_not_prod=119, tags=["jeunes_relance_ubble_ko_document_non_supporte"], use_priority_queue=False
+    )
 
     # PRO EMAIL
 
