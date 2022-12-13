@@ -31,5 +31,5 @@ class AdageClient:
     def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
         raise NotImplementedError()
 
-    def get_adage_educational_institution(self, Ansco: str) -> list[AdageEducationalInstitution]:
+    def get_adage_educational_institutions(self, ansco: str) -> list[AdageEducationalInstitution]:
         raise NotImplementedError()

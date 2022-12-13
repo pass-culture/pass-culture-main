@@ -1,6 +1,7 @@
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
+from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.serialization import venues_serialize
 
@@ -117,3 +118,26 @@ class AdageSpyClient(AdageClient):
             domaineIds="1,11",
             synchroPass=0,
         )
+
+    def get_adage_educational_institutions(self, ansco: str) -> list[AdageEducationalInstitution]:
+        testing.adage_requests.append({"url": f"{self.base_url}/v1/etablissement-culturel/{ansco}", "sent_data": ""})
+        return [
+            AdageEducationalInstitution(
+                uai="0470009E",
+                sigle="COLLEGE",
+                libelle="DE LA TOUR0",
+                communeLibelle="PARIS",
+                courriel="contact+collegelatour@example.com",
+                telephone="0600000000",
+                codePostal="75000",
+            ),
+            AdageEducationalInstitution(
+                uai="0470010E",
+                sigle="UNIVERSITE",
+                libelle="Balamb Garden",
+                communeLibelle="Balamb",
+                courriel="contact+squall@example.com",
+                telephone="0600000000",
+                codePostal="75001",
+            ),
+        ]
