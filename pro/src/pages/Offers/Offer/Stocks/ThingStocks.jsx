@@ -176,114 +176,6 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
     }
   }
 
-  const submitStocks = useCallback(
-    (e, isSavingDraft = false) => {
-      e.preventDefault()
-      if (checkStockIsValid(stock, offer.isEvent, offer.isEducational)) {
-        setEnableSubmitButtonSpinner(true)
-        const stockToCreateOrEdit = {
-          ...createThingStockPayload(stock, offer.venue.departementCode),
-          humanizedId: stock.id,
-        }
-        /* istanbul ignore next: DEBT, TO FIX */
-        const quantityOfActivationCodes = (stock.activationCodes || []).length
-        api
-          .upsertStocks({
-            humanizedOfferId: offer.id,
-            stocks: [stockToCreateOrEdit],
-          })
-          .then(() => {
-            const queryParams = queryParamsFromOfferer(location)
-            let queryString = ''
-            /* istanbul ignore next: DEBT, TO FIX */
-            if (queryParams.structure !== '') {
-              queryString = `?structure=${queryParams.structure}`
-            }
-            /* istanbul ignore next: DEBT, TO FIX */
-            if (queryParams.lieu !== '') {
-              queryString += `&lieu=${queryParams.lieu}`
-            }
-            if (isOfferDraft) {
-              loadStocks()
-              reloadOffer(true)
-              if (quantityOfActivationCodes) {
-                notification.success(
-                  `${quantityOfActivationCodes} ${
-                    /* istanbul ignore next: DEBT, TO FIX */
-                    quantityOfActivationCodes > 1
-                      ? ' Codes d’activation ont été ajoutés'
-                      : ' Code d’activation a été ajouté'
-                  }`
-                )
-              }
-              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                from: OfferBreadcrumbStep.STOCKS,
-                to: isSavingDraft
-                  ? OfferBreadcrumbStep.STOCKS
-                  : OfferBreadcrumbStep.SUMMARY,
-                used: isSavingDraft
-                  ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
-                  : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-                isEdition: !isCreatingOffer,
-                isDraft: true,
-                offerId: offer.id,
-              })
-              notification.success(
-                'Brouillon sauvegardé dans la liste des offres'
-              )
-            } else {
-              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                from: OfferBreadcrumbStep.STOCKS,
-                to: OfferBreadcrumbStep.SUMMARY,
-                used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-                isEdition: true,
-                isDraft: false,
-                offerId: offer.id,
-              })
-              loadStocks()
-              reloadOffer()
-              if (quantityOfActivationCodes) {
-                notification.success(
-                  `${quantityOfActivationCodes} ${
-                    quantityOfActivationCodes > 1
-                      ? ' Codes d’activation ont été ajoutés'
-                      : ' Code d’activation a été ajouté'
-                  }`
-                )
-              } else {
-                notification.success(
-                  'Vos modifications ont bien été enregistrées'
-                )
-              }
-            }
-            if (!isSavingDraft) {
-              history.push(`${summaryStepUrl}${queryString}`)
-            }
-          })
-          .catch(() =>
-            notification.error(
-              'Une ou plusieurs erreurs sont présentes dans le formulaire.'
-            )
-          )
-          .finally(() => {
-            setEnableSubmitButtonSpinner(false)
-          })
-      }
-    },
-    [
-      stock,
-      history,
-      location,
-      offer.id,
-      offer.isEducational,
-      offer.isEvent,
-      isOfferDraft,
-      offer.venue.departementCode,
-      loadStocks,
-      reloadOffer,
-    ]
-  )
-
   if (isLoading) {
     return null
   }
@@ -406,7 +298,6 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
               canSubmit={!(isDisabled || hasNoStock)}
               isDraft={isOfferDraft}
               isSubmiting={enableSubmitButtonSpinner}
-              onSubmit={submitStocks}
               onCancelClick={onCancelClick}
               onSubmitDraft={submitDraft}
             />
