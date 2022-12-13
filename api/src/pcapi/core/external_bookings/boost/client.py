@@ -135,3 +135,6 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         )
         showtime_details = parse_obj_as(boost_serializers.ShowTimeDetails, json_data)
         return showtime_details.data
+
+    def get_movie_poster(self, image_url: str) -> bytes:
+        return boost.get_movie_poster_from_api(image_url)

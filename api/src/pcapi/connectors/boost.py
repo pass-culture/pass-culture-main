@@ -144,6 +144,15 @@ def post_resource(cinema_str_id: str, resource: ResourceBoost, body: BaseModel) 
     return None
 
 
+def get_movie_poster_from_api(image_url: str) -> bytes:
+    api_response = requests.get(image_url)
+    if api_response.status_code != 200:
+        raise BoostAPIException(
+            f"Error getting Boost API movie poster {image_url} with code {api_response.status_code}"
+        )
+    return api_response.content
+
+
 def _check_response_is_ok(response: requests.Response, cinema_api_token: str | None, request_detail: str) -> None:
     if response.status_code >= 400:
         reason = _extract_reason_from_response(response)

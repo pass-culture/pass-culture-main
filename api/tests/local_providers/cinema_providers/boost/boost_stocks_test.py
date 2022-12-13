@@ -1,4 +1,5 @@
 import datetime
+from pathlib import Path
 
 import pytest
 
@@ -11,6 +12,9 @@ from pcapi.core.providers.factories import BoostCinemaProviderPivotFactory
 from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import BoostStocks
+from pcapi.utils.human_ids import humanize
+
+import tests
 
 from . import fixtures
 
@@ -204,3 +208,37 @@ class BoostStocksTest:
         # we still receive numberSeatsForOnlineSale = 96, so we edit our Stock.quantity to match reality
         assert created_stocks[0].quantity == 98
         assert created_stocks[0].dnBookedQuantity == 2
+
+    def should_create_product_with_correct_thumb(self, requests_mock):
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
+        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes?page=1&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
+        )
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/36683?filter_payment_method=external:credit:passculture",
+            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36683_DATA,
+        )
+        file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
+        with open(file_path, "rb") as thumb_file:
+            seagull_poster = thumb_file.read()
+        requests_mock.get(
+            "http://example.com/images/158026.jpg",
+            content=seagull_poster,
+        )
+
+        boost_stocks = BoostStocks(venue_provider=venue_provider)
+        boost_stocks.updateObjects()
+
+        created_products = Product.query.order_by(Product.id).all()
+        assert len(created_products) == 1
+        assert (
+            created_products[0].thumbUrl
+            == f"http://localhost/storage/thumbs/products/{humanize(created_products[0].id)}"
+        )
+        assert created_products[0].thumbCount == 1
