@@ -72,7 +72,6 @@ import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResp
 import type { SirenInfo } from '../models/SirenInfo';
 import type { SiretInfo } from '../models/SiretInfo';
 import type { StockIdResponseModel } from '../models/StockIdResponseModel';
-import type { StockIdsResponseModel } from '../models/StockIdsResponseModel';
 import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
@@ -1551,12 +1550,12 @@ export class DefaultService {
   /**
    * upsert_stocks <POST>
    * @param requestBody
-   * @returns StockIdsResponseModel Created
+   * @returns StocksResponseModel Created
    * @throws ApiError
    */
   public upsertStocks(
     requestBody?: StocksUpsertBodyModel,
-  ): CancelablePromise<StockIdsResponseModel> {
+  ): CancelablePromise<StocksResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/stocks/bulk',

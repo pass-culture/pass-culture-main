@@ -1,5 +1,5 @@
 import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
+import { ApiError, StockResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { STOCK_THING_FORM_DEFAULT_VALUES } from 'components/StockThingForm'
@@ -11,7 +11,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
   it('should send StockCreationBodyModel to api', async () => {
     jest
       .spyOn(api, 'upsertStocks')
-      .mockResolvedValue({ stockIds: [{ id: 'Created_STOCK_ID' }] })
+      .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
     upsertStocksThingAdapter({
       offerId: 'OFFER_ID',
       formValues: {
@@ -40,7 +40,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
   it('should send StockEditionBodyModel to api', async () => {
     jest
       .spyOn(api, 'upsertStocks')
-      .mockResolvedValue({ stockIds: [{ id: 'Created_STOCK_ID' }] })
+      .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
     upsertStocksThingAdapter({
       offerId: 'OFFER_ID',
       formValues: {

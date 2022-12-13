@@ -46,9 +46,9 @@ class Returns201Test:
         assert response.status_code == 201
 
         response_dict = response.json
-        assert len(response_dict["stockIds"]) == len(stock_data["stocks"])
+        assert len(response_dict["stocks"]) == len(stock_data["stocks"])
 
-        created_stock = Stock.query.get(dehumanize(response_dict["stockIds"][0]["id"]))
+        created_stock = Stock.query.get(dehumanize(response_dict["stocks"][0]["id"]))
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert offer.isActive == False
@@ -71,7 +71,7 @@ class Returns201Test:
             "stocks": [{"humanizedId": humanize(existing_stock.id), "price": 20}],
         }
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        created_stock = Stock.query.get(dehumanize(response.json["stockIds"][0]["id"]))
+        created_stock = Stock.query.get(dehumanize(response.json["stocks"][0]["id"]))
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert len(Stock.query.all()) == 1
@@ -108,9 +108,9 @@ class Returns201Test:
         assert response.status_code == 201
 
         response_dict = response.json
-        assert len(response_dict["stockIds"]) == len(stock_data["stocks"])
+        assert len(response_dict["stocks"]) == len(stock_data["stocks"])
 
-        created_stock: Stock = Stock.query.get(dehumanize(response_dict["stockIds"][0]["id"]))
+        created_stock: Stock = Stock.query.get(dehumanize(response_dict["stocks"][0]["id"]))
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert created_stock.quantity == 2  # Same as the activation codes length
@@ -159,9 +159,9 @@ class Returns201Test:
         assert response.status_code == 201
 
         response_dict = response.json
-        assert len(response_dict["stockIds"]) == len(stock_data["stocks"])
+        assert len(response_dict["stocks"]) == len(stock_data["stocks"])
 
-        for idx, result_stock_id in enumerate(response_dict["stockIds"]):
+        for idx, result_stock_id in enumerate(response_dict["stocks"]):
             expected_stock = stock_data["stocks"][idx]
             result_stock = Stock.query.get(dehumanize(result_stock_id["id"]))
             assert result_stock.price == expected_stock["price"]

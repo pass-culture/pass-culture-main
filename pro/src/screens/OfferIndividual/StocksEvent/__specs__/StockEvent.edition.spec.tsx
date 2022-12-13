@@ -11,6 +11,7 @@ import {
   ApiError,
   GetIndividualOfferResponseModel,
   OfferStatus,
+  StockResponseModel,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
@@ -467,9 +468,9 @@ describe('screens:StocksEvent:Edition', () => {
     expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
   })
   it('should save the offer without warning on "Enregistrer les modifications" button click', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'STOCK_ID' }],
-    })
+    jest
+      .spyOn(api, 'upsertStocks')
+      .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
     apiOffer.stocks = [
       {
         ...apiOffer.stocks[0],
@@ -488,12 +489,11 @@ describe('screens:StocksEvent:Edition', () => {
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
   })
   it('should show a warning on "Enregistrer les modifications" button click then save the offer', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'STOCK_ID' }],
-    })
+    jest
+      .spyOn(api, 'upsertStocks')
+      .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
     renderStockEventScreen({ storeOverride })
     await screen.findByRole('heading', { name: /Stock & Prix/ })
-
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })

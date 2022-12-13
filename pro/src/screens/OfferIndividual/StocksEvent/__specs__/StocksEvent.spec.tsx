@@ -7,7 +7,11 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { ApiError, GetIndividualOfferResponseModel } from 'apiClient/v1'
+import {
+  ApiError,
+  GetIndividualOfferResponseModel,
+  StockResponseModel,
+} from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
@@ -166,7 +170,7 @@ describe('screens:StocksEvent', () => {
 
   it('should submit stock and stay in creation mode when click on "Sauvegarder le brouillon"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
     renderStockEventScreen({ props, storeOverride, contextValue })
 
@@ -190,7 +194,7 @@ describe('screens:StocksEvent', () => {
 
   it('should not submit stock if nothing has changed when click on "Étape suivante" and redirect to summary', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
     const stock = {
       id: 'STOCK_ID',
@@ -218,7 +222,7 @@ describe('screens:StocksEvent', () => {
   })
   it('should submit stock form when click on "Étape suivante" (for christmas :)', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
     renderStockEventScreen({ props, storeOverride, contextValue })
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
