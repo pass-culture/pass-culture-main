@@ -131,3 +131,7 @@ class InvalidInterventionArea(Exception):
 
 class NoCollectiveBookingToCancel(Exception):
     pass
+
+
+class AdageEducationalInstitutionNotFound(Exception):
+    pass

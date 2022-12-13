@@ -1,6 +1,7 @@
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
+from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
 from pcapi.routes.serialization import venues_serialize
@@ -42,4 +43,10 @@ def notify_institution_association(data: AdageCollectiveOffer) -> None:
 def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartner:
     backend = import_string(settings.ADAGE_BACKEND)
     result = backend().get_cultural_partner(siret)
+    return result
+
+
+def get_adage_educational_institutions(ansco: str) -> list[AdageEducationalInstitution]:
+    backend = import_string(settings.ADAGE_BACKEND)
+    result = backend().get_adage_educational_institutions(ansco)
     return result

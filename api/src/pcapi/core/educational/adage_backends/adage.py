@@ -190,28 +190,29 @@ class AdageHttpClient(AdageClient):
 
         return parse_obj_as(venues_serialize.AdageCulturalPartner, response_content[0])
 
-    # WORK FROM BORIS
-    def get_adage_educational_institution(self, Ansco: str) -> list[AdageEducationalInstitution]:
-        api_url = f"{self.base_url}/v1/etablissement-scolaire/{Ansco}"
-
-        try:
+    def get_adage_educational_institutions(self, ansco: str) -> list[AdageEducationalInstitution]:
+        template_url = f"{self.base_url}/v1/etablissement-scolaire?ansco={ansco}&page=%s"
+        page = 1
+        institutions = []
+        while True:
+            api_url = template_url % page
             api_response = requests.get(
                 api_url,
                 headers={self.header_key: self.api_key},
             )
-        except ConnectionError as exp:
-            logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise exceptions.AdageException(
-                status_code=502,
-                response_text="Connection Error",
-                message="Cannot establish connection to omogen api",
-            ) from exp
 
-        if api_response.status_code == 404:
-            raise exceptions.CulturalPartnerNotFoundException(
-                "Requested Ansco is not a known cultural partner for Adage"
-            )
-        if api_response.status_code != 200:
-            raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
+            if api_response.status_code == 404:
+                raise exceptions.CulturalPartnerNotFoundException(
+                    "Requested Ansco is not a known cultural partner for Adage"
+                )
+            if api_response.status_code != 200:
+                raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
-        return parse_obj_as(list[AdageEducationalInstitution], api_response.json())
+            response_json = api_response.json()
+            if not response_json:
+                break
+
+            institutions.extend(response_json)
+            page += 1
+
+        return parse_obj_as(list[AdageEducationalInstitution], institutions)
