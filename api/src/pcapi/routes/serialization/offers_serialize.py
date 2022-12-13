@@ -137,17 +137,6 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         extra = "forbid"
 
 
-class OfferResponseIdModel(BaseModel):
-    id: str
-
-    _humanize_id = humanize_field("id")
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-
-
 class PatchOfferPublishBodyModel(BaseModel):
     id: int
     _dehumanize_id = dehumanize_field("id")

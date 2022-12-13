@@ -49,7 +49,6 @@ import type { ListVenueProviderResponse } from '../models/ListVenueProviderRespo
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
 import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
-import type { OfferResponseIdModel } from '../models/OfferResponseIdModel';
 import type { OfferType } from '../models/OfferType';
 import type { PatchAllCollectiveOffersActiveStatusBodyModel } from '../models/PatchAllCollectiveOffersActiveStatusBodyModel';
 import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
@@ -1433,13 +1432,13 @@ export class DefaultService {
    * patch_offer <PATCH>
    * @param offerId
    * @param requestBody
-   * @returns OfferResponseIdModel OK
+   * @returns GetIndividualOfferResponseModel OK
    * @throws ApiError
    */
   public patchOffer(
     offerId: string,
     requestBody?: PatchOfferBodyModel,
-  ): CancelablePromise<OfferResponseIdModel> {
+  ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/offers/{offer_id}',
