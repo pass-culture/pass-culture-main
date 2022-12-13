@@ -151,20 +151,16 @@ class CDSStocksTest:
         stock_providable_info = providable_infos[2]
 
         assert product_providable_info.type == Product
-        assert product_providable_info.id_at_providers == "123"
-        assert product_providable_info.new_id_at_provider == "123"
+        assert product_providable_info.id_at_providers == f"123%{venue_provider.venue.siret}%CDS"
+        assert product_providable_info.new_id_at_provider == f"123%{venue_provider.venue.siret}%CDS"
 
         assert offer_providable_info.type == Offer
-        assert "123%" in offer_providable_info.id_at_providers
-        assert "123%" in offer_providable_info.new_id_at_provider
+        assert offer_providable_info.id_at_providers == f"123%{venue_provider.venue.siret}%CDS"
+        assert offer_providable_info.new_id_at_provider == f"123%{venue_provider.venue.siret}%CDS"
 
         assert stock_providable_info.type == Stock
-        assert "123%" in stock_providable_info.id_at_providers
-        assert "#1" in stock_providable_info.id_at_providers
-        assert "/2022-06-20 11:00:00" in stock_providable_info.id_at_providers
-        assert "123%" in stock_providable_info.new_id_at_provider
-        assert "#1" in stock_providable_info.new_id_at_provider
-        assert "/2022-06-20 11:00:00" in stock_providable_info.new_id_at_provider
+        assert stock_providable_info.id_at_providers == f"123%{venue_provider.venue.siret}%CDS#1/2022-06-20 11:00:00"
+        assert stock_providable_info.new_id_at_provider == f"123%{venue_provider.venue.siret}%CDS#1/2022-06-20 11:00:00"
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
