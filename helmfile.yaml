@@ -24,13 +24,13 @@ environments:
       - chartVersion: 0.17.1
   integration:
     values:
-      - chartVersion: 0.16.2
+      - chartVersion: 0.17.1
   production:
     values:
-      - chartVersion: 0.16.2
+      - chartVersion: 0.17.1
   ops:
     values:
-      - chartVersion: 0.16.0
+      - chartVersion: 0.17.1
   perf:
     values:
-      - chartVersion: 0.16.0
+      - chartVersion: 0.17.1
