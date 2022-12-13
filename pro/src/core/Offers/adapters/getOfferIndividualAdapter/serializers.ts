@@ -159,7 +159,8 @@ export const serializeOfferApi = (
     venueId: apiOffer.venueId,
     venue: serializeVenueApi(apiOffer),
     withdrawalDetails: apiOffer.withdrawalDetails || '',
-    withdrawalDelay: apiOffer.withdrawalDelay || null,
+    withdrawalDelay:
+      apiOffer.withdrawalDelay === undefined ? null : apiOffer.withdrawalDelay,
     withdrawalType: apiOffer.withdrawalType || null,
     image: serializeOfferApiImage(apiOffer),
     accessibility: {
