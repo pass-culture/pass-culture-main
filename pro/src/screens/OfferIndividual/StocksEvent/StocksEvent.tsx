@@ -77,7 +77,17 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       notify.success(getSuccessMessage(mode))
       const response = await getOfferIndividualAdapter(offer.id)
       if (response.isOk) {
-        setOffer && setOffer(response.payload)
+        const updatedOffer = response.payload
+        setOffer && setOffer(updatedOffer)
+        formik.resetForm({
+          values: buildInitialValues({
+            departmentCode: updatedOffer.venue.departmentCode,
+            offerStocks: updatedOffer.stocks,
+            today,
+            lastProviderName: updatedOffer.lastProviderName,
+            offerStatus: updatedOffer.status,
+          }),
+        })
       }
       if (!isSubmittingFromRouteLeavingGuard) {
         navigate(afterSubmitUrl)
@@ -101,20 +111,42 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     setIsClickingFromActionBar(false)
   }
 
-  const onDeleteStock = async (stockValues: IStockEventFormValues) => {
+  const onDeleteStock = async (
+    stockValues: IStockEventFormValues,
+    stockIndex: number
+  ) => {
     const { isDeletable, stockId } = stockValues
-    stockId &&
-      isDeletable &&
-      api
-        .deleteStock(stockId)
-        .then(() => {
-          notify.success('Le stock a été supprimé.')
-        })
-        .catch(() =>
-          notify.error(
-            'Une erreur est survenue lors de la suppression du stock.'
-          )
-        )
+    if (stockId === undefined || !isDeletable) {
+      return
+    }
+    try {
+      await api.deleteStock(stockId)
+      const response = await getOfferIndividualAdapter(offer.id)
+      if (response.isOk) {
+        setOffer && setOffer(response.payload)
+      }
+
+      const formStocks = [...formik.values.stocks]
+
+      // When we delete a stock we must remove it from the initial values
+      // otherwise it will trigger the routeLeavingGuard
+      const initalStocks = [...formik.initialValues.stocks]
+      initalStocks.splice(stockIndex, 1)
+      formik.resetForm({
+        values: { stocks: initalStocks },
+      })
+
+      // Set back possible user change.
+      formStocks.splice(stockIndex, 1)
+      formik.setValues(
+        formStocks.length
+          ? { stocks: formStocks }
+          : { stocks: [STOCK_EVENT_FORM_DEFAULT_VALUES] }
+      )
+      notify.success('Le stock a été supprimé.')
+    } catch {
+      notify.error('Une erreur est survenue lors de la suppression du stock.')
+    }
   }
 
   const today = getLocalDepartementDateTimeFromUtc(
@@ -132,11 +164,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const formik = useFormik<{ stocks: IStockEventFormValues[] }>({
     initialValues,
     onSubmit,
-    // enableReinitialize is needed to reset dirty after submit (and not block after saving a draft)
-    // mostly needed to reinitialize the form after initialValue update and so not submiting duplicated stocks
-    // when clicking multiple times on "Save draft"
     validationSchema: getValidationSchema(),
-    enableReinitialize: true,
   })
 
   const isFormEmpty = () => {
@@ -221,7 +249,9 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       const hasSavedStock = formik.values.stocks.some(
         stock => stock.stockId !== undefined
       )
-      if (hasSavedStock && Object.keys(formik.touched).length === 0) {
+
+      if (hasSavedStock && !formik.dirty) {
+        setIsClickingFromActionBar(false)
         notify.success(getSuccessMessage(mode))
         if (!saveDraft) {
           navigate(
