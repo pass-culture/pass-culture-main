@@ -1,16 +1,12 @@
-from typing import Any
-from typing import Callable
+import datetime
+import typing
 
-from flask import Request
-from flask import Response
-from pydantic import MissingError
-from pydantic import ValidationError
-from pydantic import validator
+import flask
+import pydantic
+import pytz
 
 from pcapi.models.api_errors import ApiErrors
-from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.human_ids import dehumanize_ids_list
-from pcapi.utils.human_ids import humanize
+from pcapi.utils import human_ids
 
 
 def to_camel(string: str) -> str:
@@ -19,10 +15,10 @@ def to_camel(string: str) -> str:
 
 
 def before_handler(
-    request: Request,  # pylint: disable=unused-argument
-    response: Response,  # pylint: disable=unused-argument
-    pydantic_error: ValidationError | None,
-    _: Any,
+    request: flask.Request,  # pylint: disable=unused-argument
+    response: flask.Response,  # pylint: disable=unused-argument
+    pydantic_error: pydantic.ValidationError | None,
+    _: typing.Any,
 ) -> None:
     """Raises an ``ApiErrors` exception if input validation fails.
 
@@ -61,7 +57,7 @@ def humanize_id(id_to_humanize: int | str | None) -> str | None:
     # This is because humanize_id will be called on a int the first time
     # and then on ids already humanized. humanize can't work with string
     if isinstance(id_to_humanize, int):
-        return humanize(id_to_humanize)
+        return human_ids.humanize(id_to_humanize)
 
     return str(id_to_humanize)
 
@@ -73,20 +69,20 @@ def dehumanize_id(id_to_dehumanize: int | str | None) -> int | None:
     # This is because dehumanize_id will be called on a str the first time
     # and then on ids already dehumanized. dehumanize can't work with int
     if isinstance(id_to_dehumanize, str):
-        return dehumanize(id_to_dehumanize)
+        return human_ids.dehumanize(id_to_dehumanize)
 
     return int(id_to_dehumanize)
 
 
 def check_string_is_not_empty(string: str) -> str:
     if not string or string.isspace():
-        raise MissingError()
+        raise pydantic.MissingError()
 
     return string
 
 
 # No functools.partial here as it has no __name__ and threfore is not compatible with pydantic
-def check_string_length_wrapper(length: int) -> Callable:
+def check_string_length_wrapper(length: int) -> typing.Callable:
     def check_string_length(string: str) -> str:
         if string and len(string) > length:
             raise ValueError(f"Le champ doit faire moins de {length} caractères")
@@ -99,28 +95,30 @@ def string_to_boolean(string: str) -> bool | None:
     try:
         return {"true": True, "false": False}[string]
     except KeyError:
-        raise ValidationError("La valeur reçu doit être soit 'true' soit 'false'")  # type: ignore [call-arg]
+        raise pydantic.ValidationError("La valeur reçu doit être soit 'true' soit 'false'")  # type: ignore [call-arg]
 
 
 def humanize_field(field_name: str) -> classmethod:
-    return validator(field_name, pre=True, allow_reuse=True)(humanize_id)
+    return pydantic.validator(field_name, pre=True, allow_reuse=True)(humanize_id)
 
 
 def dehumanize_field(field_name: str) -> classmethod:
-    return validator(field_name, pre=True, allow_reuse=True)(dehumanize_id)
+    return pydantic.validator(field_name, pre=True, allow_reuse=True)(dehumanize_id)
 
 
 def dehumanize_list_field(field_name: str) -> classmethod:
-    return validator(field_name, pre=True, allow_reuse=True)(dehumanize_ids_list)
+    return pydantic.validator(field_name, pre=True, allow_reuse=True)(human_ids.dehumanize_ids_list)
 
 
 def validate_not_empty_string_when_provided(field_name: str) -> classmethod:
-    return validator(field_name, pre=True, allow_reuse=True)(check_string_is_not_empty)
+    return pydantic.validator(field_name, pre=True, allow_reuse=True)(check_string_is_not_empty)
 
 
 def string_to_boolean_field(field_name: str) -> classmethod:
-    return validator(field_name, pre=True, allow_reuse=True)(string_to_boolean)
+    return pydantic.validator(field_name, pre=True, allow_reuse=True)(string_to_boolean)
 
 
 def string_length_validator(field_name: str, *, length: int) -> classmethod:
-    return validator(field_name, pre=False, allow_reuse=True)(check_string_length_wrapper(length=length))
+    return pydantic.validator(field_name, pre=False, allow_reuse=True)(check_string_length_wrapper(length=length))
+
+
