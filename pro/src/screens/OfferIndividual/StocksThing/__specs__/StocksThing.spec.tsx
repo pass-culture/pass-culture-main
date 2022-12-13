@@ -7,7 +7,11 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { ApiError, GetIndividualOfferResponseModel } from 'apiClient/v1'
+import {
+  ApiError,
+  GetIndividualOfferResponseModel,
+  StockResponseModel,
+} from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
@@ -205,7 +209,7 @@ describe('screens:StocksThing', () => {
 
   it('should submit stock and stay in creation mode when click on "Sauvegarder le brouillon"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
     renderStockThingScreen({ props, storeOverride, contextValue })
     const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
@@ -226,7 +230,7 @@ describe('screens:StocksThing', () => {
 
   it('should submit stock form when click on "Étape suivante""', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
     renderStockThingScreen({ props, storeOverride, contextValue })
     const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
@@ -255,7 +259,7 @@ describe('screens:StocksThing', () => {
 
   it('should not submit stock form when click on "Étape précédente"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
     renderStockThingScreen({ props, storeOverride, contextValue })
@@ -301,7 +305,7 @@ describe('screens:StocksThing', () => {
   describe('activation codes', () => {
     it('should submit activation codes and freeze quantity when a csv is provided', async () => {
       jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-        stockIds: [{ id: 'CREATED_STOCK_ID' }],
+        stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
       })
       props.offer = {
         ...(offer as IOfferIndividual),
@@ -366,7 +370,7 @@ describe('screens:StocksThing', () => {
     })
     it('should display an error when activation code file is incorrect', async () => {
       jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-        stockIds: [{ id: 'CREATED_STOCK_ID' }],
+        stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
       })
       props.offer = {
         ...(offer as IOfferIndividual),

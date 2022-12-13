@@ -129,10 +129,6 @@ class StocksUpsertBodyModel(BaseModel):
         return dehumanize_or_raise(self.humanized_offer_id)
 
 
-class StockIdsResponseModel(BaseModel):
-    stockIds: list[StockIdResponseModel]
-
-
 class UpdateVenueStockBodyModel(BaseModel):
     """Available stock quantity for a book"""
 

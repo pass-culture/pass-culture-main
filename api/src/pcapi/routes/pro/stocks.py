@@ -17,7 +17,6 @@ from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import stock_serialize
 from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
-from pcapi.routes.serialization.stock_serialize import StockIdsResponseModel
 from pcapi.routes.serialization.stock_serialize import StockResponseModel
 from pcapi.routes.serialization.stock_serialize import StocksResponseModel
 from pcapi.routes.serialization.stock_serialize import StocksUpsertBodyModel
@@ -48,8 +47,8 @@ def get_stocks(offer_id: str) -> StocksResponseModel:
 
 @private_api.route("/stocks/bulk", methods=["POST"])
 @login_required
-@spectree_serialize(on_success_status=201, response_model=StockIdsResponseModel, api=blueprint.pro_private_schema)
-def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
+@spectree_serialize(on_success_status=201, response_model=StocksResponseModel, api=blueprint.pro_private_schema)
+def upsert_stocks(body: StocksUpsertBodyModel) -> StocksResponseModel:
     try:
         offerer = offerers_repository.get_by_offer_id(body.offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
@@ -92,7 +91,7 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
         )
     offers_api.handle_stocks_edition(body.offer_id, edited_stocks_with_update_info)
 
-    return StockIdsResponseModel(stockIds=[StockIdResponseModel.from_orm(stock) for stock in upserted_stocks])
+    return StocksResponseModel(stocks=[StockResponseModel.from_orm(stock) for stock in upserted_stocks])
 
 
 @private_api.route("/stocks/<stock_id>", methods=["DELETE"])
