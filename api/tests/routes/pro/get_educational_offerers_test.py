@@ -13,7 +13,12 @@ class GetEducationalOfferersTest:
         offerer_1 = offerers_factories.OffererFactory()
         offerer_2 = offerers_factories.OffererFactory()
         not_validated_offerer = offerers_factories.NotValidatedOffererFactory()
-        venue_offerer_1 = offerers_factories.VenueFactory(managingOfferer=offerer_1, collectiveInterventionArea=None)
+        venue_offerer_1 = offerers_factories.VenueFactory(
+            managingOfferer=offerer_1,
+            collectiveInterventionArea=None,
+            collectivePhone="0601020304",
+            collectiveEmail="test@example.com",
+        )
         venue_offerer_2 = offerers_factories.CollectiveVenueFactory(managingOfferer=offerer_2)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_1)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_2)
@@ -43,6 +48,8 @@ class GetEducationalOfferersTest:
                             "visualDisabilityCompliant": venue_offerer_1.visualDisabilityCompliant,
                             "name": venue_offerer_1.name,
                             "collectiveInterventionArea": None,
+                            "collectivePhone": "0601020304",
+                            "collectiveEmail": "test@example.com",
                         }
                     ],
                 },
@@ -63,6 +70,8 @@ class GetEducationalOfferersTest:
                             "visualDisabilityCompliant": venue_offerer_2.visualDisabilityCompliant,
                             "name": venue_offerer_2.name,
                             "collectiveInterventionArea": ["75", "92"],
+                            "collectivePhone": None,
+                            "collectiveEmail": None,
                         }
                     ],
                 },
@@ -119,6 +128,8 @@ class GetEducationalOfferersTest:
                             "visualDisabilityCompliant": venue_offerer_2.visualDisabilityCompliant,
                             "name": venue_offerer_2.name,
                             "collectiveInterventionArea": ["75", "92"],
+                            "collectivePhone": None,
+                            "collectiveEmail": None,
                         }
                     ],
                 },
