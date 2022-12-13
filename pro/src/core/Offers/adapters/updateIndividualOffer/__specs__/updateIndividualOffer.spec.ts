@@ -2,7 +2,11 @@
 import '@testing-library/jest-dom'
 
 import { api } from 'apiClient/api'
-import { PatchOfferBodyModel, WithdrawalTypeEnum } from 'apiClient/v1'
+import {
+  GetIndividualOfferResponseModel,
+  PatchOfferBodyModel,
+  WithdrawalTypeEnum,
+} from 'apiClient/v1'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { IOfferIndividual } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
@@ -84,7 +88,10 @@ describe('updateIndividualOffer', () => {
     const offer = {
       id: offerId,
     } as IOfferIndividual
-    jest.spyOn(api, 'patchOffer').mockResolvedValue({ id: offerId })
+
+    jest
+      .spyOn(api, 'patchOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
 
     updateIndividualOffer({ offer, formValues })
     expect(api.patchOffer).toHaveBeenCalledWith(offerId, expectedBody)
@@ -156,7 +163,9 @@ describe('updateIndividualOffer', () => {
         name: 'provider',
       },
     } as IOfferIndividual
-    jest.spyOn(api, 'patchOffer').mockResolvedValue({ id: offerId })
+    jest
+      .spyOn(api, 'patchOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
 
     updateIndividualOffer({ offer, formValues })
     expect(api.patchOffer).toHaveBeenCalledWith(offerId, expectedBody)

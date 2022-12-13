@@ -119,7 +119,6 @@ export { OfferAddressType } from './models/OfferAddressType';
 export type { OfferDomain } from './models/OfferDomain';
 export type { OffererApiKey } from './models/OffererApiKey';
 export type { OffererStatsResponseModel } from './models/OffererStatsResponseModel';
-export type { OfferResponseIdModel } from './models/OfferResponseIdModel';
 export { OfferStatus } from './models/OfferStatus';
 export { OfferType } from './models/OfferType';
 export type { PatchAllCollectiveOffersActiveStatusBodyModel } from './models/PatchAllCollectiveOffersActiveStatusBodyModel';
