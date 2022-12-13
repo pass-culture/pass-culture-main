@@ -23,7 +23,10 @@ import styles from './StockFormList.module.scss'
 
 interface IStockFormListProps {
   offer: IOfferIndividual
-  onDeleteStock: (stockValues: IStockEventFormValues) => Promise<void>
+  onDeleteStock: (
+    stockValues: IStockEventFormValues,
+    stockIndex: number
+  ) => Promise<void>
 }
 
 const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
@@ -33,7 +36,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
     hideModal: deleteConfirmHide,
   } = useModal()
   const mode = useOfferWizardMode()
-  const [deletingStockData, setDeletingStockDate] = useState<{
+  const [deletingStockData, setDeletingStockData] = useState<{
     deletingStock: IStockEventFormValues
     deletingIndex: number
   } | null>(null)
@@ -64,13 +67,13 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
           <div className={styles['form-list']}>
             {values.stocks.map((stockValues: IStockEventFormValues, index) => (
               <StockEventFormRow
-                key={index}
+                key={`${stockValues.stockId}-${index}`}
                 stockIndex={index}
                 Form={<StockEventForm today={today} stockIndex={index} />}
                 actions={[
                   {
                     callback: async () => {
-                      setDeletingStockDate({
+                      setDeletingStockData({
                         deletingStock: stockValues,
                         deletingIndex: index,
                       })
@@ -78,7 +81,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
                         deleteConfirmShow()
                       } else {
                         arrayHelpers.remove(index)
-                        if (values.stocks.length === 1) {
+                        if (values.stocks.length === 0) {
                           arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)
                         }
                       }
@@ -97,14 +100,11 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
 
           {deleteConfirmVisible && (
             <DialogStockDeleteConfirm
-              onConfirm={() => {
+              onConfirm={async () => {
                 if (deletingStockData !== null) {
                   const { deletingStock, deletingIndex } = deletingStockData
-                  deletingStock.stockId && onDeleteStock(deletingStock)
-                  arrayHelpers.remove(deletingIndex)
-                }
-                if (values.stocks.length === 1) {
-                  arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)
+                  deletingStock.stockId &&
+                    onDeleteStock(deletingStock, deletingIndex)
                 }
                 deleteConfirmHide()
               }}
