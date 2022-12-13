@@ -213,16 +213,18 @@ def patch_all_offers_active_status(
 @private_api.route("/offers/<offer_id>", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.OfferResponseIdModel,
+    response_model=offers_serialize.GetIndividualOfferResponseModel,
     api=blueprint.pro_private_schema,
 )
-def patch_offer(offer_id: str, body: offers_serialize.PatchOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
+def patch_offer(
+    offer_id: str, body: offers_serialize.PatchOfferBodyModel
+) -> offers_serialize.GetIndividualOfferResponseModel:
     offer = rest.load_or_404(Offer, human_id=offer_id)
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
 
-    return offers_serialize.OfferResponseIdModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/offers/thumbnails/", methods=["POST"])
