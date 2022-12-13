@@ -44,7 +44,10 @@ const StockEventItem = ({
           )}
         />
       )}
-      <SummaryLayout.Row title="Prix" description={`${price} €`} />
+      <SummaryLayout.Row
+        title="Prix"
+        description={`${price.toString().replace('.', ',')} €`}
+      />
       {bookingLimitDatetime !== null && (
         <SummaryLayout.Row
           title="Date limite de réservation"

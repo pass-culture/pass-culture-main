@@ -481,7 +481,7 @@ describe('Summary stock section', () => {
           departmentCode: '78',
         },
         {
-          quantity: 10,
+          quantity: null,
           price: 20,
           bookingLimitDatetime: '12/03/2020',
           beginningDatetime: '12/03/2020',
@@ -506,6 +506,7 @@ describe('Summary stock section', () => {
 
       await userEvent.click(displayMore)
       expect(screen.getAllByText(/Date limite de réservation/)).toHaveLength(3)
+      expect(screen.getAllByText(/Illimité/)).toHaveLength(1)
     })
   })
 })
