@@ -62,37 +62,20 @@ class TransactionalEmail(Enum):
     )
     REPORTED_OFFER_BY_USER = models.Template(id_prod=589, id_not_prod=70, tags=["interne_offre_signale"])
     SUBSCRIPTION_FOREIGN_DOCUMENT_ERROR = models.Template(
-        id_prod=385,
-        id_not_prod=40,
-        tags=["jeunes_document_etranger"],
-        use_priority_queue=False,
+        id_prod=385, id_not_prod=40, tags=["jeunes_document_etranger"]
     )
-    SUBSCRIPTION_INFORMATION_ERROR = models.Template(
-        id_prod=410,
-        id_not_prod=43,
-        tags=["jeunes_infos_erronees"],
-        use_priority_queue=False,
-    )
+    SUBSCRIPTION_INFORMATION_ERROR = models.Template(id_prod=410, id_not_prod=43, tags=["jeunes_infos_erronees"])
     SUBSCRIPTION_INVALID_DOCUMENT_ERROR = models.Template(
-        id_prod=384,
-        id_not_prod=39,
-        tags=["jeunes_document_invalide"],
-        use_priority_queue=False,
+        id_prod=384, id_not_prod=39, tags=["jeunes_document_invalide"]
     )
     SUBSCRIPTION_NOT_AUTHENTIC_DOCUMENT_ERROR = models.Template(
-        id_prod=760,
-        id_not_prod=101,
-        tags=["jeunes_document_non_authentique"],
-        use_priority_queue=False,
+        id_prod=760, id_not_prod=101, tags=["jeunes_document_non_authentique"]
     )
     SUBCRIPTION_REJECTED_FOR_DUPLICATE_BENEFICIARY = models.Template(
-        id_prod=80, id_not_prod=77, tags=["jeunes_compte_refuse_doublon"], use_priority_queue=False
+        id_prod=80, id_not_prod=77, tags=["jeunes_compte_refuse_doublon"]
     )
     SUBSCRIPTION_UNREADABLE_DOCUMENT_ERROR = models.Template(
-        id_prod=304,
-        id_not_prod=38,
-        tags=["jeunes_document_illisible"],
-        use_priority_queue=False,
+        id_prod=304, id_not_prod=38, tags=["jeunes_document_illisible"]
     )
     USER_REQUEST_DELETE_ACCOUNT_RECEPTION = models.Template(
         id_prod=511, id_not_prod=54, tags=["reception_demande_suppression_compte_jeune"]
@@ -100,22 +83,19 @@ class TransactionalEmail(Enum):
 
     # UBBLE KO REMINDER
     UBBLE_KO_REMINDER_ID_CHECK_DATA_MATCH = models.Template(
-        id_prod=824, id_not_prod=116, tags=["jeunes_relance_ubble_ko_infos_incorrectes"], use_priority_queue=False
+        id_prod=824, id_not_prod=116, tags=["jeunes_relance_ubble_ko_infos_incorrectes"]
     )
     UBBLE_KO_REMINDER_ID_CHECK_EXPIRED = models.Template(
-        id_prod=831, id_not_prod=118, tags=["jeunes_relance_ubble_ko_document_expire"], use_priority_queue=False
+        id_prod=831, id_not_prod=118, tags=["jeunes_relance_ubble_ko_document_expire"]
     )
     UBBLE_KO_REMINDER_ID_CHECK_NOT_AUTHENTIC = models.Template(
-        id_prod=821,
-        id_not_prod=117,
-        tags=["jeunes_relance_ubble_ko_document_non_authentique"],
-        use_priority_queue=False,
+        id_prod=821, id_not_prod=117, tags=["jeunes_relance_ubble_ko_document_non_authentique"]
     )
     UBBLE_KO_REMINDER_ID_CHECK_NOT_SUPPORTED = models.Template(
-        id_prod=825, id_not_prod=119, tags=["jeunes_relance_ubble_ko_document_non_supporte"], use_priority_queue=False
+        id_prod=825, id_not_prod=119, tags=["jeunes_relance_ubble_ko_document_non_supporte"]
     )
     UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE = models.Template(
-        id_prod=823, id_not_prod=115, tags=["jeunes_relance_ubble_ko_video_illisible"], use_priority_queue=False
+        id_prod=823, id_not_prod=115, tags=["jeunes_relance_ubble_ko_video_illisible"]
     )
 
     # PRO EMAIL
