@@ -109,6 +109,21 @@ jobs:
           SLACK_CHANNEL: shérif
           SLACK_COLOR: ${{ job.status }}
           SLACK_USERNAME: Github Actions Bot
+
+    coverage:
+      name: "coverage"
+      runs-on: ubuntu-latest
+      needs: read-node-version
+      steps:
+        - uses: actions/checkout@v3
+        - uses: ArtiomTr/jest-coverage-report-action@v2
+              id: coverage
+              with:
+                  output: report-markdown
+            - uses: marocchino/sticky-pull-request-comment@v2
+              with:
+                  message: ${{ steps.coverage.outputs.report }}
+                  test-script: yarn test:unit:ci --coverage --changedSince=master --coverageThreshold='{"global":{"statements":"100","branches":"100","functions":"100","lines":"100"}}'
 #
 #  tests-pro-e2e-tests:
 #    runs-on: ubuntu-latest
