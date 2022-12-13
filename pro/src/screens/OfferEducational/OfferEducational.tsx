@@ -96,6 +96,15 @@ const OfferEducational = ({
         ? initialValues.accessibility.audio
         : venue?.audioDisabilityCompliant
 
+      const email =
+        useOfferForFormValues || !venue?.collectiveEmail
+          ? initialValues.email
+          : venue?.collectiveEmail
+      const phone =
+        useOfferForFormValues || !venue?.collectivePhone
+          ? initialValues.phone
+          : venue?.collectivePhone
+
       const noDisabilityCompliant =
         !visualAccessibility &&
         !mentalAccessibility &&
@@ -118,6 +127,9 @@ const OfferEducational = ({
           ...formik.values.eventAddress,
           venueId: formik.values.venueId,
         },
+        email: email,
+        phone: phone,
+        notificationEmails: [email],
       })
     }
   }, [formik.values.venueId, formik.values.offererId])

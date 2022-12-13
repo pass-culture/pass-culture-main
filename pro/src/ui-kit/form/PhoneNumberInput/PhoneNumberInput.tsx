@@ -73,11 +73,15 @@ const PhoneNumberInput = ({
   }
 
   useEffect(() => {
-    const { inputValue, countryCode: computedCountryCode } =
-      getPhoneNumberInputAndCountryCode(field.value)
-    setCountryCode(computedCountryCode)
-    setPhoneInputValue(inputValue)
-  }, [])
+    try {
+      const { inputValue, countryCode: computedCountryCode } =
+        getPhoneNumberInputAndCountryCode(field.value)
+      setCountryCode(computedCountryCode)
+      setPhoneInputValue(inputValue)
+    } catch (e) {
+      helpers.setError(e as string)
+    }
+  }, [field.value])
 
   return (
     <FieldLayout
