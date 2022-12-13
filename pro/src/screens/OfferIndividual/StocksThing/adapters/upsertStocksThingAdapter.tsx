@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { StockIdResponseModel } from 'apiClient/v1'
+import { StockResponseModel } from 'apiClient/v1'
 import { IStockThingFormValues } from 'components/StockThingForm'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 
@@ -40,9 +40,7 @@ const upsertStocksThingAdapter: TUpdateStocksAdapter = async ({
       isOk: true,
       message: successMessage[mode],
       payload: {
-        stockIds: response.stockIds.map(
-          (stock: StockIdResponseModel) => stock.id
-        ),
+        stockIds: response.stocks.map((stock: StockResponseModel) => stock.id),
       },
     }
   } catch (error) {

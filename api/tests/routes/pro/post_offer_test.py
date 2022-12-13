@@ -30,8 +30,11 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
         offer_id = dehumanize(response.json["id"])
         offer = Offer.query.get(offer_id)
+        response_dict = response.json
         assert offer.isActive == False
-        assert response.json["venueId"] == humanize(venue.id)
+        assert response_dict["venueId"] == humanize(venue.id)
+        assert response_dict["name"] == "Celeste"
+        assert response_dict["nonHumanizedId"] == offer.id
 
     def test_create_event_offer(self, client):
         # Given

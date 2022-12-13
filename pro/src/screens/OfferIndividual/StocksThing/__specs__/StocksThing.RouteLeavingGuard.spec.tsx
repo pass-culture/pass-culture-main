@@ -7,7 +7,10 @@ import { Provider } from 'react-redux'
 import { generatePath, MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import {
+  GetIndividualOfferResponseModel,
+  StockResponseModel,
+} from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   IOfferIndividualContext,
@@ -161,7 +164,7 @@ describe('screens:StocksThing', () => {
 
   it('should not block when submitting stock when clicking on "Sauvegarder le brouillon"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
     renderStockThingScreen({ props, storeOverride, contextValue })
 
@@ -175,7 +178,7 @@ describe('screens:StocksThing', () => {
 
   it('should not block and submit stock form when click on "Étape suivante""', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
     renderStockThingScreen({ props, storeOverride, contextValue })
 
@@ -189,7 +192,7 @@ describe('screens:StocksThing', () => {
 
   it('should not block when going outside and form is not touched', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
     renderStockThingScreen({ props, storeOverride, contextValue })
@@ -201,7 +204,7 @@ describe('screens:StocksThing', () => {
 
   it('should block when clicking on "Étape précédente"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
     renderStockThingScreen({ props, storeOverride, contextValue })
@@ -218,7 +221,7 @@ describe('screens:StocksThing', () => {
 
   it('should track when quitting on "Étape précédente"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
     renderStockThingScreen({ props, storeOverride, contextValue })
@@ -246,7 +249,7 @@ describe('screens:StocksThing', () => {
 
   it('should be able to stay on stock form after click on "Annuler"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
     renderStockThingScreen({ props, storeOverride, contextValue })
@@ -261,7 +264,7 @@ describe('screens:StocksThing', () => {
 
   it('should be able to quit without submitting from RouteLeavingGuard', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
     renderStockThingScreen({ props, storeOverride, contextValue })
@@ -280,7 +283,7 @@ describe('screens:StocksThing', () => {
 
   it('should track when quitting without submit from RouteLeavingGuard', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
     renderStockThingScreen({ props, storeOverride, contextValue })
 
@@ -306,7 +309,7 @@ describe('screens:StocksThing', () => {
 
   it('should be able to submit from RouteLeavingGuard in creation', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
     renderStockThingScreen({
@@ -331,7 +334,7 @@ describe('screens:StocksThing', () => {
 
   it('should be able to submit from RouteLeavingGuard in draft', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
     renderStockThingScreen({
@@ -363,7 +366,7 @@ describe('screens:StocksThing', () => {
 
   it('should be able to submit from RouteLeavingGuard in edition', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
     renderStockThingScreen({
@@ -397,7 +400,7 @@ describe('screens:StocksThing', () => {
 
   it('should be able to submit from Action Bar without Guard after changing price in draft', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stockIds: [{ id: 'STOCK_ID' }],
+      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
     const stock = {
       id: 'STOCK_ID',
