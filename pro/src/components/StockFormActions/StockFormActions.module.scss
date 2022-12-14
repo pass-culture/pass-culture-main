@@ -43,6 +43,8 @@
 .menu-item {
   @include fonts.button;
 
+  width: rem.torem(240px);
+  background: colors.$white;
   cursor: pointer;
   align-items: center;
   column-gap: rem.torem(4px);
@@ -79,10 +81,11 @@
   }
 }
 
-.menu-list[data-reach-menu-list] {
+.menu-list[data-reach-popover] {
   padding: rem.torem(12px) 0;
   white-space: pre-wrap;
   width: rem.torem(215px);
+  background: colors.$white;
 
   .menu-item {
     &:hover {
@@ -99,14 +102,6 @@
   }
 }
 
-[data-reach-menu-popover] {
-  z-index: 3;
-  border: rem.torem(1px) solid #f1f1f4;
-  box-shadow: 0 rem.torem(3px) rem.torem(4px) rgb(103 104 107 / 10%);
-  border-radius: rem.torem(6px);
-  overflow: hidden;
-}
-
-div > [data-reach-menu-list] {
+div > [data-reach-popover] {
   border: none;
 }
