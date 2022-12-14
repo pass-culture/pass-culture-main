@@ -65,6 +65,16 @@ def _retrieve_venue_from_location(
     return venue
 
 
+def _retrieve_offer(offer_id: int) -> offers_models.Offer | None:
+    return (
+        offers_models.Offer.query.join(offerers_models.Venue)
+        .filter(
+            offers_models.Offer.id == offer_id, offerers_models.Venue.managingOffererId == current_api_key.offererId  # type: ignore[attr-defined]
+        )
+        .first()
+    )
+
+
 def _compute_extra_data(body: serialization.OfferCreationBase) -> dict[str, str]:
     extra_data = {}
     for extra_data_field in serialization.ExtraDataModel.__fields__:
@@ -232,3 +242,38 @@ def post_event_offer(body: serialization.EventOfferCreationBody) -> serializatio
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.OfferResponse.from_orm(created_offer)
+
+
+@blueprint.v1_blueprint.route("/events/<int:event_id>/dates", methods=["POST"])
+@spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG])
+@api_key_required
+def post_event_date(
+    event_id: int, body: serialization.AdditionalDatesCreationBody
+) -> serialization.AdditionalDatesResponseBody:
+    """
+    Add dates to an event offer.
+    """
+    offer = _retrieve_offer(event_id)
+    if not offer:
+        raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
+
+    new_dates: list[offers_models.Stock] = []
+    if body.additional_dates:
+        try:
+            with repository.transaction():
+                for date in body.additional_dates:
+                    new_dates.append(
+                        offers_api.create_stock(
+                            offer=offer,
+                            price=finance_utils.to_euros(date.price),
+                            quantity=date.quantity if date.quantity != "unlimited" else None,
+                            beginning_datetime=date.beginning_datetime,
+                            booking_limit_datetime=date.booking_limit_datetime,
+                        )
+                    )
+        except offers_exceptions.OfferCreationBaseException as error:
+            raise api_errors.ApiErrors(error.errors, status_code=400)
+
+    return serialization.AdditionalDatesResponseBody(
+        additional_dates=[serialization.DateResponseBody.from_orm(new_date) for new_date in new_dates]
+    )
