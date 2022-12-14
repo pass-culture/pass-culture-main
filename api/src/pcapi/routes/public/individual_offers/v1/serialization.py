@@ -204,7 +204,7 @@ BEGINNING_DATETIME_FIELD = pydantic.Field(
 )
 BOOKING_DATETIME_FIELD = pydantic.Field(
     ...,
-    description="The timezone aware datetime after which the offer can no longer be booked. If no value is provided, the beginning datetime is used.",
+    description="The timezone aware datetime after which the offer can no longer be booked.",
     example="2023-01-01T00:00:00+01:00",
 )
 
