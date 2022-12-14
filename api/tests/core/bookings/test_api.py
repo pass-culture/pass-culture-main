@@ -726,7 +726,8 @@ class CancelForFraudTest:
 
 @pytest.mark.usefixtures("db_session")
 def test_mark_as_cancelled():
-    booking = booking_factories.UsedBookingFactory()
+    pricing = finance_factories.PricingFactory(booking__stock__offer__venue__pricing_point="self")
+    booking = pricing.booking
 
     api.mark_as_cancelled(booking)
 
@@ -734,6 +735,7 @@ def test_mark_as_cancelled():
     assert booking.cancellationDate is not None
     assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
     assert booking.status == BookingStatus.CANCELLED
+    assert pricing.status == finance_models.PricingStatus.CANCELLED
 
 
 @pytest.mark.usefixtures("db_session")
