@@ -12,6 +12,7 @@ from pydantic import validator
 
 from pcapi.routes.serialization.dictifier import as_dict
 from pcapi.routes.serialization.serializer import serialize
+from pcapi.serialization import utils as serialization_utils
 
 
 __all__ = ("as_dict", "serialize")
@@ -40,3 +41,10 @@ class BaseModel(PydanticBaseModel):
                             value["title"] = field.type_.__config__.title or field.type_.__name__
                         value["anyOf"] = [{"$ref": value.pop("$ref")}]
                     value["nullable"] = True
+
+
+class ConfiguredBaseModel(BaseModel):
+    class Config:
+        alias_generator = serialization_utils.to_camel
+        allow_population_by_field_name = True
+        orm_mode = True

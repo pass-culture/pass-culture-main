@@ -6,12 +6,14 @@ import pydantic
 import typing_extensions
 
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.finance import utils as finance_utils
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.routes import serialization
 from pcapi.serialization import utils as serialization_utils
-from pcapi.serialization.utils import to_camel
+from pcapi.utils import date as date_utils
 
 
 class StrEnum(str, enum.Enum):
@@ -40,27 +42,21 @@ ShowTypeEnum = StrEnum(  # type: ignore [call-overload]
 )
 
 
-class DisabilityCompliance(serialization.BaseModel):
+class DisabilityCompliance(serialization.ConfiguredBaseModel):
     audio_disability_compliant: bool
     mental_disability_compliant: bool
     motor_disability_compliant: bool
     visual_disability_compliant: bool
 
-    class Config:
-        alias_generator = to_camel
 
-
-class PhysicalLocation(serialization.BaseModel):
+class PhysicalLocation(serialization.ConfiguredBaseModel):
     type: typing.Literal["physical"]
     venue_id: int = pydantic.Field(
         ..., example=1, description="You can get the list of your venues with the route GET /venues"
     )
 
-    class Config:
-        alias_generator = to_camel
 
-
-class DigitalLocation(serialization.BaseModel):
+class DigitalLocation(serialization.ConfiguredBaseModel):
     type: typing.Literal["digital"]
     url: pydantic.HttpUrl = pydantic.Field(
         ...,
@@ -69,7 +65,7 @@ class DigitalLocation(serialization.BaseModel):
     )
 
 
-class ImageBody(serialization.BaseModel):
+class ImageBody(serialization.ConfiguredBaseModel):
     credit: str | None = pydantic.Field(None, description="The image owner or author.")
     file: str = pydantic.Field(
         ...,
@@ -93,7 +89,7 @@ class CategoryRelatedFields(ExtraDataModel):
     subcategory_id: str = pydantic.Field(alias="category")
 
 
-class OfferCreationBase(serialization.BaseModel):
+class OfferCreationBase(serialization.ConfiguredBaseModel):
     accept_double_bookings: bool | None = pydantic.Field(
         None,
         description="If set to true, the user may book the offer for two persons. The second item will be delivered at the same price as the first one. The category must be compatible with this feature.",
@@ -120,9 +116,6 @@ class OfferCreationBase(serialization.BaseModel):
         ..., discriminator="type", description="The location where the offer will be available or will take place."
     )
     name: str = pydantic.Field(description="The offer title", example="Le Petit Prince", max_length=90)
-
-    class Config:
-        alias_generator = to_camel
 
 
 PRODUCT_SELECTABLE_SUBCATEGORIES = [
@@ -169,10 +162,17 @@ else:
         pydantic.Field(discriminator="subcategory_id"),
     ]
 
+PRICE_FIELD = pydantic.Field(..., description="The offer price in euro cents.", example=1000)
+QUANTITY_FIELD = pydantic.Field(
+    ...,
+    description="The quantity of items allocated to pass Culture. Value 'unlimited' is used for infinite items.",
+    example=10,
+)
 
-class BaseStockBody(serialization.BaseModel):
-    price: pydantic.StrictInt = pydantic.Field(..., description="The offer price in euro cents.", example=1000)
-    quantity: pydantic.StrictInt | typing.Literal["unlimited"]
+
+class BaseStockCreationBody(serialization.ConfiguredBaseModel):
+    price: pydantic.StrictInt = PRICE_FIELD
+    quantity: pydantic.StrictInt | typing.Literal["unlimited"] = QUANTITY_FIELD
 
     @pydantic.validator("price")
     def price_must_be_positive(cls, value: int) -> int:
@@ -186,11 +186,8 @@ class BaseStockBody(serialization.BaseModel):
             raise ValueError("The value must be positive")
         return quantity
 
-    class Config:
-        alias_generator = to_camel
 
-
-class StockBody(BaseStockBody):
+class StockCreationBody(BaseStockCreationBody):
     booking_limit_datetime: datetime.datetime | None = pydantic.Field(
         None,
         description="The timezone aware datetime after which the offer can no longer be booked.",
@@ -200,17 +197,21 @@ class StockBody(BaseStockBody):
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
 
 
-class DateBody(BaseStockBody):
-    beginning_datetime: datetime.datetime = pydantic.Field(
-        ...,
-        description="The timezone aware datetime of the event.",
-        example="2023-01-02T00:00:00+01:00",
-    )
-    booking_limit_datetime: datetime.datetime = pydantic.Field(
-        ...,
-        description="The timezone aware datetime after which the offer can no longer be booked. If no value is provided, the beginning datetime is used.",
-        example="2023-01-01T00:00:00+01:00",
-    )
+BEGINNING_DATETIME_FIELD = pydantic.Field(
+    ...,
+    description="The timezone aware datetime of the event.",
+    example="2023-01-02T00:00:00+01:00",
+)
+BOOKING_DATETIME_FIELD = pydantic.Field(
+    ...,
+    description="The timezone aware datetime after which the offer can no longer be booked. If no value is provided, the beginning datetime is used.",
+    example="2023-01-01T00:00:00+01:00",
+)
+
+
+class DateCreationBody(BaseStockCreationBody):
+    beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
+    booking_limit_datetime: datetime.datetime = BOOKING_DATETIME_FIELD
 
     _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
@@ -220,7 +221,7 @@ ON_SITE_MINUTES_BEFORE_EVENT = typing.Literal[0, 15, 30, 60, 120, 240, 1440, 288
 BY_EMAIL_DAYS_BEFORE_EVENT = typing.Literal[1, 2, 3, 4, 5, 6, 7]
 
 
-class OnSiteCollectionDetails(serialization.BaseModel):
+class OnSiteCollectionDetails(serialization.ConfiguredBaseModel):
     minutesBeforeEvent: ON_SITE_MINUTES_BEFORE_EVENT = pydantic.Field(
         ...,
         description="The number of minutes before the event when the ticket may be collected. Only some values are accepted (between 0 minutes and 48 hours).",
@@ -229,7 +230,7 @@ class OnSiteCollectionDetails(serialization.BaseModel):
     way: typing.Literal["on_site"]
 
 
-class SentByEmailDetails(serialization.BaseModel):
+class SentByEmailDetails(serialization.ConfiguredBaseModel):
     daysBeforeEvent: BY_EMAIL_DAYS_BEFORE_EVENT = pydantic.Field(
         ...,
         description="The number of days before the event when the ticket will be sent. Only some values are accepted (1 to 7).",
@@ -240,14 +241,14 @@ class SentByEmailDetails(serialization.BaseModel):
 
 class ProductOfferCreationBody(OfferCreationBase):
     category_related_fields: product_category_fields
-    stock: StockBody | None
+    stock: StockCreationBody | None
 
 
 class EventOfferCreationBody(OfferCreationBase):
     category_related_fields: event_category_fields
-    dates: typing.List[DateBody] | None = pydantic.Field(
+    dates: typing.List[DateCreationBody] | None = pydantic.Field(
         None,
-        description="The dates of your event. If there are different prices and quantity for the same date, you should add several date objects",
+        description="The dates of your event. If there are different prices and quantity for the same date, you must add several date objects",
     )
     event_duration: int | None = pydantic.Field(description="The event duration in minutes", example=60)
     ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = pydantic.Field(
@@ -257,12 +258,42 @@ class EventOfferCreationBody(OfferCreationBase):
     )
 
 
-class OfferResponse(serialization.BaseModel):
+class AdditionalDatesCreationBody(serialization.ConfiguredBaseModel):
+    additional_dates: typing.List[DateCreationBody] | None = pydantic.Field(
+        None,
+        description="The dates of your event. If there are different prices and quantity for the same date, you must add several date objects",
+    )
+
+
+class BaseStockResponseBody(serialization.ConfiguredBaseModel):
+    price: pydantic.StrictInt = PRICE_FIELD
+    quantity: pydantic.StrictInt | typing.Literal["unlimited"] = QUANTITY_FIELD
+
+
+class DateResponseBody(BaseStockResponseBody):
+    id: int
+    beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
+    booking_limit_datetime: datetime.datetime = BOOKING_DATETIME_FIELD
+
+    class Config:
+        json_encoders = {datetime: date_utils.format_into_utc_date}
+
+    @classmethod
+    def from_orm(cls, date_stock: offers_models.Stock) -> "DateResponseBody":
+        return cls(
+            id=date_stock.id,
+            beginning_datetime=date_stock.beginningDatetime,
+            booking_limit_datetime=date_stock.bookingLimitDatetime,
+            price=finance_utils.to_eurocents(date_stock.price),
+            quantity=date_stock.quantity if date_stock.quantity is not None else "unlimited",
+        )
+
+
+class AdditionalDatesResponseBody(serialization.ConfiguredBaseModel):
+    additional_dates: typing.List[DateResponseBody] | None = pydantic.Field(None, description="The new dates created.")
+
+
+class OfferResponse(serialization.ConfiguredBaseModel):
     id: int
     name: str
     description: str | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
