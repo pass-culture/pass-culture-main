@@ -160,6 +160,7 @@ filterwarnings = [
     # which emits a deprecation warnings with setuptools >=59.6.0. Remove this when we update or remove those
     # dependencies.
     "ignore:distutils Version classes are deprecated. Use packaging.version instead.:DeprecationWarning",
+    "ignore:The distutils package is deprecated and slated for removal in Python 3.12. Use setuptools or check PEP 632 for potential alternatives:DeprecationWarning",
     # FIXME (jsdupuis, 2022-04-25): flask_admin validators uses tuples for flags (eg. field_flags = ('unique', )),
     # which emits deprecation warnings in wtforms >=3.0.0a1.
     # Remove this when we remove flask_admin

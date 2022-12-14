@@ -24,7 +24,8 @@
     ],
     "distinct": true,
     "unretrievableAttributes": [
-        "offer.last30DaysBookings"
+        "offer.last30DaysBookings",
+        "offer.last30DaysBookingsRange"
     ],
     "optionalWords": null,
     "queryLanguages": [
@@ -40,7 +41,7 @@
         "filterOnly(offer.isEvent)",
         "filterOnly(offer.isForbiddenToUnderage)",
         "filterOnly(offer.isThing)",
-        "filterOnly(offer.last30DaysBookings)",
+        "filterOnly(offer.last30DaysBookingsRange)",
         "filterOnly(offer.movieGenres)",
         "filterOnly(offer.musicType)",
         "filterOnly(offer.prices)",
@@ -74,6 +75,7 @@
         "custom"
     ],
     "customRanking": [
+        "desc(offer.last30DaysBookings)",
         "desc(offer.rankingWeight)",
         "desc(offer.isEvent)"
     ],

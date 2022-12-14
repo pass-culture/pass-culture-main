@@ -19,11 +19,7 @@ from pcapi.utils.human_ids import humanize
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@override_settings(
-    ALGOLIA_LAST_30_DAYS_BOOKINGS_LOW_THRESHOLD=1,
-    ALGOLIA_LAST_30_DAYS_BOOKINGS_MEDIUM_THRESHOLD=2,
-    ALGOLIA_LAST_30_DAYS_BOOKINGS_HIGH_THRESHOLD=3,
-)
+@override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
 def test_serialize_offer():
     offer = offers_factories.OfferFactory(
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
@@ -61,7 +57,8 @@ def test_serialize_offer():
             "isEvent": False,
             "isForbiddenToUnderage": offer.is_forbidden_to_underage,
             "isThing": True,
-            "last30DaysBookings": None,
+            "last30DaysBookings": 0,
+            "last30DaysBookingsRange": algolia.Last30DaysBookingsRange.VERY_LOW.value,
             "movieGenres": None,
             "musicType": None,
             "name": "Titre formidable",
@@ -127,19 +124,16 @@ def test_serialize_offer_extra_data(
     assert serialized["offer"]["bookMacroSection"] == expected_macro_section
 
 
-@override_settings(
-    ALGOLIA_LAST_30_DAYS_BOOKINGS_LOW_THRESHOLD=1,
-    ALGOLIA_LAST_30_DAYS_BOOKINGS_MEDIUM_THRESHOLD=2,
-    ALGOLIA_LAST_30_DAYS_BOOKINGS_HIGH_THRESHOLD=3,
-)
+@override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
 @pytest.mark.parametrize(
     "bookings_number, expected_range",
     (
-        (0, None),
+        (0, algolia.Last30DaysBookingsRange.VERY_LOW.value),
         (1, algolia.Last30DaysBookingsRange.LOW.value),
         (2, algolia.Last30DaysBookingsRange.MEDIUM.value),
         (3, algolia.Last30DaysBookingsRange.HIGH.value),
-        (4, algolia.Last30DaysBookingsRange.HIGH.value),
+        (4, algolia.Last30DaysBookingsRange.VERY_HIGH.value),
+        (5, algolia.Last30DaysBookingsRange.VERY_HIGH.value),
     ),
 )
 def test_index_last_30_days_bookings(app, bookings_number, expected_range):
@@ -150,7 +144,8 @@ def test_index_last_30_days_bookings(app, bookings_number, expected_range):
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, bookings_number)
 
     # then
-    assert serialized["offer"]["last30DaysBookings"] == expected_range
+    assert serialized["offer"]["last30DaysBookings"] == bookings_number
+    assert serialized["offer"]["last30DaysBookingsRange"] == expected_range
 
 
 def test_serialize_offer_event():
