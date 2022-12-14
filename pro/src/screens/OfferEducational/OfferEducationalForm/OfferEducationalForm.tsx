@@ -63,9 +63,6 @@ const OfferEducationalForm = ({
   const [isEligible, setIsEligible] = useState<boolean>()
 
   const { values } = useFormikContext<IOfferEducationalFormValues>()
-  const isCollectiveImageEnabled = useActiveFeature(
-    'WIP_IMAGE_COLLECTIVE_OFFER'
-  )
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   useScrollToFirstErrorAfterSubmit()
@@ -142,13 +139,11 @@ const OfferEducationalForm = ({
             domainsOptions={domainsOptions}
             disableForm={mode === Mode.READ_ONLY}
           />
-          {isCollectiveImageEnabled && (
-            <FormImageUploader
-              onImageDelete={onImageDelete}
-              onImageUpload={onImageUpload}
-              imageOffer={imageOffer}
-            />
-          )}
+          <FormImageUploader
+            onImageDelete={onImageDelete}
+            onImageUpload={onImageUpload}
+            imageOffer={imageOffer}
+          />
           <FormPracticalInformation
             currentOfferer={currentOfferer}
             venuesOptions={venuesOptions}
