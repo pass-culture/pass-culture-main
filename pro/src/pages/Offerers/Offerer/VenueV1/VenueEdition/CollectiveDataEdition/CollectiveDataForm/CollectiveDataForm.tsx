@@ -15,6 +15,7 @@ import {
   TextArea,
   TextInput,
 } from 'ui-kit'
+import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import editVenueCollectiveDataAdapter from '../adapters/editVenueCollectiveDataAdapter'
 import RouteLeavingGuardVenueCollectiveDataEdition from '../RouteLeavingGuardVenueCollectiveDataEdition'
@@ -207,12 +208,12 @@ const CollectiveDataForm = ({
           </FormLayout.Row>
           <div className={styles.section}>Contact pour les enseignants</div>
           <FormLayout.Row>
-            <TextInput
+            <PhoneNumberInput
               name="collectivePhone"
               label="Téléphone :"
-              placeholder="0612345678"
               inline
-              className={styles.row}
+              spaceBetween
+              width={618}
             />
           </FormLayout.Row>
           <FormLayout.Row>

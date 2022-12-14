@@ -15,6 +15,9 @@ export interface PhoneNumberInputProps {
   label?: string
   disabled?: boolean
   isOptional?: boolean
+  inline?: boolean
+  width?: number
+  spaceBetween?: boolean
 }
 
 const PhoneNumberInput = ({
@@ -22,6 +25,9 @@ const PhoneNumberInput = ({
   label = 'Téléphone',
   disabled,
   isOptional = false,
+  inline = false,
+  width,
+  spaceBetween = false,
 }: PhoneNumberInputProps) => {
   const [field, meta, helpers] = useField({ name })
 
@@ -90,6 +96,9 @@ const PhoneNumberInput = ({
       isOptional={isOptional}
       showError={meta.touched && !!meta.error}
       error={meta.error}
+      inline={inline}
+      width={width}
+      spaceBetween={spaceBetween}
     >
       <div className={styles['phone-number-input-wrapper']}>
         <CodeCountrySelect
