@@ -5,6 +5,7 @@ import typing
 import flask
 from pydantic import EmailStr
 from pydantic import Field
+from pydantic import root_validator
 from pydantic import validator
 from pydantic.types import constr
 
@@ -388,7 +389,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     name: str
     booking_emails: list[str]
     description: str
-    domains: list[int]
+    domains: list[int] | None
     duration_minutes: int | None
     audio_disability_compliant: bool = False
     mental_disability_compliant: bool = False
@@ -407,26 +408,22 @@ class PostCollectiveOfferBodyModel(BaseModel):
         check_offer_name_length_is_valid(name)
         return name
 
-    @validator("domains", pre=True)
-    def validate_domains(
-        cls,
-        domains: list[str],
-    ) -> list[str]:
-        if len(domains) == 0:
+    @root_validator
+    def validate_domains(cls, values: dict) -> dict:
+        domains = values.get("domains")
+        is_from_template = bool(values.get("template_id", None))
+        if not domains and not is_from_template:
             raise ValueError("domains must have at least one value")
+        return values
 
-        return domains
-
-    @validator("intervention_area")
-    def validate_intervention_area(
-        cls,
-        intervention_area: list[str] | None,
-        values: dict,
-    ) -> list[str] | None:
-        if not is_intervention_area_valid(intervention_area, values.get("offer_venue", None)):
+    @root_validator
+    def validate_intervention_area(cls, values: dict) -> dict:
+        intervention_area = values.get("intervention_area", None)
+        is_from_template = bool(values.get("template_id", None))
+        offer_venue = values.get("offer_venue", None)
+        if not is_intervention_area_valid(intervention_area, offer_venue) and not is_from_template:
             raise ValueError("intervention_area must have at least one value")
-
-        return intervention_area
+        return values
 
     class Config:
         alias_generator = to_camel

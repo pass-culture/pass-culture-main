@@ -213,9 +213,14 @@ def edit_collective_offer(
             {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
             status_code=404,
         )
-    else:
-        offer = educational_api_offer.get_collective_offer_by_id(dehumanized_id)
-        return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+
+    offer = educational_api_offer.get_collective_offer_by_id(dehumanized_id)
+    if offer.template and (not offer.template.domains or not offer.template.interventionArea):
+        offers_api.update_collective_offer_template(
+            offer_id=offer.template.id,
+            new_values={"domains": [domain.id for domain in offer.domains], "interventionArea": offer.interventionArea},
+        )
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/collective/offers-template/<offer_id>/", methods=["POST"])

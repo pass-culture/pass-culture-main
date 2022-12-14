@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import CollectiveOfferFactory
+from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.factories import EducationalDomainFactory
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
@@ -158,6 +159,30 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert offer.interventionArea == []
+
+    def test_patch_collective_offer_update_legacy_template(self, client):
+        # Given
+        template = CollectiveOfferTemplateFactory(domains=[], interventionArea=[])
+        offer = CollectiveOfferFactory(templateId=template.id)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        domain = EducationalDomainFactory(name="Architecture")
+
+        # When
+        data = {
+            "domains": [domain.id],
+            "interventionArea": ["01", "2A"],
+        }
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 200
+        assert template.domains == [domain]
+        assert template.interventionArea == ["01", "2A"]
 
 
 class Returns400Test:
