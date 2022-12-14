@@ -296,6 +296,11 @@ describe('screen | VenueForm', () => {
             '/accueil?success'
           )
         })
+        await waitFor(() => {
+          expect(
+            screen.queryByText('Vos modifications ont bien été enregistrées')
+          ).not.toBeInTheDocument()
+        })
       })
     })
 
@@ -316,6 +321,11 @@ describe('screen | VenueForm', () => {
 
       await waitFor(() => {
         expect(history.location.pathname).toMatch(/\bstructures\b/)
+      })
+      await waitFor(() => {
+        expect(
+          screen.getByText('Vos modifications ont bien été enregistrées')
+        ).toBeInTheDocument()
       })
     })
 
