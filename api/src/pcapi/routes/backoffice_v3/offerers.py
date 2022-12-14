@@ -289,6 +289,8 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
     next_page = partial(url_for, ".list_offerers_to_validate", **form.data)
     next_pages_urls = search_utils.pagination_links(next_page, int(form.data["page"]), paginated_offerers.pages)
 
+    form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
+
     return render_template(
         "offerer/validation.html",
         rows=paginated_offerers,
@@ -424,6 +426,8 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
 
     next_page = partial(url_for, ".list_offerers_attachments_to_validate", **form.data)
     next_pages_urls = search_utils.pagination_links(next_page, int(form.data["page"]), paginated_users_offerers.pages)
+
+    form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
 
     return render_template(
         "offerer/user_offerer_validation.html",

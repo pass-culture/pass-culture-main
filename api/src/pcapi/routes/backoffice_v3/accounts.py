@@ -71,6 +71,8 @@ def search_public_accounts() -> utils.BackofficeResponse:
     paginated_rows = fetch_rows(search_model)
     next_pages_urls = search_utils.pagination_links(next_page, search_model.page, paginated_rows.pages)
 
+    form.page.data = 1  # Reset to first page when form is submitted ("Chercher" clicked)
+
     return render_template(
         "accounts/search_result.html",
         dst=url_for(".search_public_accounts"),
