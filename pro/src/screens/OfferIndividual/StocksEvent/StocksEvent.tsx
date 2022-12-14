@@ -107,7 +107,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors({ stocks: payload.errors })
     }
-    setShouldBlock(true)
   }
 
   const onDeleteStock = async (
@@ -186,15 +185,9 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     ({ saveDraft = false } = {}) =>
     async () => {
       setShouldBlock(false)
-      if (Object.keys(formik.errors).length !== 0) {
-        /* istanbul ignore next: DEBT, TO FIX */
-        setShouldBlock(true)
-      }
-
       // When saving draft with an empty form
       // we display a success notification even if nothing is done
       if (saveDraft && isFormEmpty()) {
-        setShouldBlock(true)
         notify.success('Brouillon sauvegardé dans la liste des offres')
         return
       }
@@ -250,7 +243,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       )
 
       if (hasSavedStock && !formik.dirty) {
-        setShouldBlock(true)
         notify.success(getSuccessMessage(mode))
         if (!saveDraft) {
           navigate(
@@ -263,9 +255,11 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
             })
           )
         }
-        setShouldBlock(true)
       } else {
         await formik.submitForm()
+      }
+      if (!formik.isValid) {
+        setShouldBlock(true)
       }
     }
 
