@@ -26,7 +26,7 @@
                 <td>{{ event.type }}</td>
                 <td>{{ event.date | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
                 <td class="px-4 text-break">
-                    {% if event.accountName and is_user_offerer_action_type(event) %}
+                    {% if event.accountName and event.accountId is not none and is_user_offerer_action_type(event) %}
                         <a href="{{ url_for("backoffice_v3_web.pro_user.get", user_id=event.accountId) }}">
                             <p>{{ event.accountName | empty_string_if_null }} - {{ event.accountId }}</p>
                         </a>
@@ -37,7 +37,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    {% if is_offerer_new_action_type(event) %}
+                    {% if is_offerer_new_action_type(event) and event.authorId is not none %}
                         <a href="{{ url_for("backoffice_v3_web.pro_user.get", user_id=event.authorId) }}">
                             <p>{{ event.authorName | empty_string_if_null }} - {{ event.authorId }}</p>
                         </a>
