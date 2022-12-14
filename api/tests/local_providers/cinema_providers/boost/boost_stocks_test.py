@@ -54,18 +54,16 @@ class BoostStocksTest:
         stock_providable_info = providable_infos[2]
 
         assert product_providable_info.type == Product
-        assert product_providable_info.id_at_providers == "207"
-        assert product_providable_info.new_id_at_provider == "207"
+        assert product_providable_info.id_at_providers == f"207%{venue_provider.venue.id}%Boost"
+        assert product_providable_info.new_id_at_provider == f"207%{venue_provider.venue.id}%Boost"
 
         assert offer_providable_info.type == Offer
-        assert "207%" in offer_providable_info.id_at_providers
-        assert "207%" in offer_providable_info.new_id_at_provider
+        assert offer_providable_info.id_at_providers == f"207%{venue_provider.venue.id}%Boost"
+        assert offer_providable_info.new_id_at_provider == f"207%{venue_provider.venue.id}%Boost"
 
         assert stock_providable_info.type == Stock
-        assert "207%" in stock_providable_info.id_at_providers
-        assert "#36683" in stock_providable_info.id_at_providers
-        assert "207%" in stock_providable_info.new_id_at_provider
-        assert "#36683" in stock_providable_info.new_id_at_provider
+        assert stock_providable_info.id_at_providers == f"207%{venue_provider.venue.id}%Boost#36683"
+        assert stock_providable_info.new_id_at_provider == f"207%{venue_provider.venue.id}%Boost#36683"
 
     def should_fill_offer_and_product_and_stock_informations_for_each_movie(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")

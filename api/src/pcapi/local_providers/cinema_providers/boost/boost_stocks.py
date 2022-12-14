@@ -41,15 +41,18 @@ class BoostStocks(LocalProvider):
                 return []
 
         providable_information_list = []
-
+        # The Product ID must be unique
+        provider_movie_unique_id = _build_movie_uuid(self.showtime_details.film.id, self.venue)
         product_providable_info = self.create_providable_info(
-            Product, str(self.showtime_details.film.id), datetime.utcnow(), str(self.showtime_details.film.id)
+            pc_object=Product,
+            id_at_providers=provider_movie_unique_id,
+            date_modified_at_provider=datetime.utcnow(),
+            new_id_at_provider=provider_movie_unique_id,
         )
         providable_information_list.append(product_providable_info)
 
-        venue_movie_unique_id = _build_movie_uuid(self.showtime_details.film.id, self.venue)
         offer_providable_info = self.create_providable_info(
-            Offer, venue_movie_unique_id, datetime.utcnow(), venue_movie_unique_id
+            Offer, provider_movie_unique_id, datetime.utcnow(), provider_movie_unique_id
         )
         providable_information_list.append(offer_providable_info)
 
@@ -174,7 +177,7 @@ def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str) -> str:
 
 
 def _build_movie_uuid(film_id: int, venue: Venue) -> str:
-    return f"{film_id}%{venue.id}"
+    return f"{film_id}%{venue.id}%Boost"
 
 
 def _build_stock_uuid(film_id: int, venue: Venue, showtime_id: int) -> str:
