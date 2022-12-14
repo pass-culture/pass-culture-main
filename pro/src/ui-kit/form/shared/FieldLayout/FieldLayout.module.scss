@@ -23,13 +23,17 @@
     @include fonts.caption;
   }
 
+  &-space-between {
+    justify-content: space-between;
+  } 
+
   &-inline {
     display: flex;
 
     .field-layout-content {
       width: 100%;
     }
-
+  
     /*
     * When label and input are inline, we need to add margin
     * bottom to the label in order to align label and input,
