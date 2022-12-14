@@ -208,7 +208,10 @@ def update_user_information(
     if civility is not None:
         user.civility = civility
     if id_piece_number is not None:
-        user.idPieceNumber = fraud_api.format_id_piece_number(id_piece_number)
+        if id_piece_number.strip() == "":
+            user.idPieceNumber = None
+        else:
+            user.idPieceNumber = fraud_api.format_id_piece_number(id_piece_number)
     if ine_hash is not None:
         user.ineHash = ine_hash
     if married_name is not None:
