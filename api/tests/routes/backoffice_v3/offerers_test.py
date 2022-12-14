@@ -257,6 +257,35 @@ class GetOffererDetailsTest:
         assert user_offerer.user.email in content
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_get_history_with_missing_authorId(self, authenticated_client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offerer = user_offerer.offerer
+        action = history_factories.ActionHistoryFactory(
+            offerer=offerer, actionType=history_models.ActionType.OFFERER_NEW, authorUser=None
+        )
+
+        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
+
+        # if offerer is not removed from the current session, any get
+        # query won't be executed because of this specific testing
+        # environment. This would tamper the real database queries
+        # count.
+        db.session.expire(offerer)
+
+        # get session (1 query)
+        # get user with profile and permissions (1 query)
+        # get FF (1 query)
+        # get offerer and its users and history (1 query)
+        with assert_num_queries(4):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content = response.data.decode("utf-8")
+
+        assert action.comment in content
+        assert user_offerer.user.email in content
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_no_details_data(self, authenticated_client, offerer):
         url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
 
