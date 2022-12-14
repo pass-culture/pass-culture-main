@@ -11,7 +11,7 @@ export type PostCollectiveOfferTemplateBodyModel = {
   contactEmail: string;
   contactPhone: string;
   description: string;
-  domains: Array<number>;
+  domains?: Array<number> | null;
   durationMinutes?: number | null;
   interventionArea?: Array<string> | null;
   mentalDisabilityCompliant?: boolean;
