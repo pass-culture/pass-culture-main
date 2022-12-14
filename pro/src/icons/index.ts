@@ -106,3 +106,5 @@ export { ReactComponent as TicketCrossIcon } from 'icons/ticket-cross.svg'
 export { ReactComponent as UserIcon } from 'icons/user.svg'
 export { ReactComponent as ValidateIcon } from 'icons/validate.svg'
 export { ReactComponent as VisualDisabilityIcon } from 'icons/visual-disability.svg'
+
+export { ReactComponent as NotificationErrorIcon } from 'icons/ico-notification-error.svg'

@@ -13,10 +13,11 @@ import {
 import { venueCreateOfferLink } from 'core/Venue/utils'
 import { useNewOfferCreationJourney } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
+import { NotificationErrorIcon } from 'icons'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { ReactComponent as IcoPlusCircle } from 'icons/ico-plus-circle.svg'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
-import { ButtonLink } from 'ui-kit'
+import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Icon from 'ui-kit/Icon/Icon'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -207,6 +208,23 @@ const Venue = ({
                   </Link>
                 )}
               </button>
+              {hasNewOfferCreationJourney && initialOpenState && !isVirtual && (
+                <Button
+                  Icon={NotificationErrorIcon}
+                  className="needs-payment-icon"
+                  variant={ButtonVariant.TERNARY}
+                  hasTooltip
+                  onClick={() => {
+                    setIsStatOpen(prev => !prev)
+                    logEvent?.(
+                      VenueEvents.CLICKED_VENUE_ACCORDION_BUTTON,
+                      venueIdTrackParam
+                    )
+                  }}
+                >
+                  Cliquer pour voir les prochaines étapes
+                </Button>
+              )}
             </h3>
             <div className="button-group">
               {hasMissingReimbursementPoint && !isVirtual && (
