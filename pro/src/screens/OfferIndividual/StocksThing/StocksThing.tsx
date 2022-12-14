@@ -33,8 +33,7 @@ import { useNavigate, useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as AddActivationCodeIcon } from 'icons/add-activation-code-light.svg'
-import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
+import { IcoTicketPlusFull, IcoTrashFilled } from 'icons'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
@@ -274,7 +273,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         callback: activationCodeFormShow,
         label: "Ajouter des codes d'activation",
         disabled: isDisabled,
-        Icon: AddActivationCodeIcon,
+        Icon: IcoTicketPlusFull,
       },
     ]
   }
@@ -289,7 +288,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         : onConfirmDeleteStock,
     label: 'Supprimer le stock',
     disabled: cannotDeleteStock,
-    Icon: TrashFilledIcon,
+    Icon: IcoTrashFilled,
   })
 
   if (offer.isDigital) {
