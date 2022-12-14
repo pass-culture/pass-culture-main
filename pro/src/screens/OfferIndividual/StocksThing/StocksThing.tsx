@@ -65,8 +65,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     isSubmittingFromRouteLeavingGuard,
     setIsSubmittingFromRouteLeavingGuard,
   ] = useState<boolean>(false)
-  const [isClickingFromActionBar, setIsClickingFromActionBar] =
-    useState<boolean>(false)
+  const [shouldBlock, setShouldBlock] = useState<boolean>(true)
   const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
@@ -121,7 +120,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors(payload.errors)
     }
-    setIsClickingFromActionBar(false)
+    setShouldBlock(true)
   }
 
   let minQuantity = null
@@ -161,16 +160,16 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     async () => {
-      setIsClickingFromActionBar(true)
+      setShouldBlock(false)
       if (Object.keys(formik.errors).length !== 0) {
         /* istanbul ignore next: DEBT, TO FIX */
-        setIsClickingFromActionBar(false)
+        setShouldBlock(true)
       }
 
       // When saving draft with an empty form
       // we display a success notification even if nothing is done
       if (saveDraft && isFormEmpty()) {
-        setIsClickingFromActionBar(false)
+        setShouldBlock(true)
         notify.success('Brouillon sauvegardé dans la liste des offres')
         return
       }
@@ -192,7 +191,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         if (!saveDraft) {
           navigate(nextStepUrl)
         }
-        setIsClickingFromActionBar(false)
+        setShouldBlock(true)
       } else {
         await formik.submitForm()
       }
@@ -348,7 +347,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         </FormLayout.Section>
       </FormLayout>
       <RouteLeavingGuardOfferIndividual
-        when={formik.dirty && !isClickingFromActionBar}
+        when={formik.dirty && shouldBlock}
         saveForm={formik.submitForm}
         setIsSubmittingFromRouteLeavingGuard={
           setIsSubmittingFromRouteLeavingGuard

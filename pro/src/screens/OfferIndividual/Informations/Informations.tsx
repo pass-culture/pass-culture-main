@@ -73,17 +73,16 @@ const Informations = ({
     isSubmittingFromRouteLeavingGuard,
     setIsSubmittingFromRouteLeavingGuard,
   ] = useState<boolean>(false)
-  const [isClickingFromActionBar, setIsClickingFromActionBar] =
-    useState<boolean>(false)
+  const [shouldBlock, setShouldBlock] = useState<boolean>(true)
 
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     async () => {
-      setIsClickingFromActionBar(true)
+      setShouldBlock(false)
       setIsSubmittingDraft(saveDraft)
       if (Object.keys(formik.errors).length !== 0) {
         /* istanbul ignore next: DEBT, TO FIX */
-        setIsClickingFromActionBar(false)
+        setShouldBlock(true)
         if (saveDraft) {
           notify.error(
             'Des informations sont nécessaires pour sauvegarder le brouillon'
@@ -292,7 +291,7 @@ const Informations = ({
     } else {
       formik.setErrors(payload.errors)
     }
-    setIsClickingFromActionBar(false)
+    setShouldBlock(true)
   }
 
   const formik = useFormik({
@@ -347,7 +346,7 @@ const Informations = ({
         </form>
       </FormLayout>
       <RouteLeavingGuardOfferIndividual
-        when={formik.dirty && !isClickingFromActionBar}
+        when={formik.dirty && shouldBlock}
         saveForm={formik.submitForm}
         setIsSubmittingFromRouteLeavingGuard={
           setIsSubmittingFromRouteLeavingGuard

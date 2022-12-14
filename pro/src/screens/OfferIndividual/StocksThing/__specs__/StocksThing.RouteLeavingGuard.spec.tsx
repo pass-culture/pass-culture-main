@@ -440,7 +440,6 @@ describe('screens:StocksThing', () => {
     await userEvent.type(screen.getByLabelText('Prix'), '20')
 
     await userEvent.click(screen.getByText('Étape suivante'))
-    screen.debug(undefined, 20000)
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
 
     expect(screen.getByText('Next page draft')).toBeInTheDocument()
