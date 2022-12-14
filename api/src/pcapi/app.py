@@ -28,7 +28,7 @@ with app.app_context():
     from pcapi.routes import install_all_routes
     import pcapi.utils.login_manager
 
-    if settings.IS_DEV:
+    if settings.IS_DEV and not settings.IS_RUNNING_TESTS:
         install_local_providers()
 
     install_all_routes(app)
