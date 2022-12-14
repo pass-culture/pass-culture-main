@@ -3,50 +3,58 @@
 {% extends "layouts/connected.html" %}
 
 {% block page %}
-<div class="pt-3 px-5">
-    <div class="d-flex justify-content-between">
-        <h2 class="fw-light">Rattachements à valider</h2>
-    </div>
-    <form action="{{ dst }}" method="GET" class="mb-4 mt-3">
-        <div class="row">
-            <div class="col-10">
-                <div class="input-group mb-3">
+    <div class="pt-3 px-5">
+        <div class="d-flex justify-content-between">
+            <h2 class="fw-light">Rattachements à valider</h2>
+        </div>
+        <form action="{{ dst }}" method="GET" class="mb-4 mt-3">
+            <div class="row">
+                <div class="col-10">
                     {% for form_field in form %}
-                        {% if form_field.type != "HiddenField" %}
+                        {% if form_field.type == "HiddenField" %}
                             {{ form_field }}
                         {% endif %}
                     {% endfor %}
+                    <div class="input-group mb-3">
+                        {% for form_field in form %}
+                            {% if form_field.type != "HiddenField" and form_field.type != "PCSelectMultipleField" and form_field.type != "PCQuerySelectMultipleField" %}
+                                {{ form_field }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="input-group mb-1 ">
+                        {% for form_field in form %}
+                            {% if form_field.type == 'PCSelectMultipleField' or form_field.type == "PCQuerySelectMultipleField" %}
+                                <div class="col-6 p-1"> {{ form_field }}</div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
                 </div>
+                <div class="col-2">
+                    <div class="py-2">
+                        <button type="submit" class="btn btn-primary">Appliquer</button>
+                    </div>
+                </div>
+            </div>
+            <div class="w-100 my-4">
                 {% for form_field in form %}
-                    {% if form_field.type == "HiddenField" %}
-                        {{ form_field }}
-                    {% endif %}
+                    {% for error in form_field.errors %}
+                        <p class="text-warning lead">{{ error }}</p>
+                    {% endfor %}
                 {% endfor %}
             </div>
-            <div class="col-2">
-                <div class="py-2">
-                    <button type="submit" class="btn btn-primary">Appliquer</button>
+        </form>
+        <div>
+            {% if rows and rows.total > 0 %}
+                <div class="d-flex justify-content-between">
+                    <p class="lead num-results">{{ rows.total }} résultat{{ "s" if rows.total > 1 else "" }}</p>
+                    <div>
+                        {% include 'components/search/pagination.html' %}
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="w-100 my-4">
-            {% for form_field in form %}
-                {% for error in form_field.errors %}
-                    <p class="text-warning lead">{{ error }}</p>
-                {% endfor %}
-            {% endfor %}
-        </div>
-    </form>
-    <div>
-        {% if rows and rows.total > 0 %}
-            <div class="d-flex justify-content-between">
-                <p class="lead num-results">{{ rows.total }} résultat{{ "s" if rows.total > 1 else "" }}</p>
-                <div>
-                    {% include 'components/search/pagination.html' %}
-                </div>
-            </div>
-            <table class="table mb-4">
-                <thead>
+                <table class="table mb-4">
+                    <thead>
                     <tr>
                         <th scope="col"></th>
                         <th scope="col">ID Compte pro</th>
@@ -61,15 +69,16 @@
                         <th scope="col">Email Responsable</th>
                         <th scope="col">SIREN</th>
                     </tr>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
                     {% for user_offerer in rows.items %}
                         {% set offerer = user_offerer.offerer %}
                         {% set owner = offerer.first_user %}
                         <tr>
                             <td>
                                 <div class="dropdown">
-                                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn p-0"><i
+                                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                            class="btn p-0"><i
                                             class="bi bi-three-dots-vertical"></i></button>
                                     <ul class="dropdown-menu">
                                         <li class="dropdown-item">
@@ -127,33 +136,33 @@
                             <td>
                                 {% if offerer.siren %}
                                     <a href="https://www.societe.com/cgi-bin/fiche?rncs={{ offerer.siren }}"
-                                            target="_blank"
-                                            title="Visualiser sur societe.com">
+                                       target="_blank"
+                                       title="Visualiser sur societe.com">
                                         {{ offerer.siren | empty_string_if_null }}
                                     </a>
                                 {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
 
-            {% for user_offerer in rows.items %}
-                {% call build_edit_status_modal(
+                {% for user_offerer in rows.items %}
+                    {% call build_edit_status_modal(
                     url_for("backoffice_v3_web.user_offerer.user_offerer_reject", offerer_id=user_offerer.offererId, user_offerer_id=user_offerer.id),
                     "reject-modal-" + user_offerer.id|string, "Rejeter le rattachement") %}
-                    Rejeter le rattachement à {{ user_offerer.offerer.name | upper }}
-                {% endcall %}
-                {% call build_edit_status_modal(
+                        Rejeter le rattachement à {{ user_offerer.offerer.name | upper }}
+                    {% endcall %}
+                    {% call build_edit_status_modal(
                     url_for("backoffice_v3_web.user_offerer.user_offerer_set_pending", offerer_id=user_offerer.offererId, user_offerer_id=user_offerer.id),
                     "pending-modal-" + user_offerer.id|string, "Mettre en attente le rattachement") %}
-                    Mettre en attente le rattachement à {{ user_offerer.offerer.name | upper }}
-                {% endcall %}
-            {% endfor %}
-        {% else %}
-            Aucun rattachement ne correspond à la requête
-        {% endif %}
+                        Mettre en attente le rattachement à {{ user_offerer.offerer.name | upper }}
+                    {% endcall %}
+                {% endfor %}
+            {% else %}
+                Aucun rattachement ne correspond à la requête
+            {% endif %}
+        </div>
     </div>
-</div>
 
 {% endblock %}
