@@ -2,19 +2,19 @@
 
     {% if object.isNew %}
         <span class="me-1 pb-1 badge rounded-pill text-bg-info">
-            Nouvelle
+            {{ new }}
         </span>
     {% elif object.isPending %}
         <span class="me-1 pb-1 badge rounded-pill text-bg-warning">
-            En attente
+            {{ pending }}
         </span>
     {% elif object.isValidated %}
         <span class="me-1 pb-1 badge rounded-pill text-bg-success">
-            Validée
+            {{ validated }}
         </span>
     {% elif object.isRejected %}
         <span class="me-1 pb-1 badge rounded-pill text-bg-danger">
-            Rejetée
+            {{ rejected }}
         </span>
     {% endif %}
 
