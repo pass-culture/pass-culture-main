@@ -21,7 +21,7 @@ const getSingleValidationSchema = () => {
     beginningDate: yup
       .date()
       .nullable()
-      .required('Champ obligatoire')
+      .required('Veuillez renseigner une date')
       .when(['readOnlyFields'], (readOnlyFields, schema) => {
         /* istanbul ignore next: DEBT, TO FIX */
         if (readOnlyFields.includes('beginningDate')) {
@@ -32,16 +32,20 @@ const getSingleValidationSchema = () => {
           "L'évènement doit être à venir"
         )
       }),
-    beginningTime: yup.string().nullable().required('Champ obligatoire'),
+    beginningTime: yup
+      .string()
+      .nullable()
+      .required('Veuillez renseigner un horaire'),
     price: yup
       .number()
       .typeError('Doit être un nombre')
       .moreThan(-1, 'Doit être positif')
       .max(300, 'Veuillez renseigner un prix inférieur à 300€')
-      .required('Champ obligatoire'),
+      .required('Veuillez renseigner un prix'),
     bookingLimitDatetime: yup.date().nullable().test({
       name: 'bookingLimitDatetime-before-beginningDate',
-      message: 'Date invalide',
+      message:
+        'Veuillez renseigner une date antérieure à la date de l’évènement',
       test: isBeforeBeginningDate,
     }),
     bookingsQuantity: yup.number(),
