@@ -58,11 +58,12 @@
 
   .signin-form {
     margin-bottom: rem.torem(40px);
+  }
 
-    .ico-key {
-      width: rem.torem(20px);
-      height: rem.torem(20px);
-    }
+  .ico-key {
+    width: rem.torem(20px);
+    height: rem.torem(20px);
+    margin-top: rem.torem(8px);
   }
 
   .buttons-field {

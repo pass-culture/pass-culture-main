@@ -101,7 +101,7 @@ const SigninForm = (): JSX.Element => {
                   <PasswordInput
                     name="password"
                     label="Mot de passe"
-                    placeholder="Mon mot de passe"
+                    placeholder="Votre mot de passe"
                   />
                 </FormLayout.Row>
               </div>
@@ -115,7 +115,8 @@ const SigninForm = (): JSX.Element => {
                 }
                 to="/mot-de-passe-perdu"
               >
-                <IcoKey className="ico-key" /> Mot de passe égaré ?
+                <IcoKey className="ico-key" />
+                Mot de passe égaré ?
               </Link>
               <div className="field buttons-field">
                 <Link
