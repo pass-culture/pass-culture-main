@@ -122,3 +122,13 @@ def string_length_validator(field_name: str, *, length: int) -> classmethod:
     return pydantic.validator(field_name, pre=False, allow_reuse=True)(check_string_length_wrapper(length=length))
 
 
+def check_and_remove_timezone(value: datetime.datetime | None) -> datetime.datetime | None:
+    if not value:
+        return None
+    if value.tzinfo is None:
+        raise ValueError("The datetime must be timezone-aware.")
+    return value.astimezone(pytz.utc).replace(tzinfo=None)
+
+
+def validate_datetime(field_name: str) -> classmethod:
+    return pydantic.validator(field_name, pre=False, allow_reuse=True)(check_and_remove_timezone)

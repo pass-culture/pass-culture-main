@@ -209,6 +209,28 @@ class PostProductTest:
         assert response.json == {"stock.price": ["The value must be positive"]}
 
     @pytest.mark.usefixtures("db_session")
+    def test_quantity_must_be_positive(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products",
+            json={
+                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
+                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "stock": {
+                    "price": 1200,
+                    "quantity": -1,
+                },
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"stock.quantity": ["The value must be positive"]}
+
+    @pytest.mark.usefixtures("db_session")
     def test_is_duo_not_applicable(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -511,7 +533,7 @@ class PostProductTest:
         assert response.status_code == 400
 
         assert response.json == {
-            "stock.bookingLimitDatetime": ["The value must be a timezone-aware datetime or null"],
+            "stock.bookingLimitDatetime": ["The datetime must be timezone-aware."],
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -586,6 +608,20 @@ class PostEventTest:
                     "performer": "Nicolas Jaar",
                     "stageDirector": "Alfred",  # field not applicable
                 },
+                "dates": [
+                    {
+                        "beginningDatetime": "2022-02-01T12:00:00+02:00",
+                        "bookingLimitDatetime": "2022-01-15T13:00:00Z",
+                        "price": 8899,
+                        "quantity": 10,
+                    },
+                    {
+                        "beginningDatetime": "2022-03-01T12:00:00+02:00",
+                        "bookingLimitDatetime": "2022-01-15T13:00:00Z",
+                        "price": 0,
+                        "quantity": "unlimited",
+                    },
+                ],
                 "description": "Space is only noise if you can see",
                 "disabilityCompliance": {
                     "audioDisabilityCompliant": False,
@@ -624,10 +660,23 @@ class PostEventTest:
         assert created_offer.bookingEmail == "nicoj@example.com"
         assert created_offer.description == "Space is only noise if you can see"
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
-        assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
+        assert created_offer.status == offer_mixin.OfferStatus.ACTIVE
         assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.BY_EMAIL
         assert created_offer.withdrawalDelay == 86400
+
+        created_stocks = offers_models.Stock.query.filter_by(offerId=created_offer.id).all()
+        assert len(created_stocks) == 2
+        first_stock = next(
+            stock for stock in created_stocks if stock.beginningDatetime == datetime.datetime(2022, 2, 1, 10, 0, 0)
+        )
+        assert first_stock.price == decimal.Decimal("88.99")
+        assert first_stock.quantity == 10
+        second_stock = next(
+            stock for stock in created_stocks if stock.beginningDatetime == datetime.datetime(2022, 3, 1, 10, 0, 0)
+        )
+        assert second_stock.price == decimal.Decimal("0")
+        assert second_stock.quantity is None
 
         created_mediation = offers_models.Mediation.query.one()
         assert created_mediation.offer == created_offer
