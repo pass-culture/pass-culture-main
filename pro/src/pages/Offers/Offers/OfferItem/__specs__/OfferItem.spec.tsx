@@ -514,7 +514,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props, store)
 
         expect(
-          within(screen.getAllByRole('cell')[1]).getByText('Offre vitrine')
+          within(screen.getAllByRole('cell')[2]).getByText('Offre vitrine')
         ).toBeInTheDocument()
       })
 

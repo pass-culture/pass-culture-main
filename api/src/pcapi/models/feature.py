@@ -120,7 +120,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_BACKOFFICE_V3 = "Autorise l'accès au nouveau back-office (v3)"
     WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY = "Nouveau parcours de creation d'offre optimisé"
     WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
-    WIP_IMAGE_COLLECTIVE_OFFER = "Active les images dans les offres collectives et les offres vitrines."
     WIP_REQUIRE_PRICE_IN_STOCK_API = "Requiert le champ de prix dans l'API Stock"
     WIP_IMPROVE_COLLECTIVE_STATUS = "Améliorer le suivi des status des offres et réservations collectives"
 
@@ -183,7 +182,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.TEMP_DISABLE_OFFERER_VALIDATION_EMAIL,
     FeatureToggle.WIP_ENABLE_BACKOFFICE_V3,
     FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY,
-    FeatureToggle.WIP_IMAGE_COLLECTIVE_OFFER,
     FeatureToggle.WIP_REQUIRE_PRICE_IN_STOCK_API,
     FeatureToggle.WIP_IMPROVE_COLLECTIVE_STATUS,
 )
