@@ -60,6 +60,34 @@ class ReimbursementRuleChoices(Enum):
     BOOK = "BOOK"
 
 
+class GenreType(Enum):
+    BOOK = "BOOK"
+    MUSIC = "MUSIC"
+    SHOW = "SHOW"
+    MOVIE = "MOVIE"
+
+    @property
+    def values(self) -> list[str]:
+        return {
+            type(self).BOOK.name: self.book_values(),
+            type(self).MUSIC.name: self.music_values(),
+            type(self).SHOW.name: self.show_values(),
+            type(self).MOVIE.name: self.movie_values(),
+        }[self.value]
+
+    def book_values(self) -> list[str]:
+        return sorted(BOOK_MACRO_SECTIONS)
+
+    def music_values(self) -> list[str]:
+        return sorted(MUSIC_TYPES_LABEL_BY_CODE.values())
+
+    def show_values(self) -> list[str]:
+        return sorted(SHOW_TYPES_LABEL_BY_CODE.values())
+
+    def movie_values(self) -> list[str]:
+        return sorted(MOVIE_TYPES)
+
+
 class NativeCategory(Enum):
     LIVRES_PAPIER = "Livres papier"
     LIVRES_NUMERIQUE_ET_AUDIO = "Livres numérique & audio"
@@ -106,33 +134,12 @@ class NativeCategory(Enum):
     PRATIQUE_ARTISTIQUE_EN_LIGNE = "Pratique artistique en ligne"
     DEPRECIEE = "Dépréciée"
 
-
-class GenreType(Enum):
-    BOOK = "BOOK"
-    MUSIC = "MUSIC"
-    SHOW = "SHOW"
-    MOVIE = "MOVIE"
-
     @property
-    def values(self) -> list[str]:
-        return {
-            type(self).BOOK.name: self.book_values(),
-            type(self).MUSIC.name: self.music_values(),
-            type(self).SHOW.name: self.show_values(),
-            type(self).MOVIE.name: self.movie_values(),
-        }[self.value]
-
-    def book_values(self) -> list[str]:
-        return sorted(BOOK_MACRO_SECTIONS)
-
-    def music_values(self) -> list[str]:
-        return sorted(MUSIC_TYPES_LABEL_BY_CODE.values())
-
-    def show_values(self) -> list[str]:
-        return sorted(SHOW_TYPES_LABEL_BY_CODE.values())
-
-    def movie_values(self) -> list[str]:
-        return sorted(MOVIE_TYPES)
+    def genre_type(self) -> GenreType | None:
+        try:
+            return NATIVE_CATEGORY_GENRES_TYPES_MAPPING[self]
+        except KeyError:
+            return None
 
 
 NATIVE_CATEGORY_GENRES_TYPES_MAPPING = {
@@ -200,13 +207,6 @@ class Subcategory:
     @property
     def is_online_only(self) -> bool:
         return self.online_offline_platform == OnlineOfflinePlatformChoices.ONLINE.value
-
-    @property
-    def genre_type(self) -> GenreType | None:
-        try:
-            return NATIVE_CATEGORY_GENRES_TYPES_MAPPING[self.native_category]
-        except KeyError:
-            return None
 
 
 # region Subcategories declarations
