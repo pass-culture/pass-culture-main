@@ -137,11 +137,32 @@ class UpdatePublicAccountTest:
         user_to_edit = users_factories.BeneficiaryGrant18Factory()
 
         base_form = {
+            "first_name": user_to_edit.firstName,
+            "last_name": user_to_edit.lastName,
+            "email": user_to_edit.email,
             "postal_code": "7500",
         }
 
         response = self.update_account(authenticated_client, user_to_edit, base_form)
         assert response.status_code == 400
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_empty_id_piece_number(self, authenticated_client):
+        user_to_edit = users_factories.BeneficiaryGrant18Factory()
+
+        base_form = {
+            "first_name": user_to_edit.firstName,
+            "last_name": user_to_edit.lastName,
+            "email": user_to_edit.email,
+            "id_piece_number": "",
+        }
+
+        response = self.update_account(authenticated_client, user_to_edit, base_form)
+        print(response)
+        assert response.status_code == 303
+
+        user_to_edit = users_models.User.query.get(user_to_edit.id)
+        assert user_to_edit.idPieceNumber is None
 
     def update_account(self, authenticated_client, user_to_edit, form):
         # generate csrf token
