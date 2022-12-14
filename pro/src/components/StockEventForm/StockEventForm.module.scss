@@ -1,21 +1,22 @@
 @use "styles/mixins/_rem.scss" as rem;
 
-.field-layout-footer {
-  min-height: rem.torem(32px);
-}
-
 .field-layout-align-self {
   align-self: flex-start;
 }
 
-.input-beginning-time {
-  flex: 1 0 rem.torem(90px);
+.input-date {
+  flex: 1 1 rem.torem(168px);
+  max-width: rem.torem(168px);
 }
 
-.input-quantity {
-  flex: 1 0 rem.torem(85px);
+.input-booking-limit-datetime {
+  flex: 1 1 rem.torem(208px);
+  max-width: rem.torem(208px);
 }
 
+.input-beginning-time,
+.input-quantity,
 .input-price {
-  flex: 1 0 rem.torem(90px);
+  flex: 1 1 rem.torem(112px);
+  max-width: rem.torem(112px);
 }

@@ -24,6 +24,8 @@ interface IDatePickerProps {
   openingDateTime?: Date
   smallLabel?: boolean
   isOptional?: boolean
+  hideFooter?: boolean
+  hideHiddenFooter?: boolean
   onChange?: (name: string, date: Date | null) => void
 }
 
@@ -41,9 +43,12 @@ const DatePicker = ({
   smallLabel,
   isOptional = false,
   onChange,
+  hideFooter = false,
+  hideHiddenFooter = false,
 }: IDatePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'date' })
   const ref = createRef<HTMLInputElement>()
+  const showError = meta.touched && !!meta.error
 
   return (
     <FieldLayout
@@ -54,9 +59,10 @@ const DatePicker = ({
       label={label}
       isLabelHidden={isLabelHidden}
       name={name}
-      showError={meta.touched && !!meta.error}
+      showError={showError}
       smallLabel={smallLabel}
       isOptional={isOptional}
+      hideFooter={hideFooter || (hideHiddenFooter && !showError)}
     >
       <ReactDatePicker
         {...field}

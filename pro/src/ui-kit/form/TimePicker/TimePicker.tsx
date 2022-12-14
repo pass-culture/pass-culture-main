@@ -19,6 +19,8 @@ export interface ITimePickerProps {
   smallLabel?: boolean
   classNameFooter?: string
   classNameLabel?: string
+  hideFooter?: boolean
+  hideHiddenFooter?: boolean
 }
 
 const TimePicker = ({
@@ -30,9 +32,12 @@ const TimePicker = ({
   label,
   isLabelHidden = false,
   smallLabel,
+  hideFooter = false,
+  hideHiddenFooter = false,
 }: ITimePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'text' })
   const ref = createRef<HTMLInputElement>()
+  const showError = meta.touched && !!meta.error
 
   /* istanbul ignore next: DEBT, TO FIX */
   return (
@@ -42,10 +47,11 @@ const TimePicker = ({
       label={label}
       isLabelHidden={isLabelHidden}
       name={name}
-      showError={meta.touched && !!meta.error}
+      showError={showError}
       smallLabel={smallLabel}
       classNameLabel={classNameLabel}
       classNameFooter={classNameFooter}
+      hideFooter={hideFooter || (hideHiddenFooter && !showError)}
     >
       <ReactDatePicker
         {...field}
