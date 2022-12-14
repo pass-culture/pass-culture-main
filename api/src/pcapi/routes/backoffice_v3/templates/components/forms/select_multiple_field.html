@@ -1,10 +1,51 @@
-<div class="form-floating">
-<select multiple class="form-select" id="{{ field.name }}" name="{{ field.name }}" size="2">
-    {% for value, label, selected in field.iter_choices() %}
-        <option value="{{ value }}" {{ "selected" if selected else "" }}>
-            {{ label | i18n_public_account }}
-        </option>
-    {% endfor %}
-</select>
-<label for="{{ field.name }}">{{ field.label }}</label>
+<div class="form-floating" >
+    <select multiple class="form-select" id="{{ field.name }}" name="{{ field.name }}" size="2" style="min-height: 8rem;border-radius: 1rem!important;">
+        {% for value, label, selected in field.iter_choices() %}
+            <option value="{{ value }}" {{ "selected" if selected else "" }}>
+                {{ label | i18n_public_account }}
+            </option>
+        {% endfor %}
+    </select>
+    <label for="{{ field.name }}" id="{{ field.name }}-label"> {{ field.label }}</label>
 </div>
+
+
+
+
+{% block scripts %}
+    <script>
+        document.getElementById('{{ field.name }}').onmousedown = function (e) {
+            e.preventDefault()
+            var select = this;
+            var scroll = select.scrollTop;
+
+
+            e.target.selected = !e.target.selected
+            setTimeout(function () {
+                select.scrollTop = scroll;
+            }, 0);
+            document.getElementById('{{field.name}}').focus()
+        }
+        document.getElementById('{{ field.name }}').onmousemove = function (e) {
+            e.preventDefault();
+        };
+        document.getElementById('{{ field.name }}').onscroll = function () {
+            var select = this;
+            var scroll = select.scrollTop;
+            const label = document.querySelector('label#{{ field.name }}-label');
+            if (scroll > 0) {
+                label.classList.add('is-hidden')
+            } else {
+                label.classList.remove('is-hidden')
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        .is-hidden {
+            display: none;
+        }
+    </style>
+{% endblock %}
