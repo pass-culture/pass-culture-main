@@ -32,9 +32,6 @@ const CollectiveOfferItem = ({
   venue,
   isOfferEditable,
 }: CollectiveOfferItemProps) => {
-  const isImageCollectiveOfferActive = useActiveFeature(
-    'WIP_IMAGE_COLLECTIVE_OFFER'
-  )
   const isImproveCollectiveStatusActive = useActiveFeature(
     'WIP_IMPROVE_COLLECTIVE_STATUS'
   )
@@ -48,9 +45,7 @@ const CollectiveOfferItem = ({
         selectOffer={selectOffer}
         isShowcase={Boolean(offer.isShowcase)}
       />
-      {isImageCollectiveOfferActive && (
-        <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
-      )}
+      <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
       <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
       <OfferVenueCell venue={venue} />
       <OfferInstitutionCell

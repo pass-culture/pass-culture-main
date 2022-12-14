@@ -3,7 +3,6 @@ import cn from 'classnames'
 import React, { useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
@@ -45,10 +44,6 @@ export const Offer = ({
     setDisplayDetails(!displayDetails)
   }
 
-  const isCollectiveImageOfferActive = useActiveFeature(
-    'WIP_IMAGE_COLLECTIVE_OFFER'
-  )
-
   return (
     <li className="offer" data-testid="offer-listitem">
       <div
@@ -60,26 +55,21 @@ export const Offer = ({
         <Logo />
       </div>
       <div className="offer-main-container">
-        {isCollectiveImageOfferActive && (
-          <div className="offer-image-container">
-            {offer.imageUrl ? (
-              <img
-                alt=""
-                className="offer-image"
-                loading="lazy"
-                src={offer.imageUrl}
-              />
-            ) : (
-              <div className="offer-image-default">
-                <ImagePlaceholder />
-              </div>
-            )}
-          </div>
-        )}
-        <div
-          className="offer-container"
-          style={!isCollectiveImageOfferActive ? { paddingLeft: '18px' } : {}}
-        >
+        <div className="offer-image-container">
+          {offer.imageUrl ? (
+            <img
+              alt=""
+              className="offer-image"
+              loading="lazy"
+              src={offer.imageUrl}
+            />
+          ) : (
+            <div className="offer-image-default">
+              <ImagePlaceholder />
+            </div>
+          )}
+        </div>
+        <div className="offer-container">
           {offer.isTemplate ? (
             <ContactButton
               className="offer-prebooking-button"
