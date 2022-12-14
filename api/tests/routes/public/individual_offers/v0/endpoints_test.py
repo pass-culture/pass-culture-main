@@ -10,6 +10,7 @@ import pytest
 from pcapi import settings
 from pcapi.core import testing
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.models import offer_mixin
 from pcapi.utils import human_ids
@@ -769,3 +770,104 @@ class PostEventTest:
         assert response.json == {
             "offer": ["Une offre qui n'a pas de ticket retirable ne peut pas avoir un type de retrait renseigné"]
         }
+
+
+class PostAdditionalDatesTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_new_dates_are_added(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(venue__managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            f"/public/offers/v1/events/{event_offer.id}/dates",
+            json={
+                "additionalDates": [
+                    {
+                        "beginningDatetime": "2022-02-01T12:00:00+02:00",
+                        "bookingLimitDatetime": "2022-01-15T13:00:00Z",
+                        "price": 8899,
+                        "quantity": 10,
+                    },
+                    {
+                        "beginningDatetime": "2022-03-01T12:00:00+02:00",
+                        "bookingLimitDatetime": "2022-01-15T13:00:00Z",
+                        "price": 0,
+                        "quantity": "unlimited",
+                    },
+                ],
+            },
+        )
+
+        assert response.status_code == 200
+        created_stocks = offers_models.Stock.query.filter(offers_models.Stock.offerId == event_offer.id).all()
+        assert len(created_stocks) == 2
+        first_stock = next(
+            stock for stock in created_stocks if stock.beginningDatetime == datetime.datetime(2022, 2, 1, 10, 0, 0)
+        )
+        assert first_stock.price == decimal.Decimal("88.99")
+        assert first_stock.quantity == 10
+        second_stock = next(
+            stock for stock in created_stocks if stock.beginningDatetime == datetime.datetime(2022, 3, 1, 10, 0, 0)
+        )
+        assert second_stock.price == decimal.Decimal("0")
+        assert second_stock.quantity is None
+
+        assert response.json == {
+            "additionalDates": [
+                {
+                    "beginningDatetime": "2022-02-01T10:00:00",
+                    "bookingLimitDatetime": "2022-01-15T13:00:00",
+                    "id": first_stock.id,
+                    "price": 8899,
+                    "quantity": 10,
+                },
+                {
+                    "beginningDatetime": "2022-03-01T10:00:00",
+                    "bookingLimitDatetime": "2022-01-15T13:00:00",
+                    "id": second_stock.id,
+                    "price": 0,
+                    "quantity": "unlimited",
+                },
+            ],
+        }
+
+    @pytest.mark.usefixtures("db_session")
+    def test_invalid_offer_id(self, client):
+        offerers_factories.ApiKeyFactory()
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events/quinze/dates",
+            json={
+                "additionalDates": [
+                    {
+                        "beginningDatetime": "2022-02-01T12:00:00+02:00",
+                        "bookingLimitDatetime": "2022-01-15T13:00:00Z",
+                        "price": 8899,
+                        "quantity": 10,
+                    }
+                ]
+            },
+        )
+
+        assert response.status_code == 404
+
+    @pytest.mark.usefixtures("db_session")
+    def test_404_for_other_offerer_offer(self, client):
+        offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory()
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            f"/public/offers/v1/events/{event_offer.id}/dates",
+            json={
+                "additionalDates": [
+                    {
+                        "beginningDatetime": "2022-02-01T12:00:00+02:00",
+                        "bookingLimitDatetime": "2022-01-15T13:00:00Z",
+                        "price": 8899,
+                        "quantity": 10,
+                    },
+                ],
+            },
+        )
+        assert response.status_code == 404
+        assert response.json == {"event_id": ["The event could not be found"]}
