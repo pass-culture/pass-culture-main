@@ -1,4 +1,5 @@
-import { Menu, MenuButton, MenuItem, MenuList } from '@reach/menu-button'
+import { Menu, MenuButton, MenuItem, MenuPopover } from '@reach/menu-button'
+import { positionRight } from '@reach/popover'
 import cn from 'classnames'
 import React from 'react'
 
@@ -31,7 +32,7 @@ const StockFormActions = ({
           />
         </MenuButton>
 
-        <MenuList className={styles['menu-list']}>
+        <MenuPopover position={positionRight} className={styles['menu-list']}>
           {actions.map((action, i) => (
             <MenuItem
               key={`action-${i}`}
@@ -52,7 +53,7 @@ const StockFormActions = ({
               <span className={styles['menu-item-text']}>{action.label}</span>
             </MenuItem>
           ))}
-        </MenuList>
+        </MenuPopover>
       </Menu>
     </div>
   )
