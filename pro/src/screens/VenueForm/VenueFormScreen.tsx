@@ -90,7 +90,9 @@ const VenueFormScreen = ({
 
     request
       .then(() => {
-        notify.success('Vos modifications ont bien été enregistrées')
+        if (!hasNewOfferCreationJourney) {
+          notify.success('Vos modifications ont bien été enregistrées')
+        }
 
         const venuesUrl = currentUser.isAdmin
           ? `/structures/${offerer.id}`
