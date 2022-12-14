@@ -28,6 +28,7 @@ export interface ITextInputProps
   inline?: boolean
   hasDecimal?: boolean
   refForInput?: ForwardedRef<HTMLInputElement>
+  hideHiddenFooter?: boolean
 }
 
 const TextInput = ({
@@ -52,6 +53,7 @@ const TextInput = ({
   step,
   hasDecimal = true,
   inline = false,
+  hideHiddenFooter = false,
   ...props
 }: ITextInputProps): JSX.Element => {
   const [field, meta] = useField({
@@ -61,6 +63,7 @@ const TextInput = ({
 
   const regexHasDecimal = /[0-9,.]|Backspace/
   const regexHasNotDecimal = /[0-9]|Backspace/
+  const showError = meta.touched && !!meta.error
 
   return (
     <FieldLayout
@@ -69,15 +72,15 @@ const TextInput = ({
       classNameFooter={classNameFooter}
       count={countCharacters ? field.value.length : undefined}
       error={meta.error}
-      hideFooter={hideFooter}
       isOptional={isOptional}
       label={label}
       isLabelHidden={isLabelHidden}
       maxLength={maxLength}
       name={name}
-      showError={meta.touched && !!meta.error}
+      showError={showError}
       smallLabel={smallLabel}
       inline={inline}
+      hideFooter={hideFooter || (hideHiddenFooter && !showError)}
     >
       {readOnly ? (
         <span

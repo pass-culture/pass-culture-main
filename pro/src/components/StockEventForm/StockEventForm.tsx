@@ -49,13 +49,14 @@ const StockEventForm = ({
         name={`stocks[${stockIndex}]beginningDate`}
         label="Date"
         isLabelHidden={stockIndex !== 0}
-        className={styles['field-layout-align-self']}
+        className={cn(styles['field-layout-align-self'], styles['input-date'])}
         classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
         minDateTime={today}
         openingDateTime={today}
         disabled={readOnlyFields.includes('beginningDate')}
         onChange={onChangeBeginningDate}
+        hideHiddenFooter={true}
       />
       <TimePicker
         smallLabel
@@ -69,6 +70,7 @@ const StockEventForm = ({
         classNameFooter={styles['field-layout-footer']}
         name={`stocks[${stockIndex}]beginningTime`}
         disabled={readOnlyFields.includes('beginningTime')}
+        hideHiddenFooter={true}
       />
       <TextInput
         smallLabel
@@ -84,6 +86,7 @@ const StockEventForm = ({
           stockFormValues.price.toString().length > 0 ? <IcoEuro /> : <></>
         }
         type="number"
+        hideHiddenFooter={true}
       />
       <DatePicker
         smallLabel
@@ -91,7 +94,7 @@ const StockEventForm = ({
         label="Date limite de réservation"
         isLabelHidden={stockIndex !== 0}
         className={cn(
-          styles['input-bookingLimitDatetime'],
+          styles['input-booking-limit-datetime'],
           styles['field-layout-align-self']
         )}
         classNameLabel={formRowStyles['field-layout-label']}
@@ -100,6 +103,7 @@ const StockEventForm = ({
         maxDateTime={beginningDate ? beginningDate : undefined}
         openingDateTime={today}
         disabled={readOnlyFields.includes('bookingLimitDatetime')}
+        hideHiddenFooter={true}
       />
       <TextInput
         smallLabel
@@ -116,6 +120,7 @@ const StockEventForm = ({
         disabled={readOnlyFields.includes('quantity')}
         type="number"
         hasDecimal={false}
+        hideHiddenFooter={true}
       />
     </>
   )
