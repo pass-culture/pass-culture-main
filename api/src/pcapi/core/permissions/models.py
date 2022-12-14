@@ -106,6 +106,7 @@ class Roles(enum.Enum):
     BIZDEV = "bizdev"
     PROGRAMMATION = "programmation"
     PRODUCT_MANAGEMENT = "product-management"
+    HOMOLOGATION = "homologation"
 
 
 role_backoffice_profile_table = sa.Table(
