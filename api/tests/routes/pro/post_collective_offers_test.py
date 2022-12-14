@@ -117,6 +117,48 @@ class Returns200Test:
         # Then
         assert response.status_code == 201
 
+    def test_create_offer_from_template_no_domains_nor_intervention_area(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "venueId": humanize(venue.id),
+            "description": "Ma super description",
+            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
+            "domains": [],
+            "durationMinutes": 60,
+            "name": "La pièce de théâtre",
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "contactEmail": "pouet@example.com",
+            "contactPhone": "01 99 00 25 68",
+            "offerVenue": {
+                "addressType": "school",
+                "venueId": humanize(venue.id),
+                "otherAddress": "17 rue aléatoire",
+            },
+            "students": ["Lycée - Seconde", "Lycée - Première"],
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "interventionArea": [],
+            "templateId": humanize(template.id),
+        }
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        # Then
+        assert response.status_code == 201
+        offer_id = dehumanize(response.json["id"])
+        offer = CollectiveOffer.query.get(offer_id)
+        assert offer.interventionArea == []
+        assert len(offer.domains) == 0
+        assert offer.templateId == template.id
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
