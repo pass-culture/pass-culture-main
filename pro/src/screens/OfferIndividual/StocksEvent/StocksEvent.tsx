@@ -270,6 +270,12 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       }
     }
 
+  useEffect(() => {
+    if (!formik.isValid) {
+      setIsClickingFromActionBar(false)
+    }
+  }, [formik.isValid])
+
   const handlePreviousStep = () => {
     if (!formik.dirty) {
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
