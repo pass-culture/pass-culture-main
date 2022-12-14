@@ -52,7 +52,6 @@ const CollectiveOfferCreation = ({
 
   const { structure: offererId, lieu: venueId } =
     queryParamsFromOfferer(location)
-
   const notify = useNotification()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useCollectiveOfferImageUpload(offer, isTemplate)
@@ -131,8 +130,8 @@ const CollectiveOfferCreation = ({
           setInitialFormValues(
             { ...values, ...initialValues },
             offerers,
-            initialValues.offererId ?? offererId,
-            initialValues.venueId ?? venueId
+            initialValues.offererId || offererId,
+            initialValues.venueId || venueId
           )
         )
 
