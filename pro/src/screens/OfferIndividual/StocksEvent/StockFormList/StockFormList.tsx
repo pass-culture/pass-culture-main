@@ -73,15 +73,19 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
                 actions={[
                   {
                     callback: async () => {
-                      setDeletingStockData({
-                        deletingStock: stockValues,
-                        deletingIndex: index,
-                      })
                       if (stockValues.stockId) {
-                        deleteConfirmShow()
+                        if (parseInt(stockValues.bookingsQuantity, 10) > 0) {
+                          setDeletingStockData({
+                            deletingStock: stockValues,
+                            deletingIndex: index,
+                          })
+                          deleteConfirmShow()
+                        } else {
+                          onDeleteStock(stockValues, index)
+                        }
                       } else {
                         arrayHelpers.remove(index)
-                        if (values.stocks.length === 0) {
+                        if (values.stocks.length === 1) {
                           arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)
                         }
                       }
