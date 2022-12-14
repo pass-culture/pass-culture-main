@@ -3,7 +3,6 @@ import enum
 import typing
 
 import pydantic
-import pytz
 import typing_extensions
 
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -11,6 +10,7 @@ from pcapi.core.offers import validation as offers_validation
 from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.routes import serialization
+from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.utils import to_camel
 
 
@@ -170,22 +170,9 @@ else:
     ]
 
 
-class StockBody(serialization.BaseModel):
-    booking_limit_datetime: datetime.datetime | None = pydantic.Field(
-        None,
-        description="The timezone aware datetime after which the offer can no longer be booked",
-        example="2023-01-01T00:00:00+01:00",
-    )
-    price: pydantic.StrictInt = pydantic.Field(..., description="The offer price in euro cents", example=1000)
+class BaseStockBody(serialization.BaseModel):
+    price: pydantic.StrictInt = pydantic.Field(..., description="The offer price in euro cents.", example=1000)
     quantity: pydantic.StrictInt | typing.Literal["unlimited"]
-
-    @pydantic.validator("booking_limit_datetime")
-    def check_booking_limit_timezone(cls, value: datetime.datetime) -> datetime.datetime | None:
-        if not value:
-            return None
-        if value.tzinfo is None:
-            raise ValueError("The value must be a timezone-aware datetime or null")
-        return value.astimezone(pytz.utc).replace(tzinfo=None)
 
     @pydantic.validator("price")
     def price_must_be_positive(cls, value: int) -> int:
@@ -193,8 +180,40 @@ class StockBody(serialization.BaseModel):
             raise ValueError("The value must be positive")
         return value
 
+    @pydantic.validator("quantity")
+    def quantity_must_be_positive(cls, quantity: int | str) -> int | str:
+        if isinstance(quantity, int) and quantity < 0:
+            raise ValueError("The value must be positive")
+        return quantity
+
     class Config:
         alias_generator = to_camel
+
+
+class StockBody(BaseStockBody):
+    booking_limit_datetime: datetime.datetime | None = pydantic.Field(
+        None,
+        description="The timezone aware datetime after which the offer can no longer be booked.",
+        example="2023-01-01T00:00:00+01:00",
+    )
+
+    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
+
+
+class DateBody(BaseStockBody):
+    beginning_datetime: datetime.datetime = pydantic.Field(
+        ...,
+        description="The timezone aware datetime of the event.",
+        example="2023-01-02T00:00:00+01:00",
+    )
+    booking_limit_datetime: datetime.datetime = pydantic.Field(
+        ...,
+        description="The timezone aware datetime after which the offer can no longer be booked. If no value is provided, the beginning datetime is used.",
+        example="2023-01-01T00:00:00+01:00",
+    )
+
+    _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
+    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
 
 
 ON_SITE_MINUTES_BEFORE_EVENT = typing.Literal[0, 15, 30, 60, 120, 240, 1440, 2880]
@@ -226,10 +245,14 @@ class ProductOfferCreationBody(OfferCreationBase):
 
 class EventOfferCreationBody(OfferCreationBase):
     category_related_fields: event_category_fields
+    dates: typing.List[DateBody] | None = pydantic.Field(
+        None,
+        description="The dates of your event. If there are different prices and quantity for the same date, you should add several date objects",
+    )
     event_duration: int | None = pydantic.Field(description="The event duration in minutes", example=60)
     ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = pydantic.Field(
         None,
-        description="The way the ticket will be collected. Leave empty if there is no ticket. Only some categories are compatible with tickets",
+        description="The way the ticket will be collected. Leave empty if there is no ticket. Only some categories are compatible with tickets.",
         discriminator="way",
     )
 
