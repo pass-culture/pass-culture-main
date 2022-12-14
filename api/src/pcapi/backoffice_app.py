@@ -36,7 +36,7 @@ with app.app_context():
     from pcapi.routes.backoffice_v3.blueprint import backoffice_v3_web
     import pcapi.utils.login_manager
 
-    if settings.IS_DEV:
+    if settings.IS_DEV and not settings.IS_RUNNING_TESTS:
         install_local_providers()
 
     install_routes(app)
