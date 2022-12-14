@@ -15,7 +15,6 @@ class SubcategoryResponseModelv2(BaseModel):
     homepage_label_name: subcategories_v2.HomepageLabelNameEnumv2
     is_event: bool
     online_offline_platform: subcategories_v2.OnlineOfflinePlatformChoicesEnumv2
-    genre_type: subcategories_v2.GenreType | None
 
     class Config:
         alias_generator = to_camel
@@ -46,6 +45,7 @@ class HomepageLabelResponseModelv2(BaseModel):
 class NativeCategoryResponseModelv2(BaseModel):
     name: subcategories_v2.NativeCategoryIdEnumv2
     value: Optional[str]
+    genre_type: subcategories_v2.GenreType | None
 
     class Config:
         alias_generator = to_camel
