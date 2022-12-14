@@ -105,6 +105,8 @@ def search_pro() -> utils.BackofficeResponse:
     paginated_rows = search_utils.fetch_paginated_rows(context.fetch_rows_func, search_model)
     next_pages_urls = search_utils.pagination_links(next_page, search_model.page, paginated_rows.pages)
 
+    form.page.data = 1  # Reset to first page when form is submitted ("Chercher" clicked)
+
     return render_template(
         "pro/search_result.html",
         form=form,
