@@ -665,34 +665,21 @@ def _delete_dependent_pricings(
 def cancel_pricing(
     booking: bookings_models.Booking | educational_models.CollectiveBooking, reason: models.PricingLogReason
 ) -> models.Pricing | None:
-    if not booking.dateUsed:
-        return None
-    if booking.venue.pricing_point_links:
-        pricing_point_id = _get_pricing_point_link(booking).pricingPointId
+    if isinstance(booking, educational_models.CollectiveBooking):
+        booking_attribute = models.Pricing.collectiveBooking
     else:
-        pricing_point_id = None
+        booking_attribute = models.Pricing.booking
+    pricing = models.Pricing.query.filter(
+        booking_attribute == booking,
+        models.Pricing.status != models.PricingStatus.CANCELLED,
+    ).one_or_none()
+
+    if not pricing:
+        return None
 
     with transaction():
-        # If the venue does not have any pricing point, we cannot
-        # lock, but we must uncancel the pricing anyway. It should
-        # not cause any inconsistency because if the pricing point
-        # is missing, no booking can be priced at the same time.
-        # Let's be defensive and log anyway, just in case...
-        if pricing_point_id:
-            lock_pricing_point(pricing_point_id)
-        else:
-            logger.warning(
-                "Could not lock pricing point while cancelling pricing",
-                extra={
-                    "booking": booking.id,
-                    "booking_type": booking.__class__.__name__,
-                },
-            )
+        lock_pricing_point(pricing.pricingPointId)
 
-        if isinstance(booking, educational_models.CollectiveBooking):
-            booking_attribute = models.Pricing.collectiveBooking
-        else:
-            booking_attribute = models.Pricing.booking
         pricing = models.Pricing.query.filter(
             booking_attribute == booking,
             models.Pricing.status != models.PricingStatus.CANCELLED,
@@ -700,6 +687,7 @@ def cancel_pricing(
 
         if not pricing:
             return None
+
         if pricing.status not in models.CANCELLABLE_PRICING_STATUSES:
             # That could happen if the offerer tries to mark as unused a
             # booking for which we have already created a cashflow.
