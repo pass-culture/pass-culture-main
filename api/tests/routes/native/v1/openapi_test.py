@@ -691,6 +691,7 @@ def test_public_api(client):
                     "properties": {
                         "name": {"$ref": "#/components/schemas/NativeCategoryIdEnumv2"},
                         "value": {"nullable": True, "title": "Value", "type": "string"},
+                        "genreType": {"anyOf": [{"$ref": "#/components/schemas/GenreType"}], "nullable": True},
                     },
                     "required": ["name"],
                     "title": "NativeCategoryResponseModelv2",
@@ -1449,7 +1450,6 @@ def test_public_api(client):
                         "onlineOfflinePlatform": {"$ref": "#/components/schemas/OnlineOfflinePlatformChoicesEnumv2"},
                         "searchGroupName": {"$ref": "#/components/schemas/SearchGroupNameEnumv2"},
                         "nativeCategoryId": {"$ref": "#/components/schemas/NativeCategoryIdEnumv2"},
-                        "genreType": {"anyOf": [{"$ref": "#/components/schemas/GenreType"}], "nullable": True},
                     },
                     "required": [
                         "id",
