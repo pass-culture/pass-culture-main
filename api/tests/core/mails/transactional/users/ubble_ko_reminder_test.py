@@ -7,8 +7,8 @@ import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.mails.transactional.sendinblue_template_ids as sendinblue_template
-from pcapi.core.mails.transactional.users.ubble.ubble_ko_reminder import _find_users_to_remind
-from pcapi.core.mails.transactional.users.ubble.ubble_ko_reminder import send_reminder_emails
+from pcapi.core.mails.transactional.users.ubble.reminder_emails import _find_users_to_remind
+from pcapi.core.mails.transactional.users.ubble.reminder_emails import send_reminder_emails
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
