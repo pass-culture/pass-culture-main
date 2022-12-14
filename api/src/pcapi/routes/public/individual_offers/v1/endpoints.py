@@ -213,6 +213,16 @@ def post_event_offer(body: serialization.EventOfferCreationBody) -> serializatio
                 withdrawal_type=withdrawal_type,
             )
 
+            if body.dates:
+                for date in body.dates:
+                    offers_api.create_stock(
+                        offer=created_offer,
+                        price=finance_utils.to_euros(date.price),
+                        quantity=date.quantity if date.quantity != "unlimited" else None,
+                        beginning_datetime=date.beginning_datetime,
+                        booking_limit_datetime=date.booking_limit_datetime,
+                    )
+
             if body.image:
                 _save_image(body.image, created_offer)
 
