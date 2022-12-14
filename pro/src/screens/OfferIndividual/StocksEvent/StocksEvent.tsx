@@ -138,11 +138,11 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
 
       // Set back possible user change.
       formStocks.splice(stockIndex, 1)
-      formik.setValues(
-        formStocks.length
-          ? { stocks: formStocks }
-          : { stocks: [STOCK_EVENT_FORM_DEFAULT_VALUES] }
-      )
+      formStocks.length
+        ? formik.setValues({ stocks: formStocks })
+        : formik.resetForm({
+            values: { stocks: [STOCK_EVENT_FORM_DEFAULT_VALUES] },
+          })
       notify.success('Le stock a été supprimé.')
     } catch {
       notify.error('Une erreur est survenue lors de la suppression du stock.')

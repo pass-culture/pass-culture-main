@@ -101,6 +101,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       const response = await getOfferIndividualAdapter(offer.id)
       if (response.isOk) {
         setOffer && setOffer(response.payload)
+        formik.resetForm({ values: buildInitialValues(response.payload) })
       }
       if (!isSubmittingFromRouteLeavingGuard) {
         navigate(afterSubmitUrl)
@@ -140,8 +141,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     initialValues,
     onSubmit,
     validationSchema: getValidationSchema(minQuantity),
-    // enableReinitialize is needed to reset dirty after submit (and not block after saving a draft)
-    enableReinitialize: true,
   })
 
   useEffect(() => {
@@ -198,6 +197,12 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       }
     }
 
+  useEffect(() => {
+    if (!formik.isValid) {
+      setIsClickingFromActionBar(false)
+    }
+  }, [formik.isValid])
+
   const handlePreviousStep = () => {
     if (!formik.dirty) {
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
@@ -233,7 +238,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
   const onConfirmDeleteStock = async () => {
     if (formik.values.stockId === undefined) {
-      deleteConfirmHide()
+      formik.resetForm({ values: STOCK_THING_FORM_DEFAULT_VALUES })
       return
     }
     try {
