@@ -1,10 +1,18 @@
-import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { ALL_STATUS } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
 import { RadioInput } from 'ui-kit/form_raw/RadioInput/RadioInput'
+
+interface IOfferStatusFiltersModalProps {
+  isVisible: boolean
+  applyFilters: () => void
+  status?: OfferStatus | 'all'
+  setIsVisible: (isVisible: boolean) => void
+  updateStatusFilter: (status: OfferStatus | 'all') => void
+  audience: string
+}
 
 export const OffersStatusFiltersModal = ({
   isVisible,
@@ -13,20 +21,22 @@ export const OffersStatusFiltersModal = ({
   setIsVisible,
   updateStatusFilter,
   audience,
-}) => {
-  const modalRef = useRef(null)
+}: IOfferStatusFiltersModalProps) => {
+  const modalRef = useRef<HTMLDivElement | null>(null)
 
   const handleStatusFilterChange = useCallback(
-    event => {
-      updateStatusFilter(event.target.value)
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      updateStatusFilter(event.target.value as OfferStatus | 'all')
     },
     [updateStatusFilter]
   )
 
   const onClickOutside = useCallback(
-    event => {
-      const { target } = event
-      if (modalRef.current && !modalRef.current.contains(target)) {
+    (event: MouseEvent): void => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
         event.preventDefault()
         event.stopPropagation()
 
@@ -121,14 +131,4 @@ export const OffersStatusFiltersModal = ({
   )
 }
 
-OffersStatusFiltersModal.defaultProps = {
-  status: null,
-}
-
-OffersStatusFiltersModal.propTypes = {
-  applyFilters: PropTypes.func.isRequired,
-  isVisible: PropTypes.bool.isRequired,
-  setIsVisible: PropTypes.func.isRequired,
-  status: PropTypes.string,
-  updateStatusFilter: PropTypes.func.isRequired,
-}
+export default OffersStatusFiltersModal
