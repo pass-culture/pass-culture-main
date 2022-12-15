@@ -8,7 +8,7 @@ import {
 import { Audience } from 'core/shared'
 import Icon from 'ui-kit/Icon/Icon'
 
-import { OffersStatusFiltersModal } from '../OffersStatusFiltersModal/OffersStatusFiltersModal'
+import OffersStatusFiltersModal from '../OffersStatusFiltersModal'
 
 type StatusFiltersButtonProps = {
   applyFilters: () => void
