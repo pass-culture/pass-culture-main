@@ -136,7 +136,10 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         assert list(task_param.recipients) == list(self.recipients[0:1])
         assert result.successful
 
-    @pytest.mark.parametrize("recipient", ["avery.kelly@example.com", "Test-ywh-0123456789012345@yeswehack.ninja"])
+    @pytest.mark.parametrize(
+        "recipient",
+        ["avery.kelly@example.com", "Test-ywh-0123456789012345@yeswehack.ninja"],
+    )
     @override_settings(
         WHITELISTED_EMAIL_RECIPIENTS=["whitelisted@example.com", "avery.kelly@example.com"], IS_STAGING=True
     )
@@ -146,6 +149,37 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
 
         backend = self._get_backend_for_test()
         result = backend().send_mail(recipients=[recipient, "lucy.ellingson@example.com"], data=self.data)
+
+        assert mock_send_transactional_email_secondary_task.call_count == 1
+        task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
+        assert list(task_param.recipients) == [recipient]
+        assert result.successful
+
+    @override_settings(IS_STAGING=True)
+    @override_settings(DEV_EMAIL_ALIAS_ADDRESS="qa-test@passculture.app")
+    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
+    def test_send_mail_whitelisted_qa_staging(self, mock_send_transactional_email_secondary_task):
+        recipient = "qa-test+123@passculture.app"
+        users_factories.UserFactory(email=recipient)
+
+        backend = self._get_backend_for_test()
+        result = backend().send_mail(recipients=[recipient], data=self.data)
+
+        assert mock_send_transactional_email_secondary_task.call_count == 1
+        task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
+        assert list(task_param.recipients) == [recipient]
+        assert result.successful
+
+    @override_settings(IS_TESTING=True)
+    @override_settings(DEV_EMAIL_ALIAS_ADDRESS="qa-test@passculture.app")
+    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
+    def test_send_mail_whitelisted_qa_testing(
+        self, mock_send_transactional_email_secondary_task, recipient="qa-test+123@passculture.app"
+    ):
+        users_factories.UserFactory(email=recipient)
+
+        backend = self._get_backend_for_test()
+        result = backend().send_mail(recipients=[recipient], data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
