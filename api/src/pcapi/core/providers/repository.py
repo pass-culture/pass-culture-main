@@ -4,7 +4,10 @@ from typing import cast
 
 from flask_sqlalchemy import BaseQuery
 
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
+import pcapi.core.offers.models as offers_models
+from pcapi.models import db
 
 from . import constants
 from . import exceptions
@@ -169,3 +172,10 @@ def get_pivot_for_id_at_provider(id_at_provider: str, provider_id: int) -> model
         models.CinemaProviderPivot.providerId == provider_id,
     ).one_or_none()
     return pivot
+
+
+def is_external_ticket_applicable(offer: offers_models.Offer) -> bool:
+    return (
+        offer.subcategory.id == subcategories.SEANCE_CINE.id
+        and db.session.query(get_cinema_venue_provider_query(offer.venueId).exists()).scalar()
+    )
