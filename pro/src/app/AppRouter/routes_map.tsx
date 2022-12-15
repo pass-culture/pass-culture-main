@@ -8,10 +8,10 @@ import BusinessUnitList from 'pages/BusinessUnitList'
 import CollectiveBookings from 'pages/CollectiveBookings'
 import CollectiveOfferRoutes from 'pages/CollectiveOfferRoutes'
 import CollectiveOffers from 'pages/CollectiveOffers'
+import { Companies } from 'pages/Companies'
 import CsvTable from 'pages/CsvTable'
 import Desk from 'pages/Desk'
 import { EmailChangeValidation } from 'pages/EmailChangeValidation'
-import { Entreprises } from 'pages/Entreprises'
 import Unavailable from 'pages/Errors/Unavailable/Unavailable'
 import Homepage from 'pages/Home/Homepage'
 import LostPassword from 'pages/LostPassword/LostPassword'
@@ -118,12 +118,12 @@ const routes: IRoute[] = [
     title: 'Accueil',
   },
   {
-    component: Entreprises,
+    component: Companies,
     path: '/entreprises',
     title: 'Vos entreprises',
     meta: {
       layoutConfig: {
-        pageName: 'entreprises',
+        pageName: 'companies',
       },
     },
   },

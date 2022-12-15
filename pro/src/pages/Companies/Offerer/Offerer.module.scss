@@ -1,0 +1,15 @@
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.venue-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    .venue-list-item {
+        margin-left: rem.torem(16px);
+        &:first-child {
+            margin-left: 0;
+        }
+    }
+}
