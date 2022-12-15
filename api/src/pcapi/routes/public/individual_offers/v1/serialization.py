@@ -3,6 +3,7 @@ import enum
 import typing
 
 import pydantic
+from pydantic import utils as pydantic_utils
 import typing_extensions
 
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -286,29 +287,31 @@ class AdditionalDatesCreation(serialization.ConfiguredBaseModel):
     )
 
 
+class BaseStockResponseGetter(pydantic_utils.GetterDict):
+    def get(self, key: typing.Any, default: typing.Any = None) -> typing.Any:
+        stock: offers_models.Stock = self._obj
+        if key == "price":
+            return finance_utils.to_eurocents(stock.price)
+        if key == "quantity":
+            return stock.quantity if stock.quantity is not None else "unlimited"
+
+        return super().get(key, default)
+
+
 class BaseStockResponse(serialization.ConfiguredBaseModel):
     booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
     price: pydantic.StrictInt = PRICE_FIELD
     quantity: pydantic.StrictInt | typing.Literal["unlimited"] = QUANTITY_FIELD
 
+    class Config:
+        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
+        getter_dict = BaseStockResponseGetter
+
 
 class DateResponse(BaseStockResponse):
     id: int
     beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
-    booking_limit_datetime: datetime.datetime = BOOKING_DATETIME_FIELD
-
-    class Config:
-        json_encoders = {datetime: date_utils.format_into_utc_date}
-
-    @classmethod
-    def from_orm(cls, date_stock: offers_models.Stock) -> "DateResponse":
-        return cls(
-            id=date_stock.id,
-            beginning_datetime=date_stock.beginningDatetime,
-            booking_limit_datetime=date_stock.bookingLimitDatetime,
-            price=finance_utils.to_eurocents(date_stock.price),
-            quantity=date_stock.quantity if date_stock.quantity is not None else "unlimited",
-        )
+    booking_limit_datetime: datetime.datetime = BOOKING_LIMIT_DATETIME_FIELD
 
 
 class AdditionalDatesResponse(serialization.ConfiguredBaseModel):
