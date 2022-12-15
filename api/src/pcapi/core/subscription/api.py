@@ -650,7 +650,9 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
         return False
     if user.eligibility is None:
         return False
-    if fraud_api.invalidate_fraud_check_if_duplicate(subscription_state.fraud_check):
+    duplicate_beneficiary = fraud_api.get_duplicate_beneficiary(subscription_state.fraud_check)
+    if duplicate_beneficiary:
+        fraud_api.invalidate_fraud_check_for_duplicate_user(subscription_state.fraud_check, duplicate_beneficiary.id)
         return False
 
     source_data = typing.cast(common_fraud_models.IdentityCheckContent, subscription_state.fraud_check.source_data())
