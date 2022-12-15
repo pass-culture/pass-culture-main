@@ -753,7 +753,7 @@ def create_profile_completion_fraud_check(
     repository.save(fraud_check)
 
 
-def invalidate_fraud_check_if_duplicate(fraud_check: models.BeneficiaryFraudCheck) -> bool:
+def get_duplicate_beneficiary(fraud_check: models.BeneficiaryFraudCheck) -> users_models.User | None:
     identity_content = fraud_check.source_data()
 
     if not isinstance(identity_content, IdentityCheckContent):
@@ -766,24 +766,25 @@ def invalidate_fraud_check_if_duplicate(fraud_check: models.BeneficiaryFraudChec
     if not first_name or not last_name or not birth_date:
         raise ValueError("Invalid fraud check identity data")
 
-    duplicate_user = find_duplicate_beneficiary(
+    return find_duplicate_beneficiary(
         first_name,
         last_name,
         identity_content.get_married_name(),
         birth_date,
         fraud_check.userId,
     )
-    if not duplicate_user:
-        return False
 
+
+def invalidate_fraud_check_for_duplicate_user(
+    fraud_check: models.BeneficiaryFraudCheck, duplicate_user_id: int
+) -> None:
     fraud_check.status = models.FraudCheckStatus.SUSPICIOUS
     if not fraud_check.reasonCodes:
         fraud_check.reasonCodes = []
     fraud_check.reasonCodes.append(models.FraudReasonCode.DUPLICATE_USER)
-    fraud_check.reason = f"Fraud check invalidé: duplicat de l'utilisateur {duplicate_user.id}"
+    fraud_check.reason = f"Fraud check invalidé: duplicat de l'utilisateur {duplicate_user_id}"
 
     repository.save(fraud_check)
-    return True
 
 
 def _anonymize_email(email: str) -> str:
