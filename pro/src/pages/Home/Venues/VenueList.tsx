@@ -47,6 +47,7 @@ const VenueList = ({
           offererId={selectedOffererId}
           publicName={venue.publicName}
           hasMissingReimbursementPoint={venue.hasMissingReimbursementPoint}
+          hasOnlyOneVenue={physicalVenues.length === 1}
         />
       ))}
     </div>
