@@ -48,8 +48,10 @@ class CreateBoostPivotTest:
         _cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
             venue=venue, provider=boost_provider, idAtProvider="cinema_test"
         )
+        venue_2 = offerers_factories.VenueFactory()
+
         data = {
-            "venue_id": venue.id,
+            "venue_id": venue_2.id,
             "account_id": "account_test",
             "cinema_id": "cinema_test",
             "api_token": "token_test",
@@ -97,6 +99,87 @@ class EditBoostPivotTest:
         assert boost_cinema_details.cinemaUrl == "https://new-url.com/"
         assert boost_cinema_details.token is None
         assert boost_cinema_details.tokenExpirationDate is None
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_update_password(self, _mocked_validate_csrf_token, app):
+        AdminFactory(email="user@example.com")
+        venue = offerers_factories.VenueFactory()
+        cinema_id = "cinema_test"
+        cinema_provider_pivot = providers_factories.BoostCinemaProviderPivotFactory(venue=venue, idAtProvider=cinema_id)
+        username = "cinema_test"
+        boost_cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot,
+            cinemaUrl="https://example.com/",
+            username=username,
+            password="password_test",
+        )
+        data = {
+            "venue_id": venue.id,
+            "cinema_id": cinema_id,
+            "username": username,
+            "password": "toto",
+            "cinema_url": "https://example.com/",
+        }
+
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post(f"/pc/back-office/boost/edit/?id={boost_cinema_details.id}", form=data)
+
+        assert cinema_provider_pivot.idAtProvider == cinema_id
+        assert boost_cinema_details.cinemaUrl == "https://example.com/"
+        assert boost_cinema_details.username == username
+        assert boost_cinema_details.password == "toto"
+        assert response.status_code == 302
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_cannot_reuse_cinema_id_at_provider(self, _mocked_validate_csrf_token, app):
+        AdminFactory(email="user@example.com")
+        boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
+
+        venue_1 = offerers_factories.VenueFactory()
+        cinema_id_1 = "cinema_1"
+        cinema_provider_pivot_1 = providers_factories.BoostCinemaProviderPivotFactory(
+            venue=venue_1, provider=boost_provider, idAtProvider=cinema_id_1
+        )
+        username_1 = "cinema_test"
+        _boost_cinema_details_1 = providers_factories.BoostCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot_1,
+            cinemaUrl="https://example.com/",
+            username=username_1,
+            password="password_test",
+        )
+        venue_2 = offerers_factories.VenueFactory()
+        cinema_id_2 = "cinema_2"
+        cinema_provider_pivot_2 = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_2, provider=boost_provider, idAtProvider=cinema_id_2
+        )
+        username_2 = "cinema_2"
+        boost_cinema_details_2 = providers_factories.BoostCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot_2,
+            cinemaUrl="https://another-example.com/",
+            username=username_2,
+            password="another_password",
+        )
+
+        data = {
+            "venue_id": venue_2.id,
+            "cinema_id": cinema_id_1,
+            "username": username_2,
+            "password": "another_password",
+            "cinema_url": "https://another-example.com/",
+        }
+
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post(f"/pc/back-office/boost/edit/?id={boost_cinema_details_2.id}", form=data)
+
+        # no changes
+        assert cinema_provider_pivot_2.idAtProvider == cinema_id_2
+        assert boost_cinema_details_2.cinemaUrl == "https://another-example.com/"
+        assert boost_cinema_details_2.username == username_2
+        assert boost_cinema_details_2.password == "another_password"
+        assert response.status_code == 200  # no redirect
+        assert "Cet identifiant cinéma existe déjà pour un autre lieu" in response.data.decode("utf8")
 
 
 class DeleteBoostPivotTest:
