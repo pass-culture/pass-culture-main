@@ -13,7 +13,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.drop_constraint("user_offerer_validationToken_key", "user_offerer", type_="unique")
+    # constraint user_offerer_validationToken_key is dropped with column
     op.drop_column("user_offerer", "validationToken")
 
 
