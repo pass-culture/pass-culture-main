@@ -76,6 +76,21 @@ class GetShowtimesTest:
             boost_serializers.ShowTime4(id=36932),
         ]
 
+    def test_should_return_a_movie_showtimes(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?film=207&page=1&per_page=2",
+            json=fixtures.ShowtimesWithFilmIdEndpointResponse.PAGE_1_JSON_DATA,
+        )
+        boost = BoostClientAPI(cinema_str_id)
+        showtimes = boost.get_showtimes(per_page=2, start_date=date.date(2022, 10, 10), interval_days=10, film=207)
+
+        assert showtimes == [
+            boost_serializers.ShowTime4(id=36683),
+            boost_serializers.ShowTime4(id=36684),
+        ]
+
 
 class GetShowtimeRemainingSeatsTest:
     def test_number_of_remaining_seats_for_showtime(self, requests_mock):
