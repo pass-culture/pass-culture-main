@@ -143,6 +143,7 @@ MAX_API_KEY_PER_OFFERER = int(os.environ.get("MAX_API_KEY_PER_OFFERER", 5))
 ADMINISTRATION_EMAIL_ADDRESS = secrets_utils.get("ADMINISTRATION_EMAIL_ADDRESS")
 COMPLIANCE_EMAIL_ADDRESS = secrets_utils.get("COMPLIANCE_EMAIL_ADDRESS", "")
 DEV_EMAIL_ADDRESS = secrets_utils.get("DEV_EMAIL_ADDRESS")
+DEV_EMAIL_ALIAS_ADDRESS = secrets_utils.get("DEV_EMAIL_ALIAS_ADDRESS")
 
 # When load testing, override `EMAIL_BACKEND` to avoid going over SendinBlue quota:
 #     EMAIL_BACKEND="pcapi.core.mails.backends.logger.LoggerBackend"
