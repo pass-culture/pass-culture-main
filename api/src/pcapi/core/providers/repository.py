@@ -5,7 +5,6 @@ from typing import cast
 from flask_sqlalchemy import BaseQuery
 
 from pcapi.core.offerers.models import Venue
-from pcapi.models import db
 
 from . import constants
 from . import exceptions
@@ -164,10 +163,9 @@ def find_latest_sync_part_end_event(provider: models.Provider) -> models.LocalPr
     )
 
 
-def id_at_provider_exists_for_provider(id_at_provider: str, provider_id: int) -> bool:
-    return db.session.query(
-        models.CinemaProviderPivot.query.filter(
-            models.CinemaProviderPivot.idAtProvider == id_at_provider,
-            models.CinemaProviderPivot.providerId == provider_id,
-        ).exists()
-    ).scalar()
+def get_pivot_for_id_at_provider(id_at_provider: str, provider_id: int) -> models.CinemaProviderPivot | None:
+    pivot = models.CinemaProviderPivot.query.filter(
+        models.CinemaProviderPivot.idAtProvider == id_at_provider,
+        models.CinemaProviderPivot.providerId == provider_id,
+    ).one_or_none()
+    return pivot

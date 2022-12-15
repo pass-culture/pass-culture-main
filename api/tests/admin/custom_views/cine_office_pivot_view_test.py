@@ -41,14 +41,16 @@ class CreateCineOfficePivotTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_id_at_provider_unicity(self, _mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
-        venue = offerers_factories.VenueFactory()
+        venue_1 = offerers_factories.VenueFactory()
         cds_provider = get_provider_by_local_class("CDSStocks")
         _cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue, provider=cds_provider, idAtProvider="cinema_test"
+            venue=venue_1, provider=cds_provider, idAtProvider="cinema_test"
         )
 
+        venue_2 = offerers_factories.VenueFactory()
+
         data = {
-            "venue_id": venue.id,
+            "venue_id": venue_2.id,
             "account_id": "account_test",
             "cinema_id": "cinema_test",
             "api_token": "token_test",
@@ -64,7 +66,7 @@ class CreateCineOfficePivotTest:
 class EditCineOfficePivotTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_update_cine_office_information(self, _mocked_validate_csrf_token, app):
+    def test_update_editable_attributes(self, _mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory()
         cds_provider = get_provider_by_local_class("CDSStocks")
@@ -89,6 +91,77 @@ class EditCineOfficePivotTest:
         assert cinema_provider_pivot.idAtProvider == "new_cinema_id"
         assert cds_cinema_details.accountId == "new_account_id"
         assert cds_cinema_details.cinemaApiToken == "new_token_id"
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_update_token(self, _mocked_validate_csrf_token, app):
+        AdminFactory(email="user@example.com")
+        venue = offerers_factories.VenueFactory()
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        cinema_id = "cinema_test"
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue, provider=cds_provider, idAtProvider=cinema_id
+        )
+        account_id = "cinema_test"
+        cds_cinema_details = providers_factories.CDSCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, accountId=account_id, cinemaApiToken="token_test"
+        )
+
+        data = {
+            "venue_id": venue.id,
+            "account_id": account_id,
+            "cinema_id": cinema_id,
+            "api_token": "new_token_id",
+        }
+
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post(f"/pc/back-office/cine-office/edit/?id={cds_cinema_details.id}", form=data)
+
+        assert cinema_provider_pivot.idAtProvider == cinema_id
+        assert cds_cinema_details.accountId == account_id
+        assert cds_cinema_details.cinemaApiToken == "new_token_id"
+        assert response.status_code == 302
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_cannot_reuse_cinema_id_at_provider(self, _mocked_validate_csrf_token, app):
+        AdminFactory(email="user@example.com")
+        venue_1 = offerers_factories.VenueFactory()
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        cinema_id_1 = "cinema_1"
+        cinema_provider_pivot_1 = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_1, provider=cds_provider, idAtProvider=cinema_id_1
+        )
+        account_id_1 = "cinema_1"
+        _cds_cinema_details_1 = providers_factories.CDSCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot_1, accountId=account_id_1, cinemaApiToken="token_test_1"
+        )
+        venue_2 = offerers_factories.VenueFactory()
+        cinema_id_2 = "cinema_2"
+        cinema_provider_pivot_2 = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_2, provider=cds_provider, idAtProvider=cinema_id_2
+        )
+        account_id_2 = "cinema_2"
+        cds_cinema_details_2 = providers_factories.CDSCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot_2, accountId=account_id_2, cinemaApiToken="token_test_2"
+        )
+
+        data = {
+            "venue_id": venue_2.id,
+            "account_id": account_id_2,
+            "cinema_id": cinema_id_1,
+            "api_token": "token_test_2",
+        }
+
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post(f"/pc/back-office/cine-office/edit/?id={cds_cinema_details_2.id}", form=data)
+
+        # no changes
+        assert cinema_provider_pivot_2.idAtProvider == cinema_id_2
+        assert cds_cinema_details_2.accountId == account_id_2
+        assert cds_cinema_details_2.cinemaApiToken == "token_test_2"
+        assert response.status_code == 200  # no redirect
+        assert "Cet identifiant cinéma existe déjà pour un autre lieu" in response.data.decode("utf8")
 
 
 class DeleteCineOfficePivotTest:

@@ -6,7 +6,6 @@ from werkzeug.exceptions import Forbidden
 from wtforms import Form
 from wtforms import IntegerField
 from wtforms import StringField
-from wtforms import ValidationError
 from wtforms.validators import DataRequired
 
 from pcapi.admin.base_configuration import BaseAdminView
@@ -16,16 +15,10 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.models import db
 
 
-def unique_id_at_provider_check(_form: SecureForm, field: StringField) -> None:
-    cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
-    if providers_repository.id_at_provider_exists_for_provider(id_at_provider=field.data, provider_id=cds_provider.id):
-        raise ValidationError("Cet identifiant cinéma existe déjà pour un autre lieu")
-
-
 class CineOfficePivotForm(SecureForm):
     venue_id = IntegerField("Identifiant numérique du lieu (pass Culture)", [DataRequired()])
     account_id = StringField("Nom de compte (CDS)", [DataRequired()])
-    cinema_id = StringField("Identifiant cinéma (CDS)", [DataRequired(), unique_id_at_provider_check])
+    cinema_id = StringField("Identifiant cinéma (CDS)", [DataRequired()])
     api_token = StringField("Clé API (CDS)", [DataRequired()])
 
 
@@ -67,6 +60,21 @@ class CineOfficePivotView(BaseAdminView):
         form = super().get_edit_form()
         form.venue_id.disabled = True
         return form
+
+    def validate_form(self, form: Form) -> bool:
+        # do not use this custom validation on DeleteForm
+        if not isinstance(form, CineOfficePivotForm):
+            return super().validate_form(form)
+
+        cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
+        pivot = providers_repository.get_pivot_for_id_at_provider(
+            id_at_provider=form.cinema_id.data, provider_id=cds_provider.id
+        )
+        if pivot and pivot.venueId != form.venue_id.data:
+            flash("Cet identifiant cinéma existe déjà pour un autre lieu")
+            return False
+
+        return super().validate_form(form)
 
     def update_model(
         self, form: CineOfficePivotForm, cds_cinema_details: providers_models.CDSCinemaDetails
