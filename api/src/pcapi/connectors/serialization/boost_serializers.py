@@ -57,7 +57,10 @@ def _convert_to_utc_datetime(datetime_with_tz_offset: datetime.datetime) -> date
 
 
 class ShowTime4(BaseModel):
+    """We transcribe their API schema and keep their name convention"""
+
     id: int
+    numberRemainingSeatsForOnlineSale: int
 
 
 class ShowTimeCollection(Collection):
