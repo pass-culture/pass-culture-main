@@ -68,7 +68,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "acceptDoubleBookings": False,
+                "enableDoubleBookings": False,
                 "bookingEmail": "spam@example.com",
                 "categoryRelatedFields": {
                     "author": "Maurice",
@@ -239,7 +239,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "acceptDoubleBookings": True,
+                "enableDoubleBookings": True,
                 "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "HUMOUR-VENTRILOQUE"},
                 "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
@@ -248,7 +248,7 @@ class PostProductTest:
         )
         assert response.status_code == 400
         assert offers_models.Offer.query.one_or_none() is None
-        assert response.json == {"acceptDoubleBookings": ["the category chosen does not allow double bookings"]}
+        assert response.json == {"enableDoubleBookings": ["the category chosen does not allow double bookings"]}
 
     @pytest.mark.usefixtures("db_session")
     @testing.override_features(WIP_ENABLE_OFFER_CREATION_API_V1=False)
@@ -600,7 +600,7 @@ class PostEventTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
             json={
-                "acceptDoubleBookings": True,
+                "enableDoubleBookings": True,
                 "bookingEmail": "nicoj@example.com",
                 "categoryRelatedFields": {
                     "author": "Ray Charles",

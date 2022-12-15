@@ -50,14 +50,14 @@ class DisabilityCompliance(serialization.ConfiguredBaseModel):
 
 
 class PhysicalLocation(serialization.ConfiguredBaseModel):
-    type: typing.Literal["physical"]
+    type: typing.Literal["physical"] = "physical"
     venue_id: int = pydantic.Field(
         ..., example=1, description="You can get the list of your venues with the route GET /venues"
     )
 
 
 class DigitalLocation(serialization.ConfiguredBaseModel):
-    type: typing.Literal["digital"]
+    type: typing.Literal["digital"] = "digital"
     url: pydantic.HttpUrl = pydantic.Field(
         ...,
         description="The link users will be redirected to after booking this offer. You may include '{token}', '{email}' and/or '{offerId}' in the URL, which will be replaced respectively by the booking token (use this token to confirm the offer - see API Contremarque), the email of the user who booked the offer and the created offer id",
@@ -74,7 +74,14 @@ class ImageBody(serialization.ConfiguredBaseModel):
     )
 
 
-class ExtraDataModel(pydantic.BaseModel):
+class ImageResponse(serialization.ConfiguredBaseModel):
+    credit: str | None = pydantic.Field(None, description="The image owner or author.")
+    url: str = pydantic.Field(
+        ..., description="The url where the image is accessible", example="https://example.com/image.png"
+    )
+
+
+class ExtraDataModel(serialization.ConfiguredBaseModel):
     author: str | None
     isbn: str | None = pydantic.Field(None, regex=r"^(\d){13}$", example="9783140464079")
     musicType: MusicTypeEnum | None  # type: ignore [valid-type]
@@ -89,43 +96,52 @@ class CategoryRelatedFields(ExtraDataModel):
     subcategory_id: str = pydantic.Field(alias="category")
 
 
+IS_DUO_BOOKINGS_FIELD = pydantic.Field(
+    False,
+    description="If set to true, the user may book the offer for two persons. The second item will be delivered at the same price as the first one. The category must be compatible with this feature.",
+    alias="enableDoubleBookings",
+)
+BOOKING_EMAIL_FIELD = pydantic.Field(
+    None, description="The recipient email for notifications about bookings, cancellations, etc."
+)
+CATEGORY_RELATED_FIELD_DESCRIPTION = (
+    "The cultural category the offer belongs to. According to the category, some fields may or must be specified."
+)
+CATEGORY_RELATED_FIELD = pydantic.Field(..., description=CATEGORY_RELATED_FIELD_DESCRIPTION)
+DESCRIPTION_FIELD = pydantic.Field(
+    None, description="The offer description", example="A great book for kids and old kids.", max_length=1000
+)
+DISABILITY_COMPLIANCE_FIELD = pydantic.Field(..., description="Specify if the offer is accessible to disabled people.")
+EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic.Field(
+    None,
+    description="This link is displayed to users wishing to book the offer but who do not have (anymore) credit.",
+)
+IMAGE_FIELD = pydantic.Field(
+    None, description="The image illustrating the offer. Offers with images are more likely to be booked."
+)
+WITHDRAWAL_DETAILS_FIELD = pydantic.Field(
+    None,
+    description="Further information that will be provided to the beneficiary to ease the offer collection.",
+    example="Opening hours, specific office, collection period, access code, email annoucement...",
+    alias="itemCollectionDetails",
+)
+LOCATION_FIELD = pydantic.Field(
+    ..., discriminator="type", description="The location where the offer will be available or will take place."
+)
+NAME_FIELD = pydantic.Field(description="The offer title", example="Le Petit Prince", max_length=90)
+
+
 class OfferCreationBase(serialization.ConfiguredBaseModel):
-    accept_double_bookings: bool | None = pydantic.Field(
-        None,
-        description="If set to true, the user may book the offer for two persons. The second item will be delivered at the same price as the first one. The category must be compatible with this feature.",
-    )
-    booking_email: pydantic.EmailStr | None = pydantic.Field(
-        None, description="The recipient email for notifications about bookings, cancellations, etc."
-    )
-    category_related_fields: CategoryRelatedFields
-    description: str | None = pydantic.Field(
-        None, description="The offer description", example="A great book for kids and old kids.", max_length=1000
-    )
-    disability_compliance: DisabilityCompliance
-    external_ticket_office_url: pydantic.HttpUrl | None = pydantic.Field(
-        None,
-        description="This link is displayed to users wishing to book the offer but who do not have (anymore) credit.",
-    )
-    image: ImageBody | None
-    item_collection_details: str | None = pydantic.Field(
-        None,
-        description="Further information that will be provided to the beneficiary to ease the offer collection.",
-        example="Opening hours, specific office, collection period, access code, email annoucement...",
-    )
-    location: PhysicalLocation | DigitalLocation = pydantic.Field(
-        ..., discriminator="type", description="The location where the offer will be available or will take place."
-    )
-    name: str = pydantic.Field(description="The offer title", example="Le Petit Prince", max_length=90)
-
-
-PRODUCT_SELECTABLE_SUBCATEGORIES = [
-    subcategory
-    for subcategory in subcategories.ALL_SUBCATEGORIES
-    if subcategory.is_selectable and not subcategory.is_event
-]
-EVENT_SELECTABLE_SUBCATEGORIES = [
-    subcategory for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.is_selectable and subcategory.is_event
-]
+    booking_email: pydantic.EmailStr | None = BOOKING_EMAIL_FIELD
+    category_related_fields: CategoryRelatedFields = CATEGORY_RELATED_FIELD
+    description: str | None = DESCRIPTION_FIELD
+    disability_compliance: DisabilityCompliance = DISABILITY_COMPLIANCE_FIELD
+    external_ticket_office_url: pydantic.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
+    image: ImageBody | None = IMAGE_FIELD
+    is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
+    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
+    name: str = NAME_FIELD
+    withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
 
 
 def get_category_fields_model(subcategory: subcategories.Subcategory) -> pydantic.BaseModel:
@@ -162,6 +178,15 @@ else:
         pydantic.Field(discriminator="subcategory_id"),
     ]
 
+BEGINNING_DATETIME_FIELD = pydantic.Field(
+    ...,
+    description="The timezone aware datetime of the event.",
+    example="2023-01-02T00:00:00+01:00",
+)
+BOOKING_LIMIT_DATETIME_FIELD = pydantic.Field(
+    description="The timezone aware datetime after which the offer can no longer be booked.",
+    example="2023-01-01T00:00:00+01:00",
+)
 PRICE_FIELD = pydantic.Field(..., description="The offer price in euro cents.", example=1000)
 QUANTITY_FIELD = pydantic.Field(
     ...,
@@ -188,11 +213,7 @@ class BaseStockCreation(serialization.ConfiguredBaseModel):
 
 
 class StockCreation(BaseStockCreation):
-    booking_limit_datetime: datetime.datetime | None = pydantic.Field(
-        None,
-        description="The timezone aware datetime after which the offer can no longer be booked.",
-        example="2023-01-01T00:00:00+01:00",
-    )
+    booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
 
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
 
@@ -211,7 +232,7 @@ BOOKING_DATETIME_FIELD = pydantic.Field(
 
 class DateCreation(BaseStockCreation):
     beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
-    booking_limit_datetime: datetime.datetime = BOOKING_DATETIME_FIELD
+    booking_limit_datetime: datetime.datetime = BOOKING_LIMIT_DATETIME_FIELD
 
     _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
@@ -266,6 +287,7 @@ class AdditionalDatesCreation(serialization.ConfiguredBaseModel):
 
 
 class BaseStockResponse(serialization.ConfiguredBaseModel):
+    booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
     price: pydantic.StrictInt = PRICE_FIELD
     quantity: pydantic.StrictInt | typing.Literal["unlimited"] = QUANTITY_FIELD
 
@@ -293,6 +315,7 @@ class AdditionalDatesResponse(serialization.ConfiguredBaseModel):
     additional_dates: typing.List[DateResponse] | None = pydantic.Field(None, description="The new dates created.")
 
 
+class OfferResponseGetter(pydantic_utils.GetterDict):
 class OfferResponse(serialization.ConfiguredBaseModel):
     id: int
     name: str
