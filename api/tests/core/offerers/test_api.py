@@ -37,6 +37,27 @@ from tests.test_utils import gen_offerer_tags
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@pytest.mark.parametrize("ape_code, expected_tag", list(offerers_api.APE_TAG_MAPPING.items()))
+def test_new_offerer_auto_tagging(db_session, ape_code, expected_tag):
+    # given
+    gen_offerer_tags()
+    offerer = offerers_factories.OffererFactory()
+    siren_info = sirene.SirenInfo(
+        ape_code=ape_code,
+        siren="777123456",
+        name="this is not a name",
+        head_office_siret="77712345600000",
+        legal_category_code="don't know",
+    )
+
+    # when
+    offerers_api.auto_tag_new_offerer(offerer, siren_info)
+
+    # then
+    db_session.refresh(offerer)
+    assert expected_tag in (tag.label for tag in offerer.tags)
+
+
 class CreateVenueTest:
     def base_data(self, offerer):
         return {
@@ -440,10 +461,11 @@ class CreateOffererTest:
         self, mock_maybe_send_offerer_validation_email
     ):
         # Given
+        gen_offerer_tags()
         offerers_factories.VirtualVenueTypeFactory()
         user = users_factories.UserFactory()
         offerer_informations = CreateOffererQueryModel(
-            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer", siren="777084112", address="123 rue de Paris", postalCode="93100", city="Montreuil"
         )
 
         # When
@@ -457,6 +479,7 @@ class CreateOffererTest:
         assert created_offerer.postalCode == offerer_informations.postalCode
         assert created_offerer.city == offerer_informations.city
         assert created_offerer.validationStatus == ValidationStatus.NEW
+        assert "Collectivité" in (tag.label for tag in created_offerer.tags)
 
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationStatus == ValidationStatus.VALIDATED
@@ -618,37 +641,12 @@ class CreateOffererTest:
         assert actions_list[0].offerer == created_offerer
         assert actions_list[0].comment == "Nouvelle demande sur un SIREN précédemment rejeté"
 
-    @pytest.mark.parametrize(
-        "siren, expected_tag",
-        (
-            ("777084112", "Collectivité"),
-            ("777084122", "Établissement public"),
-            ("777091032", "Établissement public"),
-        ),
-    )
-    def test_create_offerer_auto_tagging(self, siren, expected_tag):
-        # Given
-        gen_offerer_tags()
-        offerers_factories.VirtualVenueTypeFactory()
-        user = users_factories.UserFactory()
-        offerer_informations = CreateOffererQueryModel(
-            name="Test Offerer", siren=siren, address="123 rue de Paris", postalCode="93100", city="Montreuil"
-        )
-
-        # When
-        created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
-
-        # Then
-        created_offerer = created_user_offerer.offerer
-        assert created_offerer.name == offerer_informations.name
-        assert expected_tag in (tag.label for tag in created_offerer.tags)
-
     def test_create_offerer_auto_tagging_no_error_if_tag_not_in_db(self):
         # Given
         offerers_factories.VirtualVenueTypeFactory()
         user = users_factories.UserFactory()
         offerer_informations = CreateOffererQueryModel(
-            name="Test Offerer", siren=777084112, address="123 rue de Paris", postalCode="93100", city="Montreuil"
+            name="Test Offerer", siren="777084112", address="123 rue de Paris", postalCode="93100", city="Montreuil"
         )
 
         # When

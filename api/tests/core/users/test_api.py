@@ -745,15 +745,7 @@ class CreateProUserTest:
 
 
 class CreateProUserAndOffererTest:
-    @pytest.mark.parametrize(
-        "siren, expected_tag",
-        (
-            ("777084112", "Collectivité"),
-            ("777084122", "Établissement public"),
-            ("777091032", "Établissement public"),
-        ),
-    )
-    def test_offerer_auto_tagging(self, siren, expected_tag):
+    def test_offerer_auto_tagging(self):
         # Given
         gen_offerer_tags()
         offerers_factories.VirtualVenueTypeFactory()
@@ -768,7 +760,7 @@ class CreateProUserAndOffererTest:
             phoneNumber="0607080910",
             postalCode="75017",
             publicName="The public name",
-            siren=siren,
+            siren=777084122,
             contactOk=True,
         )
 
@@ -778,7 +770,7 @@ class CreateProUserAndOffererTest:
         # Then
         offerer = user.UserOfferers[0].offerer
         assert offerer.name == user_info.name
-        assert expected_tag in (tag.label for tag in offerer.tags)
+        assert "Établissement public" in (tag.label for tag in offerer.tags)
 
 
 class BeneficiaryInformationUpdateTest:

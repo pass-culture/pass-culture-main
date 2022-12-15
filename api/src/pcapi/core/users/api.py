@@ -669,10 +669,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
         offerer = _generate_offerer(pro_user.dict(by_alias=True))
         user_offerer = offerers_api.grant_user_offerer_access(offerer, new_pro_user)
         digital_venue = offerers_api.create_digital_venue(offerer)
-        action = history_api.log_action(
-            history_models.ActionType.OFFERER_NEW, new_pro_user, user=new_pro_user, offerer=offerer, save=False
-        )
-        objects_to_save.extend([digital_venue, offerer, user_offerer, action])
+        objects_to_save.extend([digital_venue, offerer, user_offerer])
 
     new_pro_user = _set_offerer_departement_code(new_pro_user, offerer)
 
@@ -683,14 +680,25 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
 
     repository.save(new_pro_user, user_offerer, *objects_to_save)
 
-    try:
-        siren_info = sirene.get_siren(offerer.siren)
-    except sirene.SireneException as exc:
-        logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
-        siren_info = None
+    if is_new_offerer:
+        try:
+            siren_info = sirene.get_siren(offerer.siren)
+        except sirene.SireneException as exc:
+            logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
+            siren_info = None
 
-    if is_new_offerer and siren_info:
-        offerers_api.auto_tag_new_offerer(offerer, siren_info)
+        extra_data = {}
+        if siren_info:
+            offerers_api.auto_tag_new_offerer(offerer, siren_info)
+            extra_data = {"sirene_info": dict(siren_info)}
+
+        history_api.log_action(
+            history_models.ActionType.OFFERER_NEW,
+            new_pro_user,
+            user=new_pro_user,
+            offerer=offerer,
+            **extra_data,  # type: ignore [arg-type]
+        )
 
     if not transactional_mails.send_email_validation_to_pro_email(new_pro_user):
         logger.warning(
