@@ -22,7 +22,7 @@ class OffererValidationListForm(FlaskForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("Nom de structure ou SIREN")
+    q = fields.PCOptSearchField("Nom de structure, SIREN, code postal ou département")
     tags = fields.PCQuerySelectMultipleField(
         "Tags", query_factory=_get_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
     )
@@ -39,8 +39,10 @@ class OffererValidationListForm(FlaskForm):
     )
 
     def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
-        if q.data and q.data.isnumeric() and len(q.data) != 9:
-            raise wtforms.validators.ValidationError("Le SIREN doit faire 9 caractères")
+        if q.data and q.data.isnumeric() and len(q.data) not in (2, 3, 5, 9):
+            raise wtforms.validators.ValidationError(
+                "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
+            )
         return q
 
 
