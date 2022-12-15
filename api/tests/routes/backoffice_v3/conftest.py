@@ -372,17 +372,23 @@ def offerer_tags_fixture():
 def offerers_to_be_validated_fixture(offerer_tags):
     top_tag, collec_tag, public_tag = offerer_tags
 
-    no_tag = offerers_factories.NotValidatedOffererFactory(name="A", siren="123001001", address=None)
+    no_tag = offerers_factories.NotValidatedOffererFactory(
+        name="A", siren="123001001", address=None, postalCode="35000", city="Rennes"
+    )
     top = offerers_factories.NotValidatedOffererFactory(
-        name="B", siren="123002002", validationStatus=ValidationStatus.PENDING
+        name="B", siren="123002002", validationStatus=ValidationStatus.PENDING, postalCode="29000", city="Quimper"
     )
-    collec = offerers_factories.NotValidatedOffererFactory(name="C", siren="123003003")
+    collec = offerers_factories.NotValidatedOffererFactory(
+        name="C", siren="123003003", postalCode="29200", city="Brest"
+    )
     public = offerers_factories.NotValidatedOffererFactory(
-        name="D", siren="123004004", validationStatus=ValidationStatus.PENDING
+        name="D", siren="123004004", validationStatus=ValidationStatus.PENDING, postalCode="29300", city="Quimperlé"
     )
-    top_collec = offerers_factories.NotValidatedOffererFactory(name="E", siren="123005005")
+    top_collec = offerers_factories.NotValidatedOffererFactory(
+        name="E", siren="123005005", postalCode="35400", city="Saint-Malo"
+    )
     top_public = offerers_factories.NotValidatedOffererFactory(
-        name="F", siren="123006006", validationStatus=ValidationStatus.PENDING
+        name="F", siren="123006006", validationStatus=ValidationStatus.PENDING, postalCode="29200", city="Brest"
     )
 
     for offerer in (top, top_collec, top_public):
