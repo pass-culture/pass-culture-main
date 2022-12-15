@@ -134,7 +134,7 @@ def _save_image(image_body: serialization.ImageBody, offer: offers_models.Offer)
 @blueprint.v1_blueprint.route("/products", methods=["POST"])
 @spectree_serialize(api=blueprint.v1_schema, tags=[PRODUCT_OFFERS_TAG])
 @api_key_required
-def post_product_offer(body: serialization.ProductOfferCreationBody) -> serialization.OfferResponse:
+def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.OfferResponse:
     """
     Post a product offer.
     """
@@ -193,7 +193,7 @@ def _deserialize_ticket_collection(
 @blueprint.v1_blueprint.route("/events", methods=["POST"])
 @spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG])
 @api_key_required
-def post_event_offer(body: serialization.EventOfferCreationBody) -> serialization.OfferResponse:
+def post_event_offer(body: serialization.EventOfferCreation) -> serialization.OfferResponse:
     """
     Post an event offer.
     """
@@ -248,8 +248,8 @@ def post_event_offer(body: serialization.EventOfferCreationBody) -> serializatio
 @spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG])
 @api_key_required
 def post_event_date(
-    event_id: int, body: serialization.AdditionalDatesCreationBody
-) -> serialization.AdditionalDatesResponseBody:
+    event_id: int, body: serialization.AdditionalDatesCreation
+) -> serialization.AdditionalDatesResponse:
     """
     Add dates to an event offer.
     """
@@ -274,6 +274,6 @@ def post_event_date(
         except offers_exceptions.OfferCreationBaseException as error:
             raise api_errors.ApiErrors(error.errors, status_code=400)
 
-    return serialization.AdditionalDatesResponseBody(
-        additional_dates=[serialization.DateResponseBody.from_orm(new_date) for new_date in new_dates]
+    return serialization.AdditionalDatesResponse(
+        additional_dates=[serialization.DateResponse.from_orm(new_date) for new_date in new_dates]
     )

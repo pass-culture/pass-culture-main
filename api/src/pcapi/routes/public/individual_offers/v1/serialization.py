@@ -170,7 +170,7 @@ QUANTITY_FIELD = pydantic.Field(
 )
 
 
-class BaseStockCreationBody(serialization.ConfiguredBaseModel):
+class BaseStockCreation(serialization.ConfiguredBaseModel):
     price: pydantic.StrictInt = PRICE_FIELD
     quantity: pydantic.StrictInt | typing.Literal["unlimited"] = QUANTITY_FIELD
 
@@ -187,7 +187,7 @@ class BaseStockCreationBody(serialization.ConfiguredBaseModel):
         return quantity
 
 
-class StockCreationBody(BaseStockCreationBody):
+class StockCreation(BaseStockCreation):
     booking_limit_datetime: datetime.datetime | None = pydantic.Field(
         None,
         description="The timezone aware datetime after which the offer can no longer be booked.",
@@ -209,7 +209,7 @@ BOOKING_DATETIME_FIELD = pydantic.Field(
 )
 
 
-class DateCreationBody(BaseStockCreationBody):
+class DateCreation(BaseStockCreation):
     beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
     booking_limit_datetime: datetime.datetime = BOOKING_DATETIME_FIELD
 
@@ -239,14 +239,14 @@ class SentByEmailDetails(serialization.ConfiguredBaseModel):
     way: typing.Literal["by_email"]
 
 
-class ProductOfferCreationBody(OfferCreationBase):
+class ProductOfferCreation(OfferCreationBase):
     category_related_fields: product_category_fields
-    stock: StockCreationBody | None
+    stock: StockCreation | None
 
 
-class EventOfferCreationBody(OfferCreationBase):
+class EventOfferCreation(OfferCreationBase):
     category_related_fields: event_category_fields
-    dates: typing.List[DateCreationBody] | None = pydantic.Field(
+    dates: typing.List[DateCreation] | None = pydantic.Field(
         None,
         description="The dates of your event. If there are different prices and quantity for the same date, you must add several date objects",
     )
@@ -258,19 +258,19 @@ class EventOfferCreationBody(OfferCreationBase):
     )
 
 
-class AdditionalDatesCreationBody(serialization.ConfiguredBaseModel):
-    additional_dates: typing.List[DateCreationBody] | None = pydantic.Field(
+class AdditionalDatesCreation(serialization.ConfiguredBaseModel):
+    additional_dates: typing.List[DateCreation] | None = pydantic.Field(
         None,
         description="The dates of your event. If there are different prices and quantity for the same date, you must add several date objects",
     )
 
 
-class BaseStockResponseBody(serialization.ConfiguredBaseModel):
+class BaseStockResponse(serialization.ConfiguredBaseModel):
     price: pydantic.StrictInt = PRICE_FIELD
     quantity: pydantic.StrictInt | typing.Literal["unlimited"] = QUANTITY_FIELD
 
 
-class DateResponseBody(BaseStockResponseBody):
+class DateResponse(BaseStockResponse):
     id: int
     beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
     booking_limit_datetime: datetime.datetime = BOOKING_DATETIME_FIELD
@@ -279,7 +279,7 @@ class DateResponseBody(BaseStockResponseBody):
         json_encoders = {datetime: date_utils.format_into_utc_date}
 
     @classmethod
-    def from_orm(cls, date_stock: offers_models.Stock) -> "DateResponseBody":
+    def from_orm(cls, date_stock: offers_models.Stock) -> "DateResponse":
         return cls(
             id=date_stock.id,
             beginning_datetime=date_stock.beginningDatetime,
@@ -289,8 +289,8 @@ class DateResponseBody(BaseStockResponseBody):
         )
 
 
-class AdditionalDatesResponseBody(serialization.ConfiguredBaseModel):
-    additional_dates: typing.List[DateResponseBody] | None = pydantic.Field(None, description="The new dates created.")
+class AdditionalDatesResponse(serialization.ConfiguredBaseModel):
+    additional_dates: typing.List[DateResponse] | None = pydantic.Field(None, description="The new dates created.")
 
 
 class OfferResponse(serialization.ConfiguredBaseModel):
