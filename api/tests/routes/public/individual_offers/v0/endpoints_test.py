@@ -59,6 +59,26 @@ class PostProductTest:
         assert created_offer.description is None
         assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
 
+        assert response.json == {
+            "bookingEmail": None,
+            "categoryRelatedFields": {"author": None, "category": "LIVRE_PAPIER", "isbn": None},
+            "description": None,
+            "disabilityCompliance": {
+                "audioDisabilityCompliant": True,
+                "mentalDisabilityCompliant": True,
+                "motorDisabilityCompliant": True,
+                "visualDisabilityCompliant": True,
+            },
+            "enableDoubleBookings": False,
+            "externalTicketOfficeUrl": None,
+            "id": created_offer.id,
+            "image": None,
+            "itemCollectionDetails": None,
+            "location": {"type": "physical", "venueId": venue.id},
+            "name": "Le champ des possibles",
+            "stock": None,
+        }
+
     @pytest.mark.usefixtures("db_session")
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_offer_creation_with_full_body(self, client, clear_tests_assets_bucket):
@@ -135,6 +155,34 @@ class PostProductTest:
             created_offer.image.url
             == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(created_mediation.id)}"
         )
+
+        assert response.json == {
+            "bookingEmail": "spam@example.com",
+            "categoryRelatedFields": {
+                "author": "Maurice",
+                "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                "musicType": "JAZZ-FUSION",
+                "performer": "Pink Pâtisserie",
+            },
+            "description": "Enregistrement pour la nuit des temps",
+            "disabilityCompliance": {
+                "audioDisabilityCompliant": True,
+                "mentalDisabilityCompliant": True,
+                "motorDisabilityCompliant": False,
+                "visualDisabilityCompliant": False,
+            },
+            "enableDoubleBookings": False,
+            "externalTicketOfficeUrl": "https://maposaic.com",
+            "id": created_offer.id,
+            "image": {
+                "credit": "Jean-Crédit Photo",
+                "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(created_mediation.id)}",
+            },
+            "itemCollectionDetails": None,
+            "location": {"type": "physical", "venueId": venue.id},
+            "name": "Le champ des possibles",
+            "stock": {"bookingLimitDatetime": "2021-12-31T20:00:00Z", "price": 1234, "quantity": 3},
+        }
 
     @pytest.mark.usefixtures("db_session")
     def test_unlimited_quantity(self, client):
@@ -297,6 +345,26 @@ class PostProductTest:
         assert created_offer.url == "https://example.com"
         assert created_offer.extraData == {}
 
+        assert response.json == {
+            "bookingEmail": None,
+            "categoryRelatedFields": {"category": "VOD"},
+            "description": None,
+            "disabilityCompliance": {
+                "audioDisabilityCompliant": True,
+                "mentalDisabilityCompliant": True,
+                "motorDisabilityCompliant": True,
+                "visualDisabilityCompliant": True,
+            },
+            "enableDoubleBookings": False,
+            "externalTicketOfficeUrl": None,
+            "id": created_offer.id,
+            "image": None,
+            "itemCollectionDetails": None,
+            "location": {"type": "digital", "url": "https://example.com"},
+            "name": "Le champ des possibles",
+            "stock": None,
+        }
+
     @pytest.mark.usefixtures("db_session")
     def test_extra_data_deserialization(self, client):
         api_key = offerers_factories.ApiKeyFactory()
@@ -321,6 +389,13 @@ class PostProductTest:
         created_offer = offers_models.Offer.query.one()
 
         assert created_offer.extraData == {"author": "Maurice", "stageDirector": "Alfred"}
+
+        assert response.json["categoryRelatedFields"] == {
+            "author": "Maurice",
+            "category": "CINE_VENTE_DISTANCE",
+            "stageDirector": "Alfred",
+            "visa": None,
+        }
 
     @pytest.mark.usefixtures("db_session")
     def test_physical_product_attached_to_digital_venue(self, client):
@@ -381,6 +456,11 @@ class PostProductTest:
         created_offer = offers_models.Offer.query.one()
 
         assert created_offer.extraData == {"isbn": "1234567891123"}
+        assert response.json["categoryRelatedFields"] == {
+            "author": None,
+            "category": "LIVRE_AUDIO_PHYSIQUE",
+            "isbn": "1234567891123",
+        }
 
     @pytest.mark.usefixtures("db_session")
     def test_wrong_isbn_format(self, client):

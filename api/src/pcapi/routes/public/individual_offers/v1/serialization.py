@@ -166,17 +166,43 @@ def get_category_fields_model(subcategory: subcategories.Subcategory) -> pydanti
     return model
 
 
+def compute_category_related_fields(offer: offers_models.Offer) -> CategoryRelatedFields:
+    category_fields_model = (PRODUCT_CATEGORY_MODELS_BY_SUBCATEGORY | EVENT_CATEGORY_MODELS_BY_SUBCATEGORY)[
+        offer.subcategoryId
+    ]
+    fields = offer.extraData or {}
+    if offer.extraData and "musicSubType" in offer.extraData:
+        fields["musicType"] = MusicTypeEnum(
+            music_types.MUSIC_SUB_TYPES_BY_CODE[int(offer.extraData["musicSubType"])].slug
+        )
+    if offer.extraData and "showSubType" in offer.extraData:
+        fields["showType"] = ShowTypeEnum(show_types.SHOW_SUB_TYPES_BY_CODE[int(offer.extraData["showSubType"])].slug)
+    return category_fields_model(**fields, category=offer.subcategory.id)  # type: ignore [operator]
+
+
+PRODUCT_CATEGORY_MODELS_BY_SUBCATEGORY = {
+    subcategory.id: get_category_fields_model(subcategory)
+    for subcategory in subcategories.ALL_SUBCATEGORIES
+    if subcategory.is_selectable and not subcategory.is_event
+}
+EVENT_CATEGORY_MODELS_BY_SUBCATEGORY = {
+    subcategory.id: get_category_fields_model(subcategory)
+    for subcategory in subcategories.ALL_SUBCATEGORIES
+    if subcategory.is_selectable and subcategory.is_event
+}
+
+
 if typing.TYPE_CHECKING:
     product_category_fields = CategoryRelatedFields
     event_category_fields = CategoryRelatedFields
 else:
     product_category_fields = typing_extensions.Annotated[
-        typing.Union[tuple(get_category_fields_model(subcategory) for subcategory in PRODUCT_SELECTABLE_SUBCATEGORIES)],
-        pydantic.Field(discriminator="subcategory_id"),
+        typing.Union[tuple(PRODUCT_CATEGORY_MODELS_BY_SUBCATEGORY.values())],
+        pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
     event_category_fields = typing_extensions.Annotated[
-        typing.Union[tuple(get_category_fields_model(subcategory) for subcategory in EVENT_SELECTABLE_SUBCATEGORIES)],
-        pydantic.Field(discriminator="subcategory_id"),
+        typing.Union[tuple(EVENT_CATEGORY_MODELS_BY_SUBCATEGORY.values())],
+        pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
 
 BEGINNING_DATETIME_FIELD = pydantic.Field(
@@ -217,18 +243,6 @@ class StockCreation(BaseStockCreation):
     booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
 
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
-
-
-BEGINNING_DATETIME_FIELD = pydantic.Field(
-    ...,
-    description="The timezone aware datetime of the event.",
-    example="2023-01-02T00:00:00+01:00",
-)
-BOOKING_DATETIME_FIELD = pydantic.Field(
-    ...,
-    description="The timezone aware datetime after which the offer can no longer be booked.",
-    example="2023-01-01T00:00:00+01:00",
-)
 
 
 class DateCreation(BaseStockCreation):
@@ -319,7 +333,47 @@ class AdditionalDatesResponse(serialization.ConfiguredBaseModel):
 
 
 class OfferResponseGetter(pydantic_utils.GetterDict):
+    def get(self, key: typing.Any, default: typing.Any = None) -> typing.Any:
+        offer: offers_models.Offer = self._obj
+        if key == "disability_compliance":
+            return DisabilityCompliance.from_orm(self)
+        if key == "location":
+            return DigitalLocation.from_orm(offer) if offer.isDigital else PhysicalLocation.from_orm(offer)
+
+        return super().get(key, default)
+
+
 class OfferResponse(serialization.ConfiguredBaseModel):
     id: int
-    name: str
-    description: str | None
+    booking_email: pydantic.EmailStr | None = BOOKING_EMAIL_FIELD
+    description: str | None = DESCRIPTION_FIELD
+    disability_compliance: DisabilityCompliance = DISABILITY_COMPLIANCE_FIELD
+    external_ticket_office_url: pydantic.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
+    image: ImageResponse | None = IMAGE_FIELD
+    is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
+    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
+    name: str = NAME_FIELD
+    withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
+
+    class Config:
+        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
+        getter_dict = OfferResponseGetter
+
+
+class ProductResponseGetter(OfferResponseGetter):
+    def get(self, key: typing.Any, default: typing.Any = None) -> typing.Any:
+        product: offers_models.Offer = self._obj
+        if key == "category_related_fields":
+            return compute_category_related_fields(product)
+        if key == "stock":
+            return BaseStockResponse.from_orm(product.stock) if product.stock else None
+
+        return super().get(key, default)
+
+
+class ProductOfferResponse(OfferResponse):
+    category_related_fields: product_category_fields
+    stock: BaseStockResponse | None
+
+    class Config:
+        getter_dict = ProductResponseGetter

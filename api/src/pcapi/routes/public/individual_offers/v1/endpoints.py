@@ -132,9 +132,11 @@ def _save_image(image_body: serialization.ImageBody, offer: offers_models.Offer)
 
 
 @blueprint.v1_blueprint.route("/products", methods=["POST"])
-@spectree_serialize(api=blueprint.v1_schema, tags=[PRODUCT_OFFERS_TAG])
+@spectree_serialize(
+    api=blueprint.v1_schema, tags=[PRODUCT_OFFERS_TAG], response_model=serialization.ProductOfferResponse
+)
 @api_key_required
-def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.OfferResponse:
+def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse:
     """
     Post a product offer.
     """
@@ -156,16 +158,18 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                 venue=venue,
                 visual_disability_compliant=body.disability_compliance.visual_disability_compliant,
-                withdrawal_details=body.item_collection_details,
+                withdrawal_details=body.withdrawal_details,
             )
 
             if body.stock:
-                offers_api.create_stock(
+                created_stock = offers_api.create_stock(
                     offer=created_offer,
                     price=finance_utils.to_euros(body.stock.price),
                     quantity=body.stock.quantity if body.stock.quantity != "unlimited" else None,
                     booking_limit_datetime=body.stock.booking_limit_datetime,
                 )
+            else:
+                created_stock = None
             if body.image:
                 _save_image(body.image, created_offer)
 
@@ -174,7 +178,8 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
-    return serialization.OfferResponse.from_orm(created_offer)
+    created_offer.stock = created_stock
+    return serialization.ProductOfferResponse.from_orm(created_offer)
 
 
 def _deserialize_ticket_collection(
