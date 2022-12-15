@@ -1422,13 +1422,26 @@ def list_offerers_to_be_validated(
 
     if q:
         if q.isnumeric():
-            if len(q) != 9:
-                raise exceptions.InvalidSiren("Le SIREN doit faire 9 caractères")
-            query = query.filter(offerers_models.Offerer.siren == q)
+            num_digits = len(q)
+            if num_digits == 9:
+                query = query.filter(offerers_models.Offerer.siren == q)
+            elif num_digits == 5:
+                query = query.filter(offerers_models.Offerer.postalCode == q)
+            elif num_digits in (2, 3):
+                query = query.filter(offerers_models.Offerer.departementCode == q)
+            else:
+                raise exceptions.InvalidSiren(
+                    "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
+                )
         else:
             name = q.replace(" ", "%").replace("-", "%")
             name = clean_accents(name)
-            query = query.filter(sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{name}%"))
+            query = query.filter(
+                sa.or_(
+                    sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{name}%"),
+                    sa.func.unaccent(offerers_models.Offerer.city).ilike(f"%{name}%"),
+                )
+            )
 
     return _apply_query_filters(
         query, tags, status, from_datetime, to_datetime, offerers_models.Offerer, offerers_models.Offerer.id

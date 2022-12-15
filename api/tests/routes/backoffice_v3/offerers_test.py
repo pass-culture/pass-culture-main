@@ -713,17 +713,59 @@ class ListOfferersToValidateTest:
             assert {row["Nom de la structure"] for row in rows} == {"D"}
 
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-        @pytest.mark.parametrize("siren", ["12345678", "1234567890"])
+        def test_list_search_by_postal_code(self, authenticated_client, offerers_to_be_validated):
+            # when
+            with assert_no_duplicated_queries():
+                response = authenticated_client.get(
+                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="29200")
+                )
+
+            # then
+            assert response.status_code == 200
+            rows = html_parser.extract_table_rows(response.data)
+            assert {row["Nom de la structure"] for row in rows} == {"C", "F"}
+
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-        def test_list_search_by_invalid_siren(self, authenticated_client, siren):
+        def test_list_search_by_department_code(self, authenticated_client, offerers_to_be_validated):
+            # when
+            with assert_no_duplicated_queries():
+                response = authenticated_client.get(
+                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="35")
+                )
+
+            # then
+            assert response.status_code == 200
+            rows = html_parser.extract_table_rows(response.data)
+            assert {row["Nom de la structure"] for row in rows} == {"A", "E"}
+
+        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+        def test_list_search_by_city(self, authenticated_client, offerers_to_be_validated):
+            # Search "quimper" => results include "Quimper" and "Quimperlé"
+            # when
+            with assert_no_duplicated_queries():
+                response = authenticated_client.get(
+                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="quimper")
+                )
+
+            # then
+            assert response.status_code == 200
+            rows = html_parser.extract_table_rows(response.data)
+            assert {row["Nom de la structure"] for row in rows} == {"B", "D"}
+
+        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+        @pytest.mark.parametrize("num_digits", [1, 4, 6, 7, 8, 10])
+        def test_list_search_by_invalid_number_of_digits(self, authenticated_client, num_digits):
             # when
             response = authenticated_client.get(
-                url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q=siren)
+                url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="1234567890"[:num_digits])
             )
 
             # then
             assert response.status_code == 400
-            assert "Le SIREN doit faire 9 caractères" in response.data.decode("utf-8")
+            assert (
+                "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
+                in response.data.decode("utf-8")
+            )
 
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         @pytest.mark.parametrize(
