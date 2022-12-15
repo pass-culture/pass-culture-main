@@ -321,6 +321,9 @@ MUSIC_TYPES_BY_SLUG = {
 MUSIC_SUB_TYPES_LABEL_BY_CODE = {
     music_sub_type.code: music_sub_type.label for music_type in music_types for music_sub_type in music_type.children
 }
+MUSIC_SUB_TYPES_BY_CODE = {
+    music_sub_type.code: music_sub_type for music_type in music_types for music_sub_type in music_type.children
+}
 MUSIC_SUB_TYPES_BY_SLUG = {
     music_sub_type.slug: music_sub_type for music_type in music_types for music_sub_type in music_type.children
 }
