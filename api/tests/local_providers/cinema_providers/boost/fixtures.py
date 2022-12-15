@@ -71,6 +71,34 @@ SHOWTIME_36683 = {
         "seatingAllowed": False,
     },
 }
+SHOWTIME_36684 = {
+    "id": 36684,
+    "showDate": "2022-11-29T09:00:00+01:00",
+    "showEndDate": "2022-11-29T11:52:00+01:00",
+    "soldOut": False,
+    "authorizedAccess": False,
+    "vfstfr": False,
+    "preview": False,
+    "numberSeatsRemaining": 136,
+    "numberRemainingSeatsForOnlineSale": 0,
+    "film": FILM_207,
+    "format": {"id": 1, "title": "2D"},
+    "version": {"id": 3, "title": "Film Etranger en Langue Française", "code": "VF"},
+    "screen": {
+        "id": 1,
+        "auditoriumNumber": 1,
+        "name": "SALLE CINEMAX",
+        "capacity": 136,
+        "HFR": False,
+        "is4K": False,
+        "ice": True,
+        "lightVibes": False,
+        "eclairColor": False,
+        "hearingImpaired": False,
+        "audioDescription": False,
+        "seatingAllowed": False,
+    },
+}
 SHOWTIME_36848 = {
     "id": 36848,
     "showDate": "2022-11-28T09:00:00+01:00",
@@ -141,6 +169,18 @@ SHOWTIME_36932 = {
         "seatingAllowed": True,
     },
 }
+
+
+class ShowtimesWithFilmIdEndpointResponse:
+    PAGE_1_JSON_DATA = {
+        "data": [SHOWTIME_36683, SHOWTIME_36684],
+        "message": "OK",
+        "page": 1,
+        "previousPage": 1,
+        "nextPage": 1,
+        "totalPages": 1,
+        "totalCount": 2,
+    }
 
 
 class ShowtimesEndpointResponse:
