@@ -28,6 +28,7 @@ export interface IVenueProps {
   hasMissingReimbursementPoint?: boolean
   id: string
   isVirtual?: boolean
+  hasOnlyOneVenue?: boolean
   name: string
   offererId: string
   publicName?: string
@@ -40,6 +41,7 @@ const Venue = ({
   isVirtual = false,
   name,
   offererId,
+  hasOnlyOneVenue,
   publicName,
 }: IVenueProps) => {
   const [isStatOpen, setIsStatOpen] = useState(false)
@@ -142,7 +144,7 @@ const Venue = ({
       })
       setIsStatLoaded(true)
     }
-    if (isStatOpen && !isStatLoaded) {
+    if ((isStatOpen && !isStatLoaded) || hasOnlyOneVenue) {
       updateStats()
     }
   }, [id, isStatOpen, isStatLoaded])
@@ -233,7 +235,7 @@ const Venue = ({
               </ButtonLink>
             </div>
           </div>
-          {isStatOpen &&
+          {(isStatOpen || (hasOnlyOneVenue && !stats.activeOffersCount)) &&
             (isStatLoaded ? (
               <div className="venue-stats">
                 {venueStatData.map(stat => (
