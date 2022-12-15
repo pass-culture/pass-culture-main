@@ -19,6 +19,8 @@ class Movie:
 
 
 class ExternalBookingsClientAPI:
+    # Fixme (yacine, 2022-12-19) remove this method from ExternalBookingsClientAPI. Unlike CDS, on Boost API
+    #  we can't get shows remaining places from list of shows ids
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
 

@@ -28,7 +28,7 @@ import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.external.attributes.api import update_external_pro
-from pcapi.core.external_bookings.api import get_shows_stock
+import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Venue
@@ -55,13 +55,14 @@ from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils import image_conversion
-from pcapi.utils.cinema_providers import get_cds_show_id_from_uuid
+import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.workers import push_notification_job
 
 from . import exceptions
@@ -1080,21 +1081,43 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_place(
     offer: Offer, venue_provider: providers_models.VenueProvider
 ) -> None:
     sentry_sdk.set_tag("cinema-venue-provider", venue_provider.provider.localClass)
-
-    show_ids = [get_cds_show_id_from_uuid(stock.idAtProviders) for stock in offer.activeStocks if stock.idAtProviders]
-    cleaned_show_ids = [s for s in show_ids if s is not None]
-    if not cleaned_show_ids:
-        return
-
     logger.info(
         "Getting up-to-date show stock from booking provider on offer view",
         extra={"offer": offer.id, "venue_provider": venue_provider.id},
     )
-
-    shows_remaining_places = get_shows_stock(offer.venueId, cleaned_show_ids)
+    shows_remaining_places = {}
+    match venue_provider.provider.localClass:
+        case "CDSStocks":
+            if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_CDS_IMPLEMENTATION is inactive")
+            show_ids = [
+                cinema_providers_utils.get_cds_show_id_from_uuid(stock.idAtProviders)
+                for stock in offer.activeStocks
+                if stock.idAtProviders
+            ]
+            cleaned_show_ids = [s for s in show_ids if s is not None]
+            if not cleaned_show_ids:
+                return
+            shows_remaining_places = external_bookings_api.get_shows_stock(offer.venueId, cleaned_show_ids)
+        case "BoostStocks":
+            if not FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
+            film_id = cinema_providers_utils.get_boost_film_id_from_uuid(offer.idAtProvider)
+            if not film_id:
+                return
+            shows_remaining_places = external_bookings_api.get_boost_movie_stocks(offer.venueId, film_id)
+        case _:
+            raise Exception(f"Unknown Provider: {venue_provider.provider.localClass}")
 
     for show_id, remaining_places in shows_remaining_places.items():
-        stock = next((s for s in offer.activeStocks if get_cds_show_id_from_uuid(s.idAtProviders) == show_id))
+        stock = next(
+            (
+                s
+                for s in offer.activeStocks
+                if cinema_providers_utils.get_showtime_id_from_uuid(s.idAtProviders, venue_provider.provider.localClass)
+                == show_id
+            )
+        )
         if stock and remaining_places <= 0:
             update_stock_quantity_to_dn_booked_quantity(stock.id)
 

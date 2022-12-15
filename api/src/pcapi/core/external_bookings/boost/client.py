@@ -36,6 +36,10 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:  # type: ignore [empty-body]
         pass
 
+    def get_film_showtimes_stocks(self, film_id: int) -> dict[int, int]:
+        showtimes = self.get_showtimes(film=film_id)
+        return {showtime.id: showtime.numberRemainingSeatsForOnlineSale for showtime in showtimes}
+
     def cancel_booking(self, barcodes: list[str]) -> None:
         barcodes = list(set(barcodes))
         sale_cancel_items = []
