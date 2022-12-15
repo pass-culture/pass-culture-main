@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from unittest import mock
 from unittest.mock import patch
 
 from freezegun import freeze_time
@@ -28,6 +29,7 @@ from pcapi.core.users.factories import UserFactory
 import pcapi.notifications.push.testing as notifications_testing
 
 from tests.conftest import TestClient
+from tests.local_providers.cinema_providers.boost import fixtures
 
 from .utils import create_user_and_test_client
 
@@ -245,10 +247,9 @@ class OffersTest:
 
         assert response.status_code == 404
 
-    @freeze_time("2023-01-01")
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
-    @patch("pcapi.core.offers.api.get_shows_stock")
-    def test_get_cinema_venue_provider_synchronized_seance_cine_offer(self, mocked_get_shows_stock, app):
+    @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
+    def test_get_cds_synchonized_offer(self, mocked_get_shows_stock, app):
         movie_id = 54
         show_id = 5008
 
@@ -278,6 +279,48 @@ class OffersTest:
 
         assert stock.remainingQuantity == 0
         assert response.json["stocks"][0]["isSoldOut"]
+
+    @freeze_time("2023-01-01")
+    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @patch("pcapi.connectors.boost.requests.get")
+    def test_get_boost_synchonized_offer(self, request_get, client):
+        movie_id = 207
+        first_show_id = 36683
+        second_show_id = 36684
+
+        response_return_value = mock.MagicMock(status_code=200, text="", headers={"Content-Type": "application/json"})
+        response_return_value.json = mock.MagicMock(
+            return_value=fixtures.ShowtimesWithFilmIdEndpointResponse.PAGE_1_JSON_DATA
+        )
+        request_get.return_value = response_return_value
+
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.BoostCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/"
+        )
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%Boost"
+        offer = OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            idAtProvider=offer_id_at_provider,
+            lastProviderId=venue_provider.providerId,
+            venue=venue_provider.venue,
+        )
+        first_show_stock = EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{first_show_id}", quantity=96
+        )
+        second_show_stock = EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{second_show_id}", quantity=96
+        )
+
+        client.get(f"/native/v1/offer/{offer.id}")
+        assert first_show_stock.remainingQuantity == 96
+        assert second_show_stock.remainingQuantity == 0
 
 
 class SendOfferWebAppLinkTest:

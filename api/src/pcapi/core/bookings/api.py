@@ -14,7 +14,6 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.repository import generate_booking_token
-from pcapi.core.categories import subcategories
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
@@ -123,13 +122,8 @@ def book_offer(
         )
         stock.dnBookedQuantity += booking.quantity
 
-        is_external_ticket_applicable = (
-            stock.offer.subcategory.id == subcategories.SEANCE_CINE.id
-            and stock.idAtProviders
-            and db.session.query(
-                providers_repository.get_cinema_venue_provider_query(stock.offer.venueId).exists()
-            ).scalar()
-        )
+        is_external_ticket_applicable = providers_repository.is_external_ticket_applicable(stock.offer)
+
         if is_external_ticket_applicable:
             if not offers_validation.check_offer_is_from_current_cinema_provider(stock.offer):
                 raise Exception("This offer is from the wrong cinema provider")

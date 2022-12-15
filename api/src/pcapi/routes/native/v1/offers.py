@@ -2,6 +2,7 @@ from sqlalchemy.orm import joinedload
 
 from pcapi.core.categories import subcategories
 from pcapi.core.categories import subcategories_v2
+import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -13,7 +14,6 @@ from pcapi.core.offers.models import Reason
 from pcapi.core.offers.validation import check_offer_is_from_current_cinema_provider
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.models import User
-from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -41,17 +41,10 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         .first_or_404()
     )
 
-    if (
-        feature.FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active()
-        and offer.subcategory.id == subcategories.SEANCE_CINE.id
-    ):
-        cinema_venue_provider = providers_repository.get_cinema_venue_provider_query(offer.venueId).one_or_none()
-
-        if (
-            cinema_venue_provider
-            and cinema_venue_provider.provider.localClass == "CDSStocks"
-            and check_offer_is_from_current_cinema_provider(offer)
-        ):
+    is_external_ticket_applicable = providers_repository.is_external_ticket_applicable(offer)
+    if is_external_ticket_applicable:
+        cinema_venue_provider = external_bookings_api.get_active_cinema_venue_provider(offer.venueId)
+        if check_offer_is_from_current_cinema_provider(offer):
             api.update_stock_quantity_to_match_cinema_venue_provider_remaining_place(offer, cinema_venue_provider)
 
     return serializers.OfferResponse.from_orm(offer)

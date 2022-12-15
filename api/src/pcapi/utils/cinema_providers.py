@@ -23,3 +23,25 @@ def get_boost_showtime_id_from_uuid(stock_uuid: str | None) -> int | None:
         if match and match.group(1).isdigit():
             return int(match.group(1))
     return None
+
+
+def get_showtime_id_from_uuid(stock_uuid: str | None, provider_name: str) -> int | None:
+    match provider_name:
+        case "CDSStocks":
+            return get_cds_show_id_from_uuid(stock_uuid)
+        case "BoostStocks":
+            return get_boost_showtime_id_from_uuid(stock_uuid)
+        case _:
+            return None
+
+
+def get_boost_film_id_from_uuid(offer_uuid: str | None) -> int | None:
+    """
+    Parses the uuid with this pattern: uuid pattern: <film_id>%<venue.id>%Boost
+    and returns the show_id as int, or None if it cannot
+    """
+    if offer_uuid:
+        match = re_search(r"(.*?)%", offer_uuid)
+        if match and match.group(1).isdigit():
+            return int(match.group(1))
+    return None
