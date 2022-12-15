@@ -148,7 +148,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
                 description=body.description,
                 external_ticket_office_url=body.external_ticket_office_url,
                 extra_data=_compute_extra_data(body),
-                is_duo=body.accept_double_bookings,
+                is_duo=body.is_duo,
                 mental_disability_compliant=body.disability_compliance.mental_disability_compliant,
                 motor_disability_compliant=body.disability_compliance.motor_disability_compliant,
                 name=body.name,
@@ -210,7 +210,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Of
                 duration_minutes=body.event_duration,
                 external_ticket_office_url=body.external_ticket_office_url,
                 extra_data=_compute_extra_data(body),
-                is_duo=body.accept_double_bookings,
+                is_duo=body.is_duo,
                 mental_disability_compliant=body.disability_compliance.mental_disability_compliant,
                 motor_disability_compliant=body.disability_compliance.motor_disability_compliant,
                 name=body.name,
@@ -219,7 +219,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Of
                 venue=venue,
                 visual_disability_compliant=body.disability_compliance.visual_disability_compliant,
                 withdrawal_delay=withdrawal_delay,
-                withdrawal_details=body.item_collection_details,
+                withdrawal_details=body.withdrawal_details,
                 withdrawal_type=withdrawal_type,
             )
 
