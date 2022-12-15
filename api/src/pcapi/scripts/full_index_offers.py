@@ -8,7 +8,9 @@ import pytz
 
 from pcapi.core import search
 import pcapi.core.offers.models as offers_models
+from pcapi.core.search.backends import algolia
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -60,7 +62,7 @@ def full_index_offers(start, end):  # type: ignore [no-untyped-def]
     """
     if start > end:
         raise ValueError('"start" must be less than "end"')
-    backend = search.backends.algolia.AlgoliaBackend()
+    backend = algolia.AlgoliaBackend()
 
     queue = []
 
@@ -77,7 +79,7 @@ def full_index_offers(start, end):  # type: ignore [no-untyped-def]
                 backend.index_offers([offer for offer, _ in q], {offer.id: n_bookings for offer, n_bookings in q})
             except Exception as exc:  # pylint: disable=broad-except
                 logger.exception(
-                    "Full offer reindexation: error while reindexing from %d to %d: %s", q[0].id, q[-1].id, exc
+                    "Full offer reindexation: error while reindexing from %d to %d: %s", q[0][0].id, q[-1][0].id, exc
                 )
             q.clear()
 
@@ -94,17 +96,18 @@ def full_index_offers(start, end):  # type: ignore [no-untyped-def]
             )
             .order_by(offers_models.Offer.id)
         )
-        last_30_days_bookings = {
-            row.offer_id: row.bookings_number
-            for row in db.session.execute(
-                search.get_base_query_for_last_30_days_bookings()
-                .filter(
-                    offers_models.Offer.isActive.is_(True),
-                    offers_models.Offer.id.between(start, min(start + BATCH_SIZE, end)),
-                )
-                .all()
-            )
-        }
+        if FeatureToggle.ALGOLIA_BOOKINGS_NUMBER_COMPUTATION.is_active():
+            last_30_days_bookings = {
+                row.offer_id: row.bookings_number
+                for row in db.session.execute(
+                    search.get_base_query_for_last_30_days_bookings().filter(
+                        offers_models.Offer.isActive.is_(True),
+                        offers_models.Offer.id.between(start, min(start + BATCH_SIZE, end)),
+                    )
+                ).all()
+            }
+        else:
+            last_30_days_bookings = {}
 
         for offer in offers:
             if offer.is_eligible_for_search:
