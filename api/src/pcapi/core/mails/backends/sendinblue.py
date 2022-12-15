@@ -78,13 +78,24 @@ class ToDevSendinblueBackend(SendinblueBackend):
 
     def _get_whitelisted_recipients(self, recipient_list: Iterable) -> list:
         whitelisted_recipients = set()
+        alias_recipient_arr = settings.DEV_EMAIL_ALIAS_ADDRESS.split("@")
         for recipient in recipient_list:
             # Imported test users are whitelisted (Internal users, Bug Bounty, audit, etc.)
             user = find_user_by_email(recipient)
+            qatest_recipient = (
+                len(alias_recipient_arr) == 2
+                and recipient.startswith(alias_recipient_arr[0])
+                and recipient.endswith(f"@{alias_recipient_arr[1]}")
+            )
+            staging_whitelisted_email_recipients = settings.IS_STAGING and (
+                recipient.endswith("@yeswehack.ninja") or qatest_recipient
+            )
+            testing_whitelisted_email_recipients = settings.IS_TESTING and qatest_recipient
             if (
                 (user and user.has_test_role)
                 or recipient in settings.WHITELISTED_EMAIL_RECIPIENTS
-                or (settings.IS_STAGING and recipient.endswith("@yeswehack.ninja"))
+                or staging_whitelisted_email_recipients
+                or testing_whitelisted_email_recipients
             ):
                 whitelisted_recipients.add(recipient)
         return list(whitelisted_recipients)
