@@ -44,7 +44,7 @@ ShowTypeEnum = StrEnum(  # type: ignore [call-overload]
 )
 
 
-class DisabilityCompliance(serialization.ConfiguredBaseModel):
+class Accessibility(serialization.ConfiguredBaseModel):
     audio_disability_compliant: bool
     mental_disability_compliant: bool
     motor_disability_compliant: bool
@@ -113,7 +113,7 @@ CATEGORY_RELATED_FIELD = pydantic.Field(..., description=CATEGORY_RELATED_FIELD_
 DESCRIPTION_FIELD = pydantic.Field(
     None, description="The offer description", example="A great book for kids and old kids.", max_length=1000
 )
-DISABILITY_COMPLIANCE_FIELD = pydantic.Field(..., description="Specify if the offer is accessible to disabled people.")
+ACCESSIBILITY_FIELD = pydantic.Field(..., description="Specify if the offer is accessible to disabled people.")
 EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic.Field(
     None,
     description="This link is displayed to users wishing to book the offer but who do not have (anymore) credit.",
@@ -134,10 +134,10 @@ NAME_FIELD = pydantic.Field(description="The offer title", example="Le Petit Pri
 
 
 class OfferCreationBase(serialization.ConfiguredBaseModel):
+    accessibility: Accessibility = ACCESSIBILITY_FIELD
     booking_email: pydantic.EmailStr | None = BOOKING_EMAIL_FIELD
     category_related_fields: CategoryRelatedFields = CATEGORY_RELATED_FIELD
     description: str | None = DESCRIPTION_FIELD
-    disability_compliance: DisabilityCompliance = DISABILITY_COMPLIANCE_FIELD
     external_ticket_office_url: pydantic.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageBody | None = IMAGE_FIELD
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
@@ -356,8 +356,8 @@ class AdditionalDatesResponse(serialization.ConfiguredBaseModel):
 class OfferResponseGetter(pydantic_utils.GetterDict):
     def get(self, key: typing.Any, default: typing.Any = None) -> typing.Any:
         offer: offers_models.Offer = self._obj
-        if key == "disability_compliance":
-            return DisabilityCompliance.from_orm(self)
+        if key == "accessibility":
+            return Accessibility.from_orm(self)
         if key == "location":
             return DigitalLocation.from_orm(offer) if offer.isDigital else PhysicalLocation.from_orm(offer)
 
@@ -368,7 +368,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     id: int
     booking_email: pydantic.EmailStr | None = BOOKING_EMAIL_FIELD
     description: str | None = DESCRIPTION_FIELD
-    disability_compliance: DisabilityCompliance = DISABILITY_COMPLIANCE_FIELD
+    accessibility: Accessibility = ACCESSIBILITY_FIELD
     external_ticket_office_url: pydantic.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageResponse | None = IMAGE_FIELD
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
