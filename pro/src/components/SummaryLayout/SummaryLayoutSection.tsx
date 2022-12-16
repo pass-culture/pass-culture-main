@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as BlackPen } from 'icons/ico-pen-black.svg'
+import { IcoPen } from 'icons'
 import { ButtonLink, Title } from 'ui-kit'
 
 import style from './SummaryLayout.module.scss'
@@ -31,7 +31,7 @@ const Section = ({
           <ButtonLink
             link={{ to: editLink, isExternal: false }}
             className={style['summary-layout-section-header-edit-link']}
-            Icon={BlackPen}
+            Icon={IcoPen}
             onClick={onLinkClick ? onLinkClick : undefined}
           >
             Modifier
