@@ -8,12 +8,12 @@ import {
   CanOffererCreateCollectiveOffer,
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
-  EducationalCategories,
   Mode,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   CollectiveOffer,
   CollectiveOfferTemplate,
+  EducationalCategories,
 } from 'core/OfferEducational'
 import patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
 import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
@@ -21,11 +21,11 @@ import postCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/p
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
-import { useCollectiveOfferImageUpload } from 'pages/CollectiveOfferCreation/useCollectiveOfferImageUpload'
 import { patchCollectiveOfferTemplateAdapter } from 'pages/CollectiveOfferEdition/adapters/patchCollectiveOfferTemplateAdapter'
 
 import styles from './OfferEducational.module.scss'
 import OfferEducationalForm from './OfferEducationalForm'
+import { useCollectiveOfferImageUpload } from './useCollectiveOfferImageUpload'
 import { validationSchema } from './validationSchema'
 
 export interface IOfferEducationalProps {
@@ -51,6 +51,7 @@ const OfferEducational = ({
   setOffer,
   categories,
   userOfferers,
+  domainsOptions,
   initialValues,
   getIsOffererEligible,
   mode,
@@ -59,7 +60,6 @@ const OfferEducational = ({
   isOfferBooked = false,
   isOfferCancellable = false,
   isOfferActive = false,
-  domainsOptions,
   isTemplate,
   isOfferCreated = false,
 }: IOfferEducationalProps): JSX.Element => {
@@ -152,7 +152,7 @@ const OfferEducational = ({
       mode === Mode.CREATION
     ) {
       const venue = userOfferers
-        .find(({ id }) => id === formik.values.offererId)
+        ?.find(({ id }) => id === formik.values.offererId)
         ?.managedVenues?.find(({ id }) => id === formik.values.venueId)
       const visualAccessibility = isOfferCreated
         ? initialValues.accessibility.visual
