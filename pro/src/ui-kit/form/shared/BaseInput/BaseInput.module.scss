@@ -33,7 +33,7 @@
   }
 
   &-right-icon {
-    @include forms.input-icon-wrapper(20px);
+    @include forms.input-icon-wrapper(auto);
   }
 
   &-wrapper {
