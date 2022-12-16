@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import datetime
 from functools import partial
 import typing
+from urllib.parse import urlparse
 
 from flask import flash
 from flask import redirect
@@ -440,10 +441,17 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
 
 
 def _redirect_after_user_offerer_validation_action(offerer_id: int, code: int = 303) -> utils.BackofficeResponse:
-    if request.referrer:
-        return redirect(request.referrer, code)
+    dst_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_id, active_tab="users")
 
-    return redirect(url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_id), code=code)
+    if request.referrer:
+
+        referrer_path = urlparse(request.referrer).path
+        dst_path = urlparse(dst_url).path
+
+        if referrer_path != dst_path:
+            return redirect(request.referrer, code)
+
+    return redirect(dst_url + "#offerer_details_frame", code=code)
 
 
 user_offerer_blueprint = utils.child_backoffice_blueprint(
