@@ -29,7 +29,6 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
         FeatureToggle.ENABLE_NEW_IDENTIFICATION_FLOW,
         FeatureToggle.ENABLE_PHONE_VALIDATION,
-        FeatureToggle.ENABLE_USER_PROFILING,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
         FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
         FeatureToggle.APP_ENABLE_AUTOCOMPLETE,
@@ -46,7 +45,6 @@ def get_settings() -> serializers.SettingsResponse:
         # TODO(anoukhello): remove enable_new_identification_flow when the flow is adopted by all users (PC-17223)
         enable_new_identification_flow=features[FeatureToggle.ENABLE_NEW_IDENTIFICATION_FLOW],
         enable_phone_validation=features[FeatureToggle.ENABLE_PHONE_VALIDATION],
-        enable_user_profiling=features[FeatureToggle.ENABLE_USER_PROFILING],
         id_check_address_autocompletion=features[FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION],
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],
         # TODO(antoinewg): remove this after next forced release (> v1.166.3)
