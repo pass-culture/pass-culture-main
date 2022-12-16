@@ -1,5 +1,6 @@
 from decimal import Decimal
 from unittest import mock
+from unittest.mock import patch
 
 from freezegun.api import freeze_time
 import pytest
@@ -7,18 +8,17 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.categories import subcategories
+from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import StockFactory
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.providers import api
+from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.exceptions import ProviderNotFound
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.providers.models import StockDetail
-from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.provider_api import synchronize_provider_api
 
 
@@ -34,7 +34,44 @@ class CreateVenueProviderTest:
             api.create_venue_provider(providerId, venueId)
 
         # Then
-        assert not VenueProvider.query.first()
+        assert not providers_models.VenueProvider.query.first()
+
+    @pytest.mark.parametrize(
+        "venue_type, provider_is_active, provider_enabled_for_pro, is_permanent",
+        (
+            (offerers_models.VenueTypeCode.BOOKSTORE, True, True, True),
+            (offerers_models.VenueTypeCode.MOVIE, True, True, True),
+            (offerers_models.VenueTypeCode.DIGITAL, True, True, False),
+        ),
+    )
+    @patch(
+        "pcapi.infrastructure.repository.stock_provider.provider_api.ProviderAPI.is_siret_registered",
+        return_value=True,
+    )
+    def test_permanent_venue_marking(
+        self,
+        _unused_mock,
+        venue_type,
+        provider_is_active,
+        provider_enabled_for_pro,
+        is_permanent,
+        db_session,
+    ):
+        # Given
+        venue = offerers_factories.VenueFactory(venueTypeCode=venue_type)
+        provider = providers_factories.ProviderFactory(
+            enabledForPro=provider_enabled_for_pro,
+            isActive=provider_is_active,
+            apiUrl="https://example.com/api",
+            localClass=None,
+        )
+
+        # When
+        api.create_venue_provider(provider.id, venue.id)
+
+        # Then
+        db_session.refresh(venue)
+        assert venue.isPermanent == is_permanent
 
 
 def create_product(isbn, **kwargs):
@@ -46,11 +83,11 @@ def create_product(isbn, **kwargs):
     )
 
 
-def create_offer(isbn, venue: Venue):
+def create_offer(isbn, venue: offerers_models.Venue):
     return offers_factories.OfferFactory(product=create_product(isbn), idAtProvider=isbn, venue=venue)
 
 
-def create_stock(isbn, siret, venue: Venue, **kwargs):
+def create_stock(isbn, siret, venue: offerers_models.Venue, **kwargs):
     return offers_factories.StockFactory(offer=create_offer(isbn, venue), idAtProviders=f"{isbn}@{siret}", **kwargs)
 
 
@@ -212,7 +249,7 @@ class SynchronizeStocksTest:
     def test_build_new_offers_from_stock_details(self, db_session):
         # Given
         spec = [
-            StockDetail(  # known offer, must be ignored
+            providers_models.StockDetail(  # known offer, must be ignored
                 available_quantity=1,
                 offers_provider_reference="offer_ref1",
                 venue_reference="venue_ref1",
@@ -220,7 +257,7 @@ class SynchronizeStocksTest:
                 stocks_provider_reference="stock_ref",
                 price=28.989,
             ),
-            StockDetail(  # new one, will be created
+            providers_models.StockDetail(  # new one, will be created
                 available_quantity=17,
                 offers_provider_reference="offer_ref_2",
                 price=28.989,
@@ -229,7 +266,7 @@ class SynchronizeStocksTest:
                 venue_reference="venue_ref2",
             ),
             # no quantity, must be ignored
-            StockDetail(
+            providers_models.StockDetail(
                 available_quantity=0,
                 offers_provider_reference="offer_ref_3",
                 price=28.989,
@@ -279,7 +316,7 @@ class SynchronizeStocksTest:
     def test_get_stocks_to_upsert(self):
         # Given
         spec = [
-            StockDetail(  # existing, will update
+            providers_models.StockDetail(  # existing, will update
                 offers_provider_reference="offer_ref1",
                 available_quantity=15,
                 price=15.78,
@@ -287,7 +324,7 @@ class SynchronizeStocksTest:
                 stocks_provider_reference="stock_ref1",
                 venue_reference="venue_ref1",
             ),
-            StockDetail(  # new, will be added
+            providers_models.StockDetail(  # new, will be added
                 available_quantity=17,
                 offers_provider_reference="offer_ref2",
                 price=28.989,
@@ -295,7 +332,7 @@ class SynchronizeStocksTest:
                 stocks_provider_reference="stock_ref2",
                 venue_reference="venue_ref2",
             ),
-            StockDetail(  # no quantity, must be ignored
+            providers_models.StockDetail(  # no quantity, must be ignored
                 available_quantity=0,
                 offers_provider_reference="offer_ref3",
                 price=28.989,
@@ -303,7 +340,7 @@ class SynchronizeStocksTest:
                 stocks_provider_reference="stock_ref3",
                 venue_reference="venue_ref3",
             ),
-            StockDetail(  # existing, will update but set product's price
+            providers_models.StockDetail(  # existing, will update but set product's price
                 offers_provider_reference="offer_ref4",
                 available_quantity=15,
                 price=None,
