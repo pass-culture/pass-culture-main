@@ -41,7 +41,6 @@ const renderForm = (
   isCreatingVenue: boolean,
   venue?: IVenue | undefined
 ) => {
-  const history = createMemoryHistory()
   render(
     <Provider
       store={configureTestStore({
@@ -51,7 +50,7 @@ const renderForm = (
         },
       })}
     >
-      <Router history={history}>
+      <Router history={createMemoryHistory()}>
         <VenueFormScreen
           initialValues={initialValues}
           isCreatingVenue={isCreatingVenue}
@@ -66,7 +65,6 @@ const renderForm = (
       <Notification />
     </Provider>
   )
-  return { history }
 }
 jest.mock('apiClient/api', () => ({
   api: {
@@ -276,8 +274,29 @@ describe('screen | VenueForm', () => {
         jest.spyOn(useNewOfferCreationJourney, 'default').mockReturnValue(true)
       })
 
+      it('User should be redirected with the new creation journey', async () => {
+        renderForm(
+          {
+            id: 'EY',
+            isAdmin: true,
+            publicName: 'USER',
+          } as SharedCurrentUserResponseModel,
+          formValues,
+          true,
+          undefined
+        )
+        jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: '56' })
+
+        await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
+        await waitFor(() => {
+          expect(
+            screen.getByText('Vos modifications ont bien été enregistrées')
+          ).toBeInTheDocument()
+        })
+      })
+
       it('User should be redirected with the creation popin displayed', async () => {
-        const { history } = renderForm(
+        renderForm(
           {
             id: 'EY',
             isAdmin: false,
@@ -292,11 +311,6 @@ describe('screen | VenueForm', () => {
         await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
 
         await waitFor(() => {
-          expect(history.location.pathname + history.location.search).toEqual(
-            '/accueil?success'
-          )
-        })
-        await waitFor(() => {
           expect(
             screen.queryByText('Vos modifications ont bien été enregistrées')
           ).not.toBeInTheDocument()
@@ -305,7 +319,7 @@ describe('screen | VenueForm', () => {
     })
 
     it('User should be redirected to the edit page after creating a venue', async () => {
-      const { history } = renderForm(
+      renderForm(
         {
           id: 'EY',
           isAdmin: true,
@@ -320,52 +334,9 @@ describe('screen | VenueForm', () => {
       await userEvent.click(screen.getByText(/Enregistrer et continuer/))
 
       await waitFor(() => {
-        expect(history.location.pathname).toMatch(/\bstructures\b/)
-      })
-      await waitFor(() => {
         expect(
           screen.getByText('Vos modifications ont bien été enregistrées')
         ).toBeInTheDocument()
-      })
-    })
-
-    it('administrators should be redirected to the list of structures after updating a venue', async () => {
-      const { history } = renderForm(
-        {
-          id: 'EY',
-          isAdmin: true,
-          publicName: 'USER',
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        false,
-        venue
-      )
-      jest.spyOn(api, 'editVenue').mockResolvedValue(venue)
-
-      await userEvent.click(screen.getByText(/Enregistrer/))
-
-      await waitFor(() => {
-        expect(history.location.pathname).toBe('/structures/AE')
-      })
-    })
-
-    it('non administrators should be redirected to home page after updating a venue', async () => {
-      const { history } = renderForm(
-        {
-          id: 'EY',
-          isAdmin: false,
-          publicName: 'USER',
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        false,
-        venue
-      )
-      jest.spyOn(api, 'editVenue').mockResolvedValue(venue)
-
-      await userEvent.click(screen.getByText(/Enregistrer/))
-
-      await waitFor(() => {
-        expect(history.location.pathname).toBe('/accueil')
       })
     })
   })
