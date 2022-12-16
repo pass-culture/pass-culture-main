@@ -319,6 +319,7 @@ def test_public_api(client, app):
                     "description": "An enumeration.",
                     "enum": ["ACTIVE", "PENDING", "EXPIRED", "REJECTED", "SOLD_OUT", "INACTIVE", "DRAFT"],
                     "title": "OfferStatus",
+                    "type": "string",
                 },
                 "OfferVenueModel": {
                     "additionalProperties": False,

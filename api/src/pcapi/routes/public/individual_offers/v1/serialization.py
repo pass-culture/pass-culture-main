@@ -12,6 +12,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.domain import music_types
 from pcapi.domain import show_types
+from pcapi.models import offer_mixin
 from pcapi.routes import serialization
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date as date_utils
@@ -370,6 +371,16 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     name: str = NAME_FIELD
+    status: offer_mixin.OfferStatus = pydantic.Field(
+        ...,
+        description="ACTIVE: the offer is validated and active.\n\n"
+        "DRAFT: the offer is still draft and not yet submitted for validation - this status is not applicable to offers created via this API.\n\n"
+        "EXPIRED: the offer is validated but the booking limit datetime has passed.\n\n"
+        "INACTIVE: the offer is not active and cannot be booked.\n\n"
+        "PENDING: the offer is pending for pass Culture rules compliance validation. This step may last 72 hours.\n\n"
+        "REJECTED: the offer validation has been rejected because it is not compliant with pass Culture rules.\n\n"
+        "SOLD_OUT: the offer is validated but there is no (more) stock available for booking.",
+    )
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
 
     class Config:

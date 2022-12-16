@@ -76,6 +76,7 @@ class PostProductTest:
             "itemCollectionDetails": None,
             "location": {"type": "physical", "venueId": venue.id},
             "name": "Le champ des possibles",
+            "status": "SOLD_OUT",
             "stock": None,
         }
 
@@ -181,6 +182,7 @@ class PostProductTest:
             "itemCollectionDetails": None,
             "location": {"type": "physical", "venueId": venue.id},
             "name": "Le champ des possibles",
+            "status": "EXPIRED",
             "stock": {"bookingLimitDatetime": "2021-12-31T20:00:00Z", "price": 1234, "quantity": 3},
         }
 
@@ -362,6 +364,7 @@ class PostProductTest:
             "itemCollectionDetails": None,
             "location": {"type": "digital", "url": "https://example.com"},
             "name": "Le champ des possibles",
+            "status": "SOLD_OUT",
             "stock": None,
         }
 
@@ -1006,6 +1009,7 @@ class GetProductTest:
             "itemCollectionDetails": None,
             "location": {"type": "physical", "venueId": product_offer.venueId},
             "name": "Vieux motard que jamais",
+            "status": "SOLD_OUT",
             "stock": None,
         }
 
@@ -1029,3 +1033,4 @@ class GetProductTest:
             "credit": "Ph. Oto",
             "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(mediation.id)}",
         }
+        assert response.json["status"] == "EXPIRED"
