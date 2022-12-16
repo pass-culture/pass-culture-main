@@ -27,7 +27,6 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA,
         FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY,
         FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
-        FeatureToggle.ENABLE_NEW_IDENTIFICATION_FLOW,
         FeatureToggle.ENABLE_PHONE_VALIDATION,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
         FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
@@ -42,8 +41,6 @@ def get_settings() -> serializers.SettingsResponse:
         enable_front_image_resizing=features[FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING],
         enable_native_cultural_survey=features[FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY],
         enable_native_id_check_verbose_debugging=features[FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING],
-        # TODO(anoukhello): remove enable_new_identification_flow when the flow is adopted by all users (PC-17223)
-        enable_new_identification_flow=features[FeatureToggle.ENABLE_NEW_IDENTIFICATION_FLOW],
         enable_phone_validation=features[FeatureToggle.ENABLE_PHONE_VALIDATION],
         id_check_address_autocompletion=features[FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION],
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],
