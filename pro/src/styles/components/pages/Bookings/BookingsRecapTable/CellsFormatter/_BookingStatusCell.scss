@@ -12,6 +12,10 @@
     white-space: nowrap;
   }
 
+  .bs-tooltip {
+    white-space: initial;
+  }
+
   .booking-status-booked {
     background-color: colors.$secondary;
   }
