@@ -951,3 +951,81 @@ class PostAdditionalDatesTest:
         )
         assert response.status_code == 404
         assert response.json == {"event_id": ["The event could not be found"]}
+
+    @pytest.mark.usefixtures("db_session")
+    def test_404_for_product_offer(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            f"/public/offers/v1/events/{product_offer.id}/dates",
+            json={
+                "additionalDates": [
+                    {
+                        "beginningDatetime": "2022-02-01T12:00:00+02:00",
+                        "bookingLimitDatetime": "2022-01-15T13:00:00Z",
+                        "price": 8899,
+                        "quantity": 10,
+                    },
+                ],
+            },
+        )
+        assert response.status_code == 404
+        assert response.json == {"event_id": ["The event could not be found"]}
+
+
+class GetProductTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_product_without_stock(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            description="Un livre de contrepèterie",
+            name="Vieux motard que jamais",
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products/{product_offer.id}"
+        )
+
+        assert response.status_code == 200
+        assert response.json == {
+            "bookingEmail": None,
+            "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
+            "description": "Un livre de contrepèterie",
+            "disabilityCompliance": {
+                "audioDisabilityCompliant": False,
+                "mentalDisabilityCompliant": False,
+                "motorDisabilityCompliant": False,
+                "visualDisabilityCompliant": False,
+            },
+            "enableDoubleBookings": False,
+            "externalTicketOfficeUrl": None,
+            "id": product_offer.id,
+            "image": None,
+            "itemCollectionDetails": None,
+            "location": {"type": "physical", "venueId": product_offer.venueId},
+            "name": "Vieux motard que jamais",
+            "stock": None,
+        }
+
+    @pytest.mark.usefixtures("db_session")
+    def test_product_with_stock_and_image(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)
+        offers_factories.StockFactory(offer=product_offer, isSoftDeleted=True)
+        offers_factories.StockFactory(
+            offer=product_offer, price=12.34, quantity=10, bookingLimitDatetime=datetime.datetime(2022, 1, 15, 13, 0, 0)
+        )
+        mediation = offers_factories.MediationFactory(offer=product_offer, credit="Ph. Oto")
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products/{product_offer.id}"
+        )
+
+        assert response.status_code == 200
+        assert response.json["stock"] == {"price": 1234, "quantity": 10, "bookingLimitDatetime": "2022-01-15T13:00:00Z"}
+        assert response.json["image"] == {
+            "credit": "Ph. Oto",
+            "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(mediation.id)}",
+        }
