@@ -53,9 +53,18 @@ class NativeCategoryResponseModelv2(BaseModel):
         orm_mode = True
 
 
+class GenreTypeContentModel(BaseModel):
+    name: str
+    value: str
+
+    class Config:
+        allow_population_by_field_name = True
+        orm_mode = True
+
+
 class GenreTypeModel(BaseModel):
     name: subcategories_v2.GenreType
-    values: list[str]
+    values: list[GenreTypeContentModel]
 
     class Config:
         alias_generator = to_camel

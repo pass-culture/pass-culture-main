@@ -588,10 +588,23 @@ def test_public_api(client):
                     "enum": ["BOOK", "MUSIC", "SHOW", "MOVIE"],
                     "title": "GenreType",
                 },
+                "GenreTypeContentModel": {
+                    "properties": {
+                        "name": {"title": "Name", "type": "string"},
+                        "value": {"title": "Value", "type": "string"},
+                    },
+                    "required": ["name", "value"],
+                    "title": "GenreTypeContentModel",
+                    "type": "object",
+                },
                 "GenreTypeModel": {
                     "properties": {
                         "name": {"$ref": "#/components/schemas/GenreType"},
-                        "values": {"items": {"type": "string"}, "title": "Values", "type": "array"},
+                        "values": {
+                            "items": {"$ref": "#/components/schemas/GenreTypeContentModel"},
+                            "title": "Values",
+                            "type": "array",
+                        },
                     },
                     "required": ["name", "values"],
                     "title": "GenreTypeModel",
