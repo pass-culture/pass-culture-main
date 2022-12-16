@@ -71,6 +71,7 @@ const CollectiveOfferEditionRoutes = ({
         <Route path="/offre/:offerId/collectif/edition">
           <CollectiveOfferEdition
             offer={offer}
+            setOffer={setOffer}
             reloadCollectiveOffer={loadCollectiveOffer}
           />
         </Route>
