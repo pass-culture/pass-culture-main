@@ -21,7 +21,6 @@ class SettingsResponse(BaseModel):
     enable_native_id_check_verbose_debugging: bool
     enable_new_identification_flow: bool
     enable_phone_validation: bool
-    enable_user_profiling: bool
     id_check_address_autocompletion: bool
     is_recaptcha_enabled: bool
     object_storage_url: str
