@@ -14,20 +14,16 @@ class DepositAmountsByAge(BaseModel):
 class SettingsResponse(BaseModel):
     account_creation_minimum_age: int
     app_enable_autocomplete: bool
-    auto_activate_digital_bookings: bool
     deposit_amounts_by_age = DepositAmountsByAge()
     display_dms_redirection: bool
     enable_front_image_resizing: bool
     enable_native_cultural_survey: bool
-    enable_native_eac_individual: bool
     enable_native_id_check_verbose_debugging: bool
     enable_new_identification_flow: bool
     enable_phone_validation: bool
-    enable_underage_generalisation: bool
     enable_user_profiling: bool
     id_check_address_autocompletion: bool
     is_recaptcha_enabled: bool
-    is_webapp_v2_enabled: bool
     object_storage_url: str
     pro_disable_events_qrcode: bool
     account_unsuspension_limit: int
