@@ -25,10 +25,17 @@ const Companies = (): JSX.Element => {
   const [offerers, setOfferers] = useState<IOfferer[]>([])
   const [selectedOfferer, setSelectedOfferer] = useState<IOfferer>()
   const navigate = useNavigate()
+
   useEffect(() => {
     async function fetchOffererNames() {
       try {
-        const nameResponse = await api.listOfferersNames()
+        const venueResponse = await api.getVenues()
+        console.log('venueResponse', venueResponse)
+        const nameResponse = await api.listOfferersNames(
+          true, // validated?: boolean | null,
+          true, // validatedForUser?: boolean | null,
+          null // offererId?: string | null,
+        )
         const options = nameResponse.offerersNames
           .sort((a, b) => a.name.localeCompare(b.name, 'fr'))
           .map(item => {

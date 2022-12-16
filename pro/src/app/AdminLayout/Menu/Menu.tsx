@@ -1,28 +1,38 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import cn from 'classnames'
+import { matchPath, NavLink, useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
-import { ReactComponent as IconCalendar } from 'icons/ico-calendar.svg'
 import { ReactComponent as IconDesk } from 'icons/ico-desk.svg'
 import { ReactComponent as IconEuro } from 'icons/ico-euro.svg'
 import { ReactComponent as IconHome } from 'icons/ico-home.svg'
-import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
-import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
 
 import styles from './Menu.module.scss'
 
-const Menu = () => {
+interface IMenuProps {
+  className?: string
+}
+
+const Menu = ({ className }: IMenuProps) => {
   const { currentUser } = useCurrentUser()
   const { logEvent } = useAnalytics()
-  const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
+  const location = useLocation()
+  const isSelected = {
+    accueil: !!matchPath(location.pathname, { path: '/accueil' }),
+    structures: !!matchPath(location.pathname, { path: '/structures' }),
+    guichet: !!matchPath(location.pathname, { path: '/guichet' }),
+    remboursements: !!matchPath(location.pathname, {
+      path: '/remboursements/justificatifs',
+    }),
+  }
 
   return (
-    <nav className={styles['menu']}>
+    <nav className={cn(className, styles['menu'])}>
       <NavLink
-        className={styles['nav-item']}
+        className={cn(styles['nav-item'], {
+          [styles['selected']]: isSelected.accueil || isSelected.structures,
+        })}
         onClick={() => {
           logEvent?.(Events.CLICKED_HOME, { from: location.pathname })
         }}
@@ -34,7 +44,9 @@ const Menu = () => {
       </NavLink>
 
       <NavLink
-        className={styles['nav-item']}
+        className={cn(styles['nav-item'], {
+          [styles['selected']]: isSelected.guichet,
+        })}
         onClick={() => {
           logEvent?.(Events.CLICKED_TICKET, { from: location.pathname })
         }}
@@ -46,31 +58,9 @@ const Menu = () => {
       </NavLink>
 
       <NavLink
-        className={styles['nav-item']}
-        onClick={() => {
-          logEvent?.(Events.CLICKED_OFFER, { from: location.pathname })
-        }}
-        role="menuitem"
-        to="/offres"
-      >
-        <IconOffers aria-hidden className={styles['nav-item-icon']} />
-        Offres
-      </NavLink>
-
-      <NavLink
-        className={styles['nav-item']}
-        onClick={() => {
-          logEvent?.(Events.CLICKED_BOOKING, { from: location.pathname })
-        }}
-        role="menuitem"
-        to="/reservations"
-      >
-        <IconCalendar aria-hidden className={styles['nav-item-icon']} />
-        Réservations
-      </NavLink>
-
-      <NavLink
-        className={styles['nav-item']}
+        className={cn(styles['nav-item'], {
+          [styles['selected']]: isSelected.remboursements,
+        })}
         onClick={() => {
           logEvent?.(Events.CLICKED_REIMBURSEMENT, {
             from: location.pathname,
@@ -82,22 +72,6 @@ const Menu = () => {
         <IconEuro aria-hidden className={styles['nav-item-icon']} />
         Remboursements
       </NavLink>
-
-      {isOffererStatsActive && (
-        <NavLink
-          className={styles['nav-item']}
-          onClick={() => {
-            logEvent?.(Events.CLICKED_STATS, {
-              from: location.pathname,
-            })
-          }}
-          role="menuitem"
-          to="/statistiques"
-        >
-          <StatsIcon aria-hidden className={styles['nav-item-icon']} />
-          Statistiques
-        </NavLink>
-      )}
     </nav>
   )
 }

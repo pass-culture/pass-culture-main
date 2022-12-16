@@ -4,8 +4,8 @@ import React from 'react'
 import styles from './Title.module.scss'
 
 interface ITitleProps {
-  level: 1 | 2 | 3 | 4
-  as?: 'p' | 'span' | 'h1' | 'h2' | 'h3' | 'h4'
+  level: 1 | 2 | 3 | 4 | 5
+  as?: 'p' | 'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5'
   className?: string
   children?: React.ReactNode
 }

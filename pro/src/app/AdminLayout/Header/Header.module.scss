@@ -12,6 +12,14 @@
     height: rem.torem(64px);
     padding: rem.torem(16px);
   }
+  .venue-name {
+    @include fonts.title3;
+
+    margin-left: rem.torem(32px);
+    display: flex;
+    color: colors.$white;
+    align-items: center;
+  }
   .menu-user {
     margin-left: auto;
     align-items: center;

@@ -6,6 +6,7 @@ import { ILayoutConfig } from 'app/AppRouter/routes_map'
 import styles from './AdminLayout.module.scss'
 import { Header } from './Header'
 import { Menu } from './Menu'
+import { MenuCompany } from './MenuCompany'
 
 interface IAdminLayoutProps {
   children: React.ReactElement | React.ReactElement[]
@@ -31,7 +32,9 @@ const AdminLayout = ({
       <Header />
       <div className={styles['content-wrapper']}>
         <div className={styles['side']}>
-          <Menu />
+          <Menu className={styles['menu']} />
+
+          <MenuCompany className={styles['menu']} />
         </div>
         <div className={cn(styles['content'], `${pageName}-page`)}>
           {children}

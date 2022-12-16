@@ -4,7 +4,8 @@
 
 .venue {
     height: rem.torem(200px);
-    width: rem.torem(200px);
+    // width: rem.torem(200px);
+    width: 45%;
     // border: rem.torem(1px) solid colors.$black;
     box-shadow: 0 0 rem.torem(4px) colors.$black-shadow;
     border-radius: rem.torem(16px);

@@ -42,12 +42,24 @@
     }
 
     &:hover,
-    &:focus {
+    &:focus,
+    &.selected {
       background-image: colors.$linear-gradient-to-right;
       color: colors.$white;
       .nav-item-icon {
         fill: colors.$white;
       }
+    }
+  }
+
+  &:hover {
+    a.nav-item.selected:not(:hover) {
+      // background-image: none;
+      // color: colors.$black;
+      // .nav-item-icon {
+      //   fill: colors.$black;
+      // }
+      opacity: 0.6;
     }
   }
 

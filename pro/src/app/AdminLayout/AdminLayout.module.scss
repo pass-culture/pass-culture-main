@@ -20,6 +20,12 @@
     .side {
       flex: 1 1;
       max-width: rem.torem(260px);
+      .menu {
+        margin-bottom: rem.torem(16px);
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
     }
     .content {
       flex: 3;

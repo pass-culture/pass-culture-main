@@ -2,6 +2,7 @@ import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
 
 import { App, AppRouter } from 'app'
+import { AppContextProvider } from 'app/AppContext/AppContext'
 import Notification from 'components/Notification/Notification'
 import { AnalyticsContextProvider } from 'context/analyticsContext'
 import StoreProvider from 'store/StoreProvider/StoreProvider'
@@ -14,12 +15,14 @@ const Root = (): JSX.Element => {
       <AnalyticsContextProvider>
         <RemoteContextProvider>
           <BrowserRouter>
-            <App>
-              <>
-                <AppRouter />
-                <Notification />
-              </>
-            </App>
+            <AppContextProvider>
+              <App>
+                <>
+                  <AppRouter />
+                  <Notification />
+                </>
+              </App>
+            </AppContextProvider>
           </BrowserRouter>
         </RemoteContextProvider>
       </AnalyticsContextProvider>

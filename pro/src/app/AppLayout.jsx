@@ -25,7 +25,7 @@ const AppLayout = props => {
     ...layoutConfig,
   }
 
-  if (USE_ADMIN_LAYOUT) {
+  if (USE_ADMIN_LAYOUT && !fullscreen) {
     return <AdminLayout layoutConfig={layoutConfig}>{children}</AdminLayout>
   }
 

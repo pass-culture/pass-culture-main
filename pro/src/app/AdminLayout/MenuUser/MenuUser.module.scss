@@ -8,8 +8,11 @@
     background-color: transparent;
     border: none;
     display: flex;
+    align-items: center;
     padding: rem.torem(12px) rem.torem(16px);
+    color: colors.$white;
     .menu-button-icon {
+        margin-left: rem.torem(16px);
         background: colors.$white;
         border-radius: 50%;
         height: rem.torem(40px);

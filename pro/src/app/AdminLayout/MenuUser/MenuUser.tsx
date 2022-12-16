@@ -5,6 +5,7 @@ import React, { useCallback } from 'react'
 import { Events } from 'core/FirebaseEvents/constants'
 import { useNavigate } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
+import useCurrentUser from 'hooks/useCurrentUser'
 import { IcoUserFilled, IcoSignout } from 'icons'
 
 import styles from './MenuUser.module.scss'
@@ -16,6 +17,7 @@ const MenuUser = () => {
     logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
     navigate('/logout')
   }, [history, logEvent, location.pathname])
+  const { currentUser } = useCurrentUser()
 
   return (
     <Menu>
@@ -25,6 +27,9 @@ const MenuUser = () => {
         type="button"
         data-testid="stock-form-actions-button-open"
       >
+        {currentUser.publicName
+          ? currentUser.publicName
+          : `${currentUser.firstName} ${currentUser.lastName}`}
         <IcoUserFilled
           title="Opérations sur le stock"
           className={styles['menu-button-icon']}
