@@ -19,7 +19,6 @@ class SettingsResponse(BaseModel):
     enable_front_image_resizing: bool
     enable_native_cultural_survey: bool
     enable_native_id_check_verbose_debugging: bool
-    enable_new_identification_flow: bool
     enable_phone_validation: bool
     id_check_address_autocompletion: bool
     is_recaptcha_enabled: bool
