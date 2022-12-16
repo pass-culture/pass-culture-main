@@ -9,8 +9,10 @@ import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
+import { venueSubmitRedirectUrl } from 'screens/VenueForm/utils/venueSubmitRedirectUrl'
 
 import useActiveFeature from '../../hooks/useActiveFeature'
+import useCurrentUser from '../../hooks/useCurrentUser'
 import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
 } from '../RouteLeavingGuard'
@@ -57,6 +59,7 @@ const VenueForm = ({
   const shouldDisplayImageVenueUploaderSection = isPermanent
   useScrollToFirstErrorAfterSubmit()
   const location = useLocation()
+  const user = useCurrentUser()
 
   const [canOffererCreateCollectiveOffer, setCanOffererCreateCollectiveOffer] =
     useState(false)
@@ -76,9 +79,17 @@ const VenueForm = ({
 
   const shouldBlockNavigation = useCallback(
     (nextLocation: Location): IShouldBlockNavigationReturnValue => {
+      const url = venueSubmitRedirectUrl(
+        isNewOfferCreationJourney,
+        isCreatingVenue,
+        offerer.id,
+        venue?.id,
+        user.currentUser
+      )
       if (
-        nextLocation.pathname + nextLocation.search === '/accueil?success' ||
-        nextLocation.pathname.match(/\/structures\/([A-Z0-9]+)/g)
+        venue != null
+          ? nextLocation.pathname + nextLocation.search === url
+          : nextLocation.pathname.startsWith(url)
       ) {
         return {
           shouldBlock: false,
