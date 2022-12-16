@@ -29,7 +29,8 @@ import styles from './OfferEducationalForm.module.scss'
 
 type IOfferEducationalFormProps = Omit<
   IOfferEducationalProps,
-  | 'onSubmit'
+  | 'offer'
+  | 'setOffer'
   | 'initialValues'
   | 'isEdition'
   | 'getEducationalDomainsAdapter'

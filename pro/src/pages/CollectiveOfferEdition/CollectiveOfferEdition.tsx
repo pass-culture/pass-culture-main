@@ -14,15 +14,10 @@ import {
   CollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
-import patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
-import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useNotification from 'hooks/useNotification'
-import { useCollectiveOfferImageUpload } from 'pages/CollectiveOfferCreation/useCollectiveOfferImageUpload'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 import Spinner from 'ui-kit/Spinner/Spinner'
-
-import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
@@ -32,9 +27,11 @@ type AsyncScreenProps = Pick<
 const CollectiveOfferEdition = ({
   offer,
   reloadCollectiveOffer,
+  setOffer,
 }: {
   offer: CollectiveOffer | CollectiveOfferTemplate
   reloadCollectiveOffer: () => void
+  setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
 }): JSX.Element => {
   const history = useHistory()
 
@@ -44,41 +41,6 @@ const CollectiveOfferEdition = ({
     useState<IOfferEducationalFormValues>(DEFAULT_EAC_FORM_VALUES)
 
   const notify = useNotification()
-  const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
-    useCollectiveOfferImageUpload(offer, offer.isTemplate)
-
-  const editOffer = useCallback(
-    async (offerFormValues: IOfferEducationalFormValues) => {
-      if (!offer) {
-        return
-      }
-
-      const patchAdapter = offer.isTemplate
-        ? patchCollectiveOfferTemplateAdapter
-        : patchCollectiveOfferAdapter
-
-      const offerResponse = await patchAdapter({
-        offerId: offer.id,
-        offer: offerFormValues,
-        initialValues,
-      })
-
-      if (!offerResponse.isOk) {
-        return notify.error(offerResponse.message)
-      }
-      await handleImageOnSubmit(offer.id)
-
-      notify.success(offerResponse.message)
-      reloadCollectiveOffer()
-      history.push(
-        `/offre/${computeURLCollectiveOfferId(
-          offer.id,
-          offer.isTemplate
-        )}/collectif/recapitulatif`
-      )
-    },
-    [offer, handleImageOnSubmit]
-  )
 
   const setIsOfferActive = async (isActive: boolean) => {
     const patchAdapter = offer.isTemplate
@@ -163,6 +125,8 @@ const CollectiveOfferEdition = ({
   return (
     <OfferEducationalScreen
       {...screenProps}
+      offer={offer}
+      setOffer={setOffer}
       cancelActiveBookings={cancelActiveBookings}
       initialValues={initialValues}
       isOfferActive={offer?.isActive}
@@ -171,12 +135,8 @@ const CollectiveOfferEdition = ({
       }
       isOfferCancellable={offer && offer.isCancellable}
       mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
-      onSubmit={editOffer}
       setIsOfferActive={setIsOfferActive}
       isTemplate={offer.isTemplate}
-      imageOffer={imageOffer}
-      onImageDelete={onImageDelete}
-      onImageUpload={onImageUpload}
     />
   )
 }
