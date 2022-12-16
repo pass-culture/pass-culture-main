@@ -17,12 +17,13 @@ const useVenueUpdates = (venueList: TOfferIndividualVenue[]): void => {
       const venue = venueList.find(v => v.id === venueId)
 
       if (venue) {
-        // update offer accessibility from venue when venue accessibility is defined.
-        Object.values(venue.accessibility).includes(true) &&
-          setFieldValue('accessibility', venue.accessibility)
-
         setFieldValue('isVenueVirtual', venue.isVirtual)
         setFieldValue('withdrawalDetails', venue?.withdrawalDetails || '')
+
+        // update offer accessibility from venue when venue accessibility is defined.
+        // set accessibility value after isVenueVirtual and withdrawalDetails otherwise the error message doesn't hide
+        Object.values(venue.accessibility).includes(true) &&
+          setFieldValue('accessibility', venue.accessibility)
       }
       setPrevValue(venueId)
     }
