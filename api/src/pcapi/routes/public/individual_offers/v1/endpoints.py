@@ -1,5 +1,7 @@
 import logging
 
+from sqlalchemy import orm as sqla_orm
+
 from pcapi import repository
 from pcapi import settings
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -63,13 +65,9 @@ def _retrieve_venue_from_location(
     return venue
 
 
-def _retrieve_offer(offer_id: int) -> offers_models.Offer | None:
-    return (
-        offers_models.Offer.query.join(offerers_models.Venue)
-        .filter(
-            offers_models.Offer.id == offer_id, offerers_models.Venue.managingOffererId == current_api_key.offererId  # type: ignore[attr-defined]
-        )
-        .first()
+def _retrieve_offer_query(offer_id: int) -> sqla_orm.Query:
+    return offers_models.Offer.query.join(offerers_models.Venue).filter(
+        offers_models.Offer.id == offer_id, offerers_models.Venue.managingOffererId == current_api_key.offererId  # type: ignore[attr-defined]
     )
 
 
@@ -239,7 +237,7 @@ def post_event_date(
     """
     Add dates to an event offer.
     """
-    offer = _retrieve_offer(event_id)
+    offer = _retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent == True).one_or_none()
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
 
@@ -263,3 +261,30 @@ def post_event_date(
     return serialization.AdditionalDatesResponse(
         additional_dates=[serialization.DateResponse.from_orm(new_date) for new_date in new_dates]
     )
+
+
+@blueprint.v1_blueprint.route("/products/<int:product_id>", methods=["GET"])
+@spectree_serialize(
+    api=blueprint.v1_schema, tags=[PRODUCT_OFFERS_TAG], response_model=serialization.ProductOfferResponse
+)
+@api_key_required
+def get_product(product_id: int) -> serialization.ProductOfferResponse:
+    """
+    Get a product offer.
+    """
+    offer: offers_models.Offer | None = (
+        _retrieve_offer_query(product_id)
+        .options(sqla_orm.joinedload(offers_models.Offer.stocks))
+        .options(sqla_orm.joinedload(offers_models.Offer.mediations))
+        .options(
+            sqla_orm.joinedload(offers_models.Offer.product).load_only(
+                offers_models.Product.id, offers_models.Product.thumbCount
+            )
+        )
+        .one_or_none()
+    )
+    if not offer:
+        raise api_errors.ApiErrors({"product_id": ["The product offer could not be found"]}, status_code=404)
+
+    offer.stock = next((stock for stock in offer.activeStocks), None)
+    return serialization.ProductOfferResponse.from_orm(offer)
