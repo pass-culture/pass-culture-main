@@ -60,6 +60,12 @@ class ReimbursementRuleChoices(Enum):
     BOOK = "BOOK"
 
 
+@dataclass
+class GenreTypeContent:
+    name: str  # name used to index (Algolia)
+    value: str  # value to display
+
+
 class GenreType(Enum):
     BOOK = "BOOK"
     MUSIC = "MUSIC"
@@ -67,7 +73,7 @@ class GenreType(Enum):
     MOVIE = "MOVIE"
 
     @property
-    def values(self) -> list[str]:
+    def values(self) -> list[GenreTypeContent]:
         return {
             type(self).BOOK.name: self.book_values(),
             type(self).MUSIC.name: self.music_values(),
@@ -75,17 +81,18 @@ class GenreType(Enum):
             type(self).MOVIE.name: self.movie_values(),
         }[self.value]
 
-    def book_values(self) -> list[str]:
-        return sorted(BOOK_MACRO_SECTIONS)
+    def book_values(self) -> list[GenreTypeContent]:
+        return [GenreTypeContent(name=value, value=value) for value in sorted(BOOK_MACRO_SECTIONS)]
 
-    def music_values(self) -> list[str]:
-        return sorted(MUSIC_TYPES_LABEL_BY_CODE.values())
+    def music_values(self) -> list[GenreTypeContent]:
+        return [GenreTypeContent(name=value, value=value) for value in sorted(MUSIC_TYPES_LABEL_BY_CODE.values())]
 
-    def show_values(self) -> list[str]:
-        return sorted(SHOW_TYPES_LABEL_BY_CODE.values())
+    def show_values(self) -> list[GenreTypeContent]:
+        return [GenreTypeContent(name=value, value=value) for value in sorted(SHOW_TYPES_LABEL_BY_CODE.values())]
 
-    def movie_values(self) -> list[str]:
-        return sorted(MOVIE_TYPES)
+    def movie_values(self) -> list[GenreTypeContent]:
+        values = [GenreTypeContent(name=name, value=value) for name, value in MOVIE_TYPES.items()]
+        return sorted(values, key=lambda x: x.value)
 
 
 class NativeCategory(Enum):
