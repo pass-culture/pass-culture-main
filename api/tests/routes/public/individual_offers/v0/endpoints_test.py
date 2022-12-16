@@ -21,7 +21,7 @@ from tests import conftest
 from tests.routes import image_data
 
 
-DISABILITY_COMPLIANCE_FIELDS = {
+ACCESSIBILITY_FIELDS = {
     "audioDisabilityCompliant": True,
     "mentalDisabilityCompliant": True,
     "motorDisabilityCompliant": True,
@@ -39,7 +39,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
             },
@@ -64,7 +64,7 @@ class PostProductTest:
             "bookingEmail": None,
             "categoryRelatedFields": {"author": None, "category": "LIVRE_PAPIER", "isbn": None},
             "description": None,
-            "disabilityCompliance": {
+            "accessibility": {
                 "audioDisabilityCompliant": True,
                 "mentalDisabilityCompliant": True,
                 "motorDisabilityCompliant": True,
@@ -100,7 +100,7 @@ class PostProductTest:
                     "stageDirector": "Alfred",  # field not applicable
                 },
                 "description": "Enregistrement pour la nuit des temps",
-                "disabilityCompliance": {
+                "accessibility": {
                     "audioDisabilityCompliant": True,
                     "mentalDisabilityCompliant": True,
                     "motorDisabilityCompliant": False,
@@ -167,7 +167,7 @@ class PostProductTest:
                 "performer": "Pink Pâtisserie",
             },
             "description": "Enregistrement pour la nuit des temps",
-            "disabilityCompliance": {
+            "accessibility": {
                 "audioDisabilityCompliant": True,
                 "mentalDisabilityCompliant": True,
                 "motorDisabilityCompliant": False,
@@ -201,7 +201,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "stock": {
@@ -231,7 +231,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "stock": {
@@ -253,7 +253,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "stock": {
@@ -275,7 +275,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "stock": {
@@ -298,7 +298,7 @@ class PostProductTest:
             json={
                 "enableDoubleBookings": True,
                 "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "HUMOUR-VENTRILOQUE"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
             },
@@ -317,7 +317,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
             },
@@ -336,7 +336,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "VOD"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "digital", "url": "https://example.com"},
                 "name": "Le champ des possibles",
             },
@@ -358,7 +358,7 @@ class PostProductTest:
             "bookingEmail": None,
             "categoryRelatedFields": {"category": "VOD"},
             "description": None,
-            "disabilityCompliance": {
+            "accessibility": {
                 "audioDisabilityCompliant": True,
                 "mentalDisabilityCompliant": True,
                 "motorDisabilityCompliant": True,
@@ -389,7 +389,7 @@ class PostProductTest:
                     "stageDirector": "Alfred",
                     "isbn": "1234567891123",  # this field is not applicable and not added to extraData
                 },
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "digital", "url": "https://example.com"},
                 "name": "Le champ des possibles",
             },
@@ -416,7 +416,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_MUSIQUE", "musicType": "CHANSON_VARIETE-OTHER"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
             },
@@ -435,7 +435,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "CINE_VENTE_DISTANCE"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
             },
@@ -456,7 +456,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE", "isbn": "1234567891123"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
             },
@@ -481,7 +481,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE", "isbn": "123456789"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
             },
@@ -502,7 +502,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "EVENEMENT_JEU"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
             },
@@ -521,7 +521,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": not_allowed_venue.id},
                 "name": "Le champ des possibles",
             },
@@ -542,7 +542,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "image": {"file": image_data.GOOD_IMAGE},
@@ -565,7 +565,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "image": {"file": image_data.WRONG_IMAGE_SIZE},
@@ -591,7 +591,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "image": {"file": encoded_bytes.decode()},
@@ -614,7 +614,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "stock": {"bookingLimitDatetime": "2021-01-01T00:00:00", "price": 10, "quantity": 10},
@@ -636,7 +636,7 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "OPERA-GRAND_OPERA"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "digital", "url": "https://la-flute-en-chantier.fr"},
                 "name": "La flûte en chantier",
             },
@@ -657,7 +657,7 @@ class PostEventTest:
             "/public/offers/v1/events",
             json={
                 "categoryRelatedFields": {"category": "RENCONTRE"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
             },
@@ -714,7 +714,7 @@ class PostEventTest:
                     },
                 ],
                 "description": "Space is only noise if you can see",
-                "disabilityCompliance": {
+                "accessibility": {
                     "audioDisabilityCompliant": False,
                     "mentalDisabilityCompliant": True,
                     "motorDisabilityCompliant": True,
@@ -786,7 +786,7 @@ class PostEventTest:
             "/public/offers/v1/events",
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "ticketCollection": None,
@@ -806,7 +806,7 @@ class PostEventTest:
             "/public/offers/v1/events",
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 30},
@@ -827,7 +827,7 @@ class PostEventTest:
             "/public/offers/v1/events",
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "ticketCollection": {"way": "by_email", "daysBeforeEvent": 3},
@@ -848,7 +848,7 @@ class PostEventTest:
             "/public/offers/v1/events",
             json={
                 "categoryRelatedFields": {"category": "EVENEMENT_PATRIMOINE"},
-                "disabilityCompliance": DISABILITY_COMPLIANCE_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 30},
@@ -1005,7 +1005,7 @@ class GetProductTest:
             "bookingEmail": None,
             "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
             "description": "Un livre de contrepèterie",
-            "disabilityCompliance": {
+            "accessibility": {
                 "audioDisabilityCompliant": False,
                 "mentalDisabilityCompliant": False,
                 "motorDisabilityCompliant": False,

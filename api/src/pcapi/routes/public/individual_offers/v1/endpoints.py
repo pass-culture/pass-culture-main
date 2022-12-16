@@ -126,19 +126,19 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
     try:
         with repository.transaction():
             created_offer = offers_api.create_offer(
-                audio_disability_compliant=body.disability_compliance.audio_disability_compliant,
+                audio_disability_compliant=body.accessibility.audio_disability_compliant,
                 booking_email=body.booking_email,
                 description=body.description,
                 external_ticket_office_url=body.external_ticket_office_url,
                 extra_data=serialization.compute_extra_data(body.category_related_fields),
                 is_duo=body.is_duo,
-                mental_disability_compliant=body.disability_compliance.mental_disability_compliant,
-                motor_disability_compliant=body.disability_compliance.motor_disability_compliant,
+                mental_disability_compliant=body.accessibility.mental_disability_compliant,
+                motor_disability_compliant=body.accessibility.motor_disability_compliant,
                 name=body.name,
                 subcategory_id=body.category_related_fields.subcategory_id,
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                 venue=venue,
-                visual_disability_compliant=body.disability_compliance.visual_disability_compliant,
+                visual_disability_compliant=body.accessibility.visual_disability_compliant,
                 withdrawal_details=body.withdrawal_details,
             )
 
@@ -190,20 +190,20 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Of
     try:
         with repository.transaction():
             created_offer = offers_api.create_offer(
-                audio_disability_compliant=body.disability_compliance.audio_disability_compliant,
+                audio_disability_compliant=body.accessibility.audio_disability_compliant,
                 booking_email=body.booking_email,
                 description=body.description,
                 duration_minutes=body.event_duration,
                 external_ticket_office_url=body.external_ticket_office_url,
                 extra_data=serialization.compute_extra_data(body.category_related_fields),
                 is_duo=body.is_duo,
-                mental_disability_compliant=body.disability_compliance.mental_disability_compliant,
-                motor_disability_compliant=body.disability_compliance.motor_disability_compliant,
+                mental_disability_compliant=body.accessibility.mental_disability_compliant,
+                motor_disability_compliant=body.accessibility.motor_disability_compliant,
                 name=body.name,
                 subcategory_id=body.category_related_fields.subcategory_id,
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                 venue=venue,
-                visual_disability_compliant=body.disability_compliance.visual_disability_compliant,
+                visual_disability_compliant=body.accessibility.visual_disability_compliant,
                 withdrawal_delay=withdrawal_delay,
                 withdrawal_details=body.withdrawal_details,
                 withdrawal_type=withdrawal_type,
