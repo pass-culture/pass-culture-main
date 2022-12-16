@@ -32,6 +32,7 @@ import {
   serializeEditVenueBodyModel,
   serializePostVenueBodyModel,
 } from './serializers'
+import { venueSubmitRedirectUrl } from './utils/venueSubmitRedirectUrl'
 import style from './VenueFormScreen.module.scss'
 
 interface IVenueEditionProps {
@@ -89,19 +90,21 @@ const VenueFormScreen = ({
     })
 
     request
-      .then(() => {
-        if (!hasNewOfferCreationJourney) {
+      .then(response => {
+        if (!hasNewOfferCreationJourney || currentUser.isAdmin) {
           notify.success('Vos modifications ont bien été enregistrées')
         }
 
-        const venuesUrl = currentUser.isAdmin
-          ? `/structures/${offerer.id}`
-          : `${
-              hasNewOfferCreationJourney && isCreatingVenue
-                ? '/accueil?success'
-                : '/accueil'
-            }`
-        history.push(venuesUrl, isNewBankInformationCreation)
+        history.push(
+          venueSubmitRedirectUrl(
+            hasNewOfferCreationJourney,
+            isCreatingVenue,
+            offerer.id,
+            response.id,
+            currentUser
+          ),
+          isNewBankInformationCreation
+        )
       })
       .catch(error => {
         let formErrors
