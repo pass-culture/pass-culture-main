@@ -75,6 +75,7 @@ const CollectiveOfferEditionRoutes = ({
           <PageTitle title="Détails de l'offre" />
           <CollectiveOfferEdition
             offer={offer}
+            setOffer={setOffer}
             reloadCollectiveOffer={loadCollectiveOffer}
           />
         </Route>

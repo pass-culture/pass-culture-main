@@ -45,7 +45,6 @@ const mockUserOfferers = userOfferersFactory([{}])
 export const defaultCreationProps: IOfferEducationalProps = {
   userOfferers: mockUserOfferers,
   initialValues: DEFAULT_EAC_FORM_VALUES,
-  onSubmit: jest.fn(),
   categories: {
     educationalCategories: mockEducationalCategories,
     educationalSubCategories: mockEducationalSubcategories,
@@ -58,9 +57,7 @@ export const defaultCreationProps: IOfferEducationalProps = {
   mode: Mode.CREATION,
   domainsOptions: [{ value: 1, label: 'domain1' }],
   isTemplate: false,
-  imageOffer: null,
-  onImageUpload: jest.fn(),
-  onImageDelete: jest.fn(),
+  setOffer: jest.fn(),
 }
 
 const allParticipantsOptionsToTrue = {
@@ -101,7 +98,6 @@ const editionFormValues: IOfferEducationalFormValues = {
 export const defaultEditionProps: IOfferEducationalProps = {
   userOfferers: mockUserOfferers,
   initialValues: editionFormValues,
-  onSubmit: jest.fn(),
   categories: {
     educationalCategories: mockEducationalCategories,
     educationalSubCategories: mockEducationalSubcategories,
@@ -109,7 +105,5 @@ export const defaultEditionProps: IOfferEducationalProps = {
   mode: Mode.EDITION,
   domainsOptions: [{ value: 1, label: 'domain1' }],
   isTemplate: false,
-  imageOffer: null,
-  onImageUpload: jest.fn(),
-  onImageDelete: jest.fn(),
+  setOffer: jest.fn(),
 }
