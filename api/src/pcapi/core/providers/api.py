@@ -6,7 +6,7 @@ from typing import Iterable
 
 from pcapi.core import search
 from pcapi.core.logging import log_elapsed
-from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.repository import find_venue_by_id
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
@@ -47,6 +47,18 @@ def create_venue_provider(
     else:
         new_venue_provider = connect_venue_to_provider(venue, provider, payload.venueIdAtOfferProvider)
 
+    if (
+        provider.isActive
+        and provider.enabledForPro
+        and venue.venueType.label
+        in (
+            offerers_models.VenueTypeCode.BOOKSTORE.value,
+            offerers_models.VenueTypeCode.MOVIE.value,
+        )
+    ):
+        venue.isPermanent = True
+        repository.save(venue)
+
     logger.info(  # type: ignore [call-arg]
         "La synchronisation d'offre a été activée",
         extra={"venue_id": venue_id, "provider_id": provider_id},
@@ -55,7 +67,7 @@ def create_venue_provider(
     return new_venue_provider
 
 
-def reset_stock_quantity(venue: Venue) -> None:
+def reset_stock_quantity(venue: offerers_models.Venue) -> None:
     """Reset all stock quantity with the number of non-cancelled bookings."""
     logger.info("Resetting all stock quantity for changed sync", extra={"venue": venue.id})
     stocks = offers_models.Stock.query.filter(
@@ -67,7 +79,7 @@ def reset_stock_quantity(venue: Venue) -> None:
     db.session.commit()
 
 
-def update_last_provider_id(venue: Venue, provider_id: int) -> None:
+def update_last_provider_id(venue: offerers_models.Venue, provider_id: int) -> None:
     """Update all offers' lastProviderId with the new provider_id."""
     logger.info(
         "Updating Offer.last_provider_id for changed sync",
@@ -177,7 +189,7 @@ def update_allocine_venue_provider(
 
 
 def connect_venue_to_provider(
-    venue: Venue, provider: providers_models.Provider, venueIdAtOfferProvider: str = None
+    venue: offerers_models.Venue, provider: providers_models.Provider, venueIdAtOfferProvider: str = None
 ) -> providers_models.VenueProvider:
     id_at_provider = _get_siret(venueIdAtOfferProvider, venue.siret)
 
@@ -193,7 +205,9 @@ def connect_venue_to_provider(
 
 
 def connect_venue_to_cinema_provider(
-    venue: Venue, provider: providers_models.Provider, payload: providers_models.VenueProviderCreationPayload
+    venue: offerers_models.Venue,
+    provider: providers_models.Provider,
+    payload: providers_models.VenueProviderCreationPayload,
 ) -> providers_models.VenueProvider:
     provider_pivot = providers_repository.get_cinema_provider_pivot_for_venue(venue)
 
@@ -234,7 +248,7 @@ def _siret_can_be_synchronized(
 
 
 def synchronize_stocks(
-    stock_details: Iterable[providers_models.StockDetail], venue: Venue, provider_id: int | None = None
+    stock_details: Iterable[providers_models.StockDetail], venue: offerers_models.Venue, provider_id: int | None = None
 ) -> dict[str, int]:
     products_provider_references = [stock_detail.products_provider_reference for stock_detail in stock_details]
     # here product.id_at_providers is the "ref" field that provider api gives use.
@@ -316,7 +330,7 @@ def _build_new_offers_from_stock_details(
     existing_offers_by_provider_reference: dict[str, int],
     products_by_provider_reference: dict[str, offers_models.Product],
     existing_offers_by_venue_reference: dict[str, int],
-    venue: Venue,
+    venue: offerers_models.Venue,
     provider_id: int | None,
 ) -> list[offers_models.Offer]:
     new_offers = []
@@ -448,7 +462,7 @@ def _validate_stock_or_offer(model: offers_models.Offer | offers_models.Stock) -
 
 
 def _build_new_offer(
-    venue: Venue,
+    venue: offerers_models.Venue,
     product: offers_models.Product,
     id_at_providers: str,
     id_at_provider: str,
