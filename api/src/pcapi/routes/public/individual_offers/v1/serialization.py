@@ -332,6 +332,9 @@ class BaseStockResponseGetter(pydantic_utils.GetterDict):
 
 class BaseStockResponse(serialization.ConfiguredBaseModel):
     booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
+    dnBookedQuantity: int = pydantic.Field(
+        ..., description="The number of bookings.", example=0, alias="bookedQuantity"
+    )
     price: pydantic.StrictInt = PRICE_FIELD
     quantity: pydantic.StrictInt | typing.Literal["unlimited"] = QUANTITY_FIELD
 
