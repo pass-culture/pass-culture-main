@@ -16,13 +16,8 @@ import {
 import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import useNotification from 'hooks/useNotification'
 import OfferEducationalScreen from 'screens/OfferEducational'
-import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
+import useOfferEducationalFormData from 'screens/OfferEducational/useOfferEducationalFormData'
 import Spinner from 'ui-kit/Spinner/Spinner'
-
-type AsyncScreenProps = Pick<
-  IOfferEducationalProps,
-  'categories' | 'userOfferers' | 'domainsOptions'
->
 
 const CollectiveOfferEdition = ({
   offer,
@@ -35,12 +30,14 @@ const CollectiveOfferEdition = ({
 }): JSX.Element => {
   const history = useHistory()
 
-  const [isReady, setIsReady] = useState<boolean>(false)
-  const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
   const [initialValues, setInitialValues] =
     useState<IOfferEducationalFormValues>(DEFAULT_EAC_FORM_VALUES)
 
   const notify = useNotification()
+  const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
+    offer.venue.managingOffererId,
+    offer
+  )
 
   const setIsOfferActive = async (isActive: boolean) => {
     const patchAdapter = offer.isTemplate
@@ -87,13 +84,7 @@ const CollectiveOfferEdition = ({
         notify.error(result.message)
       }
 
-      const { categories, offerers, domains, initialValues } = result.payload
-
-      setScreenProps({
-        categories: categories,
-        userOfferers: offerers,
-        domainsOptions: domains,
-      })
+      const { offerers, initialValues } = result.payload
 
       setInitialValues(values =>
         setInitialFormValues(
@@ -106,8 +97,6 @@ const CollectiveOfferEdition = ({
           offerResponse.venueId
         )
       )
-
-      setIsReady(true)
     },
     [notify]
   )
@@ -118,13 +107,15 @@ const CollectiveOfferEdition = ({
     }
   }, [isReady, offer.id, loadData, history, offer.isTemplate])
 
-  if (!isReady || !screenProps || !offer) {
+  if (!isReady || !offer) {
     return <Spinner />
   }
 
   return (
     <OfferEducationalScreen
-      {...screenProps}
+      categories={offerEducationalFormData.categories}
+      userOfferers={offerEducationalFormData.offerers}
+      domainsOptions={offerEducationalFormData.domains}
       offer={offer}
       setOffer={setOffer}
       cancelActiveBookings={cancelActiveBookings}

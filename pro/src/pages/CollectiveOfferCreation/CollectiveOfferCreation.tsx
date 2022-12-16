@@ -15,13 +15,8 @@ import getCollectiveOfferFormDataAdapter from 'core/OfferEducational/adapters/ge
 import useNotification from 'hooks/useNotification'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import OfferEducationalScreen from 'screens/OfferEducational'
-import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
+import useOfferEducationalFormData from 'screens/OfferEducational/useOfferEducationalFormData'
 import Spinner from 'ui-kit/Spinner/Spinner'
-
-type AsyncScreenProps = Pick<
-  IOfferEducationalProps,
-  'categories' | 'userOfferers' | 'domainsOptions'
->
 
 interface CollectiveOfferCreationProps {
   offer?: CollectiveOffer | CollectiveOfferTemplate
@@ -36,14 +31,16 @@ const CollectiveOfferCreation = ({
 }: CollectiveOfferCreationProps): JSX.Element => {
   const location = useLocation()
 
-  const [isReady, setIsReady] = useState<boolean>(false)
-  const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
   const [initialValues, setInitialValues] =
     useState<IOfferEducationalFormValues>(DEFAULT_EAC_FORM_VALUES)
 
   const { structure: offererId, lieu: venueId } =
     queryParamsFromOfferer(location)
   const notify = useNotification()
+  const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
+    offererId,
+    offer
+  )
 
   useEffect(() => {
     if (!isReady) {
@@ -57,13 +54,7 @@ const CollectiveOfferCreation = ({
           notify.error(result.message)
         }
 
-        const { categories, offerers, domains, initialValues } = result.payload
-
-        setScreenProps({
-          categories: categories,
-          userOfferers: offerers,
-          domainsOptions: domains,
-        })
+        const { offerers, initialValues } = result.payload
 
         setInitialValues(values =>
           setInitialFormValues(
@@ -73,18 +64,22 @@ const CollectiveOfferCreation = ({
             initialValues.venueId || venueId
           )
         )
-
-        setIsReady(true)
       }
 
       loadData()
     }
   }, [isReady, venueId, offererId])
 
-  return isReady && screenProps ? (
+  if (!isReady) {
+    return <Spinner />
+  }
+
+  return (
     <>
       <OfferEducationalScreen
-        {...screenProps}
+        categories={offerEducationalFormData.categories}
+        userOfferers={offerEducationalFormData.offerers}
+        domainsOptions={offerEducationalFormData.domains}
         offer={offer}
         setOffer={setOffer}
         getIsOffererEligible={canOffererCreateCollectiveOfferAdapter}
@@ -95,8 +90,6 @@ const CollectiveOfferCreation = ({
       />
       <RouteLeavingGuardCollectiveOfferCreation />
     </>
-  ) : (
-    <Spinner />
   )
 }
 
