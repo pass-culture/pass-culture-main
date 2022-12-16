@@ -6,7 +6,7 @@ from sqlalchemy.orm import declarative_mixin
 from sqlalchemy.sql.elements import Case
 
 
-class OfferStatus(enum.Enum):
+class OfferStatus(str, enum.Enum):
     ACTIVE = "ACTIVE"
     PENDING = "PENDING"
     EXPIRED = "EXPIRED"
