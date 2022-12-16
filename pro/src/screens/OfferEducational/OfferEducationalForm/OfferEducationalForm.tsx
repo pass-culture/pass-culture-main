@@ -7,7 +7,6 @@ import ActionsBarSticky from 'components/ActionsBarSticky'
 import FormLayout from 'components/FormLayout'
 import { IOfferEducationalFormValues, Mode } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
-import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
@@ -38,7 +37,6 @@ type IOfferEducationalFormProps = Omit<
   | 'useOfferForFormValues'
 > & {
   mode: Mode
-  domainsOptions: SelectOption[]
   imageOffer: IImageUploaderOfferProps['imageOffer']
   onImageUpload: IImageUploaderOfferProps['onImageUpload']
   onImageDelete: IImageUploaderOfferProps['onImageDelete']
