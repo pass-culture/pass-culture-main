@@ -9,8 +9,6 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
-from pcapi.domain import music_types
-from pcapi.domain import show_types
 from pcapi.models import api_errors
 from pcapi.routes.public import utils as public_utils
 from pcapi.serialization.decorator import spectree_serialize
@@ -75,23 +73,6 @@ def _retrieve_offer(offer_id: int) -> offers_models.Offer | None:
     )
 
 
-def _compute_extra_data(body: serialization.OfferCreationBase) -> dict[str, str]:
-    extra_data = {}
-    for extra_data_field in serialization.ExtraDataModel.__fields__:
-        field_value = getattr(body.category_related_fields, extra_data_field, None)
-        if field_value:
-            if extra_data_field == "musicType":
-                extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[field_value].code)
-                extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[field_value].code)
-            elif extra_data_field == "showType":
-                extra_data["showSubType"] = str(show_types.SHOW_SUB_TYPES_BY_SLUG[field_value].code)
-                extra_data["showType"] = str(show_types.SHOW_TYPES_BY_SLUG[field_value].code)
-            else:
-                extra_data[extra_data_field] = field_value
-
-    return extra_data
-
-
 def _save_image(image_body: serialization.ImageBody, offer: offers_models.Offer) -> None:
     try:
         image_as_bytes = public_utils.get_bytes_from_base64_string(image_body.file)
@@ -151,7 +132,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
                 booking_email=body.booking_email,
                 description=body.description,
                 external_ticket_office_url=body.external_ticket_office_url,
-                extra_data=_compute_extra_data(body),
+                extra_data=serialization.compute_extra_data(body.category_related_fields),
                 is_duo=body.is_duo,
                 mental_disability_compliant=body.disability_compliance.mental_disability_compliant,
                 motor_disability_compliant=body.disability_compliance.motor_disability_compliant,
@@ -216,7 +197,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Of
                 description=body.description,
                 duration_minutes=body.event_duration,
                 external_ticket_office_url=body.external_ticket_office_url,
-                extra_data=_compute_extra_data(body),
+                extra_data=serialization.compute_extra_data(body.category_related_fields),
                 is_duo=body.is_duo,
                 mental_disability_compliant=body.disability_compliance.mental_disability_compliant,
                 motor_disability_compliant=body.disability_compliance.motor_disability_compliant,

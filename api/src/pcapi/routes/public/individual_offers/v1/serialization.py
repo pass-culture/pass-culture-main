@@ -180,6 +180,23 @@ def compute_category_related_fields(offer: offers_models.Offer) -> CategoryRelat
     return category_fields_model(**fields, category=offer.subcategory.id)  # type: ignore [operator]
 
 
+def compute_extra_data(category_related_fields: CategoryRelatedFields) -> dict[str, str]:
+    extra_data = {}
+    for extra_data_field in ExtraDataModel.__fields__:
+        field_value = getattr(category_related_fields, extra_data_field, None)
+        if field_value:
+            if extra_data_field == "musicType":
+                extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[field_value].code)
+                extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[field_value].code)
+            elif extra_data_field == "showType":
+                extra_data["showSubType"] = str(show_types.SHOW_SUB_TYPES_BY_SLUG[field_value].code)
+                extra_data["showType"] = str(show_types.SHOW_TYPES_BY_SLUG[field_value].code)
+            else:
+                extra_data[extra_data_field] = field_value
+
+    return extra_data
+
+
 PRODUCT_CATEGORY_MODELS_BY_SUBCATEGORY = {
     subcategory.id: get_category_fields_model(subcategory)
     for subcategory in subcategories.ALL_SUBCATEGORIES
