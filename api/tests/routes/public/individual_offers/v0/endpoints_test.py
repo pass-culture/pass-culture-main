@@ -9,6 +9,7 @@ import pytest
 
 from pcapi import settings
 from pcapi.core import testing
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -183,7 +184,12 @@ class PostProductTest:
             "location": {"type": "physical", "venueId": venue.id},
             "name": "Le champ des possibles",
             "status": "EXPIRED",
-            "stock": {"bookingLimitDatetime": "2021-12-31T20:00:00Z", "price": 1234, "quantity": 3},
+            "stock": {
+                "bookedQuantity": 0,
+                "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+                "price": 1234,
+                "quantity": 3,
+            },
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -199,6 +205,7 @@ class PostProductTest:
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "stock": {
+                    "bookedQuantity": 0,
                     "price": 1,
                     "quantity": "unlimited",
                 },
@@ -899,6 +906,7 @@ class PostAdditionalDatesTest:
             "additionalDates": [
                 {
                     "beginningDatetime": "2022-02-01T10:00:00",
+                    "bookedQuantity": 0,
                     "bookingLimitDatetime": "2022-01-15T13:00:00",
                     "id": first_stock.id,
                     "price": 8899,
@@ -906,6 +914,7 @@ class PostAdditionalDatesTest:
                 },
                 {
                     "beginningDatetime": "2022-03-01T10:00:00",
+                    "bookedQuantity": 0,
                     "bookingLimitDatetime": "2022-01-15T13:00:00",
                     "id": second_stock.id,
                     "price": 0,
@@ -1018,9 +1027,11 @@ class GetProductTest:
         api_key = offerers_factories.ApiKeyFactory()
         product_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)
         offers_factories.StockFactory(offer=product_offer, isSoftDeleted=True)
-        offers_factories.StockFactory(
+        bookable_stock = offers_factories.StockFactory(
             offer=product_offer, price=12.34, quantity=10, bookingLimitDatetime=datetime.datetime(2022, 1, 15, 13, 0, 0)
         )
+        bookings_factories.BookingFactory(stock=bookable_stock)
+
         mediation = offers_factories.MediationFactory(offer=product_offer, credit="Ph. Oto")
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -1028,7 +1039,12 @@ class GetProductTest:
         )
 
         assert response.status_code == 200
-        assert response.json["stock"] == {"price": 1234, "quantity": 10, "bookingLimitDatetime": "2022-01-15T13:00:00Z"}
+        assert response.json["stock"] == {
+            "price": 1234,
+            "quantity": 10,
+            "bookedQuantity": 1,
+            "bookingLimitDatetime": "2022-01-15T13:00:00Z",
+        }
         assert response.json["image"] == {
             "credit": "Ph. Oto",
             "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(mediation.id)}",
