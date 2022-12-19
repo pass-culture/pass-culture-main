@@ -1009,6 +1009,14 @@ SUSPENSION_ACTIONS = defaultdict(
 )
 
 
+def get_suspension_message(suspension_action: history_models.ActionHistory) -> str:
+    message = f"par {suspension_action.authorUser.full_name}" if suspension_action.authorUser else "Auteur inconnu"
+    if suspension_action.extraData and suspension_action.extraData.get("reason"):
+        suspension_reason = users_constants.SuspensionReason(suspension_action.extraData["reason"])
+        message += f" : {dict(users_constants.SUSPENSION_REASON_CHOICES)[suspension_reason]}"
+    return message
+
+
 def public_account_history(user: models.User) -> list[dict]:
     # TODO (ASK, 2022-06-10): à ajouter un jour:
     #  - les commentaires sur l'utlisateur, horodatés et attribués à leur auteur
@@ -1040,14 +1048,7 @@ def public_account_history(user: models.User) -> list[dict]:
         {
             "action": f"{suspension_action.actionType.value}",
             "datetime": suspension_action.actionDate,
-            "message": (
-                f"par {suspension_action.authorUser.full_name}"
-                + (
-                    f" : {dict(users_constants.SUSPENSION_REASON_CHOICES)[users_constants.SuspensionReason(suspension_action.extraData['reason'])]}"
-                    if suspension_action.extraData
-                    else ""
-                )
-            ),
+            "message": get_suspension_message(suspension_action),
         }
         for suspension_action in user_suspension
     ]
