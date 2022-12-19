@@ -25,7 +25,7 @@
                     <div class="input-group mb-1 ">
                         {% for form_field in form %}
                             {% if form_field.type == 'PCSelectMultipleField' or form_field.type == "PCQuerySelectMultipleField" %}
-                                <div class="col-6 p-1"> {{ form_field }}</div>
+                                <div class="col-4 p-1"> {{ form_field }}</div>
                             {% endif %}
                         {% endfor %}
                     </div>

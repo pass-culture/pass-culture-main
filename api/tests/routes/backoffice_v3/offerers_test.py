@@ -1084,17 +1084,6 @@ class ListUserOffererToValidateTest:
                 offerer=validated_user_offerer.offerer, validationStatus=ValidationStatus.PENDING
             )
             to_be_validated.append(pending_user_offerer)
-            for action_type in (
-                history_models.ActionType.USER_OFFERER_PENDING,
-                history_models.ActionType.USER_OFFERER_PENDING,
-            ):
-                history_factories.ActionHistoryFactory(
-                    actionType=action_type,
-                    authorUser=users_factories.AdminFactory(),
-                    offerer=pending_user_offerer.offerer,
-                    user=pending_user_offerer.user,
-                    comment=None,
-                )
 
         # when
         with assert_no_duplicated_queries():
@@ -1272,6 +1261,52 @@ class ListUserOffererToValidateTest:
             response = authenticated_client.get(
                 url_for(
                     "backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", status=status_filter
+                )
+            )
+
+        # then
+        assert response.status_code == expected_status
+        if expected_status == 200:
+            rows = html_parser.extract_table_rows(response.data)
+            assert {row["Email Compte pro"] for row in rows} == expected_users_emails
+        else:
+            assert html_parser.count_table_rows(response.data) == 0
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    @pytest.mark.parametrize(
+        "offerer_status_filter, expected_status, expected_users_emails",
+        (
+            ("NEW", 200, {"a@example.com", "b@example.com"}),
+            ("PENDING", 200, {"d@example.com", "e@example.com"}),
+            (
+                ["NEW", "PENDING"],
+                200,
+                {"a@example.com", "b@example.com", "d@example.com", "e@example.com"},
+            ),
+            ("VALIDATED", 200, {"c@example.com", "f@example.com"}),
+            ("REJECTED", 200, set()),
+            (
+                None,
+                200,
+                {"a@example.com", "b@example.com", "c@example.com", "d@example.com", "e@example.com", "f@example.com"},
+            ),  # same as default
+            ("OTHER", 400, set()),  # unknown value
+        ),
+    )
+    def test_list_filtering_by_offerer_status(
+        self,
+        authenticated_client,
+        offerer_status_filter,
+        expected_status,
+        expected_users_emails,
+        user_offerer_to_be_validated,
+    ):
+        # when
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(
+                url_for(
+                    "backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate",
+                    offerer_status=offerer_status_filter,
                 )
             )
 

@@ -1374,8 +1374,6 @@ def _apply_query_filters(
 ) -> sa.orm.Query:
     if status:
         query = query.filter(cls.validationStatus.in_(status))  # type: ignore [union-attr]
-    else:
-        query = query.filter(cls.isWaitingForValidation)
 
     if tags:
         tagged_offerers = (
@@ -1476,6 +1474,7 @@ def list_users_offerers_to_be_validated_legacy(filter_: list[dict[str, typing.An
 def list_users_offerers_to_be_validated(
     tags: list[offerers_models.OffererTag] | None = None,
     status: list[ValidationStatus] | None = None,
+    offerer_status: list[ValidationStatus] | None = None,
     from_datetime: datetime | None = None,
     to_datetime: datetime | None = None,
 ) -> sa.orm.Query:
@@ -1488,6 +1487,11 @@ def list_users_offerers_to_be_validated(
         .joinedload(offerers_models.Offerer.UserOfferers)
         .joinedload(offerers_models.UserOfferer.user),
     )
+    if offerer_status:
+        query = query.join(
+            offerers_models.Offerer,
+            offerers_models.Offerer.id == offerers_models.UserOfferer.offererId,
+        ).filter(offerers_models.Offerer.validationStatus.in_(offerer_status))
 
     return _apply_query_filters(
         query,
