@@ -74,6 +74,17 @@ class CollectiveBookingStatus(enum.Enum):
     REIMBURSED = "REIMBURSED"
 
 
+class CollectiveOfferDisplayedStatus(enum.Enum):
+    ACTIVE = "ACTIVE"
+    PENDING = "PENDING"
+    REJECTED = "REJECTED"
+    PREBOOKED = "PREBOOKED"
+    BOOKED = "BOOKED"
+    INACTIVE = "INACTIVE"
+    EXPIRED = "EXPIRED"
+    ENDED = "ENDED"
+
+
 class EducationalBookingStatus(enum.Enum):
     REFUSED = "REFUSED"
 

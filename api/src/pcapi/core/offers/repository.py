@@ -18,7 +18,10 @@ from sqlalchemy.orm.exc import NoResultFound
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offerers.models import Offerer
@@ -238,7 +241,64 @@ def get_collective_offers_by_filters(
         # 2. we need to migrate Offer.extraData to JSONB in order to use `union`
         query = query.filter(CollectiveOffer.name.ilike(search))
     if status is not None:
-        query = query.filter(CollectiveOffer.status == OfferStatus[status].name)
+        match status:
+            # Status BOOKED == offer is sold out and last booking link to this reservation is not PENDING
+            case CollectiveOfferDisplayedStatus.BOOKED.value:
+                booking_subquery = (
+                    CollectiveStock.query.with_entities(CollectiveStock.collectiveOfferId)
+                    .join(CollectiveBooking, CollectiveStock.collectiveBookings)
+                    .filter(CollectiveBooking.status != CollectiveBookingStatus.PENDING)
+                )
+                query = query.filter(
+                    CollectiveOffer.status == OfferStatus.SOLD_OUT.name, CollectiveOffer.id.in_(booking_subquery)
+                )
+            # Status PREBOOKED == offer is sold out and last booking link to this reservation is PENDING
+            case CollectiveOfferDisplayedStatus.PREBOOKED.value:
+                last_booking_query = (
+                    CollectiveBooking.query.with_entities(
+                        CollectiveBooking.collectiveStockId, func.max(CollectiveBooking.dateCreated).label("maxdate")
+                    )
+                    .group_by(CollectiveBooking.collectiveStockId)
+                    .subquery()
+                )
+                offer_id_query = (
+                    CollectiveStock.query.with_entities(CollectiveStock.collectiveOfferId, CollectiveBooking.status)
+                    .join(CollectiveBooking, CollectiveStock.collectiveBookings)
+                    .join(
+                        last_booking_query,
+                        and_(
+                            CollectiveStock.id == last_booking_query.c.collectiveStockId,
+                            CollectiveBooking.dateCreated == last_booking_query.c.maxdate,
+                        ),
+                    )
+                    .subquery()
+                )
+                query = query.filter(
+                    CollectiveOffer.status == OfferStatus.SOLD_OUT.name,
+                    offer_id_query.c.status == CollectiveBookingStatus.PENDING.name,
+                ).join(offer_id_query, offer_id_query.c.collectiveOfferId == CollectiveOffer.id)
+            # Status ENDED == event is passed with a reservation
+            case CollectiveOfferDisplayedStatus.ENDED.value:
+                hasBookingQuery = (
+                    CollectiveStock.query.with_entities(CollectiveStock.collectiveOfferId)
+                    .filter(CollectiveStock.collectiveBookings != None)
+                    .subquery()
+                )
+                query = query.join(hasBookingQuery, hasBookingQuery.c.collectiveOfferId == CollectiveOffer.id).filter(
+                    CollectiveOffer.status == OfferStatus.EXPIRED.name
+                )
+            # Status EXPIRED == event is passed without any reservation
+            case CollectiveOfferDisplayedStatus.EXPIRED.value:
+                hasNoBookingQuery = (
+                    CollectiveStock.query.with_entities(CollectiveStock.collectiveOfferId)
+                    .filter(CollectiveStock.collectiveBookings == None)
+                    .subquery()
+                )
+                query = query.join(
+                    hasNoBookingQuery, hasNoBookingQuery.c.collectiveOfferId == CollectiveOffer.id
+                ).filter(CollectiveOffer.status == OfferStatus.EXPIRED.name)
+            case _:
+                query = query.filter(CollectiveOffer.status == OfferStatus[status].name)
     if period_beginning_date is not None or period_ending_date is not None:
         subquery = (
             CollectiveStock.query.with_entities(CollectiveStock.collectiveOfferId)
@@ -318,8 +378,12 @@ def get_collective_offers_template_by_filters(
         # 2. we need to migrate Offer.extraData to JSONB in order to use `union`
         query = query.filter(CollectiveOfferTemplate.name.ilike(search))
     if status is not None:
-        query = query.filter(CollectiveOfferTemplate.status == OfferStatus[status].name)
-
+        if status in (CollectiveOfferDisplayedStatus.BOOKED.value, CollectiveOfferDisplayedStatus.PREBOOKED.value):
+            query = query.filter(CollectiveOfferTemplate.status == OfferStatus.SOLD_OUT.name)
+        elif status in (CollectiveOfferDisplayedStatus.ENDED.value, CollectiveOfferDisplayedStatus.EXPIRED.value):
+            query = query.filter(CollectiveOfferTemplate.status == OfferStatus.EXPIRED.name)
+        else:
+            query = query.filter(CollectiveOfferTemplate.status == OfferStatus[status].name)
     return query
 
 
