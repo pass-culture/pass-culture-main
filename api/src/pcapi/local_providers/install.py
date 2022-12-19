@@ -12,6 +12,6 @@ def install_local_providers() -> None:
         )
     providers_factories.ProviderFactory(
         name="Pass Culture API Stocks",
-        localClass=providers_constants.PASS_CULTURE_STOCKS_PROVIDER_NAME,
+        localClass=providers_constants.PASS_CULTURE_STOCKS_FAKE_CLASS_NAME,
         enabledForPro=False,
     )
