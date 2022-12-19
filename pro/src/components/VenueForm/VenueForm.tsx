@@ -89,7 +89,7 @@ const VenueForm = ({
       if (
         venue != null
           ? nextLocation.pathname + nextLocation.search === url
-          : nextLocation.pathname.startsWith(url)
+          : (nextLocation.pathname + nextLocation.search).startsWith(url)
       ) {
         return {
           shouldBlock: false,
