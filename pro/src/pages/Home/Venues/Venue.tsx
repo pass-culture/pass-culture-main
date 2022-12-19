@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { BOOKING_STATUS } from 'core/Bookings'
@@ -13,14 +12,15 @@ import {
 import { venueCreateOfferLink } from 'core/Venue/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as DownIcon } from 'icons/ico-caret-down.svg'
-import { ReactComponent as RightIcon } from 'icons/ico-caret-right.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { ReactComponent as IcoPlusCircle } from 'icons/ico-plus-circle.svg'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
-import { Button, ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Icon from 'ui-kit/Icon/Icon'
 import Spinner from 'ui-kit/Spinner/Spinner'
+
+import { useNewOfferCreationJourney } from '../../../hooks'
 
 import VenueStat from './VenueStat'
 
@@ -133,6 +133,7 @@ const Venue = ({
   const isNewBankInformationActive = useActiveFeature(
     'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
   )
+  const hasNewOfferCreationJourney = useNewOfferCreationJourney()
 
   useEffect(() => {
     async function updateStats() {
@@ -177,12 +178,12 @@ const Venue = ({
             }`}
           >
             <h3 className="h-card-title">
-              <Button
-                className="h-card-title-ico"
-                variant={ButtonVariant.TERNARY}
-                Icon={isStatOpen ? DownIcon : RightIcon}
+              <button
+                className="h-card-title h-card-title-button"
                 type="button"
-                title={isStatOpen ? 'Masquer' : 'Afficher'}
+                title={`${
+                  isStatOpen ? 'Masquer' : 'Afficher'
+                } les statistiques de ${publicName || name}`}
                 onClick={() => {
                   setIsStatOpen(prev => !prev)
                   logEvent?.(
@@ -190,14 +191,14 @@ const Venue = ({
                     venueIdTrackParam
                   )
                 }}
-              />
-              <Link
-                className="title-text"
-                title={publicName || name}
-                to={editVenueLink}
               >
+                <Icon
+                  alt="icon"
+                  className="h-card-title-ico"
+                  svg={isStatOpen ? 'ico-caret-down' : 'ico-caret-right'}
+                />
                 {publicName || name}
-              </Link>
+              </button>
             </h3>
             <div className="button-group">
               {((isNewBankInformationActive && hasMissingReimbursementPoint) ||
@@ -232,7 +233,7 @@ const Venue = ({
                   )
                 }
               >
-                Modifier
+                {hasNewOfferCreationJourney ? 'Éditer le lieu' : 'Modifier'}
               </ButtonLink>
             </div>
           </div>
