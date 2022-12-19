@@ -51,6 +51,7 @@ class PostProductTest:
         assert created_offer.venue == venue
         assert created_offer.subcategoryId == "LIVRE_PAPIER"
         assert created_offer.audioDisabilityCompliant is True
+        assert created_offer.lastProvider.name == "Individual Offers public API"
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is True
         assert created_offer.visualDisabilityCompliant is True
@@ -128,6 +129,7 @@ class PostProductTest:
         assert created_offer.venue == venue
         assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE"
         assert created_offer.audioDisabilityCompliant is True
+        assert created_offer.lastProvider.name == "Individual Offers public API"
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is False
         assert created_offer.visualDisabilityCompliant is False
@@ -669,6 +671,7 @@ class PostEventTest:
         assert created_offer.venue == venue
         assert created_offer.subcategoryId == "RENCONTRE"
         assert created_offer.audioDisabilityCompliant is True
+        assert created_offer.lastProvider.name == "Individual Offers public API"
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is True
         assert created_offer.visualDisabilityCompliant is True
@@ -734,6 +737,7 @@ class PostEventTest:
 
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
+        assert created_offer.lastProvider.name == "Individual Offers public API"
         assert created_offer.name == "Nicolas Jaar dans ton salon"
         assert created_offer.venue == venue
         assert created_offer.subcategoryId == "CONCERT"
