@@ -31,7 +31,7 @@ export const musicOptionsTree: ICategorySubtypeItem[] = [
     code: 520,
     label: 'Blues',
     children: [
-      { code: 521, label: 'Blues Accoustique' },
+      { code: 521, label: 'Blues Acoustique' },
       { code: 522, label: 'Blues Contemporain' },
       { code: 523, label: 'Blues Électrique' },
       { code: 524, label: 'Blues Rock' },

@@ -46,7 +46,7 @@ music_types = [
         code=520,
         label="Blues",
         children=[
-            MusicSubType(code=521, label="Blues Accoustique", slug="BLUES-BLUES_ACCOUSTIQUE"),
+            MusicSubType(code=521, label="Blues Acoustique", slug="BLUES-BLUES_ACOUSTIQUE"),
             MusicSubType(code=522, label="Blues Contemporain", slug="BLUES-BLUES_CONTEMPORAIN"),
             MusicSubType(code=523, label="Blues Électrique", slug="BLUES-BLUES_ELECTRIQUE"),
             MusicSubType(code=524, label="Blues Rock", slug="BLUES-BLUES_ROCK"),
