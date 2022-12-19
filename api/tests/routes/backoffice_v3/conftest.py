@@ -398,6 +398,16 @@ def offerers_to_be_validated_fixture(offerer_tags):
     for offerer in (public, top_public):
         offerers_factories.OffererTagMappingFactory(tagId=public_tag.id, offererId=offerer.id)
 
+    offerers_factories.UserOffererFactory(
+        offerer=top, user__firstName="Sadi", user__lastName="Carnot", user__email="sadi@example.com"
+    )
+    offerers_factories.UserOffererFactory(
+        offerer=collec, user__firstName="Félix", user__lastName="Faure", user__email="felix@example.com"
+    )
+    offerers_factories.UserOffererFactory(
+        offerer=public, user__firstName="Émile", user__lastName="Loubet", user__email="emile@example.com"
+    )
+
     # Other statuses
     offerers_factories.OffererFactory(name="G")
     offerers_factories.NotValidatedOffererFactory(name="H", validationStatus=ValidationStatus.REJECTED)

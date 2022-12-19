@@ -22,7 +22,7 @@ class OffererValidationListForm(FlaskForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("Nom de structure, SIREN, code postal ou département")
+    q = fields.PCOptSearchField("Nom de structure, SIREN, code postal, département, ville, email, nom de compte pro")
     tags = fields.PCQuerySelectMultipleField(
         "Tags", query_factory=_get_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
     )

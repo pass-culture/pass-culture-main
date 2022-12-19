@@ -768,6 +768,32 @@ class ListOfferersToValidateTest:
             )
 
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+        def test_list_search_by_email(self, authenticated_client, offerers_to_be_validated):
+            # when
+            with assert_no_duplicated_queries():
+                response = authenticated_client.get(
+                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="sadi@example.com")
+                )
+
+            # then
+            assert response.status_code == 200
+            rows = html_parser.extract_table_rows(response.data)
+            assert {row["Nom de la structure"] for row in rows} == {"B"}
+
+        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+        def test_list_search_by_user_name(self, authenticated_client, offerers_to_be_validated):
+            # when
+            with assert_no_duplicated_queries():
+                response = authenticated_client.get(
+                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="Felix faure")
+                )
+
+            # then
+            assert response.status_code == 200
+            rows = html_parser.extract_table_rows(response.data)
+            assert {row["Nom de la structure"] for row in rows} == {"C"}
+
+        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         @pytest.mark.parametrize(
             "search_filter, expected_offerer_names",
             (
