@@ -31,7 +31,6 @@ import pcapi.core.testing
 from pcapi.core.users import testing as users_testing
 import pcapi.core.users.models as users_models
 from pcapi.install_database_extensions import install_database_extensions
-from pcapi.local_providers.install import install_local_providers
 from pcapi.models import db
 from pcapi.models.feature import install_feature_flags
 from pcapi.notifications.internal import testing as internal_notifications_testing
@@ -96,7 +95,6 @@ def build_backoffice_app():
         install_database_extensions()
         run_migrations()
         install_feature_flags()
-        install_local_providers()
 
         install_routes(app)
 
@@ -125,7 +123,6 @@ def build_main_app():
         install_database_extensions()
         run_migrations()
         install_feature_flags()
-        install_local_providers()
 
         yield app
 
@@ -204,7 +201,6 @@ def _db(app):
     install_database_extensions()
     run_migrations()
 
-    install_local_providers()
     clean_all_database()
 
     return mock_db

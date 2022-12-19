@@ -4,7 +4,6 @@ from sentry_sdk import set_tag
 
 from pcapi import settings
 from pcapi.flask_app import app
-from pcapi.local_providers.install import install_local_providers
 
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -27,9 +26,6 @@ with app.app_context():
     # pylint: disable=unused-import
     from pcapi.routes import install_all_routes
     import pcapi.utils.login_manager
-
-    if settings.IS_DEV and not settings.IS_RUNNING_TESTS:
-        install_local_providers()
 
     install_all_routes(app)
 
