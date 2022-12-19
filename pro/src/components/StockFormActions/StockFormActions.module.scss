@@ -34,8 +34,8 @@
 }
 
 .menu-item-icon {
-  height: rem.torem(20px);
-  width: rem.torem(20px);
+  max-height: rem.torem(20px);
+  max-width: rem.torem(20px);
   flex-shrink: 0;
   margin-right: rem.torem(8px);
 }
