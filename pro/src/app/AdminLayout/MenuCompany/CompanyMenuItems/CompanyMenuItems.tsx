@@ -48,7 +48,7 @@ const CompanyMenuItems = () => {
           })
         }}
         role="menuitem"
-        to="/remboursements/justificatifs"
+        to="/remboursements/details"
       >
         <IconEuro aria-hidden className={styles['nav-item-icon']} />
         Remboursements

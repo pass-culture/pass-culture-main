@@ -7,6 +7,7 @@ import {
 } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { useHomePath, useNavigate } from 'hooks'
+import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -60,6 +61,7 @@ interface IAppContextProviderProps {
 }
 
 export function AppContextProvider({ children }: IAppContextProviderProps) {
+  const { currentUser } = useCurrentUser()
   const homePath = useHomePath()
   const notify = useNotification()
   const navigate = useNavigate()
@@ -147,11 +149,16 @@ export function AppContextProvider({ children }: IAppContextProviderProps) {
   }
 
   useEffect(() => {
-    ;(async () => {
-      await loadData()
+    if (currentUser === null) {
       setIsLoading(false)
-    })()
-  }, [])
+    } else {
+      setIsLoading(true)
+      ;(async () => {
+        await loadData()
+        setIsLoading(false)
+      })()
+    }
+  }, [currentUser])
 
   if (isLoading === true) {
     return <Spinner />

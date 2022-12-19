@@ -57,7 +57,7 @@ const MenuCompany = ({ className }: IMenuCompanyProps) => {
         )}
         {venues.length > 0 && (
           <div className={styles['venue-selector']}>
-            <Title level={5}>Votre entreprise</Title>
+            <Title level={5}>Mon entreprise</Title>
             <SelectInput
               name="venue"
               value={selectedVenueId || venueOptions[0].value}

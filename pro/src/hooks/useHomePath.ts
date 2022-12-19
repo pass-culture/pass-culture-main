@@ -1,9 +1,8 @@
 import useCurrentUser from 'hooks/useCurrentUser'
 
 const useHomePath = () => {
-  const {
-    currentUser: { isAdmin },
-  } = useCurrentUser()
+  const { currentUser } = useCurrentUser()
+  const { isAdmin } = currentUser || {}
   return isAdmin ? '/structures' : '/accueil'
 }
 
