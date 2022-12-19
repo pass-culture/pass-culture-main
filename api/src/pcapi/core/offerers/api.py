@@ -1419,25 +1419,36 @@ def list_offerers_to_be_validated(
     )
 
     if q:
-        if q.isnumeric():
-            num_digits = len(q)
+        sanitized_q = email_utils.sanitize_email(q)
+
+        if sanitized_q.isnumeric():
+            num_digits = len(sanitized_q)
             if num_digits == 9:
-                query = query.filter(offerers_models.Offerer.siren == q)
+                query = query.filter(offerers_models.Offerer.siren == sanitized_q)
             elif num_digits == 5:
-                query = query.filter(offerers_models.Offerer.postalCode == q)
+                query = query.filter(offerers_models.Offerer.postalCode == sanitized_q)
             elif num_digits in (2, 3):
-                query = query.filter(offerers_models.Offerer.departementCode == q)
+                query = query.filter(offerers_models.Offerer.departementCode == sanitized_q)
             else:
                 raise exceptions.InvalidSiren(
                     "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
                 )
+        elif email_utils.is_valid_email(sanitized_q):
+            # Filter by attached user email address
+            query = query.join(offerers_models.UserOfferer).join(users_models.User)
+            query = query.filter(users_models.User.email == sanitized_q)
         else:
             name = q.replace(" ", "%").replace("-", "%")
             name = clean_accents(name)
+            # outerjoin so that we filter on offerer name entities which may have no user attached
+            query = query.outerjoin(offerers_models.UserOfferer).outerjoin(users_models.User)
             query = query.filter(
                 sa.or_(
                     sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{name}%"),
                     sa.func.unaccent(offerers_models.Offerer.city).ilike(f"%{name}%"),
+                    sa.func.unaccent(
+                        sa.func.concat(users_models.User.firstName, " ", users_models.User.lastName)
+                    ).ilike(f"%{name}%"),
                 )
             )
 
