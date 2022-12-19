@@ -1346,3 +1346,62 @@ class GetPaginatedOfferIdsByVenueIdTest:
         offer2 = factories.OfferFactory(venue=venue, isActive=False)
 
         assert repository.get_paginated_offer_ids_by_venue_id(venue.id, limit=2, page=0) == [offer1.id, offer2.id]
+
+
+@pytest.mark.usefixtures("db_session")
+class GetFilteredCollectiveOffersTest:
+    def test_get_prebooked_collective_offers(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        collective_offer_prebooked = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer=user_offerer.offerer
+        )
+        collective_stock_prebooked = educational_factories.CollectiveStockFactory(
+            collectiveOffer=collective_offer_prebooked
+        )
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock=collective_stock_prebooked,
+            status=educational_models.CollectiveBookingStatus.CANCELLED.value,
+        )
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock=collective_stock_prebooked, status=educational_models.CollectiveBookingStatus.PENDING.value
+        )
+
+        collective_offer_cancelled = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer=user_offerer.offerer
+        )
+        collective_stock_cancelled = educational_factories.CollectiveStockFactory(
+            collectiveOffer=collective_offer_cancelled
+        )
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock=collective_stock_cancelled, status=educational_models.CollectiveBookingStatus.PENDING.value
+        )
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock=collective_stock_cancelled,
+            status=educational_models.CollectiveBookingStatus.CANCELLED.value,
+        )
+
+        offers = repository.get_collective_offers_by_filters(
+            collective_offer_prebooked.venue.managingOfferer.first_user.id,
+            False,
+            status=educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value,
+        )
+        assert offers.all() == [collective_offer_prebooked]
+
+    def test_get_ended_collective_offers(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        collective_offer_ended = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer=user_offerer.offerer
+        )
+        collective_stock_ended = educational_factories.CollectiveStockFactory(
+            collectiveOffer=collective_offer_ended, beginningDatetime=datetime(year=2000, month=1, day=1)
+        )
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock=collective_stock_ended, status=educational_models.CollectiveBookingStatus.USED.value
+        )
+
+        offers = repository.get_collective_offers_by_filters(
+            collective_offer_ended.venue.managingOfferer.first_user.id,
+            False,
+            status=educational_models.CollectiveOfferDisplayedStatus.ENDED.value,
+        )
+        assert offers.all() == [collective_offer_ended]
