@@ -38,27 +38,18 @@ const serializer = {
     payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => {
-    if (offer.notifications) {
-      return {
-        ...payload,
-        bookingEmails: offer.notificationEmails,
-      }
+    return {
+      ...payload,
+      bookingEmails: offer.notificationEmails,
     }
-    return payload
   },
   notifications: (
     payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => {
-    if (offer.notifications) {
-      return {
-        ...payload,
-        bookingEmails: offer.notificationEmails,
-      }
-    }
     return {
       ...payload,
-      bookingEmails: [],
+      bookingEmails: offer.notificationEmails,
     }
   },
   // Unchanged keys

@@ -44,7 +44,6 @@ export type IOfferEducationalFormValues = {
   accessibility: IAccessibiltyFormValues
   phone: string
   email: string
-  notifications: boolean
   notificationEmails: string[]
   domains: string[]
   'search-domains'?: string

@@ -31,7 +31,7 @@ export const createCollectiveOfferPayload = (
   venueId: offer.venueId,
   subcategoryId: offer.subCategory,
   name: offer.title,
-  bookingEmails: offer.notifications ? offer.notificationEmails : [],
+  bookingEmails: offer.notificationEmails,
   description: offer.description,
   durationMinutes: parseDuration(offer.duration),
   ...disabilityCompliances(offer.accessibility),
