@@ -122,6 +122,7 @@ def create_offer(
     extra_data: typing.Any = None,
     is_duo: bool | None = None,
     is_national: bool | None = None,
+    provider: providers_models.Provider | None = None,
     url: str | None = None,
     withdrawal_delay: int | None = None,
     withdrawal_details: str | None = None,
@@ -157,6 +158,7 @@ def create_offer(
     offer.isActive = False
     offer.mentalDisabilityCompliant = mental_disability_compliant
     offer.motorDisabilityCompliant = motor_disability_compliant
+    offer.lastProvider = provider
     offer.validation = OfferValidationStatus.DRAFT
     offer.venue = venue
     offer.visualDisabilityCompliant = visual_disability_compliant
