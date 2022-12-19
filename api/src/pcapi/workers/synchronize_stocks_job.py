@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 @job(worker.low_queue)
 def synchronize_stocks_job(serialized_stock_details: list[dict], venue_id: str) -> None:
-    pc_provider = get_provider_by_local_class(constants.PASS_CULTURE_STOCKS_PROVIDER_NAME)
+    pc_provider = get_provider_by_local_class(constants.PASS_CULTURE_STOCKS_FAKE_CLASS_NAME)
 
     stock_details = [
         StockDetail(
