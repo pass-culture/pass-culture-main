@@ -560,6 +560,11 @@ def edit_stock(
         errors.status_code = 403
         raise errors
 
+    if beginning is None:
+        beginning = stock.beginningDatetime
+    if booking_limit_datetime is None:
+        booking_limit_datetime = stock.bookingLimitDatetime
+
     validation.check_booking_limit_datetime(stock, beginning_datetime, booking_limit_datetime)
 
     new_booking_limit_datetime = booking_limit_datetime or stock.bookingLimitDatetime
