@@ -55,40 +55,12 @@ describe('FormNotifications', () => {
   const onSubmit = jest.fn()
   beforeEach(() => {
     initialValues = {
-      notifications: false,
       notificationEmails: [''],
     }
   })
 
-  it('should render notification mail input when checkbox is clicked', async () => {
-    renderFormNotifications({ initialValues, onSubmit })
-    const notificationCheckbox = screen.getByLabelText(
-      'Être notifié par e-mail des réservations',
-      {
-        exact: false,
-      }
-    )
-    expect(
-      await screen.queryByRole('textbox', {
-        name: 'E-mail auquel envoyer les notifications',
-      })
-    ).not.toBeInTheDocument()
-    await userEvent.click(notificationCheckbox)
-    expect(
-      screen.getByRole('textbox', {
-        name: 'E-mail auquel envoyer les notifications',
-      })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', {
-        name: 'Ajouter un e-mail de notification',
-      })
-    ).toBeInTheDocument()
-  })
-
   it('should render notification mail with pro email value if provided', () => {
     initialValues = {
-      notifications: true,
       notificationEmails: [''],
       email: 'test@example.com',
     }
@@ -99,7 +71,6 @@ describe('FormNotifications', () => {
 
   it('should add notification mail input when button is clicked', async () => {
     initialValues = {
-      notifications: true,
       notificationEmails: ['test@example.com'],
     }
     renderFormNotifications({ initialValues, onSubmit })
@@ -118,7 +89,6 @@ describe('FormNotifications', () => {
   })
   it('should remove notification mail input when trash icon is clicked', async () => {
     initialValues = {
-      notifications: true,
       notificationEmails: ['test@example.com', 'test2@example.com'],
     }
     renderFormNotifications({ initialValues, onSubmit })
