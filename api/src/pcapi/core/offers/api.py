@@ -560,18 +560,12 @@ def edit_stock(
         errors.status_code = 403
         raise errors
 
-    if beginning is None:
-        beginning = stock.beginningDatetime
-    if booking_limit_datetime is None:
+    if beginning_datetime is None:
+        beginning_datetime = stock.beginningDatetime
+    if booking_limit_datetime is None and stock.offer.isEvent:
         booking_limit_datetime = stock.bookingLimitDatetime
 
     validation.check_booking_limit_datetime(stock, beginning_datetime, booking_limit_datetime)
-
-    new_booking_limit_datetime = booking_limit_datetime or stock.bookingLimitDatetime
-    new_beginning_datetime = beginning_datetime or stock.beginningDatetime
-
-    if new_beginning_datetime and new_booking_limit_datetime and new_beginning_datetime < new_booking_limit_datetime:
-        new_booking_limit_datetime = new_beginning_datetime
 
     # FIXME (dbaty, 2020-11-25): We need this ugly workaround because
     # the frontend sends us datetimes like "2020-12-03T14:00:00Z"
@@ -581,27 +575,27 @@ def edit_stock(
     # a change for the "beginningDatetime" field for Allocine stocks:
     # because we do not allow it to be changed, we raise an error when
     # we should not.
-    if new_beginning_datetime:
-        new_beginning_datetime = as_utc_without_timezone(new_beginning_datetime)
-    if new_booking_limit_datetime:
-        new_booking_limit_datetime = as_utc_without_timezone(new_booking_limit_datetime)
+    if beginning_datetime:
+        beginning_datetime = as_utc_without_timezone(beginning_datetime)
+    if booking_limit_datetime:
+        booking_limit_datetime = as_utc_without_timezone(booking_limit_datetime)
 
     validation.check_stock_is_updatable(stock, editing_provider)
-    validation.check_required_dates_for_stock(stock.offer, new_beginning_datetime, new_booking_limit_datetime)
+    validation.check_required_dates_for_stock(stock.offer, beginning_datetime, booking_limit_datetime)
     validation.check_stock_price(price, stock.offer)
     validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
     validation.check_activation_codes_expiration_datetime_on_stock_edition(
         stock.activationCodes,
-        new_booking_limit_datetime,
+        booking_limit_datetime,
     )
 
-    is_beginning_updated = new_beginning_datetime != stock.beginningDatetime
+    is_beginning_updated = beginning_datetime != stock.beginningDatetime
 
     updates = {
         "price": price,
         "quantity": quantity,
-        "beginningDatetime": new_beginning_datetime,
-        "bookingLimitDatetime": new_booking_limit_datetime,
+        "beginningDatetime": beginning_datetime,
+        "bookingLimitDatetime": booking_limit_datetime,
     }
 
     if stock.offer.isFromAllocine:
