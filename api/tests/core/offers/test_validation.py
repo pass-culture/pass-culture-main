@@ -20,36 +20,27 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 
 @pytest.mark.usefixtures("db_session")
-class CheckOfferExistingStocksAreEditableTest:
-    def test_approved_offer(self):
-        offer = offers_factories.OfferFactory()
-
-        validation.check_offer_existing_stocks_are_editable(offer)
-
-    def test_pending_offer(self):
-        pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
-
-        with pytest.raises(ApiErrors) as error:
-            validation.check_offer_existing_stocks_are_editable(pending_validation_offer)
-
-        assert error.value.errors["global"] == [
-            "Les offres refusées ou en attente de validation ne sont pas modifiables"
-        ]
-
+class CheckProviderCanEditStockTest:
     def test_allocine_offer(self):
         provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
 
-        validation.check_offer_existing_stocks_are_editable(offer)
+        validation.check_provider_can_edit_stock(offer)
 
     def test_non_allocine_provider_offer(self):
         offerer = providers_factories.APIProviderFactory()
         provider_offer = offers_factories.OfferFactory(lastProvider=offerer, idAtProvider="1")
 
         with pytest.raises(ApiErrors) as error:
-            validation.check_offer_existing_stocks_are_editable(provider_offer)
+            validation.check_provider_can_edit_stock(provider_offer)
 
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
+
+    def test_allowed_provider(self):
+        provider = providers_factories.APIProviderFactory()
+        provider_offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
+
+        validation.check_provider_can_edit_stock(provider_offer, provider)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -145,29 +136,20 @@ class CheckRequiredDatesForStockTest:
 
 @pytest.mark.usefixtures("db_session")
 class CheckStockCanBeCreatedForOfferTest:
-    def test_approved_offer_not_from_provider(self):
-        offer = offers_factories.OfferFactory(lastProvider=None)
-
-        validation.check_stock_can_be_created_for_offer(offer)
-
     def test_offer_from_provider(self, app):
         provider = providers_factories.AllocineProviderFactory()
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
 
         with pytest.raises(ApiErrors) as error:
-            validation.check_stock_can_be_created_for_offer(offer)
+            validation.check_provider_can_create_stock(offer)
 
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
-    def test_pending_offer_not_from_provider(self):
-        offer = offers_factories.OfferFactory(lastProvider=None, validation=OfferValidationStatus.PENDING)
+    def test_allowed_provider(self, app):
+        provider = providers_factories.APIProviderFactory()
+        offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
 
-        with pytest.raises(ApiErrors) as error:
-            validation.check_stock_can_be_created_for_offer(offer)
-
-        assert error.value.errors["global"] == [
-            "Les offres refusées ou en attente de validation ne sont pas modifiables"
-        ]
+        validation.check_provider_can_create_stock(offer, provider)
 
 
 @pytest.mark.usefixtures("db_session")
