@@ -76,7 +76,14 @@ def edit_collective_stock(
 
     updatable_fields = _extract_updatable_fields_from_stock_data(stock, stock_data, beginning, booking_limit_datetime)
 
-    offer_validation.check_booking_limit_datetime(stock, beginning, booking_limit_datetime)
+    check_beginning = beginning
+    check_booking_limit_datetime = booking_limit_datetime
+    if beginning is None:
+        check_beginning = stock.beginningDatetime
+    if booking_limit_datetime is None:
+        check_booking_limit_datetime = stock.bookingLimitDatetime
+
+    offer_validation.check_booking_limit_datetime(stock, check_beginning, check_booking_limit_datetime)
 
     # due to check_booking_limit_datetime the only reason beginning < booking_limit_dt is when they are on the same day
     # in the venue timezone
