@@ -14,6 +14,7 @@ import { MemoryRouter } from 'react-router'
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { configureTestStore } from 'store/testUtils'
 
 import Homepage from '../../Homepage'
@@ -281,13 +282,34 @@ describe('offererDetailsLegacy', () => {
     expect(physicalVenueTitle).toBeInTheDocument()
     const physicalVenueContainer = physicalVenueTitle.closest('div')
     expect(
-      within(physicalVenueContainer).getByText('Modifier', { exact: false })
+      within(physicalVenueContainer).getByText('Modifier', {
+        exact: false,
+      })
     ).toBeInTheDocument()
 
     const secondOfflineVenueTitle = screen.getByText(
       selectedOfferer.managedVenues[2].publicName
     )
     expect(secondOfflineVenueTitle).toBeInTheDocument()
+  })
+
+  it('should display edit venues with new offer creation journey', async () => {
+    await jest
+      .spyOn(useNewOfferCreationJourney, 'default')
+      .mockReturnValue(true)
+    await renderHomePage({ store })
+
+    const selectedOfferer = firstOffererByAlphabeticalOrder
+    const physicalVenueTitle = screen.getByText(
+      selectedOfferer.managedVenues[1].name
+    )
+    expect(physicalVenueTitle).toBeInTheDocument()
+    const physicalVenueContainer = physicalVenueTitle.closest('div')
+    expect(
+      within(physicalVenueContainer).getByText('Éditer le lieu', {
+        exact: false,
+      })
+    ).toBeInTheDocument()
   })
 
   it('should not display virtual venue informations when no virtual offers', async () => {
@@ -408,7 +430,9 @@ describe('offererDetailsLegacy', () => {
       expect(physicalVenueTitle).toBeInTheDocument()
       const physicalVenueContainer = physicalVenueTitle.closest('div')
       expect(
-        within(physicalVenueContainer).getByText('Modifier', { exact: false })
+        within(physicalVenueContainer).getByText('Modifier', {
+          exact: false,
+        })
       ).toBeInTheDocument()
 
       const secondOfflineVenueTitle = screen.getByText(

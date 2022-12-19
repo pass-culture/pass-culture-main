@@ -8,6 +8,7 @@ import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
+import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { configureTestStore } from 'store/testUtils'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
 
@@ -53,7 +54,9 @@ describe('venues', () => {
     // When
     renderVenue(props, store)
 
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByTitle('Afficher les statistiques de My venue')
+    )
 
     // Then
     expect(api.getVenueStats).toHaveBeenCalledWith(props.id)
@@ -90,7 +93,9 @@ describe('venues', () => {
   it('should contain a link for each stats', async () => {
     // When
     renderVenue(props, store)
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByTitle('Afficher les statistiques de My venue')
+    )
     const [activeOffersStat] = screen.getAllByTestId('venue-stat')
     expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
 
@@ -101,7 +106,9 @@ describe('venues', () => {
   it('should redirect to filtered bookings when clicking on link', async () => {
     // When
     renderVenue(props, store)
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByTitle('Afficher les statistiques de My venue')
+    )
     // Then
     const [
       activeOffersStat,
@@ -137,7 +144,9 @@ describe('venues', () => {
 
       // When
       renderVenue(props, store)
-      await userEvent.click(screen.getByTitle('Afficher'))
+      await userEvent.click(
+        screen.getByTitle('Afficher les statistiques de My venue')
+      )
       const [activeOffersStat] = screen.getAllByTestId('venue-stat')
       expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
 
@@ -155,7 +164,9 @@ describe('venues', () => {
 
       // When
       renderVenue(props, store)
-      await userEvent.click(screen.getByTitle('Afficher'))
+      await userEvent.click(
+        screen.getByTitle('Afficher les statistiques de My venue')
+      )
       const [activeOffersStat] = screen.getAllByTestId('venue-stat')
       expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
 
@@ -171,12 +182,32 @@ describe('venues', () => {
 
       // When
       renderVenue(props, store)
-      await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+      await userEvent.click(
+        screen.getByTitle('Afficher les statistiques de My venue')
+      )
       const [activeOffersStat] = screen.getAllByTestId('venue-stat')
       expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
 
       // Then
       expect(screen.getByRole('link', { name: 'Modifier' })).toHaveAttribute(
+        'href',
+        '/structures/OFFERER01/lieux/VENUE01?modification'
+      )
+    })
+
+    it('should display edition venue link with new offer creation journey', async () => {
+      // Given
+      props.isVirtual = false
+      await jest
+        .spyOn(useNewOfferCreationJourney, 'default')
+        .mockReturnValue(true)
+      // When
+      renderVenue(props, store)
+
+      // Then
+      expect(
+        screen.getByRole('link', { name: 'Éditer le lieu' })
+      ).toHaveAttribute(
         'href',
         '/structures/OFFERER01/lieux/VENUE01?modification'
       )
