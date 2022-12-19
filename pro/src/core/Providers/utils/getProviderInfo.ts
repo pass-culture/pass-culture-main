@@ -71,6 +71,12 @@ export const getProviderInfo = (
       synchronizedOfferMessage: 'Offre importée automatiquement',
     },
     {
+      id: 'Individual Offers public API',
+      icon: 'logo-pass-culture-dark',
+      name: 'API Offres Individuelles',
+      synchronizedOfferMessage: "Offre créée via l'API Offres Individuelles",
+    },
+    {
       id: 'ciné office',
       icon: 'logo-cine-digital-service',
       name: 'Ciné Office',
