@@ -235,7 +235,8 @@ const Venue = ({
               </ButtonLink>
             </div>
           </div>
-          {(isStatOpen || (hasOnlyOneVenue && !stats.activeOffersCount)) &&
+          {(isStatOpen ||
+            (hasOnlyOneVenue && stats.activeOffersCount == '0')) &&
             (isStatLoaded ? (
               <div className="venue-stats">
                 {venueStatData.map(stat => (
