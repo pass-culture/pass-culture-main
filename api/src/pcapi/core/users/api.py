@@ -1016,6 +1016,13 @@ def public_account_history(user: models.User) -> list[dict]:
     #  - l'horodatage et l'attribution de chaque modification de donnée utilisateur
     #    (pas possible en l'état car on ne garde pas de trace de ces changements à part pour l'email)
     email_changes = models.UserEmailHistory.query.filter_by(userId=user.id).all()
+    user_suspension = history_models.ActionHistory.query.filter(
+        history_models.ActionHistory.userId == user.id,
+        sa.or_(
+            history_models.ActionHistory.actionType == history_models.ActionType.USER_SUSPENDED,
+            history_models.ActionHistory.actionType == history_models.ActionType.USER_UNSUSPENDED,
+        ),
+    )
     fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).all()
     reviews = fraud_models.BeneficiaryFraudReview.query.filter_by(userId=user.id).all()
     imports = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).join(BeneficiaryImportStatus).all()
@@ -1027,6 +1034,22 @@ def public_account_history(user: models.User) -> list[dict]:
             "message": f"de {change.oldUserEmail}@{change.oldDomainEmail} à {change.newUserEmail}@{change.newDomainEmail}",
         }
         for change in email_changes
+    ]
+
+    user_suspension_history = [
+        {
+            "action": f"{suspension_action.actionType.value}",
+            "datetime": suspension_action.actionDate,
+            "message": (
+                f"par {suspension_action.authorUser.full_name}"
+                + (
+                    f" : {dict(users_constants.SUSPENSION_REASON_CHOICES)[users_constants.SuspensionReason(suspension_action.extraData['reason'])]}"
+                    if suspension_action.extraData
+                    else ""
+                )
+            ),
+        }
+        for suspension_action in user_suspension
     ]
 
     fraud_checks_history = [
@@ -1062,7 +1085,7 @@ def public_account_history(user: models.User) -> list[dict]:
     ]
 
     history = sorted(
-        email_changes_history + fraud_checks_history + reviews_history + imports_history,
+        email_changes_history + user_suspension_history + fraud_checks_history + reviews_history + imports_history,
         key=lambda item: item["datetime"],
         reverse=True,
     )
