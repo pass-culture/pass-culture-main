@@ -8,6 +8,7 @@ import { MemoryRouter } from 'react-router'
 
 import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { configureTestStore } from 'store/testUtils'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
 
@@ -73,7 +74,9 @@ describe('venue create offer link', () => {
 
     // When
     await renderVenue(props)
-    await userEvent.click(screen.getByTitle('Afficher'))
+    await userEvent.click(
+      screen.getByTitle('Afficher les statistiques de My venue')
+    )
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     await userEvent.click(
       screen.getByRole('link', { name: 'Créer une nouvelle offre numérique' })
@@ -99,7 +102,9 @@ describe('venue create offer link', () => {
 
     // When
     await renderVenue(props)
-    await userEvent.click(screen.getByTitle('Afficher'))
+    await userEvent.click(
+      screen.getByTitle('Afficher les statistiques de My venue')
+    )
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     await userEvent.click(
       screen.getByRole('link', { name: 'Créer une nouvelle offre' })
@@ -136,13 +141,32 @@ describe('venue create offer link', () => {
     )
   })
 
+  it('should track updating venue with new venue creation journey', async () => {
+    // Given
+    props.isVirtual = false
+
+    // When
+    await jest
+      .spyOn(useNewOfferCreationJourney, 'default')
+      .mockReturnValue(true)
+    await renderVenue(props)
+    expect(
+      screen.getByRole('link', { name: 'Éditer le lieu' })
+    ).toHaveAttribute(
+      'href',
+      '/structures/OFFERER01/lieux/VENUE01?modification'
+    )
+  })
+
   it.each(trackerForVenue)(
     'should track event $event on click on link at $index',
     async ({ index, event }) => {
       props.isVirtual = true
       await renderVenue(props)
 
-      await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+      await userEvent.click(
+        screen.getByTitle('Afficher les statistiques de My venue')
+      )
       expect(mockLogEvent).toHaveBeenCalledWith(
         VenueEvents.CLICKED_VENUE_ACCORDION_BUTTON,
         {
