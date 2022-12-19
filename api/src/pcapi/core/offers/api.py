@@ -493,6 +493,7 @@ def create_stock(
     activation_codes_expiration_datetime: datetime.datetime | None = None,
     beginning_datetime: datetime.datetime | None = None,
     booking_limit_datetime: datetime.datetime | None = None,
+    creating_provider: providers_models.Provider | None = None,
 ) -> Stock:
     validation.check_booking_limit_datetime(None, beginning_datetime, booking_limit_datetime)
 
@@ -509,7 +510,8 @@ def create_stock(
         booking_limit_datetime = beginning_datetime
 
     validation.check_required_dates_for_stock(offer, beginning_datetime, booking_limit_datetime)
-    validation.check_stock_can_be_created_for_offer(offer)
+    validation.check_validation_status(offer)
+    validation.check_provider_can_create_stock(offer, creating_provider)
     validation.check_stock_price(price, offer)
     validation.check_stock_quantity(quantity)
 
@@ -542,6 +544,7 @@ def edit_stock(
     stock_id: int,
     beginning_datetime: datetime.datetime | None = None,
     booking_limit_datetime: datetime.datetime | None = None,
+    editing_provider: providers_models.Provider | None = None,
 ) -> typing.Tuple[Stock, bool]:
     stock = (
         Stock.queryNotSoftDeleted()
@@ -576,7 +579,7 @@ def edit_stock(
     if new_booking_limit_datetime:
         new_booking_limit_datetime = as_utc_without_timezone(new_booking_limit_datetime)
 
-    validation.check_stock_is_updatable(stock)
+    validation.check_stock_is_updatable(stock, editing_provider)
     validation.check_required_dates_for_stock(stock.offer, new_beginning_datetime, new_booking_limit_datetime)
     validation.check_stock_price(price, stock.offer)
     validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
@@ -674,8 +677,8 @@ def _invalidate_bookings(bookings: list[Booking]) -> list[Booking]:
     return bookings
 
 
-def delete_stock(stock: Stock) -> None:
-    validation.check_stock_is_deletable(stock)
+def delete_stock(stock: Stock, deleting_provider: providers_models.Provider | None = None) -> None:
+    validation.check_stock_is_deletable(stock, deleting_provider)
 
     stock.isSoftDeleted = True
     repository.save(stock)
