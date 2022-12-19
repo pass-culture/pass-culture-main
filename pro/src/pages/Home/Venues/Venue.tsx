@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { BOOKING_STATUS } from 'core/Bookings'
@@ -190,13 +191,13 @@ const Venue = ({
                   )
                 }}
               />
-              <a
+              <Link
                 className="title-text"
                 title={publicName || name}
-                href={editVenueLink}
+                to={editVenueLink}
               >
                 {publicName || name}
-              </a>
+              </Link>
             </h3>
             <div className="button-group">
               {((isNewBankInformationActive && hasMissingReimbursementPoint) ||
