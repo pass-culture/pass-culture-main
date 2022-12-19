@@ -376,11 +376,6 @@ def check_booking_limit_datetime(
     booking_limit_datetime: datetime | None,
 ) -> None:
     if stock:
-        if beginning is None:
-            beginning = stock.beginningDatetime
-        if booking_limit_datetime is None:
-            booking_limit_datetime = stock.bookingLimitDatetime
-
         if isinstance(stock, CollectiveStock):
             offer = stock.collectiveOffer
         else:
