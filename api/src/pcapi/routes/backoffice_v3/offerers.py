@@ -21,6 +21,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models.validation_status_mixin import ValidationStatus
 import pcapi.utils.regions as regions_utils
 
 from . import search_utils
@@ -272,6 +273,10 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
     if not form.validate():
         return render_template("offerer/validation.html", rows=[], form=form, stats=stats), 400
 
+    # new and pending attachements by default
+    if not form.status.data:
+        form.status.data = [ValidationStatus.NEW.value, ValidationStatus.PENDING.value]
+
     offerers = offerers_api.list_offerers_to_be_validated(
         form.q.data,
         form.tags.data,
@@ -411,9 +416,14 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
     if not form.validate():
         return render_template("offerer/user_offerer_validation.html", rows=[], form=form), 400
 
+    # new and pending attachements by default
+    if not form.status.data:
+        form.status.data = [ValidationStatus.NEW.value, ValidationStatus.PENDING.value]
+
     users_offerers = offerers_api.list_users_offerers_to_be_validated(
         form.tags.data,
         form.status.data,
+        form.offerer_status.data,
         _date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time()),
         _date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
     )

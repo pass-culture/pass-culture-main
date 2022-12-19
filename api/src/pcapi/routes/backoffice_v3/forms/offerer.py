@@ -53,7 +53,12 @@ class UserOffererValidationListForm(FlaskForm):
     tags = fields.PCQuerySelectMultipleField(
         "Tags", query_factory=_get_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
     )
-    status = fields.PCSelectMultipleField("États", choices=utils.choices_from_enum(ValidationStatus))
+    status = fields.PCSelectMultipleField(
+        "États de la demande de rattachement", choices=utils.choices_from_enum(ValidationStatus)
+    )
+    offerer_status = fields.PCSelectMultipleField(
+        "États de la structure", choices=utils.choices_from_enum(ValidationStatus)
+    )
     from_date = fields.PCDateField("Demande à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Demande jusqu'au", validators=(wtforms.validators.Optional(),))
 
