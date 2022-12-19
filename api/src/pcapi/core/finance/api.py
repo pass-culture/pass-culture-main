@@ -663,7 +663,8 @@ def _delete_dependent_pricings(
 
 
 def cancel_pricing(
-    booking: bookings_models.Booking | educational_models.CollectiveBooking, reason: models.PricingLogReason
+    booking: bookings_models.Booking | educational_models.CollectiveBooking,
+    reason: models.PricingLogReason,
 ) -> models.Pricing | None:
     if isinstance(booking, educational_models.CollectiveBooking):
         booking_attribute = models.Pricing.collectiveBooking
@@ -709,6 +710,7 @@ def cancel_pricing(
         )
         pricing.status = models.PricingStatus.CANCELLED
         db.session.add(pricing)
+
         db.session.commit()
         logger.info("Cancelled pricing", extra={"pricing": pricing.id})
     return pricing

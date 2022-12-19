@@ -15,6 +15,8 @@ from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.repository import find_pending_booking_confirmation_limit_date_in_3_days
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.mails.transactional.educational.eac_booking_cancellation import send_eac_booking_cancellation_email
 from pcapi.core.users.models import User
@@ -347,8 +349,9 @@ def _cancel_collective_booking(
         educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
         db.session.refresh(collective_booking)
 
+        finance_api.cancel_pricing(collective_booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
         try:
-            collective_booking.cancel_booking(reason)
+            collective_booking.cancel_booking(reason, cancel_even_if_used=True)
         except (exceptions.CollectiveBookingAlreadyCancelled):
             return
 

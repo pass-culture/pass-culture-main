@@ -49,7 +49,7 @@ class Returns200Test:
         response_json = response.json
         assert response.status_code == 200
         assert response_json["collectiveStock"]["isBooked"] is True
-        assert response_json["isCancellable"] is False
+        assert response_json["isCancellable"] is True
         assert response_json["isVisibilityEditable"] is False
 
     def test_cancellable(self, client):

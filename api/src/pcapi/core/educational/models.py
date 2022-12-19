@@ -842,7 +842,6 @@ class CollectiveBooking(PcObject, Base, Model):
     @property
     def is_cancellable_from_offerer(self) -> bool:
         return self.status not in (
-            CollectiveBookingStatus.USED,
             CollectiveBookingStatus.REIMBURSED,
             CollectiveBookingStatus.CANCELLED,
         )
