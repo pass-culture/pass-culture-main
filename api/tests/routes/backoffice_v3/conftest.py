@@ -409,15 +409,23 @@ def offerers_to_be_validated_fixture(offerer_tags):
 def user_offerer_to_be_validated_fixture(offerer_tags):
     top_tag, collec_tag, public_tag = offerer_tags
 
-    no_tag = offerers_factories.NotValidatedUserOffererFactory(user__email="a@example.com")
+    no_tag = offerers_factories.NotValidatedUserOffererFactory(
+        user__email="a@example.com", offerer__validationStatus=ValidationStatus.NEW
+    )
     top = offerers_factories.NotValidatedUserOffererFactory(
-        user__email="b@example.com", validationStatus=ValidationStatus.PENDING
+        user__email="b@example.com",
+        offerer__validationStatus=ValidationStatus.NEW,
+        validationStatus=ValidationStatus.PENDING,
     )
     collec = offerers_factories.NotValidatedUserOffererFactory(user__email="c@example.com")
     public = offerers_factories.NotValidatedUserOffererFactory(
-        user__email="d@example.com", validationStatus=ValidationStatus.PENDING
+        user__email="d@example.com",
+        offerer__validationStatus=ValidationStatus.PENDING,
+        validationStatus=ValidationStatus.PENDING,
     )
-    top_collec = offerers_factories.NotValidatedUserOffererFactory(user__email="e@example.com")
+    top_collec = offerers_factories.NotValidatedUserOffererFactory(
+        user__email="e@example.com", offerer__validationStatus=ValidationStatus.PENDING
+    )
     top_public = offerers_factories.NotValidatedUserOffererFactory(
         user__email="f@example.com", validationStatus=ValidationStatus.PENDING
     )
