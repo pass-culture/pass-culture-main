@@ -703,13 +703,13 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(
         screen.getByAltText('Afficher ou masquer le filtre par statut')
       )
-      await userEvent.click(screen.getByLabelText('Épuisée'))
+      await userEvent.click(screen.getByLabelText('Réservée'))
       // When
       await userEvent.click(screen.getByText('Appliquer'))
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({
-        statut: 'epuisee',
+        statut: 'reservee',
       })
     })
 
