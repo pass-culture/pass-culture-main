@@ -12,6 +12,7 @@ from pcapi.core.categories import subcategories
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.subscription import api as subscription_api
@@ -1015,6 +1016,38 @@ class PublicAccountHistoryTest:
                 f"de {email_validation.oldUserEmail}@{email_validation.oldDomainEmail} "
                 f"à {email_validation.newUserEmail}@{email_validation.newDomainEmail}"
             ),
+        } in history
+
+    def test_history_contains_suspensions(self):
+        # given
+        user = users_factories.UserFactory()
+        author = users_factories.UserFactory()
+        suspension_action = history_factories.SuspendedUserActionHistoryFactory(
+            user=user,
+            authorUser=author,
+            actionDate=datetime.datetime.utcnow() - relativedelta(days=2),
+            reason=users_constants.SuspensionReason.FRAUD_SUSPICION,
+        )
+        unsuspension_action = history_factories.UnsuspendedUserActionHistoryFactory(
+            user=user,
+            authorUser=author,
+            actionDate=datetime.datetime.utcnow() - relativedelta(days=1),
+        )
+
+        # when
+        history = users_api.public_account_history(user)
+
+        # then
+        assert len(history) == 2
+        assert {
+            "action": f"{suspension_action.actionType.value}",
+            "datetime": suspension_action.actionDate,
+            "message": f"par {suspension_action.authorUser.full_name} : {dict(users_constants.SUSPENSION_REASON_CHOICES)[users_constants.SuspensionReason.FRAUD_SUSPICION]}",
+        } in history
+        assert {
+            "action": f"{unsuspension_action.actionType.value}",
+            "datetime": unsuspension_action.actionDate,
+            "message": f"par {suspension_action.authorUser.full_name}",
         } in history
 
     def test_history_contains_fraud_checks(self):
