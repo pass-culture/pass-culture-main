@@ -21,6 +21,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.models import CinemaProviderPivot
 from pcapi.core.providers.models import Provider
 from pcapi.core.users.models import User
@@ -78,9 +79,12 @@ OFFER_EXTRA_DATA_MANDATORY_FIELDS = {
 }
 
 
-def check_offer_existing_stocks_are_editable(offer: Offer) -> None:
-    check_validation_status(offer)
-    if not offer.isEditable:
+def check_provider_can_edit_stock(offer: Offer, editing_provider: providers_models.Provider | None = None) -> None:
+    if not offer.isFromProvider:
+        return
+    if offer.isFromAllocine:
+        return
+    if offer.lastProvider != editing_provider:
         error = ApiErrors()
         error.status_code = 400
         error.add_error("global", "Les offres importées ne sont pas modifiables")
@@ -175,18 +179,18 @@ def check_required_dates_for_stock(
             raise ApiErrors({"bookingLimitDatetime": ["Ce paramètre est obligatoire"]})
 
 
-def check_stock_can_be_created_for_offer(offer: Offer) -> None:
-    check_validation_status(offer)
-    if offer.isFromProvider:
+def check_provider_can_create_stock(offer: Offer, creating_provider: providers_models.Provider | None = None) -> None:
+    if offer.isFromProvider and offer.lastProvider != creating_provider:
         api_errors = ApiErrors()
         api_errors.add_error("global", "Les offres importées ne sont pas modifiables")
         raise api_errors
 
 
-def check_stock_is_updatable(stock: Stock) -> None:
+def check_stock_is_updatable(stock: Stock, editing_provider: providers_models.Provider | None = None) -> None:
     if stock.offer.validation == OfferValidationStatus.DRAFT:
         return
-    check_offer_existing_stocks_are_editable(stock.offer)
+    check_validation_status(stock.offer)
+    check_provider_can_edit_stock(stock.offer, editing_provider)
     check_event_expiration(stock)
 
 
@@ -197,8 +201,9 @@ def check_event_expiration(stock: CollectiveStock | Stock) -> None:
         raise api_errors
 
 
-def check_stock_is_deletable(stock: Stock) -> None:
-    check_offer_existing_stocks_are_editable(stock.offer)
+def check_stock_is_deletable(stock: Stock, deleting_provider: providers_models.Provider | None = None) -> None:
+    check_validation_status(stock.offer)
+    check_provider_can_edit_stock(stock.offer, deleting_provider)
     if not stock.isEventDeletable:
         raise exceptions.TooLateToDeleteStock()
 
