@@ -90,7 +90,6 @@ export const validationSchema = yup.object().shape({
     .string()
     .required('Veuillez renseigner une adresse e-mail')
     .email('Veuillez renseigner un e-mail valide'),
-  notifications: yup.boolean(),
   notificationEmails: yup.array().when('notifications', {
     is: true,
     then: yup

@@ -92,7 +92,6 @@ const editionFormValues: IOfferEducationalFormValues = {
   },
   phone: '0466841425',
   email: 'email@email.com',
-  notifications: true,
   notificationEmails: ['email.notification@email.com'],
   domains: [],
   'search-domains': '',

@@ -66,7 +66,6 @@ export const computeInitialValuesFromOffer = (
     },
     email: email ?? DEFAULT_EAC_FORM_VALUES.email,
     phone: phone ?? DEFAULT_EAC_FORM_VALUES.phone,
-    notifications: offer.bookingEmails.length > 0,
     notificationEmails:
       offer.bookingEmails ?? DEFAULT_EAC_FORM_VALUES.notificationEmails,
     domains,

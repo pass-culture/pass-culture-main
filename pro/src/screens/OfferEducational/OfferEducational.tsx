@@ -100,6 +100,10 @@ const OfferEducational = ({
         useOfferForFormValues || !venue?.collectiveEmail
           ? initialValues.email
           : venue?.collectiveEmail
+      const notifMails =
+        useOfferForFormValues || initialValues.notificationEmails.length > 1
+          ? initialValues.notificationEmails
+          : initialValues.email
       const phone =
         useOfferForFormValues || !venue?.collectivePhone
           ? initialValues.phone
@@ -129,7 +133,7 @@ const OfferEducational = ({
         },
         email: email,
         phone: phone,
-        notificationEmails: [email],
+        notificationEmails: [...notifMails],
       })
     }
   }, [formik.values.venueId, formik.values.offererId])
