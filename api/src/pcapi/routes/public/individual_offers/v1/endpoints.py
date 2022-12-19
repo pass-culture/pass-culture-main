@@ -11,6 +11,7 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
+from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.routes.public import utils as public_utils
 from pcapi.serialization.decorator import spectree_serialize
@@ -117,7 +118,10 @@ def _save_image(image_body: serialization.ImageBody, offer: offers_models.Offer)
     api=blueprint.v1_schema, tags=[PRODUCT_OFFERS_TAG], response_model=serialization.ProductOfferResponse
 )
 @api_key_required
-def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse:
+@public_utils.individual_offers_api_provider
+def post_product_offer(
+    individual_offers_provider: providers_models.Provider, body: serialization.ProductOfferCreation
+) -> serialization.ProductOfferResponse:
     """
     Post a product offer.
     """
@@ -135,6 +139,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
                 mental_disability_compliant=body.accessibility.mental_disability_compliant,
                 motor_disability_compliant=body.accessibility.motor_disability_compliant,
                 name=body.name,
+                provider=individual_offers_provider,
                 subcategory_id=body.category_related_fields.subcategory_id,
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                 venue=venue,
@@ -148,6 +153,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
                     price=finance_utils.to_euros(body.stock.price),
                     quantity=body.stock.quantity if body.stock.quantity != "unlimited" else None,
                     booking_limit_datetime=body.stock.booking_limit_datetime,
+                    creating_provider=individual_offers_provider,
                 )
             else:
                 created_stock = None
@@ -178,7 +184,10 @@ def _deserialize_ticket_collection(
 @blueprint.v1_blueprint.route("/events", methods=["POST"])
 @spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG])
 @api_key_required
-def post_event_offer(body: serialization.EventOfferCreation) -> serialization.OfferResponse:
+@public_utils.individual_offers_api_provider
+def post_event_offer(
+    individual_offers_provider: providers_models.Provider, body: serialization.EventOfferCreation
+) -> serialization.OfferResponse:
     """
     Post an event offer.
     """
@@ -199,6 +208,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Of
                 mental_disability_compliant=body.accessibility.mental_disability_compliant,
                 motor_disability_compliant=body.accessibility.motor_disability_compliant,
                 name=body.name,
+                provider=individual_offers_provider,
                 subcategory_id=body.category_related_fields.subcategory_id,
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                 venue=venue,
@@ -216,6 +226,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Of
                         quantity=date.quantity if date.quantity != "unlimited" else None,
                         beginning_datetime=date.beginning_datetime,
                         booking_limit_datetime=date.booking_limit_datetime,
+                        creating_provider=individual_offers_provider,
                     )
 
             if body.image:
