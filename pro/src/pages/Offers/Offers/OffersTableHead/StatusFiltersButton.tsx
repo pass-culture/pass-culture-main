@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
+import { CollectiveOfferStatus } from 'core/OfferEducational'
 import {
   ADMINS_DISABLED_FILTERS_MESSAGE,
   OFFER_STATUS_LIST,
@@ -13,8 +14,10 @@ import OffersStatusFiltersModal from '../OffersStatusFiltersModal'
 type StatusFiltersButtonProps = {
   applyFilters: () => void
   disabled?: boolean
-  status?: OfferStatus | 'all'
-  updateStatusFilter: (status: OfferStatus | 'all') => void
+  status?: OfferStatus | CollectiveOfferStatus | 'all'
+  updateStatusFilter: (
+    status: OfferStatus | CollectiveOfferStatus | 'all'
+  ) => void
   audience: Audience
 }
 

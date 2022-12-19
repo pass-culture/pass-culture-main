@@ -5,6 +5,7 @@ import {
   CollectiveOffersBookingResponseModel,
 } from 'apiClient/v1'
 import { ICropParams } from 'components/ImageUploader'
+import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { IAccessibiltyFormValues } from 'core/shared'
 
 import { CATEGORY_STATUS } from '.'
@@ -14,7 +15,7 @@ export type TSearchFilters = {
   offererId: string
   venueId: string
   categoryId: string
-  status: OfferStatus | 'all'
+  status: OfferStatus | CollectiveOfferStatus | 'all'
   creationMode: string
   collectiveOfferType: string
   periodBeginningDate: string

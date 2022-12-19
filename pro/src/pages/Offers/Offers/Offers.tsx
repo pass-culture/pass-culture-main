@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
+import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
 import { Offer, TSearchFilters } from 'core/Offers/types'
@@ -72,7 +73,7 @@ const Offers = ({
   )
 
   const updateStatusFilter = useCallback(
-    (selectedStatus: OfferStatus | 'all') => {
+    (selectedStatus: OfferStatus | CollectiveOfferStatus | 'all') => {
       setSearchFilters((currentSearchFilters: TSearchFilters) => ({
         ...currentSearchFilters,
         status: selectedStatus,

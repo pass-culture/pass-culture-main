@@ -2,6 +2,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 
 import { OfferStatus } from 'apiClient/v1'
+import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
 import { TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
@@ -16,7 +17,9 @@ type OffersTableHeadProps = {
   filters: TSearchFilters
   isAdminForbidden: (searchFilters: TSearchFilters) => boolean
   selectAllOffers: () => void
-  updateStatusFilter: (status: OfferStatus | 'all') => void
+  updateStatusFilter: (
+    status: OfferStatus | CollectiveOfferStatus | 'all'
+  ) => void
   audience: Audience
 }
 
