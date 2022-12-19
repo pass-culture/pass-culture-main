@@ -5588,6 +5588,7 @@ INSERT INTO public.provider VALUES (false, 8, 'Praxiel/Inférence', 'PraxielStoc
 INSERT INTO public.provider VALUES (false, 1, 'TiteLive Stocks (Epagine / Place des libraires.com)', 'TiteLiveStocks', false, NULL, NULL, true, false);
 INSERT INTO public.provider VALUES (true, 9, 'Ciné Office', 'CDSStocks', true, NULL, NULL, false, false);
 INSERT INTO public.provider VALUES (true, 10, 'Boost', 'BoostStocks', true, NULL, NULL, false, false);
+INSERT INTO public.provider VALUES (false, 11, 'Pass Culture API Stocks', 'PCAPIStocks', false, NULL, NULL, false, false);
 
 
 --
