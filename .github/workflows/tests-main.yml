@@ -1,4 +1,5 @@
-name: Tests main
+name: Test main
+run-name: Test main${{ github.ref == 'refs/heads/master' && ' and deploy to testing' || '' }}
 on:
   push:
     branches-ignore:
@@ -8,31 +9,85 @@ on:
       - staging
 
 jobs:
+  check-adage-folder-changes:
+    name: Check adage folder changes
+    uses: ./.github/workflows/check-folder-changes.yml
+    with:
+      folder: adage
+
+  check-api-folder-changes:
+    name: Check api folder changes
+    uses: ./.github/workflows/check-folder-changes.yml
+    with:
+      folder: api
+
+  check-backoffice-folder-changes:
+    name: Check backoffice folder changes
+    uses: ./.github/workflows/check-folder-changes.yml
+    with:
+      folder: backoffice
+
+  check-pro-folder-changes:
+    name: Check pro folder changes
+    uses: ./.github/workflows/check-folder-changes.yml
+    with:
+      folder: pro
+
   test-adage:
-    name: Tests adage
+    name: Test adage
+    needs: check-adage-folder-changes
+    if: needs.check-adage-folder-changes.outputs.folder_changed == 'true'
     uses: ./.github/workflows/tests-adage.yml
 
   test-api:
-    name: Tests api
+    name: Test api
+    needs: check-api-folder-changes
+    if: needs.check-api-folder-changes.outputs.folder_changed == 'true'
     uses: ./.github/workflows/tests-api.yml
     secrets: inherit
 
   test-backoffice:
-    name: Tests backoffice
+    name: Test backoffice
+    needs: check-backoffice-folder-changes
+    if: needs.check-backoffice-folder-changes.outputs.folder_changed == 'true'
     uses: ./.github/workflows/tests-backoffice.yml
     secrets: inherit
 
   test-pro:
+    needs: check-pro-folder-changes
+    if: needs.check-pro-folder-changes.outputs.folder_changed == 'true'
     name: Tests pro
     uses: ./.github/workflows/tests-pro.yml
 
-  deploy-testing:
-    name: "[testing] Deployment"
+  build-api:
+    name: Build api docker image on master branch
     needs:
-      - test-pro
-      - test-adage
       - test-api
     if: github.ref == 'refs/heads/master'
+    uses: ./.github/workflows/build-and-push-docker-images.yml
+    with:
+      tag: ${{ github.sha }}
+      pcapi: true
+    secrets: inherit
+
+  deploy-to-testing:
+    name: Deploy to testing
+    needs:
+      - check-adage-folder-changes
+      - check-api-folder-changes
+      - check-backoffice-folder-changes
+      - check-pro-folder-changes
+      - test-adage
+      - build-api
+      - test-backoffice
+      - test-pro
+    if: |
+      always() &&
+      github.ref == 'refs/heads/master' &&
+      (needs.test-adage.result == 'success' || needs.test-adage.result == 'skipped') &&
+      (needs.build-api.result == 'success' || needs.build-api.result == 'skipped') &&
+      (needs.test-backoffice.result == 'success' || needs.test-backoffice.result == 'skipped') &&
+      (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
     uses: ./.github/workflows/deploy.yml
     with:
       environment: testing
@@ -40,4 +95,8 @@ jobs:
       teleport_version: 11.1.1
       teleport_proxy: teleport.ehp.passculture.team:443
       teleport_kubernetes_cluster: passculture-metier-ehp
+      deploy_adage: ${{ needs.check-adage-folder-changes.outputs.folder_changed == 'true' }}
+      deploy_api: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }}
+      deploy_backoffice: ${{ needs.check-backoffice-folder-changes.outputs.folder_changed == 'true' }}
+      deploy_pro: ${{ needs.check-pro-folder-changes.outputs.folder_changed == 'true' }}
     secrets: inherit

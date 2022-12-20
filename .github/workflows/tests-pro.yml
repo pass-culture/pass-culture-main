@@ -9,17 +9,9 @@ defaults:
     working-directory: pro
 
 jobs:
-  check-pro-folder-changes:
-    name: "Check if folder changed"
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: pro
-
   read-node-version:
     name: "Read node version from .nvmrc"
     runs-on: ubuntu-latest
-    needs: check-pro-folder-changes
-    if: ${{ needs.check-pro-folder-changes.outputs.folder_changed == 'true' }}
     outputs:
       node_version: ${{ steps.read-node-version.outputs.node_version }}
     steps:
