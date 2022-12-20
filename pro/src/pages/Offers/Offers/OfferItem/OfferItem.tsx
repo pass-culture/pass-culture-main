@@ -73,6 +73,7 @@ const OfferItem = ({
           venue={venue}
           isOfferEditable={Boolean(isOfferEditable)}
           refreshOffers={refreshOffers}
+          audience={audience}
         />
       ) : (
         <CollectiveOfferItem
@@ -83,6 +84,7 @@ const OfferItem = ({
           editionOfferLink={editionOfferLink}
           venue={venue}
           isOfferEditable={Boolean(isOfferEditable)}
+          audience={audience}
         />
       )}
     </tr>

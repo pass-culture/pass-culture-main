@@ -38,6 +38,7 @@ export type Venue = {
 export type Stock = {
   beginningDatetime?: Date | null
   remainingQuantity: string | number
+  bookingLimitDatetime?: Date | null
 }
 
 export type Offer = {
