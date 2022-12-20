@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Offer, Venue } from 'core/Offers/types'
+import { Audience } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 
 import CheckboxCell from './Cells/CheckboxCell'
@@ -21,6 +22,7 @@ export type CollectiveOfferItemProps = {
   editionOfferLink: string
   venue: Venue
   isOfferEditable: boolean
+  audience: Audience
 }
 
 const CollectiveOfferItem = ({
@@ -31,6 +33,7 @@ const CollectiveOfferItem = ({
   editionOfferLink,
   venue,
   isOfferEditable,
+  audience,
 }: CollectiveOfferItemProps) => {
   const isImproveCollectiveStatusActive = useActiveFeature(
     'WIP_IMPROVE_COLLECTIVE_STATUS'
@@ -46,7 +49,11 @@ const CollectiveOfferItem = ({
         isShowcase={Boolean(offer.isShowcase)}
       />
       <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
-      <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
+      <OfferNameCell
+        offer={offer}
+        editionOfferLink={editionOfferLink}
+        audience={audience}
+      />
       <OfferVenueCell venue={venue} />
       <OfferInstitutionCell
         educationalInstitution={offer.educationalInstitution}

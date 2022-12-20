@@ -4,6 +4,7 @@
 
 export type CollectiveOffersStockResponseModel = {
   beginningDatetime?: string | null;
+  bookingLimitDatetime?: string | null;
   hasBookingLimitDatetimePassed: boolean;
   id: string;
   offerId: string;
