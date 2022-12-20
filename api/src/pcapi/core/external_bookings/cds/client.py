@@ -28,6 +28,7 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
         self.api_url = api_url
         self.cinema_id = cinema_id
         self.account_id = account_id
+        self.pc_voucher_types: list[cds_serializers.VoucherTypeCDS] | None = None
         super()
 
     def get_internet_sale_gauge_active(self) -> bool:
@@ -96,13 +97,17 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
         )
 
     def get_pc_voucher_types(self) -> list[cds_serializers.VoucherTypeCDS]:
+        """Save pass Culture voucher types in a variable to avoid an HTTP call foreach show"""
+        if self.pc_voucher_types:
+            return self.pc_voucher_types
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.VOUCHER_TYPE)
         voucher_types = parse_obj_as(list[cds_serializers.VoucherTypeCDS], data)
-        return [
+        self.pc_voucher_types = [
             voucher_type
             for voucher_type in voucher_types
             if voucher_type.code == cds_constants.PASS_CULTURE_VOUCHER_CODE and voucher_type.tariff
         ]
+        return self.pc_voucher_types
 
     def get_tariff(self) -> cds_serializers.TariffCDS:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.TARIFFS)
