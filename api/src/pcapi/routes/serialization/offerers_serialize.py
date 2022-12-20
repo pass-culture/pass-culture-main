@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Iterable
 
 import sqlalchemy.orm as sqla_orm
 import sqlalchemy.sql.functions as sqla_func
@@ -21,6 +22,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     comment: str | None
     departementCode: str | None
     hasMissingReimbursementPoint: bool
+    hasCreatedOffer: bool
     id: str
     isVirtual: bool
     managingOffererId: str
@@ -37,7 +39,9 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     _humanize_venue_label_id = humanize_field("venueLabelId")
 
     @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "GetOffererVenueResponseModel":
+    def from_orm(
+        cls, venue: offerers_models.Venue, venues_with_offers: Iterable[int] = None
+    ) -> "GetOffererVenueResponseModel":
         venue.nonHumanizedId = venue.id
         now = datetime.utcnow()
         venue.hasMissingReimbursementPoint = not (
@@ -49,6 +53,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
             )
             or venue.hasPendingBankInformationApplication
         )
+        venue.hasCreatedOffer = False if venues_with_offers is None else venue.id in venues_with_offers
         return super().from_orm(venue)
 
     class Config:
@@ -118,7 +123,9 @@ class GetOffererResponseModel(BaseModel):
         # `Offerer.managedVenues` relationship which does not
         # join-load what we want.
         res = super().from_orm(offerer)
-        res.managedVenues = [GetOffererVenueResponseModel.from_orm(venue) for venue in venues]
+        venues_with_offers = offerers_repository.get_venues_with_offers(offerer.id)
+
+        res.managedVenues = [GetOffererVenueResponseModel.from_orm(venue, venues_with_offers) for venue in venues]
         return res
 
     class Config:

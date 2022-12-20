@@ -138,6 +138,58 @@ def get_offer_counts_by_venue(venue_ids: Iterable[int]) -> dict[int, int]:
     return offers_count_by_venue_id
 
 
+def get_venues_with_offers(offererId: int) -> Iterable[int] | None:
+    """Return a dictionary with ids of venues with non-draft offers.
+
+    Venues that do not have any offers are not included in the
+    returned dictionary."""
+
+    venues_with_individual_offers = (
+        db.session.query(models.Venue.id)
+        .filter(models.Venue.managingOffererId == offererId)
+        .filter(
+            Offer.query.filter(Offer.venueId == models.Venue.id, Offer.validation != OfferValidationStatus.DRAFT)
+            .limit(1)
+            .exists()
+        )
+        .all()
+    )
+
+    venues_with_collective_offers = (
+        db.session.query(models.Venue.id)
+        .filter(models.Venue.managingOffererId == offererId)
+        .filter(
+            CollectiveOffer.query.filter(
+                CollectiveOffer.venueId == models.Venue.id, CollectiveOffer.validation != OfferValidationStatus.DRAFT
+            )
+            .limit(1)
+            .exists()
+        )
+        .all()
+    )
+
+    venues_with_collective_offers_template = (
+        db.session.query(models.Venue.id)
+        .filter(models.Venue.managingOffererId == offererId)
+        .filter(
+            CollectiveOfferTemplate.query.filter(
+                CollectiveOfferTemplate.venueId == models.Venue.id,
+                CollectiveOfferTemplate.validation != OfferValidationStatus.DRAFT,
+            )
+            .limit(1)
+            .exists()
+        )
+        .all()
+    )
+
+    return [
+        row.id
+        for row in list(
+            venues_with_individual_offers + venues_with_collective_offers + venues_with_collective_offers_template
+        )
+    ]
+
+
 def get_filtered_venues(
     pro_user_id: int,
     user_is_admin: bool,
