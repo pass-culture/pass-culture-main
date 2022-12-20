@@ -102,5 +102,9 @@ def suspension_action_format(action_type: history_models.ActionType) -> str:
 
 
 def suspension_reason_format(suspension_reason: users_constants.SuspensionReason | None) -> str:
-    text = dict(users_constants.SUSPENSION_REASON_CHOICES)[suspension_reason] if suspension_reason else ""
+    text = (
+        dict(users_constants.SUSPENSION_REASON_CHOICES)[users_constants.SuspensionReason(suspension_reason)]
+        if suspension_reason
+        else ""
+    )
     return Markup("<span>{text}</span>").format(text=text)
