@@ -34,7 +34,7 @@ export interface IOfferEducationalProps {
   imageOffer: IImageUploaderOfferProps['imageOffer']
   onImageUpload: IImageUploaderOfferProps['onImageUpload']
   onImageDelete: IImageUploaderOfferProps['onImageDelete']
-  useOfferForFormValues?: boolean
+  isOfferCreated?: boolean
 }
 
 const OfferEducational = ({
@@ -54,7 +54,7 @@ const OfferEducational = ({
   imageOffer,
   onImageUpload,
   onImageDelete,
-  useOfferForFormValues = false,
+  isOfferCreated = false,
 }: IOfferEducationalProps): JSX.Element => {
   const { resetForm, ...formik } = useFormik({
     initialValues,
@@ -83,29 +83,29 @@ const OfferEducational = ({
       const venue = userOfferers
         .find(({ id }) => id === formik.values.offererId)
         ?.managedVenues?.find(({ id }) => id === formik.values.venueId)
-      const visualAccessibility = useOfferForFormValues
+      const visualAccessibility = isOfferCreated
         ? initialValues.accessibility.visual
         : venue?.visualDisabilityCompliant
-      const mentalAccessibility = useOfferForFormValues
+      const mentalAccessibility = isOfferCreated
         ? initialValues.accessibility.mental
         : venue?.mentalDisabilityCompliant
-      const motorAccessibility = useOfferForFormValues
+      const motorAccessibility = isOfferCreated
         ? initialValues.accessibility.motor
         : venue?.motorDisabilityCompliant
-      const audioAccessibility = useOfferForFormValues
+      const audioAccessibility = isOfferCreated
         ? initialValues.accessibility.audio
         : venue?.audioDisabilityCompliant
 
       const email =
-        useOfferForFormValues || !venue?.collectiveEmail
+        isOfferCreated || !venue?.collectiveEmail
           ? initialValues.email
           : venue?.collectiveEmail
       const notifMails =
-        useOfferForFormValues || initialValues.notificationEmails.length > 1
+        isOfferCreated || initialValues.notificationEmails.length > 1
           ? initialValues.notificationEmails
           : initialValues.email
       const phone =
-        useOfferForFormValues || !venue?.collectivePhone
+        isOfferCreated || !venue?.collectivePhone
           ? initialValues.phone
           : venue?.collectivePhone
 
@@ -162,6 +162,7 @@ const OfferEducational = ({
             imageOffer={imageOffer}
             onImageDelete={onImageDelete}
             onImageUpload={onImageUpload}
+            isOfferCreated={isOfferCreated}
           />
         </form>
       </FormikProvider>
