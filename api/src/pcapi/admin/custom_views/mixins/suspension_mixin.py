@@ -76,7 +76,9 @@ def beneficiary_suspension_history_formatter(view, context, model, name) -> Mark
             + dict(users_constants.SUSPENSION_REASON_CHOICES)[
                 users_constants.SuspensionReason(suspension_action.extraData["reason"])
             ]
-            if suspension_action.actionType == history_models.ActionType.USER_SUSPENDED and suspension_action.extraData
+            if suspension_action.actionType == history_models.ActionType.USER_SUSPENDED
+            and suspension_action.extraData
+            and suspension_action.extraData.get("reason")
             else ""
         )
 

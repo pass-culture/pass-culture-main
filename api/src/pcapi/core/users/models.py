@@ -422,7 +422,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
                     history_models.ActionType.USER_UNSUSPENDED,
                 )
             ],
-            key=lambda action: action.actionDate,
+            key=lambda action: action.actionDate.isoformat() if action.actionDate else "",
         )
 
     @property
@@ -438,7 +438,9 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
             and suspension_action_history
             and suspension_action_history[-1].actionType == history_models.ActionType.USER_SUSPENDED
         ):
-            return constants.SuspensionReason(suspension_action_history[-1].extraData.get("reason"))
+            reason = suspension_action_history[-1].extraData.get("reason")
+            if reason:
+                return constants.SuspensionReason(reason)
         return None
 
     @property

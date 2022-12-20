@@ -253,7 +253,7 @@
                 {% endif %}
             </td>
             <td>
-                {% if suspension_action.extraData %}
+                {% if suspension_action.extraData and suspension_action.extraData.get("reason") %}
                 {{ suspension_action.extraData["reason"] | suspension_reason_format }}
                 {% else %}
                 -
