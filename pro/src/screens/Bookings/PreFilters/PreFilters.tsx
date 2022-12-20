@@ -165,21 +165,23 @@ const PreFilters = ({
         onSubmit={requestFilteredBookings}
       >
         <div className="pre-filters">
-          <div className="pre-filters-row">
-            <div className="pre-filters-venue">
-              <FilterByVenue
+          {venues.length > 0 && (
+            <div className="pre-filters-row">
+              <div className="pre-filters-venue">
+                <FilterByVenue
+                  isDisabled={isFiltersDisabled}
+                  selectedVenueId={selectedPreFilters.offerVenueId}
+                  updateFilters={updateSelectedFilters}
+                  venuesFormattedAndOrdered={venues}
+                />
+              </div>
+              <FilterByEventDate
                 isDisabled={isFiltersDisabled}
-                selectedVenueId={selectedPreFilters.offerVenueId}
+                selectedOfferDate={selectedPreFilters.offerEventDate}
                 updateFilters={updateSelectedFilters}
-                venuesFormattedAndOrdered={venues}
               />
             </div>
-            <FilterByEventDate
-              isDisabled={isFiltersDisabled}
-              selectedOfferDate={selectedPreFilters.offerEventDate}
-              updateFilters={updateSelectedFilters}
-            />
-          </div>
+          )}
           {!isBookingFiltersActive && (
             <FilterByBookingPeriod
               isDisabled={isFiltersDisabled}
@@ -191,8 +193,9 @@ const PreFilters = ({
             />
           )}
           {isBookingFiltersActive && (
-            <div className="pre-filters-row">
+            <div className="pre-filters-row-left">
               <FilterByBookingStatusPeriod
+                label="Status"
                 isDisabled={isFiltersDisabled}
                 selectedBookingBeginningDate={
                   selectedPreFilters.bookingBeginningDate
@@ -201,6 +204,13 @@ const PreFilters = ({
                 selectedBookingFilter={selectedPreFilters.bookingStatusFilter}
                 updateFilters={updateSelectedFilters}
               />
+              {venues.length === 0 && (
+                <FilterByEventDate
+                  isDisabled={isFiltersDisabled}
+                  selectedOfferDate={selectedPreFilters.offerEventDate}
+                  updateFilters={updateSelectedFilters}
+                />
+              )}
             </div>
           )}
         </div>

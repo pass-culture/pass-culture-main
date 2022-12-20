@@ -39,9 +39,9 @@ export interface IOffersProps {
   }
   isLoading: boolean
   loadAndUpdateOffers: (filters: TSearchFilters) => Promise<void>
-  offerer: Offerer | null
+  offerer?: Offerer | null
   offers: Offer[]
-  setOfferer: (offerer: Offerer | null) => void
+  setOfferer?: ((offerer: Offerer | null) => void) | null
   initialSearchFilters: TSearchFilters
   audience: Audience
   redirectWithUrlFilters: (
@@ -51,8 +51,9 @@ export interface IOffersProps {
     }
   ) => void
   urlSearchFilters: TSearchFilters
-  venues: Option[]
+  venues?: Option[]
   categories: Option[]
+  venueName?: string
 }
 
 const Offers = ({
@@ -60,15 +61,16 @@ const Offers = ({
   currentUser,
   isLoading,
   loadAndUpdateOffers,
-  offerer,
+  offerer = null,
   offers,
-  setOfferer,
+  setOfferer = null,
   initialSearchFilters,
   audience,
   redirectWithUrlFilters,
   urlSearchFilters,
-  venues,
+  venues = [],
   categories,
+  venueName,
 }: IOffersProps): JSX.Element => {
   const [searchFilters, setSearchFilters] =
     useState<TSearchFilters>(initialSearchFilters)
@@ -145,7 +147,6 @@ const Offers = ({
   }, [])
 
   const resetFilters = () => {
-    setOfferer(null)
     setSearchFilters({ ...DEFAULT_SEARCH_FILTERS })
   }
 
@@ -191,7 +192,6 @@ const Offers = ({
   ])
 
   const removeOfferer = useCallback(() => {
-    setOfferer(null)
     const updatedFilters = {
       ...searchFilters,
       offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -222,7 +222,10 @@ const Offers = ({
   return (
     <div className="offers-page">
       <PageTitle title="Vos offres" />
-      <Titles action={actionLink} title="Offres" />
+      <Titles
+        action={actionLink}
+        title={venueName ? `Offres de "${venueName}"` : 'Offres'}
+      />
       <Tabs
         selectedKey={audience}
         tabs={[

@@ -159,15 +159,17 @@ const SearchFilters = ({
           value={selectedFilters.nameOrIsbn}
         />
         <div className="form-row">
-          <Select
-            defaultOption={ALL_VENUES_OPTION}
-            handleSelection={storeSelectedVenue}
-            isDisabled={disableAllFilters}
-            label="Lieu"
-            name="lieu"
-            options={venues}
-            selectedValue={selectedFilters.venueId}
-          />
+          {venues.length > 0 && (
+            <Select
+              defaultOption={ALL_VENUES_OPTION}
+              handleSelection={storeSelectedVenue}
+              isDisabled={disableAllFilters}
+              label="Lieu"
+              name="lieu"
+              options={venues}
+              selectedValue={selectedFilters.venueId}
+            />
+          )}
           <Select
             defaultOption={ALL_CATEGORIES_OPTION}
             handleSelection={storeSelectedCategory}

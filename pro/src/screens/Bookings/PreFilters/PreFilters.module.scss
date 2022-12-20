@@ -16,10 +16,14 @@
   }
 
   .pre-filters {
-    .pre-filters-row {
+    .pre-filters-row,
+    .pre-filters-row-left {
       display: flex;
       justify-content: space-between;
       margin-bottom: rem.torem(30px);
+    }
+    .pre-filters-row-left {
+      justify-content: start;
     }
 
     .pf-offer-date {

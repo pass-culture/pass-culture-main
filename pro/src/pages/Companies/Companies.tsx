@@ -1,26 +1,19 @@
-import { Form, Formik, FormikProvider, useFormik } from 'formik'
+import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { GetOffererNameResponseModel } from 'apiClient/v1'
 import getOffererAdapter from 'core/Offerers/getOffererAdapter/getOffererAdapter'
 import { IOfferer } from 'core/Offerers/types'
 import { useNavigate } from 'hooks'
 import { Title } from 'ui-kit'
 import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete2/SelectAutocomplete'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { sortByLabel } from 'utils/strings'
 
 import styles from './Companies.module.scss'
-import { Offerer } from './Offerer'
 import { Venue } from './Offerer/Venue'
-
-const NB_DISPLAYED_OFFERER = 10
 
 const Companies = (): JSX.Element => {
   const [isReady, setIsReady] = useState<boolean>(false)
-  const [nbDisplayedOfferers, setNbDisplayedOfferers] =
-    useState<number>(NB_DISPLAYED_OFFERER)
   const [offererNames, setOffererNames] = useState<SelectOptions>([])
   const [offerers, setOfferers] = useState<IOfferer[]>([])
   const [selectedOfferer, setSelectedOfferer] = useState<IOfferer>()
@@ -29,8 +22,6 @@ const Companies = (): JSX.Element => {
   useEffect(() => {
     async function fetchOffererNames() {
       try {
-        const venueResponse = await api.getVenues()
-        console.log('venueResponse', venueResponse)
         const nameResponse = await api.listOfferersNames(
           true, // validated?: boolean | null,
           true, // validatedForUser?: boolean | null,

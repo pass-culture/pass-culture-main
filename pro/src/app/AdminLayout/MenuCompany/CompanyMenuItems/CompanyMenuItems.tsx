@@ -1,6 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
+import { useAppContext } from 'app/AppContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -14,6 +15,7 @@ import styles from '../../Menu/Menu.module.scss'
 const CompanyMenuItems = () => {
   const { logEvent } = useAnalytics()
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
+  const { selectedVenueId } = useAppContext()
   return (
     <>
       <NavLink
@@ -22,7 +24,7 @@ const CompanyMenuItems = () => {
           logEvent?.(Events.CLICKED_OFFER, { from: location.pathname })
         }}
         role="menuitem"
-        to="/offres"
+        to={`/entreprises/${selectedVenueId}/offres`}
       >
         <IconOffers aria-hidden className={styles['nav-item-icon']} />
         Offres
@@ -34,7 +36,7 @@ const CompanyMenuItems = () => {
           logEvent?.(Events.CLICKED_BOOKING, { from: location.pathname })
         }}
         role="menuitem"
-        to="/reservations"
+        to={`/entreprises/${selectedVenueId}/reservations`}
       >
         <IconCalendar aria-hidden className={styles['nav-item-icon']} />
         Réservations

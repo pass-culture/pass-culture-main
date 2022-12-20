@@ -6,6 +6,7 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
+import { useAppContext } from 'app/AppContext'
 import NoData from 'components/NoData'
 import PageTitle from 'components/PageTitle/PageTitle'
 import Tabs from 'components/Tabs'
@@ -49,6 +50,8 @@ interface IBookingsProps {
     | GetFilteredCollectiveBookingsRecapAdapter
   getUserHasBookingsAdapter: GetUserHasBookingsAdapter
   getVenuesAdapter: GetVenuesAdapter
+  venueId?: string
+  isEac?: boolean
 }
 
 const MAX_LOADED_PAGES = 5
@@ -63,10 +66,13 @@ const Bookings = <
   getFilteredBookingsRecapAdapter,
   getUserHasBookingsAdapter,
   getVenuesAdapter,
+  venueId,
+  isEac = true,
 }: IBookingsProps): JSX.Element => {
   const { currentUser: user } = useCurrentUser()
   const notify = useNotification()
   const isBookingFiltersActive = useActiveFeature('ENABLE_NEW_BOOKING_FILTERS')
+  const { selectedVenue } = useAppContext()
 
   const [appliedPreFilters, setAppliedPreFilters] = useState<TPreFilters>({
     ...DEFAULT_PRE_FILTERS,
@@ -229,30 +235,39 @@ const Bookings = <
       setIsLocalLoading(false)
     }
 
-    fetchVenues()
+    !venueId && fetchVenues()
   }, [setIsLocalLoading, setVenues, notify, getVenuesAdapter])
 
   return (
     <div className="bookings-page">
       <PageTitle title="Vos réservations" />
-      <Titles title="Réservations" />
-      <Tabs
-        selectedKey={audience}
-        tabs={[
-          {
-            label: 'Réservations individuelles',
-            url: '/reservations',
-            key: 'individual',
-            Icon: UserIcon,
-          },
-          {
-            label: 'Réservations collectives',
-            url: '/reservations/collectives',
-            key: 'collective',
-            Icon: LibraryIcon,
-          },
-        ]}
+      <Titles
+        title={
+          venueId ? `Réservation de "${selectedVenue?.name}"` : 'Réservations'
+        }
       />
+      {isEac && (
+        <Tabs
+          selectedKey={audience}
+          tabs={[
+            {
+              label: 'Réservations individuelles',
+              url: venueId
+                ? `/entreprises/${venueId}/reservations`
+                : '/reservations',
+              key: 'individual',
+              Icon: UserIcon,
+            },
+            {
+              label: 'Réservations collectives',
+              url: '/reservations/collectives',
+              key: 'collective',
+              Icon: LibraryIcon,
+            },
+          ]}
+        />
+      )}
+
       <PreFilters
         appliedPreFilters={appliedPreFilters}
         applyPreFilters={applyPreFilters}

@@ -5,6 +5,7 @@ import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
+import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { useHomePath, useNavigate } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -21,6 +22,7 @@ export interface IAppContextLoading {
   selectedVenueId: null
   setSelectedVenueId: null
   shouldSelectOfferer: boolean
+  isEac: boolean
   isLoading: true
 }
 
@@ -34,6 +36,7 @@ export interface IAppContext {
   selectedVenueId: string | null
   setSelectedVenueId: (venueId: string) => void
   shouldSelectOfferer: boolean
+  isEac: boolean
   isLoading: false
 }
 
@@ -49,6 +52,7 @@ export const AppContext = createContext<IAppContext | IAppContextLoading>({
   setSelectedOffererId: null,
   setSelectedVenueId: null,
   shouldSelectOfferer: false,
+  isEac: false,
   isLoading: true,
 })
 
@@ -78,6 +82,9 @@ export function AppContextProvider({ children }: IAppContextProviderProps) {
   const [selectedOffererId, setSelectedOffererId] = useState<string | null>(
     null
   )
+  const [isEacOffererList, setIsEacOffererList] = useState<{
+    [key: string]: boolean
+  }>({})
 
   const loadOffererNames = async () => {
     const response = await api.listOfferersNames(
@@ -143,6 +150,13 @@ export function AppContextProvider({ children }: IAppContextProviderProps) {
       return
     }
     setSelectedOffererId(offererId)
+    const response = await canOffererCreateCollectiveOfferAdapter(offererId)
+    if (response.isOk) {
+      setIsEacOffererList(currentIsEac => ({
+        ...currentIsEac,
+        [offererId]: response.payload.isOffererEligibleToEducationalOffer,
+      }))
+    }
     if (offererNames.length > NB_DISPLAYED_OFFERER) {
       await loadVenues(offererId)
     }
@@ -177,6 +191,10 @@ export function AppContextProvider({ children }: IAppContextProviderProps) {
           setSelectedOffererId: handleSetSelectedOffererId,
           setSelectedVenueId: handleSetSelectedVenueId,
           shouldSelectOfferer,
+          isEac:
+            selectedOffererId !== null &&
+            selectedOffererId in isEacOffererList &&
+            isEacOffererList[selectedOffererId],
           isLoading: false,
         } as IAppContext
       }

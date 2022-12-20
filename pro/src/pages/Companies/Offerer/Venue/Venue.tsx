@@ -11,7 +11,6 @@ interface IVenueProps {
 }
 
 const Venue = ({ className, venue }: IVenueProps) => {
-  console.log('venue', venue)
   return (
     <div className={cn(className, styles['venue'])}>
       <div>{venue.name}</div>

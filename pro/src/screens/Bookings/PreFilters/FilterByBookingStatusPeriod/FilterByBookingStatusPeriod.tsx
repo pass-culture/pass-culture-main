@@ -14,6 +14,7 @@ interface IFilterByBookingStatusPeriodProps {
   selectedBookingEndingDate?: Date
   selectedBookingFilter: string
   updateFilters: (filters: Partial<TPreFilters>) => void
+  label?: string
 }
 
 const FilterByBookingStatusPeriod = ({
@@ -22,6 +23,7 @@ const FilterByBookingStatusPeriod = ({
   selectedBookingEndingDate,
   selectedBookingFilter,
   updateFilters,
+  label,
 }: IFilterByBookingStatusPeriodProps): JSX.Element => {
   function handleBookingBeginningDateChange(bookingBeginningDate: Date) {
     updateFilters({
@@ -43,7 +45,7 @@ const FilterByBookingStatusPeriod = ({
     })
   }
 
-  return (
+  const renderFilter = () => (
     <div className={styles['satus-period-filter']}>
       <FilterByStatus
         isDisabled={isDisabled}
@@ -60,6 +62,15 @@ const FilterByBookingStatusPeriod = ({
         todayDate={getToday()}
       />
     </div>
+  )
+
+  return label ? (
+    <div className={styles['with-label-container']}>
+      <label className={styles['label']}>{label}</label>
+      {renderFilter()}
+    </div>
+  ) : (
+    renderFilter()
   )
 }
 

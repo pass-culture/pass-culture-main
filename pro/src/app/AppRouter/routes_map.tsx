@@ -1,7 +1,6 @@
 /* No need to test this file */
 /* istanbul ignore file */
 import { Redirect, useLocation } from 'react-router-dom'
-import { boolean } from 'yup'
 
 import Bookings from 'pages/Bookings'
 import BusinessUnitList from 'pages/BusinessUnitList'
@@ -23,7 +22,7 @@ import VenueV1Edition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueEdi
 import OffererCreation from 'pages/Offerers/OffererCreation'
 import { OffererStats } from 'pages/OffererStats'
 import { OfferIndividualWizard } from 'pages/OfferIndividualWizard'
-import OffersRoute from 'pages/Offers'
+import { CompanyOffersRoute, OffersRoute } from 'pages/Offers'
 import OfferLayout from 'pages/Offers/Offer/OfferLayout'
 import OfferType from 'pages/OfferType'
 import Reimbursements from 'pages/Reimbursements'
@@ -119,13 +118,30 @@ const routes: IRoute[] = [
   },
   {
     component: Companies,
-    path: '/entreprises',
+    path: '/entreprises/:venueId/',
     title: 'Vos entreprises',
+    exact: true,
     meta: {
       layoutConfig: {
         pageName: 'companies',
       },
     },
+  },
+  {
+    component: CompanyOffersRoute,
+    path: '/entreprises/:venueId/offres',
+    title: 'Offres de mon entreprise',
+    meta: {
+      layoutConfig: {
+        pageName: 'companies-offers',
+      },
+    },
+  },
+  {
+    component: Bookings,
+    exact: true,
+    path: '/entreprises/:venueId/reservations',
+    title: 'Réservations de mon entreprise',
   },
   {
     component: Desk,

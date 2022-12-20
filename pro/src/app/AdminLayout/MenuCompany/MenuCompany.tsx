@@ -1,7 +1,9 @@
 import cn from 'classnames'
 import React from 'react'
+import { generatePath, matchPath, useLocation } from 'react-router'
 
 import { useAppContext } from 'app/AppContext'
+import { useNavigate } from 'hooks'
 import { Title } from 'ui-kit'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 
@@ -14,10 +16,20 @@ interface IMenuCompanyProps {
   className?: string
 }
 
+const getCurrentCompanyRoutePath = (pathname: string) => {
+  const pathList = [
+    '/entreprises/:venueId/offres',
+    '/entreprises/:venueId/reservations',
+    // need to be last element to be the lastest found.
+    '/entreprises/:venueId',
+  ]
+
+  return pathList.find(path => matchPath(pathname, path))
+}
+
 const MenuCompany = ({ className }: IMenuCompanyProps) => {
   const {
     shouldSelectOfferer,
-    selectedVenue,
     selectedOffererId,
     setSelectedOffererId,
     selectedVenueId,
@@ -25,6 +37,8 @@ const MenuCompany = ({ className }: IMenuCompanyProps) => {
     venues,
     offererNames,
   } = useAppContext()
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const offererOptions = offererNames.map(item => {
     return {
@@ -38,6 +52,25 @@ const MenuCompany = ({ className }: IMenuCompanyProps) => {
       label: item.name,
     }
   })
+
+  const handleVenueOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedVenueId &&
+      e.target.value !== selectedVenueId &&
+      setSelectedVenueId(e.target.value)
+    const nextPath = getCurrentCompanyRoutePath(location.pathname)
+    if (nextPath !== undefined) {
+      navigate(generatePath(nextPath, { venueId: e.target.value }))
+    } else {
+      navigate(`/entreprises/${e.target.value}`)
+    }
+  }
+  const handleVenueOnClick = () => {
+    const isCompanyPage =
+      getCurrentCompanyRoutePath(location.pathname) !== undefined
+    if (!isCompanyPage) {
+      navigate(`/entreprises/${selectedVenueId}`)
+    }
+  }
 
   return (
     <nav className={cn(stylesMenu['menu'], className)}>
@@ -62,9 +95,8 @@ const MenuCompany = ({ className }: IMenuCompanyProps) => {
               name="venue"
               value={selectedVenueId || venueOptions[0].value}
               options={venueOptions}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                setSelectedVenueId && setSelectedVenueId(e.target.value)
-              }}
+              onChange={handleVenueOnChange}
+              onClick={handleVenueOnClick}
             />
           </div>
         )}
