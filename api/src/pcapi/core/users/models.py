@@ -438,7 +438,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
             and suspension_action_history
             and suspension_action_history[-1].actionType == history_models.ActionType.USER_SUSPENDED
         ):
-            return constants.SuspensionReason(suspension_action_history[-1].extraData["reason"])
+            return constants.SuspensionReason(suspension_action_history[-1].extraData.get("reason"))
         return None
 
     @property
