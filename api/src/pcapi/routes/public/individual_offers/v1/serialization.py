@@ -3,7 +3,6 @@ import enum
 import typing
 
 import pydantic
-from pydantic import utils as pydantic_utils
 import typing_extensions
 
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -319,17 +318,6 @@ class AdditionalDatesCreation(serialization.ConfiguredBaseModel):
     )
 
 
-class BaseStockResponseGetter(pydantic_utils.GetterDict):
-    def get(self, key: typing.Any, default: typing.Any = None) -> typing.Any:
-        stock: offers_models.Stock = self._obj
-        if key == "price":
-            return finance_utils.to_eurocents(stock.price)
-        if key == "quantity":
-            return stock.quantity if stock.quantity is not None else "unlimited"
-
-        return super().get(key, default)
-
-
 class BaseStockResponse(serialization.ConfiguredBaseModel):
     booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
     dnBookedQuantity: int = pydantic.Field(
@@ -340,7 +328,15 @@ class BaseStockResponse(serialization.ConfiguredBaseModel):
 
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
-        getter_dict = BaseStockResponseGetter
+
+    @classmethod
+    def build_stock(cls, stock: offers_models.Stock) -> "BaseStockResponse":
+        return cls(
+            booking_limit_datetime=stock.bookingLimitDatetime,
+            dnBookedQuantity=stock.dnBookedQuantity,
+            price=finance_utils.to_eurocents(stock.price),
+            quantity=stock.quantity if stock.quantity is not None else "unlimited",
+        )
 
 
 class DateResponse(BaseStockResponse):
@@ -348,20 +344,18 @@ class DateResponse(BaseStockResponse):
     beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
     booking_limit_datetime: datetime.datetime = BOOKING_LIMIT_DATETIME_FIELD
 
+    @classmethod
+    def build_date(cls, stock: offers_models.Stock) -> "BaseStockResponse":
+        stock_response = BaseStockResponse.build_stock(stock)
+        return cls(
+            id=stock.id,
+            beginning_datetime=stock.beginningDatetime,
+            **stock_response.dict(),
+        )
+
 
 class AdditionalDatesResponse(serialization.ConfiguredBaseModel):
     additional_dates: typing.List[DateResponse] | None = pydantic.Field(None, description="The new dates created.")
-
-
-class OfferResponseGetter(pydantic_utils.GetterDict):
-    def get(self, key: typing.Any, default: typing.Any = None) -> typing.Any:
-        offer: offers_models.Offer = self._obj
-        if key == "accessibility":
-            return Accessibility.from_orm(self)
-        if key == "location":
-            return DigitalLocation.from_orm(offer) if offer.isDigital else PhysicalLocation.from_orm(offer)
-
-        return super().get(key, default)
 
 
 class OfferResponse(serialization.ConfiguredBaseModel):
@@ -388,23 +382,34 @@ class OfferResponse(serialization.ConfiguredBaseModel):
 
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
-        getter_dict = OfferResponseGetter
 
-
-class ProductResponseGetter(OfferResponseGetter):
-    def get(self, key: typing.Any, default: typing.Any = None) -> typing.Any:
-        product: offers_models.Offer = self._obj
-        if key == "category_related_fields":
-            return compute_category_related_fields(product)
-        if key == "stock":
-            return BaseStockResponse.from_orm(product.stock) if product.stock else None
-
-        return super().get(key, default)
+    @classmethod
+    def build_offer(cls, offer: offers_models.Offer) -> "OfferResponse":
+        return cls(
+            id=offer.id,
+            booking_email=offer.bookingEmail,
+            description=offer.description,
+            accessibility=Accessibility.from_orm(offer),
+            external_ticket_office_url=offer.externalTicketOfficeUrl,
+            image=offer.image,
+            is_duo=offer.isDuo,
+            location=DigitalLocation.from_orm(offer) if offer.isDigital else PhysicalLocation.from_orm(offer),
+            name=offer.name,
+            status=offer.status,
+        )
 
 
 class ProductOfferResponse(OfferResponse):
     category_related_fields: product_category_fields
     stock: BaseStockResponse | None
 
-    class Config:
-        getter_dict = ProductResponseGetter
+    @classmethod
+    def build_product_offer(
+        cls, offer: offers_models.Offer, stock: offers_models.Stock | None
+    ) -> "ProductOfferResponse":
+        base_offer_response = OfferResponse.build_offer(offer)
+        return cls(
+            category_related_fields=compute_category_related_fields(offer),
+            stock=BaseStockResponse.build_stock(stock) if stock else None,
+            **base_offer_response.dict(),
+        )
