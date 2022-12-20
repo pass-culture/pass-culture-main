@@ -215,7 +215,7 @@ describe('src | Venue | ReimbursementPoint', () => {
     // Then
     expect(
       screen.queryByText(
-        'Les coordonnées bancaires de votre lieu sont en cours de validation par notre service financier.'
+        'Les coordonnées bancaires de votre lieu sont en cours de validation par notre service financier. Vos remboursements seront rétroactifs une fois vos coordonnées bancaires ajoutées.'
       )
     ).toBeInTheDocument()
   })

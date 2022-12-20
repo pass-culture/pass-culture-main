@@ -14,7 +14,8 @@ const ApplicationBanner = ({ applicationId }) => (
     type="notification-info"
   >
     Les coordonnées bancaires de votre lieu sont en cours de validation par
-    notre service financier.
+    notre service financier. <br /> Vos remboursements seront rétroactifs une
+    fois vos coordonnées bancaires ajoutées.
   </Banner>
 )
 
