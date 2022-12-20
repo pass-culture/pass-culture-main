@@ -2,12 +2,15 @@ from dataclasses import dataclass
 import datetime
 from itertools import chain
 from itertools import cycle
+from typing import Any
 
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.models import offer_mixin
 from pcapi.utils.human_ids import humanize
+from pcapi.utils.image_conversion import DO_NOT_CROP
 
 
 @dataclass
@@ -20,6 +23,11 @@ class StockData:
     otherAddress: str
     interventionArea: list[str]
     educationalInstitutionId: str | None
+    imageName: str | None = None
+    lastValidationDate: datetime.datetime | None = None
+    lastValidationType: offer_mixin.OfferValidationType | None = None
+    validation: offer_mixin.OfferValidationStatus | None = None
+    isActive: bool | None = None
 
 
 @dataclass
@@ -28,6 +36,7 @@ class TemplateOfferData:
     addressType: str
     otherAddress: str
     interventionArea: list[str]
+    imageName: str | None = None
 
 
 FAKE_STOCK_DATA = [
@@ -40,6 +49,7 @@ FAKE_STOCK_DATA = [
         otherAddress="1 rue des polissons, Paris 75017",
         interventionArea=[],
         educationalInstitutionId=None,
+        imageName="collective_offer.png",
     ),
     StockData(
         name="Visite de la mine Gabe Gottes",
@@ -221,6 +231,52 @@ FAKE_STOCK_DATA = [
         interventionArea=["44"],
         educationalInstitutionId="0780032L",
     ),
+    StockData(
+        name="offre refusée",
+        price=1200,
+        timedelta=22,
+        numberOfTickets=20,
+        addressType="offererVenue",
+        otherAddress="",
+        interventionArea=["44"],
+        educationalInstitutionId=None,
+        lastValidationDate=datetime.datetime.utcnow(),
+        lastValidationType=offer_mixin.OfferValidationType.MANUAL,
+        validation=offer_mixin.OfferValidationStatus.REJECTED,
+    ),
+    StockData(
+        name="offre en attente de validation",
+        price=1200,
+        timedelta=22,
+        numberOfTickets=20,
+        addressType="offererVenue",
+        otherAddress="",
+        interventionArea=["44"],
+        educationalInstitutionId=None,
+        validation=offer_mixin.OfferValidationStatus.PENDING,
+    ),
+    StockData(
+        name="brouillon d'offre",
+        price=1200,
+        timedelta=22,
+        numberOfTickets=20,
+        addressType="offererVenue",
+        otherAddress="",
+        interventionArea=["44"],
+        educationalInstitutionId=None,
+        validation=offer_mixin.OfferValidationStatus.DRAFT,
+    ),
+    StockData(
+        name="offre innactive",
+        price=1200,
+        timedelta=22,
+        numberOfTickets=20,
+        addressType="offererVenue",
+        otherAddress="",
+        interventionArea=["44"],
+        educationalInstitutionId=None,
+        isActive=False,
+    ),
 ]
 
 PASSED_STOCK_DATA: list[StockData] = [
@@ -268,6 +324,15 @@ ALL_INTERVENTION_AREA = [
     "all",
 ]
 
+
+def add_image_to_offer(offer: educational_models.HasImageMixin, image_name: str) -> None:
+    with open(
+        f"./src/pcapi/sandboxes/thumbs/collectif/{image_name}",
+        mode="rb",
+    ) as file:
+        offer.set_image(image=file.read(), credit="CC-BY-SA WIKIPEDIA", crop_params=DO_NOT_CROP)
+
+
 TEMPLATE_OFFERS_DATA = [
     TemplateOfferData(
         name="Visite du studio d'enregistrement de l'EAC collectif",
@@ -286,6 +351,7 @@ TEMPLATE_OFFERS_DATA = [
         addressType="school",
         otherAddress="",
         interventionArea=[],
+        imageName="collective_offer_template.jpg",
     ),
     TemplateOfferData(
         name="Une offre vitrine pour les Bouches-du-Rhône ",
@@ -508,27 +574,41 @@ def create_industrial_educational_bookings() -> None:
             _create_collective_stock(stock_data, now, venue, number_of_stocks=2, is_passed=False, parent=template)[0]
         )
 
-    for stock, educational_institution in zip(stocks, cycle(educational_institutions)):
-        educational_factories.PendingCollectiveBookingFactory(
-            educationalRedactor=educational_redactor,
-            educationalInstitution=educational_institution,
-            educationalYear=educational_current_year,
-            collectiveStock=stock,
-        )
-        educational_factories.CancelledCollectiveBookingFactory(
-            educationalRedactor=educational_redactor,
-            educationalInstitution=educational_institution,
-            educationalYear=educational_current_year,
-            collectiveStock=stock,
-        )
+    for index, stock, educational_institution in zip(range(len(stocks)), stocks, cycle(educational_institutions)):
+        if index % 4 == 0:
+            educational_factories.PendingCollectiveBookingFactory(
+                educationalRedactor=educational_redactor,
+                educationalInstitution=educational_institution,
+                educationalYear=educational_current_year,
+                collectiveStock=stock,
+            )
+        elif index % 4 == 1:
+            educational_factories.CancelledCollectiveBookingFactory(
+                educationalRedactor=educational_redactor,
+                educationalInstitution=educational_institution,
+                educationalYear=educational_current_year,
+                collectiveStock=stock,
+            )
+        elif index % 4 == 2:
+            educational_factories.ConfirmedCollectiveBookingFactory(
+                educationalRedactor=educational_redactor,
+                educationalInstitution=educational_institution,
+                educationalYear=educational_current_year,
+                collectiveStock=stock,
+            )
+        else:
+            educational_factories.ReimbursedCollectiveBookingFactory(
+                educationalRedactor=educational_redactor,
+                educationalInstitution=educational_institution,
+                educationalYear=educational_current_year,
+                collectiveStock=stock,
+            )
 
     for stock, educational_institution in zip(passed_stocks, cycle(educational_institutions)):
         educational_factories.UsedCollectiveBookingFactory(
             educationalRedactor=educational_redactor,
             educationalInstitution=educational_institution,
             educationalYear=educational_current_year,
-            confirmationLimitDate=stock.beginningDatetime - datetime.timedelta(days=10),
-            cancellationLimitDate=stock.beginningDatetime - datetime.timedelta(days=5),
             dateUsed=now - datetime.timedelta(8),
             collectiveStock=stock,
             collectiveStock__beginningDatetime=now - datetime.timedelta(8),
@@ -556,7 +636,7 @@ def _create_collective_stock(
     parent: educational_models.CollectiveOfferTemplate | None = None,
 ) -> list[educational_models.CollectiveStock]:
     timedelta = int(stock_data.timedelta)
-
+    kwargs: dict[str, Any] = {}
     if is_passed:
         beginningDatetime = now - datetime.timedelta(days=timedelta)
     else:
@@ -568,7 +648,16 @@ def _create_collective_stock(
             educational_models.EducationalInstitution.institutionId == stock_data.educationalInstitutionId
         ).one()
 
-    return educational_factories.CollectiveStockFactory.create_batch(
+    if stock_data.lastValidationDate:
+        kwargs["collectiveoffer__lastValidationDate"] = stock_data.lastValidationDate
+    if stock_data.lastValidationType:
+        kwargs["collectiveoffer__lastValidationType"] = stock_data.lastValidationType
+    if stock_data.validation:
+        kwargs["collectiveoffer__validation"] = stock_data.validation
+    if stock_data.isActive is not None:
+        kwargs["collectiveoffer__isActive"] = stock_data.isActive
+
+    stocks = educational_factories.CollectiveStockFactory.create_batch(
         number_of_stocks,
         price=stock_data.price,
         beginningDatetime=beginningDatetime,
@@ -597,13 +686,16 @@ def _create_collective_stock(
         collectiveOffer__educational_domains=[get_educational_domain()],
         collectiveOffer__template=parent,
     )
+    if stock_data.imageName is not None and stocks:
+        add_image_to_offer(offer=stocks[0].collectiveOffer, image_name=stock_data.imageName)
+    return stocks
 
 
 def _create_collective_offer_template(
     offer_data: TemplateOfferData,
     venue: offerers_models.Venue,
 ) -> None:
-    educational_factories.CollectiveOfferTemplateFactory(
+    offer = educational_factories.CollectiveOfferTemplateFactory(
         name=offer_data.name,
         durationMinutes=60,
         description="Une description multi-lignes.\nUn lien en description ? https://youtu.be/dQw4w9WgXcQ\n Un email ? mon.email@example.com",
@@ -624,6 +716,8 @@ def _create_collective_offer_template(
         interventionArea=offer_data.interventionArea,
         educational_domains=[get_educational_domain()],
     )
+    if offer_data.imageName is not None:
+        add_image_to_offer(offer=offer, image_name=offer_data.imageName)
 
 
 def create_educational_domains() -> None:
