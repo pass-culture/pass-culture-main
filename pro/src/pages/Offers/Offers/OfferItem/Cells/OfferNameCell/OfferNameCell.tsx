@@ -1,4 +1,3 @@
-import { format } from 'date-fns-tz'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
@@ -18,19 +17,17 @@ import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as WarningIcon } from 'icons/ico-warning.svg'
 import { Tag } from 'ui-kit'
-import {
-  FORMAT_DD_MM_YYYY_HH_mm,
-  FORMAT_DD_MM_YYYY,
-  toDateStrippedOfTimezone,
-} from 'utils/date'
+import Icon from 'ui-kit/Icon/Icon'
+import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 import styles from '../../OfferItem.module.scss'
 
-interface OfferNameCellProps {
+import { getRemainingTime, getDate, shouldDisplayWarning } from './utils'
+
+export interface OfferNameCellProps {
   offer: Offer
   editionOfferLink: string
   audience: Audience
@@ -94,44 +91,11 @@ const OfferNameCell = ({
     computeNumberOfSoldOutStocks() > 0 &&
     offer.status !== OFFER_STATUS_SOLD_OUT
 
-  const getRemainingTime = () => {
-    const { stocks } = offer
-    const { bookingLimitDatetime } = stocks[0] || {}
-
-    if (!bookingLimitDatetime) {
-      return -1
-    }
-
-    const date = new Date()
-
-    const time_diff = bookingLimitDatetime.getTime() - date.getTime()
-    const days_Diff = time_diff / (1000 * 3600 * 24)
-
-    if (days_Diff >= 7) {
-      return -1
-    }
-    return Math.floor(days_Diff)
-  }
-
-  const getDate = () => {
-    const { stocks } = offer
-    const { bookingLimitDatetime } = stocks[0] || {}
-
-    if (!bookingLimitDatetime) {
-      return false
-    }
-
-    return format(
-      toDateStrippedOfTimezone(bookingLimitDatetime.toString()),
-      FORMAT_DD_MM_YYYY
-    )
-  }
-
   const shouldShowCollectiveWarning =
     isImproveCollectiveStatusActive &&
     audience === Audience.COLLECTIVE &&
     offer.educationalBooking?.booking_status === OFFER_STATUS_PENDING &&
-    getRemainingTime() > 0
+    shouldDisplayWarning(offer.stocks)
 
   return (
     <td className={styles['title-column']}>
@@ -151,29 +115,38 @@ const OfferNameCell = ({
           {getDateInformations()}
           {shouldShowIndividualWarning && (
             <div>
-              <WarningIcon
-                title=""
+              <Icon
                 className={styles['sold-out-icon']}
-                tabIndex={0}
+                svg="ico-warning"
+                alt="Attention"
               />
 
               <span className={styles['sold-out-dates']}>
-                <WarningIcon title="" />
+                <Icon
+                  className={styles['sold-out-icon']}
+                  svg="ico-warning"
+                  alt="Attention"
+                />
                 {pluralize(computeNumberOfSoldOutStocks(), 'date épuisée')}
               </span>
             </div>
           )}
           {shouldShowCollectiveWarning && (
             <div>
-              <WarningIcon
-                title=""
+              <Icon
                 className={styles['sold-out-icon']}
-                tabIndex={0}
+                svg="ico-warning"
+                alt="Attention"
               />
 
               <span className={styles['sold-out-dates']}>
                 La date limite de réservation par le chef d'établissement est
-                dans {`${pluralize(getRemainingTime(), 'jour')} (${getDate()})`}
+                dans{' '}
+                {`${
+                  getRemainingTime(offer.stocks) >= 1
+                    ? pluralize(getRemainingTime(offer.stocks), 'jour')
+                    : "moins d'un jour"
+                } (${getDate(offer.stocks)})`}
               </span>
             </div>
           )}
