@@ -3,6 +3,7 @@ import datetime
 import pytest
 
 from pcapi.core import testing
+import pcapi.core.educational.factories as collective_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -76,6 +77,7 @@ def test_basics(client):
                 "comment": venue.comment,
                 "departementCode": venue.departementCode,
                 "hasMissingReimbursementPoint": venue.hasMissingReimbursementPoint,
+                "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
                 "id": humanize(venue.id),
                 "isVirtual": venue.isVirtual,
                 "managingOffererId": humanize(venue.managingOffererId),
@@ -150,3 +152,30 @@ def test_serialize_venue_has_missing_reimbursement_point(client):
     assert response.json["managedVenues"][0]["hasMissingReimbursementPoint"] == True
     assert response.json["managedVenues"][1]["hasMissingReimbursementPoint"] == False
     assert response.json["managedVenues"][2]["hasMissingReimbursementPoint"] == False
+
+
+def test_serialize_venue_offer_created_flag(client):
+    pro = users_factories.ProFactory()
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+    venue_with_offer = offerers_factories.VenueFactory(managingOfferer=offerer)
+    offers_factories.OfferFactory(venue=venue_with_offer)
+
+    venue_with_collective_offer = offerers_factories.VenueFactory(managingOfferer=offerer)
+    collective_factories.CollectiveOfferFactory(venue=venue_with_collective_offer)
+
+    venue_with_collective_offer_template = offerers_factories.VenueFactory(managingOfferer=offerer)
+    collective_factories.CollectiveOfferTemplateFactory(venue=venue_with_collective_offer_template)
+
+    offerers_factories.VenueFactory(managingOfferer=offerer)
+
+    offerer_id = offerer.id
+    client = client.with_session_auth(pro.email)
+
+    response = client.get(f"/offerers/{humanize(offerer_id)}")
+    assert response.status_code == 200
+    assert response.json["managedVenues"][0]["hasCreatedOffer"] == True
+    assert response.json["managedVenues"][1]["hasCreatedOffer"] == True
+    assert response.json["managedVenues"][2]["hasCreatedOffer"] == True
+    assert response.json["managedVenues"][3]["hasCreatedOffer"] == False

@@ -1,6 +1,6 @@
 import {
-  GetVenueManagingOffererResponseModel,
   GetVenueDomainResponseModel,
+  GetVenueManagingOffererResponseModel,
   GetVenueResponseModel,
   LegalStatusResponseModel,
   StudentLevels,
