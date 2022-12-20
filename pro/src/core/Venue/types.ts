@@ -1,6 +1,6 @@
 import {
-  GetVenueManagingOffererResponseModel,
   GetVenueDomainResponseModel,
+  GetVenueManagingOffererResponseModel,
   GetVenueResponseModel,
   LegalStatusResponseModel,
   StudentLevels,
@@ -42,6 +42,7 @@ export interface IVenue {
   bannerMeta: IVenueBannerMetaProps | null | undefined
   bannerUrl: string
   city: string
+  hasCreatedOffer: boolean
   hasPendingBankInformationApplication: boolean | null
   demarchesSimplifieesApplicationId: string | null
   comment: string

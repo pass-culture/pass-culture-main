@@ -18,6 +18,7 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
       venue.hasPendingBankInformationApplication != null
         ? venue.hasPendingBankInformationApplication
         : null,
+    hasCreatedOffer: venue.hasCreatedOffer,
     managingOfferer: venue.managingOfferer || [],
     reimbursementPointId: venue.reimbursementPointId || null,
     nonHumanizedId: venue.nonHumanizedId || 0,

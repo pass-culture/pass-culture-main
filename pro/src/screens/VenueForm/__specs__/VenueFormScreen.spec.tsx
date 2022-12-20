@@ -195,6 +195,7 @@ const formValues: IVenueFormValues = {
 }
 
 const venue: IVenue = {
+  hasCreatedOffer: false,
   hasPendingBankInformationApplication: false,
   demarchesSimplifieesApplicationId: '',
   collectiveDomains: [],

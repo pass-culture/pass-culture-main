@@ -5,6 +5,7 @@ import pytest
 from pcapi.core import testing
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offers.factories import OfferFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
@@ -87,6 +88,7 @@ class Returns200Test:
             "description": venue.description,
             "dmsToken": venue.dmsToken,
             "fieldsUpdated": venue.fieldsUpdated,
+            "hasCreatedOffer": False,
             "iban": bank_information.iban,
             "id": humanize(venue.id),
             "idAtProviders": venue.idAtProviders,
@@ -335,6 +337,35 @@ class Returns200Test:
             "image_credit": None,
             "original_image_url": None,
         }
+
+    def should_have_created_offer_flag(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offerers_factories.VenueFactory(
+            name="L'encre et la plume",
+            managingOfferer=user_offerer.offerer,
+            bannerUrl="http://example.com/image_cropped.png",
+            bannerMeta={"crop_params": None},
+        )
+
+        OfferFactory(venue=venue)
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % humanize(venue.id))
+
+        assert response.json["hasCreatedOffer"] == True
+
+    def should_not_have_created_offer_flag(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offerers_factories.VenueFactory(
+            name="L'encre et la plume",
+            managingOfferer=user_offerer.offerer,
+            bannerUrl="http://example.com/image_cropped.png",
+            bannerMeta={"crop_params": None},
+        )
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % humanize(venue.id))
+
+        assert response.json["hasCreatedOffer"] == False
 
 
 class Returns403Test:

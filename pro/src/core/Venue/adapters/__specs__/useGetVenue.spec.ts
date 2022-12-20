@@ -64,6 +64,7 @@ describe('useGetVenue', () => {
       collectivePhone: '',
       collectiveStudents: [],
       collectiveWebsite: '',
+      hasCreatedOffer: false,
     }
 
     jest.spyOn(api, 'getVenue').mockResolvedValue(apiVenue)
@@ -106,6 +107,7 @@ describe('useGetVenue', () => {
       dateCreated: '2022-07-29T12:18:43.087097Z',
       demarchesSimplifieesApplicationId: null,
       hasPendingBankInformationApplication: null,
+      hasCreatedOffer: false,
       id: 'AE',
       isPermanent: true,
       latitude: 12.3,

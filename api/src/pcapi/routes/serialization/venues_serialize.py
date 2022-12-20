@@ -13,6 +13,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base
@@ -193,6 +194,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     dmsToken: str | None
     fieldsUpdated: list[str]
     hasPendingBankInformationApplication: bool | None
+    hasCreatedOffer: bool
     iban: str | None
     idAtProviders: str | None
     isBusinessUnitMainVenue: bool | None
@@ -259,6 +261,12 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
                 venue.reimbursementPointId = reimbursement_link.reimbursementPointId
 
         venue.collectiveLegalStatus = venue.venueEducationalStatus
+        venue.hasCreatedOffer = (
+            len(list(filter(lambda v: v.validation != OfferValidationStatus.DRAFT, venue.offers)))
+            + len(list(filter(lambda v: v.validation != OfferValidationStatus.DRAFT, venue.collectiveOffers)))
+            + len(list(filter(lambda v: v.validation != OfferValidationStatus.DRAFT, venue.collectiveOfferTemplates)))
+            > 0
+        )
         return super().from_orm(venue)
 
 

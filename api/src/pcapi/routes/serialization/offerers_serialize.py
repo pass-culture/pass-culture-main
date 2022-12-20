@@ -7,6 +7,7 @@ from pcapi import settings
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.users.models as users_models
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import humanize_field
@@ -21,6 +22,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     comment: str | None
     departementCode: str | None
     hasMissingReimbursementPoint: bool
+    hasCreatedOffer: bool
     id: str
     isVirtual: bool
     managingOffererId: str
@@ -48,6 +50,12 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
                 )
             )
             or venue.hasPendingBankInformationApplication
+        )
+        venue.hasCreatedOffer = (
+            len(list(filter(lambda v: v.validation != OfferValidationStatus.DRAFT, venue.offers)))
+            + len(list(filter(lambda v: v.validation != OfferValidationStatus.DRAFT, venue.collectiveOffers)))
+            + len(list(filter(lambda v: v.validation != OfferValidationStatus.DRAFT, venue.collectiveOfferTemplates)))
+            > 0
         )
         return super().from_orm(venue)
 
@@ -99,6 +107,9 @@ class GetOffererResponseModel(BaseModel):
             offerers_models.Venue.query.filter_by(managingOffererId=offerer.id)
             .options(sqla_orm.joinedload(offerers_models.Venue.reimbursement_point_links))
             .options(sqla_orm.joinedload(offerers_models.Venue.bankInformation))
+            .options(sqla_orm.joinedload(offerers_models.Venue.offers))
+            .options(sqla_orm.joinedload(offerers_models.Venue.collectiveOffers))
+            .options(sqla_orm.joinedload(offerers_models.Venue.collectiveOfferTemplates))
             .order_by(sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name))
             .all()
         )
