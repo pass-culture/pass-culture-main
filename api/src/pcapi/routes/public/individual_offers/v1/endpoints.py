@@ -157,8 +157,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
-    created_offer.stock = created_stock
-    return serialization.ProductOfferResponse.from_orm(created_offer)
+    return serialization.ProductOfferResponse.build_product_offer(created_offer, created_stock)
 
 
 def _deserialize_ticket_collection(
@@ -225,7 +224,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Of
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
-    return serialization.OfferResponse.from_orm(created_offer)
+    return serialization.OfferResponse.build_offer(created_offer)
 
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates", methods=["POST"])
@@ -259,7 +258,7 @@ def post_event_date(
             raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.AdditionalDatesResponse(
-        additional_dates=[serialization.DateResponse.from_orm(new_date) for new_date in new_dates]
+        additional_dates=[serialization.DateResponse.build_date(new_date) for new_date in new_dates]
     )
 
 
@@ -286,5 +285,5 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     if not offer:
         raise api_errors.ApiErrors({"product_id": ["The product offer could not be found"]}, status_code=404)
 
-    offer.stock = next((stock for stock in offer.activeStocks), None)
-    return serialization.ProductOfferResponse.from_orm(offer)
+    active_stock = next((stock for stock in offer.activeStocks), None)
+    return serialization.ProductOfferResponse.build_product_offer(offer, active_stock)
