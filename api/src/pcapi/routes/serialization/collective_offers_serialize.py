@@ -65,6 +65,7 @@ class CollectiveOffersStockResponseModel(BaseModel):
     offerId: str
     remainingQuantity: int | str
     beginningDatetime: datetime | None
+    bookingLimitDatetime: datetime | None
 
     @validator("remainingQuantity", pre=True)
     def validate_remaining_quantity(cls, remainingQuantity: int | str) -> int | str:
@@ -156,6 +157,7 @@ def _serialize_stock(offer_id: int, stock: CollectiveStock | None = None) -> dic
             "hasBookingLimitDatetimePassed": stock.hasBookingLimitDatetimePassed,
             "remainingQuantity": 0 if stock.isSoldOut else 1,
             "beginningDatetime": stock.beginningDatetime,
+            "bookingLimitDatetime": stock.bookingLimitDatetime,
         }
     return {
         "id": humanize(0),
@@ -163,6 +165,7 @@ def _serialize_stock(offer_id: int, stock: CollectiveStock | None = None) -> dic
         "hasBookingLimitDatetimePassed": False,
         "remainingQuantity": 1,
         "beginningDatetime": datetime(year=2030, month=1, day=1),
+        "bookingLimitDatetime": datetime(year=2030, month=1, day=1),
     }
 
 
