@@ -23,6 +23,9 @@ const serializeStocks = (
       ? new Date(stock.beginningDatetime)
       : null,
     remainingQuantity: stock.remainingQuantity,
+    bookingLimitDatetime: stock.bookingLimitDatetime
+      ? new Date(stock.bookingLimitDatetime)
+      : null,
   }))
 
 export const serializeOffers = (

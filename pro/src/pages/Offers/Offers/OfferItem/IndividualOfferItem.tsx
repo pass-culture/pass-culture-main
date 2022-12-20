@@ -9,6 +9,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer, Venue } from 'core/Offers/types'
+import { Audience } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 
@@ -32,6 +33,7 @@ export type IndividualOfferItemProps = {
   venue: Venue
   isOfferEditable: boolean
   refreshOffers: () => void
+  audience: Audience
 }
 
 const IndividualOfferItem = ({
@@ -44,6 +46,7 @@ const IndividualOfferItem = ({
   venue,
   isOfferEditable,
   refreshOffers,
+  audience,
 }: IndividualOfferItemProps) => {
   const { logEvent } = useAnalytics()
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
@@ -78,7 +81,11 @@ const IndividualOfferItem = ({
         editionOfferLink={editionOfferLink}
         onThumbClick={onThumbClick}
       />
-      <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
+      <OfferNameCell
+        offer={offer}
+        editionOfferLink={editionOfferLink}
+        audience={audience}
+      />
       <OfferVenueCell venue={venue} />
       <OfferRemainingStockCell stocks={offer.stocks} />
       <OfferStatusCell status={offer.status} />
