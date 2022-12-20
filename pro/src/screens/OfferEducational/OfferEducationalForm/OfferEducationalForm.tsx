@@ -41,6 +41,7 @@ type IOfferEducationalFormProps = Omit<
   imageOffer: IImageUploaderOfferProps['imageOffer']
   onImageUpload: IImageUploaderOfferProps['onImageUpload']
   onImageDelete: IImageUploaderOfferProps['onImageDelete']
+  isOfferCreated?: boolean
 }
 
 const OfferEducationalForm = ({
@@ -53,6 +54,7 @@ const OfferEducationalForm = ({
   imageOffer,
   onImageUpload,
   onImageDelete,
+  isOfferCreated = false,
 }: IOfferEducationalFormProps): JSX.Element => {
   const notify = useNotification()
 
@@ -127,7 +129,7 @@ const OfferEducationalForm = ({
 
       <FormVenue
         isEligible={isEligible}
-        disableForm={mode !== Mode.CREATION}
+        disableForm={mode !== Mode.CREATION || isOfferCreated}
         userOfferers={userOfferers}
         venuesOptions={venuesOptions}
       />
