@@ -149,7 +149,7 @@ def test_public_api(client, app):
                 "GetBookingResponse": {
                     "properties": {
                         "bookingId": {"title": "Bookingid", "type": "string"},
-                        "dateOfBirth": {"title": "Dateofbirth", "type": "string"},
+                        "dateOfBirth": {"nullable": True, "title": "Dateofbirth", "type": "string"},
                         "datetime": {"title": "Datetime", "type": "string"},
                         "ean13": {"nullable": True, "title": "Ean13", "type": "string"},
                         "email": {"title": "Email", "type": "string"},
@@ -162,7 +162,11 @@ def test_public_api(client, app):
                         "offerId": {"title": "Offerid", "type": "integer"},
                         "offerName": {"title": "Offername", "type": "string"},
                         "offerType": {"$ref": "#/components/schemas/BookingOfferType"},
-                        "phoneNumber": {"title": "Phonenumber", "type": "string"},
+                        "phoneNumber": {
+                            "nullable": True,
+                            "title": "Phonenumber",
+                            "type": "string",
+                        },
                         "price": {"title": "Price", "type": "number"},
                         "publicOfferId": {"title": "Publicofferid", "type": "string"},
                         "quantity": {"title": "Quantity", "type": "integer"},
@@ -179,7 +183,6 @@ def test_public_api(client, app):
                     },
                     "required": [
                         "bookingId",
-                        "dateOfBirth",
                         "datetime",
                         "email",
                         "isUsed",
@@ -187,7 +190,6 @@ def test_public_api(client, app):
                         "publicOfferId",
                         "offerName",
                         "offerType",
-                        "phoneNumber",
                         "price",
                         "quantity",
                         "theater",
