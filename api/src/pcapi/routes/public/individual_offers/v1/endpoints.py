@@ -72,6 +72,19 @@ def _retrieve_offer_query(offer_id: int) -> sqla_orm.Query:
     )
 
 
+def _retrieve_offer_with_relations_query(offer_id: int) -> sqla_orm.Query:
+    return (
+        _retrieve_offer_query(offer_id)
+        .options(sqla_orm.joinedload(offers_models.Offer.stocks))
+        .options(sqla_orm.joinedload(offers_models.Offer.mediations))
+        .options(
+            sqla_orm.joinedload(offers_models.Offer.product).load_only(
+                offers_models.Product.id, offers_models.Product.thumbCount
+            )
+        )
+    )
+
+
 def _save_image(image_body: serialization.ImageBody, offer: offers_models.Offer) -> None:
     try:
         image_as_bytes = public_utils.get_bytes_from_base64_string(image_body.file)
@@ -187,7 +200,7 @@ def _deserialize_ticket_collection(
 @public_utils.individual_offers_api_provider
 def post_event_offer(
     individual_offers_provider: providers_models.Provider, body: serialization.EventOfferCreation
-) -> serialization.OfferResponse:
+) -> serialization.EventOfferResponse:
     """
     Post an event offer.
     """
@@ -201,7 +214,7 @@ def post_event_offer(
                 audio_disability_compliant=body.accessibility.audio_disability_compliant,
                 booking_email=body.booking_email,
                 description=body.description,
-                duration_minutes=body.event_duration,
+                duration_minutes=body.duration_minutes,
                 external_ticket_office_url=body.external_ticket_office_url,
                 extra_data=serialization.compute_extra_data(body.category_related_fields),
                 is_duo=body.is_duo,
@@ -237,7 +250,7 @@ def post_event_offer(
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
-    return serialization.OfferResponse.build_offer(created_offer)
+    return serialization.EventOfferResponse.build_event_offer(created_offer)
 
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates", methods=["POST"])
@@ -285,18 +298,26 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     Get a product offer.
     """
     offer: offers_models.Offer | None = (
-        _retrieve_offer_query(product_id)
-        .options(sqla_orm.joinedload(offers_models.Offer.stocks))
-        .options(sqla_orm.joinedload(offers_models.Offer.mediations))
-        .options(
-            sqla_orm.joinedload(offers_models.Offer.product).load_only(
-                offers_models.Product.id, offers_models.Product.thumbCount
-            )
-        )
-        .one_or_none()
+        _retrieve_offer_with_relations_query(product_id).filter(offers_models.Offer.isEvent == False).one_or_none()
     )
     if not offer:
         raise api_errors.ApiErrors({"product_id": ["The product offer could not be found"]}, status_code=404)
 
     active_stock = next((stock for stock in offer.activeStocks), None)
     return serialization.ProductOfferResponse.build_product_offer(offer, active_stock)
+
+
+@blueprint.v1_blueprint.route("/events/<int:event_id>", methods=["GET"])
+@spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG], response_model=serialization.EventOfferResponse)
+@api_key_required
+def get_event(event_id: int) -> serialization.EventOfferResponse:
+    """
+    Get an event offer.
+    """
+    offer: offers_models.Offer | None = (
+        _retrieve_offer_with_relations_query(event_id).filter(offers_models.Offer.isEvent == True).one_or_none()
+    )
+    if not offer:
+        raise api_errors.ApiErrors({"event_id": ["The event offer could not be found"]}, status_code=404)
+
+    return serialization.EventOfferResponse.build_event_offer(offer)
