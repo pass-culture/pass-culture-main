@@ -69,6 +69,7 @@ const Desk = ({
       getBooking(token).then((responseBooking: IDeskGetBookingResponse) => {
         if (responseBooking.error) {
           setIsTokenValidated(responseBooking.error.isTokenValidated)
+          setBooking(null)
           setMessage(responseBooking.error)
         }
         if (responseBooking.booking) {

@@ -24,15 +24,6 @@
 }
 
 .desk-button {
-  background-image:
-    linear-gradient(
-      to left,
-      colors.$primary 10%,
-      transparent 0%
-    );
-  background-position: center;
-  background-repeat: repeat-x;
-  background-size: rem.torem(6px) rem.torem(1px);
   margin-bottom: rem.torem(10px);
 }
 
