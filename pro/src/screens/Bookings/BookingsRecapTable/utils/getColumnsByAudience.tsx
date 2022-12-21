@@ -50,7 +50,7 @@ export const getColumnsByAudience = <
     id: 'booking_id',
     accessor: 'booking_id',
     Cell: ({ value }) => <BookingIdCell id={value} />,
-    Header: 'N° de réservation',
+    Header: 'Réservation',
     className: 'column-booking-id',
   }
 
