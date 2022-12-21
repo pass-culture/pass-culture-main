@@ -1,7 +1,6 @@
 import datetime
 from decimal import Decimal
 
-from pcapi.core.bookings import api
 from pcapi.core.bookings import constants
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
@@ -125,23 +124,15 @@ def check_is_usable(booking: Booking) -> None:
     is_booking_for_event_and_not_confirmed = booking.stock.beginningDatetime and not booking.isConfirmed
     if is_booking_for_event_and_not_confirmed:
         venue_departement_code = booking.venue.departementCode
-        booking_date = datetime.datetime.strftime(
-            utc_datetime_to_department_timezone(booking.dateCreated, venue_departement_code), "%d/%m/%Y à %H:%M"
-        )
         max_cancellation_date = datetime.datetime.strftime(
             utc_datetime_to_department_timezone(
-                api.compute_cancellation_limit_date(
-                    booking.stock.beginningDatetime,
-                    booking.dateCreated,
-                ),
+                booking.cancellationLimitDate,
                 venue_departement_code,
             ),
             "%d/%m/%Y à %H:%M",
         )
-
         raise exceptions.BookingIsNotConfirmed(
-            f"Cette réservation a été effectuée le {booking_date}. "
-            f"Veuillez attendre jusqu’au {max_cancellation_date} pour valider la contremarque.",
+            f"Vous pourrez valider cette contremarque à partir du {max_cancellation_date}, une fois le délai d’annulation passé."
         )
 
 
