@@ -1,5 +1,6 @@
 import logging
 
+import flask
 from sqlalchemy import orm as sqla_orm
 
 from pcapi import repository
@@ -72,10 +73,9 @@ def _retrieve_offer_query(offer_id: int) -> sqla_orm.Query:
     )
 
 
-def _retrieve_offer_with_relations_query(offer_id: int) -> sqla_orm.Query:
+def _retrieve_offer_relations_query(query: sqla_orm.Query) -> sqla_orm.Query:
     return (
-        _retrieve_offer_query(offer_id)
-        .options(sqla_orm.joinedload(offers_models.Offer.stocks))
+        query.options(sqla_orm.joinedload(offers_models.Offer.stocks))
         .options(sqla_orm.joinedload(offers_models.Offer.mediations))
         .options(
             sqla_orm.joinedload(offers_models.Offer.product).load_only(
@@ -296,12 +296,65 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     Get a product offer.
     """
     offer: offers_models.Offer | None = (
-        _retrieve_offer_with_relations_query(product_id).filter(offers_models.Offer.isEvent == False).one_or_none()
+        _retrieve_offer_relations_query(_retrieve_offer_query(product_id))
+        .filter(offers_models.Offer.isEvent == False)
+        .one_or_none()
     )
     if not offer:
         raise api_errors.ApiErrors({"product_id": ["The product offer could not be found"]}, status_code=404)
 
     return serialization.ProductOfferResponse.build_product_offer(offer)
+
+
+@blueprint.v1_blueprint.route("/products", methods=["GET"])
+@spectree_serialize(
+    api=blueprint.v1_schema, tags=[PRODUCT_OFFERS_TAG], response_model=serialization.ProductOffersResponse
+)
+@api_key_required
+def get_products(query: serialization.GetOffersQueryParams) -> serialization.ProductOffersResponse:
+    """
+    Get products.
+    """
+    total_offer_ids = [
+        offer_id
+        for offer_id, in offers_models.Offer.query.join(offerers_models.Venue)
+        .filter(offerers_models.Venue.managingOffererId == current_api_key.offererId)  # type: ignore [attr-defined]
+        .filter(offers_models.Offer.isEvent == False)
+        .with_entities(offers_models.Offer.id)
+        .order_by(offers_models.Offer.id)
+        .all()
+    ]
+    offset = query.limit * (query.page - 1)
+
+    if offset > len(total_offer_ids):
+        raise api_errors.ApiErrors(
+            {
+                "page": f"The page you requested does not exist. The maximum page for the specified limit is {len(total_offer_ids)//query.limit+1}"
+            },
+            status_code=404,
+        )
+
+    offers = (
+        _retrieve_offer_relations_query(
+            offers_models.Offer.query.filter(offers_models.Offer.id.in_(total_offer_ids[offset : offset + query.limit]))
+        )
+        .order_by(offers_models.Offer.id)
+        .all()
+    )
+
+    return serialization.ProductOffersResponse(
+        products=[serialization.ProductOfferResponse.build_product_offer(offer) for offer in offers],
+        pagination=serialization.Pagination(
+            current_page=query.page,
+            items_count=len(offers),
+            items_total=len(total_offer_ids),
+            last_page=len(total_offer_ids) // query.limit + 1,
+            limit_per_page=query.limit,
+            pages_links=serialization.PaginationLinks.build_pagination_links(
+                flask.url_for(".get_products", _external=True), query.page, query.limit, len(total_offer_ids)
+            ),
+        ),
+    )
 
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>", methods=["GET"])
@@ -312,7 +365,9 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
     Get an event offer.
     """
     offer: offers_models.Offer | None = (
-        _retrieve_offer_with_relations_query(event_id).filter(offers_models.Offer.isEvent == True).one_or_none()
+        _retrieve_offer_relations_query(_retrieve_offer_query(event_id))
+        .filter(offers_models.Offer.isEvent == True)
+        .one_or_none()
     )
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event offer could not be found"]}, status_code=404)
