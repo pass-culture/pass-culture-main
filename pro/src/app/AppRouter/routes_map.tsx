@@ -8,6 +8,7 @@ import CollectiveBookings from 'pages/CollectiveBookings'
 import CollectiveOfferRoutes from 'pages/CollectiveOfferRoutes'
 import CollectiveOffers from 'pages/CollectiveOffers'
 import { Companies } from 'pages/Companies'
+import { CompanyHome } from 'pages/CompanyHome'
 import CsvTable from 'pages/CsvTable'
 import Desk from 'pages/Desk'
 import { EmailChangeValidation } from 'pages/EmailChangeValidation'
@@ -117,7 +118,7 @@ const routes: IRoute[] = [
     title: 'Accueil',
   },
   {
-    component: Companies,
+    component: CompanyHome,
     path: '/entreprises/:venueId/',
     title: 'Vos entreprises',
     exact: true,

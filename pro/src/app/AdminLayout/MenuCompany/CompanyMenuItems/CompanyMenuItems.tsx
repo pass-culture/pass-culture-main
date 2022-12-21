@@ -27,6 +27,17 @@ const CompanyMenuItems = () => {
         to={`/entreprises/${selectedVenueId}/offres`}
       >
         <IconOffers aria-hidden className={styles['nav-item-icon']} />
+        Créer une offre
+      </NavLink>
+      <NavLink
+        className={styles['nav-item']}
+        onClick={() => {
+          logEvent?.(Events.CLICKED_OFFER, { from: location.pathname })
+        }}
+        role="menuitem"
+        to={`/entreprises/${selectedVenueId}/offres`}
+      >
+        <IconOffers aria-hidden className={styles['nav-item-icon']} />
         Offres
       </NavLink>
 

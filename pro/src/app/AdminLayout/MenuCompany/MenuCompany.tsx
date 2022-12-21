@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 import { generatePath, matchPath, useLocation } from 'react-router'
+import { Link } from 'react-router-dom'
 
 import { useAppContext } from 'app/AppContext'
 import { useNavigate } from 'hooks'
@@ -77,7 +78,9 @@ const MenuCompany = ({ className }: IMenuCompanyProps) => {
       <div className={styles['company-selector']}>
         {shouldSelectOfferer && (
           <div className={styles['offerer-selector']}>
-            <Title level={5}>Structure juridique</Title>
+            <Title className={styles['offerer-selector-title']} level={5}>
+              Structure juridique
+            </Title>
             <SelectInput
               name="offerer"
               value={selectedOffererId || offererOptions[0].value}
@@ -90,7 +93,11 @@ const MenuCompany = ({ className }: IMenuCompanyProps) => {
         )}
         {venues.length > 0 && (
           <div className={styles['venue-selector']}>
-            <Title level={5}>Mon entreprise</Title>
+            <Link to={`/entreprises/${selectedVenueId}`}>
+              <Title className={styles['venue-selector-title']} level={5}>
+                Mon entreprise
+              </Title>
+            </Link>
             <SelectInput
               name="venue"
               value={selectedVenueId || venueOptions[0].value}

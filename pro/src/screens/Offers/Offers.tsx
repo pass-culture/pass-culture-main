@@ -53,7 +53,9 @@ export interface IOffersProps {
   urlSearchFilters: TSearchFilters
   venues?: Option[]
   categories: Option[]
+  venueId?: string
   venueName?: string
+  isEac?: boolean
 }
 
 const Offers = ({
@@ -70,7 +72,9 @@ const Offers = ({
   urlSearchFilters,
   venues = [],
   categories,
+  venueId,
   venueName,
+  isEac,
 }: IOffersProps): JSX.Element => {
   const [searchFilters, setSearchFilters] =
     useState<TSearchFilters>(initialSearchFilters)
@@ -224,26 +228,28 @@ const Offers = ({
       <PageTitle title="Vos offres" />
       <Titles
         action={actionLink}
-        title={venueName ? `Offres de "${venueName}"` : 'Offres'}
+        title={venueId ? `Offres de "${venueName}"` : 'Offres'}
       />
-      <Tabs
-        selectedKey={audience}
-        tabs={[
-          {
-            label: 'Offres individuelles',
-            url: '/offres',
-            key: 'individual',
-            Icon: UserIcon,
-          },
-          {
-            label: 'Offres collectives',
-            url: '/offres/collectives',
-            key: 'collective',
-            Icon: LibraryIcon,
-          },
-        ]}
-        withQueryParams
-      />
+      {(!venueId || isEac) && (
+        <Tabs
+          selectedKey={audience}
+          tabs={[
+            {
+              label: 'Offres individuelles',
+              url: venueId ? `/entreprises/{venueId}/offres` : '/offres',
+              key: 'individual',
+              Icon: UserIcon,
+            },
+            {
+              label: 'Offres collectives',
+              url: '/offres/collectives',
+              key: 'collective',
+              Icon: LibraryIcon,
+            },
+          ]}
+          withQueryParams
+        />
+      )}
 
       <SearchFilters
         applyFilters={applyFilters}

@@ -25,7 +25,7 @@ const OffersRoute = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
   const { venueId } = useParams<{ venueId: string }>()
-  const { selectedVenue } = useAppContext()
+  const { selectedVenue, isEac } = useAppContext()
 
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<TSearchFilters | null>(null)
@@ -133,9 +133,11 @@ const OffersRoute = (): JSX.Element => {
       offers={offers}
       redirectWithUrlFilters={redirectWithUrlFilters}
       urlSearchFilters={urlSearchFilters}
+      venueId={venueId}
       venueName={
         venueId && selectedVenue !== null ? selectedVenue.name : undefined
       }
+      isEac={isEac}
     />
   )
 }

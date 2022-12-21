@@ -3,7 +3,6 @@ export { ReactComponent as IconEuroGrey } from './ico-euro-grey.svg'
 export { ReactComponent as IcoTicketPlusFull } from 'icons/ico-ticket-plus-full.svg'
 export { ReactComponent as IcoTrashFilled } from 'icons/ico-trash-filled.svg'
 export { ReactComponent as IcoParty } from 'icons/party.svg'
-<<<<<<< HEAD
 export { ReactComponent as ActivationCodeErrorIcon } from 'icons/add-activation-code-error.svg'
 export { ReactComponent as AddActivationCodeIcon } from 'icons/add-activation-code-light.svg'
 export { ReactComponent as AudioDisabilityIcon } from 'icons/audio-disability.svg'

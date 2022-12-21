@@ -1,0 +1,50 @@
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.venue-stats {
+  display: flex;
+  align-items: center;
+  margin-bottom: rem.torem(35px);
+  padding-top: rem.torem(24px);
+
+  .separator {
+    background-color: colors.$grey-medium;
+  }
+
+  .h-card-col {
+    flex: 0 0 20%;
+    padding: 0 rem.torem(24px);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: rem.torem(110px);
+    justify-content: space-between;
+    text-align: center;
+    border-right: solid rem.torem(1px) colors.$grey-medium;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &.v-add-offer-link {
+      justify-content: center;
+    }
+
+    .venue-stat-count {
+      @include fonts.title3;
+    }
+
+    a {
+      color: colors.$primary;
+
+      svg .ico-plus {
+        fill: colors.$primary;
+      }
+    }
+
+    .venue-stat-spinner {
+      animation: rotation 3s infinite linear;
+    }
+  }
+}
