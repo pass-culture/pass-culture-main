@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 
+from dateutil.relativedelta import relativedelta
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -21,6 +22,8 @@ class Returns200Test:
         past = datetime.utcnow() - timedelta(days=2)
         booking = bookings_factories.IndividualBookingFactory(
             individualBooking__user__email="beneficiary@example.com",
+            individualBooking__user__phoneNumber="0101010101",
+            individualBooking__user__dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2),
             stock__beginningDatetime=past,
             stock__offer=offers_factories.EventOfferFactory(
                 extraData={
@@ -46,7 +49,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "bookingId": humanize(booking.id),
-            "dateOfBirth": "",
+            "dateOfBirth": format_into_utc_date(booking.individualBooking.user.birth_date),
             "datetime": format_into_utc_date(booking.stock.beginningDatetime),
             "ean13": None,
             "email": "beneficiary@example.com",
@@ -55,7 +58,7 @@ class Returns200Test:
             "offerId": booking.stock.offerId,
             "offerName": "An offer you cannot refuse",
             "offerType": "EVENEMENT",
-            "phoneNumber": "",
+            "phoneNumber": "+33101010101",
             "price": 10.0,
             "publicOfferId": humanize(booking.stock.offerId),
             "quantity": 1,

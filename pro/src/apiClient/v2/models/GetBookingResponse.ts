@@ -7,7 +7,7 @@ import type { BookingOfferType } from './BookingOfferType';
 
 export type GetBookingResponse = {
   bookingId: string;
-  dateOfBirth: string;
+  dateOfBirth?: string | null;
   datetime: string;
   ean13?: string | null;
   email: string;
@@ -19,7 +19,7 @@ export type GetBookingResponse = {
   offerId: number;
   offerName: string;
   offerType: BookingOfferType;
-  phoneNumber: string;
+  phoneNumber?: string | null;
   price: number;
   publicOfferId: string;
   quantity: number;

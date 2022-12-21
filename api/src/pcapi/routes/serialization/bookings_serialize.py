@@ -34,7 +34,7 @@ class LegacyBookingResponse(BaseModel):
 
 class GetBookingResponse(BaseModel):
     bookingId: str
-    dateOfBirth: str  # avoid breaking legacy value "" returned for void date
+    dateOfBirth: str | None
     datetime: str  # avoid breaking legacy value "" returned for void date
     ean13: str | None
     email: str
@@ -46,7 +46,7 @@ class GetBookingResponse(BaseModel):
     publicOfferId: str
     offerName: str
     offerType: BookingOfferType
-    phoneNumber: str
+    phoneNumber: str | None
     price: Decimal
     quantity: int
     theater: dict = pydantic.Field(
@@ -76,9 +76,14 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
 
     extra_data = booking.stock.offer.extraData or {}
 
+    birth_date = (
+        format_into_utc_date(booking.individualBooking.user.birth_date)  # type: ignore [union-attr]
+        if booking.individualBooking.user.birth_date  # type: ignore [union-attr]
+        else None
+    )
     return GetBookingResponse(
         bookingId=humanize(booking.id),
-        dateOfBirth="",
+        dateOfBirth=birth_date,
         datetime=(format_into_utc_date(booking.stock.beginningDatetime) if booking.stock.beginningDatetime else ""),
         ean13=(
             extra_data.get("isbn", "") if booking.stock.offer.subcategoryId in subcategories.BOOK_WITH_ISBN else None
@@ -90,7 +95,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         publicOfferId=humanize(booking.stock.offer.id),
         offerName=booking.stock.offer.product.name,
         offerType=BookingOfferType.EVENEMENT if booking.stock.offer.isEvent else BookingOfferType.EVENEMENT,
-        phoneNumber="",
+        phoneNumber=booking.individualBooking.user.phoneNumber,  # type: ignore [union-attr]
         price=booking.amount,
         quantity=booking.quantity,
         theater=extra_data.get("theater", ""),
