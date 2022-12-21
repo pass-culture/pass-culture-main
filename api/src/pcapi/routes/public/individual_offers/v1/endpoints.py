@@ -161,15 +161,13 @@ def post_product_offer(
             )
 
             if body.stock:
-                created_stock = offers_api.create_stock(
+                offers_api.create_stock(
                     offer=created_offer,
                     price=finance_utils.to_euros(body.stock.price),
                     quantity=body.stock.quantity if body.stock.quantity != "unlimited" else None,
                     booking_limit_datetime=body.stock.booking_limit_datetime,
                     creating_provider=individual_offers_provider,
                 )
-            else:
-                created_stock = None
             if body.image:
                 _save_image(body.image, created_offer)
 
@@ -178,7 +176,7 @@ def post_product_offer(
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
-    return serialization.ProductOfferResponse.build_product_offer(created_offer, created_stock)
+    return serialization.ProductOfferResponse.build_product_offer(created_offer)
 
 
 def _deserialize_ticket_collection(
@@ -303,8 +301,7 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     if not offer:
         raise api_errors.ApiErrors({"product_id": ["The product offer could not be found"]}, status_code=404)
 
-    active_stock = next((stock for stock in offer.activeStocks), None)
-    return serialization.ProductOfferResponse.build_product_offer(offer, active_stock)
+    return serialization.ProductOfferResponse.build_product_offer(offer)
 
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>", methods=["GET"])

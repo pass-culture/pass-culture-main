@@ -426,13 +426,12 @@ class ProductOfferResponse(OfferResponse):
     stock: BaseStockResponse | None
 
     @classmethod
-    def build_product_offer(
-        cls, offer: offers_models.Offer, stock: offers_models.Stock | None
-    ) -> "ProductOfferResponse":
+    def build_product_offer(cls, offer: offers_models.Offer) -> "ProductOfferResponse":
         base_offer_response = OfferResponse.build_offer(offer)
+        active_stock = next((stock for stock in offer.activeStocks), None)
         return cls(
             category_related_fields=compute_category_related_fields(offer),
-            stock=BaseStockResponse.build_stock(stock) if stock else None,
+            stock=BaseStockResponse.build_stock(active_stock) if active_stock else None,
             **base_offer_response.dict(),
         )
 
