@@ -10,6 +10,7 @@ import pytest
 from pcapi import settings
 from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -182,7 +183,7 @@ class PostProductTest:
                 "credit": "Jean-Crédit Photo",
                 "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(created_mediation.id)}",
             },
-            "itemCollectionDetails": None,
+            "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
             "location": {"type": "physical", "venueId": venue.id},
             "name": "Le champ des possibles",
             "status": "EXPIRED",
@@ -717,6 +718,7 @@ class PostEventTest:
                     },
                 ],
                 "description": "Space is only noise if you can see",
+                "eventDuration": 120,
                 "accessibility": {
                     "audioDisabilityCompliant": False,
                     "mentalDisabilityCompliant": True,
@@ -780,6 +782,54 @@ class PostEventTest:
             created_offer.image.url
             == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(created_mediation.id)}"
         )
+
+        assert response.json == {
+            "accessibility": {
+                "audioDisabilityCompliant": False,
+                "mentalDisabilityCompliant": True,
+                "motorDisabilityCompliant": True,
+                "visualDisabilityCompliant": True,
+            },
+            "bookingEmail": "nicoj@example.com",
+            "categoryRelatedFields": {
+                "author": "Ray Charles",
+                "category": "CONCERT",
+                "musicType": "ELECTRO-HOUSE",
+                "performer": "Nicolas Jaar",
+            },
+            "dates": [
+                {
+                    "beginningDatetime": "2022-02-01T10:00:00Z",
+                    "bookedQuantity": 0,
+                    "bookingLimitDatetime": "2022-01-15T13:00:00Z",
+                    "id": first_stock.id,
+                    "price": 8899,
+                    "quantity": 10,
+                },
+                {
+                    "beginningDatetime": "2022-03-01T10:00:00Z",
+                    "bookedQuantity": 0,
+                    "bookingLimitDatetime": "2022-01-15T13:00:00Z",
+                    "id": second_stock.id,
+                    "price": 0,
+                    "quantity": "unlimited",
+                },
+            ],
+            "description": "Space is only noise if you can see",
+            "enableDoubleBookings": True,
+            "eventDuration": 120,
+            "externalTicketOfficeUrl": "https://maposaic.com",
+            "id": created_offer.id,
+            "image": {
+                "credit": "Jean-Crédit Photo",
+                "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(created_mediation.id)}",
+            },
+            "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
+            "location": {"type": "physical", "venueId": venue.id},
+            "name": "Nicolas Jaar dans ton salon",
+            "status": "ACTIVE",
+            "ticketCollection": {"daysBeforeEvent": 1, "way": "by_email"},
+        }
 
     @pytest.mark.usefixtures("db_session")
     def test_event_without_ticket(self, client):
@@ -1054,3 +1104,168 @@ class GetProductTest:
             "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(mediation.id)}",
         }
         assert response.json["status"] == "EXPIRED"
+
+    @pytest.mark.usefixtures("db_session")
+    def test_404_when_requesting_an_event(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(venue__managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products/{event_offer.id}"
+        )
+
+        assert response.status_code == 404
+        assert response.json == {"product_id": ["The product offer could not be found"]}
+
+
+class GetEventTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_404_when_requesting_a_product(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/events/{event_offer.id}"
+        )
+
+        assert response.status_code == 404
+        assert response.json == {"event_id": ["The event offer could not be found"]}
+
+    @pytest.mark.usefixtures("db_session")
+    def test_event_without_stock(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            venue__managingOfferer=api_key.offerer,
+            description="Un livre de contrepèterie",
+            name="Vieux motard que jamais",
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/events/{event_offer.id}"
+        )
+
+        assert response.status_code == 200
+        assert response.json == {
+            "accessibility": {
+                "audioDisabilityCompliant": False,
+                "mentalDisabilityCompliant": False,
+                "motorDisabilityCompliant": False,
+                "visualDisabilityCompliant": False,
+            },
+            "bookingEmail": None,
+            "categoryRelatedFields": {"author": None, "category": "SEANCE_CINE", "stageDirector": None, "visa": None},
+            "dates": [],
+            "description": "Un livre de contrepèterie",
+            "enableDoubleBookings": False,
+            "externalTicketOfficeUrl": None,
+            "eventDuration": None,
+            "id": event_offer.id,
+            "image": None,
+            "itemCollectionDetails": None,
+            "location": {"type": "physical", "venueId": event_offer.venueId},
+            "name": "Vieux motard que jamais",
+            "status": "SOLD_OUT",
+            "ticketCollection": None,
+        }
+
+    @freezegun.freeze_time("2023-01-01 12:00:00")
+    @pytest.mark.usefixtures("db_session")
+    def test_event_with_dates(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(venue__managingOfferer=api_key.offerer)
+        offers_factories.StockFactory(offer=event_offer, isSoftDeleted=True)
+        bookable_stock = offers_factories.EventStockFactory(
+            offer=event_offer,
+            price=12.34,
+            quantity=10,
+            bookingLimitDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
+            beginningDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
+        )
+        stock_without_booking = offers_factories.EventStockFactory(
+            offer=event_offer,
+            price=12.34,
+            quantity=2,
+            bookingLimitDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
+            beginningDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
+        )
+        offers_factories.EventStockFactory(offer=event_offer, isSoftDeleted=True)  # deleted stock, not returned
+        bookings_factories.BookingFactory(stock=bookable_stock)
+
+        mediation = offers_factories.MediationFactory(offer=event_offer, credit="Ph. Oto")
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/events/{event_offer.id}"
+        )
+
+        assert response.status_code == 200
+        assert response.json["dates"] == [
+            {
+                "beginningDatetime": "2023-01-15T13:00:00Z",
+                "bookedQuantity": 1,
+                "bookingLimitDatetime": "2023-01-15T13:00:00Z",
+                "id": bookable_stock.id,
+                "price": 1234,
+                "quantity": 10,
+            },
+            {
+                "beginningDatetime": "2023-01-15T13:00:00Z",
+                "bookedQuantity": 0,
+                "bookingLimitDatetime": "2023-01-15T13:00:00Z",
+                "id": stock_without_booking.id,
+                "price": 1234,
+                "quantity": 2,
+            },
+        ]
+        assert response.json["image"] == {
+            "credit": "Ph. Oto",
+            "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(mediation.id)}",
+        }
+        assert response.json["status"] == "ACTIVE"
+
+    @pytest.mark.usefixtures("db_session")
+    def test_ticket_collection_by_email(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
+            withdrawalDelay=259201,  # 3 days + 1 second
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/events/{event_offer.id}"
+        )
+
+        assert response.status_code == 200
+        assert response.json["ticketCollection"] == {"daysBeforeEvent": 3, "way": "by_email"}
+
+    @pytest.mark.usefixtures("db_session")
+    def test_ticket_collection_on_site(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            withdrawalType=offers_models.WithdrawalTypeEnum.ON_SITE,
+            withdrawalDelay=1801,  # 30 minutes + 1 second
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/events/{event_offer.id}"
+        )
+
+        assert response.status_code == 200
+        assert response.json["ticketCollection"] == {"minutesBeforeEvent": 30, "way": "on_site"}
+
+    @pytest.mark.usefixtures("db_session")
+    def test_ticket_collection_no_ticket(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            withdrawalType=offers_models.WithdrawalTypeEnum.NO_TICKET,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/events/{event_offer.id}"
+        )
+
+        assert response.status_code == 200
+        assert response.json["ticketCollection"] is None
