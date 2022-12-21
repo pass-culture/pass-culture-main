@@ -9,6 +9,7 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
 
 
@@ -152,7 +153,14 @@ class Returns403Test:
 
         # Then
         assert response.status_code == 403
-        assert "Veuillez attendre" in response.json["booking"][0]
+        cancellation_limit_date = datetime.strftime(
+            utc_datetime_to_department_timezone(booking.cancellationLimitDate, booking.venue.departementCode),
+            "%d/%m/%Y à %H:%M",
+        )
+        assert (
+            response.json["booking"][0]
+            == f"Vous pourrez valider cette contremarque à partir du {cancellation_limit_date}, une fois le délai d’annulation passé."
+        )
 
     def test_when_booking_is_refunded(self, client):
         # Given
