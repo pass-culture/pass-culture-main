@@ -15,9 +15,9 @@ app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_NAME"] = "bo_session"
 app.config["REMEMBER_COOKIE_HTTPONLY"] = True
 app.config["REMEMBER_COOKIE_SECURE"] = not settings.IS_DEV
-app.config["REMEMBER_COOKIE_DURATION"] = 30 * 60
+app.config["REMEMBER_COOKIE_DURATION"] = 120 * 60
 app.config["REMEMBER_COOKIE_NAME"] = "bo_remember_me"
-app.config["PERMANENT_SESSION_LIFETIME"] = 30 * 60
+app.config["PERMANENT_SESSION_LIFETIME"] = 120 * 60
 
 
 csrf = CSRFProtect()
