@@ -33,7 +33,10 @@ BASE_CODE_DESCRIPTIONS = {
     "HTTP_401": (None, "Authentification nécessaire"),
     "HTTP_403": (None, "Vous n'avez pas les droits nécessaires pour voir cette contremarque"),
     "HTTP_404": (None, "La contremarque n'existe pas"),
-    "HTTP_410": (None, "La contremarque n'est plus valide car elle a déjà été validée ou a été annulée"),
+    "HTTP_410": (
+        None,
+        "Cette contremarque a été validée. En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.",
+    ),
 }
 
 # TODO (gvanneste, 2021-10-19) : retravailler cette fonction, notamment check_user_is_logged_in_or_email_is_provided

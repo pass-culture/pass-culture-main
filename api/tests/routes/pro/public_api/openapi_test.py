@@ -640,7 +640,7 @@ def test_public_api(client, app):
                         "403": {"description": "Vous n'avez pas les droits nécessaires pour voir cette contremarque"},
                         "404": {"description": "La contremarque n'existe pas"},
                         "410": {
-                            "description": "La contremarque n'est plus valide car elle a déjà été validée ou a été annulée"
+                            "description": "Cette contremarque a été validée. En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé."
                         },
                         "422": {
                             "content": {
@@ -673,7 +673,7 @@ def test_public_api(client, app):
                         "403": {"description": "Vous n'avez pas les droits nécessaires pour voir cette contremarque"},
                         "404": {"description": "La contremarque n'existe pas"},
                         "410": {
-                            "description": "La contremarque n'est plus valide car elle a déjà été validée ou a été annulée"
+                            "description": "Cette contremarque a été validée. En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé."
                         },
                         "422": {
                             "content": {
