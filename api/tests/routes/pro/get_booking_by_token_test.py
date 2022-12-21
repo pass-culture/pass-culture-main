@@ -12,6 +12,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import serialize
+from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
 
 
@@ -230,7 +231,7 @@ class Returns403Test:
         # Given
         cancellation_date = datetime.utcnow() + timedelta(days=7)
         unconfirmed_booking = IndividualBookingFactory(
-            stock=offers_factories.EventStockFactory(), cancellationLimitDate=cancellation_date
+            stock=offers_factories.EventStockFactory(), cancellation_limit_date=cancellation_date
         )
         url = (
             f"/bookings/token/{unconfirmed_booking.token}?email={unconfirmed_booking.individualBooking.user.email}"
@@ -242,7 +243,14 @@ class Returns403Test:
 
         # Then
         assert response.status_code == 403
-        assert "Cette réservation a été effectuée le " in response.json["booking"][0]
+        cancellation_limit_date = datetime.strftime(
+            utc_datetime_to_department_timezone(cancellation_date, unconfirmed_booking.venue.departementCode),
+            "%d/%m/%Y à %H:%M",
+        )
+        assert (
+            response.json["booking"][0]
+            == f"Vous pourrez valider cette contremarque à partir du {cancellation_limit_date}, une fois le délai d’annulation passé."
+        )
 
     @pytest.mark.usefixtures("db_session")
     def when_booking_is_refunded(self, client):
