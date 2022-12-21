@@ -48,7 +48,7 @@ const getBookingFailure = (
         // api return HTTP_STATUS.GONE when booking is already been validated
         isTokenValidated: true,
         message: errorMessage,
-        variant: MESSAGE_VARIANT.DEFAULT,
+        variant: MESSAGE_VARIANT.ERROR,
       },
     }
   }

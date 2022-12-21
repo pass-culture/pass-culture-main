@@ -157,7 +157,7 @@ describe('src | routes | Desk', () => {
     expect(response.error).toBeDefined()
     expect(response.error.isTokenValidated).toBe(true)
     expect(response.error.message).toBe(globalErrorMessage)
-    expect(response.error.variant).toBe(MESSAGE_VARIANT.DEFAULT)
+    expect(response.error.variant).toBe(MESSAGE_VARIANT.ERROR)
   })
 
   it('test getBooking failure, booking cancelled', async () => {
