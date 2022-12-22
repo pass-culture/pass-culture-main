@@ -13,9 +13,11 @@ from tests.conftest import clean_database
 class CreateCineOfficePivotTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_create_cine_office_information(self, _mocked_validate_csrf_token, app):
+    @patch("flask.flash")
+    def test_create_cine_office_information_api_ok(self, flash_mock, _mocked_validate_csrf_token, requests_mock, app):
         AdminFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory()
+        requests_mock.get("https://account_test.test_cds_url/vad/rating?api_token=token_test", json=[])
 
         data = {
             "venue_id": venue.id,
@@ -36,6 +38,42 @@ class CreateCineOfficePivotTest:
         ).one()
         assert cds_cinema_details.accountId == "account_test"
         assert cds_cinema_details.cinemaApiToken == "token_test"
+        assert requests_mock.call_count == 1
+        flash_mock.assert_called_once_with("Connexion à l'API OK.")
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask.flash")
+    def test_create_cine_office_information_api_ko(self, flash_mock, _mocked_validate_csrf_token, requests_mock, app):
+        AdminFactory(email="user@example.com")
+        venue = offerers_factories.VenueFactory()
+        requests_mock.get(
+            "https://account_test.test_cds_url/vad/rating?api_token=token_test",
+            status_code=401,
+            reason="CONNECTION_ERROR : AUTHENTIFICATION_FAILED",
+        )
+
+        data = {
+            "venue_id": venue.id,
+            "account_id": "account_test",
+            "cinema_id": "cinema_test",
+            "api_token": "token_test",
+        }
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post("/pc/back-office/cine-office/new", form=data)
+
+        assert response.status_code == 302
+        cinema_provider_pivot = providers_models.CinemaProviderPivot.query.filter(
+            providers_models.CinemaProviderPivot.venueId == venue.id
+        ).one()
+        assert cinema_provider_pivot.idAtProvider == "cinema_test"
+        cds_cinema_details = providers_models.CDSCinemaDetails.query.filter(
+            providers_models.CDSCinemaDetails.cinemaProviderPivotId == cinema_provider_pivot.id
+        ).one()
+        assert cds_cinema_details.accountId == "account_test"
+        assert cds_cinema_details.cinemaApiToken == "token_test"
+        assert requests_mock.call_count == 1
+        flash_mock.assert_called_once_with("Connexion à l'API KO.", "error")
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -66,7 +104,8 @@ class CreateCineOfficePivotTest:
 class EditCineOfficePivotTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_update_editable_attributes(self, _mocked_validate_csrf_token, app):
+    @patch("flask.flash")
+    def test_update_editable_attributes_api_ok(self, flash_mock, _mocked_validate_csrf_token, requests_mock, app):
         AdminFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory()
         cds_provider = get_provider_by_local_class("CDSStocks")
@@ -75,6 +114,43 @@ class EditCineOfficePivotTest:
         )
         cds_cinema_details = providers_factories.CDSCinemaDetailsFactory(
             cinemaProviderPivot=cinema_provider_pivot, accountId="cinema_test", cinemaApiToken="token_test"
+        )
+        requests_mock.get("https://new_account_id.test_cds_url/vad/rating?api_token=new_token_id", json=[])
+
+        data = {
+            "venue_id": venue.id,
+            "account_id": "new_account_id",
+            "cinema_id": "new_cinema_id",
+            "api_token": "new_token_id",
+        }
+
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post(f"/pc/back-office/cine-office/edit/?id={cds_cinema_details.id}", form=data)
+
+        assert response.status_code == 302
+        assert cinema_provider_pivot.idAtProvider == "new_cinema_id"
+        assert cds_cinema_details.accountId == "new_account_id"
+        assert cds_cinema_details.cinemaApiToken == "new_token_id"
+        assert requests_mock.call_count == 1
+        flash_mock.assert_called_once_with("Connexion à l'API OK.")
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("flask.flash")
+    def test_update_editable_attributes_api_ko(self, flash_mock, _mocked_validate_csrf_token, requests_mock, app):
+        AdminFactory(email="user@example.com")
+        venue = offerers_factories.VenueFactory()
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue, provider=cds_provider, idAtProvider="cinema_test"
+        )
+        cds_cinema_details = providers_factories.CDSCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, accountId="cinema_test", cinemaApiToken="token_test"
+        )
+        requests_mock.get(
+            "https://new_account_id.test_cds_url/vad/rating?api_token=new_token_id",
+            status_code=401,
+            reason="CONNECTION_ERROR : AUTHENTIFICATION_FAILED",
         )
 
         data = {
@@ -91,10 +167,13 @@ class EditCineOfficePivotTest:
         assert cinema_provider_pivot.idAtProvider == "new_cinema_id"
         assert cds_cinema_details.accountId == "new_account_id"
         assert cds_cinema_details.cinemaApiToken == "new_token_id"
+        assert requests_mock.call_count == 1
+        flash_mock.assert_called_once_with("Connexion à l'API KO.", "error")
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_update_token(self, _mocked_validate_csrf_token, app):
+    @patch("flask.flash")
+    def test_update_token(self, flash_mock, _mocked_validate_csrf_token, requests_mock, app):
         AdminFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory()
         cds_provider = get_provider_by_local_class("CDSStocks")
@@ -106,6 +185,7 @@ class EditCineOfficePivotTest:
         cds_cinema_details = providers_factories.CDSCinemaDetailsFactory(
             cinemaProviderPivot=cinema_provider_pivot, accountId=account_id, cinemaApiToken="token_test"
         )
+        requests_mock.get("https://cinema_test.test_cds_url/vad/rating?api_token=new_token_id", json=[])
 
         data = {
             "venue_id": venue.id,
@@ -121,6 +201,8 @@ class EditCineOfficePivotTest:
         assert cds_cinema_details.accountId == account_id
         assert cds_cinema_details.cinemaApiToken == "new_token_id"
         assert response.status_code == 302
+        assert requests_mock.call_count == 1
+        flash_mock.assert_called_once_with("Connexion à l'API OK.")
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
