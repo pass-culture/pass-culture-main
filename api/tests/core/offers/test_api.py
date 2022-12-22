@@ -902,15 +902,6 @@ class UpdateOfferTest:
         assert offer.bookingEmail == "new@example.com"
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
-    def test_update_extra_data_should_not_erase_mandatory_fields(self):
-        offer = factories.OfferFactory(
-            subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, extraData={"showType": 200}
-        )
-
-        offer = api.update_offer(offer, extraData={"author": "Asimov"})
-
-        assert offer.extraData == {"author": "Asimov", "showType": 200}
-
     def test_update_extra_data_should_raise_error_when_mandatory_field_not_provided(self):
         offer = factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
 
@@ -919,14 +910,13 @@ class UpdateOfferTest:
 
         assert error.value.errors == {"showType": ["Ce champ est obligatoire"]}
 
-    def test_should_be_able_to_update_offer_when_extra_data_is_none(self):
+    def test_error_when_missing_mandatory_extra_data(self):
         offer = factories.OfferFactory(
             subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, extraData={"showType": 200}
         )
-
-        offer = api.update_offer(offer, extraData=None)
-
-        assert offer.extraData == {"showType": 200}
+        with pytest.raises(api_errors.ApiErrors) as error:
+            offer = api.update_offer(offer, extraData=None)
+        assert error.value.errors == {"showType": ["Ce champ est obligatoire"]}
 
     def test_update_product_if_owning_offerer_is_the_venue_managing_offerer(self):
         offerer = offerers_factories.OffererFactory()

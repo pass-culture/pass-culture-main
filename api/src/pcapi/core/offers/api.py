@@ -128,7 +128,7 @@ def create_offer(
 ) -> Offer:
     validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id)
     validation.check_offer_subcategory_is_valid(subcategory_id)
-    validation.check_offer_extra_data(None, subcategory_id, extra_data)
+    validation.check_offer_extra_data(subcategory_id, extra_data)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
     validation.check_is_duo_compliance(is_duo, subcategory)
 
@@ -275,7 +275,7 @@ def update_offer(
 ) -> Offer:
     validation.check_validation_status(offer)
     if extraData != UNCHANGED:
-        extraData = validation.check_offer_extra_data(offer, offer.subcategoryId, extraData)
+        validation.check_offer_extra_data(offer.subcategoryId, extraData)
 
     modifications = {
         field: new_value
