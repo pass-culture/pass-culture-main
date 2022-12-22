@@ -194,12 +194,13 @@ def compute_category_related_fields(offer: offers_models.Offer) -> CategoryRelat
         offer.subcategoryId
     ]
     fields = offer.extraData or {}
-    if offer.extraData and "musicSubType" in offer.extraData:
+    if offer.extraData and "musicSubType" in offer.extraData and offer.extraData["musicSubType"] != "":
         fields["musicType"] = MusicTypeEnum(
             music_types.MUSIC_SUB_TYPES_BY_CODE[int(offer.extraData["musicSubType"])].slug
         )
-    if offer.extraData and "showSubType" in offer.extraData:
+    if offer.extraData and "showSubType" in offer.extraData and offer.extraData["showSubType"] != "":
         fields["showType"] = ShowTypeEnum(show_types.SHOW_SUB_TYPES_BY_CODE[int(offer.extraData["showSubType"])].slug)
+
     return category_fields_model(**fields, category=offer.subcategory.id)  # type: ignore [operator]
 
 
