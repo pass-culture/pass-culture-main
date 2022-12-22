@@ -128,38 +128,58 @@ def build_status_history(
     confirmation_date: datetime | None,
     is_confirmed: bool | None,
 ) -> list[BookingStatusHistoryResponseModel]:
-
+    serialized_booking_status_history = []
     if booking_status == models.CollectiveBookingStatus.PENDING:
         serialized_booking_status_history = [
-            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.pending, booking_date)
+            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.pending, booking_date),
         ]
-        return serialized_booking_status_history
 
-    if booking_status == models.CollectiveBookingStatus.CANCELLED and not (confirmation_date or booking_date):
+    elif booking_status == models.CollectiveBookingStatus.CONFIRMED:
         serialized_booking_status_history = [
-            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.cancelled, cancellation_date)
+            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.pending, booking_date),
+            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.booked, confirmation_date),
         ]
-        return serialized_booking_status_history
-
-    serialized_booking_status_history = [
-        _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.booked, booking_date)
-    ]
-    if is_confirmed and confirmation_date is not None:
+        if is_confirmed:
+            serialized_booking_status_history.append(
+                _serialize_collective_booking_status_info(
+                    CollectiveBookingRecapStatus.confirmed, cancellation_limit_date
+                )
+            )
+    elif booking_status == models.CollectiveBookingStatus.USED:
+        serialized_booking_status_history = [
+            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.pending, booking_date),
+            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.booked, confirmation_date),
+            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.confirmed, cancellation_limit_date),
+            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.validated, date_used),
+        ]
+    elif booking_status == models.CollectiveBookingStatus.REIMBURSED:
+        serialized_booking_status_history = [
+            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.pending, booking_date),
+            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.booked, confirmation_date),
+            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.confirmed, cancellation_limit_date),
+            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.validated, date_used),
+            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.reimbursed, payment_date),
+        ]
+    elif booking_status == models.CollectiveBookingStatus.CANCELLED:
+        serialized_booking_status_history = [
+            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.pending, booking_date),
+        ]
+        if confirmation_date:
+            serialized_booking_status_history.append(
+                _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.booked, confirmation_date),
+            )
+            if is_confirmed:
+                serialized_booking_status_history.append(
+                    _serialize_collective_booking_status_info(
+                        CollectiveBookingRecapStatus.confirmed, cancellation_limit_date
+                    ),
+                )
+                if date_used:
+                    serialized_booking_status_history.append(
+                        _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.validated, date_used),
+                    )
         serialized_booking_status_history.append(
-            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.confirmed, confirmation_date)
-        )
-    if date_used:
-        serialized_booking_status_history.append(
-            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.validated, date_used)
-        )
-
-    if cancellation_date:
-        serialized_booking_status_history.append(
-            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.cancelled, cancellation_date)
-        )
-    if payment_date:
-        serialized_booking_status_history.append(
-            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.reimbursed, payment_date)
+            _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.cancelled, cancellation_date),
         )
     return serialized_booking_status_history
 
@@ -239,7 +259,7 @@ def serialize_collective_booking(collective_booking: CollectiveBookingNamedTuple
             cancellation_date=collective_booking.cancelledAt,
             cancellation_limit_date=collective_booking.cancellationLimitDate,
             payment_date=collective_booking.reimbursedAt,
-            date_used=collective_booking.usedAt,
+            date_used=collective_booking.stockBeginningDatetime,
             confirmation_date=collective_booking.confirmationDate,
             is_confirmed=collective_booking.isConfirmed,
         ),
