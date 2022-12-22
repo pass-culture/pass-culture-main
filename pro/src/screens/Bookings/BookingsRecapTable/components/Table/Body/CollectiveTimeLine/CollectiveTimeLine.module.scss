@@ -1,0 +1,40 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.timeline {
+  &-step-title {
+    @include fonts.body;
+
+    font-weight: 700;
+  }
+
+  &-step-title-passed {
+    @include fonts.body;
+
+    font-weight: 700;
+    color: colors.$grey-dark;
+  }
+
+  &-step-title-disabled {
+    @include fonts.body-important;
+
+    line-height: rem.torem(20px);
+    color: colors.$grey-dark;
+  }
+
+  &-infobox {
+    border-radius: rem.torem(5px);
+    padding: rem.torem(16px) rem.torem(12px) rem.torem(16px) rem.torem(12px);
+    background-color: colors.$light-pink;
+    margin-top: rem.torem(16px);
+
+    &-text {
+      margin-bottom: rem.torem(16px);
+    }
+
+    &-accent {
+      font-weight: 500;
+    }
+  }
+}
