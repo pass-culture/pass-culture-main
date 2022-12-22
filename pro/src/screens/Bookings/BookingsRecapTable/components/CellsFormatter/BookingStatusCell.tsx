@@ -30,9 +30,10 @@ const BookingStatusCell = ({
   )
 
   if (isImproveCollectiveStatusActive && isCollectiveStatus) {
-    const bookingDisplayInfo = getCollectiveBookingStatusDisplayInformations(
-      bookingRecapInfo.original.booking_status
-    )
+    const lastBookingStatus =
+      bookingRecapInfo.original.booking_status_history.slice(-1)[0].status
+    const bookingDisplayInfo =
+      getCollectiveBookingStatusDisplayInformations(lastBookingStatus)
     const tooltipId = `tooltip-${bookingRecapInfo.id}`
 
     return (
