@@ -48,10 +48,6 @@ describe('setFormReadOnlyFields', () => {
         'subcategoryId',
         'offererId',
         'venueId',
-        'showType',
-        'showSubType',
-        'musicType',
-        'musicSubType',
       ])
     }
   )
