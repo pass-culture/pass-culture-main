@@ -1,6 +1,7 @@
+import logging
 import typing
 
-from flask import flash
+import flask
 from flask_admin.form import SecureForm
 from werkzeug.exceptions import Forbidden
 from wtforms import Form
@@ -8,11 +9,18 @@ from wtforms import IntegerField
 from wtforms import StringField
 from wtforms.validators import DataRequired
 
+from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.connectors import cine_digital_service
+import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.models import db
+from pcapi.utils import requests
+
+
+logger = logging.getLogger(__name__)
 
 
 class CineOfficePivotForm(SecureForm):
@@ -71,10 +79,27 @@ class CineOfficePivotView(BaseAdminView):
             id_at_provider=form.cinema_id.data, provider_id=cds_provider.id
         )
         if pivot and pivot.venueId != form.venue_id.data:
-            flash("Cet identifiant cinéma existe déjà pour un autre lieu")
+            flask.flash("Cet identifiant cinéma existe déjà pour un autre lieu")
             return False
 
         return super().validate_form(form)
+
+    def check_if_api_call_is_ok(self, account_id: str, api_token: str) -> None:
+        try:
+            cine_digital_service.get_resource(
+                api_url=settings.CDS_API_URL,
+                account_id=account_id,
+                cinema_api_token=api_token,
+                resource=cine_digital_service.ResourceCDS.RATING,
+            )
+            flask.flash("Connexion à l'API OK.")
+            return
+        except (requests.exceptions.RequestException, cds_exceptions.CineDigitalServiceAPIException) as exc:
+            logger.exception(
+                "Network error on checking CDS API information", extra={"exc": exc, "account_id": account_id}
+            )
+
+        flask.flash("Connexion à l'API KO.", "error")
 
     def update_model(
         self, form: CineOfficePivotForm, cds_cinema_details: providers_models.CDSCinemaDetails
@@ -93,6 +118,8 @@ class CineOfficePivotView(BaseAdminView):
         db.session.add(cds_cinema_details)
         db.session.commit()
 
+        self.check_if_api_call_is_ok(account_id=account_id, api_token=api_token)
+
         return cds_cinema_details
 
     def create_model(self, form: CineOfficePivotForm) -> providers_models.CDSCinemaDetails | None:
@@ -100,7 +127,7 @@ class CineOfficePivotView(BaseAdminView):
             raise Forbidden()
         cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
         if not cds_provider:
-            flash("Provider Ciné Office n'existe pas.", "error")
+            flask.flash("Provider Ciné Office n'existe pas.", "error")
             return None
         venue_id = form.venue_id.data
         account_id = form.account_id.data
@@ -123,6 +150,8 @@ class CineOfficePivotView(BaseAdminView):
         db.session.add(cds_cinema_details)
         db.session.commit()
 
+        self.check_if_api_call_is_ok(account_id=account_id, api_token=api_token)
+
         return cds_cinema_details
 
     def delete_model(self, cds_cinema_details: providers_models.CDSCinemaDetails) -> bool:
@@ -132,7 +161,7 @@ class CineOfficePivotView(BaseAdminView):
             venueId=cinema_provider_pivot.venueId, providerId=cinema_provider_pivot.providerId
         ).one_or_none()
         if venue_provider:
-            flash("Ce lieu est toujours synchronisé avec CDS, Vous ne pouvez pas supprimer ce pivot CDS", "error")
+            flask.flash("Ce lieu est toujours synchronisé avec CDS, Vous ne pouvez pas supprimer ce pivot CDS", "error")
             return False
         db.session.delete(cds_cinema_details)
         db.session.delete(cinema_provider_pivot)
