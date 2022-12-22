@@ -962,6 +962,55 @@ class CineDigitalServiceGetVoucherForShowTest:
         assert voucher_type.tariff.id == 2
         assert voucher_type.tariff.price == 5
 
+    @patch("pcapi.core.external_bookings.cds.client.get_resource")
+    def test_should_call_voucher_types_route_only_one_time(self, mocked_get_resource):
+        show_1 = cds_serializers.ShowCDS(
+            id=1,
+            is_cancelled=False,
+            is_deleted=False,
+            is_disabled_seatmap=False,
+            is_empty_seatmap=False,
+            remaining_place=88,
+            internet_remaining_place=20,
+            showtime=datetime.datetime.utcnow(),
+            shows_tariff_pos_type_collection=[
+                cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=3)),
+            ],
+            screen=cds_serializers.IdObjectCDS(id=1),
+            media=cds_serializers.IdObjectCDS(id=52),
+        )
+        show_2 = cds_serializers.ShowCDS(
+            id=2,
+            is_cancelled=False,
+            is_deleted=False,
+            is_disabled_seatmap=False,
+            is_empty_seatmap=False,
+            remaining_place=88,
+            internet_remaining_place=20,
+            showtime=datetime.datetime.utcnow(),
+            shows_tariff_pos_type_collection=[
+                cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=2)),
+            ],
+            screen=cds_serializers.IdObjectCDS(id=1),
+            media=cds_serializers.IdObjectCDS(id=52),
+        )
+        json_voucher_types = [
+            {"id": 1, "code": "PSCULTURE", "tariffid": {"id": 2, "price": 5, "active": True, "labeltariff": ""}},
+            {"id": 2, "code": "PSCULTURE", "tariffid": {"id": 3, "price": 6, "active": True, "labeltariff": ""}},
+        ]
+
+        mocked_get_resource.return_value = json_voucher_types
+
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+        )
+
+        show_1_voucher_type = cine_digital_service.get_voucher_type_for_show(show_1)
+        show_2_voucher_type = cine_digital_service.get_voucher_type_for_show(show_2)
+        assert show_1_voucher_type.id == 2
+        assert show_2_voucher_type.id == 1
+        assert mocked_get_resource.call_count == 1
+
 
 class CineDigitalServiceBookTicketTest:
     @patch("pcapi.core.external_bookings.cds.client.post_resource")
