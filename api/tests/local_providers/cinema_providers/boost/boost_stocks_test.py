@@ -117,6 +117,7 @@ class BoostStocksTest:
         assert created_offers[0].durationMinutes == 162
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
+        assert created_offers[0].extraData == {"visa": "158026"}
 
         assert created_products[0].name == "BLACK PANTHER : WAKANDA FOREVER"
         assert not created_products[0].description  # FIXME
@@ -137,6 +138,7 @@ class BoostStocksTest:
         assert created_offers[1].durationMinutes == 92
         assert created_offers[1].isDuo
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
+        assert created_offers[1].extraData == {"visa": "149489"}
 
         assert created_products[1].name == "CHARLOTTE"
         assert not created_products[1].description  # FIXME
