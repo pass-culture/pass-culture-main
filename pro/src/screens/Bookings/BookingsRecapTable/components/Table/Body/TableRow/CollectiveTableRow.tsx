@@ -72,7 +72,11 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
               bookingDetails && (
                 <td className={styles['details-content']}>
                   {isImproveCollectiveStatusActive ? (
-                    <CollectiveBookingDetails bookingDetails={bookingDetails} />
+                    <CollectiveBookingDetails
+                      bookingDetails={bookingDetails}
+                      bookingRecap={row.original}
+                      reloadBookings={reloadBookings}
+                    />
                   ) : (
                     <OldCollectiveBookingDetails
                       bookingDetails={bookingDetails}

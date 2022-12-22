@@ -1,0 +1,6 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.action-buttons {
+  display: flex;
+  gap: rem.torem(16px);
+}
