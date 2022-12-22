@@ -207,11 +207,10 @@ const VenueFormScreen = ({
                 visually hidden span with a space between each character.
                 The other span will be hidden from the screen reader. */}
                 <span className={style['identifier-hidden']}>
-                  N° d'identifiant du lieu :{' '}
-                  {venue.dmsToken.split('').join(' ')}
+                  Identifiant du lieu : {venue.dmsToken.split('').join(' ')}
                 </span>
                 <span aria-hidden={true}>
-                  N° d'identifiant du lieu : {venue.dmsToken}
+                  Identifiant du lieu : {venue.dmsToken}
                 </span>
               </>
             )
