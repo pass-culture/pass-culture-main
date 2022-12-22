@@ -60,6 +60,8 @@ def validate_email(email: str) -> str:
 
 
 def validate_emails(emails: list[str]) -> list[str]:
+    if not emails:
+        raise ValueError("Un email doit etre renseigné.")
     for email in emails:
         if not email_utils.is_valid_email(email):
             raise ValueError(f"{email} n'est pas une adresse mail valide")
