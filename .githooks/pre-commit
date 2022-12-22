@@ -180,7 +180,8 @@ then
   if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",pylint," ]]
   then
       echo -e "\033[0;96mRunning pylint for code linting...\033[0m"
-      pylint $LINTED_FILES --output-format="colorized" --score=no --jobs=0
+      # parallel execution breaks plugins, use one single job !
+      pylint $LINTED_FILES --output-format="colorized" --score=no --jobs=1
       if [[ "$?" != 0 ]]; then
           counter=$((counter + 1))
       fi
