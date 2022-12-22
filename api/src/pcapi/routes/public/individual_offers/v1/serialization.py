@@ -168,7 +168,7 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
 
 
-def get_category_fields_model(subcategory: subcategories.Subcategory) -> pydantic.BaseModel:
+def get_category_fields_model(subcategory: subcategories.Subcategory) -> typing.Type[CategoryRelatedFields]:
     """
     Create dynamic pydantic models to indicate which fields are available for the chosen subcategory,
     without duplicating categories declaration
@@ -201,7 +201,7 @@ def compute_category_related_fields(offer: offers_models.Offer) -> CategoryRelat
     if offer.extraData and "showSubType" in offer.extraData and offer.extraData["showSubType"] != "":
         fields["showType"] = ShowTypeEnum(show_types.SHOW_SUB_TYPES_BY_CODE[int(offer.extraData["showSubType"])].slug)
 
-    return category_fields_model(**fields, category=offer.subcategory.id)  # type: ignore [operator]
+    return category_fields_model(**fields, category=offer.subcategory.id)
 
 
 def compute_extra_data(category_related_fields: CategoryRelatedFields) -> dict[str, str]:
