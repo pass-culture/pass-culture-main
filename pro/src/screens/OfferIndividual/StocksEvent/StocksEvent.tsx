@@ -162,14 +162,15 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     stockIndex: number
   ) => {
     const { isDeletable, stockId } = stockValues
-    /* istanbul ignore next: DEBT to fix */
+    // tested but coverage don't see it.
+    /* istanbul ignore next */
     if (stockId === undefined || !isDeletable) {
       return
     }
     try {
       await api.deleteStock(stockId)
       const response = await getOfferIndividualAdapter(offer.id)
-      /* istanbul ignore next: DEBT to fix */
+      /* istanbul ignore next: DEBT, TO FIX */
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }
@@ -185,8 +186,9 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       })
 
       // Set back possible user change.
+      /* istanbul ignore next: DEBT, TO FIX */
       formStocks.splice(stockIndex, 1)
-      /* istanbul ignore next: DEBT to fix */
+      /* istanbul ignore next: DEBT, TO FIX */
       formStocks.length
         ? formik.setValues({ stocks: formStocks })
         : formik.resetForm({
@@ -241,9 +243,9 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         setIsClickingFromActionBar(false)
       }
 
-      // When saving draft with an empty form
+      // When saving draft with an empty form or in edition mode
       // we display a success notification even if nothing is done
-      if (saveDraft && isFormEmpty()) {
+      if (isFormEmpty() && (saveDraft || mode === OFFER_WIZARD_MODE.EDITION)) {
         setIsClickingFromActionBar(false)
         notify.success('Brouillon sauvegardé dans la liste des offres')
         return
@@ -260,10 +262,47 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
           mode,
         })
       )
+      if (mode !== OFFER_WIZARD_MODE.CREATION) {
+        const changesOnStockWithBookings = formik.values.stocks.some(
+          (stock, index) => {
+            if (
+              !stock.bookingsQuantity ||
+              parseInt(stock.bookingsQuantity, 10) === 0 ||
+              formik.touched.stocks === undefined ||
+              formik.touched.stocks[index] === undefined
+            ) {
+              return false
+            }
+            const stockTouched = formik.touched.stocks[index]
+            /* istanbul ignore next: DEBT, TO FIX */
+            if (stockTouched === undefined) {
+              return false
+            }
+            const fieldsWithWarning: (keyof IStockEventFormValues)[] = [
+              'price',
+              'beginningDate',
+              'beginningTime',
+            ] as (keyof IStockEventFormValues)[]
+
+            return fieldsWithWarning.some(
+              (fieldName: keyof IStockEventFormValues) =>
+                stockTouched[fieldName] === true
+            )
+          }
+        )
+        if (!visible && changesOnStockWithBookings) {
+          showModal()
+          return
+        } else {
+          hideModal()
+        }
+      }
 
       const hasSavedStock = formik.values.stocks.some(
         stock => stock.stockId !== undefined
       )
+
+      /* istanbul ignore next: DEBT, TO FIX */
       if (hasSavedStock && !formik.dirty) {
         setIsClickingFromActionBar(false)
         /* istanbul ignore next: DEBT to fix */

@@ -405,4 +405,41 @@ describe('screens:StocksThing', () => {
     ).not.toBeInTheDocument()
     expect(screen.getByText(/Next page/)).toBeInTheDocument()
   })
+  it('should not display any message when user delete empty stock', async () => {
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
+    renderStockThingScreen({
+      storeOverride: { ...storeOverride },
+    })
+    apiOffer.stocks = []
+    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
+    expect(
+      screen.queryByText('Voulez-vous supprimer ce stock ?')
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByText('Le stock a été supprimé.')
+    ).not.toBeInTheDocument()
+    expect(api.deleteStock).not.toHaveBeenCalled()
+    expect(api.deleteStock).toHaveBeenCalledTimes(0)
+  })
+  it('should display draft success message on save button when stock form is empty and not redirect to next page', async () => {
+    renderStockThingScreen({
+      storeOverride: { ...storeOverride },
+    })
+    apiOffer.stocks = []
+    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    await screen.findByRole('heading', { name: /Stock & Prix/ })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+    )
+    expect(
+      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('heading', { name: /Stock & Prix/ })
+    ).toBeInTheDocument()
+  })
 })
