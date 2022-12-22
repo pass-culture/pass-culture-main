@@ -37,8 +37,8 @@ const ReimbursmentPointDialog = ({
         </h3>
         <h4 className={styles['subtitle']}>Étape 1 : </h4>
         <p className={styles['description']}>
-          Copiez le numéro d’identifiant de votre lieu qui vous permettra
-          d’identifier votre lieu sur Démarches Simplifiées.
+          Copiez l’identifiant ci-dessous qui vous permettra d’identifier votre
+          lieu sur Démarches Simplifiées.
         </p>
         <CopyLink textToCopy={dmsToken} />
       </div>
