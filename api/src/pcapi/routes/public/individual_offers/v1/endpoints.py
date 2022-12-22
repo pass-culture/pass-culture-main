@@ -85,6 +85,20 @@ def _retrieve_offer_relations_query(query: sqla_orm.Query) -> sqla_orm.Query:
     )
 
 
+def _retrieve_offer_ids(is_event: bool, filtered_venue_id: int | None) -> list[int]:
+    offer_ids_query = (
+        offers_models.Offer.query.join(offerers_models.Venue)
+        .filter(offerers_models.Venue.managingOffererId == current_api_key.offererId)  # type: ignore [attr-defined]
+        .filter(offers_models.Offer.isEvent == is_event)
+        .with_entities(offers_models.Offer.id)
+        .order_by(offers_models.Offer.id)
+    )
+    if filtered_venue_id is not None:
+        offer_ids_query = offer_ids_query.filter(offers_models.Offer.venueId == filtered_venue_id)
+
+    return [offer_id for offer_id, in offer_ids_query.all()]
+
+
 def _save_image(image_body: serialization.ImageBody, offer: offers_models.Offer) -> None:
     try:
         image_as_bytes = public_utils.get_bytes_from_base64_string(image_body.file)
@@ -313,17 +327,10 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
 @api_key_required
 def get_products(query: serialization.GetOffersQueryParams) -> serialization.ProductOffersResponse:
     """
-    Get products.
+    Get products. Results are paginated.
     """
-    total_offer_ids = [
-        offer_id
-        for offer_id, in offers_models.Offer.query.join(offerers_models.Venue)
-        .filter(offerers_models.Venue.managingOffererId == current_api_key.offererId)  # type: ignore [attr-defined]
-        .filter(offers_models.Offer.isEvent == False)
-        .with_entities(offers_models.Offer.id)
-        .order_by(offers_models.Offer.id)
-        .all()
-    ]
+
+    total_offer_ids = _retrieve_offer_ids(is_event=False, filtered_venue_id=query.venue_id)
     offset = query.limit * (query.page - 1)
 
     if offset > len(total_offer_ids):
@@ -351,7 +358,11 @@ def get_products(query: serialization.GetOffersQueryParams) -> serialization.Pro
             last_page=len(total_offer_ids) // query.limit + 1,
             limit_per_page=query.limit,
             pages_links=serialization.PaginationLinks.build_pagination_links(
-                flask.url_for(".get_products", _external=True), query.page, query.limit, len(total_offer_ids)
+                flask.url_for(".get_products", _external=True),
+                query.page,
+                query.limit,
+                len(total_offer_ids),
+                venue_id=query.venue_id,
             ),
         ),
     )

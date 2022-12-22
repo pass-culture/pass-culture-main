@@ -476,9 +476,13 @@ class EventOfferResponse(OfferResponse):
         )
 
 
-class GetOffersQueryParams(serialization.ConfiguredBaseModel):
+class PaginationQueryParams(serialization.ConfiguredBaseModel):
     limit: int = pydantic.Field(50, le=50, ge=0, description="The maximum number of items per page.")
     page: int = pydantic.Field(1, ge=1, description="The page number of the items to return.")
+
+
+class GetOffersQueryParams(PaginationQueryParams):
+    venue_id: int | None = pydantic.Field(None, description="The venue id to filter offers on. Optional.")
 
 
 class PaginationLinks(serialization.ConfiguredBaseModel):
@@ -511,13 +515,15 @@ class PaginationLinks(serialization.ConfiguredBaseModel):
         current: int,
         limit: int,
         items_total: int,
+        venue_id: int | None = None,
     ) -> "PaginationLinks":
+        url_start = f"{base_url}?venueId={venue_id}&" if venue_id is not None else f"{base_url}?"
         return cls(
-            first=f"{base_url}?page=1&limit={limit}",
-            current=f"{base_url}?page={current}&limit={limit}",
-            last=f"{base_url}?page={items_total // limit+1}&limit={limit}",
-            next=f"{base_url}?page={current + 1}&limit={limit}" if current * limit < items_total else None,
-            previous=f"{base_url}?page={current - 1}&limit={limit}" if current > 1 else None,
+            first=f"{url_start}page=1&limit={limit}",
+            current=f"{url_start}page={current}&limit={limit}",
+            last=f"{url_start}page={items_total // limit+1}&limit={limit}",
+            next=f"{url_start}page={current + 1}&limit={limit}" if current * limit < items_total else None,
+            previous=f"{url_start}page={current - 1}&limit={limit}" if current > 1 else None,
         )
 
 
