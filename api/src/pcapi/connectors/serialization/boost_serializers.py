@@ -48,10 +48,6 @@ class Collection(BaseModel):
     totalCount: int
 
 
-class FilmCollection(Collection):
-    data: list[Film2]
-
-
 def _convert_to_utc_datetime(datetime_with_tz_offset: datetime.datetime) -> datetime.datetime:
     return datetime_with_tz_offset.astimezone(tz=datetime.timezone.utc)
 
