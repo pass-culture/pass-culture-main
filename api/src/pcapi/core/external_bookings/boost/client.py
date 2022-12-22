@@ -113,14 +113,6 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
         return items
 
-    def get_venue_movies(self, per_page: int = 30) -> list[external_bookings_models.Movie]:
-        films = self.get_collection_items(
-            resource=boost.ResourceBoost.FILMS,
-            collection_class=boost_serializers.FilmCollection,
-            per_page=per_page,
-        )
-        return [film.to_generic_movie() for film in films]
-
     def get_showtimes(
         self,
         per_page: int = 30,
