@@ -182,11 +182,19 @@ class CheckStockIsDeletableTest:
         provider = providers_factories.APIProviderFactory()
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offers_factories.StockFactory(offer=offer)
+        other_provider = providers_factories.APIProviderFactory()
 
         with pytest.raises(ApiErrors) as error:
-            validation.check_stock_is_deletable(stock)
+            validation.check_stock_is_deletable(stock, deleting_provider=other_provider)
 
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
+
+    def test_offer_from_non_allocine_provider_no_editing_provider(self):
+        provider = providers_factories.APIProviderFactory()
+        offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
+        stock = offers_factories.StockFactory(offer=offer)
+
+        validation.check_stock_is_deletable(stock)
 
     def test_recently_begun_event_stock(self):
         recently = datetime.datetime.utcnow() - datetime.timedelta(days=1)
@@ -232,15 +240,23 @@ class CheckStockIsUpdatableTest:
             "Les offres refusées ou en attente de validation ne sont pas modifiables"
         ]
 
-    def test_offer_from_non_allocine_provider(self):
+    def test_offer_from_non_allocine_provider_different_provider(self):
+        provider = providers_factories.APIProviderFactory()
+        offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
+        stock = offers_factories.StockFactory(offer=offer)
+        other_provider = providers_factories.APIProviderFactory()
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_stock_is_updatable(stock, editing_provider=other_provider)
+
+        assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
+
+    def test_offer_from_non_allocine_provider_no_editing_provider(self):
         provider = providers_factories.APIProviderFactory()
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offers_factories.StockFactory(offer=offer)
 
-        with pytest.raises(ApiErrors) as error:
-            validation.check_stock_is_updatable(stock)
-
-        assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
+        validation.check_stock_is_updatable(stock)
 
     def test_past_event_stock(self):
         recently = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)

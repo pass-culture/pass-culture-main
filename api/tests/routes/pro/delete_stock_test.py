@@ -54,8 +54,7 @@ class Returns400Test:
         response = client.delete(f"/stocks/{humanize(stock.id)}")
 
         # then
-        assert response.status_code == 400
-        assert response.json["global"] == ["Les offres importées ne sont pas modifiables"]
+        assert response.status_code == 200
 
     def test_delete_non_approved_offer_fails(self, app, db_session):
         pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)

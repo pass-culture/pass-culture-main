@@ -190,7 +190,8 @@ def check_stock_is_updatable(stock: Stock, editing_provider: providers_models.Pr
     if stock.offer.validation == OfferValidationStatus.DRAFT:
         return
     check_validation_status(stock.offer)
-    check_provider_can_edit_stock(stock.offer, editing_provider)
+    if editing_provider:
+        check_provider_can_edit_stock(stock.offer, editing_provider)
     check_event_expiration(stock)
 
 
@@ -203,7 +204,8 @@ def check_event_expiration(stock: CollectiveStock | Stock) -> None:
 
 def check_stock_is_deletable(stock: Stock, deleting_provider: providers_models.Provider | None = None) -> None:
     check_validation_status(stock.offer)
-    check_provider_can_edit_stock(stock.offer, deleting_provider)
+    if deleting_provider:
+        check_provider_can_edit_stock(stock.offer, deleting_provider)
     if not stock.isEventDeletable:
         raise exceptions.TooLateToDeleteStock()
 

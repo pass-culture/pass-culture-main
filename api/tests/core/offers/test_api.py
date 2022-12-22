@@ -639,13 +639,10 @@ class DeleteStockTest:
         offer = factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = factories.StockFactory(offer=offer)
 
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.delete_stock(stock)
-        msg = "Les offres importées ne sont pas modifiables"
-        assert error.value.errors["global"][0] == msg
+        api.delete_stock(stock)
 
         stock = models.Stock.query.one()
-        assert not stock.isSoftDeleted
+        assert stock.isSoftDeleted
 
     def test_can_delete_if_event_ended_recently(self):
         recently = datetime.utcnow() - timedelta(days=1)
