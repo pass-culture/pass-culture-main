@@ -52,7 +52,6 @@ class Returns200Test:
         booking = educational_factories.CollectiveBookingFactory(
             collectiveStock=collective_stock,
             dateCreated=booking_date,
-            status=CollectiveBookingStatus.CONFIRMED,
             confirmationDate=booking_date + timedelta(days=1),
             educationalInstitution=institution,
         )
@@ -93,12 +92,16 @@ class Returns200Test:
                 "booking_is_duo": False,
                 "booking_status_history": [
                     {
-                        "status": "booked",
+                        "status": "pending",
                         "date": "2022-03-11T11:15:00+01:00",
                     },
                     {
-                        "status": "confirmed",
+                        "status": "booked",
                         "date": "2022-03-12T11:15:00+01:00",
+                    },
+                    {
+                        "status": "confirmed",
+                        "date": "2022-04-30T12:15:00+02:00",
                     },
                 ],
             }
@@ -175,52 +178,6 @@ class Returns200Test:
         ]
 
     @freeze_time("2022-05-01 15:00:00")
-    def test_when_collective_booking_used_should_show_valide_and_previous_in_history_but_not_prereserve(self, client):
-        # Given
-        booking_date = datetime(2022, 3, 11, 10, 15, 0)
-        event_date = datetime(2022, 5, 15, 20, 00, 0)
-        pro_user = users_factories.ProFactory()
-        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
-        institution = educational_factories.EducationalInstitutionFactory()
-
-        collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name="Le chant des cigales",
-            collectiveOffer__venue__managingOfferer=user_offerer.offerer,
-            beginningDatetime=event_date,
-            price=1200,
-        )
-        educational_factories.UsedCollectiveBookingFactory(
-            educationalInstitution=institution,
-            collectiveStock=collective_stock,
-            dateCreated=booking_date,
-            confirmationDate=booking_date + timedelta(days=1, hours=2),
-            dateUsed=event_date + timedelta(days=1),
-        )
-
-        # When
-        client = client.with_session_auth(pro_user.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
-
-        # Then
-        assert response.status_code == 200
-        booking_recap = response.json["bookingsRecap"][0]
-        assert booking_recap["booking_status"] == "validated"
-        assert booking_recap["booking_status_history"] == [
-            {
-                "status": "booked",
-                "date": "2022-03-11T11:15:00+01:00",
-            },
-            {
-                "status": "confirmed",
-                "date": "2022-03-12T13:15:00+01:00",
-            },
-            {
-                "status": "validated",
-                "date": "2022-05-16T22:00:00+02:00",
-            },
-        ]
-
-    @freeze_time("2022-05-01 15:00:00")
     def test_when_collective_booking_cancelled_after_confirmed_should_show_annule_and_previous_in_history_but_not_prereserve(
         self, client
     ):
@@ -242,7 +199,7 @@ class Returns200Test:
             collectiveStock=collective_stock,
             dateCreated=booking_date,
             confirmationDate=booking_date + timedelta(days=1, hours=2),
-            cancellationDate=booking_date + timedelta(days=5, minutes=32),
+            cancellationDate=booking_date + timedelta(days=45, minutes=32),
         )
 
         # When
@@ -255,16 +212,24 @@ class Returns200Test:
         assert booking_recap["booking_status"] == "cancelled"
         assert booking_recap["booking_status_history"] == [
             {
-                "status": "booked",
+                "status": "pending",
                 "date": "2022-03-11T11:15:00+01:00",
             },
             {
-                "status": "confirmed",
+                "status": "booked",
                 "date": "2022-03-12T13:15:00+01:00",
             },
             {
+                "status": "confirmed",
+                "date": "2022-04-30T22:00:00+02:00",
+            },
+            {
+                "status": "validated",
+                "date": "2022-05-15T22:00:00+02:00",
+            },
+            {
                 "status": "cancelled",
-                "date": "2022-03-16T11:47:00+01:00",
+                "date": "2022-04-25T12:47:00+02:00",
             },
         ]
 
@@ -303,7 +268,7 @@ class Returns200Test:
         assert booking_recap["booking_status"] == "cancelled"
         assert booking_recap["booking_status_history"] == [
             {
-                "status": "booked",
+                "status": "pending",
                 "date": "2022-03-11T11:15:00+01:00",
             },
             {
@@ -349,16 +314,20 @@ class Returns200Test:
         assert booking_recap["booking_status"] == "reimbursed"
         assert booking_recap["booking_status_history"] == [
             {
-                "status": "booked",
+                "status": "pending",
                 "date": "2022-03-11T11:15:00+01:00",
             },
             {
-                "status": "confirmed",
+                "status": "booked",
                 "date": "2022-03-12T13:15:00+01:00",
             },
             {
+                "status": "confirmed",
+                "date": "2022-04-30T22:00:00+02:00",
+            },
+            {
                 "status": "validated",
-                "date": "2022-05-16T22:00:00+02:00",
+                "date": "2022-05-15T22:00:00+02:00",
             },
             {
                 "status": "reimbursed",
@@ -471,12 +440,16 @@ class Returns200Test:
                 "booking_is_duo": False,
                 "booking_status_history": [
                     {
-                        "status": "booked",
+                        "status": "pending",
                         "date": "2022-03-11T11:15:00+01:00",
                     },
                     {
-                        "status": "confirmed",
+                        "status": "booked",
                         "date": "2022-03-12T11:15:00+01:00",
+                    },
+                    {
+                        "status": "confirmed",
+                        "date": "2022-04-30T12:15:00+02:00",
                     },
                 ],
             }
@@ -554,12 +527,16 @@ class Returns200Test:
                 "booking_is_duo": False,
                 "booking_status_history": [
                     {
-                        "status": "booked",
+                        "status": "pending",
                         "date": "2022-03-11T11:15:00+01:00",
                     },
                     {
-                        "status": "confirmed",
+                        "status": "booked",
                         "date": "2022-03-12T11:15:00+01:00",
+                    },
+                    {
+                        "status": "confirmed",
+                        "date": "2022-04-30T12:15:00+02:00",
                     },
                 ],
             }
@@ -639,16 +616,20 @@ class Returns200Test:
                 "booking_is_duo": False,
                 "booking_status_history": [
                     {
-                        "status": "booked",
+                        "status": "pending",
                         "date": "2022-02-11T11:15:00+01:00",
                     },
                     {
+                        "status": "booked",
+                        "date": "2022-02-12T11:15:00+01:00",
+                    },
+                    {
                         "status": "confirmed",
-                        "date": "2022-02-12T11:15:00+01:00",  # la date limite d'annulation est automatiquement calculée en db et écrase celle fournie. Dans notre cas : 15 jours avant date evènement.
+                        "date": "2022-02-23T11:15:00+01:00",
                     },
                     {
                         "status": "validated",
-                        "date": "2022-03-11T11:15:00+01:00",
+                        "date": "2022-03-10T11:15:00+01:00",
                     },
                 ],
             }
