@@ -3,7 +3,8 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .h-card {
-  .od-header {
+  .od-header,
+  .od-header-large {
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -26,6 +27,12 @@
       svg {
         fill: colors.$primary;
       }
+    }
+  }
+
+  .od-header-large {
+    .input-select {
+      width: 85%;
     }
   }
 

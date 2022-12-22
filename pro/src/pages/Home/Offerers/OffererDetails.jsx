@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as ClosedEyeSvg } from 'icons/ico-eye-full-close.svg'
 import { ReactComponent as OpenedEyeSvg } from 'icons/ico-eye-full-open.svg'
@@ -56,6 +57,7 @@ const OffererDetails = ({
   const isNewBankInformationActive = useActiveFeature(
     'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
   )
+  const newOfferCreation = useNewOfferCreationJourney()
   const { logEvent } = useAnalytics()
 
   const hasRejectedOrDraftOffererBankInformations = useMemo(() => {
@@ -155,8 +157,14 @@ const OffererDetails = ({
 
   return (
     <div className="h-card h-card-secondary" data-testid="offerrer-wrapper">
-      <div className={`h-card-inner${isExpanded ? '' : ' h-no-bottom'}`}>
-        <div className="od-header">
+      <div
+        className={`h-card-inner${
+          isExpanded && !newOfferCreation ? '' : ' h-no-bottom'
+        }`}
+      >
+        <div
+          className={`${!newOfferCreation ? 'od-header' : 'od-header-large'}`}
+        >
           <Select
             handleSelection={handleChangeOfferer}
             id={STEP_OFFERER_HASH}
@@ -166,43 +174,49 @@ const OffererDetails = ({
             selectedValue={selectedOfferer.id}
           />
           <div className="od-separator vertical" />
-          <Button
-            className={isExpanded ? ' od-primary' : ''}
-            variant={ButtonVariant.TERNARY}
-            Icon={isExpanded ? ClosedEyeSvg : OpenedEyeSvg}
-            onClick={toggleVisibility}
-            type="button"
-          >
-            {isExpanded ? 'Masquer' : 'Afficher'}
-          </Button>
-          {isBankInformationWithSiretActive ? (
-            hasInvalidBusinessUnits ? (
-              <Icon
-                alt="SIRET Manquant"
-                className="ico-bank-warning"
-                svg="ico-alert-filled"
-              />
-            ) : (
-              hasMissingBusinessUnits && (
-                <Icon
-                  alt="Coordonnées bancaires manquantes"
-                  className="ico-bank-warning"
-                  svg="ico-alert-filled"
-                />
-              )
-            )
-          ) : (
-            ((isNewBankInformationActive && hasMissingReimbursementPoints) ||
-              (!isNewBankInformationActive &&
-                selectedOfferer.hasMissingBankInformation)) && (
-              <Icon
-                alt="Informations bancaires manquantes"
-                className="ico-bank-warning"
-                svg="ico-alert-filled"
-              />
-            )
+          {!newOfferCreation && (
+            <>
+              <Button
+                className={isExpanded ? ' od-primary' : ''}
+                variant={ButtonVariant.TERNARY}
+                Icon={isExpanded ? ClosedEyeSvg : OpenedEyeSvg}
+                onClick={toggleVisibility}
+                type="button"
+              >
+                {isExpanded ? 'Masquer' : 'Afficher'}
+              </Button>
+
+              {isBankInformationWithSiretActive ? (
+                hasInvalidBusinessUnits ? (
+                  <Icon
+                    alt="SIRET Manquant"
+                    className="ico-bank-warning"
+                    svg="ico-alert-filled"
+                  />
+                ) : (
+                  hasMissingBusinessUnits && (
+                    <Icon
+                      alt="Coordonnées bancaires manquantes"
+                      className="ico-bank-warning"
+                      svg="ico-alert-filled"
+                    />
+                  )
+                )
+              ) : (
+                ((isNewBankInformationActive &&
+                  hasMissingReimbursementPoints) ||
+                  (!isNewBankInformationActive &&
+                    selectedOfferer.hasMissingBankInformation)) && (
+                  <Icon
+                    alt="Informations bancaires manquantes"
+                    className="ico-bank-warning"
+                    svg="ico-alert-filled"
+                  />
+                )
+              )}
+              <div className="od-separator vertical small" />
+            </>
           )}
-          <div className="od-separator vertical small" />
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
@@ -298,7 +312,7 @@ const OffererDetails = ({
                 </Banner>
               )}
 
-            {selectedOfferer.isValidated && (
+            {selectedOfferer.isValidated && !newOfferCreation && (
               <div className="h-card-cols">
                 <div className="h-card-col">
                   <h3 className="h-card-secondary-title">
@@ -395,13 +409,15 @@ const OffererDetails = ({
                   </p>
                 </Banner>
               )}
-            {isUserOffererValidated && !hasAtLeastOnePhysicalVenue && (
-              <VenueCreationLinks
-                hasPhysicalVenue={hasAtLeastOnePhysicalVenue}
-                hasVirtualOffers={hasAtLeastOneVirtualVenue}
-                offererId={selectedOfferer.id}
-              />
-            )}
+            {isUserOffererValidated &&
+              !hasAtLeastOnePhysicalVenue &&
+              !newOfferCreation && (
+                <VenueCreationLinks
+                  hasPhysicalVenue={hasAtLeastOnePhysicalVenue}
+                  hasVirtualOffers={hasAtLeastOneVirtualVenue}
+                  offererId={selectedOfferer.id}
+                />
+              )}
           </>
         )}
       </div>
