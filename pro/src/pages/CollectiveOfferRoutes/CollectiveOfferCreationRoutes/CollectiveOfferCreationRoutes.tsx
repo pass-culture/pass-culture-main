@@ -1,7 +1,9 @@
+/* istanbul ignore file: DEBT, TO FIX*/
 import React, { useEffect, useState } from 'react'
 import { Route, Switch, useLocation } from 'react-router-dom'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
+import PageTitle from 'components/PageTitle/PageTitle'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
@@ -64,6 +66,7 @@ const CollectiveOfferCreationRoutes = ({
           '/offre/:offerId/collectif/vitrine/confirmation',
         ]}
       >
+        <PageTitle title="Confirmation" />
         {offer ? <CollectiveOfferConfirmation offer={offer} /> : <Spinner />}
       </Route>
       <Route
@@ -76,6 +79,7 @@ const CollectiveOfferCreationRoutes = ({
         ]}
         exact={false}
       >
+        <PageTitle title="Détails de l'offre" />
         <CollectiveOfferLayout
           title={
             isCollectiveOffer(offer) && offer?.templateId
@@ -120,6 +124,7 @@ const CollectiveOfferCreationRoutes = ({
               )}
             </Route>
             <Route path="/offre/:offerId/collectif/stocks">
+              <PageTitle title="Vos stocks" />
               {offer && isCollectiveOffer(offer) ? (
                 <CollectiveOfferStockCreation
                   offer={offer}
@@ -130,6 +135,7 @@ const CollectiveOfferCreationRoutes = ({
               )}
             </Route>
             <Route path="/offre/:offerId/collectif/visibilite">
+              <PageTitle title="Visibilité" />
               {offer && isCollectiveOffer(offer) ? (
                 <CollectiveOfferVisibilityCreation
                   offer={offer}
@@ -145,6 +151,7 @@ const CollectiveOfferCreationRoutes = ({
                 '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
               ]}
             >
+              <PageTitle title="Récapitulatif" />
               {offer ? (
                 <CollectiveOfferSummaryCreation
                   offer={offer}

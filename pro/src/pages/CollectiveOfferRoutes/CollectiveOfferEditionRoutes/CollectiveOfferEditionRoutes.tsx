@@ -1,7 +1,9 @@
+/* istanbul ignore file: DEBT, TO FIX*/
 import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useLocation } from 'react-router-dom'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
+import PageTitle from 'components/PageTitle/PageTitle'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
@@ -28,6 +30,7 @@ const CollectiveOfferEditionRoutes = ({
   isTemplate,
 }: CollectiveOfferEditionRoutesProps): JSX.Element => {
   const location = useLocation()
+
   const [offer, setOffer] = useState<
     CollectiveOffer | CollectiveOfferTemplate
   >()
@@ -69,12 +72,14 @@ const CollectiveOfferEditionRoutes = ({
     >
       <Switch>
         <Route path="/offre/:offerId/collectif/edition">
+          <PageTitle title="Détails de l'offre" />
           <CollectiveOfferEdition
             offer={offer}
             reloadCollectiveOffer={loadCollectiveOffer}
           />
         </Route>
         <Route path="/offre/:offerId/collectif/recapitulatif">
+          <PageTitle title="Récapitulatif" />
           <CollectiveOfferSummaryEdition
             offer={offer}
             reloadCollectiveOffer={loadCollectiveOffer}
@@ -83,12 +88,14 @@ const CollectiveOfferEditionRoutes = ({
         {!isTemplate && isCollectiveOffer(offer) && (
           <>
             <Route path="/offre/:offerId/collectif/stocks/edition">
+              <PageTitle title="Vos Stocks" />
               <CollectiveOfferStockEdition
                 offer={offer}
                 reloadCollectiveOffer={loadCollectiveOffer}
               />
             </Route>
             <Route path="/offre/:offerId/collectif/visibilite/edition">
+              <PageTitle title="Visibilité" />
               <CollectiveOfferVisibility
                 offer={offer}
                 reloadCollectiveOffer={loadCollectiveOffer}
