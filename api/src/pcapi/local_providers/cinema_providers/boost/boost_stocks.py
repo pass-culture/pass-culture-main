@@ -91,9 +91,6 @@ class BoostStocks(LocalProvider):
 
         self.update_from_movie_information(offer, self.showtime_details.film.to_generic_movie())
 
-        if self.showtime_details.film.numVisa:
-            offer.extraData = {"visa": self.showtime_details.film.numVisa}
-
         offer.name = self.showtime_details.film.titleCnc
         offer.subcategoryId = subcategories.SEANCE_CINE.id
         offer.productId = self.last_product_id
@@ -130,9 +127,6 @@ class BoostStocks(LocalProvider):
             obj.description = movie_information.description
         if movie_information.duration:
             obj.durationMinutes = movie_information.duration
-
-        if not obj.extraData:
-            obj.extraData = {}
         obj.extraData = {"visa": movie_information.visa}
 
     def get_object_thumb(self) -> bytes:
