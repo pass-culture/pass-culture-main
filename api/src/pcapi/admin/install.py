@@ -10,6 +10,7 @@ from pcapi.admin.custom_views.allocine_pivot_view import AllocinePivotView
 from pcapi.admin.custom_views.api_key_view import ApiKeyView
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
 from pcapi.admin.custom_views.booking_view import BookingView
+from pcapi.admin.custom_views.booking_view import CollectiveBookingView
 from pcapi.admin.custom_views.category_view import CategoryView
 from pcapi.admin.custom_views.category_view import SubcategoryView
 from pcapi.admin.custom_views.criteria_view import CriteriaView
@@ -226,6 +227,13 @@ def install_views(admin: Admin, session: Session) -> None:
         BookingView(
             name="Réservations",
             endpoint="bookings",
+            category=Category.CUSTOM_OPERATIONS,
+        )
+    )
+    admin.add_view(
+        CollectiveBookingView(
+            name="Réservations collectives",
+            endpoint="collective-bookings",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
