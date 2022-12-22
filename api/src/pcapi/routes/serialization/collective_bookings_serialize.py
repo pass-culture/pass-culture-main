@@ -90,6 +90,9 @@ class CollectiveBookingResponseModel(BaseModel):
     booking_id: str
     booking_token: str | None
     booking_date: str
+    booking_cancellation_limit_date: str
+    booking_confirmation_date: str
+    booking_confirmation_limit_date: str
     booking_status: str
     booking_is_duo = False
     booking_amount: float
@@ -223,6 +226,11 @@ def serialize_collective_booking(collective_booking: CollectiveBookingNamedTuple
         institution=serialize_collective_booking_institution(collective_booking),
         booking_id=collective_booking.collectiveBookingId,
         booking_date=collective_booking.bookedAt.isoformat(),
+        booking_cancellation_limit_date=collective_booking.cancellationLimitDate.isoformat(),
+        booking_confirmation_date=collective_booking.confirmationDate.isoformat()
+        if collective_booking.confirmationDate
+        else "",
+        booking_confirmation_limit_date=collective_booking.confirmationLimitDate.isoformat(),
         booking_status=_serialize_collective_booking_recap_status(collective_booking).value,
         booking_amount=collective_booking.bookingAmount,
         booking_status_history=build_status_history(
