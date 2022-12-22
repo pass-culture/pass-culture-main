@@ -164,9 +164,9 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         setIsClickingFromActionBar(false)
       }
 
-      // When saving draft with an empty form
+      // When saving draft with an empty form or in edition mode
       // we display a success notification even if nothing is done
-      if (saveDraft && isFormEmpty()) {
+      if (isFormEmpty() && (saveDraft || mode === OFFER_WIZARD_MODE.EDITION)) {
         setIsClickingFromActionBar(false)
         notify.success('Brouillon sauvegardé dans la liste des offres')
         return

@@ -21,8 +21,12 @@ export const getToday = () => new Date()
 export const formatBrowserTimezonedDateAsUTC = (
   date: Date | string,
   dateFormat = FORMAT_ISO
-) => format(date, dateFormat, { timeZone: 'UTC' })
+) => {
+  /* istanbul ignore next: DEBT, TO FIX */
+  return format(date, dateFormat, { timeZone: 'UTC' })
+}
 
+/* istanbul ignore next: DEBT, TO FIX */
 export const toDateStrippedOfTimezone = (dateIsoString: string) => {
   const dateIsoStringWithoutTimezone = dateIsoString.replace(
     /[+-][0-2]\d:[0-5]\d|Z/,

@@ -484,4 +484,19 @@ describe('screens:StocksThing', () => {
       expect(quantityInput).toHaveValue(expectedNumber)
     }
   )
+  it('should display draft success message on save draft button when stock form is empty', async () => {
+    renderStockThingScreen({ props, storeOverride, contextValue })
+
+    await screen.findByRole('heading', { name: /Stock & Prix/ })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
+    )
+    expect(
+      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('heading', { name: /Stock & Prix/ })
+    ).toBeInTheDocument()
+  })
 })
