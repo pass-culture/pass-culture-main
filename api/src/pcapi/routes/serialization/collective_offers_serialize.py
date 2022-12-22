@@ -428,6 +428,17 @@ class PostCollectiveOfferBodyModel(BaseModel):
             raise ValueError("intervention_area must have at least one value")
         return values
 
+    @root_validator
+    def validate_booking_emails(cls, values: dict) -> dict:
+        booking_emails = values.get("booking_emails", [])
+        is_from_template = bool(values.get("template_id", None))
+        if not booking_emails:
+            if is_from_template:
+                values["booking_emails"] = [values["contact_email"]]
+            else:
+                raise ValueError("Un email doit etre renseigné")
+        return values
+
     class Config:
         alias_generator = to_camel
         extra = "forbid"
@@ -514,6 +525,12 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
             raise ValueError("interventionArea must have at least one value")
 
         return intervention_area
+
+    @validator("bookingEmails")
+    def validate_booking_emails(cls, booking_emails: list[str]) -> list[str]:
+        if not booking_emails:
+            raise ValueError("Un email doit etre renseigné.")
+        return booking_emails
 
     class Config:
         alias_generator = to_camel
