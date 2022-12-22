@@ -42,16 +42,7 @@ const setFormReadOnlyFields = (
   } else {
     readOnlyField = [
       ...readOnlyField,
-      ...[
-        'categoryId',
-        'subcategoryId',
-        'offererId',
-        'venueId',
-        'showType',
-        'showSubType',
-        'musicType',
-        'musicSubType',
-      ],
+      ...['categoryId', 'subcategoryId', 'offererId', 'venueId'],
     ]
   }
 
