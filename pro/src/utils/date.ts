@@ -1,9 +1,11 @@
 import { format } from 'date-fns-tz'
+import { fr } from 'date-fns/locale'
 
 const FORMAT_ISO = "yyyy-MM-dd'T'HH:mm:ssX"
 export const FORMAT_ISO_DATE_ONLY = 'yyyy-MM-dd'
 export const FORMAT_DD_MM_YYYY_HH_mm = 'dd/MM/yyyy HH:mm'
 export const FORMAT_DD_MM_YYYY = 'dd/MM/yyyy'
+export const FORMAT_DD_MMMM_YYYY = 'dd MMMM yyyy'
 export const FORMAT_HH_mm = 'HH:mm'
 
 export const removeTime = (date: Date): Date => {
@@ -27,6 +29,11 @@ export const toDateStrippedOfTimezone = (dateIsoString: string) => {
     ''
   )
   return new Date(dateIsoStringWithoutTimezone)
+}
+
+export const getDateToFrenchText = (dateIsoString: string) => {
+  const noTimeZoneDate = toDateStrippedOfTimezone(dateIsoString)
+  return format(noTimeZoneDate, FORMAT_DD_MMMM_YYYY, { locale: fr })
 }
 
 export const toISOStringWithoutMilliseconds = (date: Date) => {
