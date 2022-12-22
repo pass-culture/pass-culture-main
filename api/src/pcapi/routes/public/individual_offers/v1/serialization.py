@@ -464,7 +464,11 @@ class EventOfferResponse(OfferResponse):
 
         return cls(
             category_related_fields=compute_category_related_fields(offer),
-            dates=[DateResponse.build_date(stock) for stock in offer.stocks if not stock.isSoftDeleted],
+            dates=[
+                DateResponse.build_date(stock)
+                for stock in sorted(offer.stocks, key=lambda stock: stock.id)
+                if not stock.isSoftDeleted
+            ],
             duration_minutes=offer.durationMinutes,
             ticket_collection=_serialize_ticket_collection(offer),
             **base_offer_response.dict(),
