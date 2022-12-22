@@ -1381,3 +1381,32 @@ class GetProductsTest:
 
         assert response.status_code == 400
         assert response.json == {"limit": ["ensure this value is less than or equal to 50"]}
+
+    @pytest.mark.usefixtures("db_session")
+    def test_get_filterd_venue_offer(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)  # offer attached to other venue
+
+        with testing.assert_no_duplicated_queries():
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/public/offers/v1/products?venueId={venue.id}"
+            )
+
+        assert response.status_code == 200
+        assert response.json["pagination"] == {
+            "currentPage": 1,
+            "itemsCount": 1,
+            "itemsTotal": 1,
+            "lastPage": 1,
+            "limitPerPage": 50,
+            "pagesLinks": {
+                "current": f"http://localhost/public/offers/v1/products?venueId={venue.id}&page=1&limit=50",
+                "first": f"http://localhost/public/offers/v1/products?venueId={venue.id}&page=1&limit=50",
+                "last": f"http://localhost/public/offers/v1/products?venueId={venue.id}&page=1&limit=50",
+                "next": None,
+                "previous": None,
+            },
+        }
+        assert [product["id"] for product in response.json["products"]] == [offer.id]
