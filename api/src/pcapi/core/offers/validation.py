@@ -396,7 +396,7 @@ def check_booking_limit_datetime(
         raise exceptions.BookingLimitDatetimeTooLate()
 
 
-def check_offer_extra_data(offer: Offer | None, subcategory_id: str, extra_data: dict | None) -> dict:
+def check_offer_extra_data(subcategory_id: str, extra_data: dict | None) -> None:
     api_errors = ApiErrors()
     subcategory = ALL_SUBCATEGORIES_DICT[subcategory_id]
     mandatory_fields = OFFER_EXTRA_DATA_MANDATORY_FIELDS & set(subcategory.conditional_fields)
@@ -404,15 +404,11 @@ def check_offer_extra_data(offer: Offer | None, subcategory_id: str, extra_data:
         extra_data = {}
 
     for field in mandatory_fields:
-        if offer and offer.extraData and offer.extraData.get(field):
-            extra_data[field] = offer.extraData.get(field)
-        elif not extra_data or not extra_data.get(field):
+        if not extra_data.get(field):
             api_errors.add_error(field, "Ce champ est obligatoire")
 
     if api_errors.errors:
         raise api_errors
-
-    return extra_data
 
 
 def check_offer_is_from_current_cinema_provider(offer: Offer) -> bool:
