@@ -3,6 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import PageTitle from 'components/PageTitle/PageTitle'
 import { OFFER_SUBTYPES, OFFER_TYPES, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -65,6 +66,7 @@ const OfferType = (): JSX.Element => {
 
   return (
     <div className={styles['offer-type-container']}>
+      <PageTitle title="Nature de l'offre" />
       <h1 className={styles['offer-type-title']}>Créer une offre</h1>
       <FormLayout>
         <FormLayout.Section title="À qui destinez-vous cette offre ? ">

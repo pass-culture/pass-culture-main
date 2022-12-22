@@ -7,6 +7,7 @@ import {
   useRouteMatch,
 } from 'react-router'
 
+import PageTitle from 'components/PageTitle/PageTitle'
 import { OfferIndividualContextProvider } from 'context/OfferIndividualContext'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { parse } from 'utils/query-string'
@@ -30,6 +31,7 @@ const OfferIndividualWizard = () => {
     >
       <Switch>
         <Route exact path={`/offre/individuelle/creation/informations`}>
+          <PageTitle title="Détails de l'offre" />
           <Offer />
         </Route>
         <Route
@@ -40,6 +42,7 @@ const OfferIndividualWizard = () => {
             `${path}/informations`,
           ]}
         >
+          <PageTitle title="Détails de l'offre" />
           <Offer />
         </Route>
         <Route
@@ -50,6 +53,7 @@ const OfferIndividualWizard = () => {
             `${path}/stocks`,
           ]}
         >
+          <PageTitle title="Vos stocks" />
           <Stocks />
         </Route>
         <Route
@@ -60,6 +64,7 @@ const OfferIndividualWizard = () => {
             `${path}/recapitulatif`,
           ]}
         >
+          <PageTitle title="Récapitulatif" />
           <Summary />
         </Route>
         <Route
@@ -70,6 +75,7 @@ const OfferIndividualWizard = () => {
             `${path}/confirmation`,
           ]}
         >
+          <PageTitle title="Confirmation" />
           <Confirmation />
         </Route>
       </Switch>
