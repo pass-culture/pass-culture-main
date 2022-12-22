@@ -144,12 +144,18 @@ def get_invoices_query(
     return invoices
 
 
-def has_reimbursement(booking: bookings_models.Booking) -> bool:
+def has_reimbursement(booking: bookings_models.Booking | educational_models.CollectiveBooking) -> bool:
     """Return whether the requested booking has been reimbursed."""
-    if db.session.query(models.Payment.query.filter_by(bookingId=booking.id).exists()).scalar():
+    if isinstance(booking, bookings_models.Booking):
+        pricing_field = models.Pricing.bookingId
+        payment_field = models.Payment.bookingId
+    else:
+        pricing_field = models.Pricing.collectiveBookingId
+        payment_field = models.Payment.collectiveBookingId
+    if db.session.query(models.Payment.query.filter(payment_field == booking.id).exists()).scalar():
         return True
     paid_pricings = models.Pricing.query.filter(
-        models.Pricing.bookingId == booking.id,
+        pricing_field == booking.id,
         models.Pricing.status.in_((models.PricingStatus.PROCESSED, models.PricingStatus.INVOICED)),
     )
     return db.session.query(paid_pricings.exists()).scalar()

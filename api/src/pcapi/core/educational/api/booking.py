@@ -15,6 +15,9 @@ from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.repository import find_pending_booking_confirmation_limit_date_in_3_days
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.models as finance_models
+import pcapi.core.finance.repository as finance_repository
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.mails.transactional.educational.eac_booking_cancellation import send_eac_booking_cancellation_email
 from pcapi.core.users.models import User
@@ -388,3 +391,50 @@ def _cancel_collective_booking_by_offerer(
     )
 
     return booking_to_cancel
+
+
+def cancel_collective_booking_by_id_from_support(
+    collective_booking: educational_models.CollectiveBooking,
+) -> None:
+
+    with transaction():
+        educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
+        db.session.refresh(collective_booking)
+        if collective_booking.status == educational_models.CollectiveBookingStatus.REIMBURSED:
+            raise exceptions.BookingIsAlreadyRefunded()
+        if finance_repository.has_reimbursement(collective_booking):
+            raise exceptions.BookingIsAlreadyRefunded()
+
+        finance_api.cancel_pricing(collective_booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
+        collective_booking.cancel_booking(
+            reason=educational_models.CollectiveBookingCancellationReasons.OFFERER,
+            cancel_even_if_used=True,
+        )
+
+        db.session.commit()
+    search.async_index_collective_offer_ids([collective_booking.collectiveStock.collectiveOfferId])
+    logger.info(
+        "CollectiveBooking has been cancelled by support",
+        extra={
+            "collective_booking": collective_booking.id,
+            "reason": str(educational_models.CollectiveBookingCancellationReasons.OFFERER),
+        },
+    )
+
+
+def uncancel_collective_booking_by_id_from_support(
+    collective_booking: educational_models.CollectiveBooking,
+) -> None:
+    with transaction():
+        educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
+        db.session.refresh(collective_booking)
+        collective_booking.uncancel_booking_set_used()
+        db.session.commit()
+
+    search.async_index_collective_offer_ids([collective_booking.collectiveStock.collectiveOfferId])
+    logger.info(
+        "CollectiveBooking has been uncancelled by support",
+        extra={
+            "collective_booking": collective_booking.id,
+        },
+    )
