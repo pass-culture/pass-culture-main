@@ -13,49 +13,6 @@ from tests.local_providers.cinema_providers.boost import fixtures
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class GetVenueMoviesTest:
-    def test_should_return_movies_information(self, requests_mock):
-        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
-        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
-        requests_mock.get(
-            "https://cinema-0.example.com/api/films?page=1&per_page=2",
-            json=fixtures.FilmsEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/films?page=2&per_page=2",
-            json=fixtures.FilmsEndpointResponse.PAGE_2_JSON_DATA,
-        )
-        boost = BoostClientAPI(cinema_str_id)
-        movies = boost.get_venue_movies(per_page=2)
-
-        assert movies == [
-            external_bookings_models.Movie(
-                id="207",
-                title="BLACK PANTHER : WAKANDA FOREVER",
-                duration=162,
-                description="",
-                posterpath="http://example.com/images/158026.jpg",
-                visa="158026",
-            ),
-            external_bookings_models.Movie(
-                id="210",
-                title="CHARLOTTE",
-                duration=92,
-                description="",
-                posterpath="http://example.com/images/149489.jpg",
-                visa="149489",
-            ),
-            external_bookings_models.Movie(
-                id="147",
-                title="CASSE NOISETTE ROH 2021",
-                duration=100,
-                description="",
-                posterpath="http://example.com/images/2021001414.jpg",
-                visa="2021001414",
-            ),
-        ]
-
-
 class GetShowtimesTest:
     def test_should_return_showtimes(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
