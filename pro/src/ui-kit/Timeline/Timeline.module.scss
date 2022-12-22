@@ -29,7 +29,7 @@ $time-line-width: rem.torem(2px);
 .step {
   position: relative;
   margin-bottom: $margin-between-steps;
-  transform: translateX($icon-size / 2 + $margin-between-content-and-time-line);
+  margin-left: $icon-size / 2 + $margin-between-content-and-time-line;
 
   &::after {
     content: "";
