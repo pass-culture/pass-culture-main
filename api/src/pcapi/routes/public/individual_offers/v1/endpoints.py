@@ -207,7 +207,7 @@ def _deserialize_ticket_collection(
 
 
 @blueprint.v1_blueprint.route("/events", methods=["POST"])
-@spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG])
+@spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG], response_model=serialization.EventOfferResponse)
 @api_key_required
 @public_utils.individual_offers_api_provider
 def post_event_offer(
@@ -255,9 +255,9 @@ def post_event_offer(
 
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates", methods=["POST"])
-@spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG])
+@spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG], response_model=serialization.PostDatesResponse)
 @api_key_required
-def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serialization.DatesResponse:
+def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
     """
     Add dates to an event offer.
     """
@@ -281,7 +281,7 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
-    return serialization.DatesResponse(
+    return serialization.PostDatesResponse(
         dates=[serialization.DateResponse.build_date(new_date) for new_date in new_dates]
     )
 
@@ -337,19 +337,13 @@ def get_products(query: serialization.GetOffersQueryParams) -> serialization.Pro
 
     return serialization.ProductOffersResponse(
         products=[serialization.ProductOfferResponse.build_product_offer(offer) for offer in offers],
-        pagination=serialization.Pagination(
-            current_page=query.page,
-            items_count=len(offers),
-            items_total=len(total_offer_ids),
-            last_page=len(total_offer_ids) // query.limit + 1,
-            limit_per_page=query.limit,
-            pages_links=serialization.PaginationLinks.build_pagination_links(
-                flask.url_for(".get_products", _external=True),
-                query.page,
-                query.limit,
-                len(total_offer_ids),
-                venue_id=query.venue_id,
-            ),
+        pagination=serialization.Pagination.build_pagination(
+            flask.url_for(".get_products", _external=True),
+            query.page,
+            len(offers),
+            len(total_offer_ids),
+            query.limit,
+            query.venue_id,
         ),
     )
 
@@ -370,3 +364,46 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
         raise api_errors.ApiErrors({"event_id": ["The event offer could not be found"]}, status_code=404)
 
     return serialization.EventOfferResponse.build_event_offer(offer)
+
+
+@blueprint.v1_blueprint.route("/events/<int:event_id>/dates", methods=["GET"])
+@spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG], response_model=serialization.GetDatesResponse)
+@api_key_required
+def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> serialization.GetDatesResponse:
+    """
+    Get dates of an event. Results are paginated.
+    """
+    offer = _retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent == True).one_or_none()
+    if not offer:
+        raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
+
+    stock_id_query = offers_models.Stock.query.filter(
+        offers_models.Stock.offerId == offer.id, offers_models.Stock.isSoftDeleted == False
+    ).with_entities(offers_models.Stock.id)
+    total_stock_ids = [stock_id for (stock_id,) in stock_id_query.all()]
+
+    offset = query.limit * (query.page - 1)
+    if offset > len(total_stock_ids):
+        raise api_errors.ApiErrors(
+            {
+                "page": f"The page you requested does not exist. The maximum page for the specified limit is {len(total_stock_ids)//query.limit+1}"
+            },
+            status_code=404,
+        )
+
+    stocks = (
+        offers_models.Stock.query.filter(offers_models.Stock.id.in_(total_stock_ids[offset : offset + query.limit]))
+        .order_by(offers_models.Stock.id)
+        .all()
+    )
+
+    return serialization.GetDatesResponse(
+        dates=[serialization.DateResponse.build_date(stock) for stock in stocks],
+        pagination=serialization.Pagination.build_pagination(
+            flask.url_for(".get_event_dates", event_id=event_id, _external=True),
+            query.page,
+            len(stocks),
+            len(total_stock_ids),
+            query.limit,
+        ),
+    )
