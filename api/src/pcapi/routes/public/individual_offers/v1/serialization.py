@@ -227,6 +227,11 @@ PRODUCT_CATEGORY_MODELS_BY_SUBCATEGORY = {
     for subcategory in subcategories.ALL_SUBCATEGORIES
     if subcategory.is_selectable and not subcategory.is_event
 }
+EDITABLE_PRODUCT_CATEGORY_MODELS = [
+    PRODUCT_CATEGORY_MODELS_BY_SUBCATEGORY[subcategory_id]
+    for subcategory_id in PRODUCT_CATEGORY_MODELS_BY_SUBCATEGORY
+    if subcategory_id != subcategories.LIVRE_PAPIER.id
+]
 EVENT_CATEGORY_MODELS_BY_SUBCATEGORY = {
     subcategory.id: get_category_fields_model(subcategory)
     for subcategory in subcategories.ALL_SUBCATEGORIES
@@ -235,11 +240,16 @@ EVENT_CATEGORY_MODELS_BY_SUBCATEGORY = {
 
 
 if typing.TYPE_CHECKING:
+    editable_product_category_fields = CategoryRelatedFields
     product_category_fields = CategoryRelatedFields
     event_category_fields = CategoryRelatedFields
 else:
     product_category_fields = typing_extensions.Annotated[
         typing.Union[tuple(PRODUCT_CATEGORY_MODELS_BY_SUBCATEGORY.values())],
+        pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
+    ]
+    editable_product_category_fields = typing_extensions.Annotated[
+        typing.Union[tuple(EDITABLE_PRODUCT_CATEGORY_MODELS)],
         pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
     event_category_fields = typing_extensions.Annotated[
@@ -322,7 +332,7 @@ class SentByEmailDetailsResponse(serialization.ConfiguredBaseModel):
 
 
 class ProductOfferCreation(OfferCreationBase):
-    category_related_fields: product_category_fields
+    category_related_fields: editable_product_category_fields
     stock: StockCreation | None
 
 
