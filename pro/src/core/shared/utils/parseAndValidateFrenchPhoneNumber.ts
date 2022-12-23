@@ -25,7 +25,7 @@ const prefixRegionDict: { [key: string]: string } = {
 export const parseAndValidateFrenchPhoneNumber = (phoneNumber: string) => {
   const defaultParsing = parsePhoneNumberFromString(phoneNumber, 'FR')
   if (!defaultParsing) {
-    throw 'Votre numéro de téléphone n’est pas valide'
+    throw 'Veuillez entrer un numéro de téléphone valide'
   }
   const prefix = defaultParsing.nationalNumber.substring(0, 3)
   let phoneNumberFormated = defaultParsing.number
@@ -36,7 +36,7 @@ export const parseAndValidateFrenchPhoneNumber = (phoneNumber: string) => {
   }
   const parsedPhoneNumber = parsePhoneNumberFromString(phoneNumberFormated)
   if (!parsedPhoneNumber || !parsedPhoneNumber.isValid()) {
-    throw 'Votre numéro de téléphone n’est pas valide'
+    throw 'Veuillez entrer un numéro de téléphone valide'
   }
   return parsedPhoneNumber
 }

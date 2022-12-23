@@ -2,9 +2,9 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
+import { ReactComponent as CircleArrowIcon } from 'icons/ico-circle-arrow.svg'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
-import { ReactComponent as RightCircleArrowIcon } from 'icons/ico-right-circle-arrow.svg'
 
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
@@ -111,5 +111,5 @@ BoxButtonWithIcon.args = {
   disabled: false,
   variant: ButtonVariant.BOX,
   iconPosition: IconPositionEnum.LEFT,
-  Icon: RightCircleArrowIcon,
+  Icon: CircleArrowIcon,
 }

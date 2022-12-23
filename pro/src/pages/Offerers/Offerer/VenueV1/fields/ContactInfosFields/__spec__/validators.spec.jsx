@@ -16,7 +16,7 @@ describe('has fill fields with correct format', () => {
   })
 
   it('should return an error message when phone number is invalid', () => {
-    const errorMessage = 'Votre numéro de téléphone n’est pas valide'
+    const errorMessage = 'Veuillez entrer un numéro de téléphone valide'
 
     const phoneNumberWithUnexpectedString = '+33111+11111'
     const tooLongPhoneNumber = '011111111111111'

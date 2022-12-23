@@ -21,8 +21,6 @@ interface IFieldLayoutProps {
   inline?: boolean
   classNameLabel?: string
   classNameFooter?: string
-  width?: number
-  spaceBetween?: boolean
 }
 /* istanbul ignore next: DEBT, TO FIX */
 const FieldLayout = ({
@@ -41,14 +39,11 @@ const FieldLayout = ({
   inline = false,
   classNameLabel,
   classNameFooter,
-  width,
-  spaceBetween,
 }: IFieldLayoutProps): JSX.Element => (
   <div
     className={cn(styles['field-layout'], className, {
       [styles['field-layout-small-label']]: smallLabel,
       [styles['field-layout-inline']]: inline,
-      [styles['field-layout-space-between']]: spaceBetween,
     })}
     data-testid={`wrapper-${name}`}
   >
@@ -64,10 +59,7 @@ const FieldLayout = ({
       )}
     </label>
 
-    <div
-      className={styles['field-layout-content']}
-      style={width ? { width: `${width / 16}rem` } : {}}
-    >
+    <div className={styles['field-layout-content']}>
       <div>{children}</div>
 
       {!hideFooter && (
