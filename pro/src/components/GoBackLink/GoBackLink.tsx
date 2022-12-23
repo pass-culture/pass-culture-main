@@ -15,7 +15,7 @@ interface GoBackLinkProps {
 
 const GoBackLink = ({ to, title, className }: GoBackLinkProps): JSX.Element => (
   <NavLink className={cn(styles['go-back-button'], className)} to={to}>
-    <Icon svg="ico-back" className={styles['go-back-icon']} />
+    <Icon svg="ico-circle-arrow" className={styles['go-back-icon']} />
     {title}
   </NavLink>
 )

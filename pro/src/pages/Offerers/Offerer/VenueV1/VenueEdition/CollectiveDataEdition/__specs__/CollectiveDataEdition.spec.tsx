@@ -172,12 +172,12 @@ describe('CollectiveDataEdition', () => {
       const phoneField = screen.getByLabelText(/Téléphone/)
       const emailField = screen.getByLabelText(/E-mail/)
       const domainsField = screen.getByLabelText(
-        /Domaine artistique et culturel :/
+        /Domaine artistique et culturel/
       )
-      const interventionAreaField = screen.getByLabelText(/Zone de mobilité :/)
-      const statusField = screen.getByLabelText(/Statut :/)
+      const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
+      const statusField = screen.getByLabelText(/Statut/)
       const culturalPartnersField = screen.getByLabelText(
-        /Réseaux partenaires EAC :/
+        /Réseaux partenaires EAC/
       )
 
       expect(descriptionField).toBeInTheDocument()
@@ -247,7 +247,7 @@ describe('CollectiveDataEdition', () => {
       await userEvent.click(title)
 
       expect(
-        screen.queryByText('Votre numéro de téléphone n’est pas valide')
+        screen.queryByText('Veuillez entrer un numéro de téléphone valide')
       ).toBeInTheDocument()
       expect(
         screen.queryByText(
@@ -281,7 +281,7 @@ describe('CollectiveDataEdition', () => {
         ).not.toBeInTheDocument()
       )
       expect(
-        screen.queryByText('Votre numéro de téléphone n’est pas valide')
+        screen.queryByText('Veuillez entrer un numéro de téléphone valide')
       ).not.toBeInTheDocument()
       expect(
         screen.queryByText(
@@ -311,7 +311,7 @@ describe('CollectiveDataEdition', () => {
         ).not.toBeInTheDocument()
       )
       expect(
-        screen.queryByText('Votre numéro de téléphone n’est pas valide')
+        screen.queryByText('Veuillez entrer un numéro de téléphone valide')
       ).not.toBeInTheDocument()
       expect(
         screen.queryByText(
@@ -327,7 +327,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitForLoader()
 
-      const interventionAreaField = screen.getByLabelText(/Zone de mobilité :/)
+      const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
       await userEvent.click(interventionAreaField)
       await waitFor(() =>
         expect(screen.queryByText('France métropolitaine')).toBeInTheDocument()
@@ -344,7 +344,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitForLoader()
 
-      const interventionAreaField = screen.getByLabelText(/Zone de mobilité :/)
+      const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
       await userEvent.click(interventionAreaField)
       await waitFor(() =>
         expect(
@@ -364,7 +364,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitForLoader()
 
-      const interventionAreaField = screen.getByLabelText(/Zone de mobilité :/)
+      const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
       await userEvent.click(interventionAreaField)
 
       const mainlandOption = await screen.findByLabelText(
@@ -460,13 +460,13 @@ describe('CollectiveDataEdition', () => {
 
       const emailField = screen.getByLabelText(/E-mail/)
 
-      const statusField = screen.getByLabelText(/Statut :/)
+      const statusField = screen.getByLabelText(/Statut/)
 
       expect(emailField).toHaveValue('toto@domain.com')
       expect(statusField).toHaveValue('1')
 
       await userEvent.click(
-        await screen.findByLabelText(/Domaine artistique et culturel :/)
+        await screen.findByLabelText(/Domaine artistique et culturel/)
       )
       await waitFor(async () =>
         expect(
@@ -503,9 +503,9 @@ describe('CollectiveDataEdition', () => {
       await waitForLoader()
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
-      const statusField = screen.getByLabelText(/Statut :/)
+      const statusField = screen.getByLabelText(/Statut/)
       const domainsInput = screen.getByLabelText(
-        /Domaine artistique et culturel :/
+        /Domaine artistique et culturel/
       )
 
       expect(websiteField).toHaveValue('http://monsite.com')

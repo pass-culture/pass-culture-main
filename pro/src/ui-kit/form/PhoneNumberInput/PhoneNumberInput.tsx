@@ -15,9 +15,6 @@ export interface PhoneNumberInputProps {
   label?: string
   disabled?: boolean
   isOptional?: boolean
-  inline?: boolean
-  width?: number
-  spaceBetween?: boolean
 }
 
 const PhoneNumberInput = ({
@@ -25,9 +22,6 @@ const PhoneNumberInput = ({
   label = 'Téléphone',
   disabled,
   isOptional = false,
-  inline = false,
-  width,
-  spaceBetween = false,
 }: PhoneNumberInputProps) => {
   const [field, meta, helpers] = useField({ name })
 
@@ -48,7 +42,14 @@ const PhoneNumberInput = ({
     helpers.setValue(phoneNumber?.number, false)
     setPhoneInputValue(phoneNumberInputValue)
 
+    if (isOptional && phoneNumberInputValue === '') {
+      helpers.setError(undefined)
+      return phoneNumberInputValue
+    }
+
     if (!phoneNumber || !phoneNumber.isValid()) {
+      // input optional -> if optional we want to value formik field with incorrect phone number to raise error on form validation
+      isOptional && helpers.setValue(phoneNumberInputValue)
       helpers.setError('Veuillez entrer un numéro de téléphone valide')
       return phoneNumberInputValue
     }
@@ -96,9 +97,6 @@ const PhoneNumberInput = ({
       isOptional={isOptional}
       showError={meta.touched && !!meta.error}
       error={meta.error}
-      inline={inline}
-      width={width}
-      spaceBetween={spaceBetween}
     >
       <div className={styles['phone-number-input-wrapper']}>
         <CodeCountrySelect

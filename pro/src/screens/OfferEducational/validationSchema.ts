@@ -80,10 +80,10 @@ export const validationSchema = yup.object().shape({
     }),
   phone: yup
     .string()
-    .required('Veuillez renseigner un numéro de téléphone')
+    .required('Veuillez entrer un numéro de téléphone valide')
     .test({
       name: 'is-phone-valid',
-      message: 'Le numéro de téléphone n’est pas valide',
+      message: 'Veuillez entrer un numéro de téléphone valide',
       test: isPhoneValid,
     }),
   email: yup

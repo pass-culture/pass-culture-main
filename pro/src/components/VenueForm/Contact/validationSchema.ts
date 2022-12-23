@@ -9,7 +9,7 @@ const validationSchema = {
     .nullable()
     .test({
       name: 'is-phone-valid',
-      message: 'Veuillez renseigner un numéro de téléphone valide',
+      message: 'Veuillez entrer un numéro de téléphone valide',
       test: (phone?: string | null) => {
         /* istanbul ignore next: DEBT, TO FIX */
         return phone ? isPhoneValid(phone) : true
