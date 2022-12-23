@@ -184,7 +184,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_IMPROVE_COLLECTIVE_STATUS,
 )
 
-if not (settings.IS_DEV or settings.IS_RUNNING_TESTS):
+if settings.IS_PROD or settings.IS_STAGING:
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,)
 
 
