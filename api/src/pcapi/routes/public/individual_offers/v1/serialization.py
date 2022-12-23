@@ -562,6 +562,11 @@ class ProductOffersResponse(serialization.ConfiguredBaseModel):
     pagination: Pagination
 
 
+class EventOffersResponse(serialization.ConfiguredBaseModel):
+    events: typing.List[EventOfferResponse]
+    pagination: Pagination
+
+
 class GetDatesResponse(serialization.ConfiguredBaseModel):
     dates: typing.List[DateResponse]
     pagination: Pagination

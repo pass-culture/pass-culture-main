@@ -1426,3 +1426,35 @@ class GetProductsTest:
             },
         }
         assert [product["id"] for product in response.json["products"]] == [offer.id]
+
+
+class GetEventsTest:
+    ENDPOINT_URL = "http://localhost/public/offers/v1/events"
+
+    @pytest.mark.usefixtures("db_session")
+    def test_get_first_page(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        offers = offers_factories.EventOfferFactory.create_batch(12, venue__managingOfferer=api_key.offerer)
+        offers_factories.ThingOfferFactory.create_batch(3, venue__managingOfferer=api_key.offerer)  # not returned
+
+        with testing.assert_no_duplicated_queries():
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                "/public/offers/v1/events?limit=5"
+            )
+
+        assert response.status_code == 200
+        assert response.json["pagination"] == {
+            "currentPage": 1,
+            "itemsCount": 5,
+            "itemsTotal": 12,
+            "lastPage": 3,
+            "limitPerPage": 5,
+            "pagesLinks": {
+                "current": f"{self.ENDPOINT_URL}?page=1&limit=5",
+                "first": f"{self.ENDPOINT_URL}?page=1&limit=5",
+                "last": f"{self.ENDPOINT_URL}?page=3&limit=5",
+                "next": f"{self.ENDPOINT_URL}?page=2&limit=5",
+                "previous": None,
+            },
+        }
+        assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
