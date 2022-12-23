@@ -315,7 +315,6 @@ def get_products(query: serialization.GetOffersQueryParams) -> serialization.Pro
     """
     Get products. Results are paginated.
     """
-
     total_offer_ids = _retrieve_offer_ids(is_event=False, filtered_venue_id=query.venue_id)
     offset = query.limit * (query.page - 1)
 
@@ -405,5 +404,44 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
             len(stocks),
             len(total_stock_ids),
             query.limit,
+        ),
+    )
+
+
+@blueprint.v1_blueprint.route("/events", methods=["GET"])
+@spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG], response_model=serialization.EventOffersResponse)
+@api_key_required
+def get_events(query: serialization.GetOffersQueryParams) -> serialization.EventOffersResponse:
+    """
+    Get events. Results are paginated.
+    """
+    total_offer_ids = _retrieve_offer_ids(is_event=True, filtered_venue_id=query.venue_id)
+    offset = query.limit * (query.page - 1)
+
+    if offset > len(total_offer_ids):
+        raise api_errors.ApiErrors(
+            {
+                "page": f"The page you requested does not exist. The maximum page for the specified limit is {len(total_offer_ids)//query.limit+1}"
+            },
+            status_code=404,
+        )
+
+    offers = (
+        _retrieve_offer_relations_query(
+            offers_models.Offer.query.filter(offers_models.Offer.id.in_(total_offer_ids[offset : offset + query.limit]))
+        )
+        .order_by(offers_models.Offer.id)
+        .all()
+    )
+
+    return serialization.EventOffersResponse(
+        events=[serialization.EventOfferResponse.build_event_offer(offer) for offer in offers],
+        pagination=serialization.Pagination.build_pagination(
+            flask.url_for(".get_events", _external=True),
+            query.page,
+            len(offers),
+            len(total_offer_ids),
+            query.limit,
+            query.venue_id,
         ),
     )
