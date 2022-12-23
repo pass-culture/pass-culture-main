@@ -1,4 +1,5 @@
 import {
+  CollectiveBookingResponseModel,
   GetCollectiveOfferCollectiveStockResponseModel,
   GetCollectiveOfferManagingOffererResponseModel,
   GetCollectiveOfferVenueResponseModel,
@@ -7,12 +8,14 @@ import {
   StudentLevels,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
+import { BOOKING_STATUS } from 'core/Bookings'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 
 let offerId = 1
 let stockId = 1
 let venueId = 1
 let offererId = 1
+let bookingId = 1
 
 const sharedCollectiveOfferData = {
   isActive: true,
@@ -124,5 +127,44 @@ export const collectiveOfferOffererFactory = (
     postalCode: '75018',
     thumbCount: 0,
     ...customOfferer,
+  }
+}
+
+export const collectiveBookingRecapFactory = (
+  customBookingRecap: Partial<CollectiveBookingResponseModel> = {}
+): CollectiveBookingResponseModel => {
+  const currentBookingId = bookingId++
+  return {
+    booking_amount: 1,
+    booking_cancellation_limit_date: new Date().toISOString(),
+    booking_confirmation_date: new Date().toISOString(),
+    booking_confirmation_limit_date: new Date().toISOString(),
+    booking_date: new Date().toISOString(),
+    booking_id: currentBookingId.toString(),
+    booking_identifier: currentBookingId.toString(),
+    booking_is_duo: false,
+    booking_status: BOOKING_STATUS.PENDING,
+    booking_status_history: [
+      { date: new Date().toISOString(), status: BOOKING_STATUS.PENDING },
+    ],
+    booking_token: null,
+    institution: {
+      city: 'PARIS',
+      id: 1,
+      institutionId: '1',
+      institutionType: null,
+      name: 'COLLEGE DE PARIS',
+      postalCode: '75001',
+      phoneNumber: '0601020304',
+    },
+    stock: {
+      event_beginning_datetime: new Date().toISOString(),
+      number_of_tickets: 1,
+      offer_identifier: '1',
+      offer_is_educational: true,
+      offer_isbn: null,
+      offer_name: 'ma super offre collective',
+    },
+    ...customBookingRecap,
   }
 }
