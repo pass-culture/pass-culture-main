@@ -243,17 +243,6 @@ def post_event_offer(
                 withdrawal_type=withdrawal_type,
             )
 
-            if body.dates:
-                for date in body.dates:
-                    offers_api.create_stock(
-                        offer=created_offer,
-                        price=finance_utils.to_euros(date.price),
-                        quantity=date.quantity if date.quantity != "unlimited" else None,
-                        beginning_datetime=date.beginning_datetime,
-                        booking_limit_datetime=date.booking_limit_datetime,
-                        creating_provider=individual_offers_provider,
-                    )
-
             if body.image:
                 _save_image(body.image, created_offer)
 
@@ -268,9 +257,7 @@ def post_event_offer(
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates", methods=["POST"])
 @spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG])
 @api_key_required
-def post_event_date(
-    event_id: int, body: serialization.AdditionalDatesCreation
-) -> serialization.AdditionalDatesResponse:
+def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serialization.DatesResponse:
     """
     Add dates to an event offer.
     """
@@ -279,24 +266,23 @@ def post_event_date(
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
 
     new_dates: list[offers_models.Stock] = []
-    if body.additional_dates:
-        try:
-            with repository.transaction():
-                for date in body.additional_dates:
-                    new_dates.append(
-                        offers_api.create_stock(
-                            offer=offer,
-                            price=finance_utils.to_euros(date.price),
-                            quantity=date.quantity if date.quantity != "unlimited" else None,
-                            beginning_datetime=date.beginning_datetime,
-                            booking_limit_datetime=date.booking_limit_datetime,
-                        )
+    try:
+        with repository.transaction():
+            for date in body.dates:
+                new_dates.append(
+                    offers_api.create_stock(
+                        offer=offer,
+                        price=finance_utils.to_euros(date.price),
+                        quantity=date.quantity if date.quantity != "unlimited" else None,
+                        beginning_datetime=date.beginning_datetime,
+                        booking_limit_datetime=date.booking_limit_datetime,
                     )
-        except offers_exceptions.OfferCreationBaseException as error:
-            raise api_errors.ApiErrors(error.errors, status_code=400)
+                )
+    except offers_exceptions.OfferCreationBaseException as error:
+        raise api_errors.ApiErrors(error.errors, status_code=400)
 
-    return serialization.AdditionalDatesResponse(
-        additional_dates=[serialization.DateResponse.build_date(new_date) for new_date in new_dates]
+    return serialization.DatesResponse(
+        dates=[serialization.DateResponse.build_date(new_date) for new_date in new_dates]
     )
 
 

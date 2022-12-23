@@ -328,15 +328,13 @@ class ProductOfferCreation(OfferCreationBase):
 
 class EventOfferCreation(OfferCreationBase):
     category_related_fields: event_category_fields
-    dates: typing.List[DateCreation] | None = EVENT_DATES_FIELD
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = TICKET_COLLECTION_FIELD
 
 
-class AdditionalDatesCreation(serialization.ConfiguredBaseModel):
-    additional_dates: typing.List[DateCreation] | None = pydantic.Field(
-        None,
-        description="The dates of your event. If there are different prices and quantity for the same date, you must add several date objects",
+class DatesCreation(serialization.ConfiguredBaseModel):
+    dates: typing.List[DateCreation] = pydantic.Field(
+        description="The dates to add to the event. If there are different prices and quantity for the same date, you must add several date objects",
     )
 
 
@@ -376,8 +374,8 @@ class DateResponse(BaseStockResponse):
         )
 
 
-class AdditionalDatesResponse(serialization.ConfiguredBaseModel):
-    additional_dates: typing.List[DateResponse] | None = pydantic.Field(None, description="The new dates created.")
+class DatesResponse(serialization.ConfiguredBaseModel):
+    dates: typing.List[DateResponse] = pydantic.Field(description="The dates of the event.")
 
 
 class OfferResponse(serialization.ConfiguredBaseModel):
@@ -455,7 +453,6 @@ def _serialize_ticket_collection(
 
 class EventOfferResponse(OfferResponse):
     category_related_fields: event_category_fields
-    dates: typing.List[DateResponse] = EVENT_DATES_FIELD
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     ticket_collection: SentByEmailDetailsResponse | OnSiteCollectionDetailsResponse | None = TICKET_COLLECTION_FIELD
 
@@ -465,11 +462,6 @@ class EventOfferResponse(OfferResponse):
 
         return cls(
             category_related_fields=compute_category_related_fields(offer),
-            dates=[
-                DateResponse.build_date(stock)
-                for stock in sorted(offer.stocks, key=lambda stock: stock.id)
-                if not stock.isSoftDeleted
-            ],
             duration_minutes=offer.durationMinutes,
             ticket_collection=_serialize_ticket_collection(offer),
             **base_offer_response.dict(),

@@ -703,20 +703,6 @@ class PostEventTest:
                     "performer": "Nicolas Jaar",
                     "stageDirector": "Alfred",  # field not applicable
                 },
-                "dates": [
-                    {
-                        "beginningDatetime": "2022-02-01T12:00:00+02:00",
-                        "bookingLimitDatetime": "2022-01-15T13:00:00Z",
-                        "price": 8899,
-                        "quantity": 10,
-                    },
-                    {
-                        "beginningDatetime": "2022-03-01T12:00:00+02:00",
-                        "bookingLimitDatetime": "2022-01-15T13:00:00Z",
-                        "price": 0,
-                        "quantity": "unlimited",
-                    },
-                ],
                 "description": "Space is only noise if you can see",
                 "eventDuration": 120,
                 "accessibility": {
@@ -757,23 +743,10 @@ class PostEventTest:
         assert created_offer.bookingEmail == "nicoj@example.com"
         assert created_offer.description == "Space is only noise if you can see"
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
-        assert created_offer.status == offer_mixin.OfferStatus.ACTIVE
+        assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
         assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.BY_EMAIL
         assert created_offer.withdrawalDelay == 86400
-
-        created_stocks = offers_models.Stock.query.filter_by(offerId=created_offer.id).all()
-        assert len(created_stocks) == 2
-        first_stock = next(
-            stock for stock in created_stocks if stock.beginningDatetime == datetime.datetime(2022, 2, 1, 10, 0, 0)
-        )
-        assert first_stock.price == decimal.Decimal("88.99")
-        assert first_stock.quantity == 10
-        second_stock = next(
-            stock for stock in created_stocks if stock.beginningDatetime == datetime.datetime(2022, 3, 1, 10, 0, 0)
-        )
-        assert second_stock.price == decimal.Decimal("0")
-        assert second_stock.quantity is None
 
         created_mediation = offers_models.Mediation.query.one()
         assert created_mediation.offer == created_offer
@@ -797,24 +770,6 @@ class PostEventTest:
                 "musicType": "ELECTRO-HOUSE",
                 "performer": "Nicolas Jaar",
             },
-            "dates": [
-                {
-                    "beginningDatetime": "2022-02-01T10:00:00Z",
-                    "bookedQuantity": 0,
-                    "bookingLimitDatetime": "2022-01-15T13:00:00Z",
-                    "id": first_stock.id,
-                    "price": 8899,
-                    "quantity": 10,
-                },
-                {
-                    "beginningDatetime": "2022-03-01T10:00:00Z",
-                    "bookedQuantity": 0,
-                    "bookingLimitDatetime": "2022-01-15T13:00:00Z",
-                    "id": second_stock.id,
-                    "price": 0,
-                    "quantity": "unlimited",
-                },
-            ],
             "description": "Space is only noise if you can see",
             "enableDoubleBookings": True,
             "eventDuration": 120,
@@ -827,7 +782,7 @@ class PostEventTest:
             "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
             "location": {"type": "physical", "venueId": venue.id},
             "name": "Nicolas Jaar dans ton salon",
-            "status": "ACTIVE",
+            "status": "SOLD_OUT",
             "ticketCollection": {"daysBeforeEvent": 1, "way": "by_email"},
         }
 
@@ -916,7 +871,7 @@ class PostEventTest:
         }
 
 
-class PostAdditionalDatesTest:
+class PostDatesTest:
     @pytest.mark.usefixtures("db_session")
     def test_new_dates_are_added(self, client):
         api_key = offerers_factories.ApiKeyFactory()
@@ -925,7 +880,7 @@ class PostAdditionalDatesTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             f"/public/offers/v1/events/{event_offer.id}/dates",
             json={
-                "additionalDates": [
+                "dates": [
                     {
                         "beginningDatetime": "2022-02-01T12:00:00+02:00",
                         "bookingLimitDatetime": "2022-01-15T13:00:00Z",
@@ -957,7 +912,7 @@ class PostAdditionalDatesTest:
         assert second_stock.quantity is None
 
         assert response.json == {
-            "additionalDates": [
+            "dates": [
                 {
                     "beginningDatetime": "2022-02-01T10:00:00",
                     "bookedQuantity": 0,
@@ -1005,7 +960,7 @@ class PostAdditionalDatesTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             f"/public/offers/v1/events/{event_offer.id}/dates",
             json={
-                "additionalDates": [
+                "dates": [
                     {
                         "beginningDatetime": "2022-02-01T12:00:00+02:00",
                         "bookingLimitDatetime": "2022-01-15T13:00:00Z",
@@ -1026,7 +981,7 @@ class PostAdditionalDatesTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             f"/public/offers/v1/events/{product_offer.id}/dates",
             json={
-                "additionalDates": [
+                "dates": [
                     {
                         "beginningDatetime": "2022-02-01T12:00:00+02:00",
                         "bookingLimitDatetime": "2022-01-15T13:00:00Z",
@@ -1132,7 +1087,7 @@ class GetEventTest:
         assert response.json == {"event_id": ["The event offer could not be found"]}
 
     @pytest.mark.usefixtures("db_session")
-    def test_event_without_stock(self, client):
+    def test_get_event(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
@@ -1155,7 +1110,6 @@ class GetEventTest:
             },
             "bookingEmail": None,
             "categoryRelatedFields": {"author": None, "category": "SEANCE_CINE", "stageDirector": None, "visa": None},
-            "dates": [],
             "description": "Un livre de contrepèterie",
             "enableDoubleBookings": False,
             "externalTicketOfficeUrl": None,
@@ -1168,60 +1122,6 @@ class GetEventTest:
             "status": "SOLD_OUT",
             "ticketCollection": None,
         }
-
-    @freezegun.freeze_time("2023-01-01 12:00:00")
-    @pytest.mark.usefixtures("db_session")
-    def test_event_with_dates(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        event_offer = offers_factories.EventOfferFactory(venue__managingOfferer=api_key.offerer)
-        offers_factories.StockFactory(offer=event_offer, isSoftDeleted=True)
-        bookable_stock = offers_factories.EventStockFactory(
-            offer=event_offer,
-            price=12.34,
-            quantity=10,
-            bookingLimitDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
-            beginningDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
-        )
-        stock_without_booking = offers_factories.EventStockFactory(
-            offer=event_offer,
-            price=12.34,
-            quantity=2,
-            bookingLimitDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
-            beginningDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
-        )
-        offers_factories.EventStockFactory(offer=event_offer, isSoftDeleted=True)  # deleted stock, not returned
-        bookings_factories.BookingFactory(stock=bookable_stock)
-
-        mediation = offers_factories.MediationFactory(offer=event_offer, credit="Ph. Oto")
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events/{event_offer.id}"
-        )
-
-        assert response.status_code == 200
-        assert response.json["dates"] == [
-            {
-                "beginningDatetime": "2023-01-15T13:00:00Z",
-                "bookedQuantity": 1,
-                "bookingLimitDatetime": "2023-01-15T13:00:00Z",
-                "id": bookable_stock.id,
-                "price": 1234,
-                "quantity": 10,
-            },
-            {
-                "beginningDatetime": "2023-01-15T13:00:00Z",
-                "bookedQuantity": 0,
-                "bookingLimitDatetime": "2023-01-15T13:00:00Z",
-                "id": stock_without_booking.id,
-                "price": 1234,
-                "quantity": 2,
-            },
-        ]
-        assert response.json["image"] == {
-            "credit": "Ph. Oto",
-            "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(mediation.id)}",
-        }
-        assert response.json["status"] == "ACTIVE"
 
     @pytest.mark.usefixtures("db_session")
     def test_ticket_collection_by_email(self, client):
