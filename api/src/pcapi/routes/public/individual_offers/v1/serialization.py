@@ -374,7 +374,7 @@ class DateResponse(BaseStockResponse):
         )
 
 
-class DatesResponse(serialization.ConfiguredBaseModel):
+class PostDatesResponse(serialization.ConfiguredBaseModel):
     dates: typing.List[DateResponse] = pydantic.Field(description="The dates of the event.")
 
 
@@ -469,12 +469,16 @@ class EventOfferResponse(OfferResponse):
 
 
 class PaginationQueryParams(serialization.ConfiguredBaseModel):
-    limit: int = pydantic.Field(50, le=50, ge=0, description="The maximum number of items per page.")
+    limit: int = pydantic.Field(50, le=50, gt=0, description="The maximum number of items per page.")
     page: int = pydantic.Field(1, ge=1, description="The page number of the items to return.")
 
 
 class GetOffersQueryParams(PaginationQueryParams):
     venue_id: int | None = pydantic.Field(None, description="The venue id to filter offers on. Optional.")
+
+
+class GetDatesQueryParams(PaginationQueryParams):
+    pass
 
 
 class PaginationLinks(serialization.ConfiguredBaseModel):
@@ -527,7 +531,40 @@ class Pagination(serialization.ConfiguredBaseModel):
     limit_per_page: int = pydantic.Field(..., description="The maximum number of items per page.", example=50)
     pages_links: PaginationLinks
 
+    @classmethod
+    def build_pagination(
+        cls,
+        base_url: str,
+        current_page: int,
+        items_count: int,
+        items_total: int,
+        limit: int,
+        venue_id: int | None = None,
+    ) -> "Pagination":
+        return cls(
+            current_page=current_page,
+            items_count=items_count,
+            items_total=items_total,
+            last_page=items_total // limit + 1,
+            limit_per_page=limit,
+            pages_links=PaginationLinks.build_pagination_links(
+                base_url,
+                current_page,
+                limit,
+                items_total,
+                venue_id=venue_id,
+            ),
+        )
+
 
 class ProductOffersResponse(serialization.ConfiguredBaseModel):
     products: typing.List[ProductOfferResponse]
     pagination: Pagination
+
+
+class GetDatesResponse(serialization.ConfiguredBaseModel):
+    dates: typing.List[DateResponse]
+    pagination: Pagination
+
+    class Config:
+        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
