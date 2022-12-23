@@ -1,8 +1,6 @@
 import React, { FunctionComponent, SVGProps } from 'react'
 
-import { ExternalLinkIcon } from 'icons'
-import { ReactComponent as AlertSvg } from 'icons/ico-alert-grey.svg'
-import { ReactComponent as ArrowIcon } from 'icons/ico-right-circle-arrow.svg'
+import { ExternalLinkIcon, IcoCircleArrow, IcoAlertGrey } from 'icons'
 import { Button, ButtonLink } from 'ui-kit'
 import { LinkProps } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -45,7 +43,7 @@ const RedirectDialog = ({
       onCancel={onCancel}
       title={title}
       secondTitle={secondTitle}
-      icon={icon ?? AlertSvg}
+      icon={icon ?? IcoAlertGrey}
       hideIcon={hideIcon}
       explanation={children}
       extraClassNames={`${extraClassNames} ${styles['confirm-dialog-explanation']}`}
@@ -62,7 +60,7 @@ const RedirectDialog = ({
         </ButtonLink>
 
         <Button
-          Icon={cancelIcon || ArrowIcon}
+          Icon={cancelIcon || IcoCircleArrow}
           onClick={() => {
             onCancel()
           }}

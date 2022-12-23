@@ -16,8 +16,8 @@ import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapte
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
+import { IcoCircleArrow } from 'icons'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
-import { ReactComponent as CircledRightArrow } from 'icons/ico-right-circle-arrow.svg'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Titles from 'ui-kit/Titles/Titles'
@@ -521,7 +521,7 @@ const VenueEdition = () => {
             links={[
               {
                 href: `/structures/${offererId}/point-de-remboursement/`,
-                Icon: CircledRightArrow,
+                Icon: IcoCircleArrow,
                 linkTitle:
                   'Rattacher votre lieu à un point de remboursement valide',
               },

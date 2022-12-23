@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
+import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import GoBackLink from 'components/GoBackLink'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
-import { Title } from 'ui-kit'
+import { Banner, Title } from 'ui-kit'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { getCulturalPartnersAdapter } from '../adapters'
@@ -122,13 +123,14 @@ const CollectiveDataEdition = (): JSX.Element => {
       <Title level={1} className={styles['title']}>
         Mes informations pour les enseignants
       </Title>
-      <p className={styles.description}>
+      <Banner type="notification-info">
         Ce formulaire vous permet de renseigner des informations complémentaires
         concernant votre établissement et les actions menées auprès du public
         scolaire. Ces informations seront visibles par les enseignants et chefs
         d'établissement sur ADAGE. Cela leur permettra de mieux comprendre votre
         démarche d'éducation artistique et culturelle.
-      </p>
+      </Banner>
+      <MandatoryInfo className={styles.mandatory} />
       {isLoading ? (
         <Spinner className={styles.spinner} />
       ) : (
