@@ -39,7 +39,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
+                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"},
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -50,7 +50,7 @@ class PostProductTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.name == "Le champ des possibles"
         assert created_offer.venue == venue
-        assert created_offer.subcategoryId == "LIVRE_PAPIER"
+        assert created_offer.subcategoryId == "LIVRE_AUDIO_PHYSIQUE"
         assert created_offer.audioDisabilityCompliant is True
         assert created_offer.lastProvider.name == "Individual Offers public API"
         assert created_offer.mentalDisabilityCompliant is True
@@ -64,7 +64,7 @@ class PostProductTest:
 
         assert response.json == {
             "bookingEmail": None,
-            "categoryRelatedFields": {"author": None, "category": "LIVRE_PAPIER", "isbn": None},
+            "categoryRelatedFields": {"author": None, "category": "LIVRE_AUDIO_PHYSIQUE", "isbn": None},
             "description": None,
             "accessibility": {
                 "audioDisabilityCompliant": True,
@@ -319,7 +319,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
+                "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE"},
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -544,7 +544,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
+                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"},
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -567,7 +567,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
+                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"},
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -593,7 +593,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
+                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"},
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -616,7 +616,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
+                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"},
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -648,6 +648,24 @@ class PostProductTest:
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
         assert created_offer.extraData == {"showSubType": "1512", "showType": "1510"}
+
+    @pytest.mark.usefixtures("db_session")
+    def test_books_are_not_allowed(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products",
+            json={
+                "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
+                "accessibility": ACCESSIBILITY_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "A qui mieux mieux",
+            },
+        )
+
+        assert response.status_code == 400
+        assert offers_models.Offer.query.count() == 0
 
 
 class PostEventTest:
@@ -1030,6 +1048,21 @@ class GetProductTest:
             "status": "SOLD_OUT",
             "stock": None,
         }
+
+    @pytest.mark.usefixtures("db_session")
+    def test_books_may_be_retrieved(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products/{product_offer.id}"
+        )
+
+        assert response.status_code == 200
+        assert response.json["categoryRelatedFields"] == {"author": None, "category": "LIVRE_PAPIER", "isbn": None}
 
     @pytest.mark.usefixtures("db_session")
     def test_product_with_stock_and_image(self, client):
