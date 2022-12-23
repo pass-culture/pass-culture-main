@@ -267,7 +267,7 @@ class PostProductTest:
         )
 
         assert response.status_code == 400
-        assert response.json == {"stock.price": ["The value must be positive"]}
+        assert response.json == {"stock.price": ["Value must be positive"]}
 
     @pytest.mark.usefixtures("db_session")
     def test_quantity_must_be_positive(self, client):
@@ -289,7 +289,7 @@ class PostProductTest:
         )
 
         assert response.status_code == 400
-        assert response.json == {"stock.quantity": ["The value must be positive"]}
+        assert response.json == {"stock.quantity": ["Value must be positive"]}
 
     @pytest.mark.usefixtures("db_session")
     def test_is_duo_not_applicable(self, client):
