@@ -1040,12 +1040,17 @@ class GetProductTest:
             offer=product_offer, price=12.34, quantity=10, bookingLimitDatetime=datetime.datetime(2022, 1, 15, 13, 0, 0)
         )
         bookings_factories.BookingFactory(stock=bookable_stock)
-
         mediation = offers_factories.MediationFactory(offer=product_offer, credit="Ph. Oto")
+        product_offer_id = product_offer.id
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/products/{product_offer.id}"
-        )
+        num_query = 1  # feature flag WIP_ENABLE_OFFER_CREATION_API_V1
+        num_query += 1  # retrieve API key
+        num_query += 1  # retrieve offer
+
+        with testing.assert_num_queries(3):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/public/offers/v1/products/{product_offer_id}"
+            )
 
         assert response.status_code == 200
         assert response.json["stock"] == {
@@ -1089,16 +1094,24 @@ class GetEventTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_event(self, client):
         api_key = offerers_factories.ApiKeyFactory()
+        product = offers_factories.ProductFactory(thumbCount=1)
         event_offer = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             venue__managingOfferer=api_key.offerer,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
+            product=product,
         )
+        event_offer_id = event_offer.id
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events/{event_offer.id}"
-        )
+        num_query = 1  # feature flag WIP_ENABLE_OFFER_CREATION_API_V1
+        num_query += 1  # retrieve API key
+        num_query += 1  # retrieve offer
+
+        with testing.assert_num_queries(3):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/public/offers/v1/events/{event_offer_id}"
+            )
 
         assert response.status_code == 200
         assert response.json == {
@@ -1115,7 +1128,10 @@ class GetEventTest:
             "externalTicketOfficeUrl": None,
             "eventDuration": None,
             "id": event_offer.id,
-            "image": None,
+            "image": {
+                "credit": None,
+                "url": f"http://localhost/storage/thumbs/products/{human_ids.humanize(product.id)}",
+            },
             "itemCollectionDetails": None,
             "location": {"type": "physical", "venueId": event_offer.venueId},
             "name": "Vieux motard que jamais",
