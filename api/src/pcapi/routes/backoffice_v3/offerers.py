@@ -399,6 +399,7 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
         form.status.data = [ValidationStatus.NEW.value, ValidationStatus.PENDING.value]
 
     users_offerers = offerers_api.list_users_offerers_to_be_validated(
+        form.q.data,
         form.tags.data,
         form.status.data,
         form.offerer_status.data,

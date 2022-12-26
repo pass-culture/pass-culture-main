@@ -1493,26 +1493,54 @@ def list_users_offerers_to_be_validated_legacy(filter_: list[dict[str, typing.An
 
 
 def list_users_offerers_to_be_validated(
+    q: str | None,  # search query
     tags: list[offerers_models.OffererTag] | None = None,
     status: list[ValidationStatus] | None = None,
     offerer_status: list[ValidationStatus] | None = None,
     from_datetime: datetime | None = None,
     to_datetime: datetime | None = None,
 ) -> sa.orm.Query:
-    query = offerers_models.UserOfferer.query.options(
-        sa.orm.joinedload(offerers_models.UserOfferer.user),
-        sa.orm.joinedload(offerers_models.UserOfferer.offerer)
-        .joinedload(offerers_models.Offerer.action_history)
-        .joinedload(history_models.ActionHistory.authorUser),
-        sa.orm.joinedload(offerers_models.UserOfferer.offerer)
-        .joinedload(offerers_models.Offerer.UserOfferers)
-        .joinedload(offerers_models.UserOfferer.user),
+    query = (
+        offerers_models.UserOfferer.query.options(
+            sa.orm.joinedload(offerers_models.UserOfferer.user),
+            sa.orm.joinedload(offerers_models.UserOfferer.offerer)
+            .joinedload(offerers_models.Offerer.action_history)
+            .joinedload(history_models.ActionHistory.authorUser),
+            sa.orm.joinedload(offerers_models.UserOfferer.offerer).joinedload(offerers_models.Offerer.UserOfferers),
+            sa.orm.joinedload(offerers_models.UserOfferer.offerer)
+            .joinedload(offerers_models.Offerer.UserOfferers)
+            .joinedload(offerers_models.UserOfferer.user),
+        )
+        .join(users_models.User)
+        .join(offerers_models.Offerer)
     )
+
     if offerer_status:
-        query = query.join(
-            offerers_models.Offerer,
-            offerers_models.Offerer.id == offerers_models.UserOfferer.offererId,
-        ).filter(offerers_models.Offerer.validationStatus.in_(offerer_status))
+        query = query.filter(offerers_models.Offerer.validationStatus.in_(offerer_status))
+
+    if q:
+        sanitized_q = email_utils.sanitize_email(q)
+
+        if sanitized_q.isnumeric():
+            if len(sanitized_q) == 9:
+                query = query.filter(offerers_models.Offerer.siren == sanitized_q)
+            else:
+                raise exceptions.InvalidSiren("Le nombre de chiffres ne correspond pas à un SIREN")
+        elif email_utils.is_valid_email(sanitized_q):
+            query = query.filter(users_models.User.email == sanitized_q)
+        else:
+
+            name = q.replace(" ", "%").replace("-", "%")
+            name = clean_accents(name)
+
+            query = query.filter(
+                sa.or_(
+                    sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{name}%"),
+                    sa.func.unaccent(
+                        sa.func.concat(users_models.User.firstName, " ", users_models.User.lastName)
+                    ).ilike(f"%{name}%"),
+                )
+            )
 
     return _apply_query_filters(
         query,
