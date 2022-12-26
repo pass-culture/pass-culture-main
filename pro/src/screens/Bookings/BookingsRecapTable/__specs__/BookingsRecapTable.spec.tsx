@@ -2,159 +2,76 @@ import '@testing-library/jest-dom'
 
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import React from 'react'
+import React, { ComponentProps } from 'react'
 import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
-import {
-  BookingRecapStatus,
-  CollectiveBookingResponseModel,
-} from 'apiClient/v1'
 import { Audience } from 'core/shared'
 import { EMPTY_FILTER_VALUE } from 'screens/Bookings/BookingsRecapTable/components/Filters/_constants'
 import * as constants from 'screens/Bookings/BookingsRecapTable/constants/NB_BOOKINGS_PER_PAGE'
 import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
+import { bookingRecapFactory } from 'utils/apiFactories'
 
 import BookingsRecapTable from '../BookingsRecapTable'
 
-const mockedBooking = {
-  stock: {
-    offer_name: 'Avez-vous déjà vu',
-    type: 'thing',
-    stock_identifier: '1',
-    offer_identifier: '1',
-    offer_nonHumanizedId: 1,
-    offer_is_educational: false,
-  },
-  beneficiary: {
-    lastname: 'Klepi',
-    firstname: 'Sonia',
-    email: 'sonia.klepi@example.com',
-  },
-  booking_amount: 10,
-  booking_date: '2020-04-03T12:00:00Z',
-  booking_token: 'ZEHBGD',
-  booking_status: BookingRecapStatus.VALIDATED,
-  booking_is_duo: true,
-  venue: {
-    identifier: 'AE',
-    name: 'Librairie Kléber',
-  },
-  booking_status_history: [
-    {
-      status: BookingRecapStatus.BOOKED,
-      date: '2020-04-03T12:00:00Z',
-    },
-    {
-      status: BookingRecapStatus.VALIDATED,
-      date: '2020-04-23T12:00:00Z',
-    },
-  ],
-}
-
-const otherBooking = {
-  stock: {
-    offer_name: 'Autre nom offre',
-    type: 'thing',
-    stock_identifier: '2',
-    offer_identifier: '2',
-    offer_nonHumanizedId: 2,
-    offer_is_educational: false,
-  },
+const bookingBeneficiaryCustom = {
   beneficiary: {
     lastname: 'Parjeot',
     firstname: 'Micheline',
     email: 'michelinedu72@example.com',
   },
-  booking_amount: 10,
-  booking_date: '2020-04-03T12:00:00Z',
-  booking_token: 'ABCDE',
-  booking_status: BookingRecapStatus.VALIDATED,
-  booking_is_duo: true,
-  venue: {
-    identifier: 'AE',
-    name: 'Librairie Kléber',
-  },
-  booking_status_history: [
-    {
-      status: BookingRecapStatus.BOOKED,
-      date: '2020-04-03T12:00:00Z',
-    },
-    {
-      status: BookingRecapStatus.VALIDATED,
-      date: '2020-05-06T12:00:00Z',
-    },
-  ],
 }
 
-const collectiveBookingsRecap: CollectiveBookingResponseModel[] = [
-  {
-    stock: {
-      offer_name: 'Autre nom offre',
-      offer_identifier: '2',
-      offer_is_educational: false,
-      event_beginning_datetime: '2020-04-13T12:00:00Z',
-      number_of_tickets: 10,
-    },
-    institution: {
-      id: 1,
-      institutionType: 'COLLEGE',
-      name: 'BELLEVUE',
-      postalCode: '30100',
-      city: 'Ales',
-      phoneNumber: '',
-      institutionId: 'ABCDEF11',
-    },
-    booking_id: '1',
-    booking_identifier: 'A1',
-    booking_amount: 10,
-    booking_date: '2020-04-03T12:00:00Z',
-    booking_cancellation_limit_date: '2020-04-10T12:00:00Z',
-    booking_confirmation_date: '2020-04-03T12:00:00Z',
-    booking_confirmation_limit_date: '2020-04-03T12:00:00Z',
-    booking_token: 'ABCDE',
-    booking_status: BookingRecapStatus.VALIDATED,
-    booking_is_duo: true,
-    booking_status_history: [
-      {
-        status: BookingRecapStatus.BOOKED,
-        date: '2020-04-03T12:00:00Z',
-      },
-      {
-        status: BookingRecapStatus.VALIDATED,
-        date: '2020-05-06T12:00:00Z',
-      },
-    ],
+const bookingInstitutionCustom = {
+  institution: {
+    id: 1,
+    institutionType: 'COLLEGE',
+    name: 'BELLEVUE',
+    postalCode: '30100',
+    city: 'Ales',
+    phoneNumber: '',
+    institutionId: 'ABCDEF11',
   },
-]
+}
 
 describe('components | BookingsRecapTable', () => {
   let store: Store<Partial<RootState>>
+  type Props = ComponentProps<typeof BookingsRecapTable>
+
+  const renderBookingRecap = (props: Props) => {
+    return render(
+      <MemoryRouter initialEntries={['/reservations/collectives']}>
+        <Provider store={store}>
+          <BookingsRecapTable {...props} />
+        </Provider>
+      </MemoryRouter>
+    )
+  }
 
   beforeEach(() => {
     store = configureTestStore({})
   })
 
   it('should filter when filters change', async () => {
-    const bookingsRecap = [mockedBooking, otherBooking]
-    const props = {
+    const bookingsRecap = [
+      bookingRecapFactory(bookingBeneficiaryCustom),
+      bookingRecapFactory(),
+    ]
+    const props: Props = {
       bookingsRecap: bookingsRecap,
       isLoading: false,
       audience: Audience.INDIVIDUAL,
       reloadBookings: jest.fn(),
     }
-    render(
-      <Provider store={store}>
-        <BookingsRecapTable {...props} />
-      </Provider>
-    )
+    renderBookingRecap(props)
 
     // 2 lines = 12 cells
     expect(screen.getAllByRole('cell')).toHaveLength(12)
 
-    await userEvent.type(screen.getByRole('textbox'), 'Autre nom offre')
+    await userEvent.type(screen.getByRole('textbox'), 'Le nom de l’offre 2')
     await waitFor(() => {
       // 1 line = 6 cells
       expect(screen.getAllByRole('cell')).toHaveLength(6)
@@ -178,11 +95,9 @@ describe('components | BookingsRecapTable', () => {
   })
 
   it('should filter bookings on render', () => {
-    jest.mock('../utils/filterBookingsRecap', () => jest.fn())
-
     // Given
-    const props = {
-      bookingsRecap: [mockedBooking],
+    const props: Props = {
+      bookingsRecap: [bookingRecapFactory()],
       isLoading: false,
       locationState: {
         statuses: ['booked', 'cancelled'],
@@ -193,17 +108,13 @@ describe('components | BookingsRecapTable', () => {
     jest.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
 
     // When
-    render(
-      <Provider store={store}>
-        <BookingsRecapTable {...props} />
-      </Provider>
-    )
+    renderBookingRecap(props)
 
     // Then
     expect(filterBookingsRecap.default).toHaveBeenCalledWith(
       props.bookingsRecap,
       expect.objectContaining({
-        bookingStatus: props.locationState.statuses,
+        bookingStatus: props.locationState?.statuses,
         bookingBeneficiary: EMPTY_FILTER_VALUE,
         bookingToken: EMPTY_FILTER_VALUE,
         offerISBN: EMPTY_FILTER_VALUE,
@@ -217,9 +128,9 @@ describe('components | BookingsRecapTable', () => {
     // @ts-ignore
     // eslint-disable-next-line
     constants.NB_BOOKINGS_PER_PAGE = 1
-    const bookingsRecap = [mockedBooking, otherBooking]
+    const bookingsRecap = [bookingRecapFactory(), bookingRecapFactory()]
     jest.spyOn(filterBookingsRecap, 'default').mockReturnValue(bookingsRecap)
-    const props = {
+    const props: Props = {
       bookingsRecap: bookingsRecap,
       isLoading: false,
       audience: Audience.INDIVIDUAL,
@@ -227,11 +138,7 @@ describe('components | BookingsRecapTable', () => {
     }
 
     // When
-    render(
-      <Provider store={store}>
-        <BookingsRecapTable {...props} />
-      </Provider>
-    )
+    renderBookingRecap(props)
 
     // Then
     // 1 line = 6 cells
@@ -250,22 +157,17 @@ describe('components | BookingsRecapTable', () => {
     // @ts-ignore
     // eslint-disable-next-line
     constants.NB_BOOKINGS_PER_PAGE = 1
-    jest
-      .spyOn(filterBookingsRecap, 'default')
-      .mockReturnValue(collectiveBookingsRecap)
-    const props = {
-      bookingsRecap: collectiveBookingsRecap,
+    const bookingRecap = bookingRecapFactory(bookingInstitutionCustom)
+    jest.spyOn(filterBookingsRecap, 'default').mockReturnValue([bookingRecap])
+    const props: Props = {
+      bookingsRecap: [bookingRecap],
       isLoading: false,
       audience: Audience.COLLECTIVE,
       reloadBookings: jest.fn(),
     }
 
     // When
-    render(
-      <Provider store={store}>
-        <BookingsRecapTable {...props} />
-      </Provider>
-    )
+    renderBookingRecap(props)
 
     // Then
     // 1 line = 6 cells
@@ -277,5 +179,92 @@ describe('components | BookingsRecapTable', () => {
     expect(cells[3]).toHaveTextContent('Places et prix')
     expect(cells[4]).toHaveTextContent('Statut')
     expect(cells[5]).toHaveTextContent('')
+  })
+
+  it('should not render a Header component when there is no filtered booking', async () => {
+    // given
+    const props: Props = {
+      bookingsRecap: [],
+      audience: Audience.INDIVIDUAL,
+      isLoading: false,
+      reloadBookings: jest.fn(),
+    }
+
+    // When
+    renderBookingRecap(props)
+
+    // Then
+    expect(
+      screen.getByText('Aucune réservation trouvée pour votre recherche')
+    ).toBeInTheDocument()
+  })
+
+  it('should reset filters when clicking on "afficher toutes les réservations"', async () => {
+    // given
+    const props: Props = {
+      audience: Audience.INDIVIDUAL,
+      bookingsRecap: [bookingRecapFactory()],
+      isLoading: false,
+      reloadBookings: jest.fn(),
+    }
+
+    renderBookingRecap(props)
+
+    await userEvent.type(screen.getByRole('textbox'), 'Le nom de l’offre 2')
+
+    const displayAllBookingsButton = screen.getByRole('button', {
+      name: /afficher toutes les réservations/i,
+    })
+
+    // When
+    await userEvent.click(displayAllBookingsButton)
+
+    // Then
+    const offerName = screen.getByRole('textbox')
+    expect(offerName).toHaveValue('')
+  })
+
+  it('should not show pagination when applying filters with no result', async () => {
+    // given
+    const bookingsRecap = [bookingRecapFactory(), bookingRecapFactory()]
+    const props: Props = {
+      audience: Audience.INDIVIDUAL,
+      bookingsRecap: bookingsRecap,
+      isLoading: false,
+      reloadBookings: jest.fn(),
+    }
+    renderBookingRecap(props)
+
+    await userEvent.click(screen.getAllByRole('button')[1])
+
+    // when
+    await userEvent.type(screen.getByRole('textbox'), 'not findable')
+
+    // then
+    expect(screen.queryByText('Page 1/1')).not.toBeInTheDocument()
+  })
+
+  it('should update currentPage when clicking on next page button', async () => {
+    // Given
+    const spyOnFilterBookingsRecap = jest.spyOn(filterBookingsRecap, 'default')
+    const bookingsRecap = [bookingRecapFactory(), bookingRecapFactory()]
+    spyOnFilterBookingsRecap.mockReturnValue(bookingsRecap)
+
+    const props: Props = {
+      audience: Audience.INDIVIDUAL,
+      bookingsRecap: bookingsRecap,
+      isLoading: false,
+      reloadBookings: jest.fn(),
+    }
+
+    // When
+    renderBookingRecap(props)
+    await userEvent.click(screen.getAllByRole('button')[1])
+
+    // Then
+    const bookingRow = screen.getAllByRole('cell')
+
+    expect(spyOnFilterBookingsRecap).toHaveBeenCalled()
+    expect(bookingRow[0]).toHaveTextContent('Le nom de l’offre')
   })
 })

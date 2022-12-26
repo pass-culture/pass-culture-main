@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react'
+import { useLocation } from 'react-router'
 import type { Column } from 'react-table'
 
 import {
@@ -16,6 +17,7 @@ import {
   EMPTY_FILTER_VALUE,
   TableWrapper,
 } from './components'
+import { bookingIdOmnisearchFilter } from './components/Filters/FilterByOmniSearch/constants'
 import { NB_BOOKINGS_PER_PAGE } from './constants'
 import { BookingsFilters } from './types'
 import { filterBookingsRecap, getColumnsByAudience } from './utils'
@@ -45,7 +47,9 @@ const BookingsRecapTable = <
 }: IBookingsRecapTableProps<T>) => {
   const [filteredBookings, setFilteredBookings] = useState(bookingsRecap)
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_INDEX)
-
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const defaultBookingId = queryParams.get('bookingId') || EMPTY_FILTER_VALUE
   const [filters, setFilters] = useState<BookingsFilters>({
     bookingBeneficiary: EMPTY_FILTER_VALUE,
     bookingToken: EMPTY_FILTER_VALUE,
@@ -54,9 +58,12 @@ const BookingsRecapTable = <
     bookingStatus: locationState?.statuses.length
       ? locationState.statuses
       : [...ALL_BOOKING_STATUS],
-    selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
-    keywords: '',
+    selectedOmniSearchCriteria: queryParams.get('bookingId')
+      ? bookingIdOmnisearchFilter.id
+      : DEFAULT_OMNISEARCH_CRITERIA,
+    keywords: defaultBookingId,
     bookingInstitution: EMPTY_FILTER_VALUE,
+    bookingId: defaultBookingId,
   })
 
   useEffect(() => {
@@ -95,6 +102,7 @@ const BookingsRecapTable = <
       bookingStatus: [...ALL_BOOKING_STATUS],
       keywords: '',
       selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
+      bookingId: EMPTY_FILTER_VALUE,
     }
     setFilters(filtersBookingResults)
     applyFilters(filtersBookingResults)

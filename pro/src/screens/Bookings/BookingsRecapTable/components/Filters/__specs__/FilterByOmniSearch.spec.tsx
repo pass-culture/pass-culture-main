@@ -47,11 +47,13 @@ describe('components | FilterByOmniSearch', () => {
 
     // Then
     expect(screen.getByRole('combobox')).toBeInTheDocument()
-    expect(options).toHaveLength(2)
+    expect(options).toHaveLength(3)
     expect(options[0]).toHaveTextContent('Offre')
     expect(options[0]).toHaveValue('offre')
     expect(options[1]).toHaveTextContent('Établissement')
     expect(options[1]).toHaveValue('établissement')
+    expect(options[2]).toHaveTextContent('Réservation')
+    expect(options[2]).toHaveValue('booking_id')
   })
 
   it('should display the correct placeholder for current option selected', () => {
@@ -81,6 +83,7 @@ describe('components | FilterByOmniSearch', () => {
         offerISBN: '',
         offerName: '',
         bookingInstitution: '',
+        bookingId: '',
       },
       { keywords: 'Firost', selectedOmniSearchCriteria: 'bénéficiaire' }
     )
@@ -103,6 +106,7 @@ describe('components | FilterByOmniSearch', () => {
         offerISBN: '12548',
         offerName: '',
         bookingInstitution: '',
+        bookingId: '',
       },
       { keywords: '12548', selectedOmniSearchCriteria: 'isbn' }
     )

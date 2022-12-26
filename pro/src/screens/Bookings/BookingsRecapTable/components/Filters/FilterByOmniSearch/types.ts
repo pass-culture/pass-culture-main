@@ -7,4 +7,5 @@ export type BookingOmniSearchFilters = Pick<
   | 'offerISBN'
   | 'offerName'
   | 'bookingInstitution'
+  | 'bookingId'
 >
