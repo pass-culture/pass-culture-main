@@ -42,6 +42,13 @@ const tokenOmnisearchFilter: OmnisearchFilter = {
   selectOptionText: 'Contremarque',
 }
 
+export const bookingIdOmnisearchFilter: OmnisearchFilter = {
+  id: 'booking_id',
+  placeholderText: 'Rechercher par numéro de réservation',
+  stateKey: 'bookingId',
+  selectOptionText: 'Réservation',
+}
+
 export const INDIVIDUAL_OMNISEARCH_FILTERS: OmnisearchFilter[] = [
   offerOmnisearchFilter,
   beneficiaryOmnisearchFilter,
@@ -51,4 +58,5 @@ export const INDIVIDUAL_OMNISEARCH_FILTERS: OmnisearchFilter[] = [
 export const COLLECTIVE_OMNISEARCH_FILTERS: OmnisearchFilter[] = [
   offerOmnisearchFilter,
   institutionOmnisearchFilter,
+  bookingIdOmnisearchFilter,
 ]

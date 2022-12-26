@@ -114,6 +114,7 @@ export const stockFactory = (customStock = {}) => {
     quantity: null,
     activationCodes: [],
     remainingQuantity: 2,
+    isbn: '9787605639121',
     ...customStock,
   }
 }
@@ -131,6 +132,7 @@ export const bookingRecapFactory = (customBookingRecap = {}) => {
     booking_amount: 0,
     booking_date: '2020-04-12T19:31:12Z',
     booking_is_duo: false,
+    booking_id: '1',
     booking_status: BookingRecapStatus.BOOKED,
     booking_status_history: [
       {
@@ -145,6 +147,7 @@ export const bookingRecapFactory = (customBookingRecap = {}) => {
       offer_name: offer.name,
       offer_is_educational: false,
       stock_identifier: offer.stocks[0].id,
+      offer_isbn: offer.stocks[0].isbn,
     },
     ...customBookingRecap,
   }

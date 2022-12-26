@@ -19,6 +19,19 @@ const doesOfferNameMatchFilter = <
   return true
 }
 
+const doesBookingIdMatchFilter = <
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+>(
+  bookingId: string,
+  booking: T
+): boolean => {
+  if (bookingId !== EMPTY_FILTER_VALUE) {
+    const offerNameFromBooking = _sanitize(booking.booking_id)
+    return offerNameFromBooking.includes(_sanitize(bookingId))
+  }
+  return true
+}
+
 const doesBookingBeneficiaryMatchFilter = (
   bookingBeneficiary: string,
   booking: BookingRecapResponseModel
@@ -137,12 +150,14 @@ const filterBookingsRecap = <
     offerName,
     bookingStatus,
     bookingInstitution,
+    bookingId,
   } = filters
 
   return bookingsRecap.filter(booking => {
     const matchFilters =
       doesOfferNameMatchFilter(offerName, booking) &&
-      doesBookingStatusMatchFilter(bookingStatus, booking)
+      doesBookingStatusMatchFilter(bookingStatus, booking) &&
+      doesBookingIdMatchFilter(bookingId, booking)
 
     if (isBookingCollectiveBooking(booking)) {
       return (

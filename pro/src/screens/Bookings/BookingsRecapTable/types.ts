@@ -7,4 +7,5 @@ export type BookingsFilters = {
   selectedOmniSearchCriteria: string
   keywords: string
   bookingInstitution: string
+  bookingId: string
 }
