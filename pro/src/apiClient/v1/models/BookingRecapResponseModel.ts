@@ -16,5 +16,6 @@ export type BookingRecapResponseModel = {
   booking_status_history: Array<BookingRecapResponseBookingStatusHistoryModel>;
   booking_token?: string | null;
   stock: BookingRecapResponseStockModel;
+  booking_id: string;
 };
 

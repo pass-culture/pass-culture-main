@@ -47,6 +47,7 @@ const FilterByOmniSearch = ({
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
       bookingInstitution: EMPTY_FILTER_VALUE,
+      bookingId: EMPTY_FILTER_VALUE,
     }
 
     const omniSearchStateKey = omnisearchFilters.find(
@@ -87,7 +88,11 @@ const FilterByOmniSearch = ({
         onChange={handleOmniSearchCriteriaChange}
       >
         {omnisearchFilters.map(selectOption => (
-          <option key={selectOption.id} value={selectOption.id}>
+          <option
+            key={selectOption.id}
+            selected={selectOption.id === selectedOmniSearchCriteria}
+            value={selectOption.id}
+          >
             {selectOption.selectOptionText}
           </option>
         ))}
