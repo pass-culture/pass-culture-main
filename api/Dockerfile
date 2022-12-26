@@ -47,15 +47,13 @@ RUN apt-get update \
 		libxmlsec1-openssl \
 		xmlsec1
 
-COPY --from=builder /home/pcapi/.local /home/pcapi/.local
+USER pcapi
+
+COPY --chown=pcapi:pcapi --from=builder /home/pcapi/.local /home/pcapi/.local
 
 WORKDIR /usr/src/app
 
-COPY --from=sources /tmp/src .
-
-RUN chown -R pcapi:pcapi .
-
-USER pcapi
+COPY --chown=pcapi:pcapi --from=sources /tmp/src .
 
 ######### DEV ##########
 
