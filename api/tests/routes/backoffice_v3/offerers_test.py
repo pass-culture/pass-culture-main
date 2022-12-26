@@ -1431,6 +1431,19 @@ class ListUserOffererToValidateTest:
         rows = html_parser.extract_table_rows(response.data)
         assert [int(row["ID Compte pro"]) for row in rows] == [uo.user.id for uo in (user_offerer_3, user_offerer_2)]
 
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_list_search_by_email(self, authenticated_client, user_offerer_to_be_validated):
+        # when
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(
+                url_for("backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", q="b@example.com")
+            )
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Email Compte pro"] for row in rows} == {"b@example.com"}
+
 
 class ValidateOffererAttachmentUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
