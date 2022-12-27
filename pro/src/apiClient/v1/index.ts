@@ -34,6 +34,7 @@ export type { CollectiveBookingByIdResponseModel } from './models/CollectiveBook
 export type { CollectiveBookingCollectiveStockResponseModel } from './models/CollectiveBookingCollectiveStockResponseModel';
 export type { CollectiveBookingEducationalRedactorResponseModel } from './models/CollectiveBookingEducationalRedactorResponseModel';
 export type { CollectiveBookingResponseModel } from './models/CollectiveBookingResponseModel';
+export { CollectiveBookingStatus } from './models/CollectiveBookingStatus';
 export { CollectiveBookingStatusFilter } from './models/CollectiveBookingStatusFilter';
 export type { CollectiveOfferOfferVenueResponseModel } from './models/CollectiveOfferOfferVenueResponseModel';
 export type { CollectiveOfferResponseIdModel } from './models/CollectiveOfferResponseIdModel';
