@@ -16,6 +16,7 @@ export type VenueListItemResponseModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
+  nonHumanizedId: number;
   offererName: string;
   publicName?: string | null;
   siret?: string | null;

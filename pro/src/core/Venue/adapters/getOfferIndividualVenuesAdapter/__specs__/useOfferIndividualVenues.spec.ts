@@ -43,6 +43,7 @@ describe('useGetOfferIndividualVenues', () => {
         bookingEmail: '',
         businessUnit: null,
         businessUnitId: null,
+        nonHumanizedId: 1,
         id: 'AAAA',
         isVirtual: false,
         managingOffererId: 'AA',

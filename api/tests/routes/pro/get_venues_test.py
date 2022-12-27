@@ -27,6 +27,7 @@ def test_response_serialization(app):
     assert len(response.json["venues"]) == 1
     assert response.json["venues"][0] == {
         "id": humanize(venue.id),
+        "nonHumanizedId": venue.id,
         "managingOffererId": humanize(venue.managingOffererId),
         "name": venue.name,
         "offererName": user_offerer.offerer.name,
