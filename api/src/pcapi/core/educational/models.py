@@ -26,6 +26,7 @@ from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 from pcapi.models import Base
 from pcapi.models import Model
+from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.pc_object import PcObject
@@ -355,6 +356,25 @@ class CollectiveOffer(
         if self.collectiveStock is None:
             return False
         return self.collectiveStock.is_cancellable_from_offerer
+
+    @property
+    def lastBookingId(self) -> int | None:
+        query = db.session.query(func.max(CollectiveBooking.id))
+        query = query.join(CollectiveStock, CollectiveBooking.collectiveStock)
+        query = query.filter(CollectiveStock.collectiveOfferId == self.id)
+        return query.scalar()
+
+    @property
+    def lastBookingStatus(self) -> int | CollectiveBookingStatus:
+        subquery = db.session.query(func.max(CollectiveBooking.id))
+        subquery = subquery.join(CollectiveStock, CollectiveBooking.collectiveStock)
+        subquery = subquery.filter(CollectiveStock.collectiveOfferId == self.id)
+
+        query = db.session.query(CollectiveBooking.status)
+        query = query.join(CollectiveStock, CollectiveBooking.collectiveStock)
+        query = query.filter(CollectiveStock.collectiveOfferId == self.id, CollectiveBooking.id.in_(subquery))
+        result = query.one_or_none()
+        return result[0] if result else None  # type: ignore [return-value]
 
 
 class CollectiveOfferTemplate(
