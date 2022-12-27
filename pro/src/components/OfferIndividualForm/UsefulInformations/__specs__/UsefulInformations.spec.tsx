@@ -53,6 +53,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     const offererNames: TOffererName[] = [
       {
         id: 'AA',
+        nonHumanizedId: 1,
         name: 'Offerer AA',
       },
     ]

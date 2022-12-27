@@ -199,6 +199,7 @@ describe('screens:StocksEvent:Edition', () => {
         longitude: 2.3785,
         managingOfferer: {
           address: '1 boulevard Poissonnière',
+          nonHumanizedId: 1,
           city: 'Paris',
           dateCreated: '2022-05-18T08:25:30.891369Z',
           dateModifiedAtLastProvider: '2022-05-18T08:25:30.891364Z',

@@ -133,6 +133,7 @@ class GetOffererResponseModel(BaseModel):
 
 class GetOffererNameResponseModel(BaseModel):
     id: str
+    nonHumanizedId: int
     name: str
 
     _humanize_id = humanize_field("id")

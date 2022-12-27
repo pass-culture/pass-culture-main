@@ -267,6 +267,7 @@ class Returns200Test:
                     "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
                     "fieldsUpdated": [],
                     "id": humanize(offerer.id),
+                    "nonhumanizedId": offerer.id,
                     "idAtProviders": None,
                     "isActive": True,
                     "isValidated": True,

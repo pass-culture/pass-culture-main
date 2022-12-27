@@ -116,6 +116,7 @@ const apiOffer: GetIndividualOfferResponseModel = {
     latitude: 48.87004,
     longitude: 2.3785,
     managingOfferer: {
+      nonHumanizedId: 1,
       address: '1 boulevard Poissonnière',
       city: 'Paris',
       dateCreated: '2022-05-18T08:25:30.891369Z',
