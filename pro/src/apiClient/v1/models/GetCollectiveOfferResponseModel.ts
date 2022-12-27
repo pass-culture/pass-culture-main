@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { CollectiveBookingStatus } from './CollectiveBookingStatus';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { GetCollectiveOfferCollectiveStockResponseModel } from './GetCollectiveOfferCollectiveStockResponseModel';
@@ -32,6 +33,8 @@ export type GetCollectiveOfferResponseModel = {
   isCancellable: boolean;
   isEditable: boolean;
   isVisibilityEditable: boolean;
+  lastBookingId?: number | null;
+  lastBookingStatus?: CollectiveBookingStatus | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
