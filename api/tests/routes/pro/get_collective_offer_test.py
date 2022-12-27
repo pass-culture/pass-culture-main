@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.core import testing
 import pcapi.core.educational.factories as educational_factories
+import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
@@ -33,6 +34,8 @@ class Returns200Test:
         assert "institution" in response.json
         assert response.json["isVisibilityEditable"] == True
         assert response_json["nonHumanizedId"] == offer.id
+        assert response_json["lastBookingStatus"] is None
+        assert response_json["lastBookingId"] is None
 
     def test_sold_out(self, client):
         # Given
@@ -102,6 +105,28 @@ class Returns200Test:
 
         with testing.assert_no_duplicated_queries():
             client.get(f"/collective/offers/{humanized_offer_id}")
+
+    def test_last_booking_fields(self, client):
+        # Given
+        stock = educational_factories.CollectiveStockFactory()
+        offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock, status=educational_models.CollectiveBookingStatus.CANCELLED
+        )
+        booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock, status=educational_models.CollectiveBookingStatus.REIMBURSED
+        )
+
+        # When
+        client = client.with_session_auth(email="user@example.com")
+        response = client.get(f"/collective/offers/{humanize(offer.id)}")
+
+        # Then
+        response_json = response.json
+        assert response.status_code == 200
+        assert response_json["lastBookingId"] == booking.id
+        assert response_json["lastBookingStatus"] == booking.status.value
 
 
 @pytest.mark.usefixtures("db_session")

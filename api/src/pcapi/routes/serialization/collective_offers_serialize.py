@@ -11,6 +11,7 @@ from pydantic.types import constr
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
@@ -347,6 +348,8 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     institution: EducationalInstitutionResponseModel | None
     isVisibilityEditable: bool
     templateId: str | None
+    lastBookingStatus: CollectiveBookingStatus | None
+    lastBookingId: int | None
 
 
 class CollectiveOfferResponseIdModel(BaseModel):
