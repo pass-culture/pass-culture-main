@@ -270,6 +270,7 @@ describe('screens:StocksEvent:Edition', () => {
           offererName: 'offerer',
           isVirtual: false,
           id: 'venueid',
+          nonHumanizedId: 1,
           managingOffererId: '',
         },
         stocks: [],
