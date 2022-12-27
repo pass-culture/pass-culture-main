@@ -160,8 +160,8 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     ({ saveDraft = false } = {}) =>
     async () => {
       setIsClickingFromActionBar(true)
+      /* istanbul ignore next: DEBT, TO FIX */
       if (Object.keys(formik.errors).length !== 0) {
-        /* istanbul ignore next: DEBT, TO FIX */
         setIsClickingFromActionBar(false)
       }
 
@@ -236,6 +236,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   }
 
   const onConfirmDeleteStock = async () => {
+    /* istanbul ignore next: DEBT, TO FIX */
     if (formik.values.stockId === undefined) {
       formik.resetForm({ values: STOCK_THING_FORM_DEFAULT_VALUES })
       return
@@ -243,6 +244,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     try {
       await api.deleteStock(formik.values.stockId)
       const response = await getOfferIndividualAdapter(offer.id)
+      /* istanbul ignore next: DEBT, TO FIX */
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }
@@ -254,7 +256,19 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     deleteConfirmHide()
   }
 
-  let actions: IStockFormRowAction[] = []
+  const actions: IStockFormRowAction[] = [
+    {
+      callback:
+        /* istanbul ignore next: DEBT, TO FIX */
+        formik.values.bookingsQuantity !== '0'
+          ? deleteConfirmShow
+          : onConfirmDeleteStock,
+      label: 'Supprimer le stock',
+      disabled: false,
+      Icon: IcoTrashFilled,
+    },
+  ]
+
   let description
   if (!offer.isDigital) {
     description = `Les utilisateurs ont ${
@@ -268,28 +282,15 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       isDisabled = true
     }
 
-    actions = [
-      {
-        callback: activationCodeFormShow,
-        label: "Ajouter des codes d'activation",
-        disabled: isDisabled,
-        Icon: IcoTicketPlusFull,
-      },
-    ]
+    actions.push({
+      callback: activationCodeFormShow,
+      label: "Ajouter des codes d'activation",
+      disabled: isDisabled,
+      Icon: IcoTicketPlusFull,
+    })
   }
 
-  const cannotDeleteStock = isDisabled || isSynchronized
-
-  actions.push({
-    callback:
-      /* istanbul ignore next: DEBT, TO FIX */
-      formik.values.bookingsQuantity !== '0'
-        ? deleteConfirmShow
-        : onConfirmDeleteStock,
-    label: 'Supprimer le stock',
-    disabled: cannotDeleteStock,
-    Icon: IcoTrashFilled,
-  })
+  actions[0].disabled = isDisabled || isSynchronized
 
   if (offer.isDigital) {
     description += `
