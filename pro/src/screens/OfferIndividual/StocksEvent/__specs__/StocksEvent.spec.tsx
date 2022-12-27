@@ -319,4 +319,53 @@ describe('screens:StocksEvent', () => {
       screen.queryByRole('heading', { name: /Stock & Prix/ })
     ).toBeInTheDocument()
   })
+  it('should not display any message when user delete empty stock', async () => {
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stocks: [{ id: 'STOCK_ID' } as StockResponseModel],
+    })
+    const stock = {
+      id: 'STOCK_ID',
+      quantity: 10,
+      price: 10.01,
+      remainingQuantity: 6,
+      bookingsQuantity: 0,
+      isEventDeletable: true,
+      beginningDatetime: '2023-03-10T00:00:00.0200',
+    }
+    props.offer = {
+      ...(offer as IOfferIndividual),
+      stocks: [stock as IOfferIndividualStock],
+    }
+    renderStockEventScreen({ props, storeOverride, contextValue })
+    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
+    expect(
+      screen.queryByText('Voulez-vous supprimer ce stock ?')
+    ).not.toBeInTheDocument()
+
+    expect(screen.queryByText('Le stock a été supprimé.')).toBeInTheDocument()
+    expect(api.deleteStock).toHaveBeenCalledTimes(1)
+  })
+  it('should not display any message when user delete empty stock', async () => {
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'STOCK_ID' })
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stocks: [{ id: 'STOCK_ID' } as StockResponseModel],
+    })
+    props.offer = {
+      ...(offer as IOfferIndividual),
+      stocks: [],
+    }
+    renderStockEventScreen({ props, storeOverride, contextValue })
+    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
+    expect(
+      screen.queryByText('Voulez-vous supprimer ce stock ?')
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByText('Le stock a été supprimé.')
+    ).not.toBeInTheDocument()
+    expect(api.deleteStock).toHaveBeenCalledTimes(0)
+  })
 })
