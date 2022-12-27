@@ -113,6 +113,7 @@ export interface IOfferIndividualStock {
 export interface IOfferIndividualOfferer {
   id: string
   name: string
+  nonHumanizedId: number
 }
 
 export interface IOfferIndividualVenue {

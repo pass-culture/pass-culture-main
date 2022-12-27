@@ -66,6 +66,7 @@ describe('routes::Summary::serializers', () => {
         city: 'Paris',
         offerer: {
           id: 'OFID',
+          nonHumanizedId: 1,
           name: 'Offerer name',
         },
         departmentCode: '75',

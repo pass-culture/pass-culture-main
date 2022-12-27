@@ -228,6 +228,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         city: 'Paris',
         offerer: {
           id: 'OFID',
+          nonHumanizedId: 1,
           name: 'Offerer name',
         },
         departmentCode: '75',
@@ -269,7 +270,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           },
         },
       ],
-      offererNames: [{ id: 'OFID', name: 'Offerer name' }],
+      offererNames: [{ id: 'OFID', nonHumanizedId: 1, name: 'Offerer name' }],
       categories,
       subCategories,
     }

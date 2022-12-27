@@ -137,6 +137,7 @@ describe('OfferIndividualForm', () => {
     offererNames = [
       {
         id: 'virtualAndPhysical',
+        nonHumanizedId: 1,
         name: 'Offerer virtual and physical',
       },
     ]

@@ -219,6 +219,7 @@ describe('screens:StocksThing', () => {
         managingOfferer: {
           address: '1 boulevard Poissonnière',
           city: 'Paris',
+          nonHumanizedId: 1,
           dateCreated: '2022-05-18T08:25:30.891369Z',
           dateModifiedAtLastProvider: '2022-05-18T08:25:30.891364Z',
           fieldsUpdated: [],

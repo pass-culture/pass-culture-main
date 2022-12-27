@@ -183,7 +183,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
           },
         },
       ],
-      offererNames: [{ id: 'A', name: 'mon offerer A' }],
+      offererNames: [{ id: 'A', nonHumanizedId: 1, name: 'mon offerer A' }],
       categories,
       subCategories,
     }
