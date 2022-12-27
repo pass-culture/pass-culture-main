@@ -44,11 +44,17 @@ class GetVenueBankInformationApplicationDetailsByApplicationIdTest:
         )
 
 
-VENUE_DMS_TOKEN_FIELD = {
+VENUE_DMS_TOKEN_FIELD_WITHOUT_PRO_PREFIX = {
     "id": "Q2hhbXAtMjY3NDMyMQ==",
     "label": "Identifiant du lieu",
     "stringValue": "50a7536a21c8",
     "value": "50a7536a21c8",
+}
+VENUE_DMS_TOKEN_FIELD_WITH_PRO_PREFIX = {
+    "id": "Q2hhbXAtMjY3NDMyMQ==",
+    "label": "Identifiant du lieu",
+    "stringValue": "PRO-50a7536a21c8",
+    "value": "PRO-50a7536a21c8",
 }
 VENUE_FIELD = {
     "address": {
@@ -121,8 +127,10 @@ class ParseRawBankInfoDataTest:
         "procedure_version, etablissement, identifiant_du_lieu, expected_result",
         [
             (3, VENUE_FIELD, None, EXPECTED_RESULT_WITH_SIRET_V3),
-            (4, None, VENUE_DMS_TOKEN_FIELD, EXPECTED_RESULT_V4),
-            (4, VENUE_FIELD, VENUE_DMS_TOKEN_FIELD, EXPECTED_RESULT_V4),
+            (4, None, VENUE_DMS_TOKEN_FIELD_WITHOUT_PRO_PREFIX, EXPECTED_RESULT_V4),
+            (4, VENUE_FIELD, VENUE_DMS_TOKEN_FIELD_WITHOUT_PRO_PREFIX, EXPECTED_RESULT_V4),
+            (4, None, VENUE_DMS_TOKEN_FIELD_WITH_PRO_PREFIX, EXPECTED_RESULT_V4),
+            (4, VENUE_FIELD, VENUE_DMS_TOKEN_FIELD_WITH_PRO_PREFIX, EXPECTED_RESULT_V4),
         ],
     )
     def test_parsing_works(self, procedure_version, etablissement, identifiant_du_lieu, expected_result):

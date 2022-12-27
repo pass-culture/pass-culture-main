@@ -85,7 +85,7 @@ class Returns200Test:
             "demarchesSimplifieesApplicationId": venue.demarchesSimplifieesApplicationId,
             "departementCode": venue.departementCode,
             "description": venue.description,
-            "dmsToken": venue.dmsToken,
+            "dmsToken": "PRO-" + venue.dmsToken,
             "fieldsUpdated": venue.fieldsUpdated,
             "iban": bank_information.iban,
             "id": humanize(venue.id),

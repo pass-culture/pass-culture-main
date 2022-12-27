@@ -18,8 +18,8 @@ ID_TO_NAME_MAPPING = {
     "Q2hhbXAtNDA3ODky": "phone_number",
     "Q2hhbXAtMzUyNzIy": "iban",
     "Q2hhbXAtMzUyNzI3": "bic",
-    "Q2hhbXAtMjY3NDMyMQ==": "dms_token",
 }
+DMS_TOKEN_ID = "Q2hhbXAtMjY3NDMyMQ=="
 ACCEPTED_DMS_STATUS = (dms_models.DmsApplicationStates.closed,)
 DRAFT_DMS_STATUS = (
     dms_models.DmsApplicationStates.received,
@@ -29,6 +29,7 @@ REJECTED_DMS_STATUS = (
     dms_models.DmsApplicationStates.refused,
     dms_models.DmsApplicationStates.without_continuation,
 )
+DMS_TOKEN_PRO_PREFIX = "PRO-"
 
 
 class ApplicationDetail:
@@ -70,6 +71,8 @@ def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
     for field in data["dossier"]["champs"]:
         if field["id"] in ID_TO_NAME_MAPPING:
             result[ID_TO_NAME_MAPPING[field["id"]]] = field["value"]
+        elif field["id"] == DMS_TOKEN_ID:
+            result["dms_token"] = _remove_dms_pro_prefix(field["value"])
         elif field["id"] == "Q2hhbXAtNzgyODAw" and procedure_version in (2, 3):
             result["siret"] = field["etablissement"]["siret"]
             result["siren"] = field["etablissement"]["siret"][:9]
@@ -83,6 +86,12 @@ def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
             case "URL du lieu":
                 result["venue_url_annotation_id"] = annotation["id"]
     return result
+
+
+def _remove_dms_pro_prefix(dms_token: str) -> str:
+    if dms_token.startswith(DMS_TOKEN_PRO_PREFIX):
+        return dms_token[len(DMS_TOKEN_PRO_PREFIX) :]
+    return dms_token
 
 
 def get_venue_bank_information_application_details_by_application_id(

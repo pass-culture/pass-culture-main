@@ -13,6 +13,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
+from pcapi.domain.demarches_simplifiees import DMS_TOKEN_PRO_PREFIX
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base
@@ -259,6 +260,8 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
                 venue.reimbursementPointId = reimbursement_link.reimbursementPointId
 
         venue.collectiveLegalStatus = venue.venueEducationalStatus
+        if venue.dmsToken:
+            venue.dmsToken = DMS_TOKEN_PRO_PREFIX + venue.dmsToken
         return super().from_orm(venue)
 
 
