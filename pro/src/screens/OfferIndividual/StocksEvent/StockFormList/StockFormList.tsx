@@ -58,7 +58,9 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
           <Button
             variant={ButtonVariant.TERNARY}
             Icon={IconPlusCircle}
-            onClick={() => arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)}
+            onClick={() =>
+              arrayHelpers.unshift(STOCK_EVENT_FORM_DEFAULT_VALUES)
+            }
             disabled={isSynchronized}
           >
             Ajouter une date
@@ -74,6 +76,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
                   {
                     callback: async () => {
                       if (stockValues.stockId) {
+                        /* istanbul ignore next: DEBT, TO FIX */
                         if (parseInt(stockValues.bookingsQuantity, 10) > 0) {
                           setDeletingStockData({
                             deletingStock: stockValues,
@@ -81,10 +84,12 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
                           })
                           deleteConfirmShow()
                         } else {
+                          /* istanbul ignore next: DEBT, TO FIX */
                           onDeleteStock(stockValues, index)
                         }
                       } else {
                         arrayHelpers.remove(index)
+                        /* istanbul ignore next: DEBT, TO FIX */
                         if (values.stocks.length === 1) {
                           arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)
                         }
@@ -104,7 +109,9 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
 
           {deleteConfirmVisible && (
             <DialogStockDeleteConfirm
+              /* istanbul ignore next: DEBT, TO FIX */
               onConfirm={async () => {
+                /* istanbul ignore next: DEBT, TO FIX */
                 if (deletingStockData !== null) {
                   const { deletingStock, deletingIndex } = deletingStockData
                   deletingStock.stockId &&

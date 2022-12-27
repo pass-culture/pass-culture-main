@@ -332,11 +332,11 @@ describe('screens:StocksEvent:Edition', () => {
     await screen.findByRole('heading', { name: /Stock & Prix/ })
 
     await userEvent.click(await screen.findByText('Ajouter une date'))
-    await userEvent.type(screen.getAllByLabelText('Prix')[1], '20')
+    await userEvent.type(screen.getAllByLabelText('Prix')[0], '20')
     await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[1]
+      screen.getAllByTestId('stock-form-actions-button-open')[0]
     )
-    await userEvent.click(screen.getAllByText('Supprimer le stock')[1])
+    await userEvent.click(screen.getAllByText('Supprimer le stock')[0])
 
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
     expect(screen.getAllByLabelText('Prix').length).toBe(1)
@@ -378,14 +378,14 @@ describe('screens:StocksEvent:Edition', () => {
 
     // create new stock
     await userEvent.click(await screen.findByText('Ajouter une date'))
-    await userEvent.type(screen.getAllByLabelText('Prix')[2], '20')
+    await userEvent.type(screen.getAllByLabelText('Prix')[0], '20')
 
     // delete existing stock
     jest.spyOn(api, 'getOffer').mockResolvedValue(previousApiOffer)
     await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[1]
+      screen.getAllByTestId('stock-form-actions-button-open')[2]
     )
-    await userEvent.click(screen.getAllByText('Supprimer le stock')[1])
+    await userEvent.click(screen.getAllByText('Supprimer le stock')[2])
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
@@ -396,8 +396,8 @@ describe('screens:StocksEvent:Edition', () => {
 
     const allPriceInputs = screen.getAllByLabelText('Prix')
     expect(allPriceInputs).toHaveLength(2)
-    expect(allPriceInputs[0]).toHaveValue(10.01)
-    expect(allPriceInputs[1]).toHaveValue(20)
+    expect(allPriceInputs[1]).toHaveValue(10.01)
+    expect(allPriceInputs[0]).toHaveValue(20)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
