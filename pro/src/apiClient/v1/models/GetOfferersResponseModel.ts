@@ -10,6 +10,7 @@ export type GetOfferersResponseModel = {
   managedVenues: Array<GetOfferersVenueResponseModel>;
   nOffers: number;
   name: string;
+  nonHumanizedId: number;
   siren?: string | null;
   userHasAccess: boolean;
 };

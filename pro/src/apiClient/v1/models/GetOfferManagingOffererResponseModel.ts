@@ -19,3 +19,4 @@ export type GetOfferManagingOffererResponseModel = {
   siren?: string | null;
   thumbCount: number;
 };
+
