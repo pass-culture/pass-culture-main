@@ -233,12 +233,14 @@ describe('serializer', () => {
       venue: {
         managingOfferer: {
           id: 'Offerer ID',
+          nonHumanizedId: 1,
           name: 'Offerer name',
         },
       },
     } as unknown as GetIndividualOfferResponseModel
     const offerer: IOfferIndividualOfferer = {
       id: 'Offerer ID',
+      nonHumanizedId: 1,
       name: 'Offerer name',
     }
 
@@ -264,6 +266,7 @@ describe('serializer', () => {
         motorDisabilityCompliant: true,
         managingOfferer: {
           id: 'Offerer ID',
+          nonHumanizedId: 1,
           name: 'Offerer name',
         },
       },
@@ -279,6 +282,7 @@ describe('serializer', () => {
       city: 'venue city',
       offerer: {
         id: 'Offerer ID',
+        nonHumanizedId: 1,
         name: 'Offerer name',
       },
       accessibility: {
@@ -454,6 +458,7 @@ describe('serializer', () => {
         latitude: 48.87004,
         longitude: 2.3785,
         managingOfferer: {
+          nonHumanizedId: 1,
           address: '1 boulevard Poissonnière',
           city: 'Paris',
           dateCreated: '2022-05-18T08:25:30.891369Z',
@@ -565,6 +570,7 @@ describe('serializer', () => {
         name: 'Cinéma synchro avec booking provider',
         offerer: {
           id: 'CU',
+          nonHumanizedId: 1,
           name: 'Le Petit Rintintin Management 6',
         },
         postalCode: '75000',

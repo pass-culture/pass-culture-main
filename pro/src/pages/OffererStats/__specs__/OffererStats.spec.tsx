@@ -69,10 +69,12 @@ describe('OffererStatsScreen', () => {
       offerersNames: [
         {
           id: 'A1',
+          nonHumanizedId: 1,
           name: 'Mon super cinéma',
         },
         {
           id: 'B1',
+          nonHumanizedId: 1,
           name: 'Ma super librairie',
         },
       ],
