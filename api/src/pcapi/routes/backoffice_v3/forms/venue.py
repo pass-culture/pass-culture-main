@@ -1,22 +1,16 @@
 import typing
 
-from flask_wtf import FlaskForm
 from wtforms import validators
 
 import pcapi.core.offerers.models as offerers_models
-import pcapi.utils.email as email_utils
 
 from . import fields
+from . import utils
 
 
-class EditVirtualVenueForm(FlaskForm):
+class EditVirtualVenueForm(utils.PCForm):
     email = fields.PCEmailField("Email")
     phone_number = fields.PCPhoneNumberField("Numéro de téléphone")  # match Venue.contact.postal_code case
-
-    def filter_email(self, raw_email: str | None) -> str:
-        if not raw_email:
-            return ""
-        return email_utils.sanitize_email(raw_email)
 
 
 class EditVenueForm(EditVirtualVenueForm):
