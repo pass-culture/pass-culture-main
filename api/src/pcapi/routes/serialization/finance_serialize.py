@@ -7,6 +7,8 @@ import pcapi.serialization.utils as serialization_utils
 
 
 class BusinessUnitListQueryModel(BaseModel):
+    # FIXME (mageoffray, 2022-12-27): Business Units are not used and this should be cleaned
+    # Please do not use dehumanize anymore.
     class Config:
         alias_generator = serialization_utils.to_camel
         extra = "forbid"
