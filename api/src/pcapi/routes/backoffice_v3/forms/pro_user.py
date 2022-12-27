@@ -16,11 +16,6 @@ class EditProUserForm(FlaskForm):
     )
     postal_code = fields.PCOptPostalCodeField("Code postal")
 
-    def validate_phone_number(self, phone_number: fields.PCPhoneNumberField) -> fields.PCPhoneNumberField:
-        if not phone_utils.ParsedPhoneNumber(phone_number.data):
-            raise validators.ValidationError("Veuillez indiquer un numéro de téléphone valide.")
-        return phone_number
-
     def filter_email(self, raw_email: str | None) -> str:
         if not raw_email:
             return ""
