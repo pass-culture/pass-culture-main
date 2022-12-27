@@ -8,6 +8,7 @@ export type ListOffersVenueResponseModel = {
   isVirtual: boolean;
   managingOffererId: string;
   name: string;
+  nonHumanizedId: number;
   offererName: string;
   publicName?: string | null;
 };

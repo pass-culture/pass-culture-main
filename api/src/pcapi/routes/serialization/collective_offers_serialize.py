@@ -16,7 +16,6 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.offers.serialize import CollectiveOfferType
 from pcapi.models.offer_mixin import OfferStatus
@@ -82,6 +81,7 @@ class CollectiveOffersBookingResponseModel(BaseModel):
 class CollectiveOfferResponseModel(BaseModel):
     hasBookingLimitDatetimesPassed: bool
     id: str
+    nonHumanizedId: int
     isActive: bool
     isEditable: bool
     isEducational: bool
@@ -128,6 +128,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
     return CollectiveOfferResponseModel(
         hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
         id=humanize(offer.id),
+        nonHumanizedId=offer.id,
         isActive=offer.isActive,
         isEditable=offer.isEditable,
         isEducational=True,
@@ -172,6 +173,7 @@ def _serialize_stock(offer_id: int, stock: CollectiveStock | None = None) -> dic
 def _serialize_venue(venue: Venue) -> dict:
     return {
         "id": humanize(venue.id),
+        "nonHumanizedId": venue.id,
         "isVirtual": venue.isVirtual,
         "managingOffererId": humanize(venue.managingOffererId),
         "name": venue.name,
