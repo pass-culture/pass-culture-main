@@ -47,11 +47,10 @@
   background: colors.$white;
   cursor: pointer;
   align-items: center;
-  column-gap: rem.torem(4px);
   display: grid;
   grid-template-columns: rem.torem(32px) 1fr;
-  margin-top: rem.torem(10px);
-  padding: 0 rem.torem(12px);
+  margin-top: rem.torem(8px);
+  padding: 0 16px;
 
   &:first-child {
     margin-top: 0;
@@ -60,6 +59,7 @@
   &[data-selected] {
     background-color: transparent;
     display: flex;
+    align-items: flex-start;
 
     .menu-item-icon {
       path {
@@ -70,6 +70,7 @@
 
   &:not([data-selected]) {
     display: flex;
+    align-items: flex-start;
 
     path {
       fill: colors.$black;
@@ -82,12 +83,14 @@
 }
 
 .menu-list[data-reach-popover] {
-  padding: rem.torem(12px) 0;
+  padding: rem.torem(16px) 0;
   white-space: pre-wrap;
   width: rem.torem(215px);
   background: colors.$white;
 
   .menu-item {
+    padding: 0 rem.torem(16px);
+
     &:hover {
       background: colors.$grey-medium;
     }
