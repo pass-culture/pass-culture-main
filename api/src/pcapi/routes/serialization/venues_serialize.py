@@ -337,6 +337,7 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
 
 class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     id: str
+    nonHumanizedId: int
     managingOffererId: str
     name: str
     offererName: str
