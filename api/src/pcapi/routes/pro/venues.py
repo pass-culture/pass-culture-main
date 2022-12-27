@@ -87,6 +87,7 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
         venues=[
             venues_serialize.VenueListItemResponseModel(
                 id=venue.id,
+                nonHumanizedId=venue.id,
                 managingOffererId=venue.managingOfferer.id,
                 name=venue.name,
                 offererName=venue.managingOfferer.name,
