@@ -68,7 +68,8 @@ const Notification = (): JSX.Element | null => {
           cn(
             styles['notification'],
             styles[
-              /* istanbul ignore next: graphic variation */
+              //graphic variation
+              /* istanbul ignore next */
               `is-${type || 'success'}`
             ],
             /* istanbul ignore next: DEBT, TO FIX */ isVisible
