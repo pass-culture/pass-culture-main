@@ -50,6 +50,7 @@ def should_return_serialized_offers_with_relevant_informations():
         {
             "hasBookingLimitDatetimesPassed": False,
             "id": humanize(offer_id),
+            "nonHumanizedId": offer_id,
             "isActive": True,
             "isEditable": True,
             "isEvent": False,
@@ -63,6 +64,7 @@ def should_return_serialized_offers_with_relevant_informations():
                     "id": humanize(stock_id),
                     "hasBookingLimitDatetimePassed": False,
                     "offerId": humanize(offer_id),
+                    "nonHumanizedId": stock_id,
                     "remainingQuantity": 10,
                     "beginningDatetime": None,
                 }
@@ -71,6 +73,7 @@ def should_return_serialized_offers_with_relevant_informations():
             "thumbUrl": "/thumb/url",
             "venue": {
                 "id": humanize(venue_id),
+                "nonHumanizedId": venue_id,
                 "isVirtual": False,
                 "departementCode": departement_code,
                 "managingOffererId": humanize(offerer_id),

@@ -43,6 +43,7 @@ class Returns200Test:
             {
                 "hasBookingLimitDatetimesPassed": False,
                 "id": humanize(offer_on_requested_venue.id),
+                "nonHumanizedId": offer_on_requested_venue.id,
                 "isActive": True,
                 "isEditable": True,
                 "isEvent": False,
@@ -56,6 +57,7 @@ class Returns200Test:
                         "id": humanize(stock.id),
                         "offerId": humanize(offer_on_requested_venue.id),
                         "hasBookingLimitDatetimePassed": False,
+                        "nonHumanizedId": stock.id,
                         "remainingQuantity": 1000,
                         "beginningDatetime": None,
                     }
@@ -65,6 +67,7 @@ class Returns200Test:
                 "venue": {
                     "departementCode": departement_code,
                     "id": humanize(requested_venue.id),
+                    "nonHumanizedId": requested_venue.id,
                     "isVirtual": False,
                     "managingOffererId": humanize(offerer.id),
                     "name": "My Venue",

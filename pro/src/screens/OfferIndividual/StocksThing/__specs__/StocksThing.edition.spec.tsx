@@ -217,9 +217,9 @@ describe('screens:StocksThing', () => {
         latitude: 48.87004,
         longitude: 2.3785,
         managingOfferer: {
+          nonHumanizedId: 1,
           address: '1 boulevard Poissonnière',
           city: 'Paris',
-          nonHumanizedId: 1,
           dateCreated: '2022-05-18T08:25:30.891369Z',
           dateModifiedAtLastProvider: '2022-05-18T08:25:30.891364Z',
           fieldsUpdated: [],
@@ -277,6 +277,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'listOffers').mockResolvedValue([
       {
         id: 'id',
+        nonHumanizedId: 1,
         status: 'ACTIVE',
         isActive: true,
         hasBookingLimitDatetimesPassed: false,

@@ -15,6 +15,7 @@ def _serialize_offer_paginated(offer: OfferRecap) -> dict:
     return {
         "hasBookingLimitDatetimesPassed": offer.has_booking_limit_datetimes_passed,
         "id": humanize(offer.id),
+        "nonHumanizedId": offer.id,
         "isActive": offer.is_active,
         "isEditable": offer.is_editable,
         "isEvent": offer.is_event,
@@ -35,6 +36,7 @@ def _serialize_offer_paginated(offer: OfferRecap) -> dict:
 def _serialize_stock(offer_id: int, stock: OfferRecapStock) -> dict:
     return {
         "id": humanize(stock.id),
+        "nonHumanizedId": stock.id,
         "offerId": humanize(offer_id),
         "hasBookingLimitDatetimePassed": stock.has_booking_limit_datetime_passed,
         "remainingQuantity": stock.remaining_quantity,
@@ -45,6 +47,7 @@ def _serialize_stock(offer_id: int, stock: OfferRecapStock) -> dict:
 def _serialize_venue(venue: OfferRecapVenue) -> dict:
     return {
         "id": humanize(venue.id),
+        "nonHumanizedId": venue.id,
         "isVirtual": venue.is_virtual,
         "managingOffererId": humanize(venue.managing_offerer_id),
         "name": venue.name,

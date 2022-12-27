@@ -16,6 +16,7 @@ export type ListOffersOfferResponseModel = {
   isShowcase?: boolean | null;
   isThing: boolean;
   name: string;
+  nonHumanizedId: number;
   productIsbn?: string | null;
   status: string;
   stocks: Array<ListOffersStockResponseModel>;
