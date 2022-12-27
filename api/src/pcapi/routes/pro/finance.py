@@ -72,14 +72,9 @@ def get_business_units(query: finance_serialize.BusinessUnitListQueryModel) -> N
 @spectree_serialize(
     response_model=finance_serialize.ReimbursementPointListResponseModel, api=blueprint.pro_private_schema
 )
-def get_reimbursement_points(
-    query: finance_serialize.BusinessUnitListQueryModel,
-) -> finance_serialize.ReimbursementPointListResponseModel:
-    if query.offerer_id:
-        check_user_has_access_to_offerer(current_user, query.offerer_id)
+def get_reimbursement_points() -> finance_serialize.ReimbursementPointListResponseModel:
     reimbursement_points = finance_repository.get_reimbursement_points_query(
         user=current_user,
-        offerer_id=query.offerer_id,
     )
     reimbursement_points = reimbursement_points.options(
         sqla_orm.contains_eager(offerers_models.Venue.bankInformation),

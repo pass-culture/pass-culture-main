@@ -947,19 +947,13 @@ export class DefaultService {
 
   /**
    * get_reimbursement_points <GET>
-   * @param offererId
    * @returns ReimbursementPointListResponseModel OK
    * @throws ApiError
    */
-  public getReimbursementPoints(
-    offererId?: number | null,
-  ): CancelablePromise<ReimbursementPointListResponseModel> {
+  public getReimbursementPoints(): CancelablePromise<ReimbursementPointListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/finance/reimbursement-points',
-      query: {
-        'offererId': offererId,
-      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
