@@ -25,6 +25,7 @@ const mockedBooking = {
     type: 'thing',
     stock_identifier: '1',
     offer_identifier: '1',
+    offer_nonHumanizedId: 1,
     offer_is_educational: false,
   },
   beneficiary: {
@@ -59,6 +60,7 @@ const otherBooking = {
     type: 'thing',
     stock_identifier: '2',
     offer_identifier: '2',
+    offer_nonHumanizedId: 2,
     offer_is_educational: false,
   },
   beneficiary: {

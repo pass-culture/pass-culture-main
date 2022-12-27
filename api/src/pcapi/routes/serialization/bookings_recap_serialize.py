@@ -36,6 +36,7 @@ class BookingRecapResponseBeneficiaryModel(BaseModel):
 class BookingRecapResponseStockModel(BaseModel):
     event_beginning_datetime: datetime | None
     offer_identifier: str
+    offer_nonHumanizedId: int
     stock_identifier: str
     offer_is_educational: bool
     offer_isbn: str | None
@@ -125,6 +126,7 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapRespons
         stock={
             "offer_name": booking_recap.offer_name,
             "offer_identifier": humanize(booking_recap.offer_identifier),
+            "offer_nonHumanizedId": booking_recap.offer_identifier,
             "stock_identifier": humanize(booking_recap.stock_identifier),
             "event_beginning_datetime": format_into_timezoned_date(booking_recap.event_beginning_datetime)
             if booking_recap.event_beginning_datetime

@@ -127,6 +127,7 @@ class Returns200Test:
                     "offer_identifier": humanize(booking.stock.offer.id),
                     "offer_is_educational": False,
                     "event_beginning_datetime": None,
+                    "offer_nonHumanizedId": booking.stock.offer.id,
                     "offer_isbn": None,
                     "stock_identifier": humanize(booking.stock.id),
                 },

@@ -141,6 +141,7 @@ export const bookingRecapFactory = (customBookingRecap = {}) => {
     booking_token: `TOKEN${bookingId++}`,
     stock: {
       offer_identifier: offer.id,
+      offer_nonHumanizedId: offer.nonHumanizedId,
       offer_name: offer.name,
       offer_is_educational: false,
       stock_identifier: offer.stocks[0].id,
