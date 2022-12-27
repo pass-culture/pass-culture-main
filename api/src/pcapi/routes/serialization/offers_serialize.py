@@ -12,7 +12,6 @@ from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.serialize import CollectiveOfferType
 from pcapi.models.feature import FeatureToggle
@@ -177,6 +176,7 @@ class PatchAllOffersActiveStatusResponseModel(BaseModel):
 
 class ListOffersVenueResponseModel(BaseModel):
     id: str
+    nonHumanizedId: int
     isVirtual: bool
     managingOffererId: str
     name: str
@@ -187,6 +187,7 @@ class ListOffersVenueResponseModel(BaseModel):
 
 class ListOffersStockResponseModel(BaseModel):
     id: str
+    nonHumanizedId: int
     hasBookingLimitDatetimePassed: bool
     offerId: str
     remainingQuantity: int | str
@@ -202,6 +203,7 @@ class ListOffersStockResponseModel(BaseModel):
 class ListOffersOfferResponseModel(BaseModel):
     hasBookingLimitDatetimesPassed: bool
     id: str
+    nonHumanizedId: int
     isActive: bool
     isEditable: bool
     isEvent: bool
