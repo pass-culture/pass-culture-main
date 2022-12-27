@@ -221,6 +221,7 @@ class CreateOffererQueryModel(BaseModel):
 
 class GetOfferersVenueResponseModel(BaseModel):
     id: str
+    nonHumanizedId: int
     isVirtual: bool
     _humanize_id = humanize_field("id")
 
@@ -230,6 +231,7 @@ class GetOfferersVenueResponseModel(BaseModel):
 
 class GetOfferersResponseModel(BaseModel):
     id: str
+    nonHumanizedId: int
     name: str
     # FIXME (mageoffray, 2021-12-27): optional until we populate the database (PC-5693)
     siren: str | None
