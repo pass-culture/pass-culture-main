@@ -2,13 +2,12 @@ from flask_wtf import FlaskForm
 
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.models as users_models
-import pcapi.utils.email as email_utils
 
 from . import fields
 from . import utils
 
 
-class EditAccountForm(FlaskForm):
+class EditAccountForm(utils.PCForm):
     first_name = fields.PCOptStringField("Prénom")
     last_name = fields.PCOptStringField("Nom")
     email = fields.PCEmailField("Email")
@@ -17,11 +16,6 @@ class EditAccountForm(FlaskForm):
     address = fields.PCOptStringField("Adresse")
     postal_code = fields.PCOptPostalCodeField("Code postal")
     city = fields.PCOptStringField("Ville")
-
-    def filter_email(self, raw_email: str | None) -> str:
-        if not raw_email:
-            return ""
-        return email_utils.sanitize_email(raw_email)
 
 
 class ManualReviewForm(FlaskForm):
