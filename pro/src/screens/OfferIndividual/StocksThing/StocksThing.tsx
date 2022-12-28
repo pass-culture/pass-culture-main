@@ -247,11 +247,18 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
   const actions: IStockFormRowAction[] = [
     {
-      callback:
-        /* istanbul ignore next: DEBT, TO FIX */
-        formik.values.bookingsQuantity !== '0'
-          ? deleteConfirmShow
-          : onConfirmDeleteStock,
+      callback: async () => {
+        if (
+          // tested but coverage don't see it.
+          /* istanbul ignore next */
+          mode === OFFER_WIZARD_MODE.EDITION &&
+          formik.values.stockId !== undefined
+        ) {
+          deleteConfirmShow()
+        } else {
+          onConfirmDeleteStock()
+        }
+      },
       label: 'Supprimer le stock',
       disabled: false,
       Icon: IcoTrashFilled,

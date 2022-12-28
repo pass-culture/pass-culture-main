@@ -319,7 +319,7 @@ describe('screens:StocksEvent', () => {
       screen.queryByRole('heading', { name: /Stock & Prix/ })
     ).toBeInTheDocument()
   })
-  it('should not display any message when user delete empty stock', async () => {
+  it('should display a toaster when user delete a saved stock ', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'STOCK_ID' } as StockResponseModel],
