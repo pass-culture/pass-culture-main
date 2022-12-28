@@ -83,9 +83,7 @@ def format_string_list(data: list[str] | None) -> str:
 
 
 def format_reason_label(reason: str) -> str:
-    return dict(users_constants.SUSPENSION_REASON_CHOICES).get(
-        users_constants.SuspensionReason(reason), "Raison inconnue"
-    )
+    return users_constants.SUSPENSION_REASON_CHOICES.get(users_constants.SuspensionReason(reason), "Raison inconnue")
 
 
 def parse_referrer(url: str) -> str:
