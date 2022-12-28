@@ -37,4 +37,7 @@ jobs:
     with:
       environment: testing
       app_version: ${{ github.sha }}
+      teleport_version: 11.1.1
+      teleport_proxy: teleport.ehp.passculture.team:443
+      teleport_kubernetes_cluster: passculture-metier-ehp
     secrets: inherit
