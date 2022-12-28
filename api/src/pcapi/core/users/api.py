@@ -1013,7 +1013,7 @@ def get_suspension_message(suspension_action: history_models.ActionHistory) -> s
     message = f"par {suspension_action.authorUser.full_name}" if suspension_action.authorUser else "Auteur inconnu"
     if suspension_action.extraData and suspension_action.extraData.get("reason"):
         suspension_reason = users_constants.SuspensionReason(suspension_action.extraData["reason"])
-        message += f" : {dict(users_constants.SUSPENSION_REASON_CHOICES)[suspension_reason]}"
+        message += f" : {users_constants.SUSPENSION_REASON_CHOICES[suspension_reason]}"
     return message
 
 
