@@ -84,19 +84,22 @@ const FormVenue = ({
           />
         </FormLayout.Row>
       )}
-      {values.venueId.length === 0 && values.offererId.length !== 0 && (
-        <Banner
-          links={[
-            {
-              href: `/structures/${values.offererId}/lieux/creation`,
-              linkTitle: 'Renseigner un lieu',
-            },
-          ]}
-        >
-          Pour proposer des offres à destination d’un groupe scolaire, vous
-          devez renseigner un lieu pour pouvoir être remboursé.
-        </Banner>
-      )}
+      {isEligible &&
+        venuesOptions.length > 0 &&
+        values.venueId.length === 0 &&
+        values.offererId.length !== 0 && (
+          <Banner
+            links={[
+              {
+                href: `/structures/${values.offererId}/lieux/creation`,
+                linkTitle: 'Renseigner un lieu',
+              },
+            ]}
+          >
+            Pour proposer des offres à destination d’un groupe scolaire, vous
+            devez renseigner un lieu pour pouvoir être remboursé.
+          </Banner>
+        )}
     </FormLayout.Section>
   )
 }
