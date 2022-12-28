@@ -1,10 +1,9 @@
 import React from 'react'
 
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
-import { ReactComponent as GeolocIcon } from 'icons/ico-geoloc-solid.svg'
+import { InfoPhoneIcon, LocationIcon } from 'icons'
 import { ReactComponent as MailIcon } from 'icons/ico-mail.svg'
-import { ReactComponent as PhoneIcon } from 'icons/ico-phone.svg'
-import { ReactComponent as UserIcon } from 'icons/ico-user-solid.svg'
+import { ReactComponent as IconUser } from 'icons/ico-user.svg'
 
 import styles from './CollectiveBookingDetails.module.scss'
 
@@ -27,23 +26,38 @@ const CollectiveBookingDetails = ({
           </div>
 
           <div className={styles['contact-detail']}>
-            <GeolocIcon className={styles['contact-detail-icon']} />
+            <div className={styles['contact-detail-icon']}>
+              <LocationIcon />
+            </div>
             {`${educationalInstitution.institutionType} ${educationalInstitution.name}`.trim()}
           </div>
 
           <div className={styles['contact-detail']}>
-            <PhoneIcon className={styles['contact-detail-icon']} />
+            <div className={styles['contact-detail-icon']}>
+              <InfoPhoneIcon />
+            </div>
             {educationalInstitution.phoneNumber}
           </div>
 
           <div className={styles['contact-detail']}>
-            <UserIcon className={styles['contact-detail-icon']} />
+            <div className={styles['contact-detail-icon']}>
+              <IconUser />
+            </div>
             {`${educationalRedactor.firstName} ${educationalRedactor.lastName}`}
           </div>
 
           <div className={styles['contact-detail']}>
-            <MailIcon className={styles['contact-detail-icon']} />
-            {educationalRedactor.email}
+            <div className={styles['contact-detail-icon']}>
+              <MailIcon />
+            </div>
+            <a
+              className={styles['link-ternary']}
+              href={`mailto:${educationalRedactor.email}`}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {educationalRedactor.email}
+            </a>
           </div>
         </div>
       </div>

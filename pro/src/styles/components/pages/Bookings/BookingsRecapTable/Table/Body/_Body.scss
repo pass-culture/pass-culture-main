@@ -8,10 +8,6 @@
     flex-flow: row wrap;
   }
 
-  > tr:nth-child(odd) {
-    background-color: colors.$grey-light;
-  }
-
   td {
     @include fonts.body;
 

@@ -95,7 +95,7 @@ describe('StockEventForm', () => {
     await userEvent.click(screen.getByText(27))
 
     expect(screen.getByLabelText('Date limite de réservation')).toHaveValue(
-      '27/12/2022'
+      '28/12/2022'
     )
   })
 

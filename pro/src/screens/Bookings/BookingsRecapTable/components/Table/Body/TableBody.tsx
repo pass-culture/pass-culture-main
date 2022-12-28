@@ -6,6 +6,7 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import { Audience } from 'core/shared'
+import { Divider } from 'ui-kit'
 
 import CollectiveTableRow from './TableRow/CollectiveTableRow'
 import IndividualTableRow from './TableRow/IndividualTableRow'
@@ -49,6 +50,7 @@ const TableBody = <
           <IndividualTableRow key={index} row={row} />
         )
       })}
+      <Divider />
     </tbody>
   )
 }
