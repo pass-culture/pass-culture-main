@@ -1042,7 +1042,7 @@ class PublicAccountHistoryTest:
         assert {
             "action": f"{suspension_action.actionType.value}",
             "datetime": suspension_action.actionDate,
-            "message": f"par {suspension_action.authorUser.full_name} : {dict(users_constants.SUSPENSION_REASON_CHOICES)[users_constants.SuspensionReason.FRAUD_SUSPICION]}",
+            "message": f"par {suspension_action.authorUser.full_name} : {users_constants.SUSPENSION_REASON_CHOICES[users_constants.SuspensionReason.FRAUD_SUSPICION]}",
         } in history
         assert {
             "action": f"{unsuspension_action.actionType.value}",

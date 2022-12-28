@@ -47,26 +47,26 @@ class SuspensionReason(enum.Enum):
     DELETED = "deleted"
 
 
-SUSPENSION_REASON_CHOICES = (
-    (SuspensionReason.FRAUD_FAKE_DOCUMENT, "Fraude faux document"),
-    (SuspensionReason.FRAUD_RESELL_PRODUCT, "Fraude revente produit"),
-    (SuspensionReason.FRAUD_RESELL_PASS, "Fraude revente pass"),
-    (SuspensionReason.FRAUD_USURPATION, "Fraude usurpation"),
-    (SuspensionReason.FRAUD_SUSPICION, "Fraude suspicion"),
-    (SuspensionReason.FRAUD_DUPLICATE, "Fraude doublon"),
-    (SuspensionReason.FRAUD_HACK, "Fraude hacking"),
-    (SuspensionReason.FRAUD_BOOKING_CANCEL, "Fraude annulation réservation"),
-    (SuspensionReason.END_OF_CONTRACT, "Fin de contrat"),
-    (SuspensionReason.END_OF_ELIGIBILITY, "Fin d'éligibilité"),
-    (SuspensionReason.UPON_USER_REQUEST, "Demande de l'utilisateur"),
-    (SuspensionReason.FRAUD_USURPATION_PRO, "Fraude PRO usurpation"),
-    (SuspensionReason.FRAUD_CREATION_PRO, "Fraude PRO création"),
-    (SuspensionReason.CLOSED_STRUCTURE_DEFINITIVE, "Structure définitivement fermée"),
-    (SuspensionReason.CLOSED_STRUCTURE_TEMP, "Structure fermée provisoirement"),
-    (SuspensionReason.DELETED, "Supprimé"),
-)
+SUSPENSION_REASON_CHOICES = {
+    SuspensionReason.FRAUD_FAKE_DOCUMENT: "Fraude faux document",
+    SuspensionReason.FRAUD_RESELL_PRODUCT: "Fraude revente produit",
+    SuspensionReason.FRAUD_RESELL_PASS: "Fraude revente pass",
+    SuspensionReason.FRAUD_USURPATION: "Fraude usurpation",
+    SuspensionReason.FRAUD_SUSPICION: "Fraude suspicion",
+    SuspensionReason.FRAUD_DUPLICATE: "Fraude doublon",
+    SuspensionReason.FRAUD_HACK: "Fraude hacking",
+    SuspensionReason.FRAUD_BOOKING_CANCEL: "Fraude annulation réservation",
+    SuspensionReason.END_OF_CONTRACT: "Fin de contrat",
+    SuspensionReason.END_OF_ELIGIBILITY: "Fin d'éligibilité",
+    SuspensionReason.UPON_USER_REQUEST: "Demande de l'utilisateur",
+    SuspensionReason.FRAUD_USURPATION_PRO: "Fraude PRO usurpation",
+    SuspensionReason.FRAUD_CREATION_PRO: "Fraude PRO création",
+    SuspensionReason.CLOSED_STRUCTURE_DEFINITIVE: "Structure définitivement fermée",
+    SuspensionReason.CLOSED_STRUCTURE_TEMP: "Structure fermée provisoirement",
+    SuspensionReason.DELETED: "Supprimé",
+}
 
-assert set(_t[0] for _t in SUSPENSION_REASON_CHOICES) == set(SuspensionReason)
+assert set(SUSPENSION_REASON_CHOICES) == set(SuspensionReason)
 
 
 class SuspensionEventType(enum.Enum):

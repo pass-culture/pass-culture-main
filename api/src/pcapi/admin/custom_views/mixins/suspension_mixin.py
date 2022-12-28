@@ -22,7 +22,7 @@ from pcapi.core.users.models import User
 class SuspensionForm(SecureForm):
     reason = wtforms.SelectField(
         "Raison de la suspension",
-        choices=(("", "---"),) + users_constants.SUSPENSION_REASON_CHOICES,
+        choices=[("", "---")] + list(users_constants.SUSPENSION_REASON_CHOICES.items()),
         validators=[wtforms.validators.InputRequired()],
     )
 
@@ -50,7 +50,7 @@ def _action_links(view, context, model, name):  # type: ignore [no-untyped-def]
         if model.suspension_reason:
             text += "({}{})".format(
                 model.suspension_date.strftime("%d/%m/%Y ") if model.suspension_date else "",
-                dict(users_constants.SUSPENSION_REASON_CHOICES)[model.suspension_reason],
+                users_constants.SUSPENSION_REASON_CHOICES[model.suspension_reason],
             )
 
     return Markup('<a href="{url}?user_id={model_id}">{text}</a>').format(
@@ -73,7 +73,7 @@ def beneficiary_suspension_history_formatter(view, context, model, name) -> Mark
 
         reason_text = (
             " : "
-            + dict(users_constants.SUSPENSION_REASON_CHOICES)[
+            + users_constants.SUSPENSION_REASON_CHOICES[
                 users_constants.SuspensionReason(suspension_action.extraData["reason"])
             ]
             if suspension_action.actionType == history_models.ActionType.USER_SUSPENDED
