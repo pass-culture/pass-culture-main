@@ -8,6 +8,15 @@ on:
       app_version:
         type: string
         required: true
+      teleport_version:
+        type: string
+        required: true
+      teleport_proxy:
+        type: string
+        required: true
+      teleport_kubernetes_cluster:
+        type: string
+        required: true
 
 env:
   REGION: europe-west1
@@ -72,16 +81,18 @@ jobs:
           token_format: 'access_token'
           workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - id: openid-auth-metier
-        name: "OpenID Connect Authentication"
-        uses: 'google-github-actions/auth@v0'
+      - name: Install Teleport
+        uses: teleport-actions/setup@v1
         with:
-          workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.METIER_CIRCLECI_SERVICE_ACCOUNT }}
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v0'
-      - name: Get GKE cluster credentials
-        run: gcloud container clusters get-credentials --region ${REGION} ${{ secrets.METIER_GKE_CLUSTER_NAME }}
+          version: ${{ inputs.teleport_version }}
+      - id: teleport-auth
+        name: "Teleport Authentication"
+        uses: teleport-actions/auth-k8s@v1
+        with:
+          proxy: ${{ inputs.teleport_proxy }}
+          token: github-token
+          certificate-ttl: 1h
+          kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
       - name: Setup helmfile
         uses: mamezou-tech/setup-helmfile@v1.0.0
         with:
