@@ -112,7 +112,7 @@ const CollectiveOfferSummaryEdition = ({
             souhaitez pour l’associer aux établissements scolaires qui vous
             contactent. <br />
             &nbsp;· L’offre vitrine restera visible sur ADAGE <br />
-            &nbsp;· L’offre associée à l’établissement devra être pré-réservée
+            &nbsp;· L’offre associée à l’établissement devra être préréservée
             par l’enseignant(e) qui vous a contacté
           </p>
           <Button

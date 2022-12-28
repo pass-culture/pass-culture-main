@@ -2,8 +2,7 @@
 @use "styles/variables/_colors.scss" as colors;
 
 .details-container {
-  padding: rem.torem(16px);
-  border-top: 1px solid colors.$grey-medium;
+  padding: rem.torem(32px) rem.torem(16px);
 
   .details-content {
     width: 100%;

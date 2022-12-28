@@ -84,8 +84,8 @@ const COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   },
   {
     id: BOOKING_STATUS.PENDING,
-    status: 'pré-réservée',
-    label: 'L’enseignant a pré-réservé.',
+    status: 'préréservée',
+    label: 'L’enseignant a préréservé.',
     statusClassName: 'booking-status-pending',
     svgIconFilename: 'ico-status-pending-tag',
   },
