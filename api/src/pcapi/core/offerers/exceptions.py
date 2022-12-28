@@ -65,6 +65,10 @@ class InvalidSiren(Exception):
     pass
 
 
+class OffererTagNotFoundException(Exception):
+    pass
+
+
 class CannotDeleteOffererWithBookingsException(ClientError):
     def __init__(self) -> None:
         super().__init__(

@@ -49,9 +49,10 @@ def test_new_offerer_auto_tagging(db_session, ape_code, expected_tag):
         head_office_siret="77712345600000",
         legal_category_code="don't know",
     )
+    user = users_factories.UserFactory()
 
     # when
-    offerers_api.auto_tag_new_offerer(offerer, siren_info)
+    offerers_api.auto_tag_new_offerer(offerer, siren_info, user)
 
     # then
     db_session.refresh(offerer)
@@ -655,6 +656,41 @@ class CreateOffererTest:
         # Then
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == offerer_informations.name
+
+    @override_settings(NATIONAL_PARTNERS_EMAIL_DOMAINS="howdy.com,partner.com")
+    def test_create_offerer_national_partner_autotagging(self):
+        # Given
+        national_partner_tag = offerers_factories.OffererTagFactory(name="partenaire-national")
+        offerers_factories.VirtualVenueTypeFactory()
+        not_a_parner_user = users_factories.UserFactory(email="noël.flantier@gmail.com")
+        partner_user = users_factories.UserFactory(email="ssap.erutluc@partner.com")
+        not_a_partner_offerer_informations = CreateOffererQueryModel(
+            name="Test Offerer Not Partner",
+            siren="777084112",
+            address="123 rue de Paris",
+            postalCode="93100",
+            city="Montreuil",
+        )
+        partner_offerer_informations = CreateOffererQueryModel(
+            name="Test Offerer Partner",
+            siren="777084121",
+            address="123 rue de Paname",
+            postalCode="93100",
+            city="Montreuil",
+        )
+
+        # When
+        created_user_offerer_not_partner = offerers_api.create_offerer(
+            not_a_parner_user, not_a_partner_offerer_informations
+        )
+        created_user_offerer_partner = offerers_api.create_offerer(partner_user, partner_offerer_informations)
+
+        # Then
+        created_offerer_not_partner = created_user_offerer_not_partner.offerer
+        created_offerer_partner = created_user_offerer_partner.offerer
+
+        assert national_partner_tag not in created_offerer_not_partner.tags
+        assert national_partner_tag in created_offerer_partner.tags
 
 
 class ValidateOffererAttachmentTest:

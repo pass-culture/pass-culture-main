@@ -640,17 +640,9 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
             user_offerer = offerers_api.grant_user_offerer_access(existing_offerer, new_pro_user)
             # When offerer was rejected, it is considered as a new offerer in validation process;
             # history is kept with same id and siren
-            objects_to_save += [
-                existing_offerer,
-                history_api.log_action(
-                    history_models.ActionType.OFFERER_NEW,
-                    new_pro_user,
-                    user=new_pro_user,
-                    offerer=existing_offerer,
-                    save=False,
-                    comment="Nouvelle demande sur un SIREN précédemment rejeté",
-                ),
-            ]
+            is_new_offerer = True
+            comment = "Nouvelle demande sur un SIREN précédemment rejeté"
+            objects_to_save += [existing_offerer]
         else:
             user_offerer = _generate_user_offerer_when_existing_offerer(new_pro_user, existing_offerer)
             objects_to_save += [
@@ -670,6 +662,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
         user_offerer = offerers_api.grant_user_offerer_access(offerer, new_pro_user)
         digital_venue = offerers_api.create_digital_venue(offerer)
         objects_to_save.extend([digital_venue, offerer, user_offerer])
+        comment = None
 
     new_pro_user = _set_offerer_departement_code(new_pro_user, offerer)
 
@@ -687,9 +680,9 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
             logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
             siren_info = None
 
+        offerers_api.auto_tag_new_offerer(offerer, siren_info, new_pro_user)
         extra_data = {}
         if siren_info:
-            offerers_api.auto_tag_new_offerer(offerer, siren_info)
             extra_data = {"sirene_info": dict(siren_info)}
 
         history_api.log_action(
@@ -697,6 +690,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
             new_pro_user,
             user=new_pro_user,
             offerer=offerer,
+            comment=comment,
             **extra_data,  # type: ignore [arg-type]
         )
 
