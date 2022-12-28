@@ -413,26 +413,33 @@ def _fill_in_offerer(
     offerer.dateCreated = datetime.utcnow()
 
 
-def auto_tag_new_offerer(offerer: offerers_models.Offerer, siren_info: sirene.SirenInfo) -> None:
-    tag_label = APE_TAG_MAPPING.get(siren_info.ape_code)
+def auto_tag_new_offerer(
+    offerer: offerers_models.Offerer, siren_info: sirene.SirenInfo | None, user: users_models.User
+) -> None:
+    if siren_info:
+        tag_label = APE_TAG_MAPPING.get(siren_info.ape_code)
+        if tag_label:
+            tag = offerers_models.OffererTag.query.filter_by(label=tag_label).one_or_none()
+            if not tag:
+                logger.error(
+                    "Could not assign tag to offerer: tag not found in DB",
+                    extra={"offerer": offerer.id, "tag_label": tag_label},
+                )
+            else:
+                offerer.tags.append(tag)
 
-    if tag_label:
-        tag_id = db.session.execute(
-            sa.select(offerers_models.OffererTag.id).filter(offerers_models.OffererTag.label == tag_label)
-        ).scalar()
-
-        if tag_id:
-            mapping = offerers_models.OffererTagMapping(
-                offererId=offerer.id,
-                tagId=tag_id,
-            )
-            db.session.add(mapping)
-            db.session.commit()
-        else:
+    if (user.email).split("@")[-1] in set(settings.NATIONAL_PARTNERS_EMAIL_DOMAINS.split(",")):
+        tag_name = "partenaire-national"
+        tag = offerers_models.OffererTag.query.filter_by(name=tag_name).one_or_none()
+        if not tag:
             logger.error(
                 "Could not assign tag to offerer: tag not found in DB",
-                extra={"offerer": offerer.id, "tag": tag_label},
+                extra={"offerer": offerer.id, "tag_name": tag_name},
             )
+        else:
+            offerer.tags.append(tag)
+    db.session.add(offerer)
+    db.session.commit()
 
 
 def create_offerer(
@@ -447,18 +454,10 @@ def create_offerer(
         if offerer.isRejected:
             # When offerer was rejected, it is considered as a new offerer in validation process;
             # history is kept with same id and siren
+            is_new = True
             _fill_in_offerer(offerer, offerer_informations)
-            objects_to_save += [
-                offerer,
-                history_api.log_action(
-                    history_models.ActionType.OFFERER_NEW,
-                    user,
-                    user=user,
-                    offerer=offerer,
-                    save=False,
-                    comment="Nouvelle demande sur un SIREN précédemment rejeté",
-                ),
-            ]
+            comment = "Nouvelle demande sur un SIREN précédemment rejeté"
+            objects_to_save += [offerer]
         else:
             user_offerer.validationStatus = ValidationStatus.NEW
             objects_to_save += [
@@ -474,6 +473,7 @@ def create_offerer(
         _fill_in_offerer(offerer, offerer_informations)
         digital_venue = create_digital_venue(offerer)
         user_offerer = grant_user_offerer_access(offerer, user)
+        comment = None
         repository.save(offerer, digital_venue, user_offerer)
 
     assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
@@ -484,9 +484,10 @@ def create_offerer(
         siren_info = None
 
     if is_new:
+        auto_tag_new_offerer(offerer, siren_info, user)
+
         extra_data = {}
         if siren_info:
-            auto_tag_new_offerer(offerer, siren_info)
             extra_data = {"sirene_info": dict(siren_info)}
 
         history_api.log_action(
@@ -494,6 +495,7 @@ def create_offerer(
             user,
             user=user,
             offerer=offerer,
+            comment=comment,
             **extra_data,  # type: ignore [arg-type]
         )
 
