@@ -21,4 +21,5 @@ def json_default(data):
 
 def gen_offerer_tags():
     tags = [offerers_factories.OffererTagFactory(label=label) for label in ("Collectivité", "Établissement public")]
+    tags.append(offerers_factories.OffererTagFactory(name="partenaire-national", label="Partenaire national"))
     return tags

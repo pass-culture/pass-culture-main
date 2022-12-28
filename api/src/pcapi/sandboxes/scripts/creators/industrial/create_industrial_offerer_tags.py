@@ -24,3 +24,4 @@ def create_industrial_offerer_tags() -> None:
     offerers_factories.OffererTagFactory(
         name="culture-scientifique", label="Culture scientifique", categories=[homologation]
     )
+    offerers_factories.OffererTagFactory(name="partenaire-national", label="Partenaire national", categories=[comptage])

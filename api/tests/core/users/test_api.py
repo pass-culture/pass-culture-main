@@ -746,6 +746,7 @@ class CreateProUserTest:
 
 
 class CreateProUserAndOffererTest:
+    @override_settings(NATIONAL_PARTNERS_EMAIL_DOMAINS="example.com,partner.com")
     def test_offerer_auto_tagging(self):
         # Given
         gen_offerer_tags()
@@ -772,6 +773,7 @@ class CreateProUserAndOffererTest:
         offerer = user.UserOfferers[0].offerer
         assert offerer.name == user_info.name
         assert "Établissement public" in (tag.label for tag in offerer.tags)
+        assert "Partenaire national" in (tag.label for tag in offerer.tags)
 
 
 class BeneficiaryInformationUpdateTest:
