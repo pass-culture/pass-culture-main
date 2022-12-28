@@ -51,8 +51,6 @@ Subject: e-mail test #%s
                 template_id_str,
                 json_object,
             )
-            logger.info(data)
-            logger.info(sent_data)
             smtp_obj.sendmail(from_addr, recipients, message)
             logger.info("Successfully sent email")
         except smtplib.SMTPException:
