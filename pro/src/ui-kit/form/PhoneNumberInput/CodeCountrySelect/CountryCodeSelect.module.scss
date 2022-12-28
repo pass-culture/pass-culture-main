@@ -19,21 +19,20 @@ $text-padding-left: calc(
 
 .select-input-wrapper {
   position: relative;
-  border-color: transparent;
   border-radius:
     rem.torem(forms.$input-border-radius) 0 0
     rem.torem(forms.$input-border-radius);
-  border-width: size.$input-border-width;
-  border-style: solid;
-
   &:focus,
   &:focus-within {
-    border-color: forms.$input-border-color-focus;
+    border: 1px solid transparent;
+    outline-color: forms.$input-border-color-focus;
     border-radius:
       rem.torem(forms.$input-border-radius) 0 0
       rem.torem(forms.$input-border-radius);
-    border-width: $focus-border-width;
-    border-style: solid;
+    outline-width: $focus-border-width;
+    outline-style: solid;
+    outline-offset: -2px;
+    background-color: transparent;
 
     .select-input {
       height: calc(#{$input-height} - #{$focus-border-width});
@@ -44,6 +43,12 @@ $text-padding-left: calc(
     .select-input-icon {
       left: calc(#{$icon-padding-left} - (#{$focus-border-width} / 2));
     }
+  }
+
+  &:hover {
+    box-shadow: none;
+    border-radius:
+        rem.torem(forms.$input-border-radius) 0 0 rem.torem(forms.$input-border-radius);
   }
 }
 
@@ -56,14 +61,17 @@ $text-padding-left: calc(
   width: $input-width;
   height: $input-height;
   min-height: $input-height;
-
+  margin: 1px;
+  background-color: transparent;
+  
   // -- override default select style --
   border: unset;
   box-shadow: unset;
 
-  &:focus,
-  &:hover {
-    box-shadow: unset;
+  &:hover, &:hover:not(:focus), &:focus {
+    box-shadow: none;
+    outline: none;
+    border: none;
   }
 
   &-icon {
