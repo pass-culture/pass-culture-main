@@ -34,6 +34,7 @@ with app.app_context():
     from pcapi.routes import error_handlers  # pylint: disable=unused-import
     from pcapi.routes.backoffice_v3 import install_routes
     from pcapi.routes.backoffice_v3.blueprint import backoffice_v3_web
+    import pcapi.routes.backoffice_v3.error_handlers  # pylint: disable=unused-import
     import pcapi.utils.login_manager
 
     if settings.IS_DEV and not settings.IS_RUNNING_TESTS:

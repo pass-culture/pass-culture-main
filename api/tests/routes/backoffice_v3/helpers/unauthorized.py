@@ -74,7 +74,10 @@ class UnauthorizedHelper(UnauthorizedHelperBase):
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_not_logged_in(self, client):  # type: ignore
         response = getattr(client, self.http_method)(self.path)
-        assert response.status_code == 403
+        assert response.status_code in (302, 303)
+
+        expected_url = url_for("backoffice_v3_web.home", _external=True)
+        assert response.location == expected_url
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=False)
     def test_ff_disabled(self, client):  # type: ignore
@@ -128,7 +131,10 @@ class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
         client_method = getattr(client, self.method)
         response = client_method(self.path, form=self.form)
 
-        assert response.status_code == 403
+        assert response.status_code in (302, 303)
+
+        expected_url = url_for("backoffice_v3_web.home", _external=True)
+        assert response.location == expected_url
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=False)
     def test_ff_disabled(self, client):  # type: ignore
