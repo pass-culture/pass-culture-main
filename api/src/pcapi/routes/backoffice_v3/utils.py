@@ -24,13 +24,17 @@ logger = logging.getLogger(__name__)
 BackofficeResponse = typing.Union[str, typing.Tuple[str, int], WerkzeugResponse]
 
 
+class UnauthenticatedUserError(Exception):
+    pass
+
+
 def has_current_user_permission(permission: perm_models.Permissions) -> bool:
     return permission in current_user.backoffice_profile.permissions or settings.IS_TESTING
 
 
 def _check_permission(permission: perm_models.Permissions) -> None:
     if not current_user.is_authenticated:
-        raise ApiErrors({"global": ["l'utilisateur n'est pas authentifié"]}, status_code=403)
+        raise UnauthenticatedUserError()
 
     if not current_user.backoffice_profile:
         raise ApiErrors({"global": ["utilisateur inconnu"]}, status_code=403)
