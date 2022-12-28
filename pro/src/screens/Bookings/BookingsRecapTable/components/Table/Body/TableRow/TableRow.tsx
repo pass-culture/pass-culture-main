@@ -5,6 +5,7 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
+import { Divider } from 'ui-kit'
 
 interface ITableBodyProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
@@ -25,16 +26,19 @@ const TableRow = <
     ...additionalRowAttribute,
   }
   return (
-    <tr {...rowAttributes}>
-      {row.cells.map(cell => {
-        const column: ColumnInstance<T> & { className?: string } = cell.column
-        return (
-          <td {...cell.getCellProps({ className: column.className })}>
-            {cell.render('Cell')}
-          </td>
-        )
-      })}
-    </tr>
+    <>
+      <Divider />
+      <tr {...rowAttributes}>
+        {row.cells.map(cell => {
+          const column: ColumnInstance<T> & { className?: string } = cell.column
+          return (
+            <td {...cell.getCellProps({ className: column.className })}>
+              {cell.render('Cell')}
+            </td>
+          )
+        })}
+      </tr>
+    </>
   )
 }
 

@@ -142,8 +142,8 @@ const CollectiveOfferConfirmation = ({
             Après un accord mutuel, vous pourrez créer une offre réservable en
             complétant la date, le prix et l’établissement convenus avec
             l’enseignant. <br />
-            Cette nouvelle offre apparaitra sur ADAGE et pourra être
-            pré-réservée par l’enseignant.
+            Cette nouvelle offre apparaitra sur ADAGE et pourra être préréservée
+            par l’enseignant.
           </>
         ) : (
           <>
