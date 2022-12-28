@@ -33,7 +33,7 @@ class LoggerBackend(BaseBackend):
 
         try:
             json_object = json.dumps(sent_data["params"], indent=4)
-            from_addr = sent_data["reply_to"]["email"] + " <" + sent_data["reply_to"]["name"] + ">"
+            from_addr = f"{sent_data['reply_to']['name']} <{sent_data['reply_to']['email']}>"
             template_id_str = str(sent_data["template"]["id_not_prod"])
 
             message = """From: %s
