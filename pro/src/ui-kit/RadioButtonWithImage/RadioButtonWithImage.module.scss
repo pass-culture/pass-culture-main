@@ -45,7 +45,7 @@
     background-color: rgba(colors.$tertiary, 0.05);
 
     &:has(:focus-visible) {
-      border-color: colors.$black;
+      border: 2px solid colors.$tertiary;
       outline: rem.torem(1px) solid colors.$black;
       outline-offset: rem.torem(3px);
     }
