@@ -26,8 +26,26 @@ const StockThingForm = ({
     result.setDate(result.getDate() - 7)
     return result
   }
-  const values = useFormikContext().values as IStockThingFormValues
+  const { values, setFieldValue } = useFormikContext<IStockThingFormValues>()
   const maxDateTime = values.activationCodesExpirationDatetime ?? undefined
+
+  const onChangeQuantity = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const quantity = event.target.value
+    let remainingQuantity: number | string =
+      // No need to test
+      /* istanbul ignore next */
+      Number(quantity || 0) - Number(values.bookingsQuantity || 0)
+
+    if (quantity === '') {
+      remainingQuantity = 'unlimited'
+    } else if (remainingQuantity <= 0) {
+      remainingQuantity = 0
+    }
+
+    setFieldValue(`quantity`, quantity, true)
+    setFieldValue(`remainingQuantity`, remainingQuantity)
+  }
+
   return (
     <>
       <TextInput
@@ -83,6 +101,7 @@ const StockThingForm = ({
         disabled={readOnlyFields.includes('quantity')}
         type="number"
         hasDecimal={false}
+        onChange={onChangeQuantity}
       />
     </>
   )
