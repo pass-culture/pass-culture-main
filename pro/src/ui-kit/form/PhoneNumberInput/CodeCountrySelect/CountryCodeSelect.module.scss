@@ -22,15 +22,14 @@ $text-padding-left: calc(
   border-radius:
     rem.torem(forms.$input-border-radius) 0 0
     rem.torem(forms.$input-border-radius);
+
   &:focus,
   &:focus-within {
     border: 1px solid transparent;
-    outline-color: forms.$input-border-color-focus;
     border-radius:
       rem.torem(forms.$input-border-radius) 0 0
       rem.torem(forms.$input-border-radius);
-    outline-width: $focus-border-width;
-    outline-style: solid;
+    outline: solid forms.$input-border-color-focus $focus-border-width;
     outline-offset: -2px;
     background-color: transparent;
 
@@ -47,8 +46,7 @@ $text-padding-left: calc(
 
   &:hover {
     box-shadow: none;
-    border-radius:
-        rem.torem(forms.$input-border-radius) 0 0 rem.torem(forms.$input-border-radius);
+    border-radius: rem.torem(forms.$input-border-radius) 0 0 rem.torem(forms.$input-border-radius);
   }
 }
 
@@ -63,12 +61,14 @@ $text-padding-left: calc(
   min-height: $input-height;
   margin: 1px;
   background-color: transparent;
-  
+
   // -- override default select style --
   border: unset;
   box-shadow: unset;
 
-  &:hover, &:hover:not(:focus), &:focus {
+  &:hover,
+  &:hover:not(:focus),
+  &:focus {
     box-shadow: none;
     outline: none;
     border: none;
