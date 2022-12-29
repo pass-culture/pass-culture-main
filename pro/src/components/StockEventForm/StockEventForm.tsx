@@ -28,6 +28,7 @@ const StockEventForm = ({
 
   const onChangeBeginningDate = (_name: string, date: Date | null) => {
     const stockBookingLimitDatetime = stockFormValues.bookingLimitDatetime
+    /* istanbul ignore next: DEBT to fix */
     if (stockBookingLimitDatetime === null) {
       return
     }
@@ -40,6 +41,26 @@ const StockEventForm = ({
       setFieldValue(`stocks[${stockIndex}]bookingLimitDatetime`, date)
     }
   }
+
+  const onChangeQuantity = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const quantity = event.target.value
+    let remainingQuantity: number | string =
+      Number(quantity || 0) - Number(stockFormValues.bookingsQuantity || 0)
+
+    if (quantity === '') {
+      remainingQuantity = 'unlimited'
+    } else if (remainingQuantity <= 0) {
+      remainingQuantity = 0
+    }
+
+    setFieldValue(`stocks[${stockIndex}]quantity`, quantity, true)
+    setFieldValue(
+      `stocks[${stockIndex}]remainingQuantity`,
+      remainingQuantity,
+      true
+    )
+  }
+
   const beginningDate = stockFormValues.beginningDate
 
   return (
@@ -121,6 +142,7 @@ const StockEventForm = ({
         type="number"
         hasDecimal={false}
         hideHiddenFooter={true}
+        onChange={onChangeQuantity}
       />
     </>
   )
