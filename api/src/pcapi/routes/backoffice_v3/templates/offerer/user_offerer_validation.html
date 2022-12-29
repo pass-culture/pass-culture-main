@@ -53,29 +53,26 @@
                         {% include 'components/search/pagination.html' %}
                     </div>
                 </div>
-                <table class="table mb-4">
-                    <thead>
-                    <tr>
-                        <th scope="col"></th>
-                        <th scope="col">ID Compte pro</th>
-                        <th scope="col">Email Compte pro</th>
-                        <th scope="col">Nom Compte pro</th>
-                        <th scope="col">État</th>
-                        <th scope="col">Date de la demande</th>
-                        <th scope="col">Dernier commentaire</th>
-                        <th scope="col">Tél Compte pro</th>
-                        <th scope="col">Nom Structure</th>
-                        <th scope="col">Date de création Structure</th>
-                        <th scope="col">Email Responsable</th>
-                        <th scope="col">SIREN</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <div class="d-table table mb-4">
+                    <div class="d-table-row">
+                        <div class="d-table-cell d-table-cell-header" scope="col"></div>
+                        <div class="d-table-cell d-table-cell-header" scope="col">ID Compte pro</div>
+                        <div class="d-table-cell d-table-cell-header" scope="col">Email Compte pro</div>
+                        <div class="d-table-cell d-table-cell-header" scope="col">Nom Compte pro</div>
+                        <div class="d-table-cell d-table-cell-header" scope="col">État</div>
+                        <div class="d-table-cell d-table-cell-header" scope="col">Date de la demande</div>
+                        <div class="d-table-cell d-table-cell-header" scope="col">Dernier commentaire</div>
+                        <div class="d-table-cell d-table-cell-header" scope="col">Tél Compte pro</div>
+                        <div class="d-table-cell d-table-cell-header" scope="col">Nom Structure</div>
+                        <div class="d-table-cell d-table-cell-header" scope="col">Date de création Structure</div>
+                        <div class="d-table-cell d-table-cell-header" scope="col">Email Responsable</div>
+                        <div class="d-table-cell d-table-cell-header" scope="col">SIREN</div>
+                    </div>
                     {% for user_offerer in rows.items %}
                         {% set offerer = user_offerer.offerer %}
                         {% set owner = offerer.first_user %}
-                        <tr>
-                            <td>
+                        <div class="d-table-row">
+                            <div class="d-table-cell">
                                 <div class="dropdown">
                                     <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
                                             class="btn p-0"><i
@@ -113,27 +110,27 @@
                                         </li>
                                     </ul>
                                 </div>
-                            </td>
-                            <td>{{ user_offerer.user.id }}</td>
-                            <td>{{ user_offerer.user.email | empty_string_if_null }}</td>
-                            <td>
+                            </div>
+                            <div class="d-table-cell">{{ user_offerer.user.id }}</div>
+                            <div class="d-table-cell">{{ user_offerer.user.email | empty_string_if_null }}</div>
+                            <div class="d-table-cell">
                                 <a href="{{ url_for('backoffice_v3_web.pro_user.get', user_id=user_offerer.user.id) }}">
                                     {{ user_offerer.user.firstName | empty_string_if_null | escape }}
                                     {{ user_offerer.user.lastName | empty_string_if_null | escape }}
                                 </a>
-                            </td>
-                            <td>{% include "components/offerer/user_offerer_status_badge.html" %}</td>
-                            <td>{{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
-                            <td>{{ get_last_comment_func(offerer, user_offerer.userId) | empty_string_if_null }}</td>
-                            <td>{{ user_offerer.user.phoneNumber | format_phone_number }}</td>
-                            <td>
+                            </div>
+                            <div class="d-table-cell">{% include "components/offerer/user_offerer_status_badge.html" %}</div>
+                            <div class="d-table-cell">{{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}</div>
+                            <div class="d-table-cell">{{ get_last_comment_func(offerer, user_offerer.userId) | empty_string_if_null }}</div>
+                            <div class="d-table-cell">{{ user_offerer.user.phoneNumber | format_phone_number }}</div>
+                            <div class="d-table-cell">
                                 <a href="{{ url_for('backoffice_v3_web.offerer.get', offerer_id=user_offerer.offererId) }}">
                                     {{ offerer.name | upper | escape }}
                                 </a>
-                            </td>
-                            <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
-                            <td>{{ (owner and owner.email) | empty_string_if_null }}</td>
-                            <td>
+                            </div>
+                            <div class="d-table-cell">{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</div>
+                            <div class="d-table-cell">{{ (owner and owner.email) | empty_string_if_null }}</div>
+                            <div class="d-table-cell">
                                 {% if offerer.siren %}
                                     <a href="https://www.societe.com/cgi-bin/fiche?rncs={{ offerer.siren }}"
                                        target="_blank"
@@ -141,11 +138,10 @@
                                         {{ offerer.siren | empty_string_if_null }}
                                     </a>
                                 {% endif %}
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
                     {% endfor %}
-                    </tbody>
-                </table>
+                </div>
 
                 {% for user_offerer in rows.items %}
                     {% call build_edit_status_modal(
