@@ -23,6 +23,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 import pcapi.utils.regions as regions_utils
+from pcapi.utils.urls import build_pc_pro_venue_link
 
 from . import search_utils
 from . import utils
@@ -173,6 +174,7 @@ def get_details(offerer_id: int) -> utils.BackofficeResponse:
         active_tab=request.args.get("active_tab", "history"),
         is_user_offerer_action_type=_is_user_offerer_action_type,
         is_offerer_new_action_type=_is_offerer_new_action_type,
+        build_pc_pro_venue_link=build_pc_pro_venue_link,
     )
 
 
