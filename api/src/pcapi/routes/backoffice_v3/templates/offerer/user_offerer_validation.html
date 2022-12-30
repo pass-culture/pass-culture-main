@@ -81,7 +81,7 @@
                                             class="btn p-0"><i
                                             class="bi bi-three-dots-vertical"></i></button>
                                     <ul class="dropdown-menu">
-                                        <li class="dropdown-item">
+                                        <li class="dropdown-item p-0">
                                             <form
                                                     action="{{ url_for(
                                                     "backoffice_v3_web.user_offerer.user_offerer_validate",
@@ -90,26 +90,25 @@
                                                 ) }}"
                                                     method="POST">
                                                 {{ csrf_token }}
-                                                <button type="submit" class="btn btn-sm">
+                                                <button type="submit" class="btn btn-sm d-block w-100 text-start px-3">
                                                     Valider
                                                 </button>
                                             </form>
                                         </li>
-                                        <li class="dropdown-item">
-                                            <button type="button"
-                                                    class="btn btn-sm"
+                                        <li class="dropdown-item p-0">
+                                            <a class="btn btn-sm d-block w-100 text-start px-3"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#reject-modal-{{ user_offerer.id }}">
                                                 Rejeter
-                                            </button>
+                                            </a>
                                         </li>
-                                        <li class="dropdown-item">
-                                            <button type="button"
-                                                    class="btn btn-sm"
+                                        <li class="dropdown-item p-0">
+                                            <a
+                                                    class="btn btn-sm d-block w-100 text-start px-3"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#pending-modal-{{ user_offerer.id }}">
                                                 Mettre en attente
-                                            </button>
+                                            </a>
                                         </li>
                                     </ul>
                                 </div>
