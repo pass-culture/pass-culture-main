@@ -242,13 +242,9 @@ class GetOffererDetailsTest:
         # count.
         db.session.expire(offerer)
 
-        # get session (1 query)
-        # get user with profile and permissions (1 query)
-        # get FF (1 query)
-        # get offerer and its users and history (1 query)
-        with assert_num_queries(4):
+        with assert_no_duplicated_queries():
             response = authenticated_client.get(url)
-            assert response.status_code == 200
+        assert response.status_code == 200
 
         content = response.data.decode("utf-8")
 
@@ -273,13 +269,9 @@ class GetOffererDetailsTest:
         # count.
         db.session.expire(offerer)
 
-        # get session (1 query)
-        # get user with profile and permissions (1 query)
-        # get FF (1 query)
-        # get offerer and its users and history (1 query)
-        with assert_num_queries(4):
+        with assert_no_duplicated_queries():
             response = authenticated_client.get(url)
-            assert response.status_code == 200
+        assert response.status_code == 200
 
         content = response.data.decode("utf-8")
 
@@ -296,13 +288,9 @@ class GetOffererDetailsTest:
         # count.
         db.session.expire(offerer)
 
-        # get session (1 query)
-        # get user with profile and permissions (1 query)
-        # get FF (1 query)
-        # get offerer and its users and history (1 query)
-        with assert_num_queries(4):
+        with assert_no_duplicated_queries():
             response = authenticated_client.get(url)
-            assert response.status_code == 200
+        assert response.status_code == 200
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_action_name_depends_on_type(self, authenticated_client, offerer):
@@ -337,6 +325,33 @@ class GetOffererDetailsTest:
 
         assert user_offerer_1.user.full_name not in content
         assert user_offerer_2.user.full_name in content
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_get_managed_venues(self, authenticated_client, offerer):
+        other_offerer = offerers_factories.OffererFactory()
+        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        other_venue = offerers_factories.VenueFactory(managingOfferer=other_offerer)
+
+        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
+
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url)
+        assert response.status_code == 200
+
+        content = response.data.decode("utf-8")
+
+        assert str(venue_1.id) in content
+        assert venue_1.siret in content
+        assert venue_1.name in content
+        assert venue_1.venueType.label in content
+
+        assert str(venue_2.id) in content
+        assert venue_2.siret in content
+        assert venue_2.name in content
+        assert venue_2.venueType.label in content
+
+        assert str(other_venue.id) not in content
 
 
 class GetOffererHistoryDataTest:
