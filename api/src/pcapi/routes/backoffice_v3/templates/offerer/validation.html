@@ -32,7 +32,7 @@
                             {% endif %}
                         {% endfor %}
                     </div>
-                  <div class="input-group mb-1 ">
+                    <div class="input-group mb-1 ">
                         {% for form_field in form %}
                             {% if form_field.type == 'PCSelectMultipleField' or form_field.type == "PCQuerySelectMultipleField" %}
                                 <div class="col-6 p-1"> {{ form_field }}</div>
@@ -94,7 +94,7 @@
                                             class="btn p-0"><i
                                             class="bi bi-three-dots-vertical"></i></button>
                                     <ul class="dropdown-menu">
-                                        <li class="dropdown-item">
+                                        <li class="dropdown-item p-0">
                                             <form
                                                     action="{{ url_for(
                                                     "backoffice_v3_web.offerer.validate",
@@ -102,26 +102,25 @@
                                                 ) }}"
                                                     method="POST">
                                                 {{ csrf_token }}
-                                                <button type="submit" class="btn btn-sm">
+                                                <button type="submit" class="btn btn-sm d-block w-100 text-start px-3">
                                                     Valider
                                                 </button>
                                             </form>
                                         </li>
-                                        <li class="dropdown-item">
-                                            <button type="button"
-                                                    class="btn btn-sm"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#reject-modal-{{ offerer.id }}">
+                                        <li class="dropdown-item p-0">
+                                            <a class="btn btn-sm d-block w-100 text-start px-3"
+                                               data-bs-toggle="modal"
+                                               data-bs-target="#reject-modal-{{ offerer.id }}">
                                                 Rejeter
-                                            </button>
+                                            </a>
                                         </li>
-                                        <li class="dropdown-item">
-                                            <button type="button"
-                                                    class="btn btn-sm"
+                                        <li class="dropdown-item p-0">
+                                            <a
+                                                    class="btn btn-sm d-block w-100 text-start px-3"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#pending-modal-{{ offerer.id }}">
                                                 Mettre en attente
-                                            </button>
+                                            </a>
                                         </li>
                                     </ul>
                                 </div>
