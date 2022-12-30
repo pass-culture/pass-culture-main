@@ -16,6 +16,7 @@ from pcapi.core.bookings.repository import field_to_venue_timezone
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
+from pcapi.core.finance import models as financial_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.users.models import User
@@ -66,6 +67,7 @@ CollectiveBookingNamedTuple = namedtuple(
         "venueDepartmentCode",
         "offererPostalCode",
         "numberOfTickets",
+        "bankingStatus",
     ],
 )
 
@@ -548,8 +550,10 @@ def _get_filtered_collective_bookings_query(
     event_date: date | None = None,
     venue_id: int | None = None,
     extra_joins: Iterable[sa.Column] | None = None,
+    extra_outer_joins: Iterable[sa.Column] | None = None,
 ) -> sa.orm.Query:
     extra_joins = extra_joins or tuple()
+    extra_outer_joins = extra_outer_joins or tuple()
 
     collective_bookings_query = (
         educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.offerer)
@@ -559,6 +563,9 @@ def _get_filtered_collective_bookings_query(
     )
     for join_key in extra_joins:
         collective_bookings_query = collective_bookings_query.join(join_key, isouter=True)
+
+    for extra_outer_join in extra_outer_joins:
+        collective_bookings_query = collective_bookings_query.outerjoin(extra_outer_join)
 
     if not pro_user.has_admin_role:
         collective_bookings_query = collective_bookings_query.filter(offerers_models.UserOfferer.user == pro_user)
@@ -645,6 +652,7 @@ def _get_filtered_collective_bookings_pro(
                 educational_models.CollectiveStock.collectiveOffer,
                 educational_models.CollectiveBooking.educationalInstitution,
             ),
+            extra_outer_joins=[offerers_models.Venue.bankInformation],
         )
         .with_entities(
             educational_models.CollectiveBooking.id.label("collectiveBookingId"),
@@ -670,6 +678,7 @@ def _get_filtered_collective_bookings_pro(
             offerers_models.Venue.departementCode.label("venueDepartmentCode"),
             offerers_models.Offerer.postalCode.label("offererPostalCode"),
             educational_models.CollectiveStock.numberOfTickets.label("stockNumberOfTickets"),
+            financial_models.BankInformation.status.label("bankingStatus"),
         )
         .distinct(educational_models.CollectiveBooking.id)
     )
@@ -742,6 +751,7 @@ def find_collective_bookings_by_pro_user(
             venueDepartmentCode=booking.venueDepartmentCode,
             offererPostalCode=booking.offererPostalCode,
             numberOfTickets=booking.stockNumberOfTickets,
+            bankingStatus=booking.bankingStatus,
         )
         collective_bookings_page_with_converted_dates.append(booking_with_converted_dates)
 

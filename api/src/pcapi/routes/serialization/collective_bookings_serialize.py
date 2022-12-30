@@ -12,6 +12,7 @@ from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezon
 from pcapi.core.educational import models
 from pcapi.core.educational.repository import COLLECTIVE_BOOKING_STATUS_LABELS
 from pcapi.core.educational.repository import CollectiveBookingNamedTuple
+from pcapi.core.finance import models as financial_models
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.collective_offers_serialize import CollectiveOfferOfferVenueResponseModel
@@ -95,6 +96,7 @@ class CollectiveBookingResponseModel(BaseModel):
     booking_amount: float
     booking_status_history: list[BookingStatusHistoryResponseModel]
     booking_identifier: str
+    banking_stats: financial_models.BankInformationStatus | None
 
 
 class ListCollectiveBookingsResponseModel(BaseModel):
@@ -236,6 +238,7 @@ def serialize_collective_booking(collective_booking: CollectiveBookingNamedTuple
             is_confirmed=collective_booking.isConfirmed,
         ),
         booking_identifier=humanize(collective_booking.collectiveBookingId),
+        bankingStatus=collective_booking.bankingStatus,
     )
 
 

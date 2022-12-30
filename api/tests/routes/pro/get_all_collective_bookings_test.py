@@ -84,6 +84,7 @@ class Returns200Test:
                 "booking_identifier": humanize(booking.id),
                 "booking_date": "2022-03-11T11:15:00+01:00",
                 "booking_id": str(booking.id),
+                "banking_stats": None,
                 "booking_amount": 1200.00,
                 "booking_token": None,
                 "booking_status": "confirmed",
@@ -100,7 +101,6 @@ class Returns200Test:
                 ],
             }
         ]
-
         assert response.status_code == 200
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
@@ -459,6 +459,7 @@ class Returns200Test:
                 "booking_identifier": humanize(booking.id),
                 "booking_date": "2022-03-11T11:15:00+01:00",
                 "booking_id": str(booking.id),
+                "banking_stats": None,
                 "booking_amount": 1200.00,
                 "booking_token": None,
                 "booking_status": "confirmed",
@@ -539,6 +540,7 @@ class Returns200Test:
                 "booking_identifier": humanize(booking.id),
                 "booking_date": "2022-03-11T11:15:00+01:00",
                 "booking_id": str(booking.id),
+                "banking_stats": None,
                 "booking_amount": 1200.00,
                 "booking_token": None,
                 "booking_status": "confirmed",
@@ -621,6 +623,7 @@ class Returns200Test:
                 "booking_identifier": humanize(booking.id),
                 "booking_date": "2022-02-11T11:15:00+01:00",
                 "booking_id": str(booking.id),
+                "banking_stats": None,
                 "booking_amount": 1200.00,
                 "booking_token": None,
                 "booking_status": "validated",
