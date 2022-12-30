@@ -13,6 +13,7 @@ export type { AdageCulturalPartnerResponseModel } from './models/AdageCulturalPa
 export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalPartnersResponseModel';
 export type { Address } from './models/Address';
 export type { AttachImageResponseModel } from './models/AttachImageResponseModel';
+export { BankInformationStatus } from './models/BankInformationStatus';
 export type { BannerMetaModel } from './models/BannerMetaModel';
 export { BookingExportType } from './models/BookingExportType';
 export type { BookingRecapResponseBeneficiaryModel } from './models/BookingRecapResponseBeneficiaryModel';

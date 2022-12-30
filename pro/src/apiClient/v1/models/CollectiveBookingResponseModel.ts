@@ -2,11 +2,13 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { BankInformationStatus } from './BankInformationStatus';
 import type { BookingStatusHistoryResponseModel } from './BookingStatusHistoryResponseModel';
 import type { CollectiveBookingCollectiveStockResponseModel } from './CollectiveBookingCollectiveStockResponseModel';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 
 export type CollectiveBookingResponseModel = {
+  banking_stats?: BankInformationStatus | null;
   booking_amount: number;
   booking_date: string;
   booking_id: string;
