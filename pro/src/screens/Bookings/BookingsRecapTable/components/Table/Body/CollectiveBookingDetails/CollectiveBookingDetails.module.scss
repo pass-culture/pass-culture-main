@@ -41,6 +41,9 @@
   &-icon {
     display: inline-flex;
     align-self: center;
+    height: rem.torem(16px);
+    width: rem.torem(16px);
+    
 
     path {
       fill: colors.$black;
@@ -78,9 +81,4 @@
       margin-right: 0;
     }
   }
-}
-
-svg {
-  height: rem.torem(16px);
-  width: rem.torem(16px);
 }
