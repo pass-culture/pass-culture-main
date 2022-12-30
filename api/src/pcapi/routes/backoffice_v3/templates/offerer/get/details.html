@@ -31,16 +31,16 @@
         </li>
         <li class="nav-item" role="presentation">
             <button
-                class="nav-link fw-bolder py-3"
-                id="pills-details-tab"
+                class="nav-link fw-bolder py-3 {{ 'active' if active_tab == 'managed_venues' else '' }}"
+                id="pills-managed-venues-tab"
                 data-bs-toggle="pill"
-                data-bs-target="#pills-details"
+                data-bs-target="#pills-managed-venues"
                 type="button"
                 role="tab"
-                aria-controls="pills-details"
+                aria-controls="pills-managed-venues"
                 aria-selected="false"
             >
-             DÉTAILS STRUCTURE / LIEUX
+                LIEUX ASSOCIÉS
             </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -80,8 +80,16 @@
             {% include "offerer/get/details/users.html" %}
         </div>
 
-        <div class="tab-pane fade" id="pills-details" role="tabpanel" aria-labelledby="pills-details-tab" tabindex="0">
+        <div 
+            class="tab-pane fade show p-4 {{ 'active' if active_tab == 'managed_venues' else '' }}"
+            id="pills-managed-venues"
+            role="tabpanel"
+            aria-labelledby="pills-details-tab"
+            tabindex="0"
+        >
+        {% include "offerer/get/details/managed_venues.html" %}
         </div>
+
         <div class="tab-pane fade" id="pills-bookings" role="tabpanel" aria-labelledby="pills-bookings-tab" tabindex="0">
         </div>
     </div>
