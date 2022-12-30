@@ -61,6 +61,7 @@ const CollectiveOfferSummaryEdition = ({
 
     const { isOk, message } = await cancelCollectiveBookingAdapter({
       offerId: offer.id,
+      offerStatus: offer.status,
     })
 
     if (!isOk) {

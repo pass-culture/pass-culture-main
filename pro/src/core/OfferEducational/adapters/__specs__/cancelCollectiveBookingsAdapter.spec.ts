@@ -2,6 +2,7 @@ import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { OfferStatus } from 'apiClient/v2'
 
 import { cancelCollectiveBookingAdapter } from '../cancelCollectiveBookingAdapter'
 
@@ -50,7 +51,24 @@ describe('cancelCollectiveBookingAdapter', () => {
     // then
     expect(response.isOk).toBeTruthy()
     expect(response.message).toBe(
-      'La réservation / préreservation sur cette offre à été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.'
+      'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.'
+    )
+  })
+
+  it('should return a confirmation when the booking was cancelled and status expired', async () => {
+    // given
+    jest.spyOn(api, 'cancelCollectiveOfferBooking').mockResolvedValue()
+
+    // when
+    const response = await cancelCollectiveBookingAdapter({
+      offerId: '12',
+      offerStatus: OfferStatus.EXPIRED,
+    })
+
+    // then
+    expect(response.isOk).toBeTruthy()
+    expect(response.message).toBe(
+      'La réservation sur cette offre a été annulée.'
     )
   })
 })

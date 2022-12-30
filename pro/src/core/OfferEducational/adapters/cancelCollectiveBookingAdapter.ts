@@ -1,16 +1,22 @@
 import { api } from 'apiClient/api'
 import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
+import { OfferStatus } from 'apiClient/v2'
 
 type IPayloadSuccess = null
 type IPayloadFailure = null
 type cancelCollectiveBookingAdapter = Adapter<
-  { offerId?: string },
+  { offerId?: string; offerStatus?: string },
   IPayloadSuccess,
   IPayloadFailure
 >
 
 export const cancelCollectiveBookingAdapter: cancelCollectiveBookingAdapter =
-  async ({ offerId }) => {
+  async ({ offerId, offerStatus }) => {
+    const message =
+      offerStatus === OfferStatus.EXPIRED
+        ? 'La réservation sur cette offre a été annulée.'
+        : 'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.'
+
     try {
       // the api returns no understandable error when the id is not valid, so we deal before calling the api
       if (!offerId || offerId === '') {
@@ -19,8 +25,7 @@ export const cancelCollectiveBookingAdapter: cancelCollectiveBookingAdapter =
       await api.cancelCollectiveOfferBooking(offerId)
       return {
         isOk: true,
-        message:
-          'La réservation / préreservation sur cette offre à été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.',
+        message: message,
         payload: null,
       }
     } catch (error) {
