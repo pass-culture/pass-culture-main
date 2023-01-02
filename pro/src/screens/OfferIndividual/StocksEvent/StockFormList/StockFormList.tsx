@@ -96,8 +96,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
                       }
                     },
                     label: 'Supprimer le stock',
-                    disabled:
-                      !stockValues.isDeletable || isDisabled || isSynchronized,
+                    disabled: !stockValues.isDeletable || isDisabled,
                     Icon: TrashFilledIcon,
                   },
                 ]}

@@ -428,7 +428,7 @@ describe('screens:StocksEvent:Edition', () => {
     expect(screen.getByLabelText('Prix')).toHaveValue(10.01)
   })
 
-  it('should not allow user to delete stock from a synchronized offer', async () => {
+  it('should allow user to delete stock from a synchronized offer', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
     apiOffer.lastProvider = {
       ...apiOffer.lastProvider,
@@ -444,8 +444,17 @@ describe('screens:StocksEvent:Edition', () => {
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[1]
     )
-    const deleteButton = screen.getAllByTitle('Supprimer le stock')[0]
-    expect(deleteButton).toHaveAttribute('aria-disabled', 'true')
+    await userEvent.click(
+      screen.getAllByTestId('stock-form-actions-button-open')[0]
+    )
+    await userEvent.click(screen.getAllByText('Supprimer le stock')[0])
+    expect(
+      screen.getByText('Voulez-vous supprimer ce stock ?')
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
+    expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
+    expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
+    expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
   it('should not allow user to add a date for a synchronized offer', async () => {
