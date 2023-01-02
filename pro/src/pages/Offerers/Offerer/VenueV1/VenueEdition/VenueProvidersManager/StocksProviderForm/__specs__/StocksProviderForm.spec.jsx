@@ -16,7 +16,7 @@ import Notification from 'components/Notification/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
-import VenueProvidersManager from '../../VenueProvidersManager'
+import VenueProvidersManagerV2 from '../../../VenueProvidersManagerV2'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
@@ -33,7 +33,7 @@ const renderVenueProvidersManager = async props => {
   render(
     <Provider store={configureTestStore()}>
       <MemoryRouter>
-        <VenueProvidersManager {...props} />
+        <VenueProvidersManagerV2 {...props} />
         <Notification />
       </MemoryRouter>
     </Provider>
