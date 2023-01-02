@@ -36,6 +36,7 @@
     outline-color: forms.$input-border-color-disabled;
     color: forms.$input-text-color-disabled;
     opacity: 1;
+    border-color: forms.$input-border-color-disabled;
 
     &:hover {
       box-shadow: none;
