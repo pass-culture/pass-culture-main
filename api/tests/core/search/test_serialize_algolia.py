@@ -10,6 +10,7 @@ from pcapi.core.educational.models import StudentLevels
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import algolia
 from pcapi.core.testing import override_settings
 from pcapi.routes.adage_iframe.serialization.offers import OfferAddressType
@@ -21,6 +22,17 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
 def test_serialize_offer():
+    rayon = "Policier / Thriller format poche"  # fetched from provider
+
+    # known values (inserted using a migration)
+    # note: some might contain trailing whitespaces. Also sections are
+    # usually lowercase whilst sections from providers might be
+    # capitalized.
+    book_macro_section = offers_models.BookMacroSection.query.filter_by(
+        section="policier / thriller format poche"
+    ).one()
+    macro_section = book_macro_section.macroSection.strip()
+
     offer = offers_factories.OfferFactory(
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
@@ -31,6 +43,7 @@ def test_serialize_offer():
             "performer": "Performer",
             "speaker": "Speaker",
             "stageDirector": "Stage Director",
+            "rayon": rayon,
         },
         rankingWeight=2,
         subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -47,7 +60,7 @@ def test_serialize_offer():
         "objectID": offer.id,
         "offer": {
             "artist": "Author Performer Speaker Stage Director",
-            "bookMacroSection": None,
+            "bookMacroSection": macro_section,
             "dateCreated": offer.dateCreated.timestamp(),
             "dates": [],
             "description": "livre bien lire",

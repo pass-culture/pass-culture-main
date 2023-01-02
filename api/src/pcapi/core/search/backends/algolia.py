@@ -7,6 +7,7 @@ import urllib.parse
 import algoliasearch.search_client
 from flask import current_app
 import redis
+import sqlalchemy as sa
 
 from pcapi import settings
 import pcapi.core.educational.models as educational_models
@@ -391,13 +392,18 @@ class AlgoliaBackend(base.SearchBackend):
                 logger.warning("bad show type encountered", extra={"offer": offer.id, "show_type": show_type})
 
         macro_section = None
-        section = (extra_data.get("rayon") or "").strip()
+        section = (extra_data.get("rayon") or "").strip().lower()
         if section:
-            macro_section = (
-                offers_models.BookMacroSection.query.filter(offers_models.BookMacroSection.section == section)
-                .with_entities(offers_models.BookMacroSection.macroSection)
-                .scalar()
-            )
+            try:
+                macro_section = (
+                    offers_models.BookMacroSection.query.filter(
+                        sa.func.lower(offers_models.BookMacroSection.section) == section
+                    )
+                    .with_entities(offers_models.BookMacroSection.macroSection)
+                    .scalar()
+                ).strip()
+            except AttributeError:
+                macro_section = None
 
         object_to_index = {
             "distinct": distinct,
