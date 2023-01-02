@@ -5,8 +5,10 @@ from typing import Iterable
 from typing import Optional
 
 import babel.dates
+from dateutil.relativedelta import relativedelta
 
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 
 
 DEFAULT_MESSAGES = [
@@ -17,11 +19,14 @@ DEFAULT_MESSAGES = [
 ]
 
 
+AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=ELIGIBILITY_AGE_18)
+
+
 def make_graphql_application(  # pylint: disable=dangerous-default-value
     application_number: int,
     state: str,
     activity: str = "Étudiant",
-    birth_date: Optional[datetime.datetime] = datetime.datetime(2004, 1, 1),
+    birth_date: Optional[datetime.datetime] = AGE18_ELIGIBLE_BIRTH_DATE,
     civility: str = "Mme",
     city: Optional[str] = None,
     construction_datetime: str = "2020-05-13T09:09:46+02:00",
