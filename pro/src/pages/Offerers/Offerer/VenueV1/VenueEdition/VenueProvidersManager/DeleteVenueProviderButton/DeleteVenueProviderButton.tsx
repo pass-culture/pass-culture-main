@@ -4,11 +4,11 @@ import { api } from 'apiClient/api'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
-import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Button } from 'ui-kit/index'
 
 import DeleteVenueProviderDialog from '../DeleteVenueProviderDialog/DeleteVenueProviderDialog'
-import style from '../VenueProviderItemV2/VenueProviderItemV2.module.scss'
+import style from '../VenueProviderItem/VenueProviderItem.module.scss'
 
 export interface IDeleteVenueProviderButtonProps {
   venueProviderId: string

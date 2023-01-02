@@ -11,7 +11,7 @@ import CinemaProviderParameters from '../CinemaProviderParameters/CinemaProvider
 import DeleteVenueProviderButton from '../DeleteVenueProviderButton/DeleteVenueProviderButton'
 import ToggleVenueProviderStatusButton from '../ToggleVenueProviderStatusButton/ToggleVenueProviderStatusButton'
 
-import style from './VenueProviderItemV2.module.scss'
+import style from './VenueProviderItem.module.scss'
 
 export interface IVenueProviderItemV2Props {
   afterDelete: (deletedVenueProvider: string) => void
@@ -20,7 +20,7 @@ export interface IVenueProviderItemV2Props {
   venueDepartmentCode: string
 }
 
-const VenueProviderItemV2 = ({
+const VenueProviderItem = ({
   afterDelete,
   afterSubmit,
   venueProvider,
@@ -97,4 +97,4 @@ const VenueProviderItemV2 = ({
   )
 }
 
-export default VenueProviderItemV2
+export default VenueProviderItem

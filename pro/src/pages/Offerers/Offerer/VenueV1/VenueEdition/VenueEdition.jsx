@@ -46,7 +46,7 @@ import DeleteBusinessUnitConfirmationDialog from './DeleteBusinessUnitConfirmati
 import { DisplayVenueInAppLink } from './DisplayVenueInAppLink'
 import EACInformation from './EACInformation'
 import { ImageVenueUploaderSection } from './ImageVenueUploaderSection/ImageVenueUploaderSection'
-import VenueProvidersManagerV2 from './VenueProvidersManagerV2'
+import VenueProvidersManager from './VenueProvidersManager'
 
 const VenueEdition = () => {
   const [isRequestPending, setIsRequestPending] = useState(false)
@@ -539,7 +539,7 @@ const VenueEdition = () => {
         }
         title="Lieu"
       />
-      {venue && !initialIsVirtual && <VenueProvidersManagerV2 venue={venue} />}
+      {venue && !initialIsVirtual && <VenueProvidersManager venue={venue} />}
       {venue && offerer && isReady && renderForm()}
     </div>
   )
