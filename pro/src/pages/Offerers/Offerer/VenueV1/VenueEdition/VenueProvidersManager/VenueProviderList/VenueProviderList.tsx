@@ -3,7 +3,7 @@ import React from 'react'
 import { VenueProviderResponse } from 'apiClient/v1'
 import { IVenue } from 'core/Venue/types'
 
-import VenueProviderItemV2 from '../VenueProviderItemV2/VenueProviderItemV2'
+import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 
 export interface IVenueProviderListV2Props {
   afterVenueProviderDelete: (deletedVenueProvider: string) => void
@@ -12,7 +12,7 @@ export interface IVenueProviderListV2Props {
   venueProviders: VenueProviderResponse[]
 }
 
-const VenueProviderListV2 = ({
+const VenueProviderList = ({
   afterVenueProviderDelete,
   afterVenueProviderEdit,
   venue,
@@ -21,7 +21,7 @@ const VenueProviderListV2 = ({
   return (
     <ul className="provider-list">
       {venueProviders.map(venueProvider => (
-        <VenueProviderItemV2
+        <VenueProviderItem
           afterDelete={afterVenueProviderDelete}
           afterSubmit={afterVenueProviderEdit}
           key={venueProvider.id}
@@ -33,4 +33,4 @@ const VenueProviderListV2 = ({
   )
 }
 
-export default VenueProviderListV2
+export default VenueProviderList

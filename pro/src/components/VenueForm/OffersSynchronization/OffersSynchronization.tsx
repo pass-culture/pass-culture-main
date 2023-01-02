@@ -4,7 +4,7 @@ import { VenueProviderResponse } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { IProviders, IVenue } from 'core/Venue/types'
 import AddVenueProviderButton from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/AddVenueProviderButton'
-import VenueProviderListV2 from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManagerV2/VenueProviderListV2/VenueProviderListV2'
+import VenueProviderList from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/VenueProviderList/VenueProviderList'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface IOffersSynchronization {
@@ -50,7 +50,7 @@ const OffersSynchronization = ({
       <FormLayout.Row>
         {isLoading && <Spinner />}
         {venueProviders.length > 0 ? (
-          <VenueProviderListV2
+          <VenueProviderList
             afterVenueProviderDelete={afterVenueProviderDelete}
             afterVenueProviderEdit={afterVenueProviderEdit}
             venue={venue}

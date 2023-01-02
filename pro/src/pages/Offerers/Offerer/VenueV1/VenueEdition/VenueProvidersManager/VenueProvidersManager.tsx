@@ -6,17 +6,16 @@ import { IVenue } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import AddVenueProviderButton from '../VenueProvidersManager/AddVenueProviderButton'
-
-import VenueProviderListV2 from './VenueProviderListV2/VenueProviderListV2'
-import styles from './VenueProvidersManagerV2.module.scss'
+import AddVenueProviderButton from './AddVenueProviderButton'
+import VenueProviderList from './VenueProviderList/VenueProviderList'
+import styles from './VenueProvidersManager.module.scss'
 import VenueProviderStatus from './VenueProviderStatus/VenueProviderStatus'
 
 export interface IVenueProvidersManagerV2Props {
   venue: IVenue
 }
 
-const VenueProvidersManagerV2 = ({
+const VenueProvidersManager = ({
   venue,
 }: IVenueProvidersManagerV2Props): JSX.Element | null => {
   const [providers, setProviders] = useState([])
@@ -77,7 +76,7 @@ const VenueProvidersManagerV2 = ({
       {isLoading ? (
         <Spinner />
       ) : venueProviders.length > 0 ? (
-        <VenueProviderListV2
+        <VenueProviderList
           afterVenueProviderDelete={afterVenueProviderDelete}
           afterVenueProviderEdit={afterVenueProviderEdit}
           venue={venue}
@@ -94,4 +93,4 @@ const VenueProvidersManagerV2 = ({
   )
 }
 
-export default VenueProvidersManagerV2
+export default VenueProvidersManager
