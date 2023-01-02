@@ -1439,6 +1439,7 @@ class GenerateInvoiceTest:
         + 1  # commit
     )
 
+    @freezegun.freeze_time(datetime.datetime(2022, 1, 15))
     def test_reference_scheme_increments(self):
         reimbursement_point = offerers_factories.VenueFactory()
         invoice1 = api._generate_invoice(
@@ -1479,7 +1480,8 @@ class GenerateInvoiceTest:
                 cashflow_ids=cashflow_ids,
             )
 
-        assert invoice.reference == "F220000001"
+        year = invoice.date.year % 100
+        assert invoice.reference == f"F{year}0000001"
         assert invoice.businessUnitId == venue.businessUnitId
         assert invoice.reimbursementPoint == reimbursement_point
         assert invoice.amount == -40 * 100
@@ -1522,7 +1524,6 @@ class GenerateInvoiceTest:
                 cashflow_ids=cashflow_ids,
             )
 
-        assert invoice.reference == "F220000001"
         assert invoice.reimbursementPoint == reimbursement_point
         # 100% of 19_850*100 + 95% of 160*100 aka 152*100
         assert invoice.amount == -20_002 * 100
@@ -1569,7 +1570,6 @@ class GenerateInvoiceTest:
                 cashflow_ids=cashflow_ids,
             )
 
-        assert invoice.reference == "F220000001"
         assert invoice.reimbursementPoint == reimbursement_point
         assert invoice.amount == -4400
         assert len(invoice.lines) == 1
@@ -1607,7 +1607,6 @@ class GenerateInvoiceTest:
             )
 
         assert len(invoice.cashflows) == 2
-        assert invoice.reference == "F220000001"
         assert invoice.reimbursementPoint == reimbursement_point
         assert invoice.amount == -20_156_04
         # général 100%, général 95%, livre 100%, livre 95%, pas remboursé, custom 1, custom 2
@@ -1700,7 +1699,6 @@ class GenerateInvoiceTest:
                 cashflow_ids=cashflow_ids,
             )
 
-        assert invoice.reference == "F220000001"
         assert invoice.amount == -20 * 100
         assert len(invoice.lines) == 2
         line1 = invoice.lines[0]
@@ -1884,7 +1882,7 @@ class GenerateInvoiceHtmlTest:
         )
         expected_invoice_html = expected_invoice_html.replace(
             'content: "Relevé n°F220000001 du 30/01/2022";',
-            f'content: "Relevé n°F220000001 du {invoice.date.strftime("%d/%m/%Y")}";',
+            f'content: "Relevé n°F{invoice.date.year % 100}0000001 du {invoice.date.strftime("%d/%m/%Y")}";',
         )
         start_period, end_period = api.get_invoice_period(invoice.date)
         expected_invoice_html = expected_invoice_html.replace(
