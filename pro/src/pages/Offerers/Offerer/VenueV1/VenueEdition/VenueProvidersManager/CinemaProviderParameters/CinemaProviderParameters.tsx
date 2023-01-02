@@ -3,10 +3,10 @@ import React, { useCallback, useState } from 'react'
 import { api } from 'apiClient/api'
 import { VenueProviderResponse } from 'apiClient/v1'
 import useNotification from 'hooks/useNotification'
-import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Button } from 'ui-kit/index'
 
-import { CinemaProviderFormDialog } from '../../VenueProvidersManager/CinemaProviderFormDialog/CinemaProviderFormDialog'
+import { CinemaProviderFormDialog } from '../CinemaProviderFormDialog/CinemaProviderFormDialog'
 
 import style from './CinemaProviderParameters.module.scss'
 import { ICinemaProviderParametersValues } from './types'

@@ -16,8 +16,8 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
-import { DEFAULT_PROVIDER_OPTION } from '../../VenueProvidersManager/utils/_constants'
-import VenueProvidersManagerV2 from '../VenueProvidersManagerV2'
+import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
+import VenueProvidersManager from '../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
@@ -35,7 +35,7 @@ const renderVenueProvidersManager = async props => {
   render(
     <Provider store={configureTestStore()}>
       <MemoryRouter>
-        <VenueProvidersManagerV2 {...props} />
+        <VenueProvidersManager {...props} />
       </MemoryRouter>
     </Provider>
   )

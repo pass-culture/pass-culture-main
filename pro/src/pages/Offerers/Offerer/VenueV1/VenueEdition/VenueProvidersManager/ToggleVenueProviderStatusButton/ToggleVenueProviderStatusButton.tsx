@@ -4,12 +4,12 @@ import { api } from 'apiClient/api'
 import { VenueProviderResponse } from 'apiClient/v1'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
-import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Icon from 'ui-kit/Icon/Icon'
+import { Button } from 'ui-kit/index'
 
 import ToggleVenueProviderStatusDialog from '../ToggleVenueProviderStatusDialog/ToggleVenueProviderStatusDialog'
-import style from '../VenueProviderItemV2/VenueProviderItemV2.module.scss'
+import style from '../VenueProviderItem/VenueProviderItem.module.scss'
 
 export interface IToggleVenueProviderStatusButtonProps {
   venueProvider: VenueProviderResponse
