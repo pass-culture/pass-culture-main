@@ -271,7 +271,7 @@ describe('src | VenueProvidersManager', () => {
 
       const quantity = queryByTextTrimHtml(
         screen,
-        'Nombre de places/séances : 20'
+        'Nombre de places/séance : 20'
       )
       expect(quantity).toBeInTheDocument()
 

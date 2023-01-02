@@ -46,7 +46,6 @@ import DeleteBusinessUnitConfirmationDialog from './DeleteBusinessUnitConfirmati
 import { DisplayVenueInAppLink } from './DisplayVenueInAppLink'
 import EACInformation from './EACInformation'
 import { ImageVenueUploaderSection } from './ImageVenueUploaderSection/ImageVenueUploaderSection'
-import VenueProvidersManager from './VenueProvidersManager'
 import VenueProvidersManagerV2 from './VenueProvidersManagerV2'
 
 const VenueEdition = () => {
@@ -72,9 +71,6 @@ const VenueEdition = () => {
   )
   const isNewBankInformationCreation = useActiveFeature(
     'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
-  )
-  const isEnabledNewVenueProviderSection = useActiveFeature(
-    'ENABLE_PRO_NEW_VENUE_PROVIDER_UI'
   )
 
   const onImageUpload = useCallback(
@@ -543,13 +539,7 @@ const VenueEdition = () => {
         }
         title="Lieu"
       />
-      {venue &&
-        !initialIsVirtual &&
-        (isEnabledNewVenueProviderSection ? (
-          <VenueProvidersManagerV2 venue={venue} />
-        ) : (
-          <VenueProvidersManager venue={venue} />
-        ))}
+      {venue && !initialIsVirtual && <VenueProvidersManagerV2 venue={venue} />}
       {venue && offerer && isReady && renderForm()}
     </div>
   )

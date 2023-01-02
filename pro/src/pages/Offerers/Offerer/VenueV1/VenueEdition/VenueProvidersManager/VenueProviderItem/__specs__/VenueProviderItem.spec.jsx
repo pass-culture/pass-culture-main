@@ -12,7 +12,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
-import VenueProvidersManager from '../../VenueProvidersManager'
+import VenueProvidersManagerV2 from '../../../VenueProvidersManagerV2'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
@@ -29,7 +29,7 @@ const renderVenueProvidersManager = props =>
   render(
     <Provider store={configureTestStore()}>
       <MemoryRouter>
-        <VenueProvidersManager {...props} />
+        <VenueProvidersManagerV2 {...props} />
         <Notification />
       </MemoryRouter>
     </Provider>
@@ -79,7 +79,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
     jest.resetAllMocks()
   })
 
-  it('should render provider name and logo', async () => {
+  it('should render provider name', async () => {
     // when
     renderVenueProvidersManager(props)
     const venueProviderItemTitle = await screen.findByText(
@@ -88,11 +88,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
 
     // then
     expect(venueProviderItemTitle).toBeInTheDocument()
-    const providerLogo = screen.getAllByRole('img')[0]
-    expect(providerLogo).toHaveAttribute(
-      'src',
-      expect.stringContaining('logo-titeLive.svg')
-    )
   })
 
   it('should display import message when venue provider is not synced yet', async () => {

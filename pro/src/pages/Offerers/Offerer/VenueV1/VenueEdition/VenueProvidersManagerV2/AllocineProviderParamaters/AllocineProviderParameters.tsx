@@ -1,12 +1,14 @@
 import React, { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
+import { getError, isErrorAPIError } from 'apiClient/helpers'
 import { VenueProviderResponse } from 'apiClient/v1'
 import useNotification from 'hooks/useNotification'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import AllocineProviderFormDialog from '../../VenueProvidersManager/AllocineProviderFormDialog/AllocineProviderFormDialog'
+import { getRequestErrorStringFromErrors } from '../../VenueProvidersManager/utils/getRequestErrorStringFromErrors'
 
 import style from './AllocineProviderParameters.module.scss'
 import { IAllocineProviderParametersValues } from './types'
@@ -33,8 +35,10 @@ const AllocineProviderParameters = ({
             "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
           )
         })
-        .catch(() => {
-          notification.error("Une erreur s'est produite, veuillez réessayer")
+        .catch(error => {
+          if (isErrorAPIError(error)) {
+            notification.error(getRequestErrorStringFromErrors(getError(error)))
+          }
         })
     },
     [afterVenueProviderEdit]
@@ -83,7 +87,7 @@ const AllocineProviderParameters = ({
           </span>
         </div>
         <div className={style['parameter-item']}>
-          Nombre de places/séances :{' '}
+          Nombre de places/séance :{' '}
           <span>
             {`${venueProvider.quantity ? venueProvider.quantity : 'Illimité'}`}
           </span>
