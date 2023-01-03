@@ -1,4 +1,8 @@
-import { SubcategoryIdEnum, StudentLevels } from 'apiClient/v1'
+import {
+  SubcategoryIdEnum,
+  StudentLevels,
+  GetEducationalOffererResponseModel,
+} from 'apiClient/v1'
 
 import { DEFAULT_EAC_FORM_VALUES } from '../constants'
 import {
@@ -49,12 +53,76 @@ export const getCategoryAndSubcategoryFromOffer = (
   }
 }
 
+export const getInitialOffererId = (
+  offerers: GetEducationalOffererResponseModel[],
+  offer?: CollectiveOffer | CollectiveOfferTemplate,
+  offererIdQueryParam?: string | null
+): string => {
+  if (offer !== undefined) {
+    return offer.venue.managingOffererId
+  }
+
+  if (offererIdQueryParam) {
+    return offererIdQueryParam
+  }
+
+  if (offerers.length === 1) {
+    return offerers[0].id
+  }
+
+  return DEFAULT_EAC_FORM_VALUES.offererId
+}
+
+export const getInitialVenueId = (
+  offerers: GetEducationalOffererResponseModel[],
+  offererId: string,
+  offer?: CollectiveOffer | CollectiveOfferTemplate,
+  venueIdQueryParam?: string | null
+): string => {
+  if (offer !== undefined) {
+    return offer.venueId
+  }
+
+  if (venueIdQueryParam) {
+    return venueIdQueryParam
+  }
+
+  if (offererId) {
+    const currentOfferer = offerers.find(offerer => offerer.id === offererId)
+
+    if (currentOfferer?.managedVenues.length === 1) {
+      return currentOfferer.managedVenues[0].id
+    }
+  }
+
+  return DEFAULT_EAC_FORM_VALUES.venueId
+}
+
 export const computeInitialValuesFromOffer = (
   categories: EducationalCategories,
-  offer?: CollectiveOffer | CollectiveOfferTemplate
+  offerers: GetEducationalOffererResponseModel[],
+  offer?: CollectiveOffer | CollectiveOfferTemplate,
+  offererIdQueryParam?: string | null,
+  venueIdQueryParam?: string | null
 ): IOfferEducationalFormValues => {
+  const initialOffererId = getInitialOffererId(
+    offerers,
+    offer,
+    offererIdQueryParam
+  )
+  const initialVenueId = getInitialVenueId(
+    offerers,
+    initialOffererId,
+    offer,
+    venueIdQueryParam
+  )
+
   if (offer === undefined) {
-    return DEFAULT_EAC_FORM_VALUES
+    return {
+      ...DEFAULT_EAC_FORM_VALUES,
+      offererId: initialOffererId,
+      venueId: initialVenueId,
+    }
   }
 
   const eventAddress = offer?.offerVenue
@@ -106,8 +174,8 @@ export const computeInitialValuesFromOffer = (
     domains,
     interventionArea:
       offer.interventionArea ?? DEFAULT_EAC_FORM_VALUES.interventionArea,
-    venueId: offer.venueId,
-    offererId: offer.venue.managingOffererId,
+    venueId: initialVenueId,
+    offererId: initialOffererId,
     priceDetail:
       offer.isTemplate && offer.educationalPriceDetail
         ? offer.educationalPriceDetail

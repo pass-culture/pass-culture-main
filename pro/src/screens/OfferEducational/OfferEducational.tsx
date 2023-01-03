@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import OfferEducationalActions from 'components/OfferEducationalActions'
@@ -18,10 +18,12 @@ import {
 import patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
 import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
 import postCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/postCollectiveOfferTemplateAdapter'
+import { computeInitialValuesFromOffer } from 'core/OfferEducational/utils/computeInitialValuesFromOffer'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import { patchCollectiveOfferTemplateAdapter } from 'pages/CollectiveOfferEdition/adapters/patchCollectiveOfferTemplateAdapter'
+import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 
 import styles from './OfferEducational.module.scss'
 import OfferEducationalForm from './OfferEducationalForm'
@@ -32,7 +34,6 @@ export interface IOfferEducationalProps {
   offer?: CollectiveOffer | CollectiveOfferTemplate
   setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
   categories: EducationalCategories
-  initialValues: IOfferEducationalFormValues
   userOfferers: GetEducationalOffererResponseModel[]
   getIsOffererEligible?: CanOffererCreateCollectiveOffer
   mode: Mode
@@ -52,7 +53,6 @@ const OfferEducational = ({
   categories,
   userOfferers,
   domainsOptions,
-  initialValues,
   getIsOffererEligible,
   mode,
   cancelActiveBookings,
@@ -65,8 +65,19 @@ const OfferEducational = ({
 }: IOfferEducationalProps): JSX.Element => {
   const notify = useNotification()
   const history = useHistory()
+  const location = useLocation()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useCollectiveOfferImageUpload(offer, isTemplate)
+
+  const { structure: offererId, lieu: venueId } =
+    queryParamsFromOfferer(location)
+  const initialValues = computeInitialValuesFromOffer(
+    categories,
+    userOfferers,
+    offer,
+    offererId,
+    venueId
+  )
 
   const onSubmit = async (offerValues: IOfferEducationalFormValues) => {
     let response = null
@@ -137,13 +148,6 @@ const OfferEducational = ({
     (mode === Mode.EDITION || mode === Mode.READ_ONLY) &&
     setIsOfferActive &&
     cancelActiveBookings
-
-  // FIX ME
-  useEffect(() => {
-    // update formik values with initial values when initial values
-    // are updated after offer update
-    resetForm({ values: initialValues })
-  }, [initialValues, resetForm])
 
   useEffect(() => {
     if (

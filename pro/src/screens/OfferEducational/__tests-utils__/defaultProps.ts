@@ -1,10 +1,5 @@
-import { OfferAddressType, SubcategoryIdEnum } from 'apiClient/v1'
-import {
-  DEFAULT_EAC_FORM_VALUES,
-  IOfferEducationalFormValues,
-  Mode,
-} from 'core/OfferEducational'
-import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
+import { Mode } from 'core/OfferEducational'
+import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 
 import { IOfferEducationalProps } from '../OfferEducational'
 
@@ -44,7 +39,6 @@ const mockUserOfferers = userOfferersFactory([{}])
 
 export const defaultCreationProps: IOfferEducationalProps = {
   userOfferers: mockUserOfferers,
-  initialValues: DEFAULT_EAC_FORM_VALUES,
   categories: {
     educationalCategories: mockEducationalCategories,
     educationalSubCategories: mockEducationalSubcategories,
@@ -60,44 +54,9 @@ export const defaultCreationProps: IOfferEducationalProps = {
   setOffer: jest.fn(),
 }
 
-const allParticipantsOptionsToTrue = {
-  all: false,
-  ...buildStudentLevelsMapWithDefaultValue(true),
-}
-
-const editionFormValues: IOfferEducationalFormValues = {
-  category: 'MUSEE',
-  subCategory: SubcategoryIdEnum.VISITE_GUIDEE,
-  title: 'offer title',
-  description: 'offer description',
-  duration: '',
-  offererId: 'OFFERER_ID',
-  venueId: 'VENUE_ID',
-  eventAddress: {
-    addressType: OfferAddressType.OTHER,
-    otherAddress: 'other adress string',
-    venueId: '',
-  },
-  interventionArea: [],
-  participants: allParticipantsOptionsToTrue,
-  accessibility: {
-    visual: true,
-    audio: true,
-    motor: true,
-    mental: true,
-    none: false,
-  },
-  phone: '0466841425',
-  email: 'email@email.com',
-  notificationEmails: ['email.notification@email.com'],
-  domains: [],
-  'search-domains': '',
-  'search-interventionArea': '',
-}
-
 export const defaultEditionProps: IOfferEducationalProps = {
+  offer: collectiveOfferFactory(),
   userOfferers: mockUserOfferers,
-  initialValues: editionFormValues,
   categories: {
     educationalCategories: mockEducationalCategories,
     educationalSubCategories: mockEducationalSubcategories,
