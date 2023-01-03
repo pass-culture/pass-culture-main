@@ -197,7 +197,6 @@ class UpdateVenueTest:
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_update_venue(self, authenticated_client, offerer):
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-
         url = url_for("backoffice_v3_web.manage_venue.update", venue_id=venue.id)
         data = {
             "siret": venue.managingOfferer.siren + "98765",
@@ -206,6 +205,7 @@ class UpdateVenueTest:
             "address": "Skolgatan 31A",
             "email": venue.contact.email + ".update",
             "phone_number": "+33102030456",
+            "isPermanent": True,
         }
 
         response = send_request(authenticated_client, venue.id, url, data)
@@ -221,6 +221,7 @@ class UpdateVenueTest:
         assert venue.address == data["address"]
         assert venue.contact.email == data["email"]
         assert venue.contact.phone_number == data["phone_number"]
+        assert venue.isPermanent == data["isPermanent"]
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_update_virtual_venue(self, authenticated_client, offerer):
