@@ -46,7 +46,6 @@ const CollectiveOfferCreation = ({
         getIsOffererEligible={canOffererCreateCollectiveOfferAdapter}
         mode={Mode.CREATION}
         isTemplate={isTemplate}
-        isOfferCreated={offer !== undefined}
       />
       <RouteLeavingGuardCollectiveOfferCreation />
     </>
