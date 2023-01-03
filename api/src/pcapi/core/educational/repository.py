@@ -1,4 +1,3 @@
-from collections import namedtuple
 from datetime import date
 from datetime import datetime
 from datetime import time
@@ -13,7 +12,6 @@ import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.expression import extract
 
 from pcapi.core.bookings.repository import field_to_venue_timezone
-from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
@@ -39,36 +37,6 @@ BOOKING_DATE_STATUS_MAPPING: dict[educational_models.CollectiveBookingStatusFilt
     educational_models.CollectiveBookingStatusFilter.VALIDATED: educational_models.CollectiveBooking.dateUsed,
     educational_models.CollectiveBookingStatusFilter.REIMBURSED: educational_models.CollectiveBooking.reimbursementDate,
 }
-
-CollectiveBookingNamedTuple = namedtuple(
-    "CollectiveBookingNamedTuple",
-    [
-        "collectiveBookingId",
-        "bookedAt",
-        "bookingAmount",
-        "usedAt",
-        "cancelledAt",
-        "cancellationLimitDate",
-        "confirmationLimitDate",
-        "status",
-        "reimbursedAt",
-        "isConfirmed",
-        "confirmationDate",
-        "institutionId",
-        "institutionType",
-        "institutionName",
-        "institutionPostalCode",
-        "institutionCity",
-        "institutionPhoneNumber",
-        "institutionInstitutionId",
-        "offerName",
-        "offerId",
-        "stockBeginningDatetime",
-        "venueDepartmentCode",
-        "offererPostalCode",
-        "numberOfTickets",
-    ],
-)
 
 
 def find_bookings_happening_in_x_days(number_of_days: int) -> list[educational_models.CollectiveBooking]:
@@ -634,35 +602,17 @@ def _get_filtered_collective_bookings_pro(
                 educational_models.CollectiveBooking.educationalInstitution,
             ),
         )
-        .with_entities(
-            educational_models.CollectiveBooking.id.label("collectiveBookingId"),
-            educational_models.CollectiveBooking.dateCreated.label("bookedAt"),
-            educational_models.CollectiveStock.price.label("bookingAmount"),
-            educational_models.CollectiveBooking.dateUsed.label("usedAt"),
-            educational_models.CollectiveBooking.cancellationDate.label("cancelledAt"),
-            educational_models.CollectiveBooking.cancellationLimitDate,
-            educational_models.CollectiveBooking.confirmationLimitDate,
-            educational_models.CollectiveBooking.status,
-            educational_models.CollectiveBooking.reimbursementDate.label("reimbursedAt"),
-            educational_models.CollectiveBooking.isConfirmed,
-            educational_models.CollectiveBooking.confirmationDate,
-            educational_models.EducationalInstitution.id.label("institutionId"),
-            educational_models.EducationalInstitution.institutionType.label("institutionType"),
-            educational_models.EducationalInstitution.name.label("institutionName"),
-            educational_models.EducationalInstitution.city.label("institutionCity"),
-            educational_models.EducationalInstitution.postalCode.label("institutionPostalCode"),
-            educational_models.EducationalInstitution.phoneNumber.label("institutionPhoneNumber"),
-            educational_models.EducationalInstitution.institutionId.label("institutionInstitutionId"),
-            educational_models.CollectiveOffer.name.label("offerName"),
-            educational_models.CollectiveOffer.id.label("offerId"),
-            educational_models.CollectiveStock.beginningDatetime.label("stockBeginningDatetime"),
-            offerers_models.Venue.departementCode.label("venueDepartmentCode"),
-            offerers_models.Offerer.postalCode.label("offererPostalCode"),
-            educational_models.CollectiveStock.numberOfTickets.label("stockNumberOfTickets"),
+        .options(sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock))
+        .options(
+            sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock).joinedload(
+                educational_models.CollectiveStock.collectiveOffer
+            )
         )
+        .options(sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution))
+        .options(sa.orm.joinedload(educational_models.CollectiveBooking.venue))
+        .options(sa.orm.joinedload(educational_models.CollectiveBooking.offerer))
         .distinct(educational_models.CollectiveBooking.id)
     )
-
     return bookings_query
 
 
@@ -674,7 +624,7 @@ def find_collective_bookings_by_pro_user(
     venue_id: int | None = None,
     page: int = 1,
     per_page_limit: int = 1000,
-) -> Tuple[int | None, list[CollectiveBookingNamedTuple]]:
+) -> Tuple[int | None, list[educational_models.CollectiveBooking]]:
     # FIXME (gvanneste, 2022-04-01): Ne calculer le total que la première fois. À faire quand on branchera le front
     total_collective_bookings = (
         _get_filtered_collective_bookings_query(
@@ -695,7 +645,6 @@ def find_collective_bookings_by_pro_user(
         event_date=event_date,
         venue_id=venue_id,
     )
-
     collective_bookings_page = (
         collective_bookings_query.order_by(
             educational_models.CollectiveBooking.id.desc(), educational_models.CollectiveBooking.dateCreated.desc()
@@ -704,38 +653,7 @@ def find_collective_bookings_by_pro_user(
         .limit(per_page_limit)
         .all()
     )
-
-    collective_bookings_page_with_converted_dates = []
-    for booking in collective_bookings_page:
-        booking_with_converted_dates = CollectiveBookingNamedTuple(
-            collectiveBookingId=booking.collectiveBookingId,
-            bookedAt=convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
-            bookingAmount=booking.bookingAmount,
-            usedAt=convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
-            cancelledAt=convert_booking_dates_utc_to_venue_timezone(booking.cancelledAt, booking),
-            cancellationLimitDate=convert_booking_dates_utc_to_venue_timezone(booking.cancellationLimitDate, booking),
-            confirmationLimitDate=convert_booking_dates_utc_to_venue_timezone(booking.confirmationLimitDate, booking),
-            status=booking.status,
-            reimbursedAt=convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
-            isConfirmed=booking.isConfirmed,
-            confirmationDate=convert_booking_dates_utc_to_venue_timezone(booking.confirmationDate, booking),
-            institutionId=booking.institutionId,
-            institutionType=booking.institutionType,
-            institutionName=booking.institutionName,
-            institutionPostalCode=booking.institutionPostalCode,
-            institutionCity=booking.institutionCity,
-            institutionPhoneNumber=booking.institutionPhoneNumber,
-            institutionInstitutionId=booking.institutionInstitutionId,
-            offerName=booking.offerName,
-            offerId=booking.offerId,
-            stockBeginningDatetime=convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
-            venueDepartmentCode=booking.venueDepartmentCode,
-            offererPostalCode=booking.offererPostalCode,
-            numberOfTickets=booking.stockNumberOfTickets,
-        )
-        collective_bookings_page_with_converted_dates.append(booking_with_converted_dates)
-
-    return total_collective_bookings, collective_bookings_page_with_converted_dates
+    return total_collective_bookings, collective_bookings_page
 
 
 def get_filtered_collective_booking_report(
