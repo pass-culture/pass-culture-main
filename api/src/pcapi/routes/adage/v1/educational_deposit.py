@@ -1,6 +1,6 @@
 import logging
 
-from pcapi.core.educational.repository import get_educational_deposit_with_uai_code_by_year
+from pcapi.core.educational.repository import get_educational_deposits_by_year
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1 import blueprint
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(api=blueprint.api, response_model=deposit_serialization.EducationalDepositsResponse)
 @adage_api_key_required
 def get_educational_deposit(year_id: str) -> deposit_serialization.EducationalDepositsResponse:
-    educational_deposits = get_educational_deposit_with_uai_code_by_year(
+    educational_deposits = get_educational_deposits_by_year(
         year_id=year_id,
     )
     if not educational_deposits:

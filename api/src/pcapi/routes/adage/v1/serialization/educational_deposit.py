@@ -1,5 +1,10 @@
-from pcapi.core.educational.repository import EducationalDepositNamedTuple
+import typing
+
 from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.educational.models import EducationalDeposit
 
 
 class EducationalDepositResponse(AdageBaseResponseModel):
@@ -16,17 +21,14 @@ class EducationalDepositsResponse(AdageBaseResponseModel):
 
 
 def serialize_educational_deposits(
-    educational_deposits: list[EducationalDepositNamedTuple],
+    educational_deposits: list["EducationalDeposit"],
 ) -> list[EducationalDepositResponse]:
-    serialized_educational_deposit = []
-    for educational_deposit in educational_deposits:
-        serialized_educational_deposit.append(serialize_educational_deposit(educational_deposit))
-    return serialized_educational_deposit
+    return [serialize_educational_deposit(educational_deposit) for educational_deposit in educational_deposits]
 
 
-def serialize_educational_deposit(educational_deposit: EducationalDepositNamedTuple) -> EducationalDepositResponse:
+def serialize_educational_deposit(educational_deposit: "EducationalDeposit") -> EducationalDepositResponse:
     return EducationalDepositResponse(
         deposit=float(educational_deposit.amount),
-        uai=educational_deposit.uai,
+        uai=educational_deposit.educationalInstitution.institutionId,
         isFinal=educational_deposit.isFinal,
     )
