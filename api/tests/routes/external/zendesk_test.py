@@ -19,8 +19,10 @@ class ZendeskWebhookTest:
         "phone_number,postal_code", [("0612345678", 55270), ("06 12 34 56 78", None), ("+33612345678", 97600)]
     )
     def test_webhook_update_user_by_email(self, client, phone_number, postal_code):
+        birth_year = datetime.utcnow().year - user_constants.ELIGIBILITY_AGE_18
+
         user = users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime(2004, 1, 2),
+            dateOfBirth=datetime(birth_year, 1, 2),
             phoneNumber=phone_number,
             postalCode=postal_code,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
@@ -53,7 +55,7 @@ class ZendeskWebhookTest:
                     "first_name": user.firstName,
                     "last_name": user.lastName,
                     "postal_code": user.postalCode,
-                    "date_of_birth": "2004-01-02",
+                    "date_of_birth": f"{birth_year}-01-02",
                     "suspended": "Non",
                     "email_validated": True,
                     "phone_validated": True,
@@ -113,9 +115,11 @@ class ZendeskWebhookTest:
         }
 
     def test_webhook_update_user_without_subscription_process(self, client):
+        birth_year = datetime.utcnow().year - user_constants.ELIGIBILITY_AGE_18
+
         # first name, last name and phone number unknown
         user = users_factories.UserFactory(
-            dateOfBirth=datetime(2004, 1, 2),
+            dateOfBirth=datetime(birth_year, 1, 2),
             firstName=None,
             lastName=None,
             phoneNumber=None,
@@ -149,7 +153,7 @@ class ZendeskWebhookTest:
                     "first_name": user.firstName,
                     "last_name": user.lastName,
                     "postal_code": user.postalCode,
-                    "date_of_birth": "2004-01-02",
+                    "date_of_birth": f"{birth_year}-01-02",
                     "suspended": "Non",
                     "email_validated": True,
                     "phone_validated": False,
