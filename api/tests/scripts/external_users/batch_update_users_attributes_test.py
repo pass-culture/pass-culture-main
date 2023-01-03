@@ -1,3 +1,4 @@
+import datetime
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -111,7 +112,7 @@ def test_format_batch_user():
 @freeze_time("2022-12-06 10:00:00")  # Keep time frozen in 2022 as long as we send *_2022 attributes
 def test_format_sendinblue_user():
     user = BeneficiaryGrant18Factory(departementCode="75")
-    booking = IndividualBookingFactory(individualBooking__user=user)
+    booking = IndividualBookingFactory(individualBooking__user=user, dateCreated=datetime.datetime(2022, 12, 6, 10))
 
     res = format_sendinblue_users([user])
 
