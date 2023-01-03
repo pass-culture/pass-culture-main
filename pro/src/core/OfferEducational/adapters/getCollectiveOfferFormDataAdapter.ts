@@ -9,7 +9,8 @@ import {
   EducationalCategories,
   IOfferEducationalFormValues,
 } from '../types'
-import { getInitialValuesAndUserOfferers } from '../utils'
+import { getUserOfferersFromOffer } from '../utils'
+import { computeInitialValuesFromOffer } from '../utils/computeInitialValuesFromOffer'
 
 import { getEducationalCategoriesAdapter } from './getEducationalCategoriesAdapter'
 import { getEducationalDomainsAdapter } from './getEducationalDomainsAdapter'
@@ -57,21 +58,11 @@ const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
       }
       const [categories, domains, offerers] = responses
 
-      let offerersOptions = offerers.payload
-      let initialFormValues: IOfferEducationalFormValues =
-        DEFAULT_EAC_FORM_VALUES
-
-      if (offer) {
-        const { userOfferers, initialValues } = getInitialValuesAndUserOfferers(
-          {
-            categories: categories.payload,
-            offerers: offerers.payload,
-            offer,
-          }
-        )
-        offerersOptions = userOfferers
-        initialFormValues = initialValues
-      }
+      const offerersOptions = getUserOfferersFromOffer(offerers.payload, offer)
+      const initialFormValues = computeInitialValuesFromOffer(
+        categories.payload,
+        offer
+      )
 
       return {
         isOk: true,
