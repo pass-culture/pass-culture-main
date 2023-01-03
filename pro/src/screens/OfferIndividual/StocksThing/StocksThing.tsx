@@ -83,7 +83,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   } = useModal()
   /* istanbul ignore next: DEBT, TO FIX */
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
-  const isSynchronized = offer.lastProvider !== null
   const providerName = offer?.lastProviderName
 
   const onSubmit = async (formValues: IStockThingFormValues) => {
@@ -290,7 +289,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     })
   }
 
-  actions[0].disabled = isDisabled || isSynchronized
+  actions[0].disabled = isDisabled
 
   if (offer.isDigital) {
     description += `
