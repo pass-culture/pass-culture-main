@@ -3,15 +3,16 @@ from datetime import datetime
 from enum import Enum
 from io import BytesIO
 from io import StringIO
+import typing
 
 from flask_sqlalchemy import BaseQuery
 from pydantic import root_validator
 import xlsxwriter
 
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
+from pcapi.core.bookings.utils import convert_real_booking_dates_utc_to_venue_timezone
 from pcapi.core.educational import models
 from pcapi.core.educational.repository import COLLECTIVE_BOOKING_STATUS_LABELS
-from pcapi.core.educational.repository import CollectiveBookingNamedTuple
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.collective_offers_serialize import CollectiveOfferOfferVenueResponseModel
@@ -91,7 +92,7 @@ class CollectiveBookingResponseModel(BaseModel):
     booking_token: str | None
     booking_date: str
     booking_cancellation_limit_date: str
-    booking_confirmation_date: str
+    booking_confirmation_date: str | None
     booking_confirmation_limit_date: str
     booking_status: str
     booking_is_duo = False
@@ -199,33 +200,38 @@ def _serialize_collective_booking_status_info(
 
 
 def serialize_collective_booking_stock(
-    collective_booking: CollectiveBookingNamedTuple,
+    collective_booking: models.CollectiveBooking,
 ) -> CollectiveBookingCollectiveStockResponseModel:
     return CollectiveBookingCollectiveStockResponseModel(
-        offer_name=collective_booking.offerName,
-        offer_identifier=humanize(collective_booking.offerId),
-        event_beginning_datetime=collective_booking.stockBeginningDatetime.isoformat(),
+        offer_name=collective_booking.collectiveStock.collectiveOffer.name,
+        offer_identifier=humanize(collective_booking.collectiveStock.collectiveOfferId),
+        event_beginning_datetime=typing.cast(
+            datetime,
+            convert_real_booking_dates_utc_to_venue_timezone(
+                collective_booking.collectiveStock.beginningDatetime, collective_booking
+            ),
+        ).isoformat(),
         offer_is_educational=True,
-        number_of_tickets=collective_booking.numberOfTickets,
+        number_of_tickets=collective_booking.collectiveStock.numberOfTickets,
     )
 
 
 def serialize_collective_booking_institution(
-    collective_booking: CollectiveBookingNamedTuple,
+    collective_booking: models.CollectiveBooking,
 ) -> EducationalInstitutionResponseModel:
     return EducationalInstitutionResponseModel(
-        id=collective_booking.institutionId,
-        institutionType=collective_booking.institutionType,
-        name=collective_booking.institutionName,
-        postalCode=collective_booking.institutionPostalCode,
-        city=collective_booking.institutionCity,
-        phoneNumber=collective_booking.institutionPhoneNumber,
-        institutionId=collective_booking.institutionInstitutionId,
+        id=collective_booking.educationalInstitution.id,
+        institutionType=collective_booking.educationalInstitution.institutionType,
+        name=collective_booking.educationalInstitution.name,
+        postalCode=collective_booking.educationalInstitution.postalCode,
+        city=collective_booking.educationalInstitution.city,
+        phoneNumber=collective_booking.educationalInstitution.phoneNumber,
+        institutionId=collective_booking.educationalInstitution.institutionId,
     )
 
 
 def _serialize_collective_booking_recap_status(
-    collective_booking: CollectiveBookingNamedTuple,
+    collective_booking: models.CollectiveBooking,
 ) -> CollectiveBookingRecapStatus:
     if collective_booking.status == models.CollectiveBookingStatus.PENDING:
         return CollectiveBookingRecapStatus.pending
@@ -240,30 +246,57 @@ def _serialize_collective_booking_recap_status(
     return CollectiveBookingRecapStatus.booked
 
 
-def serialize_collective_booking(collective_booking: CollectiveBookingNamedTuple) -> CollectiveBookingResponseModel:
+def serialize_collective_booking(collective_booking: models.CollectiveBooking) -> CollectiveBookingResponseModel:
     return CollectiveBookingResponseModel(
         stock=serialize_collective_booking_stock(collective_booking),
         institution=serialize_collective_booking_institution(collective_booking),
-        booking_id=collective_booking.collectiveBookingId,
-        booking_date=collective_booking.bookedAt.isoformat(),
-        booking_cancellation_limit_date=collective_booking.cancellationLimitDate.isoformat(),
-        booking_confirmation_date=collective_booking.confirmationDate.isoformat()
+        booking_id=collective_booking.id,
+        booking_date=typing.cast(
+            datetime,
+            convert_real_booking_dates_utc_to_venue_timezone(collective_booking.dateCreated, collective_booking),
+        ).isoformat(),
+        booking_cancellation_limit_date=typing.cast(
+            datetime,
+            convert_real_booking_dates_utc_to_venue_timezone(
+                collective_booking.cancellationLimitDate, collective_booking
+            ),
+        ).isoformat(),
+        booking_confirmation_date=typing.cast(
+            datetime,
+            convert_real_booking_dates_utc_to_venue_timezone(collective_booking.confirmationDate, collective_booking),
+        ).isoformat()
         if collective_booking.confirmationDate
         else "",
-        booking_confirmation_limit_date=collective_booking.confirmationLimitDate.isoformat(),
+        booking_confirmation_limit_date=typing.cast(
+            datetime,
+            convert_real_booking_dates_utc_to_venue_timezone(
+                collective_booking.confirmationLimitDate, collective_booking
+            ),
+        ).isoformat(),
         booking_status=_serialize_collective_booking_recap_status(collective_booking).value,
-        booking_amount=collective_booking.bookingAmount,
+        booking_amount=collective_booking.collectiveStock.price,
         booking_status_history=build_status_history(
             booking_status=collective_booking.status,
-            booking_date=collective_booking.bookedAt,
-            cancellation_date=collective_booking.cancelledAt,
-            cancellation_limit_date=collective_booking.cancellationLimitDate,
-            payment_date=collective_booking.reimbursedAt,
-            date_used=collective_booking.stockBeginningDatetime,
-            confirmation_date=collective_booking.confirmationDate,
-            is_confirmed=collective_booking.isConfirmed,
+            booking_date=typing.cast(
+                datetime,
+                convert_real_booking_dates_utc_to_venue_timezone(collective_booking.dateCreated, collective_booking),
+            ),
+            cancellation_date=convert_real_booking_dates_utc_to_venue_timezone(
+                collective_booking.cancellationDate, collective_booking
+            ),
+            cancellation_limit_date=convert_real_booking_dates_utc_to_venue_timezone(
+                collective_booking.cancellationLimitDate, collective_booking
+            ),
+            payment_date=convert_real_booking_dates_utc_to_venue_timezone(
+                collective_booking.reimbursementDate, collective_booking
+            ),
+            date_used=convert_real_booking_dates_utc_to_venue_timezone(collective_booking.dateUsed, collective_booking),
+            confirmation_date=convert_real_booking_dates_utc_to_venue_timezone(
+                collective_booking.confirmationDate, collective_booking
+            ),
+            is_confirmed=collective_booking.isConfirmed,  # type: ignore[arg-type]
         ),
-        booking_identifier=humanize(collective_booking.collectiveBookingId),
+        booking_identifier=humanize(collective_booking.id),
     )
 
 

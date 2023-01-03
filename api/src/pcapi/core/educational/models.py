@@ -831,11 +831,11 @@ class CollectiveBooking(PcObject, Base, Model):
         self.confirmationDate = datetime.utcnow()
 
     @hybrid_property
-    def isConfirmed(self) -> BinaryExpression:
+    def isConfirmed(self) -> bool:
         return self.cancellationLimitDate <= datetime.utcnow()
 
     @isConfirmed.expression  # type: ignore[no-redef]
-    def isConfirmed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def isConfirmed(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.cancellationLimitDate <= datetime.utcnow()
 
     @hybrid_property

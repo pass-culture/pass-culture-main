@@ -1,7 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
 
-from dateutil import tz
 from freezegun import freeze_time
 import pytest
 
@@ -11,7 +10,6 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveBookingStatusFilter
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -49,23 +47,20 @@ class FindByProUserTest:
         assert total_bookings == 1
         assert len(collective_bookings) == 1
         expected_booking_recap = collective_bookings[0]
-        assert expected_booking_recap.offerId == collective_stock.collectiveOffer.id
-        assert expected_booking_recap.offerName == "Le chant des cigales"
-        assert expected_booking_recap.institutionName == institution.name
-        assert expected_booking_recap.institutionType == institution.institutionType
-        assert expected_booking_recap.institutionCity == institution.city
-        assert expected_booking_recap.institutionPhoneNumber == institution.phoneNumber
-        assert expected_booking_recap.institutionPostalCode == institution.postalCode
-        assert expected_booking_recap.institutionId == institution.id
-        assert expected_booking_recap.bookedAt == booking_date.astimezone(tz.gettz("Europe/Paris"))
+        assert expected_booking_recap.collectiveStock.collectiveOfferId == collective_stock.collectiveOffer.id
+        assert expected_booking_recap.collectiveStock.collectiveOffer.name == "Le chant des cigales"
+        assert expected_booking_recap.educationalInstitution.name == institution.name
+        assert expected_booking_recap.educationalInstitution.institutionType == institution.institutionType
+        assert expected_booking_recap.educationalInstitution.city == institution.city
+        assert expected_booking_recap.educationalInstitution.phoneNumber == institution.phoneNumber
+        assert expected_booking_recap.educationalInstitution.postalCode == institution.postalCode
+        assert expected_booking_recap.educationalInstitutionId == institution.id
         assert expected_booking_recap.status is CollectiveBookingStatus.USED
         assert expected_booking_recap.isConfirmed is True
-        assert expected_booking_recap.bookingAmount == collective_stock.price
-        assert expected_booking_recap.bookedAt == booking_date.astimezone(tz.gettz("Europe/Paris"))
-        assert expected_booking_recap.usedAt == (booking_date + timedelta(days=10)).astimezone(tz.gettz("Europe/Paris"))
-        assert expected_booking_recap.cancellationLimitDate == collective_booking.cancellationLimitDate.astimezone(
-            tz.gettz("Europe/Paris")
-        )
+        assert expected_booking_recap.collectiveStock.price == collective_stock.price
+        assert expected_booking_recap.dateCreated == booking_date
+        assert expected_booking_recap.dateUsed == (booking_date + timedelta(days=10))
+        assert expected_booking_recap.cancellationLimitDate == collective_booking.cancellationLimitDate
 
     def test_should_return_only_validated_collective_bookings_for_requested_period(self, app):
         # Given
@@ -103,7 +98,10 @@ class FindByProUserTest:
 
         # Then
         assert total_bookings == 2
-        assert {collective_bookings[0].offerId, collective_bookings[1].offerId} == {
+        assert {
+            collective_bookings[0].collectiveStock.collectiveOfferId,
+            collective_bookings[1].collectiveStock.collectiveOfferId,
+        } == {
             used_collective_booking_1.collectiveStock.collectiveOfferId,
             used_collective_booking_2.collectiveStock.collectiveOfferId,
         }
@@ -150,7 +148,10 @@ class FindByProUserTest:
 
         # Then
         assert total_bookings == 2
-        assert {collective_bookings[0].offerId, collective_bookings[1].offerId} == {
+        assert {
+            collective_bookings[0].collectiveStock.collectiveOfferId,
+            collective_bookings[1].collectiveStock.collectiveOfferId,
+        } == {
             reimbursed_collective_booking_1.collectiveStock.collectiveOfferId,
             reimbursed_collective_booking_2.collectiveStock.collectiveOfferId,
         }
@@ -193,7 +194,7 @@ class FindByProUserTest:
 
         # Then
         collective_booking = collective_bookings[0]
-        assert collective_booking.cancelledAt == booking.cancellationDate.astimezone(tz.gettz("Europe/Paris"))
+        assert collective_booking.cancellationDate == booking.cancellationDate
 
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app):
         # Given
@@ -245,7 +246,10 @@ class FindByProUserTest:
         # Then
         assert total_bookings == 2
         assert len(collective_bookings) == 1
-        assert collective_bookings[0].offerId == collective_booking.collectiveStock.collectiveOfferId
+        assert (
+            collective_bookings[0].collectiveStock.collectiveOfferId
+            == collective_booking.collectiveStock.collectiveOfferId
+        )
 
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app):
         # Given
@@ -291,8 +295,11 @@ class FindByProUserTest:
         assert total_bookings == 1
         assert len(collective_bookings) == 1
         collective_booking = collective_bookings[0]
-        assert collective_booking.offerId == booking_to_be_found.collectiveStock.collectiveOfferId
-        assert collective_booking.bookingAmount == booking_to_be_found.collectiveStock.price
+        assert (
+            collective_booking.collectiveStock.collectiveOfferId
+            == booking_to_be_found.collectiveStock.collectiveOfferId
+        )
+        assert collective_booking.collectiveStock.price == booking_to_be_found.collectiveStock.price
 
     def test_should_return_only_booking_for_requested_event_date(self, app):
         # Given
@@ -321,8 +328,11 @@ class FindByProUserTest:
         assert total_bookings == 1
         assert len(collective_bookings) == 1
         collective_booking = collective_bookings[0]
-        assert collective_booking.offerId == booking_to_be_found.collectiveStock.collectiveOfferId
-        assert collective_booking.bookingAmount == booking_to_be_found.collectiveStock.price
+        assert (
+            collective_booking.collectiveStock.collectiveOfferId
+            == booking_to_be_found.collectiveStock.collectiveOfferId
+        )
+        assert collective_booking.collectiveStock.price == booking_to_be_found.collectiveStock.price
 
     def should_consider_venue_locale_datetime_when_filtering_by_event_date(self, app):
         # Given
@@ -357,7 +367,7 @@ class FindByProUserTest:
         # Then
         assert total_bookings == 2
         assert len(collective_bookings) == 2
-        collective_bookings_ids = {booking.collectiveBookingId for booking in collective_bookings}
+        collective_bookings_ids = {booking.id for booking in collective_bookings}
         assert {cayenne_collective_booking.id, mayotte_collective_booking.id} == collective_bookings_ids
 
     def test_should_return_only_bookings_for_requested_booking_period(self, app):
@@ -389,9 +399,7 @@ class FindByProUserTest:
         # Then
         assert len(collective_bookings) == 1
         collective_booking = collective_bookings[0]
-        assert collective_booking.bookedAt == utc_datetime_to_department_timezone(
-            expected_booking.dateCreated, expected_booking.venue.departementCode
-        )
+        assert collective_booking.dateCreated == expected_booking.dateCreated
 
     def should_consider_venue_locale_datetime_when_filtering_by_booking_period(self, app):
         # Given
@@ -424,7 +432,7 @@ class FindByProUserTest:
         # Then
         assert total_bookings == 2
         assert len(collective_bookings) == 2
-        collective_bookings_ids = {booking.collectiveBookingId for booking in collective_bookings}
+        collective_bookings_ids = {booking.id for booking in collective_bookings}
         assert {cayenne_booking.id, mayotte_booking.id} == collective_bookings_ids
 
     def should_return_educational_institution_if_is_active(self, app):
