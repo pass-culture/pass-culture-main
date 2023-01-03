@@ -70,15 +70,6 @@ CollectiveBookingNamedTuple = namedtuple(
     ],
 )
 
-EducationalDepositNamedTuple = namedtuple(
-    "EducationalDepositNamedTuple",
-    [
-        "amount",
-        "uai",
-        "isFinal",
-    ],
-)
-
 
 def find_bookings_happening_in_x_days(number_of_days: int) -> list[educational_models.CollectiveBooking]:
     target_day = datetime.utcnow() + timedelta(days=number_of_days)
@@ -233,15 +224,11 @@ def find_educational_deposit_by_institution_id_and_year(
     ).one_or_none()
 
 
-def get_educational_deposit_with_uai_code_by_year(year_id: str) -> list[EducationalDepositNamedTuple]:
+def get_educational_deposits_by_year(year_id: str) -> list[educational_models.EducationalDeposit]:
     return (
         educational_models.EducationalDeposit.query.join(educational_models.EducationalDeposit.educationalInstitution)
         .filter(educational_models.EducationalDeposit.educationalYearId == year_id)
-        .with_entities(
-            educational_models.EducationalDeposit.amount.label("amount"),
-            educational_models.EducationalInstitution.institutionId.label("uai"),
-            educational_models.EducationalDeposit.isFinal.label("isFinal"),
-        )
+        .options(sa.orm.joinedload(educational_models.EducationalDeposit.educationalInstitution))
         .all()
     )
 
