@@ -224,10 +224,6 @@ class Returns200Test:
                 "date": "2022-04-30T22:00:00+02:00",
             },
             {
-                "status": "validated",
-                "date": "2022-05-15T22:00:00+02:00",
-            },
-            {
                 "status": "cancelled",
                 "date": "2022-04-25T12:47:00+02:00",
             },
@@ -327,7 +323,7 @@ class Returns200Test:
             },
             {
                 "status": "validated",
-                "date": "2022-05-15T22:00:00+02:00",
+                "date": "2022-05-16T22:00:00+02:00",
             },
             {
                 "status": "reimbursed",
@@ -629,7 +625,7 @@ class Returns200Test:
                     },
                     {
                         "status": "validated",
-                        "date": "2022-03-10T11:15:00+01:00",
+                        "date": "2022-03-11T11:15:00+01:00",
                     },
                 ],
             }
