@@ -106,6 +106,7 @@ def render_venue_details(
                 address=venue.address,
                 email=venue.contact.email if venue.contact else None,
                 phone_number=venue.contact.phone_number if venue.contact else None,
+                isPermanent=venue.isPermanent,
             )
 
     return render_template(
@@ -222,7 +223,7 @@ def update(venue_id: int) -> utils.BackofficeResponse:
                     data-bs-target="#venue-edit-details">
                 Les données envoyées comportent des erreurs. Afficher
             </button>
-        """
+            """
         ).format()
         flash(msg, "warning")
         return render_venue_details(venue, form)

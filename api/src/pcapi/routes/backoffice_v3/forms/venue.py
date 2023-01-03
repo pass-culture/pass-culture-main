@@ -19,6 +19,7 @@ class EditVenueForm(EditVirtualVenueForm):
     city = fields.PCStringField("Ville")
     postalCode = fields.PCPostalCodeField("Code postal")  # match Venue.postalCode case
     address = fields.PCStringField("Adresse")
+    isPermanent = fields.PCSwitchBooleanField("Lieu permanent")
 
     def __init__(self, venue: offerers_models.Venue, *args: typing.Any, **kwargs: typing.Any) -> None:
         """
@@ -33,6 +34,7 @@ class EditVenueForm(EditVirtualVenueForm):
         # self._fields is a collections.OrderedDict
         self._fields.move_to_end("email")
         self._fields.move_to_end("phone_number")
+        self._fields.move_to_end("isPermanent")
 
     def validate_siret(self, siret: fields.PCStringField) -> fields.PCStringField:
         if not siret.data or len(siret.data) != 14:
