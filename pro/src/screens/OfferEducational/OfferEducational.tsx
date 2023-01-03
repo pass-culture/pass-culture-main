@@ -1,12 +1,11 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import OfferEducationalActions from 'components/OfferEducationalActions'
 import {
   CanOffererCreateCollectiveOffer,
-  DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   Mode,
   isCollectiveOffer,
@@ -14,6 +13,7 @@ import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   EducationalCategories,
+  applyVenueDefaultsToFormValues,
 } from 'core/OfferEducational'
 import patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
 import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
@@ -61,7 +61,6 @@ const OfferEducational = ({
   isOfferCancellable = false,
   isOfferActive = false,
   isTemplate,
-  isOfferCreated = false,
 }: IOfferEducationalProps): JSX.Element => {
   const notify = useNotification()
   const history = useHistory()
@@ -71,13 +70,22 @@ const OfferEducational = ({
 
   const { structure: offererId, lieu: venueId } =
     queryParamsFromOfferer(location)
-  const initialValues = computeInitialValuesFromOffer(
+  const baseInitialValues = computeInitialValuesFromOffer(
     categories,
     userOfferers,
     offer,
     offererId,
     venueId
   )
+  const isOfferCreated = offer !== undefined
+  const initialValues =
+    mode === Mode.CREATION
+      ? applyVenueDefaultsToFormValues(
+          baseInitialValues,
+          userOfferers,
+          isOfferCreated
+        )
+      : baseInitialValues
 
   const onSubmit = async (offerValues: IOfferEducationalFormValues) => {
     let response = null
@@ -148,69 +156,6 @@ const OfferEducational = ({
     (mode === Mode.EDITION || mode === Mode.READ_ONLY) &&
     setIsOfferActive &&
     cancelActiveBookings
-
-  useEffect(() => {
-    if (
-      formik.values.offererId &&
-      formik.values.venueId &&
-      mode === Mode.CREATION
-    ) {
-      const venue = userOfferers
-        ?.find(({ id }) => id === formik.values.offererId)
-        ?.managedVenues?.find(({ id }) => id === formik.values.venueId)
-      const visualAccessibility = isOfferCreated
-        ? initialValues.accessibility.visual
-        : venue?.visualDisabilityCompliant
-      const mentalAccessibility = isOfferCreated
-        ? initialValues.accessibility.mental
-        : venue?.mentalDisabilityCompliant
-      const motorAccessibility = isOfferCreated
-        ? initialValues.accessibility.motor
-        : venue?.motorDisabilityCompliant
-      const audioAccessibility = isOfferCreated
-        ? initialValues.accessibility.audio
-        : venue?.audioDisabilityCompliant
-
-      const email =
-        isOfferCreated || !venue?.collectiveEmail
-          ? initialValues.email
-          : venue?.collectiveEmail
-      const phone =
-        isOfferCreated || !venue?.collectivePhone
-          ? initialValues.phone
-          : venue?.collectivePhone
-
-      const noDisabilityCompliant =
-        !visualAccessibility &&
-        !mentalAccessibility &&
-        !motorAccessibility &&
-        !audioAccessibility
-
-      formik.setValues({
-        ...formik.values,
-        interventionArea:
-          venue?.collectiveInterventionArea ??
-          DEFAULT_EAC_FORM_VALUES.interventionArea,
-        accessibility: {
-          visual: Boolean(visualAccessibility),
-          mental: Boolean(mentalAccessibility),
-          motor: Boolean(motorAccessibility),
-          audio: Boolean(audioAccessibility),
-          none: noDisabilityCompliant,
-        },
-        eventAddress: {
-          ...formik.values.eventAddress,
-          venueId: formik.values.venueId,
-        },
-        email: email,
-        phone: phone,
-        notificationEmails:
-          initialValues.notificationEmails.length < 1
-            ? ['']
-            : [...initialValues.notificationEmails],
-      })
-    }
-  }, [formik.values.venueId, formik.values.offererId])
 
   return (
     <>
