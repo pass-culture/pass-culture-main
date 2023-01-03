@@ -94,12 +94,18 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         subcategoryId=subcategories.SEANCE_CINE.id,
         extraData={"genres": ["THRILLER"]},
     )
-    b1 = IndividualBookingFactory(individualBooking__user=user, amount=10, stock__offer=offer)
+    b1 = IndividualBookingFactory(
+        individualBooking__user=user, amount=10, dateCreated=datetime(2022, 12, 6, 10), stock__offer=offer
+    )
     b2 = IndividualBookingFactory(
-        individualBooking__user=user, amount=10, dateUsed=datetime(2022, 12, 7), stock__offer=offer
+        individualBooking__user=user,
+        amount=10,
+        dateCreated=datetime(2022, 12, 6, 11),
+        dateUsed=datetime(2022, 12, 7),
+        stock__offer=offer,
     )
     IndividualBookingFactory(
-        individualBooking__user=user, amount=100, status=BookingStatus.CANCELLED
+        individualBooking__user=user, amount=100, dateCreated=datetime(2022, 12, 6, 12), status=BookingStatus.CANCELLED
     )  # should be ignored
 
     last_date_created = max(booking.dateCreated for booking in [b1, b2])
@@ -226,9 +232,15 @@ def test_get_user_attributes_beneficiary_because_of_credit():
     offer1 = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
     offer2 = OfferFactory(venue=offer1.venue)
     offer3 = OfferFactory()
-    IndividualBookingFactory(individualBooking__user=user, amount=100, stock__offer=offer1)
-    IndividualBookingFactory(individualBooking__user=user, amount=120, stock__offer=offer2)
-    last_booking = IndividualBookingFactory(individualBooking__user=user, amount=80, stock__offer=offer3)
+    IndividualBookingFactory(
+        individualBooking__user=user, amount=100, dateCreated=datetime(2022, 12, 6, 11), stock__offer=offer1
+    )
+    IndividualBookingFactory(
+        individualBooking__user=user, amount=120, dateCreated=datetime(2022, 12, 6, 12), stock__offer=offer2
+    )
+    last_booking = IndividualBookingFactory(
+        individualBooking__user=user, amount=80, dateCreated=datetime(2022, 12, 6, 13), stock__offer=offer3
+    )
 
     with assert_no_duplicated_queries():
         attributes = get_user_attributes(user)
