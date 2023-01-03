@@ -4,7 +4,10 @@ import { DEFAULT_EAC_FORM_VALUES } from '../constants'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
+  EducationalCategories,
   IOfferEducationalFormValues,
+  IEducationalCategory,
+  IEducationalSubCategory,
 } from '../types'
 
 import { buildStudentLevelsMapWithDefaultValue } from './buildStudentLevelsMapWithDefaultValue'
@@ -23,11 +26,37 @@ const computeDurationString = (
   }`
 }
 
+export const getCategoryAndSubcategoryFromOffer = (
+  categories: EducationalCategories,
+  offer: CollectiveOffer | CollectiveOfferTemplate
+): {
+  category: IEducationalCategory | null
+  subcategory: IEducationalSubCategory | null
+} => {
+  const subcategory =
+    categories.educationalSubCategories.find(
+      ({ id }) => offer.subcategoryId === id
+    ) ?? null
+
+  const category =
+    categories.educationalCategories.find(
+      ({ id }) => subcategory?.categoryId === id
+    ) ?? null
+
+  return {
+    category,
+    subcategory,
+  }
+}
+
 export const computeInitialValuesFromOffer = (
-  offer: CollectiveOffer | CollectiveOfferTemplate,
-  category: string,
-  subCategory: SubcategoryIdEnum
+  categories: EducationalCategories,
+  offer?: CollectiveOffer | CollectiveOfferTemplate
 ): IOfferEducationalFormValues => {
+  if (offer === undefined) {
+    return DEFAULT_EAC_FORM_VALUES
+  }
+
   const eventAddress = offer?.offerVenue
 
   const participants = {
@@ -45,9 +74,15 @@ export const computeInitialValuesFromOffer = (
 
   const domains = offer.domains.map(({ id }) => id.toString())
 
+  const { category, subcategory } = getCategoryAndSubcategoryFromOffer(
+    categories,
+    offer
+  )
+
   return {
-    category,
-    subCategory,
+    category: category?.id ?? '',
+    subCategory: (subcategory?.id ??
+      DEFAULT_EAC_FORM_VALUES.subCategory) as SubcategoryIdEnum,
     title: offer.name,
     description: offer.description ?? DEFAULT_EAC_FORM_VALUES.description,
     duration: computeDurationString(offer.durationMinutes),
