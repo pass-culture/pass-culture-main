@@ -1,9 +1,9 @@
-<turbo-frame id="pro_user_history_frame">
+<turbo-frame id="pro_user_details_frame">
 
     <ul class="nav nav-tabs nav-fill" id="pills-tab" role="tablist">
         <li class="nav-item" role="presentation">
             <button
-                class="nav-link active fw-bolder py-3"
+                class="nav-link fw-bolder py-3 {{ 'active' if active_tab == 'history' else '' }}"
                 id="pills-home-tab"
                 data-bs-toggle="pill"
                 data-bs-target="#pills-home"
@@ -17,7 +17,7 @@
         </li>
         <li class="nav-item" role="presentation">
             <button
-                class="nav-link fw-bolder py-3"
+                class="nav-link fw-bolder py-3 {{ 'active' if active_tab == 'user_offerers' else '' }}"
                 id="pills-offerers-tab"
                 data-bs-toggle="pill"
                 data-bs-target="#pills-offerers"
@@ -32,10 +32,22 @@
     </ul>
 
     <div class="tab-content bg-body border border-top-0" id="pills-tabContent">
-        <div class="tab-pane fade show active p-4" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+        <div 
+            class="tab-pane fade show p-4 {{ 'active' if active_tab == 'history' else '' }}"
+            id="pills-home"
+            role="tabpanel"
+            aria-labelledby="pills-home-tab"
+            tabindex="0"
+        >
             {% include "pro_user/get/details/history.html" %}
         </div>
-        <div class="tab-pane fade" id="pills-offerers" role="tabpanel" aria-labelledby="pills-offerers-tab" tabindex="0">
+        <div
+            class="tab-pane fade show p-4 {{ 'active' if active_tab == 'user_offerers' else '' }}"
+            id="pills-offerers"
+            role="tabpanel"
+            aria-labelledby="pills-offerers-tab"
+            tabindex="0">
+            {% include "pro_user/get/details/user_offerer.html" %}
         </div>
     </div>
 

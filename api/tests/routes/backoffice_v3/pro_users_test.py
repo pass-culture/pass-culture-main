@@ -98,7 +98,7 @@ class UpdateProUserTest:
         assert response.location == expected_url
 
         client.with_bo_session_auth(legit_user).get(expected_url)
-        history_url = url_for("backoffice_v3_web.pro_user.get_user_history", user_id=user_to_edit.id)
+        history_url = url_for("backoffice_v3_web.pro_user.get_details", user_id=user_to_edit.id)
         response = client.with_bo_session_auth(legit_user).get(history_url)
 
         user_to_edit = users_models.User.query.get(user_to_edit.id)
@@ -126,7 +126,7 @@ class UpdateProUserTest:
 
 class GetProUserHistoryTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.pro_user.get_user_history"
+        endpoint = "backoffice_v3_web.pro_user.get_details"
         endpoint_kwargs = {"user_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -136,12 +136,12 @@ class GetProUserHistoryTest:
         @property
         def path(self):
             user = offerers_factories.UserOffererFactory().user
-            return url_for("backoffice_v3_web.pro_user.get_user_history", user_id=user.id)
+            return url_for("backoffice_v3_web.pro_user.get_details", user_id=user.id)
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_history(self, authenticated_client, pro_user):
         action = history_factories.ActionHistoryFactory(user=pro_user)
-        url = url_for("backoffice_v3_web.pro_user.get_user_history", user_id=pro_user.id)
+        url = url_for("backoffice_v3_web.pro_user.get_details", user_id=pro_user.id)
 
         with assert_no_duplicated_queries():
             response = authenticated_client.get(url)
@@ -155,15 +155,7 @@ class GetProUserHistoryTest:
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_no_history(self, authenticated_client, pro_user):
-        url = url_for("backoffice_v3_web.pro_user.get_user_history", user_id=pro_user.id)
-
-        with assert_no_duplicated_queries():
-            response = authenticated_client.get(url)
-        assert response.status_code == 200
-
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-    def test_something(self, authenticated_client, pro_user):
-        url = url_for("backoffice_v3_web.pro_user.get_user_history", user_id=pro_user.id)
+        url = url_for("backoffice_v3_web.pro_user.get_details", user_id=pro_user.id)
 
         with assert_no_duplicated_queries():
             response = authenticated_client.get(url)
@@ -209,3 +201,41 @@ class CommentProUserTest:
         form = {"comment": comment, "csrf_token": g.get("csrf_token", "")}
 
         return authenticated_client.post(url, form=form)
+
+
+class GetProUserOfferersTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+        endpoint = "backoffice_v3_web.pro_user.get_details"
+        endpoint_kwargs = {"user_id": 1}
+        needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_get_user_offerers(self, authenticated_client, pro_user):
+        user_offerer_validated = offerers_factories.UserOffererFactory(user=pro_user)
+        user_offerer_new = offerers_factories.NotValidatedUserOffererFactory(user=pro_user)
+        url = url_for("backoffice_v3_web.pro_user.get_details", user_id=pro_user.id)
+
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url)
+        assert response.status_code == 200
+
+        content = response.data.decode("utf-8")
+
+        offerer_1 = user_offerer_validated.offerer
+        offerer_2 = user_offerer_new.offerer
+
+        assert str(offerer_1.id) in content
+        assert offerer_1.name in content
+        assert offerer_1.siren in content
+
+        assert str(offerer_2.id) in content
+        assert offerer_2.name in content
+        assert offerer_2.siren in content
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_no_user_offerers(self, authenticated_client, pro_user):
+        url = url_for("backoffice_v3_web.pro_user.get_details", user_id=pro_user.id)
+
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url)
+        assert response.status_code == 200

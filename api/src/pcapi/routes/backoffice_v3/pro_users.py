@@ -1,8 +1,10 @@
 from flask import flash
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 from flask_login import current_user
+import sqlalchemy as sa
 
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.history import api as history_api
@@ -100,10 +102,17 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
     return redirect(url_for(".get", user_id=user_id), code=303)
 
 
-@pro_user_blueprint.route("/history", methods=["GET"])
-def get_user_history(user_id: int) -> utils.BackofficeResponse:
+@pro_user_blueprint.route("/details", methods=["GET"])
+def get_details(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
     actions = history_repository.find_all_actions_by_user(user_id)
+    can_add_comment = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+    user_offerers = (
+        offerers_models.UserOfferer.query.filter_by(userId=user_id)
+        .order_by(offerers_models.UserOfferer.dateCreated)
+        .options(sa.orm.joinedload(offerers_models.UserOfferer.offerer))
+        .all()
+    )
 
     form = pro_user_forms.CommentForm()
     dst = url_for("backoffice_v3_web.pro_user.comment_pro_user", user_id=user.id)
@@ -114,6 +123,9 @@ def get_user_history(user_id: int) -> utils.BackofficeResponse:
         form=form,
         dst=dst,
         actions=actions,
+        can_add_comment=can_add_comment,
+        user_offerers=user_offerers,
+        active_tab=request.args.get("active_tab", "history"),
     )
 
 

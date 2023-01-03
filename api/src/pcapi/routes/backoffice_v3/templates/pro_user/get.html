@@ -90,7 +90,7 @@
             </div>
         </div>
         <div class="mt-4">
-            <turbo-frame id="pro_user_history_frame" src="{{ url_for("backoffice_v3_web.pro_user.get_user_history", user_id=user.id) }}">
+            <turbo-frame id="pro_user_details_frame" src="{{ url_for("backoffice_v3_web.pro_user.get_details", user_id=user.id, active_tab=request.args.get("active_tab", "history")) }}">
                 <p class="text-center">
                     <span class="spinner-grow spinner-grow-sm" role="status">
                         <span class="visually-hidden">Chargement...</span>
