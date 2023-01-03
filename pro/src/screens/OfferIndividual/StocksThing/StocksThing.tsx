@@ -184,14 +184,16 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       setAfterSubmitUrl(nextStepUrl)
 
       const hasSavedStock = formik.values.stockId !== undefined
-      if (hasSavedStock && Object.keys(formik.touched).length === 0) {
+      if (hasSavedStock && !formik.dirty) {
         notify.success(getSuccessMessage(mode))
         if (!saveDraft) {
           navigate(nextStepUrl)
         }
         setIsClickingFromActionBar(false)
       } else {
-        await formik.submitForm()
+        if (saveDraft) {
+          await formik.submitForm()
+        }
       }
     }
 

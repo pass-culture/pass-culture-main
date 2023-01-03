@@ -61,8 +61,9 @@ const TextInput = ({
     type,
   })
 
-  const regexHasDecimal = /[0-9,.]|Backspace/
-  const regexHasNotDecimal = /[0-9]|Backspace/
+  // think to add step="0.01" for decimal fields
+  const regexHasDecimal = /[0-9,.]|Backspace|Enter/
+  const regexHasNotDecimal = /[0-9]|Backspace|Enter/
   const showError = meta.touched && !!meta.error
 
   return (

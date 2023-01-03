@@ -135,6 +135,7 @@ describe('screens:StocksThing::draft', () => {
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    jest.spyOn(api, 'upsertStocks')
   })
 
   it('should show a success notification if nothing has been touched', async () => {
@@ -145,6 +146,8 @@ describe('screens:StocksThing::draft', () => {
         name: 'Sauvegarder le brouillon',
       })
     )
+
+    expect(api.upsertStocks).not.toHaveBeenCalled()
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
@@ -152,5 +155,21 @@ describe('screens:StocksThing::draft', () => {
       screen.getByRole('heading', { name: /Stock & Prix/ })
     ).toBeInTheDocument()
     expect(screen.queryByText(/Next page/)).not.toBeInTheDocument()
+  })
+
+  it('should show a success notification if nothing has been touched and click on next step', async () => {
+    renderStockThingScreen({ props, storeOverride, contextValue })
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Étape suivante',
+      })
+    )
+
+    expect(api.upsertStocks).not.toHaveBeenCalled()
+    expect(
+      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+    ).toBeInTheDocument()
+    expect(screen.queryByText(/Next page/)).toBeInTheDocument()
   })
 })
