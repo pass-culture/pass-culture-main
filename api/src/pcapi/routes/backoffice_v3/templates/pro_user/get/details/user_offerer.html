@@ -1,0 +1,37 @@
+{% from "components/badges.html" import build_user_offerer_badges %}
+
+<table class="table table-hover my-4">
+    <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">ID de la structure</th>
+            <th scope="col">Statut du rattachement</th>
+            <th scope="col">Nom</th>
+            <th scope="col">SIREN</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        {% for user_offerer in user_offerers %}
+            <tr>
+                <th scope="row"></th>
+                <td>{{ user_offerer.offererId}}</td>
+                <td>{{ build_user_offerer_badges(user_offerer) }}</td>
+                <td class="text-break">
+                    <a href="{{ url_for("backoffice_v3_web.offerer.get", offerer_id=user_offerer.offererId) }}">
+                        {{ user_offerer.offerer.name }}
+                    </a>
+                </td>
+                <td>
+                    {% if user_offerer.offerer.siren %}
+                        <a href="https://www.societe.com/cgi-bin/fiche?rncs={{ user_offerer.offerer.siren }}"
+                           target="_blank"
+                           title="Visualiser sur societe.com"
+                        >
+                            {{ user_offerer.offerer.siren }}
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
