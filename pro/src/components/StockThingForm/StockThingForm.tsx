@@ -58,6 +58,7 @@ const StockThingForm = ({
         type="number"
         data-testid="input-price"
         rightIcon={() => <IcoEuro tabIndex={-1} />}
+        step="0.01"
       />
       <DatePicker
         smallLabel
