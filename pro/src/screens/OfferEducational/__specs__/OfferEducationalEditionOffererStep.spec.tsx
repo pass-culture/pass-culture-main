@@ -3,6 +3,11 @@ import '@testing-library/jest-dom'
 import { screen } from '@testing-library/react'
 
 import {
+  collectiveOfferFactory,
+  collectiveOfferVenueFactory,
+} from 'utils/collectiveApiFactories'
+
+import {
   defaultEditionProps,
   managedVenuesFactory,
   renderEACOfferForm,
@@ -36,11 +41,11 @@ describe('screens | OfferEducational : edition offerer step', () => {
           ]),
         },
       ]),
-      initialValues: {
-        ...props.initialValues,
-        venueId: 'VENUE_3',
-        offererId: 'OFFERER_2',
-      },
+      offer: collectiveOfferFactory(
+        { venueId: 'VENUE_3' },
+        undefined,
+        collectiveOfferVenueFactory({ managingOffererId: 'OFFERER_2' })
+      ),
     }
     renderEACOfferForm(props)
 
@@ -52,7 +57,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     const offererSelect = await screen.findByLabelText('Structure')
 
     expect(offererSelect).toBeInTheDocument()
-    expect(offererSelect).toHaveValue(props.initialValues.offererId)
+    expect(offererSelect).toHaveValue('OFFERER_2')
     expect(offererSelect).toBeDisabled()
 
     const venueSelect = await screen.findByLabelText(
@@ -60,7 +65,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     )
 
     expect(venueSelect).toBeInTheDocument()
-    expect(venueSelect).toHaveValue(props.initialValues.venueId)
+    expect(venueSelect).toHaveValue('VENUE_3')
     expect(venueSelect).toBeDisabled()
   })
 })

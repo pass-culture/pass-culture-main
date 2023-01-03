@@ -7,6 +7,8 @@ import getCollectiveOfferTemplateAdapter from '../adapters/getCollectiveOfferTem
 import postCollectiveOfferAdapter from '../adapters/postCollectiveOfferAdapter'
 import postCollectiveOfferImageAdapter from '../adapters/postCollectiveOfferImageAdapter'
 
+import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
+
 export const createOfferFromTemplate = async (
   history: ReturnType<typeof useHistory>,
   notify: ReturnType<typeof useNotification>,
@@ -29,7 +31,13 @@ export const createOfferFromTemplate = async (
     notify.error(result.message)
   }
 
-  const { initialValues } = result.payload
+  const { categories, offerers } = result.payload
+
+  const initialValues = computeInitialValuesFromOffer(
+    categories,
+    offerers,
+    offerTemplateResponse.payload
+  )
 
   const { isOk, message, payload } = await postCollectiveOfferAdapter({
     offer: initialValues,
@@ -40,7 +48,7 @@ export const createOfferFromTemplate = async (
     return notify.error(message)
   }
 
-  const offerImageUrl = result.payload.initialValues.imageUrl
+  const offerImageUrl = initialValues.imageUrl
   const imageErrorMessage = "Impossible de dupliquer l'image de l'offre vitrine"
   if (offerImageUrl) {
     const imageResponse = await fetch(offerImageUrl)
@@ -56,7 +64,7 @@ export const createOfferFromTemplate = async (
     await postCollectiveOfferImageAdapter({
       offerId: payload.id,
       imageFile: imageFile,
-      credit: result.payload.initialValues.imageCredit || '',
+      credit: initialValues.imageCredit || '',
       cropParams: { x: 0, y: 0, width: 1, height: 1 },
     })
   }
