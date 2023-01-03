@@ -1,4 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
+import type { FormikTouched } from 'formik'
 import React, { useState, useEffect } from 'react'
 
 import { api } from 'apiClient/api'
@@ -42,6 +43,38 @@ export interface IStocksEventProps {
   offer: IOfferIndividual
 }
 
+const hasChangesOnStockWithBookings = (
+  values: { stocks: IStockEventFormValues[] },
+  touched: FormikTouched<{ stocks: IStockEventFormValues[] }>
+) => {
+  return values.stocks.some((stock, index) => {
+    if (
+      !stock.bookingsQuantity ||
+      parseInt(stock.bookingsQuantity, 10) === 0 ||
+      touched.stocks === undefined ||
+      touched.stocks[index] === undefined
+    ) {
+      return false
+    }
+    const stockTouched = touched.stocks[index]
+    /* istanbul ignore next: DEBT to fix */
+    if (stockTouched === undefined) {
+      return false
+    }
+    const fieldsWithWarning: (keyof IStockEventFormValues)[] = [
+      'price',
+      'beginningDate',
+      'beginningTime',
+      // TODO: ts remove as
+    ] as (keyof IStockEventFormValues)[]
+
+    return fieldsWithWarning.some(
+      (fieldName: keyof IStockEventFormValues) =>
+        stockTouched[fieldName] === true
+    )
+  })
+}
+
 const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
@@ -66,6 +99,19 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const { visible, showModal, hideModal } = useModal()
 
   const onSubmit = async (formValues: { stocks: IStockEventFormValues[] }) => {
+    if (mode === OFFER_WIZARD_MODE.EDITION) {
+      const changesOnStockWithBookings = hasChangesOnStockWithBookings(
+        formik.values,
+        formik.touched
+      )
+      if (!visible && changesOnStockWithBookings) {
+        showModal()
+        return
+      } else {
+        hideModal()
+      }
+    }
+
     const { isOk, payload } = await upsertStocksEventAdapter({
       offerId: offer.id,
       formValues: formValues.stocks,
@@ -214,46 +260,10 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
           mode,
         })
       )
-      if (mode !== OFFER_WIZARD_MODE.CREATION) {
-        const changesOnStockWithBookings = formik.values.stocks.some(
-          (stock, index) => {
-            if (
-              !stock.bookingsQuantity ||
-              parseInt(stock.bookingsQuantity, 10) === 0 ||
-              formik.touched.stocks === undefined ||
-              formik.touched.stocks[index] === undefined
-            ) {
-              return false
-            }
-            const stockTouched = formik.touched.stocks[index]
-            /* istanbul ignore next: DEBT to fix */
-            if (stockTouched === undefined) {
-              return false
-            }
-            const fieldsWithWarning: (keyof IStockEventFormValues)[] = [
-              'price',
-              'beginningDate',
-              'beginningTime',
-            ] as (keyof IStockEventFormValues)[]
-
-            return fieldsWithWarning.some(
-              (fieldName: keyof IStockEventFormValues) =>
-                stockTouched[fieldName] === true
-            )
-          }
-        )
-        if (!visible && changesOnStockWithBookings) {
-          showModal()
-          return
-        } else {
-          hideModal()
-        }
-      }
 
       const hasSavedStock = formik.values.stocks.some(
         stock => stock.stockId !== undefined
       )
-
       if (hasSavedStock && !formik.dirty) {
         setIsClickingFromActionBar(false)
         /* istanbul ignore next: DEBT to fix */
@@ -272,7 +282,9 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         }
         setIsClickingFromActionBar(false)
       } else {
-        await formik.submitForm()
+        if (saveDraft) {
+          await formik.submitForm()
+        }
       }
     }
 
@@ -310,25 +322,25 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       )}
       {visible && (
         <DialogStocksEventEditConfirm
-          onConfirm={handleNextStep()}
+          onConfirm={formik.submitForm}
           onCancel={hideModal}
         />
       )}
       <FormLayout>
-        <FormLayout.Section
-          title="Stock & Prix"
-          description={
-            'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’événement. \n Vous pouvez annuler un événement en supprimant la ligne de stock associée. Cette action est irréversible.'
-          }
-          links={[
-            {
-              href: 'https://aide.passculture.app/hc/fr/articles/4411992053649--Acteurs-Culturels-Comment-annuler-ou-reporter-un-%C3%A9v%C3%A9nement-',
-              linkTitle: 'Comment reporter ou annuler un événement ?',
-            },
-          ]}
-          descriptionAsBanner={mode === OFFER_WIZARD_MODE.EDITION}
-        >
-          <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit}>
+          <FormLayout.Section
+            title="Stock & Prix"
+            description={
+              'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’événement. \n Vous pouvez annuler un événement en supprimant la ligne de stock associée. Cette action est irréversible.'
+            }
+            links={[
+              {
+                href: 'https://aide.passculture.app/hc/fr/articles/4411992053649--Acteurs-Culturels-Comment-annuler-ou-reporter-un-%C3%A9v%C3%A9nement-',
+                linkTitle: 'Comment reporter ou annuler un événement ?',
+              },
+            ]}
+            descriptionAsBanner={mode === OFFER_WIZARD_MODE.EDITION}
+          >
             <StockFormList offer={offer} onDeleteStock={onDeleteStock} />
             <ActionBar
               isDisabled={formik.isSubmitting}
@@ -339,8 +351,8 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
               offerId={offer.id}
               shouldTrack={shouldTrack}
             />
-          </form>
-        </FormLayout.Section>
+          </FormLayout.Section>
+        </form>
       </FormLayout>
 
       <RouteLeavingGuardOfferIndividual

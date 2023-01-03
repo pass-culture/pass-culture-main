@@ -98,6 +98,7 @@ const StockEventForm = ({
         disabled={readOnlyFields.includes('price')}
         rightIcon={() => <IcoEuro />}
         type="number"
+        step="0.01"
         hideHiddenFooter={true}
         data-testid="input-price"
       />

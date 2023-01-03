@@ -300,7 +300,9 @@ describe('screens:StocksThing', () => {
         venueId: 'venueid',
       },
     ])
+    jest.spyOn(api, 'upsertStocks')
   })
+
   it('should allow user to delete a stock', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
     renderStockThingScreen({
@@ -326,7 +328,6 @@ describe('screens:StocksThing', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
-    jest.spyOn(api, 'upsertStocks')
     expect(api.upsertStocks).not.toHaveBeenCalled()
   })
   it('should allow user to delete stock from a synchronized offer', async () => {
@@ -358,6 +359,7 @@ describe('screens:StocksThing', () => {
     expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
+
   it('should display an error message when there is an api error', async () => {
     jest.spyOn(api, 'deleteStock').mockRejectedValue(
       new ApiError(
@@ -387,6 +389,7 @@ describe('screens:StocksThing', () => {
       )
     ).toBeInTheDocument()
   })
+
   it('should show a success notification if nothing has been touched', async () => {
     renderStockThingScreen({ storeOverride })
     await screen.findByRole('heading', { name: /Stock & Prix/ })
