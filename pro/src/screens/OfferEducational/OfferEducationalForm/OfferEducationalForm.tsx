@@ -128,7 +128,8 @@ const OfferEducationalForm = ({
 
       <FormVenue
         isEligible={isEligible}
-        disableForm={mode !== Mode.CREATION || isOfferCreated}
+        mode={mode}
+        isOfferCreated={isOfferCreated}
         userOfferers={userOfferers}
         venuesOptions={venuesOptions}
       />

@@ -3,7 +3,11 @@ import React from 'react'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import {
+  applyVenueDefaultsToFormValues,
+  IOfferEducationalFormValues,
+  Mode,
+} from 'core/OfferEducational'
 import { Banner, Select } from 'ui-kit'
 
 import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'
@@ -12,15 +16,19 @@ interface IFormVenueProps {
   userOfferers: GetEducationalOffererResponseModel[]
   venuesOptions: SelectOptions
   isEligible: boolean | undefined
-  disableForm: boolean
+  mode: Mode
+  isOfferCreated: boolean
 }
 
 const FormVenue = ({
   userOfferers,
   venuesOptions,
   isEligible,
-  disableForm,
+  mode,
+  isOfferCreated,
 }: IFormVenueProps): JSX.Element => {
+  const disableForm = mode !== Mode.CREATION || isOfferCreated
+
   let offerersOptions = userOfferers.map(item => ({
     value: item['id'] as string,
     label: item['name'] as string,
@@ -32,7 +40,7 @@ const FormVenue = ({
     ]
   }
 
-  const { values, setFieldValue } =
+  const { values, setFieldValue, setValues } =
     useFormikContext<IOfferEducationalFormValues>()
 
   return (
@@ -81,6 +89,17 @@ const FormVenue = ({
             label={VENUE_LABEL}
             name="venueId"
             options={venuesOptions}
+            onChange={event => {
+              if (mode === Mode.CREATION) {
+                setValues(
+                  applyVenueDefaultsToFormValues(
+                    { ...values, venueId: event.target.value },
+                    userOfferers,
+                    isOfferCreated
+                  )
+                )
+              }
+            }}
           />
         </FormLayout.Row>
       )}

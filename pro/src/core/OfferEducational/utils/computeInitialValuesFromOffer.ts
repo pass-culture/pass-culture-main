@@ -126,7 +126,6 @@ export const computeInitialValuesFromOffer = (
   }
 
   const eventAddress = offer?.offerVenue
-
   const participants = {
     all: Object.values(StudentLevels).every(student =>
       offer.students.includes(student)
@@ -135,13 +134,9 @@ export const computeInitialValuesFromOffer = (
       offer.students.includes(studentKey)
     ),
   }
-
   const email = offer.contactEmail
-
   const phone = offer.contactPhone
-
   const domains = offer.domains.map(({ id }) => id.toString())
-
   const { category, subcategory } = getCategoryAndSubcategoryFromOffer(
     categories,
     offer
