@@ -25,12 +25,10 @@ $text-padding-left: calc(
 
   &:focus,
   &:focus-within {
-    border: 1px solid transparent;
+    border: solid forms.$input-border-color-focus $focus-border-width;
     border-radius:
       rem.torem(forms.$input-border-radius) 0 0
       rem.torem(forms.$input-border-radius);
-    outline: solid forms.$input-border-color-focus $focus-border-width;
-    outline-offset: -2px;
     background-color: transparent;
 
     .select-input {
