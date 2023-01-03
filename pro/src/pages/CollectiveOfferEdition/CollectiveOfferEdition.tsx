@@ -1,19 +1,14 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import React from 'react'
 
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import {
-  DEFAULT_EAC_FORM_VALUES,
-  IOfferEducationalFormValues,
   Mode,
   cancelCollectiveBookingAdapter,
   patchIsCollectiveOfferActiveAdapter,
   patchIsTemplateOfferActiveAdapter,
-  setInitialFormValues,
   CollectiveOffer,
   CollectiveOfferTemplate,
 } from 'core/OfferEducational'
-import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import useNotification from 'hooks/useNotification'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import useOfferEducationalFormData from 'screens/OfferEducational/useOfferEducationalFormData'
@@ -28,11 +23,6 @@ const CollectiveOfferEdition = ({
   reloadCollectiveOffer: () => void
   setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
 }): JSX.Element => {
-  const history = useHistory()
-
-  const [initialValues, setInitialValues] =
-    useState<IOfferEducationalFormValues>(DEFAULT_EAC_FORM_VALUES)
-
   const notify = useNotification()
   const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
     offer.venue.managingOffererId,
@@ -71,42 +61,6 @@ const CollectiveOfferEdition = ({
     reloadCollectiveOffer()
   }
 
-  const loadData = useCallback(
-    async (offerResponse: CollectiveOffer | CollectiveOfferTemplate) => {
-      const offererId = offerResponse.venue.managingOffererId
-
-      const result = await getCollectiveOfferFormDataApdater({
-        offererId,
-        offer: offerResponse,
-      })
-
-      if (!result.isOk) {
-        notify.error(result.message)
-      }
-
-      const { offerers, initialValues } = result.payload
-
-      setInitialValues(values =>
-        setInitialFormValues(
-          {
-            ...values,
-            ...initialValues,
-          },
-          offerers,
-          offerers[0].id,
-          offerResponse.venueId
-        )
-      )
-    },
-    [notify]
-  )
-
-  useEffect(() => {
-    if (!isReady) {
-      loadData(offer)
-    }
-  }, [isReady, offer.id, loadData, history, offer.isTemplate])
-
   if (!isReady || !offer) {
     return <Spinner />
   }
@@ -119,7 +73,6 @@ const CollectiveOfferEdition = ({
       offer={offer}
       setOffer={setOffer}
       cancelActiveBookings={cancelActiveBookings}
-      initialValues={initialValues}
       isOfferActive={offer?.isActive}
       isOfferBooked={
         offer?.isTemplate ? false : offer?.collectiveStock?.isBooked

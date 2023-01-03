@@ -4,6 +4,10 @@ import { screen } from '@testing-library/react'
 
 import { Mode } from 'core/OfferEducational'
 import { RootState } from 'store/reducers'
+import {
+  collectiveOfferFactory,
+  collectiveOfferVenueFactory,
+} from 'utils/collectiveApiFactories'
 
 import { defaultEditionProps, renderEACOfferForm } from '../__tests-utils__'
 import {
@@ -53,6 +57,13 @@ describe('screens | OfferEducational', () => {
     ]
     props = {
       ...props,
+      offer: collectiveOfferFactory(
+        { venueId: 'VENUE_WITH_INTERVENTION_AREA' },
+        undefined,
+        collectiveOfferVenueFactory({
+          managingOffererId: 'OFFERER_WITH_INTERVENTION_AREA',
+        })
+      ),
       mode: Mode.READ_ONLY,
     }
     renderEACOfferForm(props, store)

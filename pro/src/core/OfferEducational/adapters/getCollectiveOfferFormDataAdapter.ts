@@ -2,15 +2,12 @@ import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 
-import { DEFAULT_EAC_FORM_VALUES } from '../constants'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   EducationalCategories,
-  IOfferEducationalFormValues,
 } from '../types'
 import { getUserOfferersFromOffer } from '../utils'
-import { computeInitialValuesFromOffer } from '../utils/computeInitialValuesFromOffer'
 
 import { getEducationalCategoriesAdapter } from './getEducationalCategoriesAdapter'
 import { getEducationalDomainsAdapter } from './getEducationalDomainsAdapter'
@@ -20,7 +17,6 @@ type Payload = {
   categories: EducationalCategories
   domains: SelectOption[]
   offerers: GetEducationalOffererResponseModel[]
-  initialValues: IOfferEducationalFormValues
 }
 
 type Param = {
@@ -40,7 +36,6 @@ const ERROR_RESPONSE = {
     },
     domains: [],
     offerers: [],
-    initialValues: DEFAULT_EAC_FORM_VALUES,
   },
 }
 
@@ -59,10 +54,6 @@ const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
       const [categories, domains, offerers] = responses
 
       const offerersOptions = getUserOfferersFromOffer(offerers.payload, offer)
-      const initialFormValues = computeInitialValuesFromOffer(
-        categories.payload,
-        offer
-      )
 
       return {
         isOk: true,
@@ -71,7 +62,6 @@ const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
           categories: categories.payload,
           domains: domains.payload,
           offerers: offerersOptions,
-          initialValues: initialFormValues,
         },
       }
     } catch (e) {
