@@ -82,9 +82,12 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_ACCESS_TOKEN }}
-          SLACK_CHANNEL: shérif
+          SLACK_CHANNEL: dev
           SLACK_COLOR: ${{ job.status }}
           SLACK_USERNAME: Github Actions Bot
+          SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          SLACK_MESSAGE: "Les tests quality-api échouent sur master. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
+          MSG_MINIMAL: true
 
   tests-database:
     name: "Tests database schema"
@@ -178,9 +181,12 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_ACCESS_TOKEN }}
-          SLACK_CHANNEL: shérif
+          SLACK_CHANNEL: dev
           SLACK_COLOR: ${{ job.status }}
           SLACK_USERNAME: Github Actions Bot
+          SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          SLACK_MESSAGE: "Les tests database échouent sur master. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
+          MSG_MINIMAL: true
 
   pytest:
     name: "Pytest"
@@ -270,6 +276,9 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_ACCESS_TOKEN }}
-          SLACK_CHANNEL: shérif
+          SLACK_CHANNEL: dev
           SLACK_COLOR: ${{ job.status }}
           SLACK_USERNAME: Github Actions Bot
+          SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          SLACK_MESSAGE: "Les tests pytest échouent sur master. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
+          MSG_MINIMAL: true
