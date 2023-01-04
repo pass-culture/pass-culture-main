@@ -89,7 +89,7 @@ class ImageResponse(serialization.ConfiguredBaseModel):
 
 class ExtraDataModel(serialization.ConfiguredBaseModel):
     author: str | None
-    isbn: str | None = pydantic.Field(None, regex=r"^(\d){13}$", example="9783140464079")
+    isbn: str | None = pydantic.Field(None, example="9783140464079")
     musicType: MusicTypeEnum | None  # type: ignore [valid-type]
     performer: str | None
     stageDirector: str | None
