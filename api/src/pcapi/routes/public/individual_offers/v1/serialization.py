@@ -202,6 +202,12 @@ def compute_category_related_fields(offer: offers_models.Offer) -> CategoryRelat
     if offer.extraData and "showSubType" in offer.extraData and offer.extraData["showSubType"] != "":
         fields["showType"] = ShowTypeEnum(show_types.SHOW_SUB_TYPES_BY_CODE[int(offer.extraData["showSubType"])].slug)
 
+    # in case our data is not consistent with the subcategory, we define a default value
+    if "showType" in offer.subcategory.conditional_fields and "showType" not in fields:
+        fields["showType"] = ShowTypeEnum(show_types.SHOW_SUB_TYPES_BY_SLUG[show_types.OTHER_SHOW_TYPE_SLUG].slug)
+    if "musicType" in offer.subcategory.conditional_fields and "musicType" not in fields:
+        fields["musicType"] = ShowTypeEnum(music_types.MUSIC_SUB_TYPES_BY_SLUG[music_types.OTHER_SHOW_TYPE_SLUG].slug)
+
     return category_fields_model(**fields, category=offer.subcategory.id)
 
 
