@@ -14,7 +14,7 @@ import { Select } from 'ui-kit/form'
 import { Title } from 'ui-kit/index'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import styles from './ReimbursementPointV2.module.scss'
+import styles from './ReimbursementPoint.module.scss'
 
 interface IReimbursementPointV2 {
   initialVenue: GetVenueResponseModel
@@ -32,7 +32,7 @@ type IReimbursementPoint = {
   iban: string
   venueName: string
 }
-const ReimbursementPointV2 = ({
+const ReimbursementPoint = ({
   readOnly = false,
   offerer,
   initialVenue,
@@ -225,4 +225,4 @@ const ReimbursementPointV2 = ({
   )
 }
 
-export default ReimbursementPointV2
+export default ReimbursementPoint
