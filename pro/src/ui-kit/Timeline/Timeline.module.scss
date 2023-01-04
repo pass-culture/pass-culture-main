@@ -10,6 +10,10 @@ $time-line-width: rem.torem(2px);
 .container {
   display: flex;
   flex-direction: column;
+
+  // TODO This kind of reset should be in a global reset file
+  list-style: none;
+  padding-left: 0;
 }
 
 .icon {

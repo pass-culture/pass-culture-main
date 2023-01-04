@@ -39,9 +39,9 @@ const CollectiveTimeLine = ({
     type: TimelineStepType.SUCCESS,
     content: (
       <>
-        <h2 className={styles['timeline-step-title-passed']}>
+        <div className={styles['timeline-step-title-passed']}>
           Préreservée par l'établissement scolaire
-        </h2>
+        </div>
         <div>{bookingDate}</div>
       </>
     ),
@@ -50,9 +50,9 @@ const CollectiveTimeLine = ({
     type: TimelineStepType.SUCCESS,
     content: (
       <>
-        <h2 className={styles['timeline-step-title-passed']}>
+        <div className={styles['timeline-step-title-passed']}>
           Réservée par l'établissement scolaire
-        </h2>
+        </div>
         <div>{confirmationDate}</div>
       </>
     ),
@@ -61,9 +61,9 @@ const CollectiveTimeLine = ({
     type: TimelineStepType.SUCCESS,
     content: (
       <>
-        <h2 className={styles['timeline-step-title-passed']}>
+        <div className={styles['timeline-step-title-passed']}>
           Réservation confirmée
-        </h2>
+        </div>
         <div>
           {cancellationLimitDate}
           <br />
@@ -76,9 +76,9 @@ const CollectiveTimeLine = ({
     type: TimelineStepType.WAITING,
     content: (
       <>
-        <h2 className={styles['timeline-step-title']}>
+        <div className={styles['timeline-step-title']}>
           En attente de réservation
-        </h2>
+        </div>
         <div className={styles['timeline-infobox']}>
           <div className={styles['timeline-infobox-text']}>
             L’établissement scolaire doit confirmer la préréservation{' '}
@@ -105,9 +105,9 @@ const CollectiveTimeLine = ({
     type: TimelineStepType.WAITING,
     content: (
       <>
-        <h2 className={styles['timeline-step-title']}>
+        <div className={styles['timeline-step-title']}>
           Réservation en cours de confirmation
-        </h2>
+        </div>
         <div>
           À partir du {cancellationLimitDate.toString()}, la réservation ne sera
           plus annulable par l’établissement scolaire. <br />
@@ -122,18 +122,18 @@ const CollectiveTimeLine = ({
   const disabledConfirmedStep = {
     type: TimelineStepType.DISABLED,
     content: (
-      <h2 className={styles['timeline-step-title-disabled']}>
+      <div className={styles['timeline-step-title-disabled']}>
         Réservation confirmée
-      </h2>
+      </div>
     ),
   }
   const endedStep = {
     type: TimelineStepType.SUCCESS,
     content: (
       <>
-        <h2 className={styles['timeline-step-title-passed']}>
-          Jour J: réservation terminée
-        </h2>
+        <div className={styles['timeline-step-title-passed']}>
+          Jour J : réservation terminée
+        </div>
         <div>
           {eventDate}
           <br />
@@ -156,26 +156,26 @@ const CollectiveTimeLine = ({
   const waitingEndedStep = {
     type: TimelineStepType.WAITING,
     content: (
-      <h2 className={styles['timeline-step-title']}>
-        Jour J: réservation terminée
-      </h2>
+      <div className={styles['timeline-step-title']}>
+        Jour J : réservation terminée
+      </div>
     ),
   }
   const disabledEndedStep = {
     type: TimelineStepType.DISABLED,
     content: (
-      <h2 className={styles['timeline-step-title-disabled']}>
-        Jour J: réservation terminée
-      </h2>
+      <div className={styles['timeline-step-title-disabled']}>
+        Jour J : réservation terminée
+      </div>
     ),
   }
   const passedEndedStep = {
     type: TimelineStepType.SUCCESS,
     content: (
       <>
-        <h2 className={styles['timeline-step-title-passed']}>
-          Jour J: réservation terminée
-        </h2>
+        <div className={styles['timeline-step-title-passed']}>
+          Jour J : réservation terminée
+        </div>
         <div>{eventDate}</div>
       </>
     ),
@@ -185,9 +185,9 @@ const CollectiveTimeLine = ({
     type: TimelineStepType.SUCCESS,
     content: (
       <>
-        <h2 className={styles['timeline-step-title']}>
+        <div className={styles['timeline-step-title']}>
           Remboursement effectué
-        </h2>
+        </div>
         <div>{}</div>
       </>
     ),
@@ -196,7 +196,9 @@ const CollectiveTimeLine = ({
     type: TimelineStepType.WAITING,
     content: (
       <>
-        <h2 className={styles['timeline-step-title']}>Remboursement à venir</h2>
+        <div className={styles['timeline-step-title']}>
+          Remboursement à venir
+        </div>
         <div>
           À compter du jour de l'événement, le virement sera exécuté dans un
           délai de 2 à 3 semaines.
@@ -207,9 +209,9 @@ const CollectiveTimeLine = ({
   const disabledReimbursedStep = {
     type: TimelineStepType.DISABLED,
     content: (
-      <h2 className={styles['timeline-step-title-disabled']}>
+      <div className={styles['timeline-step-title-disabled']}>
         Remboursement effectué
-      </h2>
+      </div>
     ),
   }
 

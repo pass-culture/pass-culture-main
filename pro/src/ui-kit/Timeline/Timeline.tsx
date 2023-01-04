@@ -77,10 +77,10 @@ const getLineStyle = (
 
 const Timeline = ({ steps }: ITimelineProps): JSX.Element => {
   return (
-    <div className={styles.container}>
+    <ol className={styles.container}>
       {steps.map((step, index) => {
         return (
-          <div
+          <li
             key={index}
             className={cn(
               styles.step,
@@ -89,10 +89,10 @@ const Timeline = ({ steps }: ITimelineProps): JSX.Element => {
           >
             {getIconComponent(step.type)}
             {step.content}
-          </div>
+          </li>
         )
       })}
-    </div>
+    </ol>
   )
 }
 
