@@ -15,6 +15,8 @@ class MusicType:
     children: list[MusicSubType]
 
 
+OTHER_SHOW_TYPE_SLUG = "OTHER"
+
 # WARNING: the list below MUST be kept in sync with the list at pro/src/core/Offers/categoriesSubTypes.ts
 music_types = [
     MusicType(
@@ -309,7 +311,7 @@ music_types = [
     MusicType(
         code=-1,
         label="Autre",
-        children=[MusicSubType(code=-1, label="Autre", slug="OTHER")],
+        children=[MusicSubType(code=-1, label="Autre", slug=OTHER_SHOW_TYPE_SLUG)],
     ),
 ]
 
