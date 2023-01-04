@@ -6,7 +6,7 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription import api as subscription_api
-from pcapi.core.subscription.models import SubscriptionItemStatus
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -146,16 +146,9 @@ def is_user_allowed_to_perform_ubble_check(
     if not eligibility_type:
         return False
 
-    has_never_performed_ubble_check = not any(
-        check for check in user.beneficiaryFraudChecks if check.type == fraud_models.FraudCheckType.UBBLE
-    )
-    if has_never_performed_ubble_check:
-        return True
+    user_subscription_state = subscription_api.get_user_subscription_state(user)
 
-    return (
-        subscription_api.get_identity_check_subscription_status(user, eligibility_type).admin_status
-        == SubscriptionItemStatus.TODO
-    )
+    return user_subscription_state.next_step == subscription_models.SubscriptionStep.IDENTITY_CHECK
 
 
 def get_restartable_identity_checks(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
