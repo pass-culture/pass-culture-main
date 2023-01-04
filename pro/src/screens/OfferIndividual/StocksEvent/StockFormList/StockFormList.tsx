@@ -9,6 +9,10 @@ import {
 import { StockEventFormRow } from 'components/StockEventFormRow'
 import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
+import {
+  isAllocineOffer,
+  isCinemaProviderOffer,
+} from 'core/Providers/utils/localProvider'
 import { useOfferWizardMode } from 'hooks'
 import { useModal } from 'hooks/useModal'
 import { IconPlusCircle } from 'icons'
@@ -49,7 +53,8 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
   )
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
   const isSynchronized = Boolean(offer.lastProvider)
-
+  const isAllocineSynchronizedOffer = isAllocineOffer(offer)
+  const isCinemaProviderSynchronizedOffer = isCinemaProviderOffer(offer)
   return (
     <FieldArray
       name="stocks"
@@ -96,7 +101,12 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
                       }
                     },
                     label: 'Supprimer le stock',
-                    disabled: !stockValues.isDeletable || isDisabled,
+                    disabled:
+                      !stockValues.isDeletable ||
+                      isDisabled ||
+                      (isSynchronized &&
+                        !isAllocineSynchronizedOffer &&
+                        !isCinemaProviderSynchronizedOffer),
                     Icon: TrashFilledIcon,
                   },
                 ]}

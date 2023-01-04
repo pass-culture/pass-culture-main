@@ -3,7 +3,7 @@ import {
   IOfferIndividual,
   IOfferIndividualVenueProvider,
 } from 'core/Offers/types'
-import { isAllocineProvider } from 'core/Providers'
+import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
 
 // can be deleted with FF OFFER_FORM_V3
 export const isSynchronizedOffer = (
@@ -16,6 +16,12 @@ export const isAllocineOffer = (
   offer: IOfferIndividual | null | undefined = null
 ) => {
   return offer?.lastProvider ? isAllocineProvider(offer?.lastProvider) : false
+}
+
+export const isCinemaProviderOffer = (
+  offer: IOfferIndividual | null | undefined = null
+) => {
+  return offer?.lastProvider ? isCinemaProvider(offer?.lastProvider) : false
 }
 
 // can be deleted with FF OFFER_FORM_V3

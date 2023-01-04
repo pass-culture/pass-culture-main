@@ -457,6 +457,34 @@ describe('screens:StocksEvent:Edition', () => {
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
+  it('should allow user to delete stock from a synchronized CDS offer', async () => {
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
+    apiOffer.lastProvider = {
+      ...apiOffer.lastProvider,
+      id: 'PROVIDER_ID',
+      isActive: true,
+      name: 'ciné office',
+      enabledForPro: true,
+    }
+    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    renderStockEventScreen({ storeOverride })
+    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await userEvent.click(
+      screen.getAllByTestId('stock-form-actions-button-open')[1]
+    )
+    await userEvent.click(
+      screen.getAllByTestId('stock-form-actions-button-open')[0]
+    )
+    await userEvent.click(screen.getAllByText('Supprimer le stock')[0])
+    expect(
+      screen.getByText('Voulez-vous supprimer ce stock ?')
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
+    expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
+    expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
+    expect(api.deleteStock).toHaveBeenCalledTimes(1)
+  })
+
   it('should not allow user to add a date for a synchronized offer', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
     apiOffer.lastProvider = {
