@@ -191,9 +191,7 @@ def get_category_fields_model(subcategory: subcategories.Subcategory) -> typing.
 
 
 def compute_category_related_fields(offer: offers_models.Offer) -> CategoryRelatedFields:
-    category_fields_model = (PRODUCT_CATEGORY_MODELS_BY_SUBCATEGORY | EVENT_CATEGORY_MODELS_BY_SUBCATEGORY)[
-        offer.subcategoryId
-    ]
+    category_fields_model = CATEGORY_MODELS_BY_SUBCATEGORY[offer.subcategoryId]
     fields = offer.extraData or {}
     if offer.extraData and "musicSubType" in offer.extraData and offer.extraData["musicSubType"] != "":
         fields["musicType"] = MusicTypeEnum(
@@ -228,30 +226,42 @@ def compute_extra_data(category_related_fields: CategoryRelatedFields) -> dict[s
     return extra_data
 
 
-PRODUCT_CATEGORY_MODELS_BY_SUBCATEGORY = {
-    subcategory.id: get_category_fields_model(subcategory)
-    for subcategory in subcategories.ALL_SUBCATEGORIES
-    if subcategory.is_selectable and not subcategory.is_event
+CATEGORY_MODELS_BY_SUBCATEGORY = {
+    subcategory.id: get_category_fields_model(subcategory) for subcategory in subcategories.ALL_SUBCATEGORIES
 }
-EDITABLE_PRODUCT_CATEGORY_MODELS = [
-    PRODUCT_CATEGORY_MODELS_BY_SUBCATEGORY[subcategory_id]
-    for subcategory_id in PRODUCT_CATEGORY_MODELS_BY_SUBCATEGORY
-    if subcategory_id != subcategories.LIVRE_PAPIER.id
+PRODUCT_CATEGORY_MODELS = [
+    CATEGORY_MODELS_BY_SUBCATEGORY[subcategory_id]
+    for subcategory_id in CATEGORY_MODELS_BY_SUBCATEGORY
+    if not subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].is_event
 ]
-EVENT_CATEGORY_MODELS_BY_SUBCATEGORY = {
-    subcategory.id: get_category_fields_model(subcategory)
-    for subcategory in subcategories.ALL_SUBCATEGORIES
-    if subcategory.is_selectable and subcategory.is_event
-}
+EDITABLE_PRODUCT_CATEGORY_MODELS = [
+    CATEGORY_MODELS_BY_SUBCATEGORY[subcategory_id]
+    for subcategory_id in CATEGORY_MODELS_BY_SUBCATEGORY
+    if not subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].is_event
+    and subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].is_selectable
+    and subcategory_id != subcategories.LIVRE_PAPIER.id
+]
+EVENT_CATEGORY_MODELS = [
+    CATEGORY_MODELS_BY_SUBCATEGORY[subcategory_id]
+    for subcategory_id in CATEGORY_MODELS_BY_SUBCATEGORY
+    if subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].is_event
+]
+EDITABLE_EVENT_CATEGORY_MODELS = [
+    CATEGORY_MODELS_BY_SUBCATEGORY[subcategory_id]
+    for subcategory_id in CATEGORY_MODELS_BY_SUBCATEGORY
+    if subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].is_event
+    and subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].is_selectable
+]
 
 
 if typing.TYPE_CHECKING:
-    editable_product_category_fields = CategoryRelatedFields
     product_category_fields = CategoryRelatedFields
+    editable_product_category_fields = CategoryRelatedFields
     event_category_fields = CategoryRelatedFields
+    editable_event_category_fields = CategoryRelatedFields
 else:
     product_category_fields = typing_extensions.Annotated[
-        typing.Union[tuple(PRODUCT_CATEGORY_MODELS_BY_SUBCATEGORY.values())],
+        typing.Union[tuple(PRODUCT_CATEGORY_MODELS)],
         pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
     editable_product_category_fields = typing_extensions.Annotated[
@@ -259,7 +269,11 @@ else:
         pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
     event_category_fields = typing_extensions.Annotated[
-        typing.Union[tuple(EVENT_CATEGORY_MODELS_BY_SUBCATEGORY.values())],
+        typing.Union[tuple(EVENT_CATEGORY_MODELS)],
+        pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
+    ]
+    editable_event_category_fields = typing_extensions.Annotated[
+        typing.Union[tuple(EDITABLE_EVENT_CATEGORY_MODELS)],
         pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
 
@@ -343,7 +357,7 @@ class ProductOfferCreation(OfferCreationBase):
 
 
 class EventOfferCreation(OfferCreationBase):
-    category_related_fields: event_category_fields
+    category_related_fields: editable_event_category_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = TICKET_COLLECTION_FIELD
 

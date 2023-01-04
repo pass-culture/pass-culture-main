@@ -1029,7 +1029,7 @@ class GetProductTest:
         }
 
     @pytest.mark.usefixtures("db_session")
-    def test_books_may_be_retrieved(self, client):
+    def test_books_can_be_retrieved(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         product_offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=api_key.offerer,
@@ -1042,6 +1042,21 @@ class GetProductTest:
 
         assert response.status_code == 200
         assert response.json["categoryRelatedFields"] == {"author": None, "category": "LIVRE_PAPIER", "isbn": None}
+
+    @pytest.mark.usefixtures("db_session")
+    def test_product_with_not_selectable_category_can_be_retrieved(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            subcategoryId=subcategories.ABO_LUDOTHEQUE.id,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products/{product_offer.id}"
+        )
+
+        assert response.status_code == 200
+        assert response.json["categoryRelatedFields"] == {"category": "ABO_LUDOTHEQUE"}
 
     @pytest.mark.usefixtures("db_session")
     def test_product_with_stock_and_image(self, client):
@@ -1150,6 +1165,21 @@ class GetEventTest:
             "status": "SOLD_OUT",
             "ticketCollection": None,
         }
+
+    @pytest.mark.usefixtures("db_session")
+    def test_event_with_not_selectable_category_can_be_retrieved(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            subcategoryId=subcategories.DECOUVERTE_METIERS.id,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/events/{event_offer.id}"
+        )
+
+        assert response.status_code == 200
+        assert response.json["categoryRelatedFields"] == {"category": "DECOUVERTE_METIERS", "speaker": None}
 
     @pytest.mark.usefixtures("db_session")
     def test_get_show_offer_without_show_type(self, client):
