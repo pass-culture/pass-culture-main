@@ -31,9 +31,7 @@ describe('collective timeline', () => {
     })
     renderCollectiveTimeLine(bookingRecap)
     expect(
-      screen.getByRole('heading', {
-        name: "Préreservée par l'établissement scolaire",
-      })
+      screen.getByText("Préreservée par l'établissement scolaire")
     ).toBeInTheDocument()
   })
   it('should render steps for booked booking', () => {
@@ -42,9 +40,7 @@ describe('collective timeline', () => {
     })
     renderCollectiveTimeLine(bookingRecap)
     expect(
-      screen.getByRole('heading', {
-        name: "Réservée par l'établissement scolaire",
-      })
+      screen.getByText("Réservée par l'établissement scolaire")
     ).toBeInTheDocument()
   })
   it('should render steps for confirmed booking', () => {
@@ -52,11 +48,7 @@ describe('collective timeline', () => {
       booking_status: BOOKING_STATUS.CONFIRMED,
     })
     renderCollectiveTimeLine(bookingRecap)
-    expect(
-      screen.getByRole('heading', {
-        name: 'Réservation confirmée',
-      })
-    ).toBeInTheDocument()
+    expect(screen.getByText('Réservation confirmée')).toBeInTheDocument()
   })
   it('should render steps for validated booking', () => {
     const bookingRecap = collectiveBookingRecapFactory({
@@ -64,9 +56,7 @@ describe('collective timeline', () => {
     })
     renderCollectiveTimeLine(bookingRecap)
     expect(
-      screen.getByRole('heading', {
-        name: 'Jour J: réservation terminée',
-      })
+      screen.getByText('Jour J : réservation terminée')
     ).toBeInTheDocument()
   })
   it('should render steps for reimbursed booking', () => {
@@ -74,10 +64,6 @@ describe('collective timeline', () => {
       booking_status: BOOKING_STATUS.REIMBURSED,
     })
     renderCollectiveTimeLine(bookingRecap)
-    expect(
-      screen.getByRole('heading', {
-        name: 'Remboursement effectué',
-      })
-    ).toBeInTheDocument()
+    expect(screen.getByText('Remboursement effectué')).toBeInTheDocument()
   })
 })
