@@ -68,7 +68,7 @@ class YoungStatusTest:
                 subscription_status=young_status.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
             )
 
-        def should_have_to_complete_when_dms_is_started(self):
+        def should_have_subscription_pending_when_dms_is_started(self):
             user = users_factories.UserFactory(
                 dateOfBirth=_with_age(18), phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
             )
@@ -89,7 +89,7 @@ class YoungStatusTest:
             )
 
             assert young_status.young_status(user) == young_status.Eligible(
-                subscription_status=young_status.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
+                subscription_status=young_status.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
             )
 
         @pytest.mark.parametrize("age", [15, 16, 17])
