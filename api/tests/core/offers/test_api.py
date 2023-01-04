@@ -15,6 +15,7 @@ from pcapi.core.categories import subcategories
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.factories as finance_factories
+import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
@@ -572,12 +573,14 @@ class DeleteStockTest:
     def test_delete_stock_cancel_bookings_and_send_emails(self):
         offerer_email = "offerer@example.com"
         stock = factories.EventStockFactory(offer__bookingEmail=offerer_email)
-        booking1 = bookings_factories.IndividualBookingFactory(
-            stock=stock,
-            individualBooking__user__email="beneficiary@example.com",
-        )
+        booking1 = bookings_factories.IndividualBookingFactory(stock=stock)
         booking2 = bookings_factories.CancelledIndividualBookingFactory(stock=stock)
         booking3 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
+        booking4 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
+        finance_factories.PricingFactory(
+            booking=booking4,
+            status=finance_models.PricingStatus.PROCESSED,
+        )
 
         api.delete_stock(stock)
 
@@ -595,6 +598,9 @@ class DeleteStockTest:
         booking3 = bookings_models.Booking.query.get(booking3.id)
         assert booking3.status == bookings_models.BookingStatus.CANCELLED  # cancel used booking for event offer
         assert booking3.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
+        booking4 = bookings_models.Booking.query.get(booking4.id)
+        assert booking4.status == bookings_models.BookingStatus.USED  # unchanged
+        assert booking4.pricings[0].status == finance_models.PricingStatus.PROCESSED  # unchanged
 
         assert len(mails_testing.outbox) == 3
         assert {outbox.sent_data["To"] for outbox in mails_testing.outbox} == {
