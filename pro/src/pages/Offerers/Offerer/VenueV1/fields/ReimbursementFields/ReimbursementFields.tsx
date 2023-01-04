@@ -2,14 +2,11 @@ import React, { useCallback, useState } from 'react'
 
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import ReimbursementPointV2 from 'components/VenueForm/ReimbursementPointV2/ReimbursementPointV2'
-import useActiveFeature from 'hooks/useActiveFeature'
+import ReimbursementPoint from 'components/VenueForm/ReimbursementPoint/ReimbursementPoint'
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
-import PricingPoint from '../PricingPoint/PricingPoint'
-import PricingPointV2 from '../PricingPointV2'
-import ReimbursementPoint from '../ReimbursementPoint/ReimbursementPoint'
+import PricingPoint from '../PricingPoint'
 
 export interface ReimbursementInterface {
   offerer: GetOffererResponseModel
@@ -38,7 +35,6 @@ const ReimbursementFields = ({
       }, 200)
     }
   }, [])
-  const isVenueFormV2 = useActiveFeature('VENUE_FORM_V2')
   return (
     <>
       <div ref={scrollToReimbursementSection}>
@@ -54,38 +50,20 @@ const ReimbursementFields = ({
             </InternalBanner>
           ) : (
             <>
-              {!venueHaveSiret &&
-                (isVenueFormV2 ? (
-                  <PricingPointV2
-                    readOnly={readOnly}
-                    offerer={offerer}
-                    venue={venue}
-                    setVenueHasPricingPoint={setVenueHasPricingPoint}
-                  />
-                ) : (
-                  <PricingPoint
-                    readOnly={readOnly}
-                    offerer={offerer}
-                    venue={venue}
-                    setVenueHasPricingPoint={setVenueHasPricingPoint}
-                  />
-                ))}
-
-              {isVenueFormV2 ? (
-                <ReimbursementPointV2
-                  offerer={offerer}
+              {!venueHaveSiret && (
+                <PricingPoint
                   readOnly={readOnly}
-                  initialVenue={venue}
-                  venueHasPricingPoint={venueHasPricingPoint}
-                />
-              ) : (
-                <ReimbursementPoint
                   offerer={offerer}
-                  readOnly={readOnly}
-                  initialVenue={venue}
-                  venueHasPricingPoint={venueHasPricingPoint}
+                  venue={venue}
+                  setVenueHasPricingPoint={setVenueHasPricingPoint}
                 />
               )}
+              <ReimbursementPoint
+                offerer={offerer}
+                readOnly={readOnly}
+                initialVenue={venue}
+                venueHasPricingPoint={venueHasPricingPoint}
+              />
             </>
           )}
         </FormLayout.Section>

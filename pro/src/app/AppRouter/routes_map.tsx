@@ -15,9 +15,7 @@ import Homepage from 'pages/Home/Homepage'
 import LostPassword from 'pages/LostPassword/LostPassword'
 import Offerers from 'pages/Offerers/List/Offerers'
 import OffererDetails from 'pages/Offerers/Offerer/OffererDetails/OffererDetails'
-import VenueV1Creation from 'pages/Offerers/Offerer/VenueV1/VenueCreation/VenueCreation'
 import CollectiveDataEdition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition'
-import VenueV1Edition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueEdition'
 import OffererCreation from 'pages/Offerers/OffererCreation'
 import { OffererStats } from 'pages/OffererStats'
 import { OfferIndividualWizard } from 'pages/OfferIndividualWizard'
@@ -203,32 +201,16 @@ const routes: IRoute[] = [
     title: 'Structures',
   },
   {
-    component: VenueV1Creation,
-    exact: true,
-    path: '/structures/:offererId([A-Z0-9]+)/lieux/creation',
-    title: 'Structures',
-    disabledFeatureName: 'VENUE_FORM_V2',
-  },
-  {
-    component: VenueV1Edition,
-    exact: true,
-    path: '/structures/:offererId([A-Z0-9]+)/lieux/:venueId([A-Z0-9]+)',
-    title: 'Structures',
-    disabledFeatureName: 'VENUE_FORM_V2',
-  },
-  {
     component: VenueCreation,
     exact: true,
     path: '/structures/:offererId([A-Z0-9]+)/lieux/creation',
     title: 'Structures',
-    featureName: 'VENUE_FORM_V2',
   },
   {
     component: VenueEdition,
     exact: true,
     path: '/structures/:offererId([A-Z0-9]+)/lieux/:venueId([A-Z0-9]+)',
     title: 'Structures',
-    featureName: 'VENUE_FORM_V2',
   },
 
   {
