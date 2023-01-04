@@ -166,7 +166,7 @@ describe('screens:StocksThing', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        'Les utilisateurs ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
+        'Les bénéficiaires ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
       )
     ).toBeInTheDocument()
 
@@ -189,9 +189,12 @@ describe('screens:StocksThing', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        /Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée. Pour ajouter des codes d’activation, veuillez passer par le menu ··· et choisir l’option correspondante./
+        /Les bénéficiaires ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les bénéficiaires ne peuvent pas annuler leurs réservations. Toute réservation est définitive et sera immédiatement validée. Pour ajouter des codes d’activation, veuillez passer par le menu ··· et choisir l’option correspondante./
       )
     ).toBeInTheDocument()
+    expect(
+      screen.queryByText('Comment gérer les codes d’activation')
+    ).not.toBeInTheDocument()
   })
   it('should render digital book', async () => {
     props.offer = {
@@ -202,9 +205,12 @@ describe('screens:StocksThing', () => {
     renderStockThingScreen({ props, storeOverride, contextValue })
     expect(
       screen.getByText(
-        'Les utilisateurs ont 10 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
+        'Les bénéficiaires ont 10 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
       )
     ).toBeInTheDocument()
+    expect(
+      screen.queryByText('Comment gérer les codes d’activation')
+    ).not.toBeInTheDocument()
   })
 
   it('should submit stock and stay in creation mode when click on "Sauvegarder le brouillon"', async () => {

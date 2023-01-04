@@ -77,7 +77,7 @@ describe('screens:Stocks', () => {
     renderStocksScreen({ storeOverride, contextOverride })
     expect(
       screen.getByText(
-        'Les utilisateurs ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
+        'Les bénéficiaires ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
       )
     ).toBeInTheDocument()
   })
@@ -89,7 +89,7 @@ describe('screens:Stocks', () => {
     renderStocksScreen({ storeOverride, contextOverride })
     expect(
       screen.getByText(
-        'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’événement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente.'
+        'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’événement. Vous pouvez annuler un évènement en supprimant la ligne de stock associée. Cette action est irréversible.'
       )
     ).toBeInTheDocument()
   })
