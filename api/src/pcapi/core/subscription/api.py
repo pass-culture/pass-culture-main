@@ -824,10 +824,3 @@ def _get_subscription_message(
             return educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
         case _:
             return subscription_messages.get_generic_ko_message(fraud_check.user.id)
-
-
-def has_subscription_issues(user: users_models.User) -> bool:
-    subscription_state = get_user_subscription_state(user)
-    return subscription_state.young_status == young_status_module.Eligible(
-        subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
-    )
