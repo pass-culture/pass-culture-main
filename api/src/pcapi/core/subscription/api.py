@@ -250,7 +250,7 @@ def get_identity_check_fraud_status(
     if fraud_check.status == fraud_models.FraudCheckStatus.PENDING:
         return models.SubscriptionItemStatus.PENDING
 
-            if fraud_check.status == fraud_models.FraudCheckStatus.STARTED:
+    if fraud_check.status == fraud_models.FraudCheckStatus.STARTED:
         if fraud_check.type == fraud_models.FraudCheckType.DMS:
             return models.SubscriptionItemStatus.PENDING
         return models.SubscriptionItemStatus.TODO
@@ -261,7 +261,7 @@ def get_identity_check_fraud_status(
 def can_retry_fraud_check(fraud_check: fraud_models.BeneficiaryFraudCheck) -> bool:
     match fraud_check.type:
         case fraud_models.FraudCheckType.EDUCONNECT:
-        return True
+            return True
 
         case fraud_models.FraudCheckType.UBBLE:
             if not fraud_check.reasonCodes or not all(
@@ -269,13 +269,13 @@ def can_retry_fraud_check(fraud_check: fraud_models.BeneficiaryFraudCheck) -> bo
             ):
                 return False
             ubble_attempts_count = fraud_models.BeneficiaryFraudCheck.query.filter(
-            fraud_models.BeneficiaryFraudCheck.userId == fraud_check.userId,
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
+                fraud_models.BeneficiaryFraudCheck.userId == fraud_check.userId,
+                fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
                 fraud_models.BeneficiaryFraudCheck.eligibilityType == fraud_check.eligibilityType,
                 ~fraud_models.BeneficiaryFraudCheck.status.in_(
                     [fraud_models.FraudCheckStatus.CANCELED, fraud_models.FraudCheckStatus.STARTED]
                 ),
-        ).count()
+            ).count()
 
             return ubble_attempts_count < ubble_constants.MAX_UBBLE_RETRIES
     return False
@@ -468,7 +468,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
             young_status=young_status_module.Eligible(
                 subscription_status=young_status_module.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
             ),
-            )
+        )
 
     if identity_check_fraud_status in [models.SubscriptionItemStatus.OK, models.SubscriptionItemStatus.PENDING]:
         pass  # Continue to honor statement
@@ -507,7 +507,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
             subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
         ),
         is_activable=True,
-        )
+    )
 
 
 def complete_profile(
@@ -673,12 +673,15 @@ def _get_activable_identity_check(
 def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
     subscription_state = get_user_subscription_state(user)
 
-    if not subscription_state.is_activable or not subscription_state.fraud_check:
+    if not subscription_state.is_activable:
+        return False
+    if not subscription_state.fraud_check:
         return False
     if subscription_state.fraud_check.resultContent is None:
         return False
     if user.eligibility is None:
         return False
+
     duplicate_beneficiary = fraud_api.get_duplicate_beneficiary(subscription_state.fraud_check)
     if duplicate_beneficiary:
         fraud_api.invalidate_fraud_check_for_duplicate_user(subscription_state.fraud_check, duplicate_beneficiary.id)
