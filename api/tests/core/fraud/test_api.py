@@ -465,10 +465,23 @@ class EduconnectFraudTest:
         )
 
 
+def build_user_at_id_check(age, eligibility_type=users_models.EligibilityType.AGE18):
+    user = users_factories.UserFactory(
+        dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, days=5),
+        phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+    )
+    fraud_factories.ProfileCompletionFraudCheckFactory(
+        user=user,
+        eligibilityType=eligibility_type,
+        resultContent=fraud_factories.ProfileCompletionContentFactory(first_name="Sally", last_name="Mara"),
+    )
+    return user
+
+
 @pytest.mark.usefixtures("db_session")
 class HasUserPerformedIdentityCheckTest:
     def test_has_not_performed(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1))
+        user = build_user_at_id_check(18)
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, eligibilityType=users_models.EligibilityType.UNDERAGE)
 
         assert not fraud_api.has_user_performed_identity_check(user)
@@ -485,18 +498,15 @@ class HasUserPerformedIdentityCheckTest:
     @pytest.mark.parametrize("check_type", [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.UBBLE])
     @pytest.mark.parametrize("status", [fraud_models.FraudCheckStatus.PENDING, fraud_models.FraudCheckStatus.OK])
     def test_has_user_performed_identity_check(self, age, eligibility_type, check_type, status):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, months=1))
+        user = build_user_at_id_check(age, eligibility_type=eligibility_type)
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=check_type, user=user, status=status, eligibilityType=eligibility_type
         )
 
         assert fraud_api.has_user_performed_identity_check(user)
-        assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility) == (
-            check_type != fraud_models.FraudCheckType.UBBLE
-        )
 
     def test_has_user_performed_identity_check_turned_18(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1))
+        user = build_user_at_id_check(18)
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE, user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
         )
@@ -505,13 +515,15 @@ class HasUserPerformedIdentityCheckTest:
         assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
     def test_has_user_performed_identity_check_without_identity_fraud_check(self):
-        user = users_factories.UserFactory()
-        fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.USER_PROFILING, user=user)
+        user = user = build_user_at_id_check(18)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.USER_PROFILING, user=user, status=fraud_models.FraudCheckStatus.OK
+        )
 
         assert not fraud_api.has_user_performed_identity_check(user)
 
     def test_has_user_performed_identity_check_status_initiated(self):
-        user = users_factories.UserFactory()
+        user = user = build_user_at_id_check(18)
         ubble_content = fraud_factories.UbbleContentFactory(
             status=ubble_fraud_models.UbbleIdentificationStatus.INITIATED
         )
@@ -522,8 +534,10 @@ class HasUserPerformedIdentityCheckTest:
             status=fraud_models.FraudCheckStatus.PENDING,
         )
 
+        assert fraud_api.has_user_performed_identity_check(user)
+
     def test_has_user_performed_identity_check_ubble_suspicious(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1))
+        user = build_user_at_id_check(18)
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             user=user,
@@ -537,7 +551,7 @@ class HasUserPerformedIdentityCheckTest:
         assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
     def test_has_user_performed_identity_check_ubble_suspicious_x3(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1))
+        user = build_user_at_id_check(18)
         for _ in range(3):
             fraud_factories.BeneficiaryFraudCheckFactory(
                 type=fraud_models.FraudCheckType.UBBLE,
@@ -552,7 +566,7 @@ class HasUserPerformedIdentityCheckTest:
         assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
     def test_has_user_performed_identity_check_ubble_ko(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1))
+        user = build_user_at_id_check(18)
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             user=user,
@@ -572,8 +586,14 @@ class HasUserPerformedIdentityCheckTest:
         assert fraud_api.has_user_performed_identity_check(user)
 
     def test_user_not_eligible_anymore_but_has_performed(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=20, months=1))
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, eligibilityType=users_models.EligibilityType.AGE18)
+        user = build_user_at_id_check(20)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.UBBLE,
+        )
+        user.roles = [users_models.UserRole.BENEFICIARY]
 
         assert fraud_api.has_user_performed_identity_check(user)
 

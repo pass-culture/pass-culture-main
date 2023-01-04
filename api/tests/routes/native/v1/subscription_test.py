@@ -143,9 +143,13 @@ class NextStepTest:
                 fraud_models.FraudCheckStatus.KO,
                 fraud_models.FraudReasonCode.AGE_TOO_OLD,
                 ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
-                "honor-statement",
-                False,
                 None,
+                False,
+                {
+                    "callToAction": None,
+                    "popOverIcon": "ERROR",
+                    "userMessage": "Ton dossier a été refusé\xa0: tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
+                },
             ),
             (
                 fraud_models.FraudCheckStatus.CANCELED,
