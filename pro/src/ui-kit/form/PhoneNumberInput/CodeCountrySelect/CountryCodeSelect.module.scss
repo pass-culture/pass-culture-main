@@ -31,7 +31,7 @@ $text-padding-left: calc(
       rem.torem(forms.$input-border-radius) 0 0
       rem.torem(forms.$input-border-radius);
     background-color: transparent;
-    box-shadow: inset 0px 0px 0px 1px forms.$input-border-color-focus;
+    box-shadow: inset 0 0 0 1px forms.$input-border-color-focus;
     
     .select-input {
       height: calc(#{$input-height} - #{$focus-border-width});
