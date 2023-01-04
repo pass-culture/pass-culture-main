@@ -215,62 +215,70 @@ const CollectiveTimeLine = ({
     ),
   }
 
-  const statusSteps = [
-    {
-      status: BOOKING_STATUS.PENDING,
-      steps: [
-        pendingStep,
-        waitingBookingStep,
-        disabledConfirmedStep,
-        disabledEndedStep,
-        disabledReimbursedStep,
-      ],
-    },
-    {
-      status: BOOKING_STATUS.BOOKED,
-      steps: [
-        pendingStep,
-        confirmationStep,
-        waitingConfirmedStep,
-        disabledEndedStep,
-        disabledReimbursedStep,
-      ],
-    },
-    {
-      status: BOOKING_STATUS.CONFIRMED,
-      steps: [
-        pendingStep,
-        confirmationStep,
-        confirmedStep,
-        waitingEndedStep,
-        disabledReimbursedStep,
-      ],
-    },
-    {
-      status: BOOKING_STATUS.VALIDATED,
-      steps: [
-        pendingStep,
-        confirmationStep,
-        confirmedStep,
-        endedStep,
-        waitingReimbursedStep,
-      ],
-    },
-    {
-      status: BOOKING_STATUS.REIMBURSED,
-      steps: [
-        pendingStep,
-        confirmationStep,
-        confirmedStep,
-        passedEndedStep,
-        reimbursedStep,
-      ],
-    },
-  ]
-  const steps = statusSteps.find(
-    x => x.status == bookingRecap.booking_status
-  )?.steps
-  return <div>{steps && <Timeline steps={steps} />}</div>
+  switch (bookingRecap.booking_status) {
+    case BOOKING_STATUS.PENDING:
+      return (
+        <Timeline
+          steps={[
+            pendingStep,
+            waitingBookingStep,
+            disabledConfirmedStep,
+            disabledEndedStep,
+            disabledReimbursedStep,
+          ]}
+        />
+      )
+    case BOOKING_STATUS.BOOKED:
+      return (
+        <Timeline
+          steps={[
+            pendingStep,
+            confirmationStep,
+            waitingConfirmedStep,
+            disabledEndedStep,
+            disabledReimbursedStep,
+          ]}
+        />
+      )
+    case BOOKING_STATUS.CONFIRMED:
+      return (
+        <Timeline
+          steps={[
+            pendingStep,
+            confirmationStep,
+            confirmedStep,
+            waitingEndedStep,
+            disabledReimbursedStep,
+          ]}
+        />
+      )
+    case BOOKING_STATUS.VALIDATED:
+      return (
+        <Timeline
+          steps={[
+            pendingStep,
+            confirmationStep,
+            confirmedStep,
+            endedStep,
+            waitingReimbursedStep,
+          ]}
+        />
+      )
+    case BOOKING_STATUS.REIMBURSED:
+      return (
+        <Timeline
+          steps={[
+            pendingStep,
+            confirmationStep,
+            confirmedStep,
+            passedEndedStep,
+            reimbursedStep,
+          ]}
+        />
+      )
+    default:
+      throw new Error('Invalid booking status')
+  }
 }
 
 export default CollectiveTimeLine
