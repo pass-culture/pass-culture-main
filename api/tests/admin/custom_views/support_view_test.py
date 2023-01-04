@@ -404,7 +404,11 @@ class BeneficiaryActivationStatusTest:
         with freezegun.freeze_time(datetime.utcnow() - relativedelta(years=3)):
             user = users_factories.UnderageBeneficiaryFactory(
                 dateOfBirth=datetime.utcnow() - relativedelta(years=15, months=5),
+                phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.PROFILE_COMPLETION, status=fraud_models.FraudCheckStatus.OK
+        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )

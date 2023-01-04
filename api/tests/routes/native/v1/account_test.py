@@ -1664,14 +1664,22 @@ class ProfilingSessionIdTest:
         assert len(session_ids) == 5
 
 
+def build_user_at_id_check(age):
+    user = users_factories.UserFactory(
+        dateOfBirth=datetime.utcnow() - relativedelta(years=age, days=5),
+        phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+    )
+    fraud_factories.ProfileCompletionFraudCheckFactory(
+        user=user,
+        eligibilityType=users_models.EligibilityType.AGE18,
+        resultContent=fraud_factories.ProfileCompletionContentFactory(first_name="Sally", last_name="Mara"),
+    )
+    return user
+
+
 class IdentificationSessionTest:
     def test_request(self, client, ubble_mock):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
-        fraud_factories.ProfileCompletionFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.AGE18,
-            resultContent=fraud_factories.ProfileCompletionContentFactory(first_name="Sally", last_name="Mara"),
-        )
+        user = build_user_at_id_check(18)
 
         client.with_token(user.email)
 
@@ -1712,8 +1720,7 @@ class IdentificationSessionTest:
         assert ubble_mock.call_count == 0
 
     def test_request_connection_error(self, client, ubble_mock_connection_error):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        user = build_user_at_id_check(18)
 
         client.with_token(user.email)
 
@@ -1730,8 +1737,7 @@ class IdentificationSessionTest:
         assert ubble_mock_connection_error.call_count == 1
 
     def test_request_ubble_http_error_status(self, client, ubble_mock_http_error_status):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        user = build_user_at_id_check(18)
 
         client.with_token(user.email)
 
@@ -1786,19 +1792,18 @@ class IdentificationSessionTest:
         assert len(user.beneficiaryFraudChecks) == 2
 
     def test_request_ubble_second_check_after_first_aborted(self, client, ubble_mock):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
+        user = build_user_at_id_check(18)
         client.with_token(user.email)
 
-        # Perform phone validation, user profiling and profile completion
-        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+        # Perform user profiling
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
             resultContent=fraud_factories.UserProfilingFraudDataFactory(
                 risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
             ),
+            status=fraud_models.FraudCheckStatus.OK,
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         # Perform first id check with Ubble
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1836,19 +1841,18 @@ class IdentificationSessionTest:
         ],
     )
     def test_request_ubble_retry(self, client, ubble_mock, reason, retry_number, expected_status):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
+        user = build_user_at_id_check(18)
         client.with_token(user.email)
 
-        # Perform phone validation, user profiling and profile completion
-        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+        # Perform user profiling
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
             resultContent=fraud_factories.UserProfilingFraudDataFactory(
                 risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
             ),
+            status=fraud_models.FraudCheckStatus.OK,
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         # Perform previous Ubble identifications
         for _ in range(0, retry_number):
@@ -1883,11 +1887,10 @@ class IdentificationSessionTest:
         ],
     )
     def test_request_ubble_retry_not_allowed(self, client, ubble_mock, reason):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
+        user = build_user_at_id_check(18)
         client.with_token(user.email)
 
-        # Perform phone validation and user profiling
-        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+        # Perform user profiling
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -1910,10 +1913,10 @@ class IdentificationSessionTest:
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 400
-        assert len(user.beneficiaryFraudChecks) == 2
+        assert len(user.beneficiaryFraudChecks) == 3  # 2 previous + 1 user profiling
 
     def test_allow_rerun_identification_from_started(self, client, ubble_mock):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
+        user = build_user_at_id_check(18)
         client.with_token(user.email)
 
         expected_url = "https://id.ubble.ai/ef055567-3794-4ca5-afad-dce60fe0f227"
@@ -1931,11 +1934,15 @@ class IdentificationSessionTest:
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 200
-        assert len(user.beneficiaryFraudChecks) == 1
+        assert len(user.beneficiaryFraudChecks) == 2  # 1 for user profiling, 1 for ubble
         assert ubble_mock.call_count == 0
 
-        check = user.beneficiaryFraudChecks[0]
-        assert check.type == fraud_models.FraudCheckType.UBBLE
+        check = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        ][0]
+        assert check
         assert response.json["identificationUrl"] == expected_url
 
 

@@ -30,7 +30,14 @@ def build_user_with_ko_retryable_ubble_fraud_check(
     if user is None:
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=user_age),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
+    fraud_factories.BeneficiaryFraudCheckFactory(
+        user=user,
+        type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+        status=fraud_models.FraudCheckStatus.OK,
+        eligibilityType=ubble_eligibility,
+    )
     fraud_factories.BeneficiaryFraudCheckFactory(
         user=user,
         type=fraud_models.FraudCheckType.UBBLE,
@@ -89,8 +96,7 @@ class FindUsersThatFailedUbbleTest:
 
     def should_not_find_users_when_they_have_another_id_check_ok(self):
         # Given
-        user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
-        build_user_with_ko_retryable_ubble_fraud_check(user=user)
+        user = build_user_with_ko_retryable_ubble_fraud_check(user_age=18)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.DMS,

@@ -352,8 +352,12 @@ def test_get_user_attributes_not_beneficiary():
         firstName="Cou",
         lastName="Zin",
         city="Nice",
+        phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
     )
 
+    fraud_factories.BeneficiaryFraudCheckFactory(
+        user=user, type=fraud_models.FraudCheckType.PROFILE_COMPLETION, status=fraud_models.FraudCheckStatus.OK
+    )
     fraud_factories.BeneficiaryFraudCheckFactory(
         user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.PENDING
     )
@@ -390,7 +394,7 @@ def test_get_user_attributes_not_beneficiary():
         user_id=user.id,
         is_eligible=True,
         is_email_validated=True,
-        is_phone_validated=False,
+        is_phone_validated=True,
         last_favorite_creation_date=None,
         last_visit_date=None,
         marketing_email_subscription=True,
