@@ -13,7 +13,7 @@ $input-phone-number-padding-left: calc(
 .country-code-select {
   position: absolute;
   top: 0;
-  left: 0;
+  left: -1px;
 }
 
 .phone-number-input {
