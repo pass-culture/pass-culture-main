@@ -150,9 +150,9 @@ def post_product_offer(
     individual_offers_provider: providers_models.Provider, body: serialization.ProductOfferCreation
 ) -> serialization.ProductOfferResponse:
     """
-    Post a product offer, except books.
+    Create a product offer (except printed books).
 
-    To post a book offer, use the API Stocks (see /v2/swagger).
+    To post a printed book offer, use the API Stocks (see /v2/swagger).
     """
     venue = _retrieve_venue_from_location(body.location)
 
