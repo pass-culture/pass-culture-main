@@ -270,13 +270,16 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   ]
 
   let description
+  let links
   if (!offer.isDigital) {
-    description = `Les utilisateurs ont ${
+    description = `Les bénéficiaires ont ${
       offer.subcategoryId === LIVRE_PAPIER_SUBCATEGORY_ID ? '10' : '30'
     } jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.`
   } else {
-    description =
-      'Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée.'
+    description = `Les bénéficiaires ont 30 jours pour annuler leurs réservations d’offres numériques. 
+
+    Dans le cas d’offres avec codes d’activation, les bénéficiaires ne peuvent pas annuler leurs réservations. Toute réservation est définitive et sera immédiatement validée.`
+
     let isDisabled = false
     if (offer.stocks.length > 0 && offer.stocks[0].hasActivationCode) {
       isDisabled = true
@@ -294,8 +297,14 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
   if (offer.isDigital) {
     description += `
-
     Pour ajouter des codes d’activation, veuillez passer par le menu ··· et choisir l’option correspondante.`
+
+    links = [
+      {
+        href: 'https://aide.passculture.app/hc/fr/articles/4411991970705--Acteurs-culturels-Comment-cr%C3%A9er-une-offre-num%C3%A9rique-avec-des-codes-d-activation-',
+        linkTitle: 'Comment gérer les codes d’activation ?',
+      },
+    ]
   }
 
   const submitActivationCodes = useCallback(
@@ -329,7 +338,12 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         <SynchronizedProviderInformation providerName={providerName} />
       )}
       <FormLayout>
-        <FormLayout.Section title="Stock & Prix" description={description}>
+        <FormLayout.Section
+          title="Stock & Prix"
+          description={description}
+          links={links}
+          descriptionAsBanner={mode === OFFER_WIZARD_MODE.EDITION}
+        >
           <form onSubmit={formik.handleSubmit}>
             <StockThingFormRow
               Form={renderStockForm()}
