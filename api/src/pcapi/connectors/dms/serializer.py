@@ -20,6 +20,7 @@ DMS_ACTIVITY_ENUM_MAPPING = {
     "Etudiant": users_models.ActivityEnum.STUDENT.value,
     "Employé": users_models.ActivityEnum.EMPLOYEE.value,
     "En recherche d'emploi ou chômeur": users_models.ActivityEnum.UNEMPLOYED.value,
+    "Chômeur, En recherche d'emploi": users_models.ActivityEnum.UNEMPLOYED.value,
     "Inactif (ni en emploi ni au chômage), En incapacité de travailler": users_models.ActivityEnum.INACTIVE.value,
     "Apprenti": users_models.ActivityEnum.APPRENTICE.value,
     "Alternant": users_models.ActivityEnum.APPRENTICE_STUDENT.value,
