@@ -1462,9 +1462,11 @@ def list_offerers_to_be_validated(
                 )
             )
 
-    return _apply_query_filters(
+    query = _apply_query_filters(
         query, tags, status, from_datetime, to_datetime, offerers_models.Offerer, offerers_models.Offerer.id
     )
+
+    return query.distinct()
 
 
 def is_top_actor(offerer: offerers_models.Offerer) -> bool:

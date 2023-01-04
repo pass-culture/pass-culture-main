@@ -764,6 +764,9 @@ class ListOfferersToValidateTest:
 
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_list_search_by_city(self, authenticated_client, offerers_to_be_validated):
+            # Ensure that outerjoin does not cause too many rows returned
+            offerers_factories.UserOffererFactory.create_batch(3, offerer=offerers_to_be_validated[1])
+
             # Search "quimper" => results include "Quimper" and "Quimperlé"
             # when
             with assert_no_duplicated_queries():
@@ -775,6 +778,7 @@ class ListOfferersToValidateTest:
             assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"B", "D"}
+            assert html_parser.extract_pagination_info(response.data) == (1, 1, 2)
 
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         @pytest.mark.parametrize("num_digits", [1, 4, 6, 7, 8, 10])
