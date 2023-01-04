@@ -1,14 +1,16 @@
+import { useField } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { Field, useField } from 'react-final-form'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
+import { ReactComponent as ValidCircleIcon } from 'icons/ico-valid.svg'
 import { ReactComponent as ValidIcon } from 'icons/ico-valide-cercle.svg'
+import { ButtonLink } from 'ui-kit/Button'
 import Button from 'ui-kit/Button/Button'
-import Icon from 'ui-kit/Icon/Icon'
-import { Banner } from 'ui-kit/index'
+import { Select } from 'ui-kit/form'
+import { Banner, Title } from 'ui-kit/index'
 
 import styles from './PricingPoint.module.scss'
 
@@ -30,14 +32,14 @@ const PricingPoint = ({
   const [isConfirmSiretDialogOpen, setIsConfirmSiretDialogOpen] =
     useState(false)
   const [isBannerVisible, setIsBannerVisible] = useState(true)
-  const pricingPointSelectField = useField('venueSiret')
+  const [pricingPointSelectField] = useField({ name: 'venueSiret' })
 
   useEffect(() => {
-    setCanSubmit(!pricingPointSelectField.input.value)
-  }, [pricingPointSelectField.input.value])
+    setCanSubmit(!pricingPointSelectField.value)
+  }, [pricingPointSelectField.value])
 
   const handleClick = async () => {
-    const pricingPointId = pricingPointSelectField.input.value
+    const pricingPointId = pricingPointSelectField.value
     if (venue?.id) {
       api
         .linkVenueToPricingPoint(venue.id, {
@@ -51,11 +53,25 @@ const PricingPoint = ({
         })
     }
   }
+  const pricingPointOptions = [
+    { value: '', label: 'Sélectionner un lieu dans la liste' },
+  ]
+
+  offerer.managedVenues
+    ?.filter(venue => venue.siret)
+    .forEach(venue =>
+      pricingPointOptions.push({
+        value: venue.nonHumanizedId.toString(),
+        label: `${venue.publicName || venue.name} - ${venue.siret}`,
+      })
+    )
 
   return (
-    <div className="section vp-content-section bank-information">
+    <>
       <div className="main-list-title">
-        <h3 className={`${styles['title']}`}>Barème de remboursement</h3>
+        <Title as="h3" className="sub-title" level={4}>
+          Barème de remboursement
+        </Title>
       </div>
       {!readOnly && !venue.pricingPoint && isBannerVisible && (
         <Banner
@@ -78,30 +94,31 @@ const PricingPoint = ({
 
       {isConfirmSiretDialogOpen && (
         <ConfirmDialog
-          cancelText={'Annuler'}
-          confirmText={'Valider ma sélection'}
+          cancelText="Annuler"
+          confirmText="Valider ma sélection"
           onCancel={() => {
             setIsConfirmSiretDialogOpen(false)
           }}
           onConfirm={handleClick}
           icon={ValidIcon}
-          title={`Êtes-vous sûr de vouloir sélectionner`}
-          secondTitle={'ce lieu avec SIRET\u00a0?'}
+          title="Êtes-vous sûr de vouloir sélectionner"
+          secondTitle={`ce lieu avec SIRET\u00a0?`}
         >
           <p className={styles['text-dialog']}>
             Vous avez sélectionné un lieu avec SIRET qui sera utilisé pour le
-            calcul de votre barème de remboursement. <br />
+            calcul de vos remboursements
+            <br />
             Ce choix ne pourra pas être modifié.
           </p>
-          <a
-            className={`bi-link tertiary-link`}
-            href="https://aide.passculture.app/hc/fr/sections/4411991876241-Modalités-de-remboursements"
-            rel="noopener noreferrer"
-            target="_blank"
+          <ButtonLink
+            Icon={ExternalSiteIcon}
+            link={{
+              to: 'https://aide.passculture.app/hc/fr/sections/4411991876241-Modalités-de-remboursements',
+              isExternal: true,
+            }}
           >
-            <Icon svg={'ico-external-site-filled'} />
             En savoir plus sur les remboursements
-          </a>
+          </ButtonLink>
         </ConfirmDialog>
       )}
 
@@ -113,39 +130,23 @@ const PricingPoint = ({
           ci-dessous le lieu avec SIRET :
         </p>
       )}
-      <div className="venue-label-label" id="venue-label">
-        <span>
-          Lieu avec SIRET utilisé pour le calcul de votre barème de
-          remboursement
-        </span>
-      </div>
-      <div className={styles['dropDown-container']}>
-        <div className="control control-select">
-          <div className={`${styles['select']} select`}>
-            <Field
-              disabled={
-                venue.pricingPoint?.id ? true : isInputDisabled || readOnly
-              }
-              component="select"
-              id="venue-siret"
-              name="venueSiret"
-              data-testid={'pricingPointSelect'}
-              defaultValue={venue.pricingPoint?.id}
-            >
-              <option value="">Sélectionner un lieu dans la liste</option>
-              {offerer.managedVenues?.map(
-                venue =>
-                  venue?.siret && (
-                    <option
-                      key={`venue-type-${venue.siret}`}
-                      value={venue.nonHumanizedId}
-                    >
-                      {`${venue.publicName || venue.name} - ${venue?.siret}`}
-                    </option>
-                  )
-              )}
-            </Field>
-          </div>
+
+      <div className={styles['dropdown-container']}>
+        <div className={`${styles['select']}`}>
+          <Select
+            disabled={
+              venue.pricingPoint?.id ? true : isInputDisabled || readOnly
+            }
+            id="venueSiret"
+            name="venueSiret"
+            data-testid={'pricingPointSelect'}
+            defaultValue={venue.pricingPoint ? venue.pricingPoint?.id : ''}
+            label={
+              'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement'
+            }
+            options={pricingPointOptions}
+            hideFooter
+          />
         </div>
         {!readOnly && !isInputDisabled && !venue.pricingPoint && (
           <Button
@@ -158,7 +159,7 @@ const PricingPoint = ({
         )}
         {!readOnly && isInputDisabled && (
           <>
-            <Icon className={styles['space-left']} svg="ico-valid" />
+            <ValidCircleIcon className={styles['space-left']} />
             <p
               className={styles['space-text-left']}
               data-testid={'validationText'}
@@ -168,7 +169,7 @@ const PricingPoint = ({
           </>
         )}
       </div>
-    </div>
+    </>
   )
 }
 
