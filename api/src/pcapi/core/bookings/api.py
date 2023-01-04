@@ -22,6 +22,7 @@ from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
 import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.mails.transactional as transactional_mails
@@ -197,11 +198,11 @@ def _cancel_booking(
     with transaction():
         stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
         db.session.refresh(booking)
-        finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
         try:
+            finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
             booking.cancel_booking(reason, cancel_even_if_used)
             _cancel_external_booking(booking, stock)
-        except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
+        except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled, finance_exceptions.NonCancellablePricingError) as e:
             if raise_if_error:
                 raise
             logger.info(
