@@ -1152,6 +1152,45 @@ class GetEventTest:
         }
 
     @pytest.mark.usefixtures("db_session")
+    def test_get_show_offer_without_show_type(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(
+            subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
+            venue__managingOfferer=api_key.offerer,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/events/{event_offer.id}"
+        )
+        assert response.status_code == 200
+        assert response.json["categoryRelatedFields"] == {
+            "author": None,
+            "category": "SPECTACLE_REPRESENTATION",
+            "performer": None,
+            "showType": "OTHER",
+            "stageDirector": None,
+        }
+
+    @pytest.mark.usefixtures("db_session")
+    def test_get_music_offer_without_music_type(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(
+            subcategoryId=subcategories.CONCERT.id,
+            venue__managingOfferer=api_key.offerer,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/events/{event_offer.id}"
+        )
+        assert response.status_code == 200
+        assert response.json["categoryRelatedFields"] == {
+            "author": None,
+            "category": "CONCERT",
+            "performer": None,
+            "musicType": "OTHER",
+        }
+
+    @pytest.mark.usefixtures("db_session")
     def test_ticket_collection_by_email(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(

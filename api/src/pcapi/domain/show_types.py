@@ -15,6 +15,8 @@ class ShowType:
     label: str
 
 
+OTHER_SHOW_TYPE_SLUG = "OTHER"
+
 # WARNING: the list below MUST be kept in sync with the list at pro/src/core/Offers/categoriesSubTypes.ts
 show_types = [
     ShowType(
@@ -169,7 +171,7 @@ show_types = [
         code=-1,
         label="Autre",
         children=[
-            ShowSubType(code=-1, label="Autre", slug="OTHER"),
+            ShowSubType(code=-1, label="Autre", slug=OTHER_SHOW_TYPE_SLUG),
         ],
     ),
 ]
