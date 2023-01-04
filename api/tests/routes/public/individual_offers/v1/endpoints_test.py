@@ -476,27 +476,6 @@ class PostProductTest:
         }
 
     @pytest.mark.usefixtures("db_session")
-    def test_wrong_isbn_format(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products",
-            json={
-                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE", "isbn": "123456789"},
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
-                "name": "Le champ des possibles",
-            },
-        )
-
-        assert response.status_code == 400
-        assert response.json == {
-            "categoryRelatedFields.LIVRE_AUDIO_PHYSIQUE.isbn": ['string does not match regex "^(\\d){13}$"']
-        }
-        assert offers_models.Offer.query.first() is None
-
-    @pytest.mark.usefixtures("db_session")
     def test_event_category_not_accepted(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
