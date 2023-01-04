@@ -23,7 +23,11 @@ $time-line-width: rem.torem(2px);
   height: $icon-size;
   background-color: colors.$white;
   top: $vertical-offset-icon-from-step;
-  left: -($margin-between-content-and-time-line + $icon-size / 2);
+
+  // Multiply by -1 at the end because calc() syntax doesn't accept - at the start
+  left: calc(
+    (#{$margin-between-content-and-time-line} + #{$icon-size} / 2) * -1
+  );
 }
 
 .icon-error path {
@@ -33,15 +37,21 @@ $time-line-width: rem.torem(2px);
 .step {
   position: relative;
   margin-bottom: $margin-between-steps;
-  margin-left: $icon-size / 2 + $margin-between-content-and-time-line;
+  margin-left: calc(
+    #{$icon-size} / 2 + #{$margin-between-content-and-time-line}
+  );
 
   &::after {
     content: "";
     border-width: 0 0 0 $time-line-width;
     position: absolute;
     top: $vertical-offset-icon-from-step;
-    left: -($margin-between-content-and-time-line + $time-line-width / 2);
-    height: calc(100% + $margin-between-steps);
+
+    // Multiply by -1 at the end because calc() syntax doesn't accept - at the start
+    left: calc(
+      (#{$margin-between-content-and-time-line} + #{$time-line-width} / 2) * -1
+    );
+    height: calc(100% + #{$margin-between-steps});
   }
 }
 
