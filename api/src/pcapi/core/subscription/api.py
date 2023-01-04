@@ -812,12 +812,11 @@ def _get_subscription_message(
     if not fraud_check:
         return None
 
-    is_retryable = _is_retryable(fraud_check)
     match fraud_check.type:
         case fraud_models.FraudCheckType.DMS:
             return dms_subscription_api.get_dms_subscription_message(fraud_check)
         case fraud_models.FraudCheckType.UBBLE:
-            return ubble_subscription_api.get_ubble_subscription_message(fraud_check, is_retryable)
+            return ubble_subscription_api.get_ubble_subscription_message(fraud_check)
         case fraud_models.FraudCheckType.EDUCONNECT:
             return educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
         case _:
