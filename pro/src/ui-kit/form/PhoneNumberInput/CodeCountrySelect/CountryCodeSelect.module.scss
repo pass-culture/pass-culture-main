@@ -22,6 +22,7 @@ $text-padding-left: calc(
   border-radius:
     rem.torem(forms.$input-border-radius) 0 0
     rem.torem(forms.$input-border-radius);
+  margin: 0 rem.torem(1px);
 
   &:focus,
   &:focus-within {
@@ -30,7 +31,8 @@ $text-padding-left: calc(
       rem.torem(forms.$input-border-radius) 0 0
       rem.torem(forms.$input-border-radius);
     background-color: transparent;
-
+    margin: rem.torem(-1px) 0;
+    
     .select-input {
       height: calc(#{$input-height} - #{$focus-border-width});
       min-height: calc(#{$input-height} - #{$focus-border-width});
