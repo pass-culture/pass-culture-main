@@ -37,11 +37,11 @@ class CreateVenueProviderTest:
         assert not providers_models.VenueProvider.query.first()
 
     @pytest.mark.parametrize(
-        "venue_type, provider_is_active, provider_enabled_for_pro, is_permanent",
+        "venue_type, is_permanent",
         (
-            (offerers_models.VenueTypeCode.BOOKSTORE, True, True, True),
-            (offerers_models.VenueTypeCode.MOVIE, True, True, True),
-            (offerers_models.VenueTypeCode.DIGITAL, True, True, False),
+            (offerers_models.VenueTypeCode.BOOKSTORE, True),
+            (offerers_models.VenueTypeCode.MOVIE, True),
+            (offerers_models.VenueTypeCode.DIGITAL, False),
         ),
     )
     @patch(
@@ -52,16 +52,14 @@ class CreateVenueProviderTest:
         self,
         _unused_mock,
         venue_type,
-        provider_is_active,
-        provider_enabled_for_pro,
         is_permanent,
         db_session,
     ):
         # Given
         venue = offerers_factories.VenueFactory(venueTypeCode=venue_type)
         provider = providers_factories.ProviderFactory(
-            enabledForPro=provider_enabled_for_pro,
-            isActive=provider_is_active,
+            enabledForPro=True,
+            isActive=True,
             apiUrl="https://example.com/api",
             localClass=None,
         )
