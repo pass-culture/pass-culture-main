@@ -201,9 +201,8 @@ def check_event_expiration(stock: CollectiveStock | Stock) -> None:
         raise api_errors
 
 
-def check_stock_is_deletable(stock: Stock, deleting_provider: providers_models.Provider | None = None) -> None:
+def check_stock_is_deletable(stock: Stock) -> None:
     check_validation_status(stock.offer)
-    check_provider_can_edit_stock(stock.offer, deleting_provider)
     if not stock.isEventDeletable:
         raise exceptions.TooLateToDeleteStock()
 
