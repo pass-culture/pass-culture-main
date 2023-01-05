@@ -42,8 +42,10 @@ const Banner = ({
         target: link.targetLink || '_blank',
         rel: 'noopener noreferrer',
       }}
-      /* istanbul ignore next: DEBT to fix */
-      Icon={link.hideLinkIcon ? undefined : link.Icon || ExternalSiteIcon}
+      Icon={
+        /* istanbul ignore next: DEBT to fix */
+        link.hideLinkIcon ? undefined : link.Icon || ExternalSiteIcon
+      }
       className={styles['bi-link']}
     >
       {link.linkTitle}
