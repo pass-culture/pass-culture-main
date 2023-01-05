@@ -1,16 +1,14 @@
-<div class="form-floating" >
-    <select multiple class="form-select" id="{{ field.name }}" name="{{ field.name }}" size="2" style="min-height: 8rem;border-radius: 1rem!important;">
+<div class="form-floating">
+    <select multiple class="form-select pc-select" id="{{ field.name }}" name="{{ field.name }}" size="2"
+            style="border-radius: 1rem!important;">
         {% for value, label, selected in field.iter_choices() %}
             <option value="{{ value }}" {{ "selected" if selected else "" }}>
                 {{ label | i18n_public_account }}
             </option>
         {% endfor %}
     </select>
-    <label for="{{ field.name }}" id="{{ field.name }}-label"> {{ field.label }}</label>
+    <label class="pc-select-label" for="{{ field.name }}" id="{{ field.name }}-label"> {{ field.label }}</label>
 </div>
-
-
-
 
 {% block scripts %}
     <script>
@@ -18,7 +16,6 @@
             e.preventDefault()
             var select = this;
             var scroll = select.scrollTop;
-
 
             e.target.selected = !e.target.selected
             setTimeout(function () {
@@ -29,16 +26,22 @@
         document.getElementById('{{ field.name }}').onmousemove = function (e) {
             e.preventDefault();
         };
-        document.getElementById('{{ field.name }}').onscroll = function () {
-            var select = this;
-            var scroll = select.scrollTop;
-            const label = document.querySelector('label#{{ field.name }}-label');
-            if (scroll > 0) {
-                label.classList.add('is-hidden')
-            } else {
-                label.classList.remove('is-hidden')
-            }
-        }
+
+       ['change', 'scroll'].forEach(function (event) {
+            document.getElementById('{{field.name}}').addEventListener(event, () => {
+                var select = document.getElementById('{{field.name}}')
+                var selected = [...select.options]
+                    .filter(option => option.selected)
+                const label = document.querySelector('label#{{ field.name }}-label');
+
+                if (selected.length > 0) {
+                    label.classList.add('is-hidden')
+                } else {
+                    label.classList.remove('is-hidden')
+                }
+            })
+        })
+
     </script>
 {% endblock %}
 
@@ -47,5 +50,6 @@
         .is-hidden {
             display: none;
         }
+
     </style>
 {% endblock %}
