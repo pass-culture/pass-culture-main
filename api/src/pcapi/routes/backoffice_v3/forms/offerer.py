@@ -39,10 +39,12 @@ class OffererValidationListForm(FlaskForm):
     )
 
     def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
-        if q.data and q.data.isnumeric() and len(q.data) not in (2, 3, 5, 9):
-            raise wtforms.validators.ValidationError(
-                "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
-            )
+        if q.data:
+            q.data = q.data.strip()
+            if q.data.isnumeric() and len(q.data) not in (2, 3, 5, 9):
+                raise wtforms.validators.ValidationError(
+                    "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
+                )
         return q
 
 
@@ -73,8 +75,10 @@ class UserOffererValidationListForm(FlaskForm):
     )
 
     def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
-        if q.data and q.data.isnumeric() and len(q.data) != 9:
-            raise wtforms.validators.ValidationError("Le nombre de chiffres ne correspond pas à un SIREN")
+        if q.data:
+            q.data = q.data.strip()
+            if q.data.isnumeric() and len(q.data) != 9:
+                raise wtforms.validators.ValidationError("Le nombre de chiffres ne correspond pas à un SIREN")
         return q
 
 
