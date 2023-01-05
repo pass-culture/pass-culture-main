@@ -13,8 +13,8 @@ const Welcome = ({
     <section className={contentClassName}>
       <div className={styles['tw-description']}>
         Le pass Culture est une politique culturelle publique permettant aux
-        jeunes âgés de 18 ans de bénéficier d’une enveloppe de 300€ utilisable
-        pour réserver vos offres.
+        jeunes âgés de 15 à 18 ans de bénéficier d’une enveloppe de 300€
+        utilisable pour réserver vos offres.
       </div>
       <div className={styles['tw-strong']}>
         Pour mettre en avant vos offres, rien de plus simple !
