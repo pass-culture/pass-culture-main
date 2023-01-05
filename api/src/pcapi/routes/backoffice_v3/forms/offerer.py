@@ -83,7 +83,7 @@ class CommentForm(FlaskForm):
 
 
 class OptionalCommentForm(FlaskForm):
-    comment = fields.PCOptStringField("Commentaire interne")
+    comment = fields.PCOptCommentField("Commentaire interne")
 
 
 class TopActorForm(FlaskForm):
