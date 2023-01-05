@@ -154,19 +154,6 @@ class CheckStockCanBeCreatedForOfferTest:
 
 @pytest.mark.usefixtures("db_session")
 class CheckStockIsDeletableTest:
-    def test_approved_offer(self):
-        offer = offers_factories.OfferFactory()
-        stock = offers_factories.StockFactory(offer=offer)
-
-        validation.check_stock_is_deletable(stock)
-
-    def test_allocine_offer(self):
-        provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
-        offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
-        stock = offers_factories.StockFactory(offer=offer)
-
-        validation.check_stock_is_deletable(stock)
-
     def test_non_approved_offer(self):
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         stock = offers_factories.StockFactory(offer=offer)
@@ -177,16 +164,6 @@ class CheckStockIsDeletableTest:
         assert error.value.errors["global"] == [
             "Les offres refusées ou en attente de validation ne sont pas modifiables"
         ]
-
-    def test_offer_from_non_allocine_provider(self):
-        provider = providers_factories.APIProviderFactory()
-        offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
-        stock = offers_factories.StockFactory(offer=offer)
-
-        with pytest.raises(ApiErrors) as error:
-            validation.check_stock_is_deletable(stock)
-
-        assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
     def test_recently_begun_event_stock(self):
         recently = datetime.datetime.utcnow() - datetime.timedelta(days=1)
