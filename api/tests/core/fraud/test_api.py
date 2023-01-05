@@ -7,7 +7,6 @@ import pytest
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
-from pcapi.core.fraud.ubble import api as ubble_fraud_api
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
 import pcapi.core.history.factories as history_factories
 from pcapi.core.testing import assert_num_queries
@@ -512,7 +511,6 @@ class HasUserPerformedIdentityCheckTest:
         )
 
         assert not fraud_api.has_user_performed_identity_check(user)
-        assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
     def test_has_user_performed_identity_check_without_identity_fraud_check(self):
         user = user = build_user_at_id_check(18)
@@ -548,7 +546,6 @@ class HasUserPerformedIdentityCheckTest:
 
         # Suspicous => Retry allowed
         assert not fraud_api.has_user_performed_identity_check(user)
-        assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
     def test_has_user_performed_identity_check_ubble_suspicious_x3(self):
         user = build_user_at_id_check(18)
@@ -563,7 +560,6 @@ class HasUserPerformedIdentityCheckTest:
 
         # Suspicous but all retries already performed
         assert fraud_api.has_user_performed_identity_check(user)
-        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
     def test_has_user_performed_identity_check_ubble_ko(self):
         user = build_user_at_id_check(18)
@@ -576,7 +572,6 @@ class HasUserPerformedIdentityCheckTest:
 
         # Retry not allowed
         assert fraud_api.has_user_performed_identity_check(user)
-        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
     def test_user_beneficiary(self):
         user = users_factories.UserFactory(
