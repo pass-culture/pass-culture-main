@@ -68,6 +68,34 @@ class YoungStatusTest:
                 subscription_status=young_status.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
             )
 
+        @pytest.mark.parametrize("age", [15, 16, 17])
+        def should_have_subscription_pending_when_dms_is_started_for_underage(self, age):
+            user = users_factories.UserFactory(
+                dateOfBirth=_with_age(age), phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                status=fraud_models.FraudCheckStatus.OK,
+                type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+                user=user,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                status=fraud_models.FraudCheckStatus.STARTED,
+                type=fraud_models.FraudCheckType.DMS,
+                user=user,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                status=fraud_models.FraudCheckStatus.OK,
+                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+                user=user,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
+
+            assert young_status.young_status(user) == young_status.Eligible(
+                subscription_status=young_status.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
+            )
+
         def should_have_subscription_pending_when_dms_is_started(self):
             user = users_factories.UserFactory(
                 dateOfBirth=_with_age(18), phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
