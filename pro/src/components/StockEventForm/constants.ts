@@ -22,3 +22,10 @@ export const STOCK_EVENT_ALLOCINE_READ_ONLY_FIELDS = [
   'beginningDate',
   'beginningTime',
 ]
+
+// 'quantity', 'bookingLimitDatetime' are editable
+export const STOCK_EVENT_CINEMA_PROVIDER_READ_ONLY_FIELDS = [
+  'beginningDate',
+  'beginningTime',
+  'price',
+]

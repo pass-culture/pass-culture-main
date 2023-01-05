@@ -13,6 +13,14 @@ export const isAllocineProviderName = (
 }
 
 /* istanbul ignore next: DEBT, TO FIX */
+export const isCinemaProviderName = (providerName: string | null): boolean => {
+  if (providerName === null) {
+    return false
+  }
+  return CINEMA_PROVIDER_NAMES.includes(providerName.toLowerCase())
+}
+
+/* istanbul ignore next: DEBT, TO FIX */
 export const isAllocineProvider = (
   provider?: IOfferIndividualVenueProvider | null
 ): boolean => {
@@ -29,5 +37,5 @@ export const isCinemaProvider = (
   if (!provider) {
     return false
   }
-  return CINEMA_PROVIDER_NAMES.includes(provider.name.toLowerCase())
+  return isCinemaProviderName(provider.name)
 }
