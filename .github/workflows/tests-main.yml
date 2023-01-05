@@ -1,4 +1,5 @@
-name: Tests main
+name: Test main
+run-name: Test main${{ github.ref == 'refs/heads/master' && ' and deploy to testing' || '' }}
 on:
   push:
     branches-ignore:
