@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
 import { render, screen, waitFor } from '@testing-library/react'
+import { Formik } from 'formik'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Form } from 'react-final-form'
@@ -16,9 +17,13 @@ const renderReimbursementFields = async (props, store) => {
   const rtlReturn = render(
     <Router history={createBrowserHistory()}>
       <Provider store={store}>
-        <Form onSubmit={() => {}}>
-          {() => <ReimbursementFields {...props} />}
-        </Form>
+        <Formik onSubmit={() => {}} initialValues={{}}>
+          {({ handleSubmit }) => (
+            <Form onSubmit={handleSubmit}>
+              {() => <ReimbursementFields {...props} />}
+            </Form>
+          )}
+        </Formik>
       </Provider>
     </Router>
   )
