@@ -432,12 +432,16 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
     # Step 5: identity check
     relevant_fraud_check = get_relevant_identity_fraud_check(user, user.eligibility)
     identity_check_fraud_status = get_identity_check_fraud_status(user, user.eligibility, relevant_fraud_check)
-    subscription_message = _get_subscription_message(user=user, fraud_check=relevant_fraud_check)
-
-    id_check_next_step = (
-        models.SubscriptionStep.MAINTENANCE
-        if not get_allowed_identity_check_methods(user)
-        else models.SubscriptionStep.IDENTITY_CHECK
+    allowed_identity_check_methods = get_allowed_identity_check_methods(user)
+    next_step: models.SubscriptionStep | None = (
+        models.SubscriptionStep.IDENTITY_CHECK
+        if len(allowed_identity_check_methods) > 0
+        else models.SubscriptionStep.MAINTENANCE
+    )
+    subscription_message = (
+        _get_subscription_message(relevant_fraud_check)
+        if len(allowed_identity_check_methods) > 0
+        else subscription_messages.MAINTENANCE_PAGE_MESSAGE
     )
 
     if identity_check_fraud_status in [models.SubscriptionItemStatus.KO, models.SubscriptionItemStatus.SUSPICIOUS]:
@@ -445,7 +449,6 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
             relevant_fraud_check is not None
         )  # mypy. This is not None if identity_check_fraud_status is KO or SUSPICIOUS (see get_identity_check_fraud_status)
         if can_retry_identity_fraud_check(relevant_fraud_check):
-            next_step = id_check_next_step
             identity_check_fraud_status = models.SubscriptionItemStatus.TODO
         else:
             next_step = None
@@ -465,7 +468,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
             fraud_check=relevant_fraud_check,
             fraud_status=identity_check_fraud_status,
             subscription_message=subscription_message,
-            next_step=id_check_next_step,
+            next_step=next_step,
             young_status=young_status_module.Eligible(
                 subscription_status=young_status_module.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
             ),
@@ -817,12 +820,9 @@ def get_first_registration_date(
 
 
 def _get_subscription_message(
-    user: users_models.User, fraud_check: fraud_models.BeneficiaryFraudCheck | None
+    fraud_check: fraud_models.BeneficiaryFraudCheck | None,
 ) -> models.SubscriptionMessage | None:
     """The subscription message is meant to help the user have information about the subscription status."""
-    if not get_allowed_identity_check_methods(user):
-        return subscription_messages.MAINTENANCE_PAGE_MESSAGE
-
     if not fraud_check:
         return None
 
