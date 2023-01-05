@@ -255,7 +255,7 @@ const Summary = (
         >
           <p>Vous pouvez dès à présent renseigner des coordonnées bancaires.</p>
           <p>
-            Vos remboursement seront rétroactifs une fois vos coordonnées
+            Vos remboursements seront rétroactifs une fois vos coordonnées
             bancaires ajoutées.
           </p>
         </RedirectDialog>
