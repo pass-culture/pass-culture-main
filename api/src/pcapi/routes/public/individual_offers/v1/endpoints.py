@@ -259,7 +259,10 @@ def post_event_offer(
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates", methods=["POST"])
 @spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG], response_model=serialization.PostDatesResponse)
 @api_key_required
-def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
+@public_utils.individual_offers_api_provider
+def post_event_dates(
+    individual_offers_provider: providers_models.Provider, event_id: int, body: serialization.DatesCreation
+) -> serialization.PostDatesResponse:
     """
     Add dates to an event offer.
     """
@@ -278,6 +281,7 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
                         quantity=date.quantity if date.quantity != "unlimited" else None,
                         beginning_datetime=date.beginning_datetime,
                         booking_limit_datetime=date.booking_limit_datetime,
+                        creating_provider=individual_offers_provider,
                     )
                 )
     except offers_exceptions.OfferCreationBaseException as error:

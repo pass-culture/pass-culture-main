@@ -14,6 +14,8 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers import constants as providers_constants
+from pcapi.core.providers import repository as providers_repository
 from pcapi.models import offer_mixin
 from pcapi.utils import human_ids
 
@@ -893,7 +895,12 @@ class PostDatesTest:
     @pytest.mark.usefixtures("db_session")
     def test_new_dates_are_added(self, client):
         api_key = offerers_factories.ApiKeyFactory()
-        event_offer = offers_factories.EventOfferFactory(venue__managingOfferer=api_key.offerer)
+        individual_offers_provider = providers_repository.get_provider_by_local_class(
+            providers_constants.INDIVIDUAL_OFFERS_API_FAKE_CLASS_NAME
+        )
+        event_offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=api_key.offerer, lastProvider=individual_offers_provider
+        )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             f"/public/offers/v1/events/{event_offer.id}/dates",
