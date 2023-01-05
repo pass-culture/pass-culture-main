@@ -213,8 +213,6 @@ def _generate_storable_picture_filename(
 def get_ubble_subscription_message(
     ubble_fraud_check: fraud_models.BeneficiaryFraudCheck,
 ) -> subscription_models.SubscriptionMessage | None:
-    is_retryable = subscription_api.can_retry_fraud_check(ubble_fraud_check)
-
     if ubble_fraud_check.status == fraud_models.FraudCheckStatus.PENDING:
         return messages.get_application_pending_message(ubble_fraud_check.updatedAt)
 
@@ -223,7 +221,7 @@ def get_ubble_subscription_message(
         fraud_models.FraudCheckStatus.KO,
         fraud_models.FraudCheckStatus.ERROR,
     ):
-        if is_retryable:
+        if subscription_api.can_retry_identity_fraud_check(ubble_fraud_check):
             return messages.get_ubble_retryable_message(
                 ubble_fraud_check.reasonCodes or [], ubble_fraud_check.updatedAt
             )

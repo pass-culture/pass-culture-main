@@ -258,20 +258,21 @@ def get_identity_check_fraud_status(
     return models.SubscriptionItemStatus.VOID
 
 
-def can_retry_fraud_check(fraud_check: fraud_models.BeneficiaryFraudCheck) -> bool:
-    match fraud_check.type:
+def can_retry_identity_fraud_check(identity_fraud_check: fraud_models.BeneficiaryFraudCheck) -> bool:
+    match identity_fraud_check.type:
         case fraud_models.FraudCheckType.EDUCONNECT:
             return True
 
         case fraud_models.FraudCheckType.UBBLE:
-            if not fraud_check.reasonCodes or not all(
-                code in ubble_constants.RESTARTABLE_FRAUD_CHECK_REASON_CODES for code in fraud_check.reasonCodes
+            if not identity_fraud_check.reasonCodes or not all(
+                code in ubble_constants.RESTARTABLE_FRAUD_CHECK_REASON_CODES
+                for code in identity_fraud_check.reasonCodes
             ):
                 return False
             ubble_attempts_count = fraud_models.BeneficiaryFraudCheck.query.filter(
-                fraud_models.BeneficiaryFraudCheck.userId == fraud_check.userId,
+                fraud_models.BeneficiaryFraudCheck.userId == identity_fraud_check.userId,
                 fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
-                fraud_models.BeneficiaryFraudCheck.eligibilityType == fraud_check.eligibilityType,
+                fraud_models.BeneficiaryFraudCheck.eligibilityType == identity_fraud_check.eligibilityType,
                 ~fraud_models.BeneficiaryFraudCheck.status.in_(
                     [fraud_models.FraudCheckStatus.CANCELED, fraud_models.FraudCheckStatus.STARTED]
                 ),
@@ -443,7 +444,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
         assert (
             relevant_fraud_check is not None
         )  # mypy. This is not None if identity_check_fraud_status is KO or SUSPICIOUS (see get_identity_check_fraud_status)
-        if can_retry_fraud_check(relevant_fraud_check):
+        if can_retry_identity_fraud_check(relevant_fraud_check):
             next_step = id_check_next_step
             identity_check_fraud_status = models.SubscriptionItemStatus.TODO
         else:
