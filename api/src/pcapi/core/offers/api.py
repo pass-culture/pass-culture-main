@@ -252,23 +252,23 @@ def _initialize_offer_with_new_data(
 
 def update_offer(
     offer: Offer,
-    bookingEmail: str = UNCHANGED,  # type: ignore [assignment]
-    description: str = UNCHANGED,  # type: ignore [assignment]
+    bookingEmail: str | None = UNCHANGED,  # type: ignore [assignment]
+    description: str | None = UNCHANGED,  # type: ignore [assignment]
     isNational: bool = UNCHANGED,  # type: ignore [assignment]
     name: str = UNCHANGED,  # type: ignore [assignment]
-    extraData: dict = UNCHANGED,  # type: ignore [assignment]
-    externalTicketOfficeUrl: str = UNCHANGED,  # type: ignore [assignment]
-    url: str = UNCHANGED,  # type: ignore [assignment]
-    withdrawalDetails: str = UNCHANGED,  # type: ignore [assignment]
-    withdrawalType: WithdrawalTypeEnum = UNCHANGED,  # type: ignore [assignment]
-    withdrawalDelay: int = UNCHANGED,  # type: ignore [assignment]
+    extraData: dict | None = UNCHANGED,  # type: ignore [assignment]
+    externalTicketOfficeUrl: str | None = UNCHANGED,  # type: ignore [assignment]
+    url: str | None = UNCHANGED,  # type: ignore [assignment]
+    withdrawalDetails: str | None = UNCHANGED,  # type: ignore [assignment]
+    withdrawalType: WithdrawalTypeEnum | None = UNCHANGED,  # type: ignore [assignment]
+    withdrawalDelay: int | None = UNCHANGED,  # type: ignore [assignment]
     isActive: bool = UNCHANGED,  # type: ignore [assignment]
     isDuo: bool = UNCHANGED,  # type: ignore [assignment]
-    durationMinutes: int = UNCHANGED,  # type: ignore [assignment]
-    mediaUrls: list[str] = UNCHANGED,  # type: ignore [assignment]
-    ageMin: int = UNCHANGED,  # type: ignore [assignment]
-    ageMax: int = UNCHANGED,  # type: ignore [assignment]
-    conditions: str = UNCHANGED,  # type: ignore [assignment]
+    durationMinutes: int | None = UNCHANGED,  # type: ignore [assignment]
+    mediaUrls: list[str] | None = UNCHANGED,  # type: ignore [assignment]
+    ageMin: int | None = UNCHANGED,  # type: ignore [assignment]
+    ageMax: int | None = UNCHANGED,  # type: ignore [assignment]
+    conditions: str | None = UNCHANGED,  # type: ignore [assignment]
     venueId: str = UNCHANGED,  # type: ignore [assignment]
     productId: str = UNCHANGED,  # type: ignore [assignment]
     audioDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
@@ -296,10 +296,7 @@ def update_offer(
             changed_withdrawalDelay = withdrawalDelay if withdrawalDelay != UNCHANGED else offer.withdrawalDelay
             validation.check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)
         except offers_exceptions.OfferCreationBaseException as error:
-            raise ApiErrors(
-                error.errors,
-                status_code=400,
-            )
+            raise ApiErrors(error.errors, status_code=400)
 
     if offer.isFromProvider:
         validation.check_update_only_allowed_fields_for_offer_from_provider(set(modifications), offer.lastProvider)
