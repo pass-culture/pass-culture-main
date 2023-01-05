@@ -431,8 +431,8 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
         )
 
     # Step 5: identity check
-    relevant_fraud_check = get_relevant_identity_fraud_check(user, user.eligibility)
-    identity_check_fraud_status = get_identity_check_fraud_status(user, user.eligibility, relevant_fraud_check)
+    relevant_identity_fraud_check = get_relevant_identity_fraud_check(user, user.eligibility)
+    identity_check_fraud_status = get_identity_check_fraud_status(user, user.eligibility, relevant_identity_fraud_check)
     allowed_identity_check_methods = get_allowed_identity_check_methods(user)
     next_step: models.SubscriptionStep | None = (
         models.SubscriptionStep.IDENTITY_CHECK
@@ -440,22 +440,22 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
         else models.SubscriptionStep.MAINTENANCE
     )
     subscription_message = (
-        _get_subscription_message(relevant_fraud_check)
+        _get_subscription_message(relevant_identity_fraud_check)
         if len(allowed_identity_check_methods) > 0
         else subscription_messages.MAINTENANCE_PAGE_MESSAGE
     )
 
     if identity_check_fraud_status in [models.SubscriptionItemStatus.KO, models.SubscriptionItemStatus.SUSPICIOUS]:
         assert (
-            relevant_fraud_check is not None
+            relevant_identity_fraud_check is not None
         )  # mypy. This is not None if identity_check_fraud_status is KO or SUSPICIOUS (see get_identity_check_fraud_status)
-        if can_retry_identity_fraud_check(relevant_fraud_check):
+        if can_retry_identity_fraud_check(relevant_identity_fraud_check):
             identity_check_fraud_status = models.SubscriptionItemStatus.TODO
         else:
             next_step = None
 
         return subscription_models.UserSubscriptionState(
-            fraud_check=relevant_fraud_check,
+            identity_fraud_check=relevant_identity_fraud_check,
             fraud_status=identity_check_fraud_status,
             subscription_message=subscription_message,
             next_step=next_step,
@@ -466,7 +466,7 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
 
     if identity_check_fraud_status == models.SubscriptionItemStatus.TODO:
         return subscription_models.UserSubscriptionState(
-            fraud_check=relevant_fraud_check,
+            identity_fraud_check=relevant_identity_fraud_check,
             fraud_status=identity_check_fraud_status,
             subscription_message=subscription_message,
             next_step=next_step,
@@ -481,7 +481,7 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
     else:
         logger.error("Unknown fraud status %s", identity_check_fraud_status)
         return subscription_models.UserSubscriptionState(
-            fraud_check=relevant_fraud_check,
+            identity_fraud_check=relevant_identity_fraud_check,
             fraud_status=identity_check_fraud_status,
             next_step=None,
             young_status=young_status_module.Eligible(
@@ -493,7 +493,7 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
     # Step 6: honor statement
     if not fraud_api.has_performed_honor_statement(user, user.eligibility):
         return subscription_models.UserSubscriptionState(
-            fraud_check=relevant_fraud_check,
+            identity_fraud_check=relevant_identity_fraud_check,
             next_step=models.SubscriptionStep.HONOR_STATEMENT,
             fraud_status=identity_check_fraud_status,
             subscription_message=None,  # The user needs no message to complete honor statement
@@ -515,7 +515,7 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
         )
 
     return subscription_models.UserSubscriptionState(
-        fraud_check=relevant_fraud_check,
+        identity_fraud_check=relevant_identity_fraud_check,
         fraud_status=identity_check_fraud_status,
         subscription_message=subscription_message,
         next_step=None,
@@ -690,24 +690,28 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
 
     if not subscription_state.is_activable:
         return False
-    if not subscription_state.fraud_check:
+    if not subscription_state.identity_fraud_check:
         return False
-    if subscription_state.fraud_check.resultContent is None:
+    if subscription_state.identity_fraud_check.resultContent is None:
         return False
     if user.eligibility is None:
         return False
 
-    duplicate_beneficiary = fraud_api.get_duplicate_beneficiary(subscription_state.fraud_check)
+    duplicate_beneficiary = fraud_api.get_duplicate_beneficiary(subscription_state.identity_fraud_check)
     if duplicate_beneficiary:
-        fraud_api.invalidate_fraud_check_for_duplicate_user(subscription_state.fraud_check, duplicate_beneficiary.id)
+        fraud_api.invalidate_fraud_check_for_duplicate_user(
+            subscription_state.identity_fraud_check, duplicate_beneficiary.id
+        )
         return False
 
-    source_data = typing.cast(common_fraud_models.IdentityCheckContent, subscription_state.fraud_check.source_data())
+    source_data = typing.cast(
+        common_fraud_models.IdentityCheckContent, subscription_state.identity_fraud_check.source_data()
+    )
     users_api.update_user_information_from_external_source(user, source_data, commit=False)
 
     try:
         activate_beneficiary_for_eligibility(
-            user, subscription_state.fraud_check.get_detailed_source(), user.eligibility
+            user, subscription_state.identity_fraud_check.get_detailed_source(), user.eligibility
         )
     except (finance_exceptions.DepositTypeAlreadyGrantedException, finance_exceptions.UserHasAlreadyActiveDeposit):
         # this error may happen on identity provider concurrent requests
