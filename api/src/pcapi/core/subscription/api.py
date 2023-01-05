@@ -13,6 +13,7 @@ import pcapi.core.fraud.repository as fraud_repository
 import pcapi.core.fraud.ubble.constants as ubble_constants
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import messages as subscription_messages
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
@@ -338,10 +339,10 @@ def get_next_subscription_step(user: users_models.User) -> models.SubscriptionSt
     return get_user_subscription_state(user).next_step
 
 
-def get_user_subscription_state(user: users_models.User) -> young_status_module.UserSubscriptionState:
+def get_user_subscription_state(user: users_models.User) -> subscription_models.UserSubscriptionState:
     # Step 1: email validation
     if not user.isEmailValidated:
-        return young_status_module.UserSubscriptionState(
+        return subscription_models.UserSubscriptionState(
             fraud_status=models.SubscriptionItemStatus.TODO,
             next_step=models.SubscriptionStep.EMAIL_VALIDATION,
             young_status=young_status_module.Eligible(
@@ -351,7 +352,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
 
     # Early return if there is an admin manual review
     if fraud_repository.has_admin_ko_review(user):
-        return young_status_module.UserSubscriptionState(
+        return subscription_models.UserSubscriptionState(
             fraud_status=models.SubscriptionItemStatus.KO,
             next_step=None,
             young_status=young_status_module.NonEligible(),
@@ -361,12 +362,12 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
     # Early return if user is beneficiary
     if user.is_beneficiary and not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
         if user.has_active_deposit:
-            return young_status_module.UserSubscriptionState(
+            return subscription_models.UserSubscriptionState(
                 fraud_status=models.SubscriptionItemStatus.OK,
                 next_step=None,
                 young_status=young_status_module.Beneficiary(),
             )
-        return young_status_module.UserSubscriptionState(
+        return subscription_models.UserSubscriptionState(
             fraud_status=models.SubscriptionItemStatus.OK,
             next_step=None,
             young_status=young_status_module.ExBeneficiary(),
@@ -374,7 +375,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
 
     # Early return if user is not eligible
     if user.eligibility is None:
-        return young_status_module.UserSubscriptionState(
+        return subscription_models.UserSubscriptionState(
             fraud_status=models.SubscriptionItemStatus.VOID,
             next_step=None,
             young_status=young_status_module.NonEligible(),
@@ -383,7 +384,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
     # Step 2: phone validation
     phone_subscription_item = get_phone_validation_subscription_item(user, user.eligibility)
     if phone_subscription_item.status == models.SubscriptionItemStatus.KO:
-        return young_status_module.UserSubscriptionState(
+        return subscription_models.UserSubscriptionState(
             fraud_status=models.SubscriptionItemStatus.KO,
             next_step=models.SubscriptionStep.PHONE_VALIDATION,
             young_status=young_status_module.Eligible(
@@ -391,7 +392,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
             ),
         )
     if phone_subscription_item.status == models.SubscriptionItemStatus.TODO:
-        return young_status_module.UserSubscriptionState(
+        return subscription_models.UserSubscriptionState(
             fraud_status=models.SubscriptionItemStatus.TODO,
             next_step=models.SubscriptionStep.PHONE_VALIDATION,
             young_status=young_status_module.Eligible(
@@ -402,7 +403,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
     # Step 3: user profiling
     user_profiling_item = get_user_profiling_subscription_item(user, user.eligibility)
     if user_profiling_item.status == models.SubscriptionItemStatus.TODO:
-        return young_status_module.UserSubscriptionState(
+        return subscription_models.UserSubscriptionState(
             fraud_status=models.SubscriptionItemStatus.TODO,
             next_step=models.SubscriptionStep.USER_PROFILING,
             young_status=young_status_module.Eligible(
@@ -410,7 +411,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
             ),
         )
     if user_profiling_item.status == models.SubscriptionItemStatus.KO:
-        return young_status_module.UserSubscriptionState(
+        return subscription_models.UserSubscriptionState(
             fraud_status=models.SubscriptionItemStatus.KO,
             next_step=None,
             young_status=young_status_module.Eligible(
@@ -421,7 +422,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
 
     # Step 4: profile completion
     if not has_completed_profile_for_given_eligibility(user, user.eligibility):
-        return young_status_module.UserSubscriptionState(
+        return subscription_models.UserSubscriptionState(
             fraud_status=models.SubscriptionItemStatus.TODO,
             next_step=models.SubscriptionStep.PROFILE_COMPLETION,
             young_status=young_status_module.Eligible(
@@ -453,7 +454,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
         else:
             next_step = None
 
-        return young_status_module.UserSubscriptionState(
+        return subscription_models.UserSubscriptionState(
             fraud_check=relevant_fraud_check,
             fraud_status=identity_check_fraud_status,
             subscription_message=subscription_message,
@@ -464,7 +465,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
         )
 
     if identity_check_fraud_status == models.SubscriptionItemStatus.TODO:
-        return young_status_module.UserSubscriptionState(
+        return subscription_models.UserSubscriptionState(
             fraud_check=relevant_fraud_check,
             fraud_status=identity_check_fraud_status,
             subscription_message=subscription_message,
@@ -479,7 +480,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
 
     else:
         logger.error("Unknown fraud status %s", identity_check_fraud_status)
-        return young_status_module.UserSubscriptionState(
+        return subscription_models.UserSubscriptionState(
             fraud_check=relevant_fraud_check,
             fraud_status=identity_check_fraud_status,
             next_step=None,
@@ -491,7 +492,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
 
     # Step 6: honor statement
     if not fraud_api.has_performed_honor_statement(user, user.eligibility):
-        return young_status_module.UserSubscriptionState(
+        return subscription_models.UserSubscriptionState(
             fraud_check=relevant_fraud_check,
             next_step=models.SubscriptionStep.HONOR_STATEMENT,
             fraud_status=identity_check_fraud_status,
@@ -513,7 +514,7 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
             ),
         )
 
-    return young_status_module.UserSubscriptionState(
+    return subscription_models.UserSubscriptionState(
         fraud_check=relevant_fraud_check,
         fraud_status=identity_check_fraud_status,
         subscription_message=subscription_message,
