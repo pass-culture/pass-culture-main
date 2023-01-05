@@ -101,7 +101,6 @@ describe('test updateIndividualOffer::serializers', () => {
         motorDisabilityCompliant: true,
         name: 'test name',
         url: 'http://my.url',
-        venueId: 'test venueId',
         visualDisabilityCompliant: true,
         withdrawalDelay: null,
         withdrawalDetails: 'test withdrawalDetails',
