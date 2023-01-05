@@ -32,6 +32,17 @@ jobs:
     uses: ./.github/workflows/tests-pro.yml
     secrets: inherit
 
+  build-api:
+    name: Build api docker image on master branch
+    needs:
+      - test-api
+    if: github.ref == 'refs/heads/master'
+    uses: ./.github/workflows/build-and-push-docker-images.yml
+    with:
+      tag: ${{ github.sha }}
+      pcapi: true
+    secrets: inherit
+
   deploy-testing:
     name: "[testing] Deployment"
     needs:
