@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { Button } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
 
 interface IButtonInvalidateTokenProps {
   onConfirm: () => void
@@ -27,9 +26,7 @@ const ButtonInvalidateToken = ({
 
   return (
     <>
-      <Button onClick={openDialog} variant={ButtonVariant.SECONDARY}>
-        Invalider la contremarque
-      </Button>
+      <Button onClick={openDialog}>Invalider la contremarque</Button>
       {isDialogOpen && (
         <ConfirmDialog
           cancelText="Annuler"
