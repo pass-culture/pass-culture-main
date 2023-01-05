@@ -9,10 +9,14 @@ from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import Pagination
 import pydantic
+import sqlalchemy as sa
 
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 import pcapi.core.subscription.api as subscription_api
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
@@ -108,6 +112,17 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
     history = users_api.public_account_history(user)
     eligibility_history = get_eligibility_history(user)
 
+    bookings = (
+        bookings_models.Booking.query.filter_by(userId=user.id)
+        .options(
+            sa.orm.joinedload(bookings_models.Booking.stock)
+            .joinedload(offers_models.Stock.offer)
+            .load_only(offers_models.Offer.id, offers_models.Offer.name)
+        )
+        .options(sa.orm.joinedload(bookings_models.Booking.offerer).load_only(offerers_models.Offerer.name))
+        .order_by(bookings_models.Booking.dateCreated.desc())
+    ).all()
+
     return render_template(
         "accounts/get.html",
         user=user,
@@ -117,6 +132,7 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
         resend_email_validation_form=empty_forms.EmptyForm(),
         send_validation_code_form=empty_forms.EmptyForm(),
         manual_validation_form=empty_forms.EmptyForm(),
+        bookings=bookings,
     )
 
 
