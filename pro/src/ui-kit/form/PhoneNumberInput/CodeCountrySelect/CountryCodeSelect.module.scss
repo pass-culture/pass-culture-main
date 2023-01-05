@@ -9,6 +9,7 @@ $icon-width: rem.torem(16px);
 $icon-padding-left: rem.torem(16px);
 $space-icon-text: rem.torem(8px);
 $focus-border-width: rem.torem(2px);
+$base-border-width: rem.torem(1px);
 $input-height: calc(
   #{size.$input-min-height} - (2 * #{size.$input-border-width})
 );
@@ -22,16 +23,16 @@ $text-padding-left: calc(
   border-radius:
     rem.torem(forms.$input-border-radius) 0 0
     rem.torem(forms.$input-border-radius);
-  margin: 0 rem.torem(1px);
+  margin: 0 $base-border-width;
 
   &:focus,
   &:focus-within {
-    border: solid forms.$input-border-color-focus rem.torem(1px);
+    border: solid forms.$input-border-color-focus $base-border-width;
     border-radius:
       rem.torem(forms.$input-border-radius) 0 0
       rem.torem(forms.$input-border-radius);
     background-color: transparent;
-    box-shadow: inset 0 0 0 1px forms.$input-border-color-focus;
+    box-shadow: inset 0 0 0 rem.torem(1px) forms.$input-border-color-focus;
     
     .select-input {
       height: calc(#{$input-height} - #{$focus-border-width});
