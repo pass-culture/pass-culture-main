@@ -724,11 +724,12 @@ class ListOfferersToValidateTest:
             assert "Date invalide" in response.data.decode("utf-8")
 
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-        def test_list_search_by_siren(self, authenticated_client, offerers_to_be_validated):
+        @pytest.mark.parametrize("search", ["123004004", "  123004004 ", "123004004\n"])
+        def test_list_search_by_siren(self, authenticated_client, offerers_to_be_validated, search):
             # when
             with assert_no_duplicated_queries():
                 response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="123004004")
+                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q=search)
                 )
 
             # then
@@ -781,11 +782,11 @@ class ListOfferersToValidateTest:
             assert html_parser.extract_pagination_info(response.data) == (1, 1, 2)
 
         @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
-        @pytest.mark.parametrize("num_digits", [1, 4, 6, 7, 8, 10])
-        def test_list_search_by_invalid_number_of_digits(self, authenticated_client, num_digits):
+        @pytest.mark.parametrize("search", ["1", "1234", "123456", "1234567", "12345678", "12345678912345", "  1234"])
+        def test_list_search_by_invalid_number_of_digits(self, authenticated_client, search):
             # when
             response = authenticated_client.get(
-                url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="1234567890"[:num_digits])
+                url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q=search)
             )
 
             # then
