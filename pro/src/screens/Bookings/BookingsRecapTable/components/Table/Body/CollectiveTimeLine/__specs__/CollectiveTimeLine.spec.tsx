@@ -31,7 +31,7 @@ describe('collective timeline', () => {
     })
     renderCollectiveTimeLine(bookingRecap)
     expect(
-      screen.getByText("Préreservée par l'établissement scolaire")
+      screen.getByText('Préreservée par l’établissement scolaire')
     ).toBeInTheDocument()
   })
   it('should render steps for booked booking', () => {
@@ -40,7 +40,7 @@ describe('collective timeline', () => {
     })
     renderCollectiveTimeLine(bookingRecap)
     expect(
-      screen.getByText("Réservée par l'établissement scolaire")
+      screen.getByText('Réservée par l’établissement scolaire')
     ).toBeInTheDocument()
   })
   it('should render steps for confirmed booking', () => {

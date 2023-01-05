@@ -40,7 +40,7 @@ const CollectiveTimeLine = ({
     content: (
       <>
         <div className={styles['timeline-step-title-passed']}>
-          Préreservée par l'établissement scolaire
+          Préreservée par l’établissement scolaire
         </div>
         <div>{bookingDate}</div>
       </>
@@ -51,7 +51,7 @@ const CollectiveTimeLine = ({
     content: (
       <>
         <div className={styles['timeline-step-title-passed']}>
-          Réservée par l'établissement scolaire
+          Réservée par l’établissement scolaire
         </div>
         <div>{confirmationDate}</div>
       </>
