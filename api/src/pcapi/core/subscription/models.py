@@ -91,7 +91,7 @@ class UserSubscriptionState:
     young_status: "YoungStatus"
 
     # identity_fraud_check is the relevant identity fraud check used to calculate their status.
-    fraud_check: fraud_models.BeneficiaryFraudCheck | None = None  # identity fraud check (a renommer)
+    identity_fraud_check: fraud_models.BeneficiaryFraudCheck | None = None
 
     # is_activable is True if beneficiary role can be upgraded.
     is_activable: bool = False
