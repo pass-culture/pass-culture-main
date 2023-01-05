@@ -1,6 +1,13 @@
 import dataclasses
 import datetime
 import enum
+import typing
+
+from pcapi.core.fraud import models as fraud_models
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.users.young_status import YoungStatus
 
 
 class SubscriptionStep(enum.Enum):
@@ -69,3 +76,26 @@ class SubscriptionMessage:
     call_to_action: CallToActionMessage | None = None
     pop_over_icon: PopOverIcon | None = None
     updated_at: datetime.datetime | None = None
+
+
+@dataclasses.dataclass
+class UserSubscriptionState:
+    # fraud_status holds the user status relative to its fraud checks. It is mainly used in the admin interface.
+    fraud_status: SubscriptionItemStatus
+
+    # next_step holds the next step to be done by the user to complete its subscription.
+    # In the frontend, each enum value corresponds to a call to action.
+    next_step: SubscriptionStep | None
+
+    # young_status holds the user status relative to its subscription. It is mainly used in the frontend.
+    young_status: "YoungStatus"
+
+    # identity_fraud_check is the relevant identity fraud check used to calculate their status.
+    fraud_check: fraud_models.BeneficiaryFraudCheck | None = None  # identity fraud check (a renommer)
+
+    # is_activable is True if beneficiary role can be upgraded.
+    is_activable: bool = False
+
+    # subscription_message is the message to display to the user.
+    # Be careful : in the frontend, this message is displayed with higher priority than next_step call to action
+    subscription_message: SubscriptionMessage | None = None
