@@ -35,7 +35,7 @@ BASE_CODE_DESCRIPTIONS = {
     "HTTP_404": (None, "La contremarque n'existe pas"),
     "HTTP_410": (
         None,
-        "Cette contremarque a été validée. En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.",
+        "Cette contremarque a été validée.\n En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.",
     ),
 }
 
