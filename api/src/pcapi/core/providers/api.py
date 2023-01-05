@@ -50,11 +50,12 @@ def create_venue_provider(
     if (
         provider.isActive
         and provider.enabledForPro
-        and venue.venueType.label
+        and venue.venueTypeCode
         in (
-            offerers_models.VenueTypeCode.BOOKSTORE.value,
-            offerers_models.VenueTypeCode.MOVIE.value,
+            offerers_models.VenueTypeCode.BOOKSTORE,
+            offerers_models.VenueTypeCode.MOVIE,
         )
+        and not venue.isPermanent
     ):
         venue.isPermanent = True
         repository.save(venue)
