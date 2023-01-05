@@ -326,7 +326,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'upsertStocks')
     expect(api.upsertStocks).not.toHaveBeenCalled()
   })
-  it('should not allow user to delete stock from a synchronized offer', async () => {
+  it('should allow user to delete stock from a synchronized offer', async () => {
     apiOffer.lastProvider = {
       id: 'PROVIDER_ID',
       isActive: true,
@@ -343,11 +343,17 @@ describe('screens:StocksThing', () => {
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[1]
     )
-    const deleteButton = screen.getAllByTitle('Supprimer le stock')[0]
-    expect(deleteButton).toHaveAttribute('aria-disabled', 'true')
-    await deleteButton.click()
-    expect(api.deleteStock).toHaveBeenCalledTimes(0)
-    expect(screen.getByLabelText('Prix')).toHaveValue(10.01)
+    await userEvent.click(
+      screen.getAllByTestId('stock-form-actions-button-open')[0]
+    )
+    await userEvent.click(screen.getAllByText('Supprimer le stock')[0])
+    expect(
+      screen.getByText('Voulez-vous supprimer ce stock ?')
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
+    expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
+    expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
+    expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
   it('should display an error message when there is an api error', async () => {
     jest.spyOn(api, 'deleteStock').mockRejectedValue(
