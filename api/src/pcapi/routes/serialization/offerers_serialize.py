@@ -42,7 +42,6 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     def from_orm(
         cls, venue: offerers_models.Venue, venues_with_offers: Iterable[int] = None
     ) -> "GetOffererVenueResponseModel":
-        venue.nonHumanizedId = venue.id
         now = datetime.utcnow()
         venue.hasMissingReimbursementPoint = not (
             any(
@@ -116,7 +115,6 @@ class GetOffererResponseModel(BaseModel):
             or offerer.hasDigitalVenueAtLeastOneOffer
         )
         offerer.hasAvailablePricingPoints = any(venue.siret for venue in offerer.managedVenues)
-        offerer.nonHumanizedId = offerer.id
 
         # We would like the response attribute to be called
         # `managedVenues` but we don't want to use the

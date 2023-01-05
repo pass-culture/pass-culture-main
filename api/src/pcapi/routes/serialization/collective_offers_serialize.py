@@ -318,14 +318,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     _humanize_offerId = humanize_field("offerId")
     _humanize_venue_id = humanize_field("venueId")
 
-    @classmethod
-    def from_orm(
-        cls: typing.Type[T_GetCollectiveOfferBaseResponseModel],
-        offer: offers_models.Offer,
-    ) -> T_GetCollectiveOfferBaseResponseModel:
-        offer.nonHumanizedId = offer.id
-        return super().from_orm(offer)
-
     class Config:
         allow_population_by_field_name = True
         orm_mode = True
