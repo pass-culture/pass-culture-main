@@ -4,6 +4,7 @@ from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import models as users_models
@@ -108,7 +109,10 @@ def start_identification_session(
             status_code=400,
         )
 
-    if not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility):
+    if (
+        not subscription_api.get_user_subscription_state(user).next_step
+        == subscription_models.SubscriptionStep.IDENTITY_CHECK
+    ):
         raise api_errors.ApiErrors(
             {"code": "IDCHECK_ALREADY_PROCESSED", "message": "Une identification a déjà été traitée"},
             status_code=400,

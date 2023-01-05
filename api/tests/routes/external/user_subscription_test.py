@@ -1660,8 +1660,6 @@ class UbbleWebhookTest:
         assert reason_code in ubble_fraud_check.reasonCodes
         assert reason in [s.strip() for s in ubble_fraud_check.reason.split(";")]
 
-        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
-
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == in_app_message
         assert message.pop_over_icon == subscription_models.PopOverIcon.ERROR
@@ -1727,8 +1725,6 @@ class UbbleWebhookTest:
         assert not user.has_beneficiary_role
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert fraud_models.FraudReasonCode.DUPLICATE_USER in ubble_fraud_check.reasonCodes
-
-        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == (
@@ -1805,8 +1801,6 @@ class UbbleWebhookTest:
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in ubble_fraud_check.reasonCodes
 
-        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
-
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == (
             "Ton dossier a été refusé car il y a déjà un compte bénéficiaire associé à ce numéro de pièce d’identité. "
@@ -1877,8 +1871,6 @@ class UbbleWebhookTest:
         assert not user.has_beneficiary_role
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in ubble_fraud_check.reasonCodes
-
-        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert (
@@ -1956,8 +1948,6 @@ class UbbleWebhookTest:
         assert not user.has_beneficiary_role
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in ubble_fraud_check.reasonCodes
-
-        assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry allowed
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert (
@@ -2038,8 +2028,6 @@ class UbbleWebhookTest:
         assert fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in ubble_fraud_check.reasonCodes
         assert fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA in ubble_fraud_check.reasonCodes
 
-        assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry allowed
-
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert (
             message.user_message
@@ -2110,8 +2098,6 @@ class UbbleWebhookTest:
         assert not user.has_beneficiary_role
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in ubble_fraud_check.reasonCodes
-
-        assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert (
@@ -2185,8 +2171,6 @@ class UbbleWebhookTest:
         assert not user.has_beneficiary_role
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in ubble_fraud_check.reasonCodes
-
-        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert (
@@ -2264,8 +2248,6 @@ class UbbleWebhookTest:
         assert not user.has_beneficiary_role
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.KO
         assert fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in ubble_fraud_check.reasonCodes
-
-        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry not allowed
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert (
@@ -2358,8 +2340,6 @@ class UbbleWebhookTest:
         assert not user.has_beneficiary_role
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in ubble_fraud_check.reasonCodes
-
-        assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry allowed
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert (
