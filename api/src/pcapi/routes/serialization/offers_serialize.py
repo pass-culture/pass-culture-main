@@ -472,11 +472,6 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     _humanize_venue_id = humanize_field("venueId")
     _humanize_last_provider_id = humanize_field("lastProviderId")
 
-    @classmethod
-    def from_orm(cls, offer: offers_models.Offer) -> "GetIndividualOfferResponseModel":
-        offer.nonHumanizedId = offer.id
-        return super().from_orm(offer)
-
     class Config:
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
