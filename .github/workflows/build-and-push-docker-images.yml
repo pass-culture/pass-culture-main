@@ -11,6 +11,10 @@ on:
         # The docker image tag
         required: true
         type: string
+      pcapi:
+        required: false
+        type: boolean
+        default: false
       console:
         required: false
         type: boolean
@@ -58,6 +62,7 @@ jobs:
       uses: docker/setup-buildx-action@v2
     - name: "Build and push pcapi image"
       uses: docker/build-push-action@v2
+      if: ${{ inputs.pcapi == true }}
       with:
         context: api
         push: true
