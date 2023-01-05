@@ -123,7 +123,7 @@
                             </td>
                             <td>{% include "components/offerer/user_offerer_status_badge.html" %}</td>
                             <td>{{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
-                            <td>{{ get_last_comment_func(offerer, user_offerer.userId) | empty_string_if_null }}</td>
+                            <td>{{ get_last_comment_func(offerer, user_offerer.userId) | empty_string_if_null | replace("\n", "<br/>"|safe) }}</td>
                             <td>{{ user_offerer.user.phoneNumber | format_phone_number }}</td>
                             <td>
                                 <a href="{{ url_for('backoffice_v3_web.offerer.get', offerer_id=user_offerer.offererId) }}">

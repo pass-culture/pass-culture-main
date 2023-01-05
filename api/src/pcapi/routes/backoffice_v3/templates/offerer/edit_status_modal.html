@@ -10,7 +10,7 @@
             </div>
             <div class="modal-body row">
                 <div class="form-floating my-3 col">
-                    <textarea name="comment" class="form-control" id="{{ div_id }}-textarea" rows="3"></textarea>
+                    <textarea name="comment" class="form-control" id="{{ div_id }}-textarea" rows="3" style="height:100%;"></textarea>
                     <label for={{ div_id }}-textarea"><label for="comment">Raison</label></label>
                 </div>
                 <button type="button" class="btn btn-outline-secondary col-1 h-50" id="{{ div_id }}-newline">⏎</button>
@@ -29,9 +29,8 @@
         function(event) {
             if (event.keyCode === 13) {
                 event.preventDefault();
-                if (event.ctrlKey) {
-                    const textarea = document.getElementById('{{ div_id }}-textarea')
-                    textarea.value = textarea.value.slice(0, textarea.selectionStart) + "\n" + textarea.value.slice(textarea.selectionEnd)
+                if (event.ctrlKey || event.shiftKey) {
+                    document.getElementById("{{ div_id }}-newline").click()
                 } else {
                     document.getElementById("{{ div_id }}-form").submit();
                 }
@@ -43,7 +42,10 @@
         "click",
         function() {
             const textarea = document.getElementById('{{ div_id }}-textarea')
-            textarea.value = textarea.value.slice(0, textarea.selectionStart) + "\n" + textarea.value.slice(textarea.selectionEnd)
+            const start = textarea.selectionStart
+            textarea.value = textarea.value.slice(0, start) + "\n" + textarea.value.slice(textarea.selectionEnd)
+            textarea.setSelectionRange(start + 1, start + 1)
+            textarea.focus()
         }
     )
 </script>
