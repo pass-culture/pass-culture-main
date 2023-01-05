@@ -81,6 +81,7 @@ const ReimbursementPoint = ({
     const venueRequest = await api.getVenue(venue.id)
     setVenue(venueRequest)
   }, [])
+
   useEffect(() => {
     async function loadReimbursementPoints(offererId: number) {
       const reimbursementPointsResponse =
