@@ -38,7 +38,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
     def get_film_showtimes_stocks(self, film_id: int) -> dict[int, int]:
         showtimes = self.get_showtimes(film=film_id)
-        return {showtime.id: showtime.numberRemainingSeatsForOnlineSale for showtime in showtimes}
+        return {showtime.id: showtime.numberSeatsRemaining for showtime in showtimes}
 
     def cancel_booking(self, barcodes: list[str]) -> None:
         barcodes = list(set(barcodes))
@@ -139,7 +139,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             pattern_values={"id": showtime_id},
         )
         res = parse_obj_as(boost_serializers.ShowTimeDetails, json_data)
-        return res.data.numberRemainingSeatsForOnlineSale
+        return res.data.numberSeatsRemaining
 
     def get_showtime(self, showtime_id: int) -> boost_serializers.ShowTime:
         json_data = boost.get_resource(

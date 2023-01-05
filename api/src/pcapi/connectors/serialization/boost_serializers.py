@@ -56,7 +56,7 @@ class ShowTime4(BaseModel):
     """We transcribe their API schema and keep their name convention"""
 
     id: int
-    numberRemainingSeatsForOnlineSale: int
+    numberSeatsRemaining: int
 
 
 class ShowTimeCollection(Collection):
@@ -71,7 +71,7 @@ class ShowtimePricing(BaseModel):
 
 class ShowTime(BaseModel):
     id: int
-    numberRemainingSeatsForOnlineSale: int
+    numberSeatsRemaining: int
     showDate: datetime.datetime
     showEndDate: datetime.datetime
     soldOut: bool

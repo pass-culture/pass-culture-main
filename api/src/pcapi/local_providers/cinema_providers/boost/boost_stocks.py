@@ -113,14 +113,14 @@ class BoostStocks(LocalProvider):
             stock.fieldsUpdated = []
 
         if "quantity" not in stock.fieldsUpdated:
-            stock.quantity = self.showtime_details.numberRemainingSeatsForOnlineSale
+            stock.quantity = self.showtime_details.numberSeatsRemaining
 
         if "price" not in stock.fieldsUpdated:
             assert self.pcu_pricing  # helps mypy
             stock.price = self.pcu_pricing.amountTaxesIncluded
 
         if not is_new_stock_to_insert:
-            stock.quantity = self.showtime_details.numberRemainingSeatsForOnlineSale + stock.dnBookedQuantity
+            stock.quantity = self.showtime_details.numberSeatsRemaining + stock.dnBookedQuantity
 
     def update_from_movie_information(self, obj: Offer | Product, movie_information: Movie) -> None:
         if movie_information.description:

@@ -28,9 +28,9 @@ class GetShowtimesTest:
         boost = BoostClientAPI(cinema_str_id)
         showtimes = boost.get_showtimes(per_page=2, start_date=date.date(2022, 10, 10), interval_days=10)
         assert showtimes == [
-            boost_serializers.ShowTime4(id=36683, numberRemainingSeatsForOnlineSale=96),
-            boost_serializers.ShowTime4(id=36848, numberRemainingSeatsForOnlineSale=177),
-            boost_serializers.ShowTime4(id=36932, numberRemainingSeatsForOnlineSale=122),
+            boost_serializers.ShowTime4(id=36683, numberSeatsRemaining=96),
+            boost_serializers.ShowTime4(id=36848, numberSeatsRemaining=177),
+            boost_serializers.ShowTime4(id=36932, numberSeatsRemaining=122),
         ]
 
     def test_should_return_a_movie_showtimes(self, requests_mock):
@@ -44,8 +44,8 @@ class GetShowtimesTest:
         showtimes = boost.get_showtimes(per_page=2, start_date=date.date(2022, 10, 10), interval_days=10, film=207)
 
         assert showtimes == [
-            boost_serializers.ShowTime4(id=36683, numberRemainingSeatsForOnlineSale=96),
-            boost_serializers.ShowTime4(id=36684, numberRemainingSeatsForOnlineSale=0),
+            boost_serializers.ShowTime4(id=36683, numberSeatsRemaining=96),
+            boost_serializers.ShowTime4(id=36684, numberSeatsRemaining=0),
         ]
 
 
