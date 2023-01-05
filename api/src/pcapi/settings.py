@@ -264,7 +264,7 @@ DMS_INACTIVITY_TOLERANCE_DELAY = int(os.environ.get("DEMARCHES_SIMPLIFIEES_INACT
 DMS_INSTRUCTOR_ID = secrets_utils.get("DEMARCHES_SIMPLIFIEES_INSTRUCTOR_ID", "")
 
 # OBJECT STORAGE
-OBJECT_STORAGE_URL = secrets_utils.get("OBJECT_STORAGE_URL")
+OBJECT_STORAGE_URL = os.environ.get("OBJECT_STORAGE_URL", "")
 OBJECT_STORAGE_PROVIDER = os.environ.get("OBJECT_STORAGE_PROVIDER", _default_object_storage_provider)
 LOCAL_STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__))) / "static" / "object_store_data"
 
