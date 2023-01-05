@@ -326,15 +326,6 @@ describe('components | BookingsRecap | Pro user', () => {
 
     const { submitDownloadFilters } = await renderBookingsRecap({
       ...store,
-      features: {
-        list: [
-          {
-            isActive: true,
-            name: 'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON',
-            nameKey: 'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON',
-          },
-        ],
-      },
     })
 
     // When
@@ -365,15 +356,6 @@ describe('components | BookingsRecap | Pro user', () => {
 
     const { submitDownloadFilters } = await renderBookingsRecap({
       ...store,
-      features: {
-        list: [
-          {
-            isActive: true,
-            name: 'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON',
-            nameKey: 'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON',
-          },
-        ],
-      },
     })
 
     // When

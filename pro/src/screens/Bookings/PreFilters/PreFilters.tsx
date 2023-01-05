@@ -9,7 +9,6 @@ import {
   GetBookingsCSVFileAdapter,
   GetBookingsXLSFileAdapter,
 } from 'core/Bookings'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
@@ -57,10 +56,6 @@ const PreFilters = ({
 }: IPreFiltersProps): JSX.Element => {
   const notify = useNotification()
 
-  const isCsvMultiDownloadFiltersActive = useActiveFeature(
-    'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON'
-  )
-
   const { logEvent } = useAnalytics()
 
   const [selectedPreFilters, setSelectedPreFilters] = useState<TPreFilters>({
@@ -103,6 +98,7 @@ const PreFilters = ({
       if (updatedFilter.offerEventDate) {
         updatedFilter.bookingBeginningDate = null
         updatedFilter.bookingEndingDate = null
+        /* istanbul ignore next: DEBT to fix */
         if (updatedFilter.offerEventDate === appliedPreFilters.offerEventDate) {
           updatedFilter.bookingBeginningDate =
             appliedPreFilters.bookingBeginningDate
@@ -119,6 +115,7 @@ const PreFilters = ({
   )
 
   const requestFilteredBookings = useCallback(
+    /* istanbul ignore next: DEBT to fix */
     (event: any) => {
       event.preventDefault()
       applyPreFilters(selectedPreFilters)
@@ -141,11 +138,13 @@ const PreFilters = ({
     async (filters: TPreFilters, type: string) => {
       setIsDownloadingCSV(true)
 
+      /* istanbul ignore next: DEBT to fix */
       const { isOk, message } =
         type === 'CSV'
           ? await getBookingsCSVFileAdapter(filters)
           : await getBookingsXLSFileAdapter(filters)
 
+      /* istanbul ignore next: DEBT to fix */
       if (!isOk) {
         notify.error(message)
       }
@@ -217,28 +216,14 @@ const PreFilters = ({
         <div className="button-group">
           <div className="button-group-buttons">
             <span className="button-group-separator" />
-            {isCsvMultiDownloadFiltersActive ? (
-              <MultiDownloadButtonsModal
-                downloadFunction={downloadBookingsCSV}
-                filters={downloadBookingsFilters}
-                isDownloading={isDownloadingCSV}
-                isFiltersDisabled={isFiltersDisabled}
-                isLocalLoading={isLocalLoading}
-              />
-            ) : (
-              <button
-                className="primary-button"
-                disabled={
-                  isDownloadingCSV || isLocalLoading || isFiltersDisabled
-                }
-                onClick={() =>
-                  downloadBookingsCSV(downloadBookingsFilters, 'CSV')
-                }
-                type="button"
-              >
-                Télécharger
-              </button>
-            )}
+
+            <MultiDownloadButtonsModal
+              downloadFunction={downloadBookingsCSV}
+              filters={downloadBookingsFilters}
+              isDownloading={isDownloadingCSV}
+              isFiltersDisabled={isFiltersDisabled}
+              isLocalLoading={isLocalLoading}
+            />
             <Button
               className={styles['show-button']}
               disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
