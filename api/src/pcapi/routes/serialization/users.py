@@ -156,7 +156,6 @@ class SharedLoginUserResponseModel(BaseModel):
     @classmethod
     def from_orm(cls, user: users_models.User) -> "SharedLoginUserResponseModel":
         user.isAdmin = user.has_admin_role
-        user.nonHumanizedId = user.id
         result = super().from_orm(user)
         return result
 
@@ -201,7 +200,6 @@ class SharedCurrentUserResponseModel(BaseModel):
     @classmethod
     def from_orm(cls, user: users_models.User) -> "SharedCurrentUserResponseModel":
         user.isAdmin = user.has_admin_role
-        user.nonHumanizedId = user.id
         result = super().from_orm(user)
         return result
 
