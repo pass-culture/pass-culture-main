@@ -6,7 +6,6 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription import api as subscription_api
-from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -137,18 +136,6 @@ def does_match_ubble_test_email(email: str) -> re.Match | None:
         return None
 
     return UBBLE_TEST_EMAIL_RE.match(email)
-
-
-def is_user_allowed_to_perform_ubble_check(
-    user: users_models.User, eligibility_type: users_models.EligibilityType | None
-) -> bool:
-    # Ubble check must be performed for an eligible credit
-    if not eligibility_type:
-        return False
-
-    user_subscription_state = subscription_api.get_user_subscription_state(user)
-
-    return user_subscription_state.next_step == subscription_models.SubscriptionStep.IDENTITY_CHECK
 
 
 def get_restartable_identity_checks(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:

@@ -15,7 +15,6 @@ from pcapi.core.fraud.factories import BeneficiaryFraudCheckFactory
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.fraud.models import FraudCheckStatus
 from pcapi.core.fraud.models import FraudCheckType
-from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.fraud.ubble.models import UbbleContent
 from pcapi.core.subscription import messages as subscription_messages
@@ -225,7 +224,6 @@ class UbbleWorkflowTest:
         assert fraud_checks[1].thirdPartyId == ubble_identification
 
         db.session.refresh(user)
-        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
         assert user.dateOfBirth == signup_birth_date
         assert user.validatedBirthDate == document_birth_date.date()
 
