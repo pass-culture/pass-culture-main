@@ -157,7 +157,7 @@ describe('screens:StocksEvent', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’événement. Vous pouvez annuler un évènement en supprimant la ligne de stock associée. Cette action est irréversible.'
+        'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’événement. Vous pouvez annuler un événement en supprimant la ligne de stock associée. Cette action est irréversible.'
       )
     ).toBeInTheDocument()
 
