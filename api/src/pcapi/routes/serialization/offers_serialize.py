@@ -124,7 +124,6 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     ageMax: int | None
     conditions: str | None
     venueId: str | None
-    productId: str | None
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:

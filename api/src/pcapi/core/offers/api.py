@@ -269,8 +269,6 @@ def update_offer(
     ageMin: int | None = UNCHANGED,  # type: ignore [assignment]
     ageMax: int | None = UNCHANGED,  # type: ignore [assignment]
     conditions: str | None = UNCHANGED,  # type: ignore [assignment]
-    venueId: str = UNCHANGED,  # type: ignore [assignment]
-    productId: str = UNCHANGED,  # type: ignore [assignment]
     audioDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
     mentalDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
     motorDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
