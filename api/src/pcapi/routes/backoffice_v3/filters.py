@@ -6,6 +6,8 @@ from urllib.parse import urlunparse
 from flask import Flask
 import pytz
 
+from pcapi.core.bookings import models as bookings_models
+from pcapi.core.categories import subcategories_v2
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.utils import urls
@@ -86,6 +88,43 @@ def format_reason_label(reason: str) -> str:
     return users_constants.SUSPENSION_REASON_CHOICES.get(users_constants.SuspensionReason(reason), "Raison inconnue")
 
 
+def format_booking_cancellation_reason(reason: bookings_models.BookingCancellationReasons) -> str:
+    match reason:
+        case bookings_models.BookingCancellationReasons.OFFERER:
+            return "Annulée par l'acteur culturel"
+        case bookings_models.BookingCancellationReasons.BENEFICIARY:
+            return "Annulée par le bénéficiaire"
+        case bookings_models.BookingCancellationReasons.EXPIRED:
+            return "Expirée"
+        case bookings_models.BookingCancellationReasons.FRAUD:
+            return "Fraude"
+        case bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE:
+            return "Refusée par l'institution"
+        case _:
+            return ""
+
+
+def format_booking_status(status: bookings_models.BookingStatus) -> str:
+    match status:
+        case bookings_models.BookingStatus.CONFIRMED:
+            return "Réservation confirmée"
+        case bookings_models.BookingStatus.USED:
+            return "Le jeune a consommé l'offre"
+        case bookings_models.BookingStatus.CANCELLED:
+            return "L'offre n'a pas eu lieu"
+        case bookings_models.BookingStatus.REIMBURSED:
+            return "AC remboursé"
+        case _:
+            return ""
+
+
+def format_offer_category(subcategory_id: str) -> str:
+    subcategory = subcategories_v2.ALL_SUBCATEGORIES_DICT.get(subcategory_id)
+    if subcategory:
+        return subcategory.category.pro_label
+    return ""
+
+
 def parse_referrer(url: str) -> str:
     """
     Ensure that a relative path is used, which will be understood.
@@ -101,13 +140,17 @@ def parse_referrer(url: str) -> str:
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
     app.jinja_env.filters["format_amount"] = format_amount
+    app.jinja_env.filters["format_booking_cancellation_reason"] = format_booking_cancellation_reason
+    app.jinja_env.filters["format_booking_status"] = format_booking_status
     app.jinja_env.filters["format_bool"] = format_bool
     app.jinja_env.filters["format_string_list"] = format_string_list
     app.jinja_env.filters["format_date"] = format_date
+    app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_phone_number"] = format_phone_number
     app.jinja_env.filters["format_role"] = format_role
     app.jinja_env.filters["format_state"] = format_state
     app.jinja_env.filters["format_reason_label"] = format_reason_label
     app.jinja_env.filters["parse_referrer"] = parse_referrer
+    app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link
     app.jinja_env.filters["pc_pro_offerer_link"] = urls.build_pc_pro_offerer_link
     app.jinja_env.filters["pc_pro_venue_link"] = urls.build_pc_pro_venue_link

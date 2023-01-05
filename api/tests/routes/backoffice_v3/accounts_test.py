@@ -1,7 +1,10 @@
+import datetime
+
 from flask import g
 from flask import url_for
 import pytest
 
+from pcapi.core.bookings import factories as bookings_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails import testing as mails_testing
 import pcapi.core.permissions.models as perm_models
@@ -12,6 +15,7 @@ from pcapi.notifications.sms import testing as sms_testing
 import pcapi.utils.email as email_utils
 
 from .helpers import accounts as accounts_helpers
+from .helpers import html_parser
 from .helpers import search as search_helpers
 from .helpers import unauthorized as unauthorized_helpers
 
@@ -55,6 +59,47 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         endpoint = "backoffice_v3_web.get_public_account"
         endpoint_kwargs = {"user_id": 1}
         needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_get_beneficiary_bookings(self, authenticated_client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        b1 = bookings_factories.CancelledBookingFactory(user=user, amount=12.5)
+        b2 = bookings_factories.UsedBookingFactory(user=user, amount=20)
+        bookings_factories.UsedBookingFactory()
+
+        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+
+        bookings = html_parser.extract_table_rows(response.data, parent_id="bookings-tab-pane")
+        assert len(bookings) == 2
+
+        assert bookings[0]["Offreur"] == b2.offerer.name
+        assert bookings[0]["Nom de l'offre"] == b2.stock.offer.name
+        assert bookings[0]["Prix"] == "20,00 €"
+        assert bookings[1]["Date de résa"].startswith(datetime.date.today().strftime("Le %d/%m/%Y"))
+        assert bookings[0]["État"] == "Le jeune a consommé l'offre"
+        assert bookings[0]["Contremarque"] == b2.token
+
+        assert bookings[1]["Offreur"] == b1.offerer.name
+        assert bookings[1]["Nom de l'offre"] == b1.stock.offer.name
+        assert bookings[1]["Prix"] == "12,50 €"
+        assert bookings[1]["Date de résa"].startswith(datetime.date.today().strftime("Le %d/%m/%Y"))
+        assert bookings[1]["État"] == "L'offre n'a pas eu lieu"
+        assert bookings[1]["Contremarque"] == b1.token
+
+        text = html_parser.content_as_text(response.data)
+        assert f"Utilisée le : {datetime.date.today().strftime('%d/%m/%Y')}" in text
+        assert f"Annulée le : {datetime.date.today().strftime('%d/%m/%Y')}" in text
+        assert "Motif d'annulation : Annulée par le bénéficiaire" in text
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_get_beneficiary_bookings_empty(self, authenticated_client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        bookings_factories.UsedBookingFactory()
+
+        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+
+        assert not html_parser.extract_table_rows(response.data, parent_id="bookings-tab-pane")
+        assert "Aucune réservation à ce jour" in response.data.decode("utf-8")
 
 
 class EditPublicAccountTest(accounts_helpers.PageRendersHelper):

@@ -12,13 +12,19 @@ def content_as_text(html_content: str) -> str:
     return _filter_whitespaces(soup.text)
 
 
-def extract_table_rows(html_content: str) -> list[dict[str, str]]:
+def extract_table_rows(html_content: str, parent_id: str | None = None) -> list[dict[str, str]]:
     """
     Extract data from html table (thead + tbody), so that we can compare with expected data when testing routes.
     Every row is a dictionary, in which keys are column headers.
     Note that all data is returned as a string.
+
+    Use `parent_id` parameter to filter inside a html tag id when several tables may be printed in the page.
     """
     soup = BeautifulSoup(html_content, features="html5lib", from_encoding="utf-8")
+
+    if parent_id:
+        soup = soup.find(id=parent_id)
+        assert soup is not None
 
     thead = soup.find("thead")
     tbody = soup.find("tbody")
@@ -35,11 +41,12 @@ def extract_table_rows(html_content: str) -> list[dict[str, str]]:
         th_text = re.sub(r"\s+", " ", th.text.strip())
         headers.append(th_text)
 
-    tbody_tr_list = tbody.find_all("tr")
+    # Only main rows, skip additional rows which show more information on click
+    tbody_tr_list = tbody.find_all("tr", class_=lambda c: not c or "collapse" not in c)
 
     for tr in tbody_tr_list:
         row_data = {}
-        td_list = tr.find_all("td")
+        td_list = tr.find_all(["th", "td"])
         assert len(td_list) == len(headers)
         for idx, td in enumerate(td_list):
             if headers[idx]:
