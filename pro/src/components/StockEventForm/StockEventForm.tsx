@@ -49,16 +49,10 @@ const StockEventForm = ({
 
     if (quantity === '') {
       remainingQuantity = 'unlimited'
-    } else if (remainingQuantity <= 0) {
-      remainingQuantity = 0
     }
 
-    setFieldValue(`stocks[${stockIndex}]quantity`, quantity, true)
-    setFieldValue(
-      `stocks[${stockIndex}]remainingQuantity`,
-      remainingQuantity,
-      true
-    )
+    setFieldValue(`stocks[${stockIndex}]remainingQuantity`, remainingQuantity)
+    setFieldValue(`stocks[${stockIndex}]quantity`, quantity)
   }
 
   const beginningDate = stockFormValues.beginningDate

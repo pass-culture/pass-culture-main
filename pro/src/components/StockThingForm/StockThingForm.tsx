@@ -38,12 +38,10 @@ const StockThingForm = ({
 
     if (quantity === '') {
       remainingQuantity = 'unlimited'
-    } else if (remainingQuantity <= 0) {
-      remainingQuantity = 0
     }
 
-    setFieldValue(`quantity`, quantity, true)
     setFieldValue(`remainingQuantity`, remainingQuantity)
+    setFieldValue(`quantity`, quantity)
   }
 
   return (
