@@ -81,7 +81,8 @@ export class ApiContremarqueService {
         401: `Authentification nécessaire`,
         403: `Vous n'avez pas les droits nécessaires pour voir cette contremarque`,
         404: `La contremarque n'existe pas`,
-        410: `Cette contremarque a été validée. En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.`,
+        410: `Cette contremarque a été validée.
+        En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.`,
         422: `Unprocessable Entity`,
       },
     });
@@ -107,7 +108,8 @@ export class ApiContremarqueService {
         401: `Authentification nécessaire`,
         403: `Vous n'avez pas les droits nécessaires pour voir cette contremarque`,
         404: `La contremarque n'existe pas`,
-        410: `Cette contremarque a été validée. En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.`,
+        410: `Cette contremarque a été validée.
+        En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.`,
         422: `Unprocessable Entity`,
       },
     });

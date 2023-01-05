@@ -30,6 +30,7 @@
 .desk-message {
   @include fonts.caption;
 
+  white-space: pre-line;
   color: colors.$green-valid;
 
   &.error {
