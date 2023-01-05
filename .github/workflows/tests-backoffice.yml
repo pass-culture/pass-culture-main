@@ -9,16 +9,9 @@ defaults:
     working-directory: backoffice
 
 jobs:
-  check-backoffice-folder-changes:
-    name: "Check if folder changed"
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: backoffice
-
   read-node-version:
     name: "Read node version from .nvmrc"
     runs-on: ubuntu-latest
-    needs: check-backoffice-folder-changes
     if: ${{ needs.check-backoffice-folder-changes.outputs.folder_changed == 'true' }}
     outputs:
       node_version: ${{ steps.read-node-version.outputs.node_version }}
