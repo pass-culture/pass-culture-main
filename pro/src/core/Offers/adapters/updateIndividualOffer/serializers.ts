@@ -56,7 +56,6 @@ export const serializePatchOffer = (
     formValues.accessibility &&
     formValues.accessibility[AccessiblityEnum.MOTOR],
   name: formValues.name,
-  venueId: formValues.venueId,
   withdrawalDelay:
     formValues.withdrawalDelay === undefined
       ? null
