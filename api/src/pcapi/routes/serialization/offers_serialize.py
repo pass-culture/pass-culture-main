@@ -123,7 +123,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     ageMin: int | None
     ageMax: int | None
     conditions: str | None
-    venueId: str | None
+    venueId: str | None  # TODO (viconnex): remove this field when frontend does not send it anymore
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:

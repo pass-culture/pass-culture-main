@@ -75,7 +75,6 @@ describe('updateIndividualOffer', () => {
       isDuo: true,
       name: 'Test offer',
       url: undefined,
-      venueId: 'AB',
       withdrawalDelay: 12,
       withdrawalDetails: 'withdrawal description',
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
