@@ -17,6 +17,22 @@ on:
       teleport_kubernetes_cluster:
         type: string
         required: true
+      deploy_adage:
+        type: boolean
+        required: false
+        default: false
+      deploy_api:
+        type: boolean
+        required: false
+        default: false
+      deploy_backoffice:
+        type: boolean
+        required: false
+        default: false
+      deploy_pro:
+        type: boolean
+        required: false
+        default: false
 
 env:
   REGION: europe-west1
@@ -25,6 +41,7 @@ jobs:
   generate-pcapi-helm-secrets-file:
     name: "[pcapi] Generate helm secrets values file"
     runs-on: ubuntu-latest
+    if: ${{ inputs.deploy_api }}
     permissions:
       id-token: write
       contents: read
@@ -58,14 +75,15 @@ jobs:
         id: set-secrets-file-output
         run: echo "secrets_file_base64=$(cat ${{ github.workspace }}/helm_secrets_file_base64)" >> $GITHUB_OUTPUT
 
-  deploy-helm-release:
-    name: "[pcapi] Deploy helm release"
+  deploy-api:
+    name: Deploy api
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
     needs: generate-pcapi-helm-secrets-file
+    if: ${{ inputs.deploy_api }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/checkout@v3
@@ -106,7 +124,12 @@ jobs:
           helmfile -e ${{ inputs.environment }} sync --set image.tag=${{ inputs.app_version }}
 
   deploy-pro:
-    needs: deploy-helm-release
+    name: Deploy pro
+    needs: deploy-api
+    if: |
+      always() &&
+      (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
+      inputs.deploy_pro == true
     uses: ./.github/workflows/deploy-gcs-front.yml
     with:
       app_name: pro
@@ -118,7 +141,12 @@ jobs:
       workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
 
   deploy-adage-front:
-    needs: deploy-helm-release
+    name: Deploy adage
+    needs: deploy-api
+    if: |
+      always() &&
+      (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
+      inputs.deploy_adage == true
     uses: ./.github/workflows/deploy-gcs-front.yml
     with:
       app_name: adage
@@ -130,8 +158,12 @@ jobs:
       workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
 
   deploy-backoffice-front:
-    name: "[backoffice] Deployment"
-    if: inputs.environment != 'integration'
+    name: Deploy backoffice
+    needs: deploy-api
+    if: |
+      inputs.environment != 'integration' &&
+      (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
+      inputs.deploy_backoffice == true
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     permissions:
@@ -140,7 +172,6 @@ jobs:
     defaults:
       run:
         working-directory: backoffice
-    needs: deploy-helm-release
     steps:
       - uses: actions/checkout@v3
       - id: openid-auth
@@ -176,20 +207,22 @@ jobs:
 
   apply-algolia-config:
     name: "apply Algolia settings"
-    if: inputs.environment == 'production'
+    needs: deploy-api
+    if: |
+      inputs.environment == 'production' &&
+      (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped')
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backoffice
-    needs: deploy-helm-release
     steps:
       - run: su pcapi -c "flask set_algolia_settings offers --dry-run=false"
       - run: su pcapi -c "flask set_algolia_settings collective_offers --dry-run=false"
       - run: su pcapi -c "flask set_algolia_settings venues --dry-run=false"
 
   deploy-image-resizing:
-    name: "[image-resizing] Deployment"
+    name: "Deploy image-resizing"
     permissions:
       contents: 'read'
       id-token: 'write'
