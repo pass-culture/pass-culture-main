@@ -2,7 +2,6 @@ from pcapi.core.bookings.factories import IndividualBookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
-import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.notifications.push import testing as push_testing
 from pcapi.utils.human_ids import humanize
@@ -41,22 +40,6 @@ class Returns200Test:
 
 
 class Returns400Test:
-    def when_stock_is_on_an_offer_from_titelive_provider(self, app, db_session):
-        # given
-        provider = providers_factories.AllocineProviderFactory(localClass="TiteLiveThings")
-        offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
-        stock = offers_factories.StockFactory(offer=offer)
-
-        user = users_factories.AdminFactory()
-
-        # when
-        client = TestClient(app.test_client()).with_session_auth(user.email)
-        response = client.delete(f"/stocks/{humanize(stock.id)}")
-
-        # then
-        assert response.status_code == 400
-        assert response.json["global"] == ["Les offres importées ne sont pas modifiables"]
-
     def test_delete_non_approved_offer_fails(self, app, db_session):
         pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         stock = offers_factories.StockFactory(offer=pending_validation_offer)

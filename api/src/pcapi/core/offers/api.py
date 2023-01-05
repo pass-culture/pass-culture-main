@@ -678,8 +678,8 @@ def _invalidate_bookings(bookings: list[Booking]) -> list[Booking]:
     return bookings
 
 
-def delete_stock(stock: Stock, deleting_provider: providers_models.Provider | None = None) -> None:
-    validation.check_stock_is_deletable(stock, deleting_provider)
+def delete_stock(stock: Stock) -> None:
+    validation.check_stock_is_deletable(stock)
 
     stock.isSoftDeleted = True
     repository.save(stock)
