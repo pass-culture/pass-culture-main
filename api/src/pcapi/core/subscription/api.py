@@ -498,7 +498,18 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
             ),
         )
 
-    # If we are here, the user has completed all the steps
+    if identity_check_fraud_status == models.SubscriptionItemStatus.OK:
+        return subscription_models.UserSubscriptionState(
+            identity_fraud_check=relevant_identity_fraud_check,
+            is_activable=True,
+            fraud_status=identity_check_fraud_status,
+            subscription_message=None,
+            next_step=None,
+            young_status=young_status_module.Eligible(
+                subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
+            ),
+        )
+
     return young_status_module.UserSubscriptionState(
         fraud_check=relevant_fraud_check,
         fraud_status=identity_check_fraud_status,
@@ -507,7 +518,6 @@ def get_user_subscription_state(user: users_models.User) -> young_status_module.
         young_status=young_status_module.Eligible(
             subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_PENDING
         ),
-        is_activable=True,
     )
 
 
