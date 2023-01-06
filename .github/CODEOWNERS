@@ -1,0 +1,4 @@
+### DevOps team should be notified if a modification on workflow is done
+
+/.github/workflows/ @pass-culture/sherif-ops
+/.circleci/ @pass-culture/sherif-ops
