@@ -289,28 +289,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     })
   }
 
-  actions[0].disabled = isDisabled || isSynchronized
-  const cannotDeleteStock = isDisabled || isSynchronized
-
-  actions.push({
-    /* istanbul ignore next: DEBT, TO FIX */
-    callback: async () => {
-      if (
-        // tested but coverage don't see it.
-        /* istanbul ignore next */
-        (mode === OFFER_WIZARD_MODE.EDITION ||
-          formik.values.bookingsQuantity !== '0') &&
-        formik.values.stockId !== undefined
-      ) {
-        deleteConfirmShow()
-      } else {
-        onConfirmDeleteStock()
-      }
-    },
-    label: 'Supprimer le stock',
-    disabled: cannotDeleteStock,
-    Icon: IcoTrashFilled,
-  })
+  actions[0].disabled = isDisabled
 
   if (offer.isDigital) {
     description += `

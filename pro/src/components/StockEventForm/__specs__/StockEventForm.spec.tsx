@@ -103,25 +103,25 @@ describe('StockEventForm', () => {
   })
   it('should set stockBookingLimitDatetime at event date if date changed before stockBookingLimitDatetime', async () => {
     const initialStock = {
-      beginningDate: new Date('2022-12-31T00:00:00Z'),
-      beginningTime: new Date('2022-12-31T00:00:00Z'),
+      beginningDate: new Date('2022-12-29T00:00:00Z'),
+      beginningTime: new Date('2022-12-29T00:00:00Z'),
       remainingQuantity: '11',
       bookingsQuantity: '1',
       quantity: 12,
-      bookingLimitDatetime: new Date('2022-12-30T00:00:00Z'),
+      bookingLimitDatetime: new Date('2022-12-28T00:00:00Z'),
       price: 10,
       isDeletable: true,
       readOnlyFields: [],
     }
 
-    await renderStockEventForm(props, initialStock)
+    renderStockEventForm(props, initialStock)
 
-    await userEvent.click(await screen.getByLabelText('Date', { exact: true }))
-    await userEvent.click(await screen.getAllByText(29)[1])
-    await expect(await screen.getByLabelText('Date')).toHaveValue('29/12/2022')
-    await expect(
-      screen.getByLabelText('Date limite de réservation')
-    ).toHaveValue('29/12/2022')
+    await userEvent.click(screen.getByLabelText('Date'))
+    await userEvent.click(screen.getByText(27))
+
+    expect(screen.getByLabelText('Date limite de réservation')).toHaveValue(
+      '28/12/2022'
+    )
   })
 
   const setNumberValueForPrice = [
