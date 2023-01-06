@@ -19,8 +19,11 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_patch_offer(self, app, client):
         # Given
-        offer = offers_factories.OfferFactory(subcategoryId="SEANCE_CINE")
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        product = offers_factories.ProductFactory(owningOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            subcategoryId="SEANCE_CINE", venue__managingOfferer=user_offerer.offerer, product=product
+        )
 
         # When
         data = {
@@ -39,6 +42,7 @@ class Returns200Test:
         assert updated_offer.externalTicketOfficeUrl == "http://example.net"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.subcategoryId == "SEANCE_CINE"
+        assert updated_offer.product.name == "New name"
 
     def test_withdrawal_can_be_updated(self, client):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id)
