@@ -219,10 +219,6 @@ def update_offer(
     motorDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
     visualDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
 ) -> Offer:
-    validation.check_validation_status(offer)
-    if extraData != UNCHANGED:
-        validation.check_offer_extra_data(offer.subcategoryId, extraData)
-
     modifications = {
         field: new_value
         for field, new_value in locals().items()
@@ -232,6 +228,12 @@ def update_offer(
     }
     if not modifications:
         return offer
+
+    validation.check_validation_status(offer)
+    if extraData != UNCHANGED:
+        validation.check_offer_extra_data(offer.subcategoryId, extraData)
+    if isDuo != UNCHANGED:
+        validation.check_is_duo_compliance(isDuo, offer.subcategory)
 
     if (UNCHANGED, UNCHANGED) != (withdrawalType, withdrawalDelay):
         changed_withdrawalType = withdrawalType if withdrawalType != UNCHANGED else offer.withdrawalType
