@@ -25,7 +25,6 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import VenueStat from './VenueStat'
 
 export interface IVenueProps {
-  hasBusinessUnit?: boolean
   hasMissingReimbursementPoint?: boolean
   id: string
   isVirtual?: boolean
@@ -36,7 +35,6 @@ export interface IVenueProps {
 }
 
 const Venue = ({
-  hasBusinessUnit = false,
   hasMissingReimbursementPoint = false,
   id,
   isVirtual = false,
@@ -131,9 +129,6 @@ const Venue = ({
     },
   ]
 
-  const isBankInformationWithSiretActive = useActiveFeature(
-    'ENFORCE_BANK_INFORMATION_WITH_SIRET'
-  )
   const isNewBankInformationActive = useActiveFeature(
     'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
   )
@@ -218,8 +213,8 @@ const Venue = ({
               </button>
             </h3>
             <div className="button-group">
-              {((isNewBankInformationActive && hasMissingReimbursementPoint) ||
-                (isBankInformationWithSiretActive && !hasBusinessUnit)) &&
+              {isNewBankInformationActive &&
+                hasMissingReimbursementPoint &&
                 !isVirtual && (
                   <>
                     <ButtonLink

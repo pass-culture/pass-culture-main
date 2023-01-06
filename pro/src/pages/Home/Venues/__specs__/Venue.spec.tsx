@@ -213,29 +213,6 @@ describe('venues', () => {
       )
     })
 
-    it('should display add bank information when venue does not have a business unit', () => {
-      // Given
-      props.hasBusinessUnit = false
-      const storeOverrides = configureTestStore({
-        features: {
-          list: [
-            { isActive: true, nameKey: 'ENFORCE_BANK_INFORMATION_WITH_SIRET' },
-          ],
-        },
-      })
-
-      // When
-      renderVenue(props, storeOverrides)
-
-      // Then
-      expect(
-        screen.getByRole('link', { name: 'Ajouter un RIB' })
-      ).toHaveAttribute(
-        'href',
-        '/structures/OFFERER01/lieux/VENUE01?modification#remboursement'
-      )
-    })
-
     it('should display add bank information when venue does not have a reimbursement point', () => {
       // Given
       props.hasMissingReimbursementPoint = true

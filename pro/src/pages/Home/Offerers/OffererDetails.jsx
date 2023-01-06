@@ -12,13 +12,10 @@ import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { Banner, ButtonLink, Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Select from 'ui-kit/form_raw/Select'
-import Icon from 'ui-kit/Icon/Icon'
 
 import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
 
 import BankInformations from './BankInformations'
-import InvalidBusinessUnits from './InvalidBusinessUnits'
-import MissingBusinessUnits from './MissingBusinessUnits'
 import MissingReimbursementPoints from './MissingReimbursementPoints/MissingReimbursementPoints'
 import VenueCreationLinks from './VenueCreationLinks'
 
@@ -29,34 +26,25 @@ const hasRejectedOrDraftBankInformation = offerer =>
 
 const initialIsExpanded = (
   hasPhysicalVenues,
-  isBankInformationWithSiretActive,
   isNewBankInformationActive,
-  hasInvalidBusinessUnits,
-  hasMissingReimbursementPoints,
-  hasMissingBusinessUnits
+  hasMissingReimbursementPoints
 ) => {
   return (
     !hasPhysicalVenues ||
-    (isBankInformationWithSiretActive &&
-      (hasInvalidBusinessUnits || hasMissingBusinessUnits)) ||
     (isNewBankInformationActive && hasMissingReimbursementPoints)
   )
 }
 
 const OffererDetails = ({
-  businessUnitList,
   handleChangeOfferer,
   hasPhysicalVenues,
   isUserOffererValidated,
   offererOptions,
   selectedOfferer,
 }) => {
-  const isBankInformationWithSiretActive = useActiveFeature(
-    'ENFORCE_BANK_INFORMATION_WITH_SIRET'
-  )
   const isNewBankInformationActive = useActiveFeature(
     'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
-  )
+  ) //True
   const newOfferCreation = useNewOfferCreationJourney()
   const { logEvent } = useAnalytics()
 
@@ -66,31 +54,6 @@ const OffererDetails = ({
     }
     return hasRejectedOrDraftBankInformation(selectedOfferer)
   }, [selectedOfferer])
-
-  const hasInvalidBusinessUnits = useMemo(() => {
-    if (!isBankInformationWithSiretActive) {
-      return false
-    }
-    if (!selectedOfferer) {
-      return false
-    }
-    return (
-      businessUnitList.filter(businessUnit => !businessUnit.siret).length > 0
-    )
-  }, [selectedOfferer, businessUnitList, isBankInformationWithSiretActive])
-
-  const hasMissingBusinessUnits = useMemo(() => {
-    if (!isBankInformationWithSiretActive) {
-      return false
-    }
-    if (!selectedOfferer) {
-      return false
-    }
-    return selectedOfferer.managedVenues
-      .filter(venue => !venue.isVirtual)
-      .map(venue => !venue.businessUnitId)
-      .some(Boolean)
-  }, [isBankInformationWithSiretActive, selectedOfferer])
 
   const hasAtLeastOnePhysicalVenue = selectedOfferer.managedVenues
     .filter(venue => !venue.isVirtual)
@@ -118,11 +81,8 @@ const OffererDetails = ({
   const [isExpanded, setIsExpanded] = useState(
     initialIsExpanded(
       hasPhysicalVenues,
-      isBankInformationWithSiretActive,
       isNewBankInformationActive,
-      hasInvalidBusinessUnits,
-      hasMissingReimbursementPoints,
-      hasMissingBusinessUnits
+      hasMissingReimbursementPoints
     )
   )
 
@@ -131,20 +91,14 @@ const OffererDetails = ({
       setIsExpanded(
         initialIsExpanded(
           hasPhysicalVenues,
-          isBankInformationWithSiretActive,
           isNewBankInformationActive,
-          hasInvalidBusinessUnits,
-          hasMissingReimbursementPoints,
-          hasMissingBusinessUnits
+          hasMissingReimbursementPoints
         )
       ),
     [
       hasPhysicalVenues,
-      isBankInformationWithSiretActive,
       isNewBankInformationActive,
-      hasInvalidBusinessUnits,
       hasMissingReimbursementPoints,
-      hasMissingBusinessUnits,
     ]
   )
 
@@ -186,34 +140,6 @@ const OffererDetails = ({
                 {isExpanded ? 'Masquer' : 'Afficher'}
               </Button>
 
-              {isBankInformationWithSiretActive ? (
-                hasInvalidBusinessUnits ? (
-                  <Icon
-                    alt="SIRET Manquant"
-                    className="ico-bank-warning"
-                    svg="ico-alert-filled"
-                  />
-                ) : (
-                  hasMissingBusinessUnits && (
-                    <Icon
-                      alt="Coordonnées bancaires manquantes"
-                      className="ico-bank-warning"
-                      svg="ico-alert-filled"
-                    />
-                  )
-                )
-              ) : (
-                ((isNewBankInformationActive &&
-                  hasMissingReimbursementPoints) ||
-                  (!isNewBankInformationActive &&
-                    selectedOfferer.hasMissingBankInformation)) && (
-                  <Icon
-                    alt="Informations bancaires manquantes"
-                    className="ico-bank-warning"
-                    svg="ico-alert-filled"
-                  />
-                )
-              )}
               <div className="od-separator vertical small" />
             </>
           )}
@@ -351,22 +277,8 @@ const OffererDetails = ({
                     <MissingReimbursementPoints />
                   </div>
                 )}
-                {isBankInformationWithSiretActive && (
-                  <>
-                    {hasInvalidBusinessUnits && (
-                      <div className="h-card-col">
-                        <InvalidBusinessUnits offererId={selectedOfferer.id} />
-                      </div>
-                    )}
-                    {!hasInvalidBusinessUnits && hasMissingBusinessUnits && (
-                      <div className="h-card-col">
-                        <MissingBusinessUnits />
-                      </div>
-                    )}
-                  </>
-                )}
-                {!isBankInformationWithSiretActive &&
-                  !isNewBankInformationActive &&
+
+                {!isNewBankInformationActive &&
                   (selectedOfferer.hasMissingBankInformation ||
                     hasRejectedOrDraftOffererBankInformations) && (
                     <div className="h-card-col">
@@ -426,7 +338,6 @@ const OffererDetails = ({
 }
 
 OffererDetails.propTypes = {
-  businessUnitList: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleChangeOfferer: PropTypes.func.isRequired,
   hasPhysicalVenues: PropTypes.bool.isRequired,
   isUserOffererValidated: PropTypes.bool.isRequired,

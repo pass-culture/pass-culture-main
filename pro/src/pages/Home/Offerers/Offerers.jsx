@@ -28,7 +28,6 @@ const Offerers = () => {
   const [offererOptions, setOffererOptions] = useState([])
   const [selectedOffererId, setSelectedOffererId] = useState(null)
   const [selectedOfferer, setSelectedOfferer] = useState(null)
-  const [businessUnitList, setBusinessUnitList] = useState([])
   const [physicalVenues, setPhysicalVenues] = useState(INITIAL_PHYSICAL_VENUES)
   const [virtualVenue, setVirtualVenue] = useState(INITIAL_VIRTUAL_VENUE)
   const [isLoading, setIsLoading] = useState(true)
@@ -96,14 +95,10 @@ const Offerers = () => {
         )
         setVirtualVenue(virtualVenue)
         setIsUserOffererValidated(true)
-
-        const receivedBusinessUnitList = await api.getBusinessUnits(offererId)
-        setBusinessUnitList(receivedBusinessUnitList)
       } catch (error) {
         /* istanbul ignore next: DEBT, TO FIX */
         if (error.status === HTTP_STATUS.FORBIDDEN) {
           setSelectedOfferer({ id: offererId, managedVenues: [] })
-          setBusinessUnitList([])
           setPhysicalVenues(INITIAL_PHYSICAL_VENUES)
           setVirtualVenue(INITIAL_VIRTUAL_VENUE)
           setIsUserOffererValidated(false)
@@ -193,7 +188,6 @@ const Offerers = () => {
           )}
           <h2 className="h-section-title">Structures et lieux</h2>
           <OffererDetails
-            businessUnitList={businessUnitList}
             handleChangeOfferer={handleChangeOfferer}
             hasPhysicalVenues={physicalVenues.length > 0}
             isUserOffererValidated={isUserOffererValidated}
