@@ -188,6 +188,8 @@ class GetBookingsTest:
             used1.id,
         ]
 
+        assert response.json["hasBookingsAfter18"] is True
+
         assert response.json["ended_bookings"][3] == {
             "activationCode": None,
             "cancellationDate": None,
@@ -232,6 +234,24 @@ class GetBookingsTest:
 
         for booking in response.json["ongoing_bookings"]:
             assert booking["qrCodeData"] is not None
+
+    @freeze_time("2021-03-12")
+    def test_get_bookings_15_17_user(self, client):
+        user = users_factories.UnderageBeneficiaryFactory(email=self.identifier)
+
+        booking = booking_factories.UsedIndividualBookingFactory(
+            individualBooking__user=user,
+            stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
+            dateUsed=datetime(2021, 2, 3),
+        )
+
+        test_client = client.with_token(user.email)
+        with assert_no_duplicated_queries():
+            response = test_client.get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        assert response.json["ongoing_bookings"][0]["id"] == booking.id
+        assert response.json["hasBookingsAfter18"] is False
 
     def test_offer_url_is_not_overrided_by_cancelled_booking_url(self, app, client):
         OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"

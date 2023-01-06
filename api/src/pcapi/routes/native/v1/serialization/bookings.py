@@ -125,6 +125,7 @@ class BookingReponse(BaseModel):
 class BookingsResponse(BaseModel):
     ended_bookings: list[BookingReponse]
     ongoing_bookings: list[BookingReponse]
+    hasBookingsAfter18: bool
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
