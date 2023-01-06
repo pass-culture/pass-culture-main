@@ -7,44 +7,51 @@
         <div class="d-flex justify-content-between">
             <h2 class="fw-light">Rattachements à valider</h2>
         </div>
-        <form action="{{ dst }}" method="GET" class="mb-4 mt-3">
-            <div class="row">
-                <div class="col-10">
-                    {% for form_field in form %}
-                        {% if form_field.type == "HiddenField" %}
-                            {{ form_field }}
-                        {% endif %}
-                    {% endfor %}
-                    <div class="input-group mb-3">
+        <div class="col-2">
+            <div class="py-2">
+                <button id="toggle-filters-button" type="submit" class="btn btn-primary"></button>
+            </div>
+        </div>
+        <div id="filters" class="d-none">
+            <form action="{{ dst }}" method="GET" class="mb-4 mt-3">
+                <div class="row">
+                    <div class="col-10">
                         {% for form_field in form %}
-                            {% if form_field.type != "HiddenField" and form_field.type != "PCSelectMultipleField" and form_field.type != "PCQuerySelectMultipleField" %}
+                            {% if form_field.type == "HiddenField" %}
                                 {{ form_field }}
                             {% endif %}
                         {% endfor %}
-                    </div>
-                    <div class="input-group mb-1 ">
-                        {% for form_field in form %}
-                            {% if form_field.type == 'PCSelectMultipleField' or form_field.type == "PCQuerySelectMultipleField" %}
-                                <div class="col-4 p-1"> {{ form_field }}</div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
+                        <div class="input-group mb-3">
+                            {% for form_field in form %}
+                                {% if form_field.type != "HiddenField" and form_field.type != "PCSelectMultipleField" and form_field.type != "PCQuerySelectMultipleField" %}
+                                    {{ form_field }}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="input-group mb-1 ">
+                            {% for form_field in form %}
+                                {% if form_field.type == 'PCSelectMultipleField' or form_field.type == "PCQuerySelectMultipleField" %}
+                                    <div class="col-4 p-1"> {{ form_field }}</div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
 
-                </div>
-                <div class="col-2">
-                    <div class="py-2">
-                        <button type="submit" class="btn btn-primary">Appliquer</button>
+                    </div>
+                    <div class="col-2">
+                        <div class="py-2">
+                            <button type="submit" class="btn btn-primary">Appliquer</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="w-100 my-4">
-                {% for form_field in form %}
-                    {% for error in form_field.errors %}
-                        <p class="text-warning lead">{{ error }}</p>
+                <div class="w-100 my-4">
+                    {% for form_field in form %}
+                        {% for error in form_field.errors %}
+                            <p class="text-warning lead">{{ error }}</p>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
-            </div>
-        </form>
+                </div>
+            </form>
+        </div>
         <div>
             {% if rows and rows.total > 0 %}
                 <div class="d-flex justify-content-between">
@@ -164,4 +171,30 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function toggleSearchFilters(areFiltersHidden){
+            const button = document.getElementById("toggle-filters-button");
+            const filters = document.getElementById("filters");
+            if (areFiltersHidden){
+                button.textContent = "Afficher les filtres";
+                filters.classList.add("d-none");
+            } else {
+                button.textContent = "Masquer les filtres";
+                filters.classList.remove("d-none");
+            }
+        }
+        let areUserOffererFiltersHidden = localStorage.getItem("areUserOffererFiltersHidden") === "true";
+        toggleSearchFilters(areUserOffererFiltersHidden);
+        document.getElementById("toggle-filters-button").addEventListener(
+            "click",
+            function() {
+                areUserOffererFiltersHidden = !areUserOffererFiltersHidden;
+                localStorage.setItem("areUserOffererFiltersHidden", areUserOffererFiltersHidden.toString());
+                toggleSearchFilters(areUserOffererFiltersHidden);
+            }
+        )
+    </script>
 {% endblock %}
