@@ -16,6 +16,7 @@ def delete(*models: Model) -> None:
 
 
 def add_to_session(*models: Model) -> None:
+    """Validate models and add them to session."""
     if not models:
         return
 
