@@ -26,6 +26,8 @@ from pcapi import settings
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
+from pcapi.core.providers import constants as providers_constants
+from pcapi.core.providers import repository as providers_repository
 import pcapi.core.search.testing as search_testing
 import pcapi.core.testing
 from pcapi.core.users import testing as users_testing
@@ -216,6 +218,11 @@ def client_fixture(app: Flask):
     # the csrf protection enabled during tests)
     g.pop("csrf_token", default=None)
     return TestClient(app.test_client())
+
+
+@pytest.fixture(name="individual_offers_api_provider")
+def individual_offers_api_provider_fixture():
+    return providers_repository.get_provider_by_local_class(providers_constants.INDIVIDUAL_OFFERS_API_FAKE_CLASS_NAME)
 
 
 @pytest.fixture(name="ubble_mock")
