@@ -32,7 +32,6 @@ import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation
 from pcapi.core.offers.exceptions import OfferAlreadyReportedError
 from pcapi.core.offers.exceptions import ReportMalformed
@@ -289,12 +288,9 @@ def update_offer(
         return offer
 
     if (UNCHANGED, UNCHANGED) != (withdrawalType, withdrawalDelay):
-        try:
-            changed_withdrawalType = withdrawalType if withdrawalType != UNCHANGED else offer.withdrawalType
-            changed_withdrawalDelay = withdrawalDelay if withdrawalDelay != UNCHANGED else offer.withdrawalDelay
-            validation.check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)
-        except offers_exceptions.OfferCreationBaseException as error:
-            raise ApiErrors(error.errors, status_code=400)
+        changed_withdrawalType = withdrawalType if withdrawalType != UNCHANGED else offer.withdrawalType
+        changed_withdrawalDelay = withdrawalDelay if withdrawalDelay != UNCHANGED else offer.withdrawalDelay
+        validation.check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)
 
     if offer.isFromProvider:
         validation.check_update_only_allowed_fields_for_offer_from_provider(set(modifications), offer.lastProvider)

@@ -222,7 +222,10 @@ def patch_offer(
     offer = rest.load_or_404(Offer, human_id=offer_id)
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
+    try:
+        offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
+    except exceptions.OfferCreationBaseException as error:
+        raise ApiErrors(error.errors, status_code=400)
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
