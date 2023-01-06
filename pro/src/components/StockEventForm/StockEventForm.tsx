@@ -4,26 +4,41 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import formRowStyles from 'components/StockEventFormRow/SharedStockEventFormRow.module.scss'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { useOfferWizardMode } from 'hooks'
 import { IcoEuro } from 'icons'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
 
+import { STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS } from './constants'
 import styles from './StockEventForm.module.scss'
 import { IStockEventFormValues } from './types'
 
 export interface IStockEventFormProps {
   today: Date
   stockIndex: number
+  isSynchronized?: boolean
 }
 
 const StockEventForm = ({
   today,
   stockIndex,
+  isSynchronized = false,
 }: IStockEventFormProps): JSX.Element => {
+  const mode = useOfferWizardMode()
   const { values, setFieldValue, setTouched } = useFormikContext<{
     stocks: IStockEventFormValues[]
   }>()
 
   const stockFormValues = values.stocks[stockIndex]
+
+  if (
+    isSynchronized &&
+    mode === OFFER_WIZARD_MODE.EDITION &&
+    !stockFormValues.stockId
+  ) {
+    stockFormValues.readOnlyFields =
+      STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS
+  }
   const { readOnlyFields } = stockFormValues
 
   const onChangeBeginningDate = (_name: string, date: Date | null) => {
