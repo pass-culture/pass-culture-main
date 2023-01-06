@@ -8,7 +8,6 @@ import { BannerReimbursementsInfo } from 'components/Banner'
 import PageTitle from 'components/PageTitle/PageTitle'
 import { ReimbursementsBreadcrumb } from 'components/ReimbursementsBreadcrumb'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import Icon from 'ui-kit/Icon/Icon'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -37,10 +36,6 @@ const Reimbursements = () => {
     []
   )
 
-  const isNewBankInformationCreation = useActiveFeature(
-    'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
-  )
-
   const match = useRouteMatch()
 
   const loadVenues = useCallback(async () => {
@@ -55,9 +50,7 @@ const Reimbursements = () => {
   const loadReimbursementPoints = useCallback(async () => {
     try {
       /* istanbul ignore next: TO FIX */
-      const reimbursementPointsResponse = isNewBankInformationCreation
-        ? await api.getReimbursementPoints()
-        : await api.getBusinessUnits()
+      const reimbursementPointsResponse = await api.getReimbursementPoints()
       setReimbursementPointsOptions(
         sortByDisplayName(
           reimbursementPointsResponse.map(item => ({
