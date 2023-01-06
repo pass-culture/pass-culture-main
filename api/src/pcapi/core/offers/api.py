@@ -118,7 +118,7 @@ def create_offer(
     description: str | None = None,
     duration_minutes: int | None = None,
     external_ticket_office_url: str | None = None,
-    extra_data: typing.Any = None,
+    extra_data: dict | None = None,
     is_duo: bool | None = None,
     is_national: bool | None = None,
     provider: providers_models.Provider | None = None,
@@ -134,7 +134,7 @@ def create_offer(
     validation.check_is_duo_compliance(is_duo, subcategory)
 
     if _is_able_to_create_book_offer_from_isbn(subcategory):
-        product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(extra_data["isbn"])
+        product = _load_product_by_isbn(extra_data.get("isbn") if extra_data else None)
         is_national = bool(is_national) if is_national is not None else product.isNational
     else:
         is_national = True if url else bool(is_national)
@@ -190,7 +190,6 @@ def create_offer(
 
 
 def _is_able_to_create_book_offer_from_isbn(subcategory: subcategories.Subcategory) -> bool:
-    # TODO(viconnex): add check on isbn presence
     return FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active() and can_create_from_isbn(
         subcategory_id=subcategory.id
     )
@@ -949,16 +948,12 @@ def import_offer_validation_config(config_as_yaml: str, user: User = None) -> Of
     return config
 
 
-def _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(isbn: str) -> Product:
+def _load_product_by_isbn(isbn: str | None) -> Product:
+    if not isbn:
+        raise exceptions.MissingISBN()
     product = Product.query.filter(Product.extraData["isbn"].astext == isbn).first()
     if product is None or not product.isGcuCompatible:
-        errors = ApiErrors()
-        errors.add_error(
-            "isbn",
-            "Ce produit n’est pas éligible au pass Culture.",
-        )
-        errors.status_code = 400
-        raise errors
+        raise exceptions.NotEligibleISBN()
     return product
 
 
