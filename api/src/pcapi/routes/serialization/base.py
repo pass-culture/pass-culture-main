@@ -108,3 +108,14 @@ class BaseVenueResponse(BaseModel):
     postalCode: str | None
     publicName: str | None
     withdrawalDetails: str | None
+
+
+class ListOffersVenueResponseModel(BaseModel):
+    id: str
+    nonHumanizedId: int
+    isVirtual: bool
+    managingOffererId: str
+    name: str
+    offererName: str
+    publicName: str | None
+    departementCode: str | None
