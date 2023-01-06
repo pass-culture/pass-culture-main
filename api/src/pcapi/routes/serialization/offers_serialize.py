@@ -9,12 +9,11 @@ from pydantic import root_validator
 from pydantic import validator
 
 from pcapi.core.bookings.api import compute_cancellation_limit_date
-from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.serialize import CollectiveOfferType
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -88,9 +87,7 @@ class PostOfferBodyModel(BaseModel):
 
     @root_validator()
     def validate_isbn(cls, values: dict) -> dict:
-        if FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active() and can_create_from_isbn(
-            subcategory_id=values.get("subcategory_id")
-        ):
+        if offers_api.should_retrieve_book_from_isbn(values.get("subcategory_id", "")):
             check_offer_isbn_is_valid(values.get("extra_data", {}).get("isbn"))
         return values
 
