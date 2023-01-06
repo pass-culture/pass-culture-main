@@ -3,6 +3,7 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { Mode, OfferEducationalStockFormValues } from 'core/OfferEducational'
+import { IcoEuro } from 'icons'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
 
 import {
@@ -47,10 +48,10 @@ const FormStock = ({ mode }: IFormStockProps): JSX.Element => {
         disabled={mode === Mode.READ_ONLY}
         label={TOTAL_PRICE_LABEL}
         name="totalPrice"
-        placeholder="Ex : 200€"
         smallLabel
         step={0.01} // allow user to enter a price with cents
         type="number"
+        rightIcon={() => <IcoEuro />}
       />
       <DatePicker
         disabled={mode === Mode.READ_ONLY}

@@ -52,18 +52,13 @@ const StockThingForm = ({
         smallLabel
         name="price"
         label="Prix"
-        placeholder="Ex: 20€"
         className={cn({
           [styles['input-price']]: !showExpirationDate,
         })}
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('price')}
         type="number"
-        rightIcon={
-          values.price.toString().length > 0
-            ? () => <IcoEuro tabIndex={-1} />
-            : () => <></>
-        }
+        rightIcon={() => <IcoEuro tabIndex={-1} />}
       />
       <DatePicker
         smallLabel

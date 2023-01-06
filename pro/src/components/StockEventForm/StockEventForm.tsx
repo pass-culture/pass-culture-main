@@ -101,11 +101,8 @@ const StockEventForm = ({
         className={cn(styles['input-price'], styles['field-layout-align-self'])}
         classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
-        placeholder="Ex: 20€"
         disabled={readOnlyFields.includes('price')}
-        rightIcon={() =>
-          stockFormValues.price.toString().length > 0 ? <IcoEuro /> : <></>
-        }
+        rightIcon={() => <IcoEuro />}
         type="number"
         hideHiddenFooter={true}
       />
