@@ -3,17 +3,7 @@
     "minWordSizefor2Typos": 8,
     "hitsPerPage": 20,
     "maxValuesPerFacet": 100,
-    "attributesToIndex": [
-        "unordered(offer.name)",
-        "unordered(venue.publicName)",
-        "unordered(offer.artist)",
-        "unordered(offer.subcategoryId)",
-        "unordered(venue.name)",
-        "unordered(offerer.name)",
-        "unordered(offer.description)",
-        "unordered(distinct)"
-    ],
-    "numericAttributesToIndex": null,
+    "version": 2,
     "attributesToRetrieve": null,
     "ignorePlurals": [
         "fr"
@@ -24,15 +14,15 @@
     ],
     "distinct": true,
     "unretrievableAttributes": [
-        "offer.last30DaysBookings",
-        "offer.last30DaysBookingsRange"
+        "offer.last30DaysBookings"
     ],
     "optionalWords": null,
     "queryLanguages": [
         "fr"
     ],
+    "replicas": [],
     "attributesForFaceting": [
-        "filterOnly(offer.bookMacroSection)",
+        "offer.bookMacroSection",
         "filterOnly(offer.category)",
         "filterOnly(offer.dates)",
         "filterOnly(offer.isDigital)",
@@ -41,17 +31,19 @@
         "filterOnly(offer.isEvent)",
         "filterOnly(offer.isForbiddenToUnderage)",
         "filterOnly(offer.isThing)",
-        "filterOnly(offer.last30DaysBookingsRange)",
-        "filterOnly(offer.movieGenres)",
-        "filterOnly(offer.musicType)",
+        "filterOnly(offer.last30DaysBookings)",
+        "offer.last30DaysBookingsRange",
+        "offer.movieGenres",
+        "offer.musicType",
+        "offer.nativeCategoryId",
         "filterOnly(offer.prices)",
         "filterOnly(offer.searchGroupName)",
-        "filterOnly(offer.searchGroupNamev2)",
-        "filterOnly(offer.showType)",
+        "offer.searchGroupNamev2",
+        "offer.showType",
         "filterOnly(offer.stocksDateCreated)",
         "filterOnly(offer.students)",
-        "filterOnly(offer.subcategoryId)",
-        "filterOnly(offer.tags)",
+        "offer.subcategoryId",
+        "searchable(offer.tags)",
         "filterOnly(offer.times)",
         "filterOnly(venue.departmentCode)",
         "filterOnly(venue.id)"
@@ -60,6 +52,9 @@
     "attributesToHighlight": null,
     "paginationLimitedTo": 1000,
     "attributeForDistinct": "distinct",
+    "disableTypoToleranceOnWords": [
+        "canal+"
+    ],
     "exactOnSingleWordQuery": "attribute",
     "disableTypoToleranceOnAttributes": [
         "distinct"
@@ -89,6 +84,7 @@
         "ignorePlurals",
         "singleWordSynonym"
     ],
+    "maxFacetHits": 10,
     "indexLanguages": [
         "fr"
     ],
@@ -100,5 +96,16 @@
         [
             "offer.searchGroupName:-CINEMA"
         ]
-    ]
+    ],
+    "searchableAttributes": [
+        "unordered(offer.name)",
+        "unordered(venue.publicName)",
+        "unordered(offer.artist)",
+        "unordered(offer.subcategoryId)",
+        "unordered(venue.name)",
+        "unordered(offerer.name)",
+        "unordered(offer.description)",
+        "unordered(distinct)"
+    ],
+    "numericAttributesForFiltering": null
 }

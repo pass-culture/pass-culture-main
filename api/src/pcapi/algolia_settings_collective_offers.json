@@ -3,17 +3,12 @@
     "minWordSizefor2Typos": 8,
     "hitsPerPage": 20,
     "maxValuesPerFacet": 100,
-    "attributesToIndex": [
-        "unordered(offer.name)",
-        "unordered(offerer.name)",
-        "unordered(offer.artist)",
-        "unordered(distinct)",
-        "unordered(venue.name)",
-        "unordered(venue.publicName)"
-    ],
-    "numericAttributesToIndex": null,
+    "version": 2,
     "attributesToRetrieve": null,
     "ignorePlurals": [
+        "fr"
+    ],
+    "removeStopWords": [
         "fr"
     ],
     "distinct": true,
@@ -65,5 +60,14 @@
     ],
     "indexLanguages": [
         "fr"
-    ]
+    ],
+    "searchableAttributes": [
+        "unordered(offer.name)",
+        "unordered(offerer.name)",
+        "unordered(offer.artist)",
+        "unordered(distinct)",
+        "unordered(venue.name)",
+        "unordered(venue.publicName)"
+    ],
+    "numericAttributesForFiltering": null
 }
