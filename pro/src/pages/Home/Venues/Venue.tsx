@@ -12,7 +12,6 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { venueCreateOfferLink } from 'core/Venue/utils'
 import { useNewOfferCreationJourney } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { ReactComponent as IcoPlusCircle } from 'icons/ico-plus-circle.svg'
@@ -129,9 +128,6 @@ const Venue = ({
     },
   ]
 
-  const isNewBankInformationActive = useActiveFeature(
-    'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
-  )
   const hasNewOfferCreationJourney = useNewOfferCreationJourney()
 
   if (prevInitialOpenState != initialOpenState) {
@@ -213,24 +209,22 @@ const Venue = ({
               </button>
             </h3>
             <div className="button-group">
-              {isNewBankInformationActive &&
-                hasMissingReimbursementPoint &&
-                !isVirtual && (
-                  <>
-                    <ButtonLink
-                      className="add-rib-link tertiary-link"
-                      variant={ButtonVariant.TERNARY}
-                      link={{
-                        to: reimbursementSectionLink,
-                        isExternal: false,
-                      }}
-                      Icon={IcoPlusCircle}
-                    >
-                      Ajouter un RIB
-                    </ButtonLink>
-                    <span className="button-group-separator" />
-                  </>
-                )}
+              {hasMissingReimbursementPoint && !isVirtual && (
+                <>
+                  <ButtonLink
+                    className="add-rib-link tertiary-link"
+                    variant={ButtonVariant.TERNARY}
+                    link={{
+                      to: reimbursementSectionLink,
+                      isExternal: false,
+                    }}
+                    Icon={IcoPlusCircle}
+                  >
+                    Ajouter un RIB
+                  </ButtonLink>
+                  <span className="button-group-separator" />
+                </>
+              )}
               <ButtonLink
                 variant={ButtonVariant.TERNARY}
                 link={{

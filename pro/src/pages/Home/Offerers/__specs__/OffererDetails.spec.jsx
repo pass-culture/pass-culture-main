@@ -808,14 +808,6 @@ describe('offererDetailsLegacy', () => {
           },
           initialized: true,
         },
-        features: {
-          list: [
-            {
-              isActive: true,
-              nameKey: 'ENABLE_NEW_BANK_INFORMATIONS_CREATION',
-            },
-          ],
-        },
         app: { logEvent: mockLogEvent },
       })
     })

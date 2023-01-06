@@ -20,7 +20,6 @@ import {
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
 import { useNewOfferCreationJourney } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -61,9 +60,6 @@ const VenueFormScreen = ({
   const [isSiretValued, setIsSiretValued] = useState(
     isCreatingVenue || !!venue?.siret
   )
-  const isNewBankInformationCreation = useActiveFeature(
-    'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
-  )
 
   const hasNewOfferCreationJourney = useNewOfferCreationJourney()
 
@@ -103,7 +99,7 @@ const VenueFormScreen = ({
             response.id,
             currentUser
           ),
-          isNewBankInformationCreation
+          true
         )
       })
       .catch(error => {
@@ -199,7 +195,6 @@ const VenueFormScreen = ({
         </Title>
         {
           /* istanbul ignore next: DEBT, TO FIX */ !isCreatingVenue &&
-            isNewBankInformationCreation &&
             venue &&
             venue.dmsToken && (
               <>
