@@ -22,8 +22,8 @@ from pcapi.core.offers.serialize import CollectiveOfferType
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
-from pcapi.routes.serialization.offers_serialize import ListOffersVenueResponseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
 from pcapi.serialization.utils import humanize_field
@@ -91,7 +91,7 @@ class CollectiveOfferResponseModel(BaseModel):
     booking: CollectiveOffersBookingResponseModel | None
     subcategoryId: SubcategoryIdEnum
     isShowcase: bool
-    venue: ListOffersVenueResponseModel
+    venue: base_serializers.ListOffersVenueResponseModel
     status: str
     venueId: str
     educationalInstitution: EducationalInstitutionResponseModel | None
