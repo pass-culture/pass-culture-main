@@ -8,6 +8,7 @@ import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
+import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.models import Offer
@@ -128,8 +129,14 @@ def get_bookings(user: User) -> BookingsResponse:
         )
         .options(joinedload(IndividualBooking.booking).joinedload(Booking.activationCode))
         .options(joinedload(IndividualBooking.booking).joinedload(Booking.externalBookings))
+        .options(
+            joinedload(IndividualBooking.booking).joinedload(Booking.deposit).load_only(finance_models.Deposit.type)
+        )
     ).all()
 
+    has_bookings_after_18 = any(
+        booking for booking in individual_bookings if booking.deposit.type == finance_models.DepositType.GRANT_18
+    )
     ended_bookings = []
     ongoing_bookings = []
 
@@ -158,6 +165,7 @@ def get_bookings(user: User) -> BookingsResponse:
                 ongoing_bookings, key=lambda b: (b.expirationDate or b.stock.beginningDatetime or datetime.max, -b.id)
             )
         ],
+        hasBookingsAfter18=has_bookings_after_18,
     )
     _update_booking_offer_url(result.ended_bookings)
     _update_booking_offer_url(result.ongoing_bookings)
