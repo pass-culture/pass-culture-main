@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { useNewOfferCreationJourney } from 'hooks'
+
 import Venue from './Venue'
 
 interface IVenueListProps {
@@ -9,12 +11,14 @@ interface IVenueListProps {
     publicName?: string
     businessUnitId?: string
     hasMissingReimbursementPoint: boolean
+    hasCreatedOffer: boolean
   }[]
   selectedOffererId: string
   virtualVenue: {
     id: string
     businessUnitId?: string
     hasMissingReimbursementPoint: boolean
+    hasCreatedOffer: boolean
   } | null
 }
 
@@ -23,6 +27,7 @@ const VenueList = ({
   selectedOffererId,
   virtualVenue,
 }: IVenueListProps) => {
+  const hasNewOfferCreationJourney = useNewOfferCreationJourney()
   return (
     <div className="h-venue-list">
       {virtualVenue && (
@@ -34,6 +39,9 @@ const VenueList = ({
           offererId={selectedOffererId}
           hasMissingReimbursementPoint={
             virtualVenue.hasMissingReimbursementPoint
+          }
+          initialOpenState={
+            hasNewOfferCreationJourney ? !virtualVenue.hasCreatedOffer : false
           }
         />
       )}
@@ -47,7 +55,9 @@ const VenueList = ({
           offererId={selectedOffererId}
           publicName={venue.publicName}
           hasMissingReimbursementPoint={venue.hasMissingReimbursementPoint}
-          hasOnlyOneVenue={physicalVenues.length === 1}
+          initialOpenState={
+            hasNewOfferCreationJourney ? !venue.hasCreatedOffer : false
+          }
         />
       ))}
     </div>
