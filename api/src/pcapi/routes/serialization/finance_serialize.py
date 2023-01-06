@@ -71,7 +71,6 @@ class InvoiceListQueryModel(BaseModel):
     class Config:
         orm_mode = True
 
-    businessUnitId: int | None
     periodBeginningDate: datetime.date | None
     periodEndingDate: datetime.date | None
     reimbursementPointId: int | None
@@ -85,13 +84,11 @@ class InvoiceResponseModel(BaseModel):
     date: datetime.date
     amount: float
     url: str
-    businessUnitName: str | None
     reimbursementPointName: str | None
     cashflowLabels: list[str]
 
     @classmethod
     def from_orm(cls, invoice: finance_models.Invoice) -> "InvoiceResponseModel":
-        invoice.businessUnitName = invoice.businessUnit.name if invoice.businessUnit else None
         invoice.reimbursementPointName = (
             (invoice.reimbursementPoint.publicName or invoice.reimbursementPoint.name)
             if invoice.reimbursementPoint

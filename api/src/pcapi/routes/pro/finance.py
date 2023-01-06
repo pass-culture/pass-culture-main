@@ -30,12 +30,10 @@ def get_invoices(
         query.periodEndingDate += datetime.timedelta(days=1)
     invoices = finance_repository.get_invoices_query(
         current_user,
-        business_unit_id=query.businessUnitId,
         reimbursement_point_id=query.reimbursementPointId,
         date_from=query.periodBeginningDate,
         date_until=query.periodEndingDate,
     )
-    invoices = invoices.options(sqla_orm.joinedload(finance_models.Invoice.businessUnit))
     invoices = invoices.options(
         sqla_orm.joinedload(finance_models.Invoice.cashflows).joinedload(finance_models.Cashflow.batch)
     )

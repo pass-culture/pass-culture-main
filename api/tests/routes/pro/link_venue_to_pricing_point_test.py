@@ -1,6 +1,5 @@
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.utils import human_ids
@@ -10,7 +9,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns201Test:
-    @testing.override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_no_pre_existing_link(self, client):
         venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=venue.managingOfferer)
@@ -29,7 +27,6 @@ class Returns201Test:
 
 
 class Returns400Test:
-    @testing.override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_pricing_point_does_not_exist(self, client):
         venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=venue.managingOfferer)

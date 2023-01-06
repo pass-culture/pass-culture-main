@@ -5,7 +5,6 @@ import pytest
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.testing import override_features
 from pcapi.core.users import testing as external_testing
 from pcapi.utils.human_ids import humanize
 
@@ -241,7 +240,6 @@ class Returns200Test:
 
         assert len(external_testing.sendinblue_requests) == 1
 
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_add_reimbursement_point(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, pricing_point="self")
@@ -262,7 +260,6 @@ class Returns200Test:
         assert response.json["reimbursementPointId"] == new_reimbursement_point.id
         assert len(external_testing.sendinblue_requests) == 1
 
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_remove_reimbursement_point_id(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, pricing_point="self")
@@ -317,7 +314,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert key in response.json
 
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_raises_if_different_offerer(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, pricing_point="self")
