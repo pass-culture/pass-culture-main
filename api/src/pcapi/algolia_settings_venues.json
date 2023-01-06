@@ -3,18 +3,14 @@
     "minWordSizefor2Typos": 8,
     "hitsPerPage": 20,
     "maxValuesPerFacet": 100,
-    "attributesToIndex": [
-        "unordered(name)",
-        "unordered(offerer_name)",
-        "unordered(description)"
-    ],
-    "numericAttributesToIndex": null,
+    "version": 2,
     "attributesToRetrieve": null,
     "ignorePlurals": false,
     "removeStopWords": [
         "fr",
         "en"
     ],
+    "distinct": false,
     "unretrievableAttributes": null,
     "optionalWords": null,
     "queryLanguages": [
@@ -54,5 +50,11 @@
     ],
     "indexLanguages": [
         "fr"
-    ]
+    ],
+    "searchableAttributes": [
+        "unordered(name)",
+        "unordered(offerer_name)",
+        "unordered(description)"
+    ],
+    "numericAttributesForFiltering": null
 }
