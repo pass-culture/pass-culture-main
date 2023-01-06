@@ -99,16 +99,13 @@ const ReimbursementsInvoices = ({
 
       api
         .getInvoices(
-          // @ts-expect-error type string is not assignable to type number
-          reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.businessUnitId
-            ? reimbursmentPoint
-            : undefined,
           periodStart !== DEFAULT_INVOICES_FILTERS.periodBeginningDate
             ? formatBrowserTimezonedDateAsUTC(periodStart, FORMAT_ISO_DATE_ONLY)
             : undefined,
           periodEnd !== DEFAULT_INVOICES_FILTERS.periodEndingDate
             ? formatBrowserTimezonedDateAsUTC(periodEnd, FORMAT_ISO_DATE_ONLY)
             : undefined,
+          // @ts-expect-error type string is not assignable to type number
           reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.businessUnitId
             ? reimbursmentPoint
             : undefined

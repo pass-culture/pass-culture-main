@@ -4,7 +4,6 @@ import typing
 import sqlalchemy.orm as sqla_orm
 
 import pcapi.core.finance.models as finance_models
-from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.human_ids import dehumanize
 
@@ -56,10 +55,6 @@ def check_venue_creation(data: dict[str, typing.Any]) -> None:
         data.get("visualDisabilityCompliant"),
     ]:
         raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit être définie."]})
-    if not feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
-        business_unit_id = data.get("businessUnitId")
-        if business_unit_id:
-            check_existing_business_unit(business_unit_id, offerer)
 
 
 def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venue) -> None:
