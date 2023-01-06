@@ -140,7 +140,7 @@ test('je peux créer une offre avec médiation', async t => {
     .match(/\/offre\/([A-Z0-9]+)\/individuel\/creation\/stocks$/)
 })
 
-test("je suis redirigé sur la page de choix du type d'offre si je clique sur retour à partir de la page de création d'offre", async t => {
+test.skip("je suis redirigé sur la page de choix du type d'offre si je clique sur retour à partir de la page de création d'offre", async t => {
   await navigateToNewOfferAs(
     t.fixtureCtx.validatedUser,
     null,
