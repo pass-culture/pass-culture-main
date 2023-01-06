@@ -18,14 +18,18 @@ export const STOCK_EVENT_FORM_DEFAULT_VALUES: IStockEventFormValues = {
 }
 
 // 'price','quantity','bookingLimitDatetime', are editable
-export const STOCK_EVENT_ALLOCINE_READ_ONLY_FIELDS = [
-  'beginningDate',
-  'beginningTime',
-]
+export const STOCK_EVENT_ALLOCINE_READ_ONLY_FIELDS: (keyof IStockEventFormValues)[] =
+  ['beginningDate', 'beginningTime']
 
 // 'quantity','bookingLimitDatetime' are editable
-export const STOCK_EVENT_CINEMA_PROVIDER_READ_ONLY_FIELDS = [
-  'beginningDate',
-  'beginningTime',
-  'price',
-]
+export const STOCK_EVENT_CINEMA_PROVIDER_READ_ONLY_FIELDS: (keyof IStockEventFormValues)[] =
+  ['beginningDate', 'beginningTime', 'price']
+
+export const STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS: (keyof IStockEventFormValues)[] =
+  [
+    'beginningDate',
+    'beginningTime',
+    'price',
+    'quantity',
+    'bookingLimitDatetime',
+  ]
