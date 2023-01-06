@@ -32,6 +32,9 @@ from . import repository
 
 logger = logging.getLogger(__name__)
 
+# This is subscription API
+
+
 USER_PROFILING_BLOCKING_STATUS = fraud_models.FraudCheckStatus.KO
 
 
