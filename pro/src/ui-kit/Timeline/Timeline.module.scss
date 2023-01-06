@@ -62,12 +62,12 @@ $time-line-width: rem.torem(2px);
 
 .line-error::after {
   border-style: solid;
-  border-color: colors.$black;
+  border-color: colors.$grey-dark;
 }
 
 .line-waiting::after {
   border-style: dashed;
-  border-color: colors.$black;
+  border-color: colors.$grey-dark;
 }
 
 .line-disabled::after {
