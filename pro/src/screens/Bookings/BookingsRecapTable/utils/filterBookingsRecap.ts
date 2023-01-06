@@ -19,9 +19,7 @@ const doesOfferNameMatchFilter = <
   return true
 }
 
-const doesBookingIdMatchFilter = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
->(
+const doesBookingIdMatchFilter = <T extends CollectiveBookingResponseModel>(
   bookingId: string,
   booking: T
 ): boolean => {
@@ -156,13 +154,13 @@ const filterBookingsRecap = <
   return bookingsRecap.filter(booking => {
     const matchFilters =
       doesOfferNameMatchFilter(offerName, booking) &&
-      doesBookingStatusMatchFilter(bookingStatus, booking) &&
-      doesBookingIdMatchFilter(bookingId, booking)
+      doesBookingStatusMatchFilter(bookingStatus, booking)
 
     if (isBookingCollectiveBooking(booking)) {
       return (
         matchFilters &&
-        doesBookingInstitutionMatchFilter(bookingInstitution, booking)
+        doesBookingInstitutionMatchFilter(bookingInstitution, booking) &&
+        doesBookingIdMatchFilter(bookingId, booking)
       )
     }
 
