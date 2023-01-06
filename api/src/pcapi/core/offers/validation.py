@@ -22,6 +22,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.models import CinemaProviderPivot
 from pcapi.core.providers.models import Provider
@@ -43,6 +44,13 @@ EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER = {
 }
 EDITABLE_FIELDS_FOR_ALLOCINE_OFFER = {"isDuo"} | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
 EDITABLE_FIELDS_FOR_ALLOCINE_STOCK = {"bookingLimitDatetime", "price", "quantity"}
+EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER = {
+    "isActive",
+    "isDuo",
+    "bookingEmail",
+    "extraData",
+    "withdrawalDetails",
+} | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
 
 MAX_THUMBNAIL_SIZE = 10_000_000
 MIN_THUMBNAIL_WIDTH = 400
@@ -95,6 +103,8 @@ def check_provider_can_edit_stock(offer: Offer, editing_provider: providers_mode
 def check_update_only_allowed_fields_for_offer_from_provider(updated_fields: set, provider: Provider) -> None:
     if provider.isAllocine:
         rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_ALLOCINE_OFFER
+    elif provider.name == providers_constants.INDIVIDUAL_OFFERS_API_PROVIDER_NAME:
+        rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER
     else:
         rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
     if rejected_fields:

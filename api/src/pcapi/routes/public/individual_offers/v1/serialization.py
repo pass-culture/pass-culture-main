@@ -1,3 +1,4 @@
+import copy
 import datetime
 import enum
 import logging
@@ -53,6 +54,13 @@ class Accessibility(serialization.ConfiguredBaseModel):
     mental_disability_compliant: bool
     motor_disability_compliant: bool
     visual_disability_compliant: bool
+
+
+class PartialAccessibility(serialization.ConfiguredBaseModel):
+    audio_disability_compliant: bool | None
+    mental_disability_compliant: bool | None
+    motor_disability_compliant: bool | None
+    visual_disability_compliant: bool | None
 
 
 class PhysicalLocation(serialization.ConfiguredBaseModel):
@@ -117,7 +125,7 @@ CATEGORY_RELATED_FIELD = pydantic.Field(..., description=CATEGORY_RELATED_FIELD_
 DESCRIPTION_FIELD = pydantic.Field(
     None, description="Offer description", example="A great book for kids and old kids.", max_length=1000
 )
-ACCESSIBILITY_FIELD = pydantic.Field(..., description="Accessibility to disabled people.")
+ACCESSIBILITY_FIELD = pydantic.Field(description="Accessibility to disabled people.")
 EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic.Field(
     None,
     description="Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
@@ -200,7 +208,7 @@ def compute_category_fields_model(
 
 def compute_category_related_fields(offer: offers_models.Offer) -> CategoryRelatedFields:
     category_fields_model = (product_category_reading_models | event_category_reading_models)[offer.subcategoryId]
-    fields = offer.extraData or {}
+    fields = copy.deepcopy(offer.extraData) or {}
     if offer.extraData and "musicSubType" in offer.extraData and offer.extraData["musicSubType"] != "":
         fields["musicType"] = MusicTypeEnum(
             music_types.MUSIC_SUB_TYPES_BY_CODE[int(offer.extraData["musicSubType"])].slug
@@ -211,25 +219,32 @@ def compute_category_related_fields(offer: offers_models.Offer) -> CategoryRelat
     return category_fields_model(**fields, category=offer.subcategory.id)
 
 
-def compute_extra_data(category_related_fields: CategoryRelatedFields) -> dict[str, str]:
-    extra_data = {}
-    for extra_data_field in ExtraDataModel.__fields__:
-        field_value = getattr(category_related_fields, extra_data_field, None)
-        if field_value:
-            if extra_data_field == "musicType":
-                extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[field_value].code)
-                extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[field_value].code)
-            elif extra_data_field == "showType":
-                extra_data["showSubType"] = str(show_types.SHOW_SUB_TYPES_BY_SLUG[field_value].code)
-                extra_data["showType"] = str(show_types.SHOW_TYPES_BY_SLUG[field_value].code)
-            else:
-                extra_data[extra_data_field] = field_value
+def compute_extra_data(
+    category_related_fields: CategoryRelatedFields, initial_extra_data: dict[str, str] | None = None
+) -> dict[str, str]:
+    extra_data = initial_extra_data or {}
+    for field_name, field_value in category_related_fields.dict(exclude_unset=True).items():
+        if field_name == "subcategory_id":
+            continue
+        if field_name == "musicType":
+            extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[field_value].code)
+            extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[field_value].code)
+        elif field_name == "showType":
+            extra_data["showSubType"] = str(show_types.SHOW_SUB_TYPES_BY_SLUG[field_value].code)
+            extra_data["showType"] = str(show_types.SHOW_TYPES_BY_SLUG[field_value].code)
+        else:
+            extra_data[field_name] = field_value
 
     return extra_data
 
 
 product_category_creation_models = {
     subcategory.id: compute_category_fields_model(subcategory, Method.create)
+    for subcategory in subcategories.ALL_SUBCATEGORIES
+    if not subcategory.is_event and subcategory != subcategories.LIVRE_PAPIER and subcategory.is_selectable
+}
+product_category_edition_models = {
+    subcategory.id: compute_category_fields_model(subcategory, Method.edit)
     for subcategory in subcategories.ALL_SUBCATEGORIES
     if not subcategory.is_event and subcategory != subcategories.LIVRE_PAPIER and subcategory.is_selectable
 }
@@ -256,6 +271,7 @@ if typing.TYPE_CHECKING:
     product_category_reading_fields = CategoryRelatedFields
     event_category_creation_fields = CategoryRelatedFields
     event_category_reading_fields = CategoryRelatedFields
+    product_category_edition_fields = CategoryRelatedFields
 else:
     product_category_creation_fields = typing_extensions.Annotated[
         typing.Union[tuple(product_category_creation_models.values())],
@@ -264,6 +280,10 @@ else:
     product_category_reading_fields = typing_extensions.Annotated[
         typing.Union[tuple(product_category_reading_models.values())],
         pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
+    ]
+    product_category_edition_fields = typing_extensions.Annotated[
+        typing.Union[tuple(product_category_edition_models.values())],
+        pydantic.Field(discriminator="subcategory_id"),
     ]
     event_category_creation_fields = typing_extensions.Annotated[
         typing.Union[tuple(event_category_creation_models.values())],
@@ -357,6 +377,25 @@ class EventOfferCreation(OfferCreationBase):
     category_related_fields: event_category_creation_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = TICKET_COLLECTION_FIELD
+
+
+class OfferEditionBase(serialization.ConfiguredBaseModel):
+    accessibility: PartialAccessibility | None = pydantic.Field(
+        description="Accessibility to disabled people. Leave fields undefined to keep current value"
+    )
+    booking_email: pydantic.EmailStr | None = BOOKING_EMAIL_FIELD
+    is_active: bool | None = pydantic.Field(
+        description="Whether the offer is activated. An inactive offer cannot be booked."
+    )
+    is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
+    withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
+
+
+class ProductOfferEdition(OfferEditionBase):
+    category_related_fields: product_category_edition_fields | None = pydantic.Field(
+        None,
+        description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
+    )
 
 
 class DatesCreation(serialization.ConfiguredBaseModel):

@@ -1,3 +1,4 @@
+import copy
 import logging
 
 import flask
@@ -451,3 +452,50 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
             query.venue_id,
         ),
     )
+
+
+def compute_accessibility_edition_fields(accessibility_payload: dict | None) -> dict:
+    if not accessibility_payload:
+        return {}
+    return {
+        "audioDisabilityCompliant": accessibility_payload.get("audio_disability_compliant", offers_api.UNCHANGED),
+        "mentalDisabilityCompliant": accessibility_payload.get("mental_disability_compliant", offers_api.UNCHANGED),
+        "motorDisabilityCompliant": accessibility_payload.get("motor_disability_compliant", offers_api.UNCHANGED),
+        "visualDisabilityCompliant": accessibility_payload.get("visual_disability_compliant", offers_api.UNCHANGED),
+    }
+
+
+@blueprint.v1_blueprint.route("/products/<int:product_id>", methods=["PATCH"])
+@spectree_serialize(
+    api=blueprint.v1_schema, tags=[PRODUCT_OFFERS_TAG], response_model=serialization.ProductOfferResponse
+)
+@api_key_required
+def edit_product(product_id: int, body: serialization.ProductOfferEdition) -> serialization.ProductOfferResponse:
+    """
+    Edit a product offer.
+
+    Leave fields undefined to keep their current value.
+    """
+    offer: offers_models.Offer | None = (
+        _retrieve_offer_relations_query(_retrieve_offer_query(product_id))
+        .filter(offers_models.Offer.isEvent == False)
+        .one_or_none()
+    )
+
+    if not offer:
+        raise api_errors.ApiErrors({"product_id": ["The product offer could not be found"]}, status_code=404)
+
+    update_body = body.dict(exclude_unset=True)
+    with repository.transaction():
+        offers_api.update_offer(
+            offer,
+            extraData=serialization.compute_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))  # type: ignore[arg-type]
+            if body.category_related_fields
+            else offers_api.UNCHANGED,
+            isActive=update_body.get("is_active", offers_api.UNCHANGED),
+            isDuo=update_body.get("is_duo", offers_api.UNCHANGED),
+            withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
+            **compute_accessibility_edition_fields(update_body.get("accessibility")),
+        )
+
+    return serialization.ProductOfferResponse.build_product_offer(offer)
