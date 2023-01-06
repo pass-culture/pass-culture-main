@@ -81,7 +81,7 @@ class Returns201Test:
         assert len(external_testing.sendinblue_requests) == 1
         assert external_testing.zendesk_sell_requests == [{"action": "create", "type": "Venue", "id": dehumanize(idx)}]
 
-    @testing.override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True, ENABLE_ZENDESK_SELL_CREATION=True)
+    @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
     def test_register_new_venue(self, client):
         user = ProFactory()
         client = client.with_session_auth(email=user.email)
@@ -116,24 +116,6 @@ class Returns201Test:
 
 
 class Returns400Test:
-    @testing.override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=False)
-    def test_business_unit_not_exist(self, client):
-        # given
-        user = ProFactory()
-        client = client.with_session_auth(email=user.email)
-        venue_data = create_valid_venue_data(user)
-        venue_data["businessUnitId"] = "777"
-
-        # when
-        response = client.post("/venues", json=venue_data)
-
-        # then
-        assert response.status_code == 400
-        assert response.json["businessUnitId"] == ["Ce point de facturation n'existe pas."]
-
-        assert len(external_testing.sendinblue_requests) == 0
-        assert len(external_testing.zendesk_sell_requests) == 0
-
     def test_latitude_out_of_range_and_longitude_wrong_format(self, client):
         user = ProFactory()
         venue_data = create_valid_venue_data(user)

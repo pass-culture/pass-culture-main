@@ -916,7 +916,6 @@ export class DefaultService {
 
   /**
    * get_invoices <GET>
-   * @param businessUnitId
    * @param periodBeginningDate
    * @param periodEndingDate
    * @param reimbursementPointId
@@ -924,7 +923,6 @@ export class DefaultService {
    * @throws ApiError
    */
   public getInvoices(
-    businessUnitId?: number | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
     reimbursementPointId?: number | null,
@@ -933,7 +931,6 @@ export class DefaultService {
       method: 'GET',
       url: '/finance/invoices',
       query: {
-        'businessUnitId': businessUnitId,
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
         'reimbursementPointId': reimbursementPointId,

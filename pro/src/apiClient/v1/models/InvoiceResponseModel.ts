@@ -4,7 +4,6 @@
 
 export type InvoiceResponseModel = {
   amount: number;
-  businessUnitName?: string | null;
   cashflowLabels: Array<string>;
   date: string;
   reference: string;
