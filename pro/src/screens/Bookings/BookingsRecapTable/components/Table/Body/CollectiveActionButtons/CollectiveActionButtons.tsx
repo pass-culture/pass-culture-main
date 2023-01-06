@@ -45,16 +45,17 @@ const CollectiveActionButtons = ({
   return (
     <>
       <div className={styles['action-buttons']}>
-        <Button
-          variant={ButtonVariant.SECONDARY}
-          onClick={() => setIsModalOpen(true)}
-          disabled={!isCancellable}
-        >
-          Annuler la{' '}
-          {bookingRecap.booking_status === BOOKING_STATUS.PENDING
-            ? 'préréservation'
-            : 'réservation'}
-        </Button>
+        {isCancellable && (
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            onClick={() => setIsModalOpen(true)}
+          >
+            Annuler la{' '}
+            {bookingRecap.booking_status === BOOKING_STATUS.PENDING
+              ? 'préréservation'
+              : 'réservation'}
+          </Button>
+        )}
         {bookingRecap.booking_status === BOOKING_STATUS.PENDING && (
           <ButtonLink
             link={{ isExternal: false, to: offerEditionUrl }}

@@ -2,10 +2,8 @@ import React from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings'
-import {
-  ReactComponent as IcoPen,
-  ReactComponent as ExternalLinkIcon,
-} from 'icons/ico-external-site-filled.svg'
+import { ReactComponent as ExternalLinkIcon } from 'icons/ico-external-site-filled.svg'
+import { ReactComponent as IcoPen } from 'icons/ico-pen.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Timeline from 'ui-kit/Timeline'
@@ -147,7 +145,7 @@ const CollectiveTimeLine = ({
             }}
             Icon={ExternalLinkIcon}
           >
-            Modifier la date limite de réservation
+            Je rencontre un problème à cette étape
           </ButtonLink>
         </div>
       </>
