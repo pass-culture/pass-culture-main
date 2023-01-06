@@ -17,6 +17,7 @@ from pcapi.core.offers.serialize import CollectiveOfferType
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import base as base_serializers
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
 from pcapi.serialization.utils import humanize_field
@@ -170,17 +171,6 @@ class PatchAllOffersActiveStatusResponseModel(BaseModel):
     pass
 
 
-class ListOffersVenueResponseModel(BaseModel):
-    id: str
-    nonHumanizedId: int
-    isVirtual: bool
-    managingOffererId: str
-    name: str
-    offererName: str
-    publicName: str | None
-    departementCode: str | None
-
-
 class ListOffersStockResponseModel(BaseModel):
     id: str
     nonHumanizedId: int
@@ -210,7 +200,7 @@ class ListOffersOfferResponseModel(BaseModel):
     thumbUrl: str | None
     productIsbn: str | None
     subcategoryId: SubcategoryIdEnum
-    venue: ListOffersVenueResponseModel
+    venue: base_serializers.ListOffersVenueResponseModel
     status: str
     venueId: str
     isShowcase: bool | None
