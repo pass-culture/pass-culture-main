@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { BOOKING_STATUS } from 'core/Bookings'
@@ -10,6 +11,7 @@ import {
   VenueEvents,
 } from 'core/FirebaseEvents/constants'
 import { venueCreateOfferLink } from 'core/Venue/utils'
+import { useNewOfferCreationJourney } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
@@ -20,8 +22,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import Icon from 'ui-kit/Icon/Icon'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import { useNewOfferCreationJourney } from '../../../hooks'
-
 import VenueStat from './VenueStat'
 
 export interface IVenueProps {
@@ -29,7 +29,7 @@ export interface IVenueProps {
   hasMissingReimbursementPoint?: boolean
   id: string
   isVirtual?: boolean
-  hasOnlyOneVenue?: boolean
+  initialOpenState?: boolean
   name: string
   offererId: string
   publicName?: string
@@ -42,17 +42,21 @@ const Venue = ({
   isVirtual = false,
   name,
   offererId,
-  hasOnlyOneVenue,
+  initialOpenState,
   publicName,
 }: IVenueProps) => {
-  const [isStatOpen, setIsStatOpen] = useState(false)
+  const [prevInitialOpenState, setPrevInitialOpenState] =
+    useState(initialOpenState)
+  const [prevOffererId, setPrevOffererId] = useState(offererId)
+  const [isStatOpen, setIsStatOpen] = useState(initialOpenState)
   const [isStatLoaded, setIsStatLoaded] = useState(false)
-  const [stats, setStats] = useState({
+  const INITIAL_STATS_VALUE = {
     activeBookingsQuantity: '',
     activeOffersCount: '',
     soldOutOffersCount: '',
     validatedBookingsQuantity: '',
-  })
+  }
+  const [stats, setStats] = useState(INITIAL_STATS_VALUE)
   const { logEvent } = useAnalytics()
 
   const venueIdTrackParam = {
@@ -135,6 +139,20 @@ const Venue = ({
   )
   const hasNewOfferCreationJourney = useNewOfferCreationJourney()
 
+  if (prevInitialOpenState != initialOpenState) {
+    setIsStatOpen(initialOpenState)
+    setPrevInitialOpenState(initialOpenState)
+  }
+
+  if (offererId !== prevOffererId) {
+    setPrevOffererId(offererId)
+    if (stats !== INITIAL_STATS_VALUE) {
+      setIsStatOpen(false)
+      setIsStatLoaded(false)
+      setStats(INITIAL_STATS_VALUE)
+    }
+  }
+
   useEffect(() => {
     async function updateStats() {
       const stats = await api.getVenueStats(id)
@@ -146,21 +164,10 @@ const Venue = ({
       })
       setIsStatLoaded(true)
     }
-    if ((isStatOpen && !isStatLoaded) || hasOnlyOneVenue) {
+    if (isStatOpen && !isStatLoaded) {
       updateStats()
     }
-  }, [id, isStatOpen, isStatLoaded])
-
-  useEffect(() => {
-    setIsStatOpen(false)
-    setIsStatLoaded(false)
-    setStats({
-      activeBookingsQuantity: '',
-      activeOffersCount: '',
-      soldOutOffersCount: '',
-      validatedBookingsQuantity: '',
-    })
-  }, [offererId])
+  }, [id, isStatOpen, isStatLoaded, initialOpenState])
 
   const editVenueLink = `/structures/${offererId}/lieux/${id}?modification`
   const reimbursementSectionLink = `/structures/${offererId}/lieux/${id}?modification#remboursement`
@@ -197,7 +204,17 @@ const Venue = ({
                   className="h-card-title-ico"
                   svg={isStatOpen ? 'ico-caret-down' : 'ico-caret-right'}
                 />
-                {publicName || name}
+                {hasNewOfferCreationJourney ? (
+                  <>{publicName || name}</>
+                ) : (
+                  <Link
+                    className="title-text"
+                    title={publicName || name}
+                    to={editVenueLink}
+                  >
+                    {publicName || name}
+                  </Link>
+                )}
               </button>
             </h3>
             <div className="button-group">
@@ -237,8 +254,7 @@ const Venue = ({
               </ButtonLink>
             </div>
           </div>
-          {(isStatOpen ||
-            (hasOnlyOneVenue && stats.activeOffersCount == '0')) &&
+          {isStatOpen &&
             (isStatLoaded ? (
               <div className="venue-stats">
                 {venueStatData.map(stat => (
