@@ -887,7 +887,9 @@ class CreateOfferTest:
 class UpdateOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_basics(self, mocked_async_index_offer_ids):
-        offer = factories.OfferFactory(isDuo=False, bookingEmail="old@example.com")
+        offer = factories.OfferFactory(
+            isDuo=False, bookingEmail="old@example.com", subcategoryId=subcategories.ESCAPE_GAME.id
+        )
 
         offer = api.update_offer(offer, isDuo=True, bookingEmail="new@example.com")
 
@@ -941,7 +943,9 @@ class UpdateOfferTest:
 
     def test_success_on_allocine_offer(self):
         provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
-        offer = factories.OfferFactory(lastProvider=provider, name="Old name")
+        offer = factories.OfferFactory(
+            lastProvider=provider, name="Old name", subcategoryId=subcategories.SEANCE_CINE.id
+        )
 
         api.update_offer(offer, name="Old name", isDuo=True)
 
@@ -951,7 +955,9 @@ class UpdateOfferTest:
 
     def test_forbidden_on_allocine_offer_on_certain_fields(self):
         provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
-        offer = factories.OfferFactory(lastProvider=provider, name="Old name")
+        offer = factories.OfferFactory(
+            lastProvider=provider, name="Old name", subcategoryId=subcategories.SEANCE_CINE.id
+        )
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_offer(offer, name="New name", isDuo=True)
@@ -1008,7 +1014,11 @@ class UpdateOfferTest:
     def test_forbidden_on_imported_offer_on_other_fields(self):
         provider = providers_factories.APIProviderFactory()
         offer = factories.OfferFactory(
-            lastProvider=provider, name="Old name", isDuo=False, audioDisabilityCompliant=True
+            lastProvider=provider,
+            name="Old name",
+            isDuo=False,
+            audioDisabilityCompliant=True,
+            subcategoryId=subcategories.SEANCE_CINE.id,
         )
 
         with pytest.raises(api_errors.ApiErrors) as error:
