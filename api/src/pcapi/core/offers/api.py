@@ -134,33 +134,47 @@ def create_offer(
     validation.check_is_duo_compliance(is_duo, subcategory)
 
     if _is_able_to_create_book_offer_from_isbn(subcategory):
-        offer = _initialize_book_offer_from_template(description, extra_data, is_national, name, url)
+        product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(extra_data["isbn"])
+        is_national = bool(is_national) if is_national is not None else product.isNational
     else:
-        offer = _initialize_offer_with_new_data(
-            description,
-            duration_minutes,
-            extra_data,
-            is_duo,
-            is_national,
-            name,
-            subcategory_id,
-            url,
-            venue,
-            withdrawal_delay,
-            withdrawal_details,
-            withdrawal_type,
+        is_national = True if url else bool(is_national)
+        product = Product(
+            name=name,
+            description=description,
+            url=url,
+            durationMinutes=duration_minutes,
+            isNational=is_national,
+            owningOfferer=venue.managingOfferer,
+            subcategoryId=subcategory_id,
         )
 
-    offer.audioDisabilityCompliant = audio_disability_compliant
-    offer.bookingEmail = booking_email
-    offer.externalTicketOfficeUrl = external_ticket_office_url
-    offer.isActive = False
-    offer.mentalDisabilityCompliant = mental_disability_compliant
-    offer.motorDisabilityCompliant = motor_disability_compliant
-    offer.lastProvider = provider
-    offer.validation = OfferValidationStatus.DRAFT
-    offer.venue = venue
-    offer.visualDisabilityCompliant = visual_disability_compliant
+    offer = Offer(
+        ageMin=product.ageMin,
+        ageMax=product.ageMax,
+        audioDisabilityCompliant=audio_disability_compliant,
+        bookingEmail=booking_email,
+        conditions=product.conditions,
+        description=product.description or description,
+        durationMinutes=duration_minutes,
+        externalTicketOfficeUrl=external_ticket_office_url,
+        extraData=(product.extraData or {}) | (extra_data or {}),
+        isActive=False,
+        isDuo=bool(is_duo),
+        isNational=is_national,
+        mentalDisabilityCompliant=mental_disability_compliant,
+        motorDisabilityCompliant=motor_disability_compliant,
+        lastProvider=provider,
+        subcategoryId=product.subcategoryId,
+        name=name,
+        product=product,
+        url=url,
+        validation=OfferValidationStatus.DRAFT,
+        venue=venue,
+        visualDisabilityCompliant=visual_disability_compliant,
+        withdrawalDelay=withdrawal_delay,
+        withdrawalDetails=withdrawal_details,
+        withdrawalType=withdrawal_type,
+    )
 
     repository.add_to_session(offer)
 
@@ -180,73 +194,6 @@ def _is_able_to_create_book_offer_from_isbn(subcategory: subcategories.Subcatego
     return FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active() and can_create_from_isbn(
         subcategory_id=subcategory.id
     )
-
-
-def _initialize_book_offer_from_template(
-    description: str | None,
-    extra_data: typing.Any,
-    is_national: bool | None,
-    name: str,
-    url: str | None,
-) -> Offer:
-    product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(extra_data["isbn"])
-
-    offer = Offer(
-        ageMax=product.ageMax,
-        ageMin=product.ageMin,
-        conditions=product.conditions,
-        description=description if description else product.description,
-        extraData=product.extraData | extra_data,
-        isNational=is_national if is_national else product.isNational,
-        name=name,
-        product=product,
-        subcategoryId=product.subcategoryId,
-        url=url if url else product.url,
-    )
-    return offer
-
-
-def _initialize_offer_with_new_data(
-    description: str | None,
-    duration_minutes: int | None,
-    extra_data: typing.Any,
-    is_duo: bool | None,
-    is_national: bool | None,
-    name: str,
-    subcategory_id: str,
-    url: str | None,
-    venue: Venue,
-    withdrawal_delay: int | None,
-    withdrawal_details: str | None,
-    withdrawal_type: models.WithdrawalTypeEnum | None,
-) -> Offer:
-    is_national = True if url else bool(is_national)
-    product = Product(
-        name=name,
-        description=description,
-        url=url,
-        durationMinutes=duration_minutes,
-        isNational=bool(is_national),
-        owningOfferer=venue.managingOfferer,
-        subcategoryId=subcategory_id,
-    )
-
-    offer = Offer(
-        description=description,
-        durationMinutes=duration_minutes,
-        extraData=extra_data,
-        isDuo=bool(is_duo),
-        isNational=bool(is_national),
-        name=name,
-        product=product,
-        subcategoryId=subcategory_id,
-        url=url,
-        withdrawalDelay=withdrawal_delay,
-        withdrawalDetails=withdrawal_details,
-        withdrawalType=withdrawal_type,
-    )
-
-    return offer
 
 
 def update_offer(

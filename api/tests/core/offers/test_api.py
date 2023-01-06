@@ -755,7 +755,7 @@ class CreateOfferTest:
         assert offer.motorDisabilityCompliant
         assert offer.visualDisabilityCompliant
         assert offer.validation == models.OfferValidationStatus.DRAFT
-        assert offer.extraData is None
+        assert offer.extraData == {}
         assert not offer.bookingEmail
         assert models.Offer.query.count() == 1
 
