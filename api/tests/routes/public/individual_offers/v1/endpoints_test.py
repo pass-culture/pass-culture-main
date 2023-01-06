@@ -14,8 +14,6 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.core.providers import constants as providers_constants
-from pcapi.core.providers import repository as providers_repository
 from pcapi.models import offer_mixin
 from pcapi.utils import human_ids
 
@@ -867,13 +865,10 @@ class PostEventTest:
 
 @pytest.mark.usefixtures("db_session")
 class PostDatesTest:
-    def test_new_dates_are_added(self, client):
+    def test_new_dates_are_added(self, individual_offers_api_provider, client):
         api_key = offerers_factories.ApiKeyFactory()
-        individual_offers_provider = providers_repository.get_provider_by_local_class(
-            providers_constants.INDIVIDUAL_OFFERS_API_FAKE_CLASS_NAME
-        )
         event_offer = offers_factories.EventOfferFactory(
-            venue__managingOfferer=api_key.offerer, lastProvider=individual_offers_provider
+            venue__managingOfferer=api_key.offerer, lastProvider=individual_offers_api_provider
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -1520,3 +1515,100 @@ class GetEventsTest:
             },
         }
         assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
+
+
+@pytest.mark.usefixtures("db_session")
+class PatchProductTest:
+    def test_deactivate_offer(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer, isActive=True, lastProvider=individual_offers_api_provider
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/{product_offer.id}",
+            json={"isActive": False},
+        )
+
+        assert response.status_code == 200
+        assert response.json["status"] == "INACTIVE"
+        assert product_offer.isActive is False
+
+    def test_sets_field_to_none_and_leaves_other_unchanged(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            withdrawalDetails="Des conditions de retrait sur la sellette",
+            bookingEmail="notify@example.com",
+            lastProvider=individual_offers_api_provider,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/{product_offer.id}",
+            json={"itemCollectionDetails": None},
+        )
+
+        assert response.status_code == 200
+        assert response.json["itemCollectionDetails"] is None
+        assert product_offer.withdrawalDetails is None
+        assert product_offer.bookingEmail == "notify@example.com"
+
+    def test_sets_accessibility_partially(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+            lastProvider=individual_offers_api_provider,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/{product_offer.id}",
+            json={"accessibility": {"audioDisabilityCompliant": False}},
+        )
+
+        assert response.status_code == 200
+        assert response.json["accessibility"] == {
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": True,
+        }
+        assert product_offer.audioDisabilityCompliant is False
+        assert product_offer.mentalDisabilityCompliant is True
+        assert product_offer.motorDisabilityCompliant is True
+        assert product_offer.visualDisabilityCompliant is True
+
+    def test_update_extra_data_partially(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            subcategoryId="SUPPORT_PHYSIQUE_MUSIQUE",
+            extraData={
+                "author": "Maurice",
+                "musicType": "501",
+                "musicSubType": "508",
+                "performer": "Pink Pâtisserie",
+            },
+            lastProvider=individual_offers_api_provider,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/{product_offer.id}",
+            json={"categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_MUSIQUE", "musicType": "JAZZ-ACID_JAZZ"}},
+        )
+        assert response.status_code == 200
+        assert response.json["categoryRelatedFields"] == {
+            "author": "Maurice",
+            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+            "musicType": "JAZZ-ACID_JAZZ",
+            "performer": "Pink Pâtisserie",
+        }
+        assert product_offer.extraData == {
+            "author": "Maurice",
+            "musicSubType": "502",
+            "musicType": "501",
+            "performer": "Pink Pâtisserie",
+        }
