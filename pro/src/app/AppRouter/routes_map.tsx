@@ -3,7 +3,6 @@
 import { Redirect, useLocation } from 'react-router-dom'
 
 import Bookings from 'pages/Bookings'
-import BusinessUnitList from 'pages/BusinessUnitList'
 import CollectiveBookings from 'pages/CollectiveBookings'
 import CollectiveOfferRoutes from 'pages/CollectiveOfferRoutes'
 import CollectiveOffers from 'pages/CollectiveOffers'
@@ -218,13 +217,6 @@ const routes: IRoute[] = [
     exact: true,
     path: '/structures/:offererId([A-Z0-9]+)/lieux/:venueId([A-Z0-9]+)/eac',
     title: 'Structures',
-  },
-  {
-    component: BusinessUnitList,
-    exact: true,
-    path: '/structures/:offererId([A-Z0-9]+)/point-de-remboursement',
-    title: 'Structures',
-    featureName: 'ENFORCE_BANK_INFORMATION_WITH_SIRET',
   },
   {
     component: OfferType,
