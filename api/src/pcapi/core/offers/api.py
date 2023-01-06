@@ -23,7 +23,6 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
-from pcapi.core.categories.conf import can_create_from_isbn
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api_offer
@@ -133,7 +132,7 @@ def create_offer(
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
     validation.check_is_duo_compliance(is_duo, subcategory)
 
-    if _is_able_to_create_book_offer_from_isbn(subcategory):
+    if should_retrieve_book_from_isbn(subcategory.id):
         product = _load_product_by_isbn(extra_data.get("isbn") if extra_data else None)
         is_national = bool(is_national) if is_national is not None else product.isNational
     else:
@@ -189,9 +188,10 @@ def create_offer(
     return offer
 
 
-def _is_able_to_create_book_offer_from_isbn(subcategory: subcategories.Subcategory) -> bool:
-    return FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active() and can_create_from_isbn(
-        subcategory_id=subcategory.id
+def should_retrieve_book_from_isbn(subcategory_id: str) -> bool:
+    return (
+        subcategory_id == subcategories.LIVRE_PAPIER.id
+        and FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active()
     )
 
 
