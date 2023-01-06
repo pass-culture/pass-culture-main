@@ -7,6 +7,10 @@ on:
       - production
       - staging
 
+concurrency:
+  group: tests-main-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test-adage:
     name: Tests adage
