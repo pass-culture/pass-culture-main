@@ -216,19 +216,9 @@ describe('venues', () => {
     it('should display add bank information when venue does not have a reimbursement point', () => {
       // Given
       props.hasMissingReimbursementPoint = true
-      const storeOverrides = configureTestStore({
-        features: {
-          list: [
-            {
-              isActive: true,
-              nameKey: 'ENABLE_NEW_BANK_INFORMATIONS_CREATION',
-            },
-          ],
-        },
-      })
 
       // When
-      renderVenue(props, storeOverrides)
+      renderVenue(props, store)
 
       // Then
       expect(

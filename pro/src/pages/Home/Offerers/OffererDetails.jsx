@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React, { useEffect, useMemo, useState } from 'react'
 
 import { Events } from 'core/FirebaseEvents/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
@@ -15,24 +14,14 @@ import Select from 'ui-kit/form_raw/Select'
 
 import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
 
-import BankInformations from './BankInformations'
 import MissingReimbursementPoints from './MissingReimbursementPoints/MissingReimbursementPoints'
 import VenueCreationLinks from './VenueCreationLinks'
 
-const hasRejectedOrDraftBankInformation = offerer =>
-  Boolean(
-    offerer.demarchesSimplifieesApplicationId && !offerer.iban && !offerer.bic
-  )
-
 const initialIsExpanded = (
   hasPhysicalVenues,
-  isNewBankInformationActive,
   hasMissingReimbursementPoints
 ) => {
-  return (
-    !hasPhysicalVenues ||
-    (isNewBankInformationActive && hasMissingReimbursementPoints)
-  )
+  return !hasPhysicalVenues || hasMissingReimbursementPoints
 }
 
 const OffererDetails = ({
@@ -42,18 +31,8 @@ const OffererDetails = ({
   offererOptions,
   selectedOfferer,
 }) => {
-  const isNewBankInformationActive = useActiveFeature(
-    'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
-  ) //True
   const newOfferCreation = useNewOfferCreationJourney()
   const { logEvent } = useAnalytics()
-
-  const hasRejectedOrDraftOffererBankInformations = useMemo(() => {
-    if (!selectedOfferer) {
-      return false
-    }
-    return hasRejectedOrDraftBankInformation(selectedOfferer)
-  }, [selectedOfferer])
 
   const hasAtLeastOnePhysicalVenue = selectedOfferer.managedVenues
     .filter(venue => !venue.isVirtual)
@@ -66,9 +45,6 @@ const OffererDetails = ({
     .some(Boolean)
 
   const hasMissingReimbursementPoints = useMemo(() => {
-    if (!isNewBankInformationActive) {
-      return false
-    }
     if (!selectedOfferer) {
       return false
     }
@@ -76,30 +52,18 @@ const OffererDetails = ({
       .filter(venue => !venue.isVirtual)
       .map(venue => venue.hasMissingReimbursementPoint)
       .some(Boolean)
-  }, [selectedOfferer, isNewBankInformationActive])
+  }, [selectedOfferer])
 
   const [isExpanded, setIsExpanded] = useState(
-    initialIsExpanded(
-      hasPhysicalVenues,
-      isNewBankInformationActive,
-      hasMissingReimbursementPoints
-    )
+    initialIsExpanded(hasPhysicalVenues, hasMissingReimbursementPoints)
   )
 
   useEffect(
     () =>
       setIsExpanded(
-        initialIsExpanded(
-          hasPhysicalVenues,
-          isNewBankInformationActive,
-          hasMissingReimbursementPoints
-        )
+        initialIsExpanded(hasPhysicalVenues, hasMissingReimbursementPoints)
       ),
-    [
-      hasPhysicalVenues,
-      isNewBankInformationActive,
-      hasMissingReimbursementPoints,
-    ]
+    [hasPhysicalVenues, hasMissingReimbursementPoints]
   )
 
   const toggleVisibility = () => {
@@ -272,27 +236,11 @@ const OffererDetails = ({
                   </div>
                 </div>
 
-                {isNewBankInformationActive && hasMissingReimbursementPoints && (
+                {hasMissingReimbursementPoints && (
                   <div className="h-card-col">
                     <MissingReimbursementPoints />
                   </div>
                 )}
-
-                {!isNewBankInformationActive &&
-                  (selectedOfferer.hasMissingBankInformation ||
-                    hasRejectedOrDraftOffererBankInformations) && (
-                    <div className="h-card-col">
-                      <BankInformations
-                        hasMissingBankInformation={
-                          selectedOfferer.hasMissingBankInformation
-                        }
-                        hasRejectedOrDraftOffererBankInformations={
-                          hasRejectedOrDraftOffererBankInformations
-                        }
-                        offerer={selectedOfferer}
-                      />
-                    </div>
-                  )}
               </div>
             )}
             {selectedOfferer.isValidated &&
