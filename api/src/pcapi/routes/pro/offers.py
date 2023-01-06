@@ -139,10 +139,7 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
             )
 
     except exceptions.OfferCreationBaseException as error:
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
+        raise ApiErrors(error.errors, status_code=400)
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
@@ -223,7 +220,8 @@ def patch_offer(
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     try:
-        offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
+        with repository.transaction():
+            offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
     except exceptions.OfferCreationBaseException as error:
         raise ApiErrors(error.errors, status_code=400)
 

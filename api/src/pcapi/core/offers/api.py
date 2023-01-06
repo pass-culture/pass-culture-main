@@ -296,21 +296,20 @@ def update_offer(
         validation.check_update_only_allowed_fields_for_offer_from_provider(set(modifications), offer.lastProvider)
 
     offer.populate_from_dict(modifications)
-    with db.session.no_autoflush:
-        if offer.product.owningOfferer and offer.product.owningOfferer == offer.venue.managingOfferer:
-            offer.product.populate_from_dict(modifications)
-            product_has_been_updated = True
-        else:
-            product_has_been_updated = False
-
     if offer.isFromAllocine:
         offer.fieldsUpdated = list(set(offer.fieldsUpdated) | set(modifications))
 
-    repository.save(offer)
+    repository.add_to_session(offer)
+
+    if offer.product.owningOfferer and offer.product.owningOfferer == offer.venue.managingOfferer:
+        offer.product.populate_from_dict(modifications)
+        repository.add_to_session(offer.product)
+        product_has_been_updated = True
+    else:
+        product_has_been_updated = False
 
     logger.info("Offer has been updated", extra={"offer_id": offer.id}, technical_message_id="offer.updated")  # type: ignore [call-arg]
     if product_has_been_updated:
-        repository.save(offer.product)
         logger.info("Product has been updated", extra={"product": offer.product.id})
 
     search.async_index_offer_ids([offer.id])
