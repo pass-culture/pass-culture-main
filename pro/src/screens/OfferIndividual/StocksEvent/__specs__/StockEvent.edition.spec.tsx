@@ -480,6 +480,34 @@ describe('screens:StocksEvent:Edition', () => {
     expect(screen.queryByText('Ajouter une date')).toBeDisabled()
   })
 
+  it('should allow user to edit quantity and booking limit date for a cinema synchronized offer', async () => {
+    jest
+      .spyOn(api, 'upsertStocks')
+      .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
+    apiOffer.lastProvider = {
+      ...apiOffer.lastProvider,
+      id: 'PROVIDER_ID',
+      isActive: true,
+      name: 'ciné office',
+      enabledForPro: true,
+    }
+    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    renderStockEventScreen({ storeOverride })
+    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await userEvent.type(screen.getByLabelText('Quantité'), '30')
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+    )
+    expect(
+      await screen.getByText('Des réservations sont en cours pour cette offre')
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Confirmer les modifications'))
+    expect(
+      screen.getByText('Vos modifications ont bien été enregistrées')
+    ).toBeInTheDocument()
+    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+  })
+
   it('should display an error message when there is an api error', async () => {
     jest.spyOn(api, 'deleteStock').mockRejectedValue(
       new ApiError(
