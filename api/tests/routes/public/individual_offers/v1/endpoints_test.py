@@ -649,8 +649,8 @@ class PostProductTest:
         assert offers_models.Offer.query.count() == 0
 
 
+@pytest.mark.usefixtures("db_session")
 class PostEventTest:
-    @pytest.mark.usefixtures("db_session")
     def test_event_minimal_body(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -684,7 +684,6 @@ class PostEventTest:
         assert created_offer.withdrawalType is None
         assert created_offer.withdrawalDelay is None
 
-    @pytest.mark.usefixtures("db_session")
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
         api_key = offerers_factories.ApiKeyFactory()
@@ -785,7 +784,6 @@ class PostEventTest:
             "ticketCollection": {"daysBeforeEvent": 1, "way": "by_email"},
         }
 
-    @pytest.mark.usefixtures("db_session")
     def test_event_without_ticket(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -805,7 +803,6 @@ class PostEventTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET
 
-    @pytest.mark.usefixtures("db_session")
     def test_event_with_on_site_ticket(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -826,7 +823,6 @@ class PostEventTest:
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.ON_SITE
         assert created_offer.withdrawalDelay == 30 * 60
 
-    @pytest.mark.usefixtures("db_session")
     def test_event_with_email_ticket(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -847,7 +843,6 @@ class PostEventTest:
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.BY_EMAIL
         assert created_offer.withdrawalDelay == 3 * 24 * 3600
 
-    @pytest.mark.usefixtures("db_session")
     def test_error_when_ticket_specified_but_not_applicable(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -870,8 +865,8 @@ class PostEventTest:
         }
 
 
+@pytest.mark.usefixtures("db_session")
 class PostDatesTest:
-    @pytest.mark.usefixtures("db_session")
     def test_new_dates_are_added(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         individual_offers_provider = providers_repository.get_provider_by_local_class(
@@ -936,7 +931,6 @@ class PostDatesTest:
             ],
         }
 
-    @pytest.mark.usefixtures("db_session")
     def test_invalid_offer_id(self, client):
         offerers_factories.ApiKeyFactory()
 
@@ -956,7 +950,6 @@ class PostDatesTest:
 
         assert response.status_code == 404
 
-    @pytest.mark.usefixtures("db_session")
     def test_404_for_other_offerer_offer(self, client):
         offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory()
@@ -977,7 +970,6 @@ class PostDatesTest:
         assert response.status_code == 404
         assert response.json == {"event_id": ["The event could not be found"]}
 
-    @pytest.mark.usefixtures("db_session")
     def test_404_for_product_offer(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         product_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)
@@ -999,8 +991,8 @@ class PostDatesTest:
         assert response.json == {"event_id": ["The event could not be found"]}
 
 
+@pytest.mark.usefixtures("db_session")
 class GetProductTest:
-    @pytest.mark.usefixtures("db_session")
     def test_product_without_stock(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         product_offer = offers_factories.ThingOfferFactory(
@@ -1035,7 +1027,6 @@ class GetProductTest:
             "stock": None,
         }
 
-    @pytest.mark.usefixtures("db_session")
     def test_books_can_be_retrieved(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         product_offer = offers_factories.ThingOfferFactory(
@@ -1050,7 +1041,6 @@ class GetProductTest:
         assert response.status_code == 200
         assert response.json["categoryRelatedFields"] == {"author": None, "category": "LIVRE_PAPIER", "isbn": None}
 
-    @pytest.mark.usefixtures("db_session")
     def test_product_with_not_selectable_category_can_be_retrieved(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         product_offer = offers_factories.ThingOfferFactory(
@@ -1065,7 +1055,6 @@ class GetProductTest:
         assert response.status_code == 200
         assert response.json["categoryRelatedFields"] == {"category": "ABO_LUDOTHEQUE"}
 
-    @pytest.mark.usefixtures("db_session")
     def test_product_with_stock_and_image(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         product_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)
@@ -1099,7 +1088,6 @@ class GetProductTest:
         }
         assert response.json["status"] == "EXPIRED"
 
-    @pytest.mark.usefixtures("db_session")
     def test_404_when_requesting_an_event(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(venue__managingOfferer=api_key.offerer)
@@ -1112,8 +1100,8 @@ class GetProductTest:
         assert response.json == {"product_id": ["The product offer could not be found"]}
 
 
+@pytest.mark.usefixtures("db_session")
 class GetEventTest:
-    @pytest.mark.usefixtures("db_session")
     def test_404_when_requesting_a_product(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)
@@ -1125,7 +1113,6 @@ class GetEventTest:
         assert response.status_code == 404
         assert response.json == {"event_id": ["The event offer could not be found"]}
 
-    @pytest.mark.usefixtures("db_session")
     def test_get_event(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         product = offers_factories.ProductFactory(thumbCount=1)
@@ -1173,7 +1160,6 @@ class GetEventTest:
             "ticketCollection": None,
         }
 
-    @pytest.mark.usefixtures("db_session")
     def test_event_with_not_selectable_category_can_be_retrieved(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(
@@ -1188,7 +1174,6 @@ class GetEventTest:
         assert response.status_code == 200
         assert response.json["categoryRelatedFields"] == {"category": "DECOUVERTE_METIERS", "speaker": None}
 
-    @pytest.mark.usefixtures("db_session")
     def test_get_show_offer_without_show_type(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(
@@ -1208,7 +1193,6 @@ class GetEventTest:
             "stageDirector": None,
         }
 
-    @pytest.mark.usefixtures("db_session")
     def test_get_music_offer_without_music_type(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(
@@ -1227,7 +1211,6 @@ class GetEventTest:
             "musicType": None,
         }
 
-    @pytest.mark.usefixtures("db_session")
     def test_ticket_collection_by_email(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(
@@ -1243,7 +1226,6 @@ class GetEventTest:
         assert response.status_code == 200
         assert response.json["ticketCollection"] == {"daysBeforeEvent": 3, "way": "by_email"}
 
-    @pytest.mark.usefixtures("db_session")
     def test_ticket_collection_on_site(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(
@@ -1259,7 +1241,6 @@ class GetEventTest:
         assert response.status_code == 200
         assert response.json["ticketCollection"] == {"minutesBeforeEvent": 30, "way": "on_site"}
 
-    @pytest.mark.usefixtures("db_session")
     def test_ticket_collection_no_ticket(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(
@@ -1275,9 +1256,9 @@ class GetEventTest:
         assert response.json["ticketCollection"] is None
 
 
+@pytest.mark.usefixtures("db_session")
 class GetEventDatesTest:
     @freezegun.freeze_time("2023-01-01 12:00:00")
-    @pytest.mark.usefixtures("db_session")
     def test_event_with_dates(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(venue__managingOfferer=api_key.offerer)
@@ -1328,7 +1309,6 @@ class GetEventDatesTest:
             == f"http://localhost/public/offers/v1/events/{event_offer.id}/dates?page=1&limit=50"
         )
 
-    @pytest.mark.usefixtures("db_session")
     def test_event_without_dates(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(venue__managingOfferer=api_key.offerer)
@@ -1358,7 +1338,6 @@ class GetEventDatesTest:
             },
         }
 
-    @pytest.mark.usefixtures("db_session")
     def test_404_when_page_is_too_high(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(venue__managingOfferer=api_key.offerer)
@@ -1375,10 +1354,10 @@ class GetEventDatesTest:
         }
 
 
+@pytest.mark.usefixtures("db_session")
 class GetProductsTest:
     ENDPOINT_URL = "http://localhost/public/offers/v1/products"
 
-    @pytest.mark.usefixtures("db_session")
     def test_get_first_page(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         offers = offers_factories.ThingOfferFactory.create_batch(12, venue__managingOfferer=api_key.offerer)
@@ -1405,7 +1384,6 @@ class GetProductsTest:
         }
         assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers[0:5]]
 
-    @pytest.mark.usefixtures("db_session")
     def test_get_last_page(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         offers = offers_factories.ThingOfferFactory.create_batch(12, venue__managingOfferer=api_key.offerer)
@@ -1432,7 +1410,6 @@ class GetProductsTest:
         }
         assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers[10:12]]
 
-    @pytest.mark.usefixtures("db_session")
     def test_404_when_the_page_is_too_high(self, client):
         offerers_factories.ApiKeyFactory()
 
@@ -1446,7 +1423,6 @@ class GetProductsTest:
             "page": "The page you requested does not exist. The maximum page for the " "specified limit is 1"
         }
 
-    @pytest.mark.usefixtures("db_session")
     def test_200_for_first_page_if_no_items(self, client):
         offerers_factories.ApiKeyFactory()
 
@@ -1474,7 +1450,6 @@ class GetProductsTest:
             "products": [],
         }
 
-    @pytest.mark.usefixtures("db_session")
     def test_400_when_limit_is_too_high(self, client):
         offerers_factories.ApiKeyFactory()
 
@@ -1486,7 +1461,6 @@ class GetProductsTest:
         assert response.status_code == 400
         assert response.json == {"limit": ["ensure this value is less than or equal to 50"]}
 
-    @pytest.mark.usefixtures("db_session")
     def test_get_filterd_venue_offer(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -1516,10 +1490,10 @@ class GetProductsTest:
         assert [product["id"] for product in response.json["products"]] == [offer.id]
 
 
+@pytest.mark.usefixtures("db_session")
 class GetEventsTest:
     ENDPOINT_URL = "http://localhost/public/offers/v1/events"
 
-    @pytest.mark.usefixtures("db_session")
     def test_get_first_page(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         offers = offers_factories.EventOfferFactory.create_batch(12, venue__managingOfferer=api_key.offerer)
