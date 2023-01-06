@@ -801,7 +801,7 @@ class CreateOfferTest:
 
         venue = offerers_factories.VenueFactory()
 
-        with pytest.raises(api_errors.ApiErrors) as error:
+        with pytest.raises(exceptions.NotEligibleISBN) as exception_info:
             api.create_offer(
                 venue=venue,
                 name="FONDATION T.1",
@@ -813,13 +813,13 @@ class CreateOfferTest:
                 visual_disability_compliant=False,
             )
 
-        assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
+        assert exception_info.value.errors == {"isbn": ["product not eligible to pass Culture"]}
 
     @override_features(ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION=True)
     def test_create_offer_livre_edition_from_isbn_with_product_not_exists_should_fail(self):
         venue = offerers_factories.VenueFactory()
 
-        with pytest.raises(api_errors.ApiErrors) as error:
+        with pytest.raises(exceptions.NotEligibleISBN) as exception_info:
             api.create_offer(
                 venue=venue,
                 name="FONDATION T.1",
@@ -831,7 +831,7 @@ class CreateOfferTest:
                 visual_disability_compliant=False,
             )
 
-        assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
+        assert exception_info.value.errors == {"isbn": ["product not eligible to pass Culture"]}
 
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
@@ -1734,31 +1734,31 @@ class ComputeOfferValidationScoreTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class LoadProductByIsbnAndCheckIsGCUCompatibleOrRaiseErrorTest:
+class LoadProductByIsbn:
     def test_returns_product_if_found_and_is_gcu_compatible(self):
         isbn = "2221001648"
         product = factories.ProductFactory(extraData={"isbn": isbn}, isGcuCompatible=True)
 
-        result = api._load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(isbn)
+        result = api._load_product_by_isbn(isbn)
 
         assert result == product
 
     def test_raise_api_error_if_no_product(self):
         factories.ProductFactory(isGcuCompatible=True)
 
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api._load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error("2221001649")
+        with pytest.raises(exceptions.NotEligibleISBN) as exception_info:
+            api._load_product_by_isbn("2221001649")
 
-        assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
+        assert exception_info.value.errors["isbn"] == ["product not eligible to pass Culture"]
 
     def test_raise_api_error_if_product_is_not_gcu_compatible(self):
         isbn = "2221001648"
         factories.ProductFactory(extraData={"isbn": isbn}, isGcuCompatible=False)
 
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api._load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(isbn)
+        with pytest.raises(exceptions.NotEligibleISBN) as exception_info:
+            api._load_product_by_isbn(isbn)
 
-        assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
+        assert exception_info.value.errors["isbn"] == ["product not eligible to pass Culture"]
 
 
 @freeze_time("2020-01-05 10:00:00")

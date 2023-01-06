@@ -91,6 +91,16 @@ class OfferCreationBaseException(ClientError):
     pass
 
 
+class MissingISBN(OfferCreationBaseException):
+    def __init__(self) -> None:
+        super().__init__("isbn", "field required")
+
+
+class NotEligibleISBN(OfferCreationBaseException):
+    def __init__(self) -> None:
+        super().__init__("isbn", "product not eligible to pass Culture")
+
+
 class OfferCannotBeDuo(OfferCreationBaseException):
     def __init__(self) -> None:
         super().__init__("enableDoubleBookings", "the category chosen does not allow double bookings")
