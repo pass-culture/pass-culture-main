@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { ReactComponent as AlertSvg } from 'icons/ico-alert-grey.svg'
-import { Button, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import Dialog, { IDialogProps } from '../Dialog'
@@ -23,7 +23,6 @@ const ConfirmDialog = ({
   secondTitle,
   confirmText,
   cancelText,
-  isLoading = false,
   children,
   icon,
   hideIcon = false,
@@ -45,19 +44,14 @@ const ConfirmDialog = ({
       <div className={styles['confirm-dialog-actions']}>
         <Button
           onClick={leftButtonAction}
-          type="submit"
           data-testid="confirm-dialog-button-cancel"
           variant={ButtonVariant.SECONDARY}
         >
           {cancelText}
         </Button>
-        <SubmitButton
-          isLoading={isLoading}
-          onClick={onConfirm}
-          testId="confirm-dialog-button-confirm"
-        >
+        <Button onClick={onConfirm} testId="confirm-dialog-button-confirm">
           {confirmText}
-        </SubmitButton>
+        </Button>
       </div>
     </Dialog>
   )

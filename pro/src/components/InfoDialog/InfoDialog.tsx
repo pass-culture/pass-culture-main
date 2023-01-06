@@ -42,7 +42,7 @@ const InfoDialog = ({
       </div>
       <div className={styles['info-dialog-subtitle']}>{subTitle}</div>
       <div className={styles['info-dialog-actions']}>
-        <button className="primary-button" onClick={closeDialog} type="submit">
+        <button className="primary-button" onClick={closeDialog} type="button">
           {buttonText}
         </button>
       </div>
