@@ -68,9 +68,6 @@ class FeatureToggle(enum.Enum):
         "Active le mode debug Firebase pour l'Id Check intégrée à l'application native"
     )
     ENABLE_NEW_BOOKING_FILTERS = "Active les nouveaux filtres sur les statuts pour la page de réservations"
-    ENABLE_NEW_BANK_INFORMATIONS_CREATION = (
-        "Active le nouveau parcours d'ajout de coordonnées bancaires sur la page lieu"
-    )
     ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
@@ -78,7 +75,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
     ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
     ENABLE_USER_PROFILING = "Active l'étape USER_PROFILING dans le parcours d'inscription des jeunes de 18 ans"
-    ENFORCE_BANK_INFORMATION_WITH_SIRET = "Forcer les informations banquaires à être liées à un SIRET."
     GENERATE_CASHFLOWS_BY_CRON = (
         "Active la génération automatique (via cron) des flux monétaires et fichiers de remboursement"
     )
@@ -163,7 +159,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
     FeatureToggle.ENABLE_USER_PROFILING,
-    FeatureToggle.ENFORCE_BANK_INFORMATION_WITH_SIRET,
     FeatureToggle.GENERATE_CASHFLOWS_BY_CRON,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
