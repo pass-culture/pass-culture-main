@@ -125,7 +125,7 @@ describe('test updateIndividualOffer::serializers', () => {
       }
       patchBody = {
         ...patchBody,
-        bookingEmail: undefined,
+        bookingEmail: null,
         durationMinutes: undefined,
         externalTicketOfficeUrl: undefined,
         url: undefined,
