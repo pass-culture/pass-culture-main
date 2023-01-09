@@ -31,3 +31,10 @@ def send_transactional_notification(
 def delete_user_attributes(user_id: int, can_be_asynchronously_retried: bool = False) -> None:
     backend = import_string(settings.PUSH_NOTIFICATION_BACKEND)
     backend().delete_user_attributes(user_id, can_be_asynchronously_retried=can_be_asynchronously_retried)
+
+
+def track_deposit_activated_event(user_id: int, can_be_asynchronously_retried: bool = False) -> None:
+    backend = import_string(settings.PUSH_NOTIFICATION_BACKEND)
+    backend().track_event(
+        user_id, "user_deposit_activated", can_be_asynchronously_retried=can_be_asynchronously_retried
+    )

@@ -488,8 +488,12 @@ class CreateBeneficiaryTest:
         )
         subscription_api.activate_beneficiary_for_eligibility(user, "test", users_models.EligibilityType.AGE18)
 
-        assert len(batch_testing.requests) == 2
+        assert len(batch_testing.requests) == 3
         assert len(sendinblue_testing.sendinblue_requests) == 1
+
+        trigger_event_log = batch_testing.requests[2]
+        assert trigger_event_log["user_id"] == user.id
+        assert trigger_event_log["event_name"] == "user_deposit_activated"
 
 
 class FulfillBeneficiaryDataTest:
