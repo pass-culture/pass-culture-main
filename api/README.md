@@ -125,12 +125,18 @@ pc start-backend
 
 Si la base de données n'a pas été initialisée, vous devez suivre les étapes suivantes :
 
-* Ajouter cette variable au fichier `.env.local` à la racine du dépôt (en complétant par le port de votre serveur
-  postgresql):
-
+* Ajouter cette variable au fichier `.env.local.secret` à la racine du dossier `api/` (en complétant par le port de
+  votre serveur postgresql):
   ```dotenv
   DATABASE_URL=postgresql://pass_culture:passq@localhost:<port>/pass_culture
-  ```  
+  ```
+
+* Installer `PostGIS` dans les systèmes d'exploitation qui ne le fournissent pas avec `PostgreSQL`
+  - Linux : `apt install postgis` pour Ubuntu ou `pacman -S postgis` pour Arch Linux
+  - Windows : après l'installation de `PostgreSQL`, [Stackbuilder](https://www.bostongis.com/PrinterFriendly.aspx?content_name=postgis_tut01)
+    permet d'installer `PostGIS`
+  - MacOS : `PostGIS` est fourni avec la distribution [Postgres.app](https://postgresapp.com/). Si une autre manière
+    d'installer `PostgreSQL` a été choisie, alors la commande d'installation est `brew install postgis`
 
 * Installer les extensions et jouer les migrations
 
