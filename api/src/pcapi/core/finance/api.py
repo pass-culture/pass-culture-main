@@ -30,7 +30,6 @@ from collections import defaultdict
 import csv
 import datetime
 import decimal
-import hashlib
 import itertools
 import logging
 import math
@@ -335,14 +334,19 @@ def lock_pricing_point(pricing_point_id: int) -> None:
 
     The lock is automatically released at the end of the transaction.
     """
-    # We want a numeric lock identifier. Using `pricing_point_id`
-    # would not be unique enough, so we add a prefix, hash the
-    # resulting string, keep only the first 14 characters to avoid
-    # collisions (and still stay within the range of PostgreSQL big
-    # int type), and turn it back into an integer.
-    lock_bytestring = f"pricing-point-{pricing_point_id}".encode()
-    lock_id = int(hashlib.sha256(lock_bytestring).hexdigest()[:14], 16)
-    db.session.execute(sqla.select([sqla.func.pg_advisory_xact_lock(lock_id)]))
+    return db_utils.acquire_lock(f"pricing-point-{pricing_point_id}")
+
+
+def lock_reimbursement_point(reimbursement_point_id: int) -> None:
+    """Lock a reimbursement point (a venue) while we are doing some
+    work that cannot be done while there are other running operations
+    on the same reimbursement point.
+
+    IMPORTANT: This must only be used within a transaction.
+
+    The lock is automatically released at the end of the transaction.
+    """
+    return db_utils.acquire_lock(f"reimbursement-point-{reimbursement_point_id}")
 
 
 def get_non_cancelled_pricing_from_booking(
@@ -1279,23 +1283,26 @@ def _make_invoice_line(
     return invoice_line, reimbursed_amount
 
 
-def generate_invoices() -> None:
-    """Generate (and store) all invoices."""
-    rows = (
-        db.session.query(
-            models.Cashflow.reimbursementPointId.label("reimbursement_point_id"),
-            sqla_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
-        )
-        .filter(models.Cashflow.status == models.CashflowStatus.UNDER_REVIEW)
-        .outerjoin(
+def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
+    return (
+        query.filter(models.Cashflow.status == models.CashflowStatus.UNDER_REVIEW).outerjoin(
             models.InvoiceCashflow,
             models.InvoiceCashflow.cashflowId == models.Cashflow.id,
         )
         # There should not be any invoice linked to a cashflow that is
         # UNDER_REVIEW, but having a safety belt here is almost free.
         .filter(models.InvoiceCashflow.invoiceId.is_(None))
-        .group_by(models.Cashflow.reimbursementPointId)
     )
+
+
+def generate_invoices() -> None:
+    """Generate (and store) all invoices."""
+    rows = _filter_invoiceable_cashflows(
+        db.session.query(
+            models.Cashflow.reimbursementPointId.label("reimbursement_point_id"),
+            sqla_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
+        )
+    ).group_by(models.Cashflow.reimbursementPointId)
 
     for row in rows:
         try:
@@ -1378,6 +1385,8 @@ def generate_and_store_invoice(
             reimbursement_point_id=reimbursement_point_id,
             cashflow_ids=cashflow_ids,
         )
+        if not invoice:
+            return
     with log_elapsed(logger, "Generated invoice HTML", log_extra):
         invoice_html = _generate_invoice_html(invoice)
     with log_elapsed(logger, "Generated and stored PDF invoice", log_extra):
@@ -1389,16 +1398,28 @@ def generate_and_store_invoice(
 def _generate_invoice(
     reimbursement_point_id: int | None,
     cashflow_ids: list[int],
-) -> models.Invoice:
+) -> models.Invoice | None:
+    # Acquire lock to avoid 2 simultaneous calls to this function (on
+    # the same reimbursement point) generating 2 duplicate invoices.
+    # This is also why we call `_filter_invoiceable_cashflows()` again
+    # below.
+    lock_reimbursement_point(reimbursement_point_id)
     invoice = models.Invoice(
         reimbursementPointId=reimbursement_point_id,
     )
     total_reimbursed_amount = 0
-    cashflows = models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).options(
-        sqla_orm.joinedload(models.Cashflow.pricings)
-        .options(sqla_orm.joinedload(models.Pricing.lines))
-        .options(sqla_orm.joinedload(models.Pricing.customRule))
-    )
+    cashflows = _filter_invoiceable_cashflows(
+        models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).options(
+            sqla_orm.joinedload(models.Cashflow.pricings)
+            .options(sqla_orm.joinedload(models.Pricing.lines))
+            .options(sqla_orm.joinedload(models.Pricing.customRule))
+        )
+    ).all()
+    if not cashflows:
+        # We should not end up here unless another instance of the
+        # `generate_invoices` command is being executed simultaneously
+        # and it has already processed this reimbursement point.
+        return None
     pricings_and_rates_by_rule_group = defaultdict(list)
     pricings_by_custom_rule = defaultdict(list)
 

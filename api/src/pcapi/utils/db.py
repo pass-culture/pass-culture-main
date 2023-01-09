@@ -1,5 +1,6 @@
 import datetime
 import enum
+import hashlib
 import json
 import typing
 
@@ -199,3 +200,26 @@ def get_ordering_clauses_from_json(
         raise BadSortError("bad sort provided: " ", ".join((f"{message}" for message in bad_sorts)))
 
     return ordering_clauses
+
+
+def acquire_lock(name: str) -> None:
+    """Acquire an "advisory xact lock".
+
+    IMPORTANT: This must only be used within a transaction.
+
+    IMPORTANT: Callers should use a specific name for their lock.
+    Simply using a stringified object id (such as "1234") is not
+    specific enough: other callers could do the same for a different
+    object that has the same id. Using a prefixed id is required, for
+    example "pricing-point-1234".
+
+    The lock is automatically released at the end of the transaction.
+    """
+    # We want a numeric lock identifier. Using `pricing_point_id`
+    # would not be unique enough, so we add a prefix, hash the
+    # resulting string, keep only the first 14 characters to avoid
+    # collisions (and still stay within the range of PostgreSQL big
+    # int type), and turn it back into an integer.
+    lock_bytestring = name.encode()
+    lock_id = int(hashlib.sha256(lock_bytestring).hexdigest()[:14], 16)
+    db.session.execute(sqla.select([sqla.func.pg_advisory_xact_lock(lock_id)]))
