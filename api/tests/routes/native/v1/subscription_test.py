@@ -878,7 +878,7 @@ class UpdateProfileTest:
         assert user.lastName == "Stan"
         assert user.has_beneficiary_role
 
-        assert len(push_testing.requests) == 2
+        assert len(push_testing.requests) == 3
         notification = push_testing.requests[0]
         assert notification["user_id"] == user.id
         assert notification["attribute_values"]["u.is_beneficiary"]
