@@ -13,7 +13,6 @@ import { OFFER_WITHDRAWAL_TYPE_LABELS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 
 import humanizeDelay from './utils'
@@ -65,7 +64,6 @@ const OfferSummary = ({
   offer,
   conditionalFields,
 }: IOfferSummaryProps): JSX.Element => {
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const mode = useOfferWizardMode()
   const { logEvent } = useAnalytics()
 
@@ -73,15 +71,12 @@ const OfferSummary = ({
     offerId: offer.id,
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
     mode,
-    isV2: !isOfferFormV3,
   })
 
   const logEditEvent = () => {
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.SUMMARY,
-      to: isOfferFormV3
-        ? OFFER_WIZARD_STEP_IDS.INFORMATIONS
-        : OfferBreadcrumbStep.DETAILS,
+      to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
       offerId: offer.id,

@@ -131,7 +131,8 @@ describe('Summary trackers', () => {
       isVenueVirtual: venue.isVirtual,
       offererName: 'mon offerer',
       bookingEmail: 'booking@example.com',
-      withdrawalDetails: 'détails de retrait',
+      withdrawalinformations: 'détails de retrait',
+      withdrawalDetails: 'non',
       withdrawalType: null,
       withdrawalDelay: null,
       status: OfferStatus.ACTIVE,
@@ -148,7 +149,6 @@ describe('Summary trackers', () => {
     props = {
       offerId: offer.id,
       nonHumanizedOfferId: offer.nonHumanizedId,
-      formOfferV2: true,
       providerName: null,
       offer: offer,
       stockThing: stock,
@@ -182,7 +182,7 @@ describe('Summary trackers', () => {
         {
           from: 'recapitulatif',
           isEdition: true,
-          to: 'details',
+          to: 'informations',
           isDraft: false,
           offerId: 'AB',
           used: 'RecapLink',
@@ -285,7 +285,7 @@ describe('Summary trackers', () => {
         {
           from: 'recapitulatif',
           isEdition: false,
-          to: 'details',
+          to: 'informations',
           used: 'RecapLink',
           isDraft: true,
           offerId: 'AB',
@@ -364,56 +364,50 @@ describe('Summary trackers', () => {
       })
     })
 
-    describe('When it is form v3', () => {
-      beforeEach(() => {
-        props.formOfferV2 = false
-      })
+    it('should track when clicking on return to previous step button', async () => {
+      // given
+      renderSummary({ props })
 
-      it('should track when clicking on return to previous step button', async () => {
-        // given
-        renderSummary({ props })
+      // when
+      await userEvent.click(await screen.findByText('Étape précédente'))
 
-        // when
-        await userEvent.click(await screen.findByText('Étape précédente'))
+      // then
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'recapitulatif',
+          isEdition: false,
+          to: 'stocks',
+          used: 'StickyButtons',
+          offerId: 'AB',
+          isDraft: true,
+        }
+      )
+    })
 
-        // then
-        expect(mockLogEvent).toHaveBeenCalledTimes(1)
-        expect(mockLogEvent).toHaveBeenNthCalledWith(
-          1,
-          Events.CLICKED_OFFER_FORM_NAVIGATION,
-          {
-            from: 'recapitulatif',
-            isEdition: false,
-            to: 'stocks',
-            used: 'StickyButtons',
-            offerId: 'AB',
-            isDraft: true,
-          }
-        )
-      })
+    it('should track when clicking on publish button', async () => {
+      // given
+      renderSummary({ props })
 
-      it('should track when clicking on publish button', async () => {
-        // given
-        renderSummary({ props })
+      // when
+      await userEvent.click(await screen.findByText('Publier l’offre'))
 
-        // when
-        await userEvent.click(await screen.findByText('Publier l’offre'))
-
-        // then
-        expect(mockLogEvent).toHaveBeenCalledTimes(1)
-        expect(mockLogEvent).toHaveBeenNthCalledWith(
-          1,
-          Events.CLICKED_OFFER_FORM_NAVIGATION,
-          {
-            from: 'recapitulatif',
-            isEdition: false,
-            to: 'confirmation',
-            used: 'StickyButtons',
-            isDraft: true,
-            offerId: 'AB',
-          }
-        )
-      })
+      // then
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'recapitulatif',
+          isEdition: false,
+          to: 'confirmation',
+          used: 'StickyButtons',
+          isDraft: true,
+          offerId: 'AB',
+        }
+      )
     })
   })
 
@@ -441,7 +435,7 @@ describe('Summary trackers', () => {
         {
           from: 'recapitulatif',
           isEdition: true,
-          to: 'details',
+          to: 'informations',
           used: 'RecapLink',
           isDraft: true,
           offerId: 'AB',

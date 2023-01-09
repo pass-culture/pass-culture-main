@@ -4,7 +4,6 @@ import React from 'react'
 import { isOfferDisabled, OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
-import useActiveFeature from 'hooks/useActiveFeature'
 import {
   useOfferEditionURL,
   useOfferStockEditionURL,
@@ -32,18 +31,17 @@ const OfferItem = ({
   refreshOffers,
 }: OfferItemProps) => {
   const { venue, id, isEducational, isShowcase, status } = offer
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const editionOfferLink = useOfferEditionURL(
     isEducational,
     id,
-    isOfferFormV3,
+    true,
     !!isShowcase,
     status
   )
   const editionStockLink = useOfferStockEditionURL(
     isEducational,
     id,
-    isOfferFormV3,
+    true,
     !!isShowcase
   )
 

@@ -8,7 +8,6 @@ import FormLayout from 'components/FormLayout'
 import { IOfferEducationalFormValues, Mode } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { Banner, SubmitButton } from 'ui-kit'
 import { sortByLabel } from 'utils/strings'
@@ -64,7 +63,6 @@ const OfferEducationalForm = ({
   const [isEligible, setIsEligible] = useState<boolean>()
 
   const { values } = useFormikContext<IOfferEducationalFormValues>()
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   useScrollToFirstErrorAfterSubmit()
 
@@ -158,28 +156,13 @@ const OfferEducationalForm = ({
           <FormNotifications disableForm={mode === Mode.READ_ONLY} />
         </>
       ) : null}
-      {isOfferFormV3 ? (
-        <ActionsBarSticky>
-          <ActionsBarSticky.Left>
-            <Link className="secondary-link" to={computeOffersUrl({})}>
-              Annuler et quitter
-            </Link>
-          </ActionsBarSticky.Left>
-          <ActionsBarSticky.Right>
-            <SubmitButton
-              className="primary-button"
-              disabled={!isEligible || mode === Mode.READ_ONLY}
-              isLoading={isLoading}
-            >
-              {mode === Mode.CREATION ? 'Étape suivante' : 'Enregistrer'}
-            </SubmitButton>
-          </ActionsBarSticky.Right>
-        </ActionsBarSticky>
-      ) : (
-        <FormLayout.Actions>
+      <ActionsBarSticky>
+        <ActionsBarSticky.Left>
           <Link className="secondary-link" to={computeOffersUrl({})}>
             Annuler et quitter
           </Link>
+        </ActionsBarSticky.Left>
+        <ActionsBarSticky.Right>
           <SubmitButton
             className="primary-button"
             disabled={!isEligible || mode === Mode.READ_ONLY}
@@ -187,8 +170,8 @@ const OfferEducationalForm = ({
           >
             {mode === Mode.CREATION ? 'Étape suivante' : 'Enregistrer'}
           </SubmitButton>
-        </FormLayout.Actions>
-      )}
+        </ActionsBarSticky.Right>
+      </ActionsBarSticky>
     </FormLayout>
   )
 }

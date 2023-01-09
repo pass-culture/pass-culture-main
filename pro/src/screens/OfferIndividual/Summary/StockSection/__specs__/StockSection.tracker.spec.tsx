@@ -124,15 +124,8 @@ describe('Summary stock section trackers', () => {
   })
 
   it('should track creation summary (v3)', async () => {
-    const storeOverride = {
-      features: {
-        initialized: true,
-        list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
-      },
-    }
     renderStockSection({
       props,
-      storeOverride,
       url: '/creation/recapitulatif',
     })
 
@@ -154,13 +147,7 @@ describe('Summary stock section trackers', () => {
   })
 
   it('should track edition summary (v3)', async () => {
-    const storeOverride = {
-      features: {
-        initialized: true,
-        list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
-      },
-    }
-    renderStockSection({ props, storeOverride })
+    renderStockSection({ props })
     await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)

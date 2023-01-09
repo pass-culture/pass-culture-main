@@ -2,11 +2,6 @@ import React from 'react'
 
 import type { Step } from 'components/Breadcrumb'
 import Breadcrumb, { BreadcrumbStyle } from 'components/Breadcrumb/Breadcrumb'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
 
 export enum OfferBreadcrumbStep {
@@ -22,7 +17,7 @@ export interface IOfferBreadcrumb {
   isCreatingOffer: boolean
   isCompletingDraft?: boolean
   offerId?: string
-  isOfferEducational?: boolean
+  true?: boolean
   className?: string
   haveStock?: boolean
 }
@@ -32,47 +27,26 @@ const OfferBreadcrumb = ({
   isCreatingOffer,
   isCompletingDraft = false,
   offerId = '',
-  isOfferEducational = false,
   className,
   haveStock = false,
 }: IOfferBreadcrumb): JSX.Element => {
-  const { logEvent } = useAnalytics()
   // it is never OfferFormV3 in this breadcrumb
-  const isOfferFormV3 = false
   const isTemplateId = offerId.startsWith('T-')
   let steps: Step[] = []
-
-  if (activeStep == OfferBreadcrumbStep.CONFIRMATION && !isOfferEducational) {
-    return <></>
-  }
-  if (
-    !isCreatingOffer &&
-    activeStep == OfferBreadcrumbStep.SUMMARY &&
-    !isOfferEducational &&
-    !isCompletingDraft
-  ) {
-    return <></>
-  }
 
   if (!isCreatingOffer && !isCompletingDraft) {
     steps = [
       {
         id: OfferBreadcrumbStep.DETAILS,
         label: 'Détails de l’offre',
-        url: isOfferEducational
-          ? `/offre/${offerId}/collectif/edition`
-          : `/offre/${offerId}/individuel/edition`,
+        url: `/offre/${offerId}/collectif/edition`,
       },
       {
         id: OfferBreadcrumbStep.STOCKS,
-        label: isOfferEducational ? 'Date et prix' : 'Stocks et prix',
-        url: useOfferStockEditionURL(
-          isOfferEducational,
-          offerId,
-          isOfferFormV3
-        ),
+        label: 'Date et prix',
+        url: useOfferStockEditionURL(true, offerId, false),
       },
-      ...(isOfferEducational && !isTemplateId
+      ...(!isTemplateId
         ? [
             {
               id: OfferBreadcrumbStep.VISIBILITY,
@@ -90,15 +64,14 @@ const OfferBreadcrumb = ({
       },
       [OfferBreadcrumbStep.STOCKS]: {
         id: OfferBreadcrumbStep.STOCKS,
-        label: isOfferEducational ? 'Date et prix' : 'Stocks et prix',
+        label: 'Date et prix',
       },
-      ...(isOfferEducational &&
-        !isTemplateId && {
-          [OfferBreadcrumbStep.VISIBILITY]: {
-            id: OfferBreadcrumbStep.VISIBILITY,
-            label: 'Visibilité',
-          },
-        }),
+      ...(!isTemplateId && {
+        [OfferBreadcrumbStep.VISIBILITY]: {
+          id: OfferBreadcrumbStep.VISIBILITY,
+          label: 'Visibilité',
+        },
+      }),
 
       [OfferBreadcrumbStep.SUMMARY]: {
         id: OfferBreadcrumbStep.SUMMARY,
@@ -134,22 +107,6 @@ const OfferBreadcrumb = ({
     steps = Object.values(stepList)
   }
 
-  // Add firebase tracking only on individual offers
-  if (!isOfferEducational) {
-    steps.map((step, index) => {
-      steps[index].onClick = () => {
-        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-          from: activeStep,
-          to: step.id,
-          used: OFFER_FORM_NAVIGATION_MEDIUM.BREADCRUMB,
-          isEdition: !isCreatingOffer,
-          isDraft: isCreatingOffer || isCompletingDraft,
-          offerId: offerId,
-        })
-      }
-    })
-  }
-
   return (
     <Breadcrumb
       activeStep={activeStep}
@@ -157,9 +114,7 @@ const OfferBreadcrumb = ({
       steps={steps}
       styleType={
         isCreatingOffer || isCompletingDraft
-          ? isOfferEducational
-            ? BreadcrumbStyle.DEFAULT
-            : BreadcrumbStyle.STEPPER
+          ? BreadcrumbStyle.DEFAULT
           : BreadcrumbStyle.TAB
       }
     />

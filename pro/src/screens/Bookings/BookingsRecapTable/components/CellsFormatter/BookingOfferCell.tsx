@@ -12,7 +12,6 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
@@ -25,11 +24,10 @@ interface IBookingOfferCellProps {
 
 const BookingOfferCell = ({ offer }: IBookingOfferCellProps) => {
   const { logEvent } = useAnalytics()
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const editionUrl = useOfferEditionURL(
     offer.offer_is_educational,
     offer.offer_identifier,
-    isOfferFormV3
+    true
   )
   const eventBeginningDatetime = offer.event_beginning_datetime
   const isbn = offer.offer_isbn

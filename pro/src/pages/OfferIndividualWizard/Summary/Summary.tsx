@@ -13,12 +13,7 @@ import {
 
 import { serializePropsFromOfferIndividual } from '.'
 
-interface ISummaryProps {
-  isOfferV2?: boolean
-}
-
-// FIX ME: remove isOfferV2 props when removing OFFER_FORM_V3 FF
-const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
+const Summary = (): JSX.Element | null => {
   const {
     offer: contextOffer,
     categories,
@@ -39,17 +34,14 @@ const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
     subCategories
   )
 
-  // FIX ME: when OFFER_FORM_V3 is removed, it will be only string | undefined
-  let title: string | undefined | null = undefined
-  if (isOfferV2) {
-    title = null
-  } else if (mode === OFFER_WIZARD_MODE.EDITION) {
+  let title: string | undefined = undefined
+  if (mode === OFFER_WIZARD_MODE.EDITION) {
     title = 'Récapitulatif'
   }
   return (
     <WizardTemplate
       title={title}
-      withStepper={!isOfferV2 && mode !== OFFER_WIZARD_MODE.EDITION}
+      withStepper={mode !== OFFER_WIZARD_MODE.EDITION}
     >
       <PageTitle title="Récapitulatif" />
       <SummaryScreen
@@ -61,7 +53,6 @@ const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
         stockEventList={stockEventList}
         subCategories={subCategories}
         preview={preview}
-        formOfferV2={isOfferV2}
       />
     </WizardTemplate>
   )
