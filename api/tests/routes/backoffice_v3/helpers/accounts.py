@@ -1,6 +1,5 @@
 import pytest
 
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 
 from . import base
@@ -21,7 +20,6 @@ class PageRendersHelper(base.BaseHelper):
     def endpoint_kwargs(self):
         return {"user_id": self.user.id}
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_page_renders(self, client, legit_user):
         response = client.with_bo_session_auth(legit_user).get(self.path)
         assert response.status_code == 200

@@ -4,7 +4,6 @@ import pytest
 
 from pcapi.core.permissions import factories as permissions_factories
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.testing import override_features
 
 from .helpers import unauthorized as unauthorized_helpers
 
@@ -29,7 +28,6 @@ class UpdateRoleTest:
         endpoint_kwargs = {"role_id": 1}
         method = "post"
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_update_role(self, client, legit_user):
         perms = permissions_factories.PermissionFactory.create_batch(4)
         old_perms = [perms[0], perms[1]]
