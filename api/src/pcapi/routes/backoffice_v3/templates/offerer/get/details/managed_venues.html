@@ -14,12 +14,12 @@
             <tr>
                 <th scope="row"></th>
                 <td class="fw-bolder">
-                    <a href="{{ url_for("backoffice_v3_web.venue.get", venue_id=venue.id) }}">
+                    <a href="{{ url_for("backoffice_v3_web.venue.get", venue_id=venue.id) }}" class="link-primary">
                         {{ venue.id }}
                     </a>
                 </td>
                 <td class="text-break">
-                    <a href="{{ build_pc_pro_venue_link(venue) }}">
+                    <a href="{{ build_pc_pro_venue_link(venue) }}" class="link-primary">
                         {{ venue.publicName or venue.name }}
                     </a>
                 </td>
