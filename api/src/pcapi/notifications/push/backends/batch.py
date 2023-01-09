@@ -139,3 +139,22 @@ class BatchBackend:
                 api_name="delete_user_attributes",
                 can_be_asynchronously_retried=can_be_asynchronously_retried,
             )
+
+    def track_event(self, user_id: int, event_name: str, can_be_asynchronously_retried: bool = False) -> None:
+        def make_post_request(api: BatchAPI) -> None:
+            self.handle_request(
+                "POST",
+                f"{API_URL}/1.0/{api.value}/events/users/{user_id}",
+                api_name="track_event",
+                payload={
+                    "events": [
+                        {
+                            "name": f"ue.{event_name}",
+                        }
+                    ]
+                },
+                can_be_asynchronously_retried=can_be_asynchronously_retried,
+            )
+
+        make_post_request(BatchAPI.ANDROID)
+        make_post_request(BatchAPI.IOS)
