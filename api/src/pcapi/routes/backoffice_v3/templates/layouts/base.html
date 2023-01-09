@@ -44,6 +44,15 @@
         };
         new TomSelect(el, settings);
     });
+    document.getElementsByName("form").forEach((el) => {
+        el.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const form = event.target;
+            if (form.checkValidity()) {
+                form.submit();
+            }
+        }, false);
+    })
 </script>
 <!-- Useful for local script modification per-view -->
 {% block scripts %}{% endblock %}

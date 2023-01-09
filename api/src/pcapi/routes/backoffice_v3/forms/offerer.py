@@ -99,3 +99,14 @@ class OptionalCommentForm(FlaskForm):
 class TopActorForm(FlaskForm):
     # Optional because the request is sent with an empty value when disabled, "on" when enabled
     is_top_actor = wtforms.HiddenField("Top acteur", validators=(wtforms.validators.Optional(),))
+
+
+class AddProUserForm(FlaskForm):
+    pro_user_id = fields.PCSelectField("Compte pro", coerce=int)
+    comment = fields.PCCommentField("Commentaire interne")
+
+    # Empty choice is proposed to avoid select first user by default, but empty choice is not allowed
+    def validate_pro_user_id(self, pro_user_id: fields.PCSelectField) -> fields.PCSelectField:
+        if not pro_user_id.data:
+            raise wtforms.validators.ValidationError("Aucun compte pro n'est sélectionné")
+        return pro_user_id

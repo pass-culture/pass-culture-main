@@ -38,4 +38,6 @@ class SearchForm(FlaskForm):
 
 
 class ProSearchForm(SearchForm):
-    pro_type = fields.PCSelectField("Type", choices=utils.values_from_enum(TypeOptions))
+    pro_type = fields.PCSelectField(
+        "Type", choices=utils.values_from_enum(TypeOptions), default=TypeOptions.OFFERER.value
+    )

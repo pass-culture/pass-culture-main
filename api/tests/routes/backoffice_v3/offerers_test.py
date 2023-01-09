@@ -10,6 +10,8 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
+import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional import sendinblue_template_ids
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
@@ -325,6 +327,42 @@ class GetOffererDetailsTest:
 
         assert user_offerer_1.user.full_name not in content
         assert user_offerer_2.user.full_name in content
+
+    def test_add_pro_user_choices(self, authenticated_client, legit_user, offerer):
+        user1 = offerers_factories.UserOffererFactory(offerer=offerer)
+        user2 = users_factories.UserFactory(firstName="Raymond", lastName="Poincaré")
+        user3 = users_factories.ProFactory(firstName="Paul", lastName="Deschanel")
+        users_factories.UserFactory(firstName="Alexandre", lastName="Millerand")
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            authorUser=legit_user,
+            user=user1.user,
+            offerer=offerer,
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_OFFERER_REJECTED,
+            authorUser=legit_user,
+            user=user2,
+            offerer=offerer,
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_OFFERER_REJECTED,
+            authorUser=legit_user,
+            user=user3,
+            offerer=offerer,
+        )
+
+        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
+
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url)
+
+        assert response.status_code == 200
+
+        parsed_html = html_parser.get_soup(response.data)
+        select = parsed_html.find(id="pro_user_id")
+        options = select.find_all("option")
+        assert [option["value"] for option in options] == ["", str(user3.id), str(user2.id)]
 
     def test_get_managed_venues(self, authenticated_client, offerer):
         other_offerer = offerers_factories.OffererFactory()
@@ -1473,6 +1511,13 @@ class ValidateOffererAttachmentTest:
         assert action.offererId == user_offerer.offerer.id
         assert action.venueId is None
 
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["To"] == user_offerer.user.email
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value.__dict__
+        )
+
     def test_validate_offerer_attachment_returns_404_if_offerer_is_not_found(self, authenticated_client, offerer):
         # when
         url = url_for("backoffice_v3_web.user_offerer.user_offerer_validate", user_offerer_id=42)
@@ -1526,6 +1571,13 @@ class RejectOffererAttachmentTest:
         assert action.offererId == user_offerer.offerer.id
         assert action.venueId is None
 
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["To"] == user_offerer.user.email
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_REJECTION.value.__dict__
+        )
+
     def test_reject_offerer_returns_404_if_offerer_attachment_is_not_found(self, authenticated_client, offerer):
         # when
         url = url_for("backoffice_v3_web.user_offerer.user_offerer_reject", user_offerer_id=42)
@@ -1567,6 +1619,125 @@ class SetOffererAttachmentPendingTest:
         assert action.offererId == user_offerer.offerer.id
         assert action.venueId is None
         assert action.comment == "En attente de documents"
+
+
+class AddUserOffererAndValidateUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+    method = "post"
+    endpoint = "backoffice_v3_web.offerer.add_user_offerer_and_validate"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+
+class AddUserOffererAndValidateTest:
+    endpoint = "backoffice_v3_web.offerer.add_user_offerer_and_validate"
+
+    def test_add_user_offerer_and_validate(self, legit_user, authenticated_client):
+        # given
+        offerer = offerers_factories.UserOffererFactory().offerer
+        user = users_factories.UserFactory()
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_OFFERER_REJECTED,
+            authorUser=legit_user,
+            offerer=offerer,
+            user=user,
+        )
+
+        # when
+        response = send_request(
+            authenticated_client,
+            offerer.id,
+            url_for(self.endpoint, offerer_id=offerer.id),
+            {"pro_user_id": user.id, "comment": "Le rattachement avait été rejeté par erreur"},
+        )
+
+        # then
+        assert response.status_code == 303
+        db.session.refresh(offerer)
+        db.session.refresh(user)
+        assert len(offerer.UserOfferers) == 2
+        assert user.has_pro_role
+        assert len(user.UserOfferers) == 1
+        assert user.UserOfferers[0].isValidated
+        assert user.UserOfferers[0].offerer == offerer
+
+        action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_VALIDATED
+        ).one()
+        assert action.actionDate is not None
+        assert action.authorUserId == legit_user.id
+        assert action.userId == user.id
+        assert action.offererId == offerer.id
+        assert action.venueId is None
+        assert action.comment == "Le rattachement avait été rejeté par erreur"
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["To"] == user.email
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value.__dict__
+        )
+
+    def test_add_existing_user_offerer(self, legit_user, authenticated_client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+
+        # when
+        response = send_request(
+            authenticated_client,
+            user_offerer.offererId,
+            url_for(self.endpoint, offerer_id=user_offerer.offererId),
+            {"pro_user_id": user_offerer.userId, "comment": "test"},
+        )
+
+        # then
+        assert response.status_code == 303
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert html_parser.extract_alert(redirected_response.data) == "Les données envoyées comportent des erreurs"
+
+        assert offerers_models.UserOfferer.query.count() == 1  # existing before request
+        assert history_models.ActionHistory.query.count() == 0
+        assert len(mails_testing.outbox) == 0
+
+    def test_add_user_not_related(self, legit_user, authenticated_client):
+        # given
+        offerer = offerers_factories.UserOffererFactory().offerer
+        user = users_factories.UserFactory()
+
+        # when
+        response = send_request(
+            authenticated_client,
+            offerer.id,
+            url_for(self.endpoint, offerer_id=offerer.id),
+            {"pro_user_id": user.id, "comment": "test"},
+        )
+
+        # then
+        assert response.status_code == 303
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert html_parser.extract_alert(redirected_response.data) == "Les données envoyées comportent des erreurs"
+
+    def test_add_user_empty(self, legit_user, authenticated_client):
+        # given
+        offerer = offerers_factories.UserOffererFactory().offerer
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_OFFERER_REJECTED,
+            authorUser=legit_user,
+            offerer=offerer,
+            user=users_factories.UserFactory(),
+        )
+
+        # when
+        response = send_request(
+            authenticated_client,
+            offerer.id,
+            url_for(self.endpoint, offerer_id=offerer.id),
+            {"pro_user_id": 0, "comment": "test"},
+        )
+
+        # then
+        assert response.status_code == 303
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert html_parser.extract_alert(redirected_response.data) == "Les données envoyées comportent des erreurs"
 
 
 def send_request(authenticated_client, offerer_id, url, form_data=None):
