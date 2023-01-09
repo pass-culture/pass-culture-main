@@ -6,6 +6,7 @@ import { BannerInvisibleSiren, BannerRGS } from 'components/Banner'
 import FormLayout from 'components/FormLayout'
 import LegalInfos from 'components/LegalInfos/LegalInfos'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
+import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import { useModal } from 'hooks/useModal'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import { Button, SubmitButton, TextInput, Checkbox } from 'ui-kit'
@@ -24,6 +25,7 @@ const SignupForm = (): JSX.Element => {
   const { values, setFieldValue, setFieldError, isSubmitting } =
     useFormikContext<ISignupFormValues>()
 
+  useScrollToFirstErrorAfterSubmit()
   useRedirectLoggedUser()
 
   useEffect(() => {
