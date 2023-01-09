@@ -3,6 +3,7 @@ from datetime import timedelta
 import decimal
 from io import BytesIO
 import logging
+from typing import Any
 
 from PIL import Image
 from PIL import UnidentifiedImageError
@@ -406,8 +407,25 @@ def check_offer_extra_data(subcategory_id: str, extra_data: dict | None) -> None
         if not extra_data.get(field):
             api_errors.add_error(field, "Ce champ est obligatoire")
 
+    try:
+        check_ean_field(extra_data.get("ean"))
+    except exceptions.EanFormatException as e:
+        api_errors.add_client_error(e)
+
     if api_errors.errors:
         raise api_errors
+
+
+def check_ean_field(ean: Any) -> None:
+    if ean is None or ean == "":
+        return
+
+    if not isinstance(ean, str):
+        raise exceptions.EanFormatException("L'EAN doit être une chaîne de caractères")
+
+    has_correct_length = len(ean) == 8 or len(ean) == 13
+    if not ean.isdigit() or not has_correct_length:
+        raise exceptions.EanFormatException("L'EAN doit être composé de 8 ou 13 chiffres")
 
 
 def check_offer_is_from_current_cinema_provider(offer: Offer) -> bool:
