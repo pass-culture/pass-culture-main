@@ -1204,7 +1204,7 @@ class GetEventTest:
             "author": None,
             "category": "SPECTACLE_REPRESENTATION",
             "performer": None,
-            "showType": "OTHER",
+            "showType": None,
             "stageDirector": None,
         }
 
@@ -1224,7 +1224,7 @@ class GetEventTest:
             "author": None,
             "category": "CONCERT",
             "performer": None,
-            "musicType": "OTHER",
+            "musicType": None,
         }
 
     @pytest.mark.usefixtures("db_session")
