@@ -9,7 +9,6 @@
 // Components scoped imports.
 @import "src/components/DialogBox/DialogBox.module";
 @import "src/components/ImagePreview/ImagePreview.module";
-@import "src/ui-kit/form_raw/DurationInput/DurationInput";
 @import "src/components/Header/Header";
 @import "src/pages/Bookings/BookingsRecap";
 @import "src/screens/Bookings/PreFilters/PreFilters.module";
@@ -24,18 +23,6 @@
 @import "src/pages/Home/ProfileAndSupport/Support";
 @import "src/pages/Offers/Offers/Offers";
 @import "src/pages/Offers/Offers/OffersStatusFiltersModal/OffersStatusFiltersModal";
-@import "src/pages/Offers/Offer/Confirmation/Confirmation";
-@import "src/pages/Offers/Offer/Offer";
-@import "src/pages/Offers/Offer/Stocks/Stocks";
-@import "src/pages/Offers/Offer/Stocks/StockItem/StockItem";
-@import "src/pages/Offers/Offer/Stocks/StockItemOptionsMenu/StockItemOptionsMenu";
-@import "src/pages/Offers/Offer/Stocks/ActivationCodesUploadDialog/ActivationCodesUploadDialog";
-@import "src/pages/Offers/Offer/Stocks/ActivationCodesUploadDialog/ActivationCodesCsvForm/ActivationCodesCsvForm";
-@import "src/pages/Offers/Offer/Stocks/ActivationCodesUploadDialog/ActivationCodesConfirmationForm/ActivationCodesConfirmationForm";
-@import "src/pages/Offers/Offer/OfferDetails/OfferForm/OfferForm";
-@import "src/pages/Offers/Offer/OfferDetails/OfferThumbnail/OfferThumbnail";
-@import "src/pages/Offers/Offer/OfferDetails/OfferPreview/OfferPreview";
-@import "src/pages/Offers/Offer/Thumbnail/ThumbnailDialog";
 @import "src/components/LegalInfos/LegalInfos";
 @import "src/pages/SetPassword/SetPassword";
 @import "src/pages/SetPasswordConfirm/SetPasswordConfirm";

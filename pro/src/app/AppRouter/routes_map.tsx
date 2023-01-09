@@ -19,7 +19,6 @@ import OffererCreation from 'pages/Offerers/OffererCreation'
 import { OffererStats } from 'pages/OffererStats'
 import { OfferIndividualWizard } from 'pages/OfferIndividualWizard'
 import OffersRoute from 'pages/Offers'
-import OfferLayout from 'pages/Offers/Offer/OfferLayout'
 import OfferType from 'pages/OfferType'
 import Reimbursements from 'pages/Reimbursements'
 import SetPassword from 'pages/SetPassword/SetPassword'
@@ -223,15 +222,6 @@ const routes: IRoute[] = [
     exact: true,
     path: '/offre/creation',
     title: 'Selection du type d’offre',
-  },
-  {
-    component: OfferLayout,
-    exact: false,
-    path: [
-      '/offre/creation/individuel',
-      '/offre/:offerId([A-Z0-9]+)/individuel',
-    ],
-    title: 'Offre',
   },
   {
     component: OffersRoute,

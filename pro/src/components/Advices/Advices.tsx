@@ -1,9 +1,9 @@
 import React, { FunctionComponent, useCallback, useEffect, useRef } from 'react'
 
 import { NBSP } from 'core/shared'
-import { ReactComponent as ArrowUp } from 'icons/ico-arrow-up-b.svg'
-import { ReactComponent as ArrowDown } from 'icons/ico-caret-down.svg'
-import { ReactComponent as ExternalSite } from 'icons/ico-external-site-filled.svg'
+import { ReactComponent as ArrowDown } from 'icons/arrow-down.svg'
+import { ReactComponent as ArrowUp } from 'icons/arrow-up.svg'
+import { ReactComponent as ExternalSite } from 'icons/external-site.svg'
 
 interface Props {
   hidden: boolean
