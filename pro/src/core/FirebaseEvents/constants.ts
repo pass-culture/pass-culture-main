@@ -50,6 +50,7 @@ export enum Events {
 }
 export enum VenueEvents {
   CLICKED_VENUE_ACCORDION_BUTTON = 'hasClickedVenueAccordionButton',
+  CLICKED_VENUE_ADD_RIB_BUTTON = 'hasClickedVenueAddRibButton',
   CLICKED_VENUE_PUBLISHED_OFFERS_LINK = 'hasClickedVenuePublishedOffersLink',
   CLICKED_VENUE_ACTIVE_BOOKINGS_LINK = 'hasClickedVenueActiveBookingsLink',
   CLICKED_VENUE_VALIDATED_RESERVATIONS_LINK = 'hasClickedVenueValidatedReservationsLink',

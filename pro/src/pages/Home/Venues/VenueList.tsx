@@ -53,6 +53,7 @@ const VenueList = ({
           offererId={selectedOffererId}
           publicName={venue.publicName}
           hasMissingReimbursementPoint={venue.hasMissingReimbursementPoint}
+          hasCreatedOffer={venue.hasCreatedOffer}
           initialOpenState={
             hasNewOfferCreationJourney ? !venue.hasCreatedOffer : false
           }
