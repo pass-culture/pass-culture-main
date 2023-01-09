@@ -404,3 +404,19 @@ class CheckOfferWithdrawalTest:
                 withdrawal_delay=None,
                 subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
             )
+
+
+class CheckOfferExtraDataTest:
+    def test_invalid_ean_extra_data(self):
+        with pytest.raises(ApiErrors) as error:
+            validation.check_offer_extra_data(subcategories.JEU_EN_LIGNE.id, {"ean": 12345678})
+
+        assert error.value.errors["ean"] == ["L'EAN doit être une chaîne de caractères"]
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_offer_extra_data(subcategories.JEU_EN_LIGNE.id, {"ean": "invalid ean"})
+
+        assert error.value.errors["ean"] == ["L'EAN doit être composé de 8 ou 13 chiffres"]
+
+    def test_valid_ean_extra_data(self):
+        assert validation.check_offer_extra_data(subcategories.JEU_EN_LIGNE.id, {"ean": "12345678"}) is None

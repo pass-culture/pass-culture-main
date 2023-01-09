@@ -162,6 +162,11 @@ class WithdrawableEventOfferMustHaveWithdrawal(OfferCreationBaseException):
         )
 
 
+class EanFormatException(OfferCreationBaseException):
+    def __init__(self, error_message: str) -> None:
+        super().__init__("ean", error_message)
+
+
 class ThumbnailStorageError(ApiErrors):
     status_code = 500
 
