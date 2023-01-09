@@ -83,7 +83,7 @@ OFFER_EXTRA_DATA_MANDATORY_FIELDS = {
 def check_provider_can_edit_stock(offer: Offer, editing_provider: providers_models.Provider | None = None) -> None:
     if not offer.isFromProvider:
         return
-    if offer.isFromAllocine:
+    if offer.isFromAllocine or offer.isFromCinemaProvider:
         return
     if offer.lastProvider != editing_provider:
         error = ApiErrors()
