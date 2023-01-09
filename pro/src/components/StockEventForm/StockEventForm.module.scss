@@ -4,19 +4,19 @@
   align-self: flex-start;
 }
 
+.input-booking-limit-datetime,
 .input-date {
-  flex: 0 1 rem.torem(168px);
-  min-width: rem.torem(160px);
-}
-
-.input-booking-limit-datetime {
   flex: 0 1 rem.torem(208px);
-  min-width: rem.torem(160px);
+  min-width: rem.torem(157px);
 }
 
 .input-beginning-time,
-.input-quantity,
-.input-price {
+.input-quantity {
   flex: 0 1 rem.torem(112px);
   min-width: rem.torem(89px);
+}
+
+.input-price {
+  flex: 0 1 rem.torem(112px);
+  min-width: rem.torem(95px);
 }
