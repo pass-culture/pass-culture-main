@@ -4,6 +4,10 @@ import { NBSP } from 'core/shared'
 import { ReactComponent as ArrowDown } from 'icons/arrow-down.svg'
 import { ReactComponent as ArrowUp } from 'icons/arrow-up.svg'
 import { ReactComponent as ExternalSite } from 'icons/external-site.svg'
+import { Button, ButtonLink } from 'ui-kit'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+
+import styles from './Advices.module.scss'
 
 interface Props {
   hidden: boolean
@@ -14,7 +18,7 @@ interface Props {
 
 const Advices: FunctionComponent<Props> = ({
   teaserText,
-  hidden,
+  hidden = true,
   setHidden,
 }) => {
   const toggle = useCallback(() => {
@@ -27,59 +31,69 @@ const Advices: FunctionComponent<Props> = ({
   }, [])
 
   return (
-    <div className="tna-advices">
-      <button
+    <div className={styles['advices']}>
+      <Button
         aria-pressed={!hidden}
-        className={`tna-toggle ${hidden ? 'up' : 'down'} tertiary-link`}
+        variant={ButtonVariant.TERNARY}
         onClick={toggle}
-        ref={defaultTargetedButton}
         type="button"
+        Icon={hidden ? ArrowDown : ArrowUp}
+        iconPosition={IconPositionEnum.RIGHT}
       >
         Conseils pour votre image
-        {hidden ? <ArrowDown /> : <ArrowUp />}
-      </button>
-      <div aria-hidden={hidden} className={hidden ? 'tna-hidden' : ''}>
-        <p className="tna-teaser">{teaserText}</p>
-        <p className="tna-title">Banques d’images libres de droits</p>
-        <ul className="tna-links">
-          <li>
-            <a
-              className="tertiary-link"
-              href="https://www.pexels.com/fr-fr/"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <ExternalSite />
-              Pexels
-              <span className="tna-links-help">{`${NBSP}(nouvel onglet)`}</span>
-            </a>
-          </li>
-          <li>
-            <a
-              className="tertiary-link"
-              href="https://pixabay.com/fr/"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <ExternalSite />
-              Pixabay
-              <span className="tna-links-help">{`${NBSP}(nouvel onglet)`}</span>
-            </a>
-          </li>
-          <li>
-            <a
-              className="tertiary-link"
-              href="https://www.shutterstock.com/"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <ExternalSite />
-              Shutterstock
-              <span className="tna-links-help">{`${NBSP}(nouvel onglet)`}</span>
-            </a>
-          </li>
-        </ul>
-      </div>
+      </Button>
+      {hidden && (
+        <div aria-hidden={hidden}>
+          <p>{teaserText}</p>
+          <p className={styles['advices-title']}>
+            Banques d’images libres de droits
+          </p>
+          <ul>
+            <li>
+              <ButtonLink
+                link={{
+                  to: 'https://www.pexels.com/fr-fr/',
+                  isExternal: true,
+                  rel: 'noopener noreferrer',
+                  target: '_blank',
+                }}
+                Icon={ExternalSite}
+              >
+                Pexels
+                <span>{`${NBSP}(nouvel onglet)`}</span>
+              </ButtonLink>
+            </li>
+            <li>
+              <ButtonLink
+                link={{
+                  to: 'https://pixabay.com/fr/',
+                  isExternal: true,
+                  rel: 'noopener noreferrer',
+                  target: '_blank',
+                }}
+                Icon={ExternalSite}
+              >
+                Pixabay
+                <span>{`${NBSP}(nouvel onglet)`}</span>
+              </ButtonLink>
+            </li>
+            <li>
+              <ButtonLink
+                link={{
+                  to: 'https://www.shutterstock.com/',
+                  isExternal: true,
+                  rel: 'noopener noreferrer',
+                  target: '_blank',
+                }}
+                Icon={ExternalSite}
+              >
+                Shutterstock
+                <span>{`${NBSP}(nouvel onglet)`}</span>
+              </ButtonLink>
+            </li>
+          </ul>
+        </div>
+      )}
     </div>
   )
 }
