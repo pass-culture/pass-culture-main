@@ -16,7 +16,6 @@ import {
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 import { isOfferDisabled } from 'core/Offers/utils'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { Banner, ButtonLink, SubmitButton, TextArea } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -52,7 +51,6 @@ const OfferEducationalStock = <
 }: IOfferEducationalStockProps<T>): JSX.Element => {
   const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   const submitForm = async (values: OfferEducationalStockFormValues) => {
     setIsLoading(true)
@@ -147,31 +145,8 @@ const OfferEducationalStock = <
                 />
               </FormLayout.Row>
             </FormLayout.Section>
-            {isOfferFormV3 ? (
-              <ActionsBarSticky>
-                <ActionsBarSticky.Left>
-                  <ButtonLink
-                    variant={ButtonVariant.SECONDARY}
-                    link={{
-                      to: `/offre/collectif/${offer.id}/creation`,
-                      isExternal: false,
-                    }}
-                  >
-                    Étape précédente
-                  </ButtonLink>
-                </ActionsBarSticky.Left>
-                <ActionsBarSticky.Right>
-                  <SubmitButton
-                    className=""
-                    disabled={offerIsDisabled || mode === Mode.READ_ONLY}
-                    isLoading={isLoading}
-                  >
-                    {mode === Mode.EDITION ? 'Enregistrer' : 'Étape suivante'}
-                  </SubmitButton>
-                </ActionsBarSticky.Right>
-              </ActionsBarSticky>
-            ) : (
-              <FormLayout.Actions>
+            <ActionsBarSticky>
+              <ActionsBarSticky.Left>
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
                   link={{
@@ -181,6 +156,8 @@ const OfferEducationalStock = <
                 >
                   Étape précédente
                 </ButtonLink>
+              </ActionsBarSticky.Left>
+              <ActionsBarSticky.Right>
                 <SubmitButton
                   className=""
                   disabled={offerIsDisabled || mode === Mode.READ_ONLY}
@@ -188,8 +165,8 @@ const OfferEducationalStock = <
                 >
                   {mode === Mode.EDITION ? 'Enregistrer' : 'Étape suivante'}
                 </SubmitButton>
-              </FormLayout.Actions>
-            )}
+              </ActionsBarSticky.Right>
+            </ActionsBarSticky>
           </FormLayout>
         </form>
       </FormikProvider>

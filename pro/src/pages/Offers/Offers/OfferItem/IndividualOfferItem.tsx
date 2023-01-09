@@ -10,7 +10,6 @@ import {
 import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer, Venue } from 'core/Offers/types'
 import { Audience } from 'core/shared'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 
 import CheckboxCell from './Cells/CheckboxCell'
@@ -49,7 +48,6 @@ const IndividualOfferItem = ({
   audience,
 }: IndividualOfferItemProps) => {
   const { logEvent } = useAnalytics()
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   const onThumbClick = () => {
     const isDraft = offer.status === OFFER_STATUS_DRAFT
@@ -57,9 +55,7 @@ const IndividualOfferItem = ({
       from: OFFER_FORM_NAVIGATION_IN.OFFERS,
       to: !isDraft
         ? OfferBreadcrumbStep.SUMMARY
-        : isOfferFormV3
-        ? OFFER_WIZARD_STEP_IDS.INFORMATIONS
-        : OfferBreadcrumbStep.DETAILS,
+        : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_THUMB,
       isEdition: true,
       isDraft: isDraft,

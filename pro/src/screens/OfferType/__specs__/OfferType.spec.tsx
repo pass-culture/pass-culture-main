@@ -45,15 +45,6 @@ describe('screens:OfferIndividual::OfferType', () => {
           email: 'email@example.com',
         },
       },
-      features: {
-        list: [
-          {
-            nameKey: 'OFFER_FORM_V3',
-            isActive: false,
-          },
-        ],
-        initialized: true,
-      },
     }
   })
 
@@ -77,9 +68,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render new buttons when FF OFFER_FORM_V3 is active ', async () => {
-    store.features.list[0].isActive = true
-
+  it('should render action bar buttons ', async () => {
     renderOfferTypes(store)
 
     expect(

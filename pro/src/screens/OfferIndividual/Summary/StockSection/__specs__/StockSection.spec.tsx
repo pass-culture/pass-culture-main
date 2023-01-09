@@ -84,34 +84,6 @@ const renderStockSection = ({
         >
           <div>Offer V3 brouillon: page stocks</div>
         </Route>
-
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-            isV2: true,
-          })}
-        >
-          <div>Offer V2 creation: page stocks</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-            isV2: true,
-          })}
-        >
-          <div>Offer V2 edition: page stocks</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-            isV2: true,
-          })}
-        >
-          <div>Offer V2 brouillon: page stocks</div>
-        </Route>
       </MemoryRouter>
     </Provider>
   )
@@ -220,69 +192,9 @@ describe('Summary stock section', () => {
       }
     })
 
-    it('should render creation summary (v2)', async () => {
-      renderStockSection({
-        props,
-        url: generatePath(
-          getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-      })
-      expect(
-        screen.getByRole('heading', { name: /Stocks et prix/ })
-      ).toBeInTheDocument()
-
-      await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
-      expect(
-        screen.getByText(/Offer V2 creation: page stocks/)
-      ).toBeInTheDocument()
-    })
-
-    it('should render edition summary (v2)', async () => {
-      renderStockSection({ props })
-      expect(
-        screen.getByRole('heading', { name: /Stocks et prix/ })
-      ).toBeInTheDocument()
-      await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
-      expect(
-        screen.getByText(/Offer V2 edition: page stocks/)
-      ).toBeInTheDocument()
-    })
-
-    it('should render draft summary (v2)', async () => {
-      renderStockSection({
-        props,
-        url: generatePath(
-          getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          }),
-          { offerId: 'AA' }
-        ),
-      })
-      expect(
-        screen.getByRole('heading', { name: /Stocks et prix/ })
-      ).toBeInTheDocument()
-
-      await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
-      expect(
-        screen.getByText(/Offer V2 brouillon: page stocks/)
-      ).toBeInTheDocument()
-    })
-
     it('should render creation summary (v3)', async () => {
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
-        },
-      }
       renderStockSection({
         props,
-        storeOverride,
         url: generatePath(
           getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -305,13 +217,7 @@ describe('Summary stock section', () => {
     })
 
     it('should render edition summary (v3)', async () => {
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
-        },
-      }
-      renderStockSection({ props, storeOverride })
+      renderStockSection({ props })
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()
@@ -326,13 +232,6 @@ describe('Summary stock section', () => {
     })
 
     it("should render booking limit date when it's given", async () => {
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
-        },
-      }
-
       props = {
         ...props,
         stockThing: {
@@ -341,7 +240,7 @@ describe('Summary stock section', () => {
           bookingLimitDatetime: '2001-06-12',
         },
       }
-      renderStockSection({ props, storeOverride })
+      renderStockSection({ props })
       expect(screen.getByText(/Date limite de réservation/)).toBeInTheDocument()
     })
 
@@ -388,15 +287,8 @@ describe('Summary stock section', () => {
     })
 
     it('should render creation summary (v3)', async () => {
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
-        },
-      }
       renderStockSection({
         props,
-        storeOverride,
         url: generatePath(
           getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -417,15 +309,8 @@ describe('Summary stock section', () => {
     })
 
     it('should render brouillon summary (v3)', async () => {
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
-        },
-      }
       renderStockSection({
         props,
-        storeOverride,
         url: generatePath(
           getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -446,13 +331,7 @@ describe('Summary stock section', () => {
     })
 
     it('should render edition summary (v3)', async () => {
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
-        },
-      }
-      renderStockSection({ props, storeOverride })
+      renderStockSection({ props })
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()

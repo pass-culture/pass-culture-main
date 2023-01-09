@@ -10,7 +10,6 @@ import {
   OFFER_WIZARD_MODE,
 } from 'core/Offers'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.svg'
 import { ReactComponent as CaseIcon } from 'icons/ico-case.svg'
 import { ReactComponent as TemplateOfferIcon } from 'icons/ico-template-offer.svg'
@@ -18,7 +17,6 @@ import { ReactComponent as PhoneIcon } from 'icons/info-phone.svg'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
 
 import ActionsBar from './ActionsBar/ActionsBar'
-import ActionsBarLegacy from './ActionsBar/ActionsBarLegacy'
 import styles from './OfferType.module.scss'
 
 const OfferType = (): JSX.Element => {
@@ -28,7 +26,6 @@ const OfferType = (): JSX.Element => {
   const [offerSubtype, setOfferSubtype] = useState(
     COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE
   )
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   const getNextPageHref = () => {
     if (offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
@@ -37,7 +34,6 @@ const OfferType = (): JSX.Element => {
         pathname: getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           mode: OFFER_WIZARD_MODE.CREATION,
-          isV2: !isOfferFormV3,
         }),
         search: location.search,
       })
@@ -128,11 +124,7 @@ const OfferType = (): JSX.Element => {
           </FormLayout.Section>
         )}
 
-        {isOfferFormV3 ? (
-          <ActionsBar getNextPageHref={getNextPageHref} />
-        ) : (
-          <ActionsBarLegacy getNextPageHref={getNextPageHref} />
-        )}
+        <ActionsBar getNextPageHref={getNextPageHref} />
       </FormLayout>
     </div>
   )

@@ -370,99 +370,11 @@ describe('Summary', () => {
       ).not.toBeInTheDocument()
     })
 
-    describe('When it is form v2', () => {
-      it('should render component with right buttons', async () => {
-        // given / when
-        renderSummary({
-          props,
-          url: generatePath(
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-            { offerId: 'AA' }
-          ),
-        })
-
-        // then
-        expect(screen.getByText('Étape précédente')).toBeInTheDocument()
-        const saveDraftButton = screen.getByText(
-          'Sauvegarder le brouillon et quitter'
-        )
-        expect(saveDraftButton).toBeInTheDocument()
-        expect(saveDraftButton).toHaveAttribute('href', '/offres')
-        expect(screen.getByText('Publier l’offre')).toBeInTheDocument()
-      })
-
-      it('should link to creation confirmation page', async () => {
-        // given
-        props = {
-          ...props,
-          formOfferV2: true,
-        }
-
-        // when
-        renderSummary({
-          props,
-          url: generatePath(
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-            { offerId: 'AA' }
-          ),
-        })
-
-        await userEvent.click(
-          screen.getByRole('button', { name: /Publier l’offre/ })
-        )
-
-        expect(
-          await screen.findByText(/Confirmation page: creation V2/)
-        ).toBeInTheDocument()
-      })
-
-      it('should link to draft confirmation page', async () => {
-        // given
-        props = {
-          ...props,
-          formOfferV2: true,
-        }
-
-        // when
-        renderSummary({
-          props,
-          url: generatePath(
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-              mode: OFFER_WIZARD_MODE.DRAFT,
-            }),
-            { offerId: 'AA' }
-          ),
-        })
-
-        await userEvent.click(
-          screen.getByRole('button', { name: /Publier l’offre/ })
-        )
-
-        expect(screen.getByText(/Confirmation page: draft/)).toBeInTheDocument()
-      })
-    })
-
     describe('When it is form v3', () => {
       it('should render component with right buttons', async () => {
-        // given
-        const storeOverride = {
-          features: {
-            initialized: true,
-            list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
-          },
-        }
-
         // when
         renderSummary({
           props,
-          storeOverride,
           url: generatePath(
             getOfferIndividualPath({
               step: OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -481,18 +393,9 @@ describe('Summary', () => {
       })
 
       it('should link to creation confirmation page', async () => {
-        // given
-        const storeOverride = {
-          features: {
-            initialized: true,
-            list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
-          },
-        }
-
         // when
         renderSummary({
           props,
-          storeOverride,
           url: generatePath(
             getOfferIndividualPath({
               step: OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -513,17 +416,9 @@ describe('Summary', () => {
     })
 
     it('should disabled publish button link during submit', async () => {
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
-        },
-      }
-
       // when
       renderSummary({
         props,
-        storeOverride,
         url: generatePath(
           getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -556,17 +451,9 @@ describe('Summary', () => {
     })
 
     it('should display notification on api error', async () => {
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
-        },
-      }
-
       // when
       renderSummary({
         props,
-        storeOverride,
         url: generatePath(
           getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -607,7 +494,6 @@ describe('Summary', () => {
         features: {
           initialized: true,
           list: [
-            { isActive: true, nameKey: 'OFFER_FORM_V3' },
             {
               isActive: true,
               nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',

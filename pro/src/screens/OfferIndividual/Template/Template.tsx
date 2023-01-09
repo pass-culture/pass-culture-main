@@ -13,8 +13,7 @@ import { Status } from '../Status'
 import styles from './Template.module.scss'
 
 export interface ITemplateProps {
-  // TODO: remove this '| null' on OFFER_FORM_V3 FF cleaning
-  title?: string | null
+  title?: string
   withStepper?: boolean
   withStatus?: boolean
   children: JSX.Element | JSX.Element[]

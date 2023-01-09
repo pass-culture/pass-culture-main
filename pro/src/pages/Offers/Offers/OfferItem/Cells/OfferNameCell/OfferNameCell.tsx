@@ -39,7 +39,6 @@ const OfferNameCell = ({
   audience,
 }: OfferNameCellProps) => {
   const { logEvent } = useAnalytics()
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   const onOfferNameClick = () => {
     const isDraft = offer.status === OFFER_STATUS_DRAFT
@@ -47,9 +46,7 @@ const OfferNameCell = ({
       from: OFFER_FORM_NAVIGATION_IN.OFFERS,
       to: !isDraft
         ? OfferBreadcrumbStep.SUMMARY
-        : isOfferFormV3
-        ? OFFER_WIZARD_STEP_IDS.INFORMATIONS
-        : OfferBreadcrumbStep.DETAILS,
+        : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TITLE,
       isEdition: true,
       isDraft: isDraft,
