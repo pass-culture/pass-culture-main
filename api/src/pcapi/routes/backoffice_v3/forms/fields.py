@@ -30,7 +30,8 @@ class PCOptStringField(wtforms.StringField):
     ]
 
 
-class PCStringField(PCOptStringField):
+class PCStringField(wtforms.StringField):
+    widget = partial(widget, template="components/forms/string_field.html")
     validators = [
         validators.InputRequired("Information obligatoire"),
         validators.Length(min=1, max=64, message="doit contenir entre %(min)d et %(max)d caractères"),
@@ -65,8 +66,9 @@ class PCOptCommentField(PCOptStringField):
     ]
 
 
-class PCCommentField(PCOptStringField):
+class PCCommentField(PCStringField):
     validators = [
+        validators.InputRequired("Information obligatoire"),
         validators.Length(min=1, max=1024, message="doit contenir entre %(min)d et %(max)d caractères"),
     ]
 
