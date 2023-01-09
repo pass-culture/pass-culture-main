@@ -99,6 +99,7 @@ const StockEventForm = ({
         rightIcon={() => <IcoEuro />}
         type="number"
         hideHiddenFooter={true}
+        data-testid="input-price"
       />
       <DatePicker
         smallLabel
