@@ -46,3 +46,13 @@ class TestingBackend(LoggerBackend):
     def delete_user_attributes(self, user_id: int, can_be_asynchronously_retried: bool = False) -> None:
         super().delete_user_attributes(user_id, can_be_asynchronously_retried=can_be_asynchronously_retried)
         testing.requests.append({"user_id": user_id, "can_be_asynchronously_retried": can_be_asynchronously_retried})
+
+    def track_event(self, user_id: int, event_name: str, can_be_asynchronously_retried: bool = False) -> None:
+        super().track_event(user_id, event_name, can_be_asynchronously_retried=can_be_asynchronously_retried)
+        testing.requests.append(
+            {
+                "user_id": user_id,
+                "event_name": event_name,
+                "can_be_asynchronously_retried": can_be_asynchronously_retried,
+            }
+        )
