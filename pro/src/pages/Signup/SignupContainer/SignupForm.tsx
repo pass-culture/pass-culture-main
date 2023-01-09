@@ -14,6 +14,7 @@ import { PasswordInput, SirenInput } from 'ui-kit/form'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import { MAYBE_APP_USER_APE_CODE } from './constants'
+import styles from './SignupContainer.module.scss'
 import { ISignupFormValues } from './types'
 
 const SignupForm = (): JSX.Element => {
@@ -68,7 +69,7 @@ const SignupForm = (): JSX.Element => {
 
   return (
     <FormLayout>
-      <div className="sign-up-form">
+      <div className={styles['sign-up-form']}>
         <FormLayout.Row>
           <TextInput
             label="Adresse e-mail"
@@ -102,14 +103,14 @@ const SignupForm = (): JSX.Element => {
             }
           />
         </FormLayout.Row>
-        <div className="siren-field">
+        <div className={styles['siren-field']}>
           <FormLayout.Row>
             <SirenInput
               label="SIREN de la structure que vous représentez"
               onValidSiren={getSirenAPIData}
             />
           </FormLayout.Row>
-          <span className="field-siren-value">
+          <span className={styles['field-siren-value']}>
             {values.legalUnitValues.name}
           </span>
           {showAnonymousBanner && <BannerInvisibleSiren />}
@@ -124,22 +125,18 @@ const SignupForm = (): JSX.Element => {
           />
         </FormLayout.Row>
         <LegalInfos
-          className="sign-up-infos-before-signup"
+          className={styles['sign-up-infos-before-signup']}
           title="Créer mon compte"
         />
       </div>
-      <div className="buttons-field">
+      <div className={styles['buttons-field']}>
         <Button
           onClick={() => history.push('/connexion')}
           variant={ButtonVariant.SECONDARY}
         >
           J’ai déjà un compte
         </Button>
-        <SubmitButton
-          className="primary-button"
-          isLoading={isSubmitting}
-          disabled={isSubmitting}
-        >
+        <SubmitButton isLoading={isSubmitting} disabled={isSubmitting}>
           Créer mon compte
         </SubmitButton>
       </div>

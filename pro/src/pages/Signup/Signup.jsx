@@ -8,6 +8,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 import Logo from 'ui-kit/Logo/Logo'
 
+import styles from './Signup.module.scss'
 import SignupConfirmation from './SignupConfirmation/SignupConfirmation'
 import SignupContainer from './SignupContainer/SignupContainer'
 import SignupUnavailable from './SignupUnavailable/SignupUnavailable'
@@ -25,9 +26,10 @@ const Signup = ({ location }) => {
         fullscreen: true,
         pageName: 'sign-up',
       }}
+      className={styles['sign-up']}
     >
       <PageTitle title="S’inscrire" />
-      <div className="logo-side">
+      <div className={styles['logo-side']}>
         <Logo noLink signPage />
       </div>
       {isProAccountCreationEnabled ? (

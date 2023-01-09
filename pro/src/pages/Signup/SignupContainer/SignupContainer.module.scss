@@ -13,46 +13,9 @@
     padding: rem.torem(60px) 0;
     width: rem.torem(486px);
 
-    .field-password > img {
-      position: absolute;
-      right: rem.torem(16px);
-      top: rem.torem(37px);
-    }
-
     .sign-page-form {
       margin-left: 36%;
       width: 59%;
-    }
-
-    h1 {
-      margin-bottom: rem.torem(16px);
-    }
-
-    h2 {
-      margin-bottom: rem.torem(16px);
-      word-break: break-word;
-    }
-
-    .sign-up-tips {
-      @include fonts.caption;
-
-      color: colors.$grey-dark;
-      margin-bottom: rem.torem(32px);
-    }
-
-    .tertiary-link {
-      align-items: center;
-      display: flex;
-    }
-
-    .field-password {
-      display: flex;
-      justify-content: space-between;
-      position: relative;
-    }
-
-    .field-password > label {
-      width: 90%;
     }
 
     .siren-field {
