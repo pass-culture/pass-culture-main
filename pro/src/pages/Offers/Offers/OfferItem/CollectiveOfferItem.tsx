@@ -1,9 +1,11 @@
 import React from 'react'
 
+import { OfferStatus } from 'apiClient/v1'
 import { Offer, Venue } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 
+import BookingLinkCell from './Cells/BookingLinkCell'
 import CheckboxCell from './Cells/CheckboxCell'
 import CollectiveOfferStatusCell from './Cells/CollectiveOfferStatusCell'
 import DuplicateOfferCell from './Cells/DuplicateOfferCell'
@@ -66,6 +68,16 @@ const CollectiveOfferItem = ({
       {Boolean(offer.isShowcase) && (
         <DuplicateOfferCell templateOfferId={offer.id} />
       )}
+
+      {isImproveCollectiveStatusActive &&
+        offer.status == OfferStatus.SOLD_OUT &&
+        offer.educationalBooking && (
+          <BookingLinkCell
+            bookingId={offer.educationalBooking?.id}
+            bookingStatus={offer.educationalBooking.booking_status}
+            offerEventDate={offer.stocks[0].beginningDatetime}
+          />
+        )}
 
       <EditOfferCell
         offer={offer}
