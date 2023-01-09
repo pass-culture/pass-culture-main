@@ -1429,12 +1429,12 @@ class GenerateInvoicesTest:
 
 class GenerateInvoiceTest:
     EXPECTED_NUM_QUERIES = (
-        1  # select cashflows, pricings, pricing_lines, and custom_reimbursement_rules
+        1  # lock reimbursement point
+        + 1  # select cashflows, pricings, pricing_lines, and custom_reimbursement_rules
         + 1  # select and lock ReferenceScheme
         + 1  # update ReferenceScheme
         + 1  # insert invoice
         + 1  # insert invoice lines
-        + 1  # select cashflows
         + 1  # insert invoice_cashflows
         + 1  # update Cashflow.status
         + 1  # update Pricing.status
@@ -1446,13 +1446,22 @@ class GenerateInvoiceTest:
     @freezegun.freeze_time(datetime.datetime(2022, 1, 15))
     def test_reference_scheme_increments(self):
         reimbursement_point = offerers_factories.VenueFactory()
+        factories.BankInformationFactory(venue=reimbursement_point)
+        cashflow1 = factories.CashflowFactory(
+            reimbursementPoint=reimbursement_point,
+            status=models.CashflowStatus.UNDER_REVIEW,
+        )
         invoice1 = api._generate_invoice(
             reimbursement_point_id=reimbursement_point.id,
-            cashflow_ids=[1, 2],
+            cashflow_ids=[cashflow1.id],
+        )
+        cashflow2 = factories.CashflowFactory(
+            reimbursementPoint=reimbursement_point,
+            status=models.CashflowStatus.UNDER_REVIEW,
         )
         invoice2 = api._generate_invoice(
             reimbursement_point_id=reimbursement_point.id,
-            cashflow_ids=[1, 2],
+            cashflow_ids=[cashflow2.id],
         )
 
         assert invoice1.reference == "F220000001"
@@ -1473,7 +1482,8 @@ class GenerateInvoiceTest:
         booking2 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
         api.price_booking(booking1)
         api.price_booking(booking2)
-        api.generate_cashflows(datetime.datetime.utcnow())
+        batch_id = api.generate_cashflows(datetime.datetime.utcnow())
+        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         reimbursement_point_id = reimbursement_point.id
@@ -1515,7 +1525,8 @@ class GenerateInvoiceTest:
         booking2 = bookings_factories.UsedIndividualBookingFactory(stock=stock2)
         api.price_booking(booking1)
         api.price_booking(booking2)
-        api.generate_cashflows(datetime.datetime.utcnow())
+        batch_id = api.generate_cashflows(datetime.datetime.utcnow())
+        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         reimbursement_point_id = reimbursement_point.id
@@ -1560,7 +1571,8 @@ class GenerateInvoiceTest:
         booking2 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
         api.price_booking(booking1)
         api.price_booking(booking2)
-        api.generate_cashflows(datetime.datetime.utcnow())
+        batch_id = api.generate_cashflows(datetime.datetime.utcnow())
+        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         reimbursement_point_id = reimbursement_point.id
@@ -1593,10 +1605,12 @@ class GenerateInvoiceTest:
             bookings.append(booking)
         for booking in bookings[:3]:
             api.price_booking(booking)
-        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
         for booking in bookings[3:]:
             api.price_booking(booking)
-        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         reimbursement_point_id = reimbursement_point.id
@@ -1688,7 +1702,8 @@ class GenerateInvoiceTest:
         booking2 = bookings_factories.UsedIndividualBookingFactory(stock=stock2)
         api.price_booking(booking1)
         api.price_booking(booking2)
-        api.generate_cashflows(datetime.datetime.utcnow())
+        batch_id = api.generate_cashflows(datetime.datetime.utcnow())
+        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         reimbursement_point_id = reimbursement_point.id
@@ -1727,7 +1742,8 @@ class GenerateInvoiceTest:
         )
         for b in (booking1, booking2, collective_booking1, collective_booking2):
             api.price_booking(b)
-        api.generate_cashflows(datetime.datetime.utcnow())
+        batch_id = api.generate_cashflows(datetime.datetime.utcnow())
+        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIWE
         cashflow_ids = {cf.id for cf in models.Cashflow.query.all()}
         booking2.status = bookings_models.BookingStatus.CANCELLED
         collective_booking2.status = educational_models.CollectiveBookingStatus.CANCELLED
@@ -1766,10 +1782,12 @@ class PrepareInvoiceContextTest:
             bookings.append(booking)
         for booking in bookings[:3]:
             api.price_booking(booking)
-        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
         for booking in bookings[3:]:
             api.price_booking(booking)
-        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
         invoice = api._generate_invoice(
             reimbursement_point_id=reimbursement_point.id,
@@ -1835,7 +1853,8 @@ class PrepareInvoiceContextTest:
             individualBooking__user=user,
         )
         api.price_booking(booking)
-        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
         invoice = api._generate_invoice(
             reimbursement_point_id=venue.id,
@@ -1863,14 +1882,16 @@ class GenerateInvoiceHtmlTest:
             bookings.append(booking)
         for booking in bookings[:3]:
             api.price_booking(booking)
-        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
         for booking in bookings[3:]:
             api.price_booking(booking)
         duo_offer = offers_factories.OfferFactory(venue=venue, isDuo=True)
         duo_stock = offers_factories.StockFactory(offer=duo_offer, price=1)
         duo_booking = bookings_factories.UsedIndividualBookingFactory(stock=duo_stock, quantity=2)
         api.price_booking(duo_booking)
-        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
         cashflows = models.Cashflow.query.order_by(models.Cashflow.id).all()
         cashflow_ids = [c.id for c in cashflows]
         invoice = api._generate_invoice(
@@ -1991,13 +2012,17 @@ class GenerateAndStoreInvoiceTest:
     def test_basics(self, clear_tests_invoices_bucket, css_font_http_request_mock):
         reimbursement_point = offerers_factories.VenueFactory()
         factories.BankInformationFactory(venue=reimbursement_point, iban="FR2710010000000000000000064")
+        cashflow = factories.CashflowFactory(
+            reimbursementPoint=reimbursement_point,
+            status=models.CashflowStatus.UNDER_REVIEW,
+        )
 
         # We're not interested in the invoice itself. We just want to
         # check that the function does not fail and that the e-mail is
         # sent.
         api.generate_and_store_invoice(
             reimbursement_point_id=reimbursement_point.id,
-            cashflow_ids=[1],
+            cashflow_ids=[cashflow.id],
         )
 
         assert len(mails_testing.outbox) == 1
