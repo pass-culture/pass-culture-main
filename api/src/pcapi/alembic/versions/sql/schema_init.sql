@@ -5578,17 +5578,14 @@ INSERT INTO public.offerer_tag VALUES (1, 'top-acteur', 'Top Acteur', 'Acteur pr
 -- Data for Name: provider; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
-INSERT INTO public.provider VALUES (false, 2, 'TiteLive (Epagine / Place des libraires.com)', 'TiteLiveThings', false, NULL, NULL, false, false);
-INSERT INTO public.provider VALUES (false, 3, 'TiteLive (Epagine / Place des libraires.com) Descriptions', 'TiteLiveThingDescriptions', false, NULL, NULL, false, false);
-INSERT INTO public.provider VALUES (false, 4, 'TiteLive (Epagine / Place des libraires.com) Thumbs', 'TiteLiveThingThumbs', false, NULL, NULL, false, false);
-INSERT INTO public.provider VALUES (false, 5, 'Allociné', 'AllocineStocks', false, NULL, NULL, false, false);
-INSERT INTO public.provider VALUES (false, 6, 'Leslibraires.fr', 'LibrairesStocks', false, NULL, NULL, false, false);
-INSERT INTO public.provider VALUES (false, 7, 'FNAC', 'FnacStocks', false, NULL, NULL, false, false);
-INSERT INTO public.provider VALUES (false, 8, 'Praxiel/Inférence', 'PraxielStocks', false, NULL, NULL, false, false);
-INSERT INTO public.provider VALUES (false, 1, 'TiteLive Stocks (Epagine / Place des libraires.com)', 'TiteLiveStocks', false, NULL, NULL, true, false);
-INSERT INTO public.provider VALUES (true, 9, 'Ciné Office', 'CDSStocks', true, NULL, NULL, false, false);
-INSERT INTO public.provider VALUES (true, 10, 'Boost', 'BoostStocks', true, NULL, NULL, false, false);
-INSERT INTO public.provider VALUES (false, 11, 'Pass Culture API Stocks', 'PCAPIStocks', false, NULL, NULL, false, false);
+INSERT INTO public.provider VALUES (false, 1, 'TiteLive (Epagine / Place des libraires.com)', 'TiteLiveThings', false, NULL, NULL, false, false);
+INSERT INTO public.provider VALUES (false, 2, 'TiteLive (Epagine / Place des libraires.com) Descriptions', 'TiteLiveThingDescriptions', false, NULL, NULL, false, false);
+INSERT INTO public.provider VALUES (false, 3, 'TiteLive (Epagine / Place des libraires.com) Thumbs', 'TiteLiveThingThumbs', false, NULL, NULL, false, false);
+INSERT INTO public.provider VALUES (false, 4, 'Allociné', 'AllocineStocks', false, NULL, NULL, false, false);
+INSERT INTO public.provider VALUES (false, 5, 'FNAC', 'FnacStocks', false, NULL, NULL, false, false);
+INSERT INTO public.provider VALUES (true, 6, 'Ciné Office', 'CDSStocks', true, NULL, NULL, false, false);
+INSERT INTO public.provider VALUES (true, 7, 'Boost', 'BoostStocks', true, NULL, NULL, false, false);
+INSERT INTO public.provider VALUES (false, 8, 'Pass Culture API Stocks', 'PCAPIStocks', false, NULL, NULL, false, false);
 
 
 --
