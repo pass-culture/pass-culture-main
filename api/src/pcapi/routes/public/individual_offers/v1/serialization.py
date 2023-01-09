@@ -169,7 +169,15 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
 
 
-def get_category_fields_model(subcategory: subcategories.Subcategory) -> typing.Type[CategoryRelatedFields]:
+class Method(enum.Enum):
+    create = "create"
+    read = "read"
+    edit = "edit"
+
+
+def compute_category_fields_model(
+    subcategory: subcategories.Subcategory, method: Method
+) -> typing.Type[CategoryRelatedFields]:
     """
     Create dynamic pydantic models to indicate which fields are available for the chosen subcategory,
     without duplicating categories declaration
@@ -177,7 +185,7 @@ def get_category_fields_model(subcategory: subcategories.Subcategory) -> typing.
     specific_fields: dict[typing.Any, typing.Any] = {}
     for field_name, model_field in ExtraDataModel.__fields__.items():
         if field_name in subcategory.conditional_fields:
-            is_required = field_name in offers_validation.OFFER_EXTRA_DATA_MANDATORY_FIELDS
+            is_required = field_name in offers_validation.OFFER_EXTRA_DATA_MANDATORY_FIELDS and method == Method.create
             specific_fields[field_name] = (model_field.type_, ... if is_required else model_field.default)
 
     specific_fields["subcategory_id"] = (
@@ -185,13 +193,13 @@ def get_category_fields_model(subcategory: subcategories.Subcategory) -> typing.
         pydantic.Field(alias="category"),
     )
 
-    model = pydantic.create_model(subcategory.id, **specific_fields)
+    model = pydantic.create_model(f"{subcategory.id}_{method.value}", **specific_fields)
     model.__doc__ = subcategory.pro_label
     return model
 
 
 def compute_category_related_fields(offer: offers_models.Offer) -> CategoryRelatedFields:
-    category_fields_model = CATEGORY_MODELS_BY_SUBCATEGORY[offer.subcategoryId]
+    category_fields_model = (product_category_reading_models | event_category_reading_models)[offer.subcategoryId]
     fields = offer.extraData or {}
     if offer.extraData and "musicSubType" in offer.extraData and offer.extraData["musicSubType"] != "":
         fields["musicType"] = MusicTypeEnum(
@@ -199,12 +207,6 @@ def compute_category_related_fields(offer: offers_models.Offer) -> CategoryRelat
         )
     if offer.extraData and "showSubType" in offer.extraData and offer.extraData["showSubType"] != "":
         fields["showType"] = ShowTypeEnum(show_types.SHOW_SUB_TYPES_BY_CODE[int(offer.extraData["showSubType"])].slug)
-
-    # in case our data is not consistent with the subcategory, we define a default value
-    if "showType" in offer.subcategory.conditional_fields and "showType" not in fields:
-        fields["showType"] = ShowTypeEnum(show_types.SHOW_SUB_TYPES_BY_SLUG[show_types.OTHER_SHOW_TYPE_SLUG].slug)
-    if "musicType" in offer.subcategory.conditional_fields and "musicType" not in fields:
-        fields["musicType"] = ShowTypeEnum(music_types.MUSIC_SUB_TYPES_BY_SLUG[music_types.OTHER_SHOW_TYPE_SLUG].slug)
 
     return category_fields_model(**fields, category=offer.subcategory.id)
 
@@ -226,54 +228,49 @@ def compute_extra_data(category_related_fields: CategoryRelatedFields) -> dict[s
     return extra_data
 
 
-CATEGORY_MODELS_BY_SUBCATEGORY = {
-    subcategory.id: get_category_fields_model(subcategory) for subcategory in subcategories.ALL_SUBCATEGORIES
+product_category_creation_models = {
+    subcategory.id: compute_category_fields_model(subcategory, Method.create)
+    for subcategory in subcategories.ALL_SUBCATEGORIES
+    if not subcategory.is_event and subcategory != subcategories.LIVRE_PAPIER and subcategory.is_selectable
 }
-PRODUCT_CATEGORY_MODELS = [
-    CATEGORY_MODELS_BY_SUBCATEGORY[subcategory_id]
-    for subcategory_id in CATEGORY_MODELS_BY_SUBCATEGORY
-    if not subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].is_event
-]
-EDITABLE_PRODUCT_CATEGORY_MODELS = [
-    CATEGORY_MODELS_BY_SUBCATEGORY[subcategory_id]
-    for subcategory_id in CATEGORY_MODELS_BY_SUBCATEGORY
-    if not subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].is_event
-    and subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].is_selectable
-    and subcategory_id != subcategories.LIVRE_PAPIER.id
-]
-EVENT_CATEGORY_MODELS = [
-    CATEGORY_MODELS_BY_SUBCATEGORY[subcategory_id]
-    for subcategory_id in CATEGORY_MODELS_BY_SUBCATEGORY
-    if subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].is_event
-]
-EDITABLE_EVENT_CATEGORY_MODELS = [
-    CATEGORY_MODELS_BY_SUBCATEGORY[subcategory_id]
-    for subcategory_id in CATEGORY_MODELS_BY_SUBCATEGORY
-    if subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].is_event
-    and subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].is_selectable
-]
+product_category_reading_models = {
+    subcategory.id: compute_category_fields_model(subcategory, Method.read)
+    for subcategory in subcategories.ALL_SUBCATEGORIES
+    if not subcategory.is_event
+}
+
+event_category_creation_models = {
+    subcategory.id: compute_category_fields_model(subcategory, Method.create)
+    for subcategory in subcategories.ALL_SUBCATEGORIES
+    if subcategory.is_event and subcategory.is_selectable
+}
+event_category_reading_models = {
+    subcategory.id: compute_category_fields_model(subcategory, Method.read)
+    for subcategory in subcategories.ALL_SUBCATEGORIES
+    if subcategory.is_event
+}
 
 
 if typing.TYPE_CHECKING:
-    product_category_fields = CategoryRelatedFields
-    editable_product_category_fields = CategoryRelatedFields
-    event_category_fields = CategoryRelatedFields
-    editable_event_category_fields = CategoryRelatedFields
+    product_category_creation_fields = CategoryRelatedFields
+    product_category_reading_fields = CategoryRelatedFields
+    event_category_creation_fields = CategoryRelatedFields
+    event_category_reading_fields = CategoryRelatedFields
 else:
-    product_category_fields = typing_extensions.Annotated[
-        typing.Union[tuple(PRODUCT_CATEGORY_MODELS)],
+    product_category_creation_fields = typing_extensions.Annotated[
+        typing.Union[tuple(product_category_creation_models.values())],
         pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
-    editable_product_category_fields = typing_extensions.Annotated[
-        typing.Union[tuple(EDITABLE_PRODUCT_CATEGORY_MODELS)],
+    product_category_reading_fields = typing_extensions.Annotated[
+        typing.Union[tuple(product_category_reading_models.values())],
         pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
-    event_category_fields = typing_extensions.Annotated[
-        typing.Union[tuple(EVENT_CATEGORY_MODELS)],
+    event_category_creation_fields = typing_extensions.Annotated[
+        typing.Union[tuple(event_category_creation_models.values())],
         pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
-    editable_event_category_fields = typing_extensions.Annotated[
-        typing.Union[tuple(EDITABLE_EVENT_CATEGORY_MODELS)],
+    event_category_reading_fields = typing_extensions.Annotated[
+        typing.Union[tuple(event_category_reading_models.values())],
         pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
 
@@ -352,12 +349,12 @@ class SentByEmailDetailsResponse(serialization.ConfiguredBaseModel):
 
 
 class ProductOfferCreation(OfferCreationBase):
-    category_related_fields: editable_product_category_fields
+    category_related_fields: product_category_creation_fields
     stock: StockCreation | None
 
 
 class EventOfferCreation(OfferCreationBase):
-    category_related_fields: editable_event_category_fields
+    category_related_fields: event_category_creation_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = TICKET_COLLECTION_FIELD
 
@@ -450,7 +447,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
 
 
 class ProductOfferResponse(OfferResponse):
-    category_related_fields: product_category_fields
+    category_related_fields: product_category_reading_fields
     stock: BaseStockResponse | None
 
     @classmethod
@@ -481,7 +478,7 @@ def _serialize_ticket_collection(
 
 
 class EventOfferResponse(OfferResponse):
-    category_related_fields: event_category_fields
+    category_related_fields: event_category_reading_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     ticket_collection: SentByEmailDetailsResponse | OnSiteCollectionDetailsResponse | None = TICKET_COLLECTION_FIELD
 
