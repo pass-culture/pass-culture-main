@@ -138,7 +138,7 @@ NAME_FIELD = pydantic.Field(description="Offer title", example="Le Petit Prince"
 DURATION_MINUTES_FIELD = pydantic.Field(description="Event duration in minutes", example=60, alias="eventDuration")
 TICKET_COLLECTION_FIELD = pydantic.Field(
     None,
-    description="How the ticket will be collected. Left empty if there is no ticket. Only some categories are compatible with tickets.",
+    description="How are you? Left empty if there is no ticket. Only some categories are compatible with tickets.",
     discriminator="way",
 )
 EVENT_DATES_FIELD = pydantic.Field(
