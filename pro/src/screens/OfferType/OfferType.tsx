@@ -4,7 +4,11 @@ import { useHistory, useLocation } from 'react-router-dom'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import PageTitle from 'components/PageTitle/PageTitle'
-import { OFFER_SUBTYPES, OFFER_TYPES, OFFER_WIZARD_MODE } from 'core/Offers'
+import {
+  COLLECTIVE_OFFER_SUBTYPE,
+  OFFER_TYPES,
+  OFFER_WIZARD_MODE,
+} from 'core/Offers'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.svg'
@@ -21,7 +25,9 @@ const OfferType = (): JSX.Element => {
   const history = useHistory()
   const location = useLocation()
   const [offerType, setOfferType] = useState(OFFER_TYPES.INDIVIDUAL_OR_DUO)
-  const [offerSubtype, setOfferSubtype] = useState(OFFER_SUBTYPES.COLLECTIVE)
+  const [offerSubtype, setOfferSubtype] = useState(
+    COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE
+  )
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   const getNextPageHref = () => {
@@ -38,7 +44,7 @@ const OfferType = (): JSX.Element => {
     }
 
     // Offer type is EDUCATIONAL
-    if (offerSubtype === OFFER_SUBTYPES.TEMPLATE) {
+    if (offerSubtype === COLLECTIVE_OFFER_SUBTYPE.TEMPLATE) {
       return history.push({
         pathname: '/offre/creation/collectif/vitrine',
         search: location.search,
@@ -60,7 +66,7 @@ const OfferType = (): JSX.Element => {
   const handleOfferSubtypeChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const selectedOfferSubtype = event.target.value as OFFER_SUBTYPES
+    const selectedOfferSubtype = event.target.value as COLLECTIVE_OFFER_SUBTYPE
     setOfferSubtype(selectedOfferSubtype)
   }
 
@@ -101,22 +107,22 @@ const OfferType = (): JSX.Element => {
               <RadioButtonWithImage
                 name="offer-subtype"
                 Icon={CalendarCheckIcon}
-                isChecked={offerSubtype === OFFER_SUBTYPES.COLLECTIVE}
+                isChecked={offerSubtype === COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE}
                 label="Une offre réservable"
                 description="Cette offre a une date et un prix. Vous pouvez choisir de la rendre visible par tous les établissements scolaires ou par un seul."
                 onChange={handleOfferSubtypeChange}
-                value={OFFER_SUBTYPES.COLLECTIVE}
+                value={COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE}
               />
             </FormLayout.Row>
             <FormLayout.Row inline>
               <RadioButtonWithImage
                 name="offer-subtype"
                 Icon={TemplateOfferIcon}
-                isChecked={offerSubtype === OFFER_SUBTYPES.TEMPLATE}
+                isChecked={offerSubtype === COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
                 label="Une offre vitrine"
                 description="Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée. "
                 onChange={handleOfferSubtypeChange}
-                value={OFFER_SUBTYPES.TEMPLATE}
+                value={COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
               />
             </FormLayout.Row>
           </FormLayout.Section>
