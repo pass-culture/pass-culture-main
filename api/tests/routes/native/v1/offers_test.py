@@ -414,8 +414,7 @@ class ReportOfferTest:
         #
         #   * reload user
         #   * select offer
-        #   * get features: is OFFER_FORM_V3 active
-        with assert_num_queries(7):
+        with assert_num_queries(6):
             response = test_client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "INAPPROPRIATE"})
             assert response.status_code == 204
 
@@ -444,8 +443,7 @@ class ReportOfferTest:
         #
         #   * reload user
         #   * select offer
-        #   * get features: is OFFER_FORM_V3 active
-        with assert_num_queries(7):
+        with assert_num_queries(6):
             data = {"reason": "OTHER", "customReason": "saynul"}
             response = test_client.post(f"/native/v1/offer/{offer.id}/report", json=data)
             assert response.status_code == 204

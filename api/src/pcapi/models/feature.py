@@ -94,7 +94,6 @@ class FeatureToggle(enum.Enum):
     SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS = "Permettre limport journalier des couvertures de livres"
     UPDATE_BOOKING_USED = "Permettre la validation automatique des contremarques 48h après la fin de lévènement"
     USER_PROFILING_FRAUD_CHECK = "Détection de la fraude basée sur le profil de l'utilisateur"
-    OFFER_FORM_V3 = "Afficher la version 3 du formulaire d'offre"
     ENABLE_VENUE_STRICT_SEARCH = (
         "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
     )
