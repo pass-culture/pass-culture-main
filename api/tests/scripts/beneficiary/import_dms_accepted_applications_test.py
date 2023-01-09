@@ -391,7 +391,7 @@ class RunIntegrationTest:
             if fraud_check.type == fraud_models.FraudCheckType.HONOR_STATEMENT
         )
 
-        assert len(push_testing.requests) == 2
+        assert len(push_testing.requests) == 3
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 96  # accepted as beneficiary email
@@ -548,7 +548,7 @@ class RunIntegrationTest:
             TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
         )
 
-        assert len(push_testing.requests) == 2
+        assert len(push_testing.requests) == 3
         assert push_testing.requests[0]["attribute_values"]["u.is_beneficiary"]
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
