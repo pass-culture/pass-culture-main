@@ -1376,7 +1376,7 @@ def generate_invoice_file(invoice_date: datetime.date) -> pathlib.Path:
 
 
 def generate_and_store_invoice(
-    reimbursement_point_id: int | None,
+    reimbursement_point_id: int,
     cashflow_ids: list[int],
 ) -> None:
     log_extra = {"reimbursement_point": reimbursement_point_id}
@@ -1396,7 +1396,7 @@ def generate_and_store_invoice(
 
 
 def _generate_invoice(
-    reimbursement_point_id: int | None,
+    reimbursement_point_id: int,
     cashflow_ids: list[int],
 ) -> models.Invoice | None:
     # Acquire lock to avoid 2 simultaneous calls to this function (on
