@@ -1,9 +1,8 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 
-.sign-up-page {
+.sign-up {
   display: flex;
-  flex-direction: row;
 
   .logo-side {
     background-image: url("/icons/linear-gradient.svg");
