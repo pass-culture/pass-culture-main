@@ -8,7 +8,8 @@ on:
       - staging
 
 concurrency:
-  group: tests-main-${{ github.ref }}
+  # cancel previous workflow of the same branch except on master
+  group: ${{ github.ref == 'refs/heads/master' && github.sha || github.ref }}
   cancel-in-progress: true
 
 jobs:
