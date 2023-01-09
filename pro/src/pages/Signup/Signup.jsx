@@ -9,7 +9,7 @@ import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 import Logo from 'ui-kit/Logo/Logo'
 
 import SignupConfirmation from './SignupConfirmation/SignupConfirmation'
-import SignupForm from './SignupForm/SignupForm'
+import SignupContainer from './SignupContainer/SignupContainer'
 import SignupUnavailable from './SignupUnavailable/SignupUnavailable'
 
 const Signup = ({ location }) => {
@@ -32,7 +32,7 @@ const Signup = ({ location }) => {
       </div>
       {isProAccountCreationEnabled ? (
         <Switch location={location}>
-          <Route component={SignupForm} exact path="/inscription" />
+          <Route component={SignupContainer} exact path="/inscription" />
           <Route
             component={SignupConfirmation}
             path="/inscription/confirmation"
