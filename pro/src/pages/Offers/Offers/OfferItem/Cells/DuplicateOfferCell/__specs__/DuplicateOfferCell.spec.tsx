@@ -16,7 +16,7 @@ jest.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
   createOfferFromTemplate: jest.fn(),
 }))
 
-const renderDuplicateOfferCell = (isTemplate = true) => {
+const renderDuplicateOfferCell = () => {
   const store = configureTestStore({
     user: {
       initialized: true,
@@ -34,10 +34,7 @@ const renderDuplicateOfferCell = (isTemplate = true) => {
           <table>
             <tbody>
               <tr>
-                <DuplicateOfferCell
-                  isTemplate={isTemplate}
-                  templateOfferId="AE"
-                />
+                <DuplicateOfferCell templateOfferId="AE" />
               </tr>
             </tbody>
           </table>
@@ -51,15 +48,6 @@ const renderDuplicateOfferCell = (isTemplate = true) => {
 }
 
 describe('DuplicateOfferCell', () => {
-  it('should not render duplicate button if offer is not template', () => {
-    renderDuplicateOfferCell(false)
-    const button = screen.queryByRole('button', {
-      name: 'Créer une offre réservable pour un établissement',
-    })
-
-    expect(button).not.toBeInTheDocument()
-  })
-
   it('should close dialog when click on cancel button', async () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'false')
     renderDuplicateOfferCell()

@@ -19,10 +19,8 @@ import DuplicateOfferDialog from './DuplicateOfferDialog'
 export const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
 
 const DuplicateOfferCell = ({
-  isTemplate,
   templateOfferId,
 }: {
-  isTemplate: boolean
   templateOfferId: string
 }) => {
   const history = useHistory()
@@ -55,18 +53,16 @@ const DuplicateOfferCell = ({
   return (
     <>
       <td className={styles['duplicate-offer-column']}>
-        {isTemplate ? (
-          <Button
-            variant={ButtonVariant.SECONDARY}
-            className={styles['button']}
-            onClick={handleCreateOfferClick}
-            Icon={PlusIcon}
-            iconPosition={IconPositionEnum.CENTER}
-            hasTooltip
-          >
-            Créer une offre réservable pour un établissement
-          </Button>
-        ) : null}
+        <Button
+          variant={ButtonVariant.SECONDARY}
+          className={styles['button']}
+          onClick={handleCreateOfferClick}
+          Icon={PlusIcon}
+          iconPosition={IconPositionEnum.CENTER}
+          hasTooltip
+        >
+          Créer une offre réservable pour un établissement
+        </Button>
         {isModalOpen && shouldDisplayModal && (
           <DuplicateOfferDialog
             onCancel={() => setIsModalOpen(false)}
