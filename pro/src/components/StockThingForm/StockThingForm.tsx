@@ -56,6 +56,7 @@ const StockThingForm = ({
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('price')}
         type="number"
+        data-testid="input-price"
         rightIcon={() => <IcoEuro tabIndex={-1} />}
       />
       <DatePicker
