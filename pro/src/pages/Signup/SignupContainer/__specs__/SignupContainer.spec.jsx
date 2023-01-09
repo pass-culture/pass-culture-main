@@ -13,9 +13,10 @@ import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter
 import * as useAnalytics from 'hooks/useAnalytics'
 import { configureTestStore } from 'store/testUtils'
 
-import SignupForm from '../SignupForm'
+import SignupContainer from '../SignupContainer'
 
 const mockLogEvent = jest.fn()
+window.matchMedia = jest.fn().mockReturnValue({ matches: true })
 
 jest.mock('core/Offerers/adapters/getSirenDataAdapter')
 jest.mock('apiClient/api', () => ({
@@ -31,7 +32,7 @@ const renderSignUp = storeOveride => {
     <Provider store={store}>
       <MemoryRouter initialEntries={['/inscription']}>
         <Route path="/inscription">
-          <SignupForm />
+          <SignupContainer />
         </Route>
         <Route path="/accueil">
           <span>I'm logged in as a pro user</span>
@@ -47,7 +48,7 @@ const renderSignUp = storeOveride => {
   )
 }
 
-describe('src | components | pages | Signup | SignupForm', () => {
+describe('Signup', () => {
   let store
 
   beforeEach(() => {
@@ -62,6 +63,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+    Element.prototype.scrollIntoView = jest.fn()
   })
 
   it('should redirect to accueil page if the user is logged in', async () => {
@@ -200,6 +202,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
         })
       ).toBeInTheDocument()
     })
+
     describe('formlogEvents', () => {
       describe('on component unmount', () => {
         it('should trigger an event with touched fields', async () => {
@@ -281,7 +284,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
         })
       })
 
-      it('should enable submit button only when required inputs are filled and call pcapi with data', async () => {
+      it('should enable submit button', async () => {
         renderSignUp(store)
         const submitButton = screen.getByRole('button', {
           name: /Créer mon compte/,
@@ -315,7 +318,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
           '+33722332233'
         )
-        expect(submitButton).toBeDisabled()
+        expect(submitButton).toBeEnabled()
         await userEvent.type(
           screen.getByRole('textbox', {
             name: /SIREN/,
@@ -362,6 +365,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
         )
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
       })
+
       it('should show a notification on api call error', async () => {
         api.signupPro.mockRejectedValue({
           errors: {
@@ -400,7 +404,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
         await userEvent.click(submitButton)
         expect(api.signupPro).toHaveBeenCalledTimes(1)
-        expect(submitButton).toBeDisabled()
 
         expect(
           await screen.findByText(
@@ -416,6 +419,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
         await userEvent.tab()
         await waitFor(() => expect(submitButton).toBeEnabled())
       })
+
       it('should display a Banner when SIREN is invisible', async () => {
         jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
           isOk: false,
