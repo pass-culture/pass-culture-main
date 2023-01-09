@@ -17,7 +17,6 @@ from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -70,7 +69,6 @@ class GetOffererTest:
         endpoint_kwargs = {"offerer_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_offerer(self, authenticated_client):  # type: ignore
         offerer = offerers_factories.UserOffererFactory().offerer
         url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id)
@@ -83,10 +81,9 @@ class GetOffererTest:
 
         # get session (1 query)
         # get user with profile and permissions (1 query)
-        # get FF (1 query)
         # get offerer (1 query)
         # get offerer basic info (1 query)
-        with assert_num_queries(5):
+        with assert_num_queries(4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -104,16 +101,14 @@ class GetOffererStatsTest:
         endpoint_kwargs = {"offerer_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_stats(self, authenticated_client, offerer, offer, booking):  # type: ignore
         url = url_for("backoffice_v3_web.offerer.get_stats", offerer_id=offerer.id)
 
         # get session (1 query)
         # get user with profile and permissions (1 query)
-        # get FF (1 query)
         # get total revenue (1 query)
         # get offerers offers stats (1 query)
-        with assert_num_queries(5):
+        with assert_num_queries(4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -237,7 +232,6 @@ class GetOffererDetailsTest:
             offerer = offerers_factories.UserOffererFactory().offerer
             return url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_history(self, authenticated_client):
         user_offerer = offerers_factories.UserOffererFactory()
         offerer = user_offerer.offerer
@@ -262,7 +256,6 @@ class GetOffererDetailsTest:
 
         assert user_offerer.user.email in content
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_history_with_missing_authorId(self, authenticated_client):
         user_offerer = offerers_factories.UserOffererFactory()
         offerer = user_offerer.offerer
@@ -287,7 +280,6 @@ class GetOffererDetailsTest:
         assert action.comment in content
         assert user_offerer.user.email in content
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_no_details_data(self, authenticated_client, offerer):
         url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
 
@@ -301,7 +293,6 @@ class GetOffererDetailsTest:
             response = authenticated_client.get(url)
         assert response.status_code == 200
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_action_name_depends_on_type(self, authenticated_client, offerer):
         admin_user = users_factories.AdminFactory()
         user_offerer_1 = offerers_factories.UserOffererFactory(
@@ -335,7 +326,6 @@ class GetOffererDetailsTest:
         assert user_offerer_1.user.full_name not in content
         assert user_offerer_2.user.full_name in content
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_managed_venues(self, authenticated_client, offerer):
         other_offerer = offerers_factories.OffererFactory()
         venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -418,7 +408,6 @@ class NewCommentTest:
         endpoint_kwargs = {"offerer_id": 1}
         needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_new_comment(self, authenticated_client, offerer):
         url = url_for("backoffice_v3_web.offerer_comment.new_comment", offerer_id=offerer.id)
 
@@ -430,9 +419,8 @@ class NewCommentTest:
 
         # get session (1 query)
         # get user with profile and permissions (1 query)
-        # get FF (1 query)
         # get offerer (1 query)
-        with assert_num_queries(4):
+        with assert_num_queries(3):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -443,7 +431,6 @@ class CommentOffererTest:
         endpoint_kwargs = {"offerer_id": 1}
         needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_add_comment(self, authenticated_client, offerer):
         comment = "some comment"
         response = self.send_comment_offerer_request(authenticated_client, offerer, comment)
@@ -456,7 +443,6 @@ class CommentOffererTest:
         assert len(offerer.action_history) == 1
         assert offerer.action_history[0].comment == comment
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_add_invalid_comment(self, authenticated_client, offerer):
         response = self.send_comment_offerer_request(authenticated_client, offerer, "")
 
@@ -481,7 +467,6 @@ class ListOfferersToValidateUnauthorizedTest(unauthorized_helpers.UnauthorizedHe
 
 class ListOfferersToValidateTest:
     class ListOfferersToBeValidatedTest:
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_list_offerers_to_be_validated(self, authenticated_client):
             # given
             _validated_offerers = [offerers_factories.UserOffererFactory().offerer for _ in range(3)]
@@ -515,7 +500,6 @@ class ListOfferersToValidateTest:
                 (ValidationStatus.PENDING, "En attente"),
             ],
         )
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_payload_content(self, authenticated_client, validation_status, expected_status, top_acteur_tag):
             # given
             user_offerer = offerers_factories.UserNotValidatedOffererFactory(
@@ -577,7 +561,6 @@ class ListOfferersToValidateTest:
             assert rows[0]["Ville"] == user_offerer.offerer.city
             assert rows[0]["Téléphone"] == user_offerer.offerer.first_user.phoneNumber
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_payload_content_no_action(self, authenticated_client):
             # given
             user_offerer = offerers_factories.UserNotValidatedOffererFactory(
@@ -600,7 +583,6 @@ class ListOfferersToValidateTest:
             assert rows[0]["Date de la demande"] == "03/10/2022"
             assert rows[0]["Dernier commentaire"] == ""
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         @pytest.mark.parametrize(
             "total_items, pagination_config, expected_total_pages, expected_page, expected_items",
             (
@@ -640,7 +622,6 @@ class ListOfferersToValidateTest:
                 total_items,
             )
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         @pytest.mark.parametrize(
             "tag_filter, expected_offerer_names",
             (
@@ -672,7 +653,6 @@ class ListOfferersToValidateTest:
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_list_filtering_by_date(self, authenticated_client):
             # given
             # Created before requested range, excluded from results:
@@ -707,7 +687,6 @@ class ListOfferersToValidateTest:
             rows = html_parser.extract_table_rows(response.data)
             assert [int(row["ID"]) for row in rows] == [uo.offerer.id for uo in (user_offerer_3, user_offerer_2)]
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_list_filtering_by_invalid_date(self, authenticated_client):
             # given
 
@@ -723,7 +702,6 @@ class ListOfferersToValidateTest:
             assert response.status_code == 400
             assert "Date invalide" in response.data.decode("utf-8")
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         @pytest.mark.parametrize("search", ["123004004", "  123004004 ", "123004004\n"])
         def test_list_search_by_siren(self, authenticated_client, offerers_to_be_validated, search):
             # when
@@ -737,7 +715,6 @@ class ListOfferersToValidateTest:
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"D"}
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_list_search_by_postal_code(self, authenticated_client, offerers_to_be_validated):
             # when
             with assert_no_duplicated_queries():
@@ -750,7 +727,6 @@ class ListOfferersToValidateTest:
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"C", "F"}
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_list_search_by_department_code(self, authenticated_client, offerers_to_be_validated):
             # when
             with assert_no_duplicated_queries():
@@ -763,7 +739,6 @@ class ListOfferersToValidateTest:
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"A", "E"}
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_list_search_by_city(self, authenticated_client, offerers_to_be_validated):
             # Ensure that outerjoin does not cause too many rows returned
             offerers_factories.UserOffererFactory.create_batch(3, offerer=offerers_to_be_validated[1])
@@ -781,7 +756,6 @@ class ListOfferersToValidateTest:
             assert {row["Nom de la structure"] for row in rows} == {"B", "D"}
             assert html_parser.extract_pagination_info(response.data) == (1, 1, 2)
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         @pytest.mark.parametrize("search", ["1", "1234", "123456", "1234567", "12345678", "12345678912345", "  1234"])
         def test_list_search_by_invalid_number_of_digits(self, authenticated_client, search):
             # when
@@ -796,7 +770,6 @@ class ListOfferersToValidateTest:
                 in response.data.decode("utf-8")
             )
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_list_search_by_email(self, authenticated_client, offerers_to_be_validated):
             # when
             with assert_no_duplicated_queries():
@@ -809,7 +782,6 @@ class ListOfferersToValidateTest:
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"B"}
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_list_search_by_user_name(self, authenticated_client, offerers_to_be_validated):
             # when
             with assert_no_duplicated_queries():
@@ -822,7 +794,6 @@ class ListOfferersToValidateTest:
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"C"}
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         @pytest.mark.parametrize(
             "search_filter, expected_offerer_names",
             (
@@ -832,7 +803,6 @@ class ListOfferersToValidateTest:
                 ("Librairie du Centre", set()),
             ),
         )
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_list_search_by_name(self, authenticated_client, search_filter, expected_offerer_names):
             # given
             for name in (
@@ -854,7 +824,6 @@ class ListOfferersToValidateTest:
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {name.upper() for name in expected_offerer_names}
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         @pytest.mark.parametrize(
             "status_filter, expected_status, expected_offerer_names",
             (
@@ -885,7 +854,6 @@ class ListOfferersToValidateTest:
             else:
                 assert html_parser.count_table_rows(response.data) == 0
 
-        @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
         def test_offerers_stats_are_displayed(self, authenticated_client, offerers_to_be_validated):
             # when
             response = authenticated_client.get(url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate"))
@@ -907,7 +875,6 @@ class ValidateOffererUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWit
 
 
 class ValidateOffererTest:
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_validate_offerer(self, legit_user, authenticated_client):
         # given
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
@@ -931,7 +898,6 @@ class ValidateOffererTest:
         assert action.offererId == user_offerer.offerer.id
         assert action.venueId is None
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_validate_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
         # when
         url = url_for("backoffice_v3_web.offerer.validate", offerer_id=1)
@@ -940,7 +906,6 @@ class ValidateOffererTest:
         # then
         assert response.status_code == 404
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_cannot_validate_offerer_already_validated(self, authenticated_client):
         # given
         user_offerer = offerers_factories.UserOffererFactory()
@@ -964,7 +929,6 @@ class RejectOffererUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithC
 
 
 class RejectOffererTest:
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_reject_offerer(self, legit_user, authenticated_client):
         # given
         user = users_factories.UserFactory()
@@ -992,7 +956,6 @@ class RejectOffererTest:
         assert action.offererId == offerer.id
         assert action.venueId is None
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_reject_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
         # when
         url = url_for("backoffice_v3_web.offerer.reject", offerer_id=1)
@@ -1001,7 +964,6 @@ class RejectOffererTest:
         # then
         assert response.status_code == 404
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_cannot_reject_offerer_already_rejected(self, authenticated_client):
         # given
         offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.REJECTED)
@@ -1025,7 +987,6 @@ class SetOffererPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperW
 
 
 class SetOffererPendingTest:
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_set_offerer_pending(self, legit_user, authenticated_client):
         # given
         offerer = offerers_factories.NotValidatedOffererFactory()
@@ -1050,7 +1011,6 @@ class SetOffererPendingTest:
         assert action.venueId is None
         assert action.comment == "En attente de documents"
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_set_offerer_pending_returns_404_if_offerer_is_not_found(self, authenticated_client):
         # when
         url = url_for("backoffice_v3_web.offerer.set_pending", offerer_id=1)
@@ -1067,7 +1027,6 @@ class ToggleTopActorUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWith
 
 
 class ToggleTopActorTest:
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_toggle_is_top_actor(self, authenticated_client, top_acteur_tag):
         # given
         offerer = offerers_factories.UserNotValidatedOffererFactory().offerer
@@ -1091,7 +1050,6 @@ class ToggleTopActorTest:
         assert response.status_code == 303
         assert offerers_models.OffererTagMapping.query.count() == 0
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_toggle_is_top_actor_twice_true(self, authenticated_client, top_acteur_tag):
         # given
         offerer = offerers_factories.UserNotValidatedOffererFactory().offerer
@@ -1110,7 +1068,6 @@ class ToggleTopActorTest:
         assert offerer_mappings[0].tagId == top_acteur_tag.id
         assert offerer_mappings[0].offererId == offerer.id
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_toggle_top_actor_returns_404_if_offerer_is_not_found(self, authenticated_client):
         # given
 
@@ -1127,7 +1084,6 @@ class ListUserOffererToValidateUnauthorizedTest(unauthorized_helpers.Unauthorize
 
 
 class ListUserOffererToValidateTest:
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_list_only_user_offerer_to_be_validated(self, authenticated_client):
         # given
         to_be_validated = []
@@ -1158,7 +1114,6 @@ class ListUserOffererToValidateTest:
             (ValidationStatus.PENDING, "En attente"),
         ],
     )
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_payload_content(self, authenticated_client, validation_status, expected_status):
         # given
         owner_user_offerer = offerers_factories.UserOffererFactory(
@@ -1220,7 +1175,6 @@ class ListUserOffererToValidateTest:
         assert rows[0]["Email Responsable"] == owner_user_offerer.user.email
         assert rows[0]["SIREN"] == owner_user_offerer.offerer.siren
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_payload_content_no_action(self, authenticated_client):
         # given
         owner_user_offerer = offerers_factories.UserOffererFactory(
@@ -1253,7 +1207,6 @@ class ListUserOffererToValidateTest:
         assert rows[0]["Email Responsable"] == owner_user_offerer.user.email
         assert rows[0]["SIREN"] == owner_user_offerer.offerer.siren
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     @pytest.mark.parametrize(
         "total_items, pagination_config, expected_total_pages, expected_page, expected_items",
         (
@@ -1287,7 +1240,6 @@ class ListUserOffererToValidateTest:
             total_items,
         )
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     @pytest.mark.parametrize(
         "status_filter, expected_status, expected_users_emails",
         (
@@ -1327,7 +1279,6 @@ class ListUserOffererToValidateTest:
         else:
             assert html_parser.count_table_rows(response.data) == 0
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     @pytest.mark.parametrize(
         "offerer_status_filter, expected_status, expected_users_emails",
         (
@@ -1373,7 +1324,6 @@ class ListUserOffererToValidateTest:
         else:
             assert html_parser.count_table_rows(response.data) == 0
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     @pytest.mark.parametrize(
         "tag_filter, expected_users_emails",
         (
@@ -1405,7 +1355,6 @@ class ListUserOffererToValidateTest:
         rows = html_parser.extract_table_rows(response.data)
         assert {row["Email Compte pro"] for row in rows} == expected_users_emails
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_list_filtering_by_date(self, authenticated_client):
         # given
         # Created before requested range, excluded from results:
@@ -1436,7 +1385,6 @@ class ListUserOffererToValidateTest:
         rows = html_parser.extract_table_rows(response.data)
         assert [int(row["ID Compte pro"]) for row in rows] == [uo.user.id for uo in (user_offerer_3, user_offerer_2)]
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_list_search_by_email(self, authenticated_client, user_offerer_to_be_validated):
         # when
         with assert_no_duplicated_queries():
@@ -1458,7 +1406,6 @@ class ValidateOffererAttachmentUnauthorizedTest(unauthorized_helpers.Unauthorize
 
 
 class ValidateOffererAttachmentTest:
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_validate_offerer_attachment(self, legit_user, authenticated_client):
         # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
@@ -1482,7 +1429,6 @@ class ValidateOffererAttachmentTest:
         assert action.offererId == user_offerer.offerer.id
         assert action.venueId is None
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_validate_offerer_attachment_returns_404_if_offerer_is_not_found(self, authenticated_client, offerer):
         # when
         url = url_for("backoffice_v3_web.user_offerer.user_offerer_validate", user_offerer_id=42)
@@ -1491,7 +1437,6 @@ class ValidateOffererAttachmentTest:
         # then
         assert response.status_code == 404
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_cannot_validate_offerer_attachment_already_validated(self, authenticated_client):
         # given
         user_offerer = offerers_factories.UserOffererFactory()
@@ -1515,7 +1460,6 @@ class RejectOffererAttachmentUnauthorizedTest(unauthorized_helpers.UnauthorizedH
 
 
 class RejectOffererAttachmentTest:
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_reject_offerer_attachment(self, legit_user, authenticated_client):
         # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
@@ -1538,7 +1482,6 @@ class RejectOffererAttachmentTest:
         assert action.offererId == user_offerer.offerer.id
         assert action.venueId is None
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_reject_offerer_returns_404_if_offerer_attachment_is_not_found(self, authenticated_client, offerer):
         # when
         url = url_for("backoffice_v3_web.user_offerer.user_offerer_reject", user_offerer_id=42)
@@ -1556,7 +1499,6 @@ class SetOffererAttachmentPendingUnauthorizedTest(unauthorized_helpers.Unauthori
 
 
 class SetOffererAttachmentPendingTest:
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_set_offerer_attachment_pending(self, legit_user, authenticated_client):
         # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()

@@ -8,7 +8,6 @@ from pcapi.core.bookings import factories as bookings_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails import testing as mails_testing
 import pcapi.core.permissions.models as perm_models
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.notifications.sms import testing as sms_testing
@@ -34,7 +33,6 @@ class SearchPublicAccountsUnauthorizedTest(unauthorized_helpers.UnauthorizedHelp
 class SearchPublicAccountsAuthorizedTest(search_helpers.SearchHelper):
     endpoint = "backoffice_v3_web.search_public_accounts"
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_search_result_page(self, authenticated_client, legit_user):  # type: ignore
         url = url_for(self.endpoint, terms=legit_user.email, order_by="", page=1, per_page=20)
 
@@ -43,7 +41,6 @@ class SearchPublicAccountsAuthorizedTest(search_helpers.SearchHelper):
         assert response.status_code == 200, f"[{response.status}] {response.location}"
         assert legit_user.email in str(response.data)
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_malformed_query(self, authenticated_client, legit_user):  # type: ignore
         url = url_for(self.endpoint, terms=legit_user.email, order_by="unknown_field")
 
@@ -60,7 +57,6 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         endpoint_kwargs = {"user_id": 1}
         needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_beneficiary_bookings(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()
         b1 = bookings_factories.CancelledBookingFactory(user=user, amount=12.5)
@@ -91,7 +87,6 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         assert f"Annulée le : {datetime.date.today().strftime('%d/%m/%Y')}" in text
         assert "Motif d'annulation : Annulée par le bénéficiaire" in text
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_beneficiary_bookings_empty(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()
         bookings_factories.UsedBookingFactory()
@@ -118,7 +113,6 @@ class UpdatePublicAccountTest:
         method = "post"
         form = {"first_name": "aaaaaaaaaaaaaaaaaaa"}
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_update_field(self, authenticated_client):
         user_to_edit = users_factories.BeneficiaryGrant18Factory()
 
@@ -149,7 +143,6 @@ class UpdatePublicAccountTest:
         assert user_to_edit.postalCode == expected_new_postal_code
         assert user_to_edit.city == expected_city
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_unknown_field(self, authenticated_client):
         user_to_edit = users_factories.BeneficiaryGrant18Factory()
         base_form = {
@@ -160,7 +153,6 @@ class UpdatePublicAccountTest:
         response = self.update_account(authenticated_client, user_to_edit, base_form)
         assert response.status_code == 400
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_email_already_exists(self, authenticated_client):
         user_to_edit = users_factories.BeneficiaryGrant18Factory()
         other_user = users_factories.BeneficiaryGrant18Factory()
@@ -177,7 +169,6 @@ class UpdatePublicAccountTest:
         user_to_edit = users_models.User.query.get(user_to_edit.id)
         assert user_to_edit.email != other_user.email
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_invalid_postal_code(self, authenticated_client):
         user_to_edit = users_factories.BeneficiaryGrant18Factory()
 
@@ -191,7 +182,6 @@ class UpdatePublicAccountTest:
         response = self.update_account(authenticated_client, user_to_edit, base_form)
         assert response.status_code == 400
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_empty_id_piece_number(self, authenticated_client):
         user_to_edit = users_factories.BeneficiaryGrant18Factory()
 
@@ -230,7 +220,6 @@ class ResendValidationEmailTest:
         endpoint_kwargs = {"user_id": 1}
         needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_resend_validation_email(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory(isEmailValidated=False)
         response = self.send_resend_validation_email_request(authenticated_client, user)
@@ -239,7 +228,6 @@ class ResendValidationEmailTest:
         assert len(mails_testing.outbox) == 1
 
     @pytest.mark.parametrize("user_factory", [users_factories.AdminFactory, users_factories.ProFactory])
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_no_email_sent_if_admin_pro(self, authenticated_client, user_factory):
         user = user_factory()
         response = self.send_resend_validation_email_request(authenticated_client, user)
@@ -247,7 +235,6 @@ class ResendValidationEmailTest:
         assert response.status_code == 303
         assert not mails_testing.outbox
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_no_email_sent_if_already_validated(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory(isEmailValidated=True)
         response = self.send_resend_validation_email_request(authenticated_client, user)
@@ -277,7 +264,6 @@ class SendValidationCodeTest:
         endpoint_kwargs = {"user_id": 1}
         needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_send_validation_code(self, authenticated_client):
         user = users_factories.UserFactory(phoneNumber="+33601020304", isEmailValidated=True)
         response = self.send_request(authenticated_client, user)
@@ -285,7 +271,6 @@ class SendValidationCodeTest:
         assert response.status_code == 303
         assert len(sms_testing.requests) == 1
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_nothing_sent_use_cases(self, authenticated_client):
         other_user = users_factories.BeneficiaryGrant18Factory(
             phoneNumber="+33601020304",
@@ -344,7 +329,6 @@ class UpdatePublicAccountReviewTest:
         endpoint_kwargs = {"user_id": 1}
         needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_add_new_fraud_review_to_account(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryGrant18Factory()
 
@@ -368,7 +352,6 @@ class UpdatePublicAccountReviewTest:
         fraud_review = user.beneficiaryFraudReviews[0]
         assert fraud_review.reason == "test"
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_malformed_form(self, authenticated_client):
         user = users_factories.UserFactory()
 
@@ -384,7 +367,6 @@ class UpdatePublicAccountReviewTest:
         user = users_models.User.query.get(user.id)
         assert not user.deposits
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_reason_not_compulsory(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()
 
@@ -407,7 +389,6 @@ class UpdatePublicAccountReviewTest:
         fraud_review = user.beneficiaryFraudReviews[0]
         assert fraud_review.reason == None
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_missing_identity_fraud_check_filled(self, authenticated_client):
         # not a beneficiary, does not have any identity fraud check
         # filled by default.

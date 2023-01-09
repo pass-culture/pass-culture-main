@@ -5,7 +5,6 @@ from flask import url_for
 import pytest
 
 import pcapi.core.permissions.models as perm_models
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
 import pcapi.core.users.models as users_models
@@ -37,11 +36,6 @@ class UnauthorizedHelperBase(base.BaseHelper, metaclass=abc.ABCMeta):
     def test_not_logged_in(self, client):  # type: ignore
         pass
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=False)
-    @abc.abstractmethod
-    def test_ff_disabled(self, client):  # type: ignore
-        pass
-
     def setup_user(self) -> users_models.User:
         user = users_factories.UserFactory(isActive=True)
         user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
@@ -53,7 +47,6 @@ class UnauthorizedHelperBase(base.BaseHelper, metaclass=abc.ABCMeta):
 
 
 class UnauthorizedHelper(UnauthorizedHelperBase):
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_missing_permission(self, client):  # type: ignore
         user = self.setup_user()
 
@@ -62,7 +55,6 @@ class UnauthorizedHelper(UnauthorizedHelperBase):
 
         assert response.status_code == 403
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_no_backoffice_profile(self, client):  # type: ignore
         user = users_factories.UserFactory(isActive=True)
 
@@ -71,22 +63,12 @@ class UnauthorizedHelper(UnauthorizedHelperBase):
 
         assert response.status_code == 403
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_not_logged_in(self, client):  # type: ignore
         response = getattr(client, self.http_method)(self.path)
         assert response.status_code in (302, 303)
 
         expected_url = url_for("backoffice_v3_web.home", _external=True)
         assert response.location == expected_url
-
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=False)
-    def test_ff_disabled(self, client):  # type: ignore
-        user = self.setup_user()
-
-        authenticated_client = client.with_bo_session_auth(user)
-        response = authenticated_client.get(self.path)
-
-        assert response.status_code == 400
 
 
 class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
@@ -98,7 +80,6 @@ class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
     def form(self) -> dict:
         return {"csrf_token": g.get("csrf_token", None)}
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_missing_permission(self, client):  # type: ignore
         user = self.setup_user()
 
@@ -111,7 +92,6 @@ class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
 
         assert response.status_code == 403
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_no_backoffice_profile(self, client):  # type: ignore
         user = users_factories.UserFactory(isActive=True)
 
@@ -124,7 +104,6 @@ class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
 
         assert response.status_code == 403
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_not_logged_in(self, client):  # type: ignore
         self.fetch_csrf_token(client)
 
@@ -135,13 +114,6 @@ class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
 
         expected_url = url_for("backoffice_v3_web.home", _external=True)
         assert response.location == expected_url
-
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=False)
-    def test_ff_disabled(self, client):  # type: ignore
-        client_method = getattr(client, self.method)
-        response = client_method(self.path)
-
-        assert response.status_code == 400
 
     def fetch_csrf_token(self, client):  # type: ignore
         # will generate a csrf token (for the logout button)
@@ -157,7 +129,6 @@ class MissingCSRFHelper(base.BaseHelper):
     def form(self) -> dict:
         return {}
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_missing_csrf_token(self, client):  # type: ignore
         user = users_factories.UserFactory(isActive=True)
 

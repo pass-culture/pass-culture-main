@@ -2,7 +2,6 @@ import pytest
 import sqlalchemy as sa
 
 import pcapi.core.permissions.models as perm_models
-from pcapi.core.testing import override_features
 import pcapi.core.users.backoffice.api as backoffice_api
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
@@ -33,14 +32,12 @@ class CommentButtonHelper:
 
         return user
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_comment_button_when_can_add_one(self, authenticated_client):
         response = authenticated_client.get(self.path)
         assert response.status_code == 200
 
         assert "Ajouter un commentaire" in response.data.decode("utf-8")
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_not_comment_button(self, client, roles_with_permissions):
         client = client.with_bo_session_auth(self.unauthorized_user)
 

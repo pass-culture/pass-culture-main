@@ -3,7 +3,6 @@ import pytest
 
 from pcapi.core.offerers import factories as offerers_factories
 import pcapi.core.permissions.models as perm_models
-from pcapi.core.testing import override_features
 
 from .helpers import search as search_helpers
 from .helpers import unauthorized as unauthorized_helpers
@@ -43,7 +42,6 @@ class SearchProTest(search_helpers.SearchHelper):
             (build_venue, "venue"),
         ],
     )
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_search_result_page(self, authenticated_client, pro_builder, pro_type):
         pro_object = pro_builder()
 
