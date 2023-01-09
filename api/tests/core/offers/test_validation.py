@@ -10,6 +10,7 @@ from pcapi.core.offers import validation
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import override_features
 from pcapi.models.api_errors import ApiErrors
 
@@ -194,6 +195,13 @@ class CheckStockIsUpdatableTest:
     def test_allocine_offer(self):
         provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
+        stock = offers_factories.StockFactory(offer=offer)
+
+        validation.check_stock_is_updatable(stock)
+
+    def test_cinema_provider_offer(self):
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        offer = offers_factories.OfferFactory(lastProvider=boost_provider, idAtProvider="2")
         stock = offers_factories.StockFactory(offer=offer)
 
         validation.check_stock_is_updatable(stock)

@@ -512,6 +512,10 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
         return self.isFromProvider and self.lastProvider.isAllocine
 
     @property
+    def isFromCinemaProvider(self) -> bool:
+        return self.isFromProvider and self.lastProvider.isCinemaProvider
+
+    @property
     def isBookable(self) -> bool:
         for stock in self.stocks:
             if stock.isBookable:
