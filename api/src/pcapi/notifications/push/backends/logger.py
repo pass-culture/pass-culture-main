@@ -48,3 +48,11 @@ class LoggerBackend:
             user_id,
             extra={"can_be_asynchronously_retried": can_be_asynchronously_retried},
         )
+
+    def track_event(self, user_id: int, event_name: str, can_be_asynchronously_retried: bool = False) -> None:
+        logger.info(
+            "A request to track event=ue.%s would be sent for user with id=%d",
+            event_name,
+            user_id,
+            extra={"can_be_asynchronously_retried": can_be_asynchronously_retried},
+        )
