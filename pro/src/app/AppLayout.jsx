@@ -9,7 +9,7 @@ import Header from 'components/Header/Header'
 import TutorialDialog from 'components/TutorialDialog'
 
 const AppLayout = props => {
-  const { children, layoutConfig } = props
+  const { children, layoutConfig, className } = props
 
   const defaultConfig = {
     backTo: null,
@@ -21,6 +21,7 @@ const AppLayout = props => {
     ...defaultConfig,
     ...layoutConfig,
   }
+
   return (
     <>
       {!fullscreen && <Header />}
@@ -32,12 +33,15 @@ const AppLayout = props => {
       />
 
       <main
-        className={classnames({
-          page: true,
-          [`${pageName}-page`]: true,
-          container: !fullscreen,
-          fullscreen,
-        })}
+        className={classnames(
+          {
+            page: true,
+            [`${pageName}-page`]: true,
+            container: !fullscreen,
+            fullscreen,
+          },
+          className
+        )}
       >
         {fullscreen ? (
           children
@@ -65,6 +69,7 @@ const AppLayout = props => {
 
 AppLayout.defaultProps = {
   layoutConfig: {},
+  classname: undefined,
 }
 
 AppLayout.propTypes = {
@@ -73,6 +78,7 @@ AppLayout.propTypes = {
     PropTypes.shape(),
   ]).isRequired,
   layoutConfig: PropTypes.shape(),
+  classname: PropTypes.string,
 }
 
 export default AppLayout

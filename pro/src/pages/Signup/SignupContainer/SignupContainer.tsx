@@ -14,6 +14,7 @@ import { removeWhitespaces } from 'utils/string'
 import { SIGNUP_FORM_DEFAULT_VALUES } from './constants'
 import MaybeAppUserDialog from './MaybeAppUserDialog'
 import OperatingProcedures from './OperationProcedures'
+import styles from './SignupContainer.module.scss'
 import SignupForm from './SignupForm'
 import { ISignupApiErrorResponse, ISignupFormValues } from './types'
 import { validationSchema } from './validationSchema'
@@ -121,13 +122,13 @@ const SignupContainer = (): JSX.Element => {
   }, [])
 
   return (
-    <section className="sign-up-form-page">
+    <section className={styles['sign-up-form-page']}>
       {visible && <MaybeAppUserDialog onCancel={hideModal} />}
-      <div className="content">
+      <div className={styles['content']}>
         <h1>Créer votre compte professionnel</h1>
         <OperatingProcedures />
 
-        <div className="sign-up-tips">
+        <div className={styles['sign-up-tips']}>
           Tous les champs sont obligatoires sauf mention contraire
         </div>
         <FormikProvider value={formik}>
