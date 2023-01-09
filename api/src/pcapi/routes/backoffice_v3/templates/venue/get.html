@@ -132,7 +132,7 @@
                                     "backoffice_v3_web.offerer.get",
                                     offerer_id=venue.managingOffererId
                                 )}}"
-                                class="fw-bold text-decoration-none"
+                                class="fw-bold link-primary"
                             >
                                 {{ venue.managingOfferer.name }}
                             </a>
@@ -147,7 +147,7 @@
                             <p class="mb-1">
                                 <span class="fw-bold">Site web :</span>
                                 <a href="{{ venue.contact.website | escape }}" target="_blank"
-                                   class="text-decoration-none">
+                                   class="link-primary">
                                     {{ venue.contact.website | escape }}
                                 </a>
                             </p>

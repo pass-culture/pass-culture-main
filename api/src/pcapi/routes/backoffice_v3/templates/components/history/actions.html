@@ -5,7 +5,7 @@
             <th scope="col">Type</th>
             <th scope="col">Date/Heure</th>
             <th scope="col">Commentaire</th>
-            <th scope="col" class="px-4">Auteur</th>
+            <th scope="col">Auteur</th>
         </tr>
     </thead>
     <tbody class="table-group-divider">
@@ -14,10 +14,10 @@
                 <th scope="row"></th>
                 <td>{{ action.actionType.value }}</td>
                 <td>{{ action.actionDate | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
-                <td class="px-4 text-break">
+                <td class="text-break">
                     {% if action.userId and action.user.full_name and is_user_offerer_action_type(action) %}
-                        <a href="{{ url_for("backoffice_v3_web.pro_user.get", user_id=action.userId) }}">
-                            <p>{{ action.user.full_name | empty_string_if_null }} - {{ action.userId }}</p>
+                        <a href="{{ url_for("backoffice_v3_web.pro_user.get", user_id=action.userId) }}" class="link-primary">
+                            {{ action.user.full_name | empty_string_if_null }} - {{ action.userId }}
                         </a>
 
                         <p>{{ action.comment | empty_string_if_null | replace("\n", "<br/>"|safe) }}</p>

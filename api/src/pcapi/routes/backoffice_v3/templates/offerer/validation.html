@@ -133,7 +133,7 @@
                             </td>
                             <td>{{ offerer.id }}</td>
                             <td>
-                                <a href="{{ url_for('backoffice_v3_web.offerer.get', offerer_id=offerer.id) }}">
+                                <a href="{{ url_for('backoffice_v3_web.offerer.get', offerer_id=offerer.id) }}" class="link-primary">
                                     {{ offerer.name | upper | escape }}
                                 </a>
                             </td>
@@ -164,6 +164,7 @@
                                 {% if offerer.siren %}
                                     <a href="https://www.societe.com/cgi-bin/fiche?rncs={{ offerer.siren }}"
                                        target="_blank"
+                                       class="link-primary"
                                        title="Visualiser sur societe.com">
                                         {{ offerer.siren | empty_string_if_null }}
                                     </a>
@@ -172,7 +173,7 @@
                             <td>{{ (owner and owner.email) | empty_string_if_null }}</td>
                             <td>
                                 {% if owner %}
-                                    <a href="{{ url_for('backoffice_v3_web.pro_user.get', user_id=owner.id) }}">
+                                    <a href="{{ url_for('backoffice_v3_web.pro_user.get', user_id=owner.id) }}" class="link-primary">
                                         {{ owner.firstName | empty_string_if_null | escape }}
                                         {{ owner.lastName | empty_string_if_null | escape }}
                                     </a>

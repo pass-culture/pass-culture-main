@@ -23,3 +23,11 @@ select.dropdown-menu option.dropdown-item:checked {
 a.hover-text-underline:hover {
     text-decoration: underline !important;
 }
+
+a.link-primary {
+    text-decoration: none;
+}
+
+a.link-primary:hover, .nav-link:hover {
+    text-decoration: underline;
+}

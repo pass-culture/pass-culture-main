@@ -17,13 +17,14 @@
                 <td>{{ user_offerer.offererId}}</td>
                 <td>{{ build_user_offerer_badges(user_offerer) }}</td>
                 <td class="text-break">
-                    <a href="{{ url_for("backoffice_v3_web.offerer.get", offerer_id=user_offerer.offererId) }}">
+                    <a href="{{ url_for("backoffice_v3_web.offerer.get", offerer_id=user_offerer.offererId) }}" class="link-primary">
                         {{ user_offerer.offerer.name }}
                     </a>
                 </td>
                 <td>
                     {% if user_offerer.offerer.siren %}
                         <a href="https://www.societe.com/cgi-bin/fiche?rncs={{ user_offerer.offerer.siren }}"
+                           class="link-primary"
                            target="_blank"
                            title="Visualiser sur societe.com"
                         >
