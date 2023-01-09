@@ -138,7 +138,7 @@ describe('updateIndividualOffer', () => {
 
     const expectedBody: PatchOfferBodyModel = {
       audioDisabilityCompliant: true,
-      bookingEmail: undefined,
+      bookingEmail: null,
       description: undefined,
       durationMinutes: undefined,
       externalTicketOfficeUrl: 'https://example.com',
