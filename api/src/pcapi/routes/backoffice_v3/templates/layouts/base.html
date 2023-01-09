@@ -59,6 +59,20 @@
 
 <script type="module">
     import hotwiredTurbo from 'https://cdn.skypack.dev/@hotwired/turbo';
+
+    // Handle server-side errors without a turbo-frame
+    addEventListener("turbo:frame-missing", async (event) => {
+        // default behaviour since turbo 7.2 is to display a full page with the
+        // error content. For example, if nginx throws a 504 error because the
+        // flask controller did not respond in time, the the whole page will be
+        // replaced by a generic 504 error message, which is not great in terms
+        // of UX...
+        event.preventDefault();
+        console.log('Turbo frame missing');
+        console.log(`status code: ${event.detail.response.status}`);
+
+        event.target.textContent = "Une erreur est survenue";
+    })
 </script>
 </body>
 
