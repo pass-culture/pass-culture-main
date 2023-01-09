@@ -27,13 +27,11 @@ const beginninigDateInput = Selector('input').withAttribute(
   'placeholder',
   'JJ/MM/AAAA'
 )
-
 const beginninigTimeInput = Selector('input').withAttribute(
   'placeholder',
   'HH:MM'
 )
-
-const priceInput = Selector('input').withAttribute('placeholder', 'Ex: 20€')
+const priceInput = Selector('input').withAttribute('data-testid', 'input-price')
 
 fixture('En créant des offres et des stocks,').before(async ctx => {
   const { user, offerer, venue } = await fetchSandbox(
