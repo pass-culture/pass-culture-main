@@ -516,7 +516,9 @@ def grant_user_offerer_access(offerer: models.Offerer, user: users_models.User) 
     return models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.VALIDATED)
 
 
-def validate_offerer_attachment(user_offerer: offerers_models.UserOfferer, author_user: users_models.User) -> None:
+def validate_offerer_attachment(
+    user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str | None = None
+) -> None:
     if user_offerer.isValidated:
         raise exceptions.UserOffererAlreadyValidatedException()
 
@@ -528,6 +530,7 @@ def validate_offerer_attachment(user_offerer: offerers_models.UserOfferer, autho
         author=author_user,
         user=user_offerer.user,
         offerer=user_offerer.offerer,
+        comment=comment,
         save=False,
     )
 

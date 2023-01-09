@@ -7,8 +7,12 @@ def _filter_whitespaces(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip())
 
 
+def get_soup(html_content: str) -> BeautifulSoup:
+    return BeautifulSoup(html_content, features="html5lib", from_encoding="utf-8")
+
+
 def content_as_text(html_content: str) -> str:
-    soup = BeautifulSoup(html_content, features="html5lib", from_encoding="utf-8")
+    soup = get_soup(html_content)
     return _filter_whitespaces(soup.text)
 
 
@@ -20,7 +24,7 @@ def extract_table_rows(html_content: str, parent_id: str | None = None) -> list[
 
     Use `parent_id` parameter to filter inside a html tag id when several tables may be printed in the page.
     """
-    soup = BeautifulSoup(html_content, features="html5lib", from_encoding="utf-8")
+    soup = get_soup(html_content)
 
     if parent_id:
         soup = soup.find(id=parent_id)
@@ -57,7 +61,7 @@ def extract_table_rows(html_content: str, parent_id: str | None = None) -> list[
 
 
 def count_table_rows(html_content: str) -> int:
-    soup = BeautifulSoup(html_content, features="html5lib", from_encoding="utf-8")
+    soup = get_soup(html_content)
 
     tbody = soup.find("tbody")
     if tbody is None:
@@ -70,7 +74,7 @@ def extract_pagination_info(html_content: str) -> tuple[int, int, int]:
     """
     Returns current and total pages in pagination block, and total number of results on all pages
     """
-    soup = BeautifulSoup(html_content, features="html5lib", from_encoding="utf-8")
+    soup = get_soup(html_content)
 
     num_results = soup.find("p", class_="num-results")
     if num_results is None:
@@ -96,7 +100,16 @@ def extract_cards_text(html_content: str) -> list[str]:
     """
     Extract text from all cards in the page, as strings
     """
-    soup = BeautifulSoup(html_content, features="html5lib", from_encoding="utf-8")
+    soup = get_soup(html_content)
 
     cards = soup.find_all("div", class_="card")
     return [_filter_whitespaces(card.text) for card in cards]
+
+
+def extract_alert(html_content: str) -> str:
+    soup = get_soup(html_content)
+
+    alert = soup.find("div", class_="alert")
+    assert alert is not None
+
+    return _filter_whitespaces(alert.text)

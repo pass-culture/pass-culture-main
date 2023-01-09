@@ -134,6 +134,19 @@ def get_offerer(offerer_id: int) -> offerers_models.Offerer:
     return offerer
 
 
+def _get_add_pro_user_form(offerer: offerers_models.Offerer) -> offerer_forms.AddProUserForm:
+    # Users whose association to the offerer has been removed, for which relationship is only from history
+    removed_users = sorted(
+        {action.user for action in offerer.action_history if action.user} - {uo.user for uo in offerer.UserOfferers},
+        key=lambda user: user.full_name,
+    )
+
+    form = offerer_forms.AddProUserForm()
+    form.pro_user_id.choices = [(user.id, f"{user.full_name} ({user.id})") for user in removed_users]
+
+    return form
+
+
 @offerer_blueprint.route("/details", methods=["GET"])
 def get_details(offerer_id: int) -> utils.BackofficeResponse:
     offerer = get_offerer(offerer_id)
@@ -143,6 +156,10 @@ def get_details(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.CommentForm()
     dst = url_for("backoffice_v3_web.offerer_comment.comment_offerer", offerer_id=offerer.id)
 
+    can_add_user = utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
+    add_user_form = _get_add_pro_user_form(offerer) if can_add_user else None
+    add_user_dst = url_for("backoffice_v3_web.offerer.add_user_offerer_and_validate", offerer_id=offerer.id)
+
     return render_template(
         "offerer/get/details.html",
         offerer=offerer,
@@ -151,6 +168,8 @@ def get_details(offerer_id: int) -> utils.BackofficeResponse:
         form=form,
         users_offerer=offerer.UserOfferers,
         active_tab=request.args.get("active_tab", "history"),
+        add_user_dst=add_user_dst,
+        add_user_form=add_user_form,
     )
 
 
@@ -513,3 +532,25 @@ def user_offerer_set_pending(user_offerer_id: int) -> utils.BackofficeResponse:
     )
 
     return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
+
+
+@offerer_blueprint.route("/add-user", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    form = _get_add_pro_user_form(offerer)
+    # validate() checks that the id is within the list of previously attached users, so this ensures that:
+    # - user exists with given id
+    # - user_offerer entry does not exist with same ids
+    if not form.validate():
+        flash("Les données envoyées comportent des erreurs", "warning")
+        return _redirect_after_user_offerer_validation_action(offerer.id)
+
+    user = users_models.User.query.get(form.pro_user_id.data)
+
+    new_user_offerer = offerers_models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
+    offerers_api.validate_offerer_attachment(new_user_offerer, current_user, form.comment.data)
+
+    flash(f"Le rattachement de {user.email} à la structure {offerer.name} a été ajouté", "success")
+    return _redirect_after_user_offerer_validation_action(offerer.id)
