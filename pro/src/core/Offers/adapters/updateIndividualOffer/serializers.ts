@@ -69,7 +69,7 @@ export const serializePatchOffer = (
   durationMinutes: serializeDurationMinutes(formValues.durationMinutes || ''),
   bookingEmail: formValues.receiveNotificationEmails
     ? formValues.bookingEmail
-    : undefined,
+    : null,
   externalTicketOfficeUrl: formValues.externalTicketOfficeUrl || undefined,
   url: formValues.url || undefined,
 })
