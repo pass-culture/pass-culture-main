@@ -14,7 +14,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as PendingIcon } from 'icons/pending.svg'
 import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
-import { DisplayOfferInAppLink } from 'pages/Offers/Offer/DisplayOfferInAppLink'
+import { DisplayOfferInAppLink } from 'screens/OfferIndividual/Summary/DisplayOfferInAppLink'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
