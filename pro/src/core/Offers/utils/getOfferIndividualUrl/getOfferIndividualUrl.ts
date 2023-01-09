@@ -20,7 +20,7 @@ export const getOfferIndividualPath = ({
   step,
   isV2 = false,
 }: IGetOfferIndividualPathArgs) => {
-  // remove me when deleting OFFER_FORM_V3
+  // needed for redirection to old url
   if (isV2) {
     return getOfferIndividualPathV2({
       isCreation,

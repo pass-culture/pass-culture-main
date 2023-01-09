@@ -11,7 +11,6 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 
 import { IStockEventItemProps, StockEventSection } from './StockEventSection'
@@ -31,7 +30,6 @@ const StockSection = ({
   offerId,
   offerStatus,
 }: IStockSection): JSX.Element => {
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const mode = useOfferWizardMode()
   const { logEvent } = useAnalytics()
 
@@ -51,7 +49,6 @@ const StockSection = ({
     offerId,
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
     mode,
-    isV2: !isOfferFormV3,
   })
 
   const hasNoStock = !stockThing && !stockEventList?.length

@@ -191,7 +191,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           from: 'Offers',
           isEdition: true,
           isDraft: true,
-          to: 'details',
+          to: 'informations',
           used: 'OffersTitle',
           offerId: 'M4',
         }

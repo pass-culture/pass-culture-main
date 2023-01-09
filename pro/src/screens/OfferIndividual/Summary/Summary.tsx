@@ -21,7 +21,6 @@ import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOf
 import { IOfferSubCategory } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate, useOfferWizardMode } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { IcoParty } from 'icons'
@@ -35,7 +34,6 @@ import useNewOfferCreationJourney from '../../../hooks/useNewOfferCreationJourne
 import { ActionBar } from '../ActionBar'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 
-import { ActionsFormV2 } from './ActionsFormV2'
 import { IOfferSectionProps, OfferSection } from './OfferSection'
 import { StockSection } from './StockSection'
 import { IStockEventItemProps } from './StockSection/StockEventSection'
@@ -45,7 +43,6 @@ import styles from './Summary.module.scss'
 export interface ISummaryProps {
   offerId: string
   nonHumanizedOfferId: number
-  formOfferV2?: boolean
   providerName: string | null
   offer: IOfferSectionProps
   stockThing?: IStockThingSectionProps
@@ -57,7 +54,6 @@ export interface ISummaryProps {
 const Summary = (
   /* istanbul ignore next: DEBT, TO FIX */
   {
-    formOfferV2 = false,
     providerName,
     offerId,
     nonHumanizedOfferId,
@@ -72,7 +68,6 @@ const Summary = (
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
   const mode = useOfferWizardMode()
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const navigate = useNavigate()
   const { setOffer, isFirstOffer, venueId, offerOfferer } =
     useOfferIndividualContext()
@@ -111,7 +106,6 @@ const Summary = (
             offerId,
             step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
             mode,
-            isV2: !isOfferFormV3,
           })
         )
       }
@@ -137,7 +131,6 @@ const Summary = (
         offerId,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         mode,
-        isV2: !isOfferFormV3,
       })
     )
   }
@@ -190,22 +183,13 @@ const Summary = (
             offerId={offerId}
             offerStatus={offer.status}
           />
-          {formOfferV2 ? (
-            <ActionsFormV2
-              offerId={offerId}
-              className={styles['offer-creation-preview-actions']}
-              publishOffer={publishOffer}
-              disablePublish={isDisabled}
-            />
-          ) : (
-            <ActionBar
-              onClickNext={publishOffer}
-              onClickPrevious={handlePreviousStep}
-              step={OFFER_WIZARD_STEP_IDS.SUMMARY}
-              isDisabled={isDisabled}
-              offerId={offerId}
-            />
-          )}
+          <ActionBar
+            onClickNext={publishOffer}
+            onClickPrevious={handlePreviousStep}
+            step={OFFER_WIZARD_STEP_IDS.SUMMARY}
+            isDisabled={isDisabled}
+            offerId={offerId}
+          />
         </SummaryLayout.Content>
 
         <SummaryLayout.Side>

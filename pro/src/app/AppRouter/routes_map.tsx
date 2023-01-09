@@ -274,7 +274,6 @@ const routes: IRoute[] = [
     exact: false,
     path: ['/offre/individuelle/:offerId'],
     title: 'Offre étape par étape',
-    featureName: 'OFFER_FORM_V3',
   },
   {
     component: Reimbursements,

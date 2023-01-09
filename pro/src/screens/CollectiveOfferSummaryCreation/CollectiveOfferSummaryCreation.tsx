@@ -3,14 +3,12 @@ import { useHistory } from 'react-router-dom'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
-import FormLayout from 'components/FormLayout'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   EducationalCategories,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { Banner, Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -61,7 +59,6 @@ const CollectiveOfferSummaryCreation = ({
     ? `/offre/collectif/vitrine/${offer.id}/creation`
     : `/offre/${offer.id}/collectif/visibilite`
 
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   return (
     <div className={styles['summary']}>
       <Banner type="notification-info" className={styles['summary-banner']}>
@@ -77,25 +74,8 @@ const CollectiveOfferSummaryCreation = ({
         stockEditLink={`/offre/${offer.id}/collectif/stocks/edition`}
         visibilityEditLink={`/offre/${offer.id}/collectif/visibilite`}
       />
-      {isOfferFormV3 ? (
-        <ActionsBarSticky>
-          <ActionsBarSticky.Left>
-            <ButtonLink
-              variant={ButtonVariant.SECONDARY}
-              link={{
-                to: backRedirectionUrl,
-                isExternal: false,
-              }}
-            >
-              Étape précédente
-            </ButtonLink>
-          </ActionsBarSticky.Left>
-          <ActionsBarSticky.Right>
-            <Button onClick={publishOffer}>Publier l’offre</Button>{' '}
-          </ActionsBarSticky.Right>
-        </ActionsBarSticky>
-      ) : (
-        <FormLayout.Actions>
+      <ActionsBarSticky>
+        <ActionsBarSticky.Left>
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
             link={{
@@ -105,9 +85,11 @@ const CollectiveOfferSummaryCreation = ({
           >
             Étape précédente
           </ButtonLink>
-          <Button onClick={publishOffer}>Publier l’offre</Button>
-        </FormLayout.Actions>
-      )}
+        </ActionsBarSticky.Left>
+        <ActionsBarSticky.Right>
+          <Button onClick={publishOffer}>Publier l’offre</Button>{' '}
+        </ActionsBarSticky.Right>
+      </ActionsBarSticky>
     </div>
   )
 }

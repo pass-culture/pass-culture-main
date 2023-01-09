@@ -2,7 +2,6 @@ import React from 'react'
 
 import type { Step } from 'components/Breadcrumb'
 import Breadcrumb, { BreadcrumbStyle } from 'components/Breadcrumb/Breadcrumb'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
 
 export enum CollectiveOfferBreadcrumbStep {
@@ -31,8 +30,7 @@ const CollectiveOfferBreadcrumb = ({
   offerId = '',
   className,
 }: IOfferBreadcrumb): JSX.Element => {
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
-  const stockEditionUrl = useOfferStockEditionURL(true, offerId, isOfferFormV3)
+  const stockEditionUrl = useOfferStockEditionURL(true, offerId, true)
   const isEditingExistingOffer = !(isCreatingOffer || isCompletingDraft)
 
   const stepList: { [key: string]: Step } = {}

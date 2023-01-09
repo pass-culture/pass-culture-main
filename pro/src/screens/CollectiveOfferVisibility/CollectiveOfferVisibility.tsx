@@ -11,7 +11,6 @@ import {
   VisibilityFormValues,
 } from 'core/OfferEducational'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import { Banner, ButtonLink, SelectAutocomplete, SubmitButton } from 'ui-kit'
@@ -56,8 +55,6 @@ const CollectiveOfferVisibility = ({
 }: CollectiveOfferVisibilityProps) => {
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
-
-  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   const onSubmit = async (values: VisibilityFormValues) => {
     setButtonPressed(true)
@@ -197,33 +194,8 @@ const CollectiveOfferVisibility = ({
               </FormLayout.Row>
             )}
           </FormLayout.Section>
-          {isOfferFormV3 ? (
-            <ActionsBarSticky>
-              <ActionsBarSticky.Left>
-                <ButtonLink
-                  variant={ButtonVariant.SECONDARY}
-                  link={{
-                    to: `/offre/${offerId}/collectif/stocks`,
-                    isExternal: false,
-                  }}
-                >
-                  Étape précédente
-                </ButtonLink>
-              </ActionsBarSticky.Left>
-              <ActionsBarSticky.Right>
-                <SubmitButton
-                  className=""
-                  disabled={nextStepDisabled}
-                  isLoading={false}
-                >
-                  {mode === Mode.CREATION
-                    ? 'Étape suivante'
-                    : 'Valider et enregistrer l’offre'}
-                </SubmitButton>
-              </ActionsBarSticky.Right>
-            </ActionsBarSticky>
-          ) : (
-            <FormLayout.Actions className={styles['actions-layout']}>
+          <ActionsBarSticky>
+            <ActionsBarSticky.Left>
               <ButtonLink
                 variant={ButtonVariant.SECONDARY}
                 link={{
@@ -233,6 +205,8 @@ const CollectiveOfferVisibility = ({
               >
                 Étape précédente
               </ButtonLink>
+            </ActionsBarSticky.Left>
+            <ActionsBarSticky.Right>
               <SubmitButton
                 className=""
                 disabled={nextStepDisabled}
@@ -242,8 +216,8 @@ const CollectiveOfferVisibility = ({
                   ? 'Étape suivante'
                   : 'Valider et enregistrer l’offre'}
               </SubmitButton>
-            </FormLayout.Actions>
-          )}
+            </ActionsBarSticky.Right>
+          </ActionsBarSticky>
         </FormLayout>
       </form>
     </FormikProvider>
