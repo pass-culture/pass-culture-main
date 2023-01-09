@@ -7,7 +7,6 @@ import pcapi.core.history.models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.routes.backoffice_v3.filters import format_date
@@ -31,7 +30,6 @@ class GetProUserTest:
         endpoint_kwargs = {"user_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_pro_user(self, authenticated_client):  # type: ignore
         user = offerers_factories.UserOffererFactory(user__phoneNumber="+33638656565", user__postalCode="29000").user
         url = url_for("backoffice_v3_web.pro_user.get", user_id=user.id)
@@ -51,7 +49,6 @@ class GetProUserTest:
         assert user.departementCode in content
         assert "Pro" in content
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_not_pro_user(self, authenticated_client):  # type: ignore
         user = users_factories.BeneficiaryGrant18Factory()
         url = url_for("backoffice_v3_web.pro_user.get", user_id=user.id)
@@ -71,7 +68,6 @@ class UpdateProUserTest:
         method = "post"
         form = {"first_name": "aaaaaaaaaaaaaaaaaaa"}
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_update_pro_user(self, client, legit_user):
         user_to_edit = offerers_factories.UserOffererFactory().user
 
@@ -138,7 +134,6 @@ class GetProUserHistoryTest:
             user = offerers_factories.UserOffererFactory().user
             return url_for("backoffice_v3_web.pro_user.get_details", user_id=user.id)
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_history(self, authenticated_client, pro_user):
         action = history_factories.ActionHistoryFactory(user=pro_user)
         url = url_for("backoffice_v3_web.pro_user.get_details", user_id=pro_user.id)
@@ -153,7 +148,6 @@ class GetProUserHistoryTest:
         assert action.authorUser.full_name in content
         assert format_date(action.actionDate, "Le %d/%m/%Y à %Hh%M") in content
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_no_history(self, authenticated_client, pro_user):
         url = url_for("backoffice_v3_web.pro_user.get_details", user_id=pro_user.id)
 
@@ -168,7 +162,6 @@ class CommentProUserTest:
         endpoint_kwargs = {"user_id": 1}
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_add_comment(self, client, legit_user, pro_user):
         comment = "J'aime les commentaires en français !"
         response = self.send_comment_pro_user_request(client, legit_user, pro_user, comment)
@@ -183,7 +176,6 @@ class CommentProUserTest:
         assert pro_user.action_history[0].authorUser == legit_user
         assert pro_user.action_history[0].comment == comment
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_add_invalid_comment(self, client, legit_user, pro_user):
         response = self.send_comment_pro_user_request(client, legit_user, pro_user, "")
 
@@ -209,7 +201,6 @@ class GetProUserOfferersTest:
         endpoint_kwargs = {"user_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_user_offerers(self, authenticated_client, pro_user):
         user_offerer_validated = offerers_factories.UserOffererFactory(user=pro_user)
         user_offerer_new = offerers_factories.NotValidatedUserOffererFactory(user=pro_user)
@@ -232,7 +223,6 @@ class GetProUserOfferersTest:
         assert offerer_2.name in content
         assert offerer_2.siren in content
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_no_user_offerers(self, authenticated_client, pro_user):
         url = url_for("backoffice_v3_web.pro_user.get_details", user_id=pro_user.id)
 

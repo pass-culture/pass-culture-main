@@ -14,7 +14,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.models import db
 from pcapi.routes.backoffice_v3 import venues
 
@@ -45,7 +44,6 @@ class GetVenueTest:
         endpoint_kwargs = {"venue_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_bank_info_status")
     def test_get_venue(self, bank_info_mock, authenticated_client, venue):  # type: ignore
         bank_info_mock.return_value = {
@@ -65,9 +63,8 @@ class GetVenueTest:
 
         # get session (1 query)
         # get user with profile and permissions (1 query)
-        # get FF (1 query)
         # get venue (1 query)
-        with assert_num_queries(4):
+        with assert_num_queries(3):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -77,7 +74,6 @@ class GetVenueTest:
         assert "ID Adage" not in response_text
         assert f"Site web : {venue.contact.website}" in response_text
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_venue_with_adage_id(self, authenticated_client):
         venue = offerers_factories.VenueFactory(adageId="7122022", contact=None)
 
@@ -135,17 +131,15 @@ class GetVenueStatsTest:
         endpoint_kwargs = {"venue_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_get_stats(self, authenticated_client, venue):
         booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
         url = url_for("backoffice_v3_web.venue.get_stats", venue_id=venue.id)
 
         # get session (1 query)
         # get user with profile and permissions (1 query)
-        # get FF (1 query)
         # get total revenue (1 query)
         # get venue stats (1 query)
-        with assert_num_queries(5):
+        with assert_num_queries(4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -194,7 +188,6 @@ class UpdateVenueTest:
         endpoint_kwargs = {"venue_id": 1}
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_update_venue(self, authenticated_client, offerer):
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         url = url_for("backoffice_v3_web.manage_venue.update", venue_id=venue.id)
@@ -223,7 +216,6 @@ class UpdateVenueTest:
         assert venue.contact.phone_number == data["phone_number"]
         assert venue.isPermanent == data["isPermanent"]
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_update_virtual_venue(self, authenticated_client, offerer):
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
@@ -243,7 +235,6 @@ class UpdateVenueTest:
         assert venue.contact.email == data["email"]
         assert venue.contact.phone_number == data["phone_number"]
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_update_with_missing_data(self, authenticated_client, venue):
         url = url_for("backoffice_v3_web.manage_venue.update", venue_id=venue.id)
         data = {"email": venue.contact.email + ".update"}
@@ -280,7 +271,6 @@ class GetVenueDetailsTest:
             venue = offerers_factories.VenueFactory()
             return url_for("backoffice_v3_web.venue.get_details", venue_id=venue.id)
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_venue_history(self, authenticated_client, legit_user):
         venue = offerers_factories.VenueFactory()
 
@@ -297,15 +287,13 @@ class GetVenueDetailsTest:
 
         # get session (1 query)
         # get user with profile and permissions (1 query)
-        # get FF (1 query)
         # get venue details (1 query)
-        with assert_num_queries(4):
+        with assert_num_queries(3):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
         assert comment in response.data.decode("utf-8")
 
-    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_venue_without_history(self, authenticated_client, legit_user):
         venue = offerers_factories.VenueFactory()
 
@@ -319,8 +307,7 @@ class GetVenueDetailsTest:
 
         # get session (1 query)
         # get user with profile and permissions (1 query)
-        # get FF (1 query)
         # get venue details (1 query)
-        with assert_num_queries(4):
+        with assert_num_queries(3):
             response = authenticated_client.get(url)
             assert response.status_code == 200

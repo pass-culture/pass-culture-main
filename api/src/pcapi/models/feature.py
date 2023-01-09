@@ -113,7 +113,6 @@ class FeatureToggle(enum.Enum):
     TEMP_DISABLE_OFFERER_VALIDATION_EMAIL = (
         "Désactiver l'envoi d'email interne de validation par token pour les structures et rattachements"
     )
-    WIP_ENABLE_BACKOFFICE_V3 = "Autorise l'accès au nouveau back-office (v3)"
     WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY = "Nouveau parcours de creation d'offre optimisé"
     WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
     WIP_REQUIRE_PRICE_IN_STOCK_API = "Requiert le champ de prix dans l'API Stock"
@@ -172,7 +171,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_OFFERER_STATS,
     FeatureToggle.TEMP_ENABLE_JOB_HIGHLIGHTS_BANNER,
     FeatureToggle.TEMP_DISABLE_OFFERER_VALIDATION_EMAIL,
-    FeatureToggle.WIP_ENABLE_BACKOFFICE_V3,
     FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY,
     FeatureToggle.WIP_REQUIRE_PRICE_IN_STOCK_API,
     FeatureToggle.WIP_IMPROVE_COLLECTIVE_STATUS,
