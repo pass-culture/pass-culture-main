@@ -63,10 +63,10 @@ const CollectiveOfferItem = ({
       ) : (
         <OfferStatusCell status={offer.status} />
       )}
-      <DuplicateOfferCell
-        isTemplate={Boolean(offer.isShowcase)}
-        templateOfferId={offer.id}
-      />
+      {Boolean(offer.isShowcase) && (
+        <DuplicateOfferCell templateOfferId={offer.id} />
+      )}
+
       <EditOfferCell
         offer={offer}
         isOfferEditable={isOfferEditable}
