@@ -31,6 +31,7 @@ export interface IVenueProps {
   name: string
   offererId: string
   publicName?: string
+  hasCreatedOffer?: boolean
 }
 
 const Venue = ({
@@ -41,6 +42,7 @@ const Venue = ({
   offererId,
   initialOpenState,
   publicName,
+  hasCreatedOffer,
 }: IVenueProps) => {
   const [prevInitialOpenState, setPrevInitialOpenState] =
     useState(initialOpenState)
@@ -209,7 +211,7 @@ const Venue = ({
               </button>
             </h3>
             <div className="button-group">
-              {hasMissingReimbursementPoint && !isVirtual && (
+              {hasMissingReimbursementPoint && !isVirtual && hasCreatedOffer && (
                 <>
                   <ButtonLink
                     className="add-rib-link tertiary-link"
@@ -217,6 +219,12 @@ const Venue = ({
                     link={{
                       to: reimbursementSectionLink,
                       isExternal: false,
+                    }}
+                    onClick={() => {
+                      logEvent?.(
+                        VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
+                        venueIdTrackParam
+                      )
                     }}
                     Icon={IcoPlusCircle}
                   >

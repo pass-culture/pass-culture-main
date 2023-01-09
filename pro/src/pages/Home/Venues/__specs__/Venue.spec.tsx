@@ -216,6 +216,7 @@ describe('venues', () => {
     it('should display add bank information when venue does not have a reimbursement point', () => {
       // Given
       props.hasMissingReimbursementPoint = true
+      props.hasCreatedOffer = true
 
       // When
       renderVenue(props, store)
