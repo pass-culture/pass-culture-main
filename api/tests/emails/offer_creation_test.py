@@ -6,7 +6,6 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.mailing import make_offer_creation_notification_email
@@ -19,7 +18,6 @@ class MakeOfferCreationNotificationEmailTest:
         "isEducationalOffer",
         [True, False],
     )
-    @override_features(OFFER_FORM_V3=True)
     def test_with_physical_offer(self, isEducationalOffer):
         author = users_factories.ProFactory()
         venue = offerers_factories.VenueFactory(
@@ -112,7 +110,6 @@ class MakeOfferRejectionNotificationEmailTest:
         "isEducationalOffer",
         [True, False],
     )
-    @override_features(OFFER_FORM_V3=True)
     def test_with_physical_offer(self, isEducationalOffer):
         author = users_factories.ProFactory(firstName=None)
         venue = offerers_factories.VenueFactory(

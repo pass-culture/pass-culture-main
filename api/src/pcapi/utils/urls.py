@@ -6,7 +6,6 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.human_ids import humanize
 
 
@@ -37,8 +36,6 @@ def build_pc_pro_offer_link(offer: CollectiveOffer | CollectiveOfferTemplate | O
     if isinstance(offer, CollectiveOfferTemplate):
         return f"{settings.PRO_URL}/offre/T-{humanize(offer.id)}/collectif/edition"
 
-    if not FeatureToggle.OFFER_FORM_V3.is_active():
-        return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/individuel/edition"
     return f"{settings.PRO_URL}/offre/individuelle/{humanize(offer.id)}/recapitulatif"
 
 
