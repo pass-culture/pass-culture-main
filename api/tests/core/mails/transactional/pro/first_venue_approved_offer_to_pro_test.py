@@ -11,7 +11,6 @@ from pcapi.core.mails.transactional.pro.first_venue_approved_offer_to_pro import
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 from pcapi.settings import PRO_URL
 from pcapi.utils.human_ids import humanize
 
@@ -20,7 +19,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class SendinblueSendFirstVenueOfferEmailTest:
-    @override_features(OFFER_FORM_V3=True)
     def test_get_first_venue_approved_offer_correct_email_metadata(self):
         # Given
         offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
@@ -40,7 +38,6 @@ class SendinblueSendFirstVenueOfferEmailTest:
             "WITHDRAWAL_PERIOD": 30,
         }
 
-    @override_features(OFFER_FORM_V3=True)
     def test_get_first_venue_approved_book_offer_correct_email_metadata(self):
         # Given
         product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
@@ -61,7 +58,6 @@ class SendinblueSendFirstVenueOfferEmailTest:
             "WITHDRAWAL_PERIOD": 10,
         }
 
-    @override_features(OFFER_FORM_V3=True)
     def test_send_offer_approval_email(self):
         # Given
         venue = offerers_factories.VenueFactory(name="Sibérie orientale", bookingEmail="venue@bookingEmail.com")
