@@ -92,7 +92,7 @@ const OfferEducationalStock = <
           isBooked={
             offer.isTemplate ? false : Boolean(offer.collectiveStock?.isBooked)
           }
-          isCancellable={offer.isCancellable}
+          offer={offer}
           isOfferActive={offer.isActive}
           setIsOfferActive={setIsOfferActive}
         />

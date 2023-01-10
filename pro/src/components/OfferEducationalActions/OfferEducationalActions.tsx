@@ -1,8 +1,21 @@
 import cn from 'classnames'
 import React, { useState } from 'react'
 
-import { Button } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import {
+  CollectiveOffer,
+  CollectiveOfferTemplate,
+  isCollectiveOffer,
+} from 'core/OfferEducational'
+import useActiveFeature from 'hooks/useActiveFeature'
+import { ReactComponent as IcoCircleArrow } from 'icons/ico-circle-arrow.svg'
+import { getCollectiveStatusLabel } from 'pages/Offers/Offers/OfferItem/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
+import { Button, ButtonLink } from 'ui-kit'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import {
+  FORMAT_ISO_DATE_ONLY,
+  formatBrowserTimezonedDateAsUTC,
+  toDateStrippedOfTimezone,
+} from 'utils/date'
 
 import CancelCollectiveBookingModal from '../CancelCollectiveBookingModal'
 
@@ -14,7 +27,7 @@ interface IOfferEducationalActions {
   className?: string
   isOfferActive: boolean
   isBooked: boolean
-  isCancellable: boolean
+  offer?: CollectiveOffer | CollectiveOfferTemplate
   setIsOfferActive?(isActive: boolean): void
   cancelActiveBookings?(): void
 }
@@ -23,11 +36,33 @@ const OfferEducationalActions = ({
   className,
   isOfferActive,
   isBooked,
-  isCancellable,
+  offer,
   cancelActiveBookings,
   setIsOfferActive,
 }: IOfferEducationalActions): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const lastBookingId = isCollectiveOffer(offer) ? offer.lastBookingId : null
+  const lastBookingStatus = isCollectiveOffer(offer)
+    ? offer.lastBookingStatus
+    : null
+  const getBookingLink = () => {
+    const offerEventDate =
+      isCollectiveOffer(offer) && offer.collectiveStock
+        ? offer.collectiveStock.beginningDatetime
+        : null
+    if (offerEventDate && lastBookingId) {
+      const eventDateFormated = formatBrowserTimezonedDateAsUTC(
+        toDateStrippedOfTimezone(offerEventDate),
+        FORMAT_ISO_DATE_ONLY
+      )
+      return `/reservations/collectives?page=1&offerEventDate=${eventDateFormated}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=${lastBookingId}`
+    }
+    return ''
+  }
+
+  const isImproveCollectiveStatusActive = useActiveFeature(
+    'WIP_IMPROVE_COLLECTIVE_STATUS'
+  )
 
   return (
     <>
@@ -53,15 +88,35 @@ const OfferEducationalActions = ({
               : 'Publier sur Adage'}
           </Button>
         )}
-
-        {isBooked && isCancellable && cancelActiveBookings && (
-          <Button
-            className={style['actions-button']}
-            onClick={() => setIsModalOpen(true)}
-            variant={ButtonVariant.SECONDARY}
+        {!isImproveCollectiveStatusActive &&
+          isBooked &&
+          offer?.isCancellable &&
+          cancelActiveBookings && (
+            <Button
+              className={style['actions-button']}
+              onClick={() => setIsModalOpen(true)}
+              variant={ButtonVariant.SECONDARY}
+            >
+              Annuler la réservation
+            </Button>
+          )}
+        {isImproveCollectiveStatusActive && lastBookingId && (
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            className={style['button-link']}
+            link={{ isExternal: false, to: getBookingLink() }}
+            Icon={IcoCircleArrow}
+            iconPosition={IconPositionEnum.LEFT}
           >
-            Annuler la réservation
-          </Button>
+            Voir la{' '}
+            {lastBookingStatus == 'PENDING' ? 'préréservation' : 'réservation'}
+          </ButtonLink>
+        )}
+        {offer?.status && isImproveCollectiveStatusActive && (
+          <>
+            <div className={style.separator} />{' '}
+            {getCollectiveStatusLabel(offer?.status, lastBookingStatus || '')}
+          </>
         )}
       </div>
     </>
