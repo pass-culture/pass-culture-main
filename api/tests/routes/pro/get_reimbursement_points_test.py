@@ -11,12 +11,12 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def test_get_reimbursement_points_by_admin(client):
     pro_reimbursement_point_z = offerers_factories.VenueFactory(
-        businessUnit=None, reimbursement_point="self", name="Reimbursement Point Z"
+        reimbursement_point="self", name="Reimbursement Point Z"
     )
     finance_factories.BankInformationFactory(venue=pro_reimbursement_point_z)
 
     pro_reimbursement_point_a = offerers_factories.VenueFactory(
-        businessUnit=None, reimbursement_point="self", name="Reimbursement Point A"
+        reimbursement_point="self", name="Reimbursement Point A"
     )
     finance_factories.BankInformationFactory(venue=pro_reimbursement_point_a)
 
@@ -34,14 +34,13 @@ def test_get_reimbursement_points_by_admin(client):
 
 def test_get_reimbursement_points_by_pro(client):
     pro_reimbursement_point_1 = offerers_factories.VenueFactory(
-        businessUnit=None,
         reimbursement_point="self",
         name="My Reimbursement Point",
         publicName="My Reimbursement Point Public Name",
     )
     finance_factories.BankInformationFactory(venue=pro_reimbursement_point_1)
 
-    reimbursement_point_2 = offerers_factories.VenueFactory(businessUnit=None, reimbursement_point="self")
+    reimbursement_point_2 = offerers_factories.VenueFactory(reimbursement_point="self")
     finance_factories.BankInformationFactory(venue=reimbursement_point_2)
     pro = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(offerer=pro_reimbursement_point_1.managingOfferer, user=pro)

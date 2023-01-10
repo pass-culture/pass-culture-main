@@ -38,31 +38,6 @@ class BankInformationFactory(BaseFactory):
     status = models.BankInformationStatus.ACCEPTED
 
 
-class BusinessUnitFactory(BaseFactory):
-    class Meta:
-        model = models.BusinessUnit
-
-    name = factory.Sequence("Business unit #{}".format)
-    siret = factory.Sequence("{:014}".format)
-    status = models.BusinessUnitStatus.ACTIVE
-
-    bankAccount = factory.SubFactory(BankInformationFactory)
-
-
-class BusinessUnitVenueLinkFactory(BaseFactory):
-    class Meta:
-        model = models.BusinessUnitVenueLink
-
-    businessUnit = factory.SelfAttribute("venue.businessUnit")
-    venue = factory.SubFactory(offerers_factories.VenueFactory)
-    timespan = factory.LazyFunction(
-        lambda: [
-            datetime.datetime.utcnow() - datetime.timedelta(days=365),
-            None,
-        ]
-    )
-
-
 class PricingFactory(BaseFactory):
     class Meta:
         model = models.Pricing
@@ -70,10 +45,7 @@ class PricingFactory(BaseFactory):
     status = models.PricingStatus.VALIDATED
     booking = factory.SubFactory(bookings_factories.UsedIndividualBookingFactory)
     venue = factory.SelfAttribute("booking.venue")
-    businessUnit = factory.SelfAttribute("booking.venue.businessUnit")
-    siret = factory.LazyAttribute(
-        lambda pricing: pricing.booking.venue.siret or pricing.booking.venue.businessUnit.siret
-    )
+    siret = factory.LazyAttribute(lambda pricing: pricing.booking.venue.siret)
     pricingPointId = factory.SelfAttribute("booking.venue.current_pricing_point_id")
     valueDate = factory.SelfAttribute("booking.dateUsed")
     amount = factory.LazyAttribute(lambda pricing: -int(100 * pricing.booking.total_amount))
@@ -88,7 +60,6 @@ class CollectivePricingFactory(BaseFactory):
     status = models.PricingStatus.VALIDATED
     collectiveBooking = factory.SubFactory(UsedCollectiveBookingFactory)
     venue = factory.SelfAttribute("collectiveBooking.venue")
-    businessUnit = factory.SelfAttribute("collectiveBooking.venue.businessUnit")
     siret = factory.SelfAttribute("collectiveBooking.venue.siret")
     valueDate = factory.SelfAttribute("collectiveBooking.dateUsed")
     amount = factory.LazyAttribute(lambda pricing: -int(100 * pricing.collectiveBooking.collectiveStock.price))
@@ -146,7 +117,6 @@ class InvoiceFactory(BaseFactory):
     class Meta:
         model = models.Invoice
 
-    businessUnit = factory.SubFactory(BusinessUnitFactory)
     reimbursementPoint = factory.SubFactory(offerers_factories.VenueFactory)
     amount = 1000
     reference = factory.Sequence("{:09}".format)
@@ -168,13 +138,8 @@ class CashflowFactory(BaseFactory):
     amount = -1000
     batch = factory.SubFactory(CashflowBatchFactory)
     status = models.CashflowStatus.ACCEPTED
-    businessUnit = None
     reimbursementPoint = None
-    bankAccount = factory.LazyAttribute(
-        lambda cashflow: cashflow.reimbursementPoint.bankInformation
-        if cashflow.reimbursementPoint
-        else cashflow.businessUnit.bankAccount
-    )
+    bankAccount = factory.LazyAttribute(lambda cashflow: cashflow.reimbursementPoint.bankInformation)
 
 
 # Factories below are deprecated and should probably NOT BE USED in

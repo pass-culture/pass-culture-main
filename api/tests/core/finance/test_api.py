@@ -255,7 +255,7 @@ class PriceBookingTest:
         booking = api._get_bookings_to_price(bookings_models.Booking, window).first()
 
         queries = 0
-        queries += 1  # select for update on BusinessUnit / Venue (lock)
+        queries += 1  # select for update on Venue (lock)
         queries += 1  # fetch booking again with multiple joinedload
         queries += 1  # select existing Pricing (if any)
         queries += 1  # select dependent pricings
@@ -1322,7 +1322,6 @@ def test_generate_invoice_file():
 @pytest.fixture(name="invoice_data")
 def invoice_test_data():
     venue_kwargs = {
-        "businessUnit": None,
         "pricing_point": "self",
         "reimbursement_point": "self",
     }
@@ -1438,7 +1437,6 @@ class GenerateInvoiceTest:
             managingOfferer=reimbursement_point.managingOfferer,
             pricing_point="self",
             reimbursement_point=reimbursement_point,
-            businessUnit=None,
         )
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
@@ -1459,7 +1457,6 @@ class GenerateInvoiceTest:
 
         year = invoice.date.year % 100
         assert invoice.reference == f"F{year}0000001"
-        assert invoice.businessUnitId == venue.businessUnitId
         assert invoice.reimbursementPoint == reimbursement_point
         assert invoice.amount == -40 * 100
         assert len(invoice.lines) == 1
@@ -1477,7 +1474,6 @@ class GenerateInvoiceTest:
             managingOfferer=reimbursement_point.managingOfferer,
             pricing_point="self",
             reimbursement_point=reimbursement_point,
-            businessUnit=None,
         )
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
@@ -1527,7 +1523,6 @@ class GenerateInvoiceTest:
             managingOfferer=reimbursement_point.managingOfferer,
             pricing_point="self",
             reimbursement_point=reimbursement_point,
-            businessUnit=None,
         )
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
@@ -1648,7 +1643,6 @@ class GenerateInvoiceTest:
             managingOfferer=reimbursement_point.managingOfferer,
             pricing_point="self",
             reimbursement_point=reimbursement_point,
-            businessUnit=None,
         )
 
         # 2 offers that have a distinct reimbursement rate rule.

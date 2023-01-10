@@ -380,7 +380,6 @@ class CollectiveReimbursementDetailsTest:
             collectiveBooking=booking,
             standardRule="Remboursement total pour les offres physiques",
             status=finance_models.PricingStatus.VALIDATED,
-            businessUnit=venue.businessUnit,
         )
         with freezegun.freeze_time(datetime(2022, 7, 1, 12, 0)):
             finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())

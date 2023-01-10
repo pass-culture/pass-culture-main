@@ -3,7 +3,6 @@ import typing
 
 import factory
 
-import pcapi.core.finance.models as finance_models
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -62,29 +61,9 @@ class VenueFactory(BaseFactory):
     mentalDisabilityCompliant: bool | None = False
     motorDisabilityCompliant: bool | None = False
     visualDisabilityCompliant: bool | None = False
-    businessUnit = factory.SubFactory(
-        "pcapi.core.finance.factories.BusinessUnitFactory",
-        name=factory.LazyAttribute(lambda bu: bu.factory_parent.name),
-        siret=factory.LazyAttribute(lambda bu: bu.factory_parent.siret),
-    )
     contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
     bookingEmail = factory.Sequence("venue{}@example.net".format)
     dmsToken = factory.LazyFunction(api.generate_dms_token)
-
-    @factory.post_generation
-    def business_unit_venue_link(  # pylint: disable=no-self-argument
-        venue: models.Venue,
-        create: bool,
-        extracted: typing.Callable | None,
-        **kwargs: typing.Any,
-    ) -> finance_models.BusinessUnitVenueLink | None:
-        import pcapi.core.finance.factories as finance_factories
-
-        if not create:
-            return None
-        if not venue.businessUnit:
-            return None
-        return finance_factories.BusinessUnitVenueLinkFactory(venue=venue, businessUnit=venue.businessUnit)
 
     @factory.post_generation
     def pricing_point(  # pylint: disable=no-self-argument
