@@ -128,7 +128,7 @@ describe('filterCategories', () => {
     )
 
     expect(
-      filteredCategories.find((c: IOfferCategory) => c.id === 'D')
+      filteredCategories.find(category => category.id === 'D')
     ).toBeUndefined()
     expect(
       filteredSubCategories.find((c: IOfferSubCategory) => c.id === 'C-D')
@@ -144,7 +144,7 @@ describe('filterCategories', () => {
     )
 
     expect(
-      filteredCategories.find((c: IOfferCategory) => c.id === 'D')
+      filteredCategories.find(category => category.id === 'D')
     ).toBeUndefined()
     expect(
       filteredSubCategories.find((c: IOfferSubCategory) => c.id === 'C-D')
@@ -159,11 +159,8 @@ describe('filterCategories', () => {
       null
     )
 
-    expect(filteredCategories.map((c: IOfferCategory) => c.id)).toEqual([
-      'A',
-      'C',
-    ])
-    expect(filteredSubCategories.map((s: IOfferSubCategory) => s.id)).toEqual([
+    expect(filteredCategories.map(category => category.id)).toEqual(['A', 'C'])
+    expect(filteredSubCategories.map(subCategory => subCategory.id)).toEqual([
       'A-A',
       'C-A',
       'C-B',
@@ -178,11 +175,8 @@ describe('filterCategories', () => {
       null
     )
 
-    expect(filteredCategories.map((c: IOfferCategory) => c.id)).toEqual([
-      'B',
-      'C',
-    ])
-    expect(filteredSubCategories.map((s: IOfferSubCategory) => s.id)).toEqual([
+    expect(filteredCategories.map(category => category.id)).toEqual(['B', 'C'])
+    expect(filteredSubCategories.map(subCategory => subCategory.id)).toEqual([
       'B-A',
       'C-A',
       'C-C',
@@ -197,11 +191,8 @@ describe('filterCategories', () => {
       true
     )
 
-    expect(filteredCategories.map((c: IOfferCategory) => c.id)).toEqual([
-      'A',
-      'C',
-    ])
-    expect(filteredSubCategories.map((s: IOfferSubCategory) => s.id)).toEqual([
+    expect(filteredCategories.map(category => category.id)).toEqual(['A', 'C'])
+    expect(filteredSubCategories.map(subCategory => subCategory.id)).toEqual([
       'A-A',
       'C-A',
       'C-B',
@@ -217,8 +208,8 @@ describe('filterCategories', () => {
       false
     )
 
-    expect(filteredCategories.map((c: IOfferCategory) => c.id)).toEqual(['B'])
-    expect(filteredSubCategories.map((s: IOfferSubCategory) => s.id)).toEqual([
+    expect(filteredCategories.map(category => category.id)).toEqual(['B'])
+    expect(filteredSubCategories.map(subCategory => subCategory.id)).toEqual([
       'B-A',
     ])
   })
