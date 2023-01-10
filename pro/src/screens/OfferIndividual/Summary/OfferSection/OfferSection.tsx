@@ -2,7 +2,6 @@ import React from 'react'
 
 import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
 import AccessibilitySummarySection from 'components/AccessibilitySummarySection'
-import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { SummaryLayout } from 'components/SummaryLayout'
 import {
@@ -75,7 +74,7 @@ const OfferSummary = ({
 
   const logEditEvent = () => {
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OfferBreadcrumbStep.SUMMARY,
+      from: OFFER_WIZARD_STEP_IDS.SUMMARY,
       to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
