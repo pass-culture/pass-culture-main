@@ -4,16 +4,12 @@ from flask_login import current_user
 from flask_login import login_required
 import sqlalchemy.orm as sqla_orm
 
-import pcapi.core.finance.api as finance_api
-import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.offerers.models as offerers_models
-from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import finance_serialize
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.rest import check_user_has_access_to_offerer
 
 from . import blueprint
 
@@ -63,19 +59,3 @@ def get_reimbursement_points() -> finance_serialize.ReimbursementPointListRespon
             for reimbursement_point in reimbursement_points
         ],
     )
-
-
-@private_api.route("/finance/business-units/<int:business_unit_id>", methods=["PATCH"])
-@login_required
-@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def edit_business_unit(business_unit_id: int, body: finance_serialize.BusinessUnitEditionBodyModel) -> None:
-    business_unit = finance_models.BusinessUnit.query.filter_by(id=business_unit_id).first_or_404()
-    if business_unit.siret:
-        msg = "Ce point de facturation a déjà un SIRET, vous ne pouvez pas le modifier."
-        raise ApiErrors({"siret": [msg]})
-    venue = business_unit.venues[0]
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    try:
-        finance_api.edit_business_unit(business_unit, siret=body.siret)
-    except finance_exceptions.InvalidSiret:
-        raise ApiErrors({"siret": ["Ce SIRET n'est pas valide."]})
