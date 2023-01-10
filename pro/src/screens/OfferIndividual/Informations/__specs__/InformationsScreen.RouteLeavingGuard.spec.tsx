@@ -158,6 +158,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       offererId: 'A',
       offererName: '',
       performer: 'Offer performer',
+      ean: '',
       showSubType: '',
       showType: '',
       stageDirector: 'Offer stageDirector',

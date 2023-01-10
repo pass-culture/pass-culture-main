@@ -194,6 +194,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       offererId: 'OFID',
       offererName: '',
       performer: 'Offer performer',
+      ean: '',
       showSubType: '',
       showType: '',
       stageDirector: 'Offer stageDirector',
