@@ -80,6 +80,7 @@ class CollectiveBookingCollectiveStockResponseModel(BaseModel):
     offer_name: str
     offer_identifier: str
     event_beginning_datetime: str
+    booking_limit_datetime: str
     offer_isbn: str | None
     offer_is_educational: bool
     number_of_tickets: int

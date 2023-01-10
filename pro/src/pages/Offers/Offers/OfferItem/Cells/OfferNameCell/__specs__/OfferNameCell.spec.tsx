@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
+import { add } from 'date-fns'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -56,14 +57,18 @@ describe('OfferNameCell', () => {
     }
   })
 
-  it('should display warning icon in name cell', () => {
+  it('should display warning when limit booking date is in less than 7 days', () => {
+    const tomorrowFns = add(new Date(), {
+      days: 1,
+    })
+
     const eventOffer = {
       ...defaultOffer,
       stocks: [
         {
-          beginningDatetime: new Date('2022-12-22T00:00:00Z'),
+          beginningDatetime: new Date('2023-12-22T00:00:00Z'),
           remainingQuantity: 1,
-          bookingLimitDatetime: new Date('2022-12-24T00:00:00Z'),
+          bookingLimitDatetime: tomorrowFns,
         },
       ],
     }
@@ -80,8 +85,10 @@ describe('OfferNameCell', () => {
     const warningIco = screen.queryByAltText('Attention')
     expect(warningIco).not.toBeNull()
   })
-  it('should not display warning icon in name cell', () => {
-    const store: Store<RootState> = configureTestStore({})
+  it('should not display warning when limit booking date is in more than 7 days', () => {
+    const eightDaysFns = add(new Date(), {
+      days: 8,
+    })
 
     const eventOffer = {
       ...defaultOffer,
@@ -89,7 +96,7 @@ describe('OfferNameCell', () => {
         {
           beginningDatetime: new Date('2022-12-22T00:00:00Z'),
           remainingQuantity: 1,
-          bookingLimitDatetime: new Date('2023-12-24T00:00:00Z'),
+          bookingLimitDatetime: eightDaysFns,
         },
       ],
     }

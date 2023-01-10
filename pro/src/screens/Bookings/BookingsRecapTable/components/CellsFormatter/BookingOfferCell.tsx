@@ -28,6 +28,8 @@ import Icon from 'ui-kit/Icon/Icon'
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
 
+import styles from './BookingOfferCell.module.scss'
+
 interface IBookingOfferCellProps {
   offer:
     | BookingRecapResponseStockModel
@@ -48,7 +50,6 @@ const BookingOfferCell = ({
     'WIP_IMPROVE_COLLECTIVE_STATUS'
   )
 
-  console.log('ici', offer)
   const editionUrl = useOfferEditionURL(
     offer.offerIsEducational,
     offer.offerIdentifier,
@@ -67,7 +68,7 @@ const BookingOfferCell = ({
   const shouldShowCollectiveWarning =
     isImproveCollectiveStatusActive &&
     isCollective &&
-    bookingRecapInfo.values.booking_status.toUpperCase() ===
+    bookingRecapInfo.values.bookingStatus.toUpperCase() ===
       OFFER_STATUS_PENDING &&
     shouldDisplayWarning([bookingRecapInfo.values.stock])
 
@@ -88,27 +89,28 @@ const BookingOfferCell = ({
         title={`${offer.offerName} (ouverture dans un nouvel onglet)`}
       >
         <div
-          className={cn('booking-offer-name', {
-            'booking-offer-name-individual': !offer.offerIsEducational,
-          })}
+          className={cn(
+            styles['booking-offer-name'],
+            !offer.offerIsEducational && styles['booking-offer-name-individual']
+          )}
         >
           {offer.offerName}
         </div>
       </a>
       {isbn ||
         (eventBeginningDatetime && (
-          <div className="booking-offer-additional-info">
+          <div className={styles['booking-offer-additional-info']}>
             {eventDatetimeFormatted || isbn}
-            <span className="stocks">
+            <span className={styles['stocks']}>
               {shouldShowCollectiveWarning && (
                 <div>
                   <Icon
-                    className="sold-out-icon"
+                    className={styles['sold-out-icon']}
                     svg="ico-warning"
                     alt="Attention"
                   />
 
-                  <span className="sold-out-dates">
+                  <span className={styles['sold-out-dates']}>
                     La date limite de réservation par le chef d'établissement
                     est dans{' '}
                     {`${

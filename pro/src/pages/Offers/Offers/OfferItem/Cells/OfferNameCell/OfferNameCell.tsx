@@ -58,7 +58,7 @@ const OfferNameCell = ({
       stocks,
       venue: { departementCode },
     } = offer
-    const { beginningDatetime } = stocks[0] || {}
+    const { beginningDatetime } = stocks[0] ?? {}
     /* istanbul ignore next: DEBT, TO FIX */
     if (offer.isShowcase || !beginningDatetime || !departementCode) {
       return null
