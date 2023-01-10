@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import { BannerInvisibleSiren, BannerRGS } from 'components/Banner'
@@ -8,7 +8,6 @@ import LegalInfos from 'components/LegalInfos/LegalInfos'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import { useModal } from 'hooks/useModal'
-import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import { Button, SubmitButton, TextInput, Checkbox } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { PasswordInput, SirenInput } from 'ui-kit/form'
@@ -26,23 +25,6 @@ const SignupForm = (): JSX.Element => {
     useFormikContext<ISignupFormValues>()
 
   useScrollToFirstErrorAfterSubmit()
-  useRedirectLoggedUser()
-
-  useEffect(() => {
-    const script = document.createElement('script')
-
-    script.src = '//js.hs-scripts.com/5119289.js'
-    script.async = true
-    script.type = 'text/javascript'
-    script.id = 'hs-script-loader'
-    script.defer = true
-
-    document.body.appendChild(script)
-    return () => {
-      const script = document.getElementById('hs-script-loader') as Node
-      document.body.removeChild(script)
-    }
-  }, [])
 
   const getSirenAPIData = async (siren: string) => {
     setShowAnonymousBanner(false)
