@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { SummaryLayout } from 'components/SummaryLayout'
 import {
@@ -36,8 +35,8 @@ const StockSection = ({
   const logEditEvent = () => {
     /* istanbul ignore next: DEBT, TO FIX */
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OfferBreadcrumbStep.SUMMARY,
-      to: OfferBreadcrumbStep.STOCKS,
+      from: OFFER_WIZARD_STEP_IDS.SUMMARY,
+      to: OFFER_WIZARD_STEP_IDS.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,

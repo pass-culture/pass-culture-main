@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
@@ -30,7 +30,7 @@ const EditStocksCell = ({
         onClick={() =>
           logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
             from: OFFER_FORM_NAVIGATION_IN.OFFERS,
-            to: OfferBreadcrumbStep.STOCKS,
+            to: OFFER_WIZARD_STEP_IDS.STOCKS,
             used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_STOCKS,
             isEdition: true,
             offerId: offer.id,
