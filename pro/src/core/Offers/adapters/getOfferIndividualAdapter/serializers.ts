@@ -85,6 +85,7 @@ export const serializeOfferApiExtraData = (
   musicType: apiOffer.extraData?.musicType || '',
   musicSubType: apiOffer.extraData?.musicSubType || '',
   performer: apiOffer.extraData?.performer || '',
+  ean: apiOffer.extraData?.ean || '',
   showType: apiOffer.extraData?.showType || '',
   showSubType: apiOffer.extraData?.showSubType || '',
   speaker: apiOffer.extraData?.speaker || '',

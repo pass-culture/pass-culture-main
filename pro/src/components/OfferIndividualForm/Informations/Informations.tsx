@@ -22,6 +22,7 @@ const Informations = ({
   const hasAuthor = subCategoryFields.includes('author')
   const hasIsbn = subCategoryFields.includes('isbn')
   const hasPerformer = subCategoryFields.includes('performer')
+  const hasEan = subCategoryFields.includes('ean')
   const hasSpeaker = subCategoryFields.includes('speaker')
   const hasStageDirector = subCategoryFields.includes('stageDirector')
   const hasVisa = subCategoryFields.includes('visa')
@@ -111,6 +112,17 @@ const Informations = ({
             maxLength={1000}
             name="performer"
             disabled={readOnlyFields.includes('performer')}
+          />
+        </FormLayout.Row>
+      )}
+      {hasEan && (
+        <FormLayout.Row>
+          <TextInput
+            isOptional
+            label="EAN"
+            name="ean"
+            maxLength={13}
+            disabled={readOnlyFields.includes('ean')}
           />
         </FormLayout.Row>
       )}

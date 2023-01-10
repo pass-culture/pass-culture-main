@@ -15,6 +15,7 @@ export const serializeExtraData = (
   extraData.musicType = formValues.musicType
   extraData.musicSubType = formValues.musicSubType
   extraData.performer = formValues.performer
+  extraData.ean = formValues.ean
   extraData.showType = formValues.showType
   extraData.showSubType = formValues.showSubType
   extraData.speaker = formValues.speaker

@@ -206,6 +206,7 @@ describe('useGetOfferIndividual', () => {
       offererId: 'CU',
       offererName: 'Le Petit Rintintin Management 6',
       performer: '',
+      ean: '',
       showSubType: '',
       showType: '',
       stageDirector: '',

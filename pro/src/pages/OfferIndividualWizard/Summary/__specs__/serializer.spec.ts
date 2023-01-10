@@ -43,6 +43,7 @@ describe('routes::Summary::serializers', () => {
       offererId: 'OFID',
       offererName: '',
       performer: 'Offer performer',
+      ean: '',
       showSubType: '',
       showType: '',
       stageDirector: 'Offer stageDirector',
