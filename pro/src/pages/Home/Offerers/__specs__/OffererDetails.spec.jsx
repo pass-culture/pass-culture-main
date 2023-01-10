@@ -36,7 +36,6 @@ jest.mock('apiClient/api', () => ({
     getOfferer: jest.fn(),
     listOfferersNames: jest.fn(),
     getVenueStats: jest.fn(),
-    getBusinessUnits: jest.fn(),
   },
 }))
 
@@ -211,8 +210,6 @@ describe('offererDetailsLegacy', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
-
-    api.getBusinessUnits.mockResolvedValue([{}])
   })
 
   it('should display offerer select', async () => {

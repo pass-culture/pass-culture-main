@@ -6,17 +6,6 @@ from pcapi.routes.serialization import BaseModel
 import pcapi.serialization.utils as serialization_utils
 
 
-class BusinessUnitListQueryModel(BaseModel):
-    # FIXME (mageoffray, 2022-12-27): Business Units are not used and this should be cleaned
-    # Please do not use dehumanize anymore.
-    class Config:
-        alias_generator = serialization_utils.to_camel
-        extra = "forbid"
-
-    _dehumanize_id = serialization_utils.dehumanize_field("offerer_id")
-    offerer_id: int | None
-
-
 class BusinessUnitResponseModel(BaseModel):
     class Config:
         orm_mode = True
@@ -36,13 +25,6 @@ class BusinessUnitResponseModel(BaseModel):
         business_unit.bic = business_unit.bankAccount.bic  # type: ignore [union-attr]
         res = super().from_orm(business_unit)
         return res
-
-
-class BusinessUnitListResponseModel(BaseModel):
-    __root__: list[BusinessUnitResponseModel]
-
-    class Config:
-        orm_mode = True
 
 
 class ReimbursementPointListQueryModel(BaseModel):
