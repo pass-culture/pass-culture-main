@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { GetOffererVenueResponseModel } from 'apiClient/v1'
 import { useNewOfferCreationJourney } from 'hooks'
 
 import Venue from './Venue'
@@ -14,12 +15,7 @@ interface IVenueListProps {
     hasCreatedOffer: boolean
   }[]
   selectedOffererId: string
-  virtualVenue: {
-    id: string
-    businessUnitId?: string
-    hasMissingReimbursementPoint: boolean
-    hasCreatedOffer: boolean
-  } | null
+  virtualVenue: GetOffererVenueResponseModel | null
 }
 
 const VenueList = ({
