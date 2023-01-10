@@ -116,6 +116,7 @@ class FeatureToggle(enum.Enum):
     WIP_REQUIRE_PRICE_IN_STOCK_API = "Requiert le champ de prix dans l'API Stock"
     WIP_IMPROVE_COLLECTIVE_STATUS = "Améliorer le suivi des status des offres et réservations collectives"
     WIP_DUPLICATE_OFFER_SELECTION = "Active la sélection d'offre à dupliquer à la création d'une offre collective"
+    WIP_ENABLE_MULTI_PRICE_STOCKS = "Active la fonctionnalité multi-tarif pour les offres individuelles"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -174,6 +175,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_REQUIRE_PRICE_IN_STOCK_API,
     FeatureToggle.WIP_IMPROVE_COLLECTIVE_STATUS,
     FeatureToggle.WIP_DUPLICATE_OFFER_SELECTION,
+    FeatureToggle.WIP_ENABLE_MULTI_PRICE_STOCKS,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
