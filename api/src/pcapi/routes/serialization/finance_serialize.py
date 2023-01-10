@@ -84,11 +84,3 @@ class InvoiceResponseModel(BaseModel):
 
 class InvoiceListResponseModel(BaseModel):
     __root__: list[InvoiceResponseModel]
-
-
-class BusinessUnitEditionBodyModel(BaseModel):
-    class Config:
-        alias_generator = serialization_utils.to_camel
-        extra = "forbid"
-
-    siret: str

@@ -6,7 +6,6 @@ import type { AdageCulturalPartnersResponseModel } from '../models/AdageCultural
 import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
 import type { BookingExportType } from '../models/BookingExportType';
 import type { BookingStatusFilter } from '../models/BookingStatusFilter';
-import type { BusinessUnitEditionBodyModel } from '../models/BusinessUnitEditionBodyModel';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
 import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
@@ -858,32 +857,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/features',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
-   * edit_business_unit <PATCH>
-   * @param businessUnitId
-   * @param requestBody
-   * @returns void
-   * @throws ApiError
-   */
-  public editBusinessUnit(
-    businessUnitId: number,
-    requestBody?: BusinessUnitEditionBodyModel,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/finance/business-units/{business_unit_id}',
-      path: {
-        'business_unit_id': businessUnitId,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
