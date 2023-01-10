@@ -693,6 +693,32 @@ class CreateOffererTest:
         assert national_partner_tag in created_offerer_partner.tags
 
 
+class UpdateOffererTest:
+    def test_update_offerer(self):
+        offerer = offerers_factories.OffererFactory(city="Portus Namnetum", address="1 rue d'Armorique")
+
+        offerers_api.update_offerer(offerer, city="Nantes", postal_code="44000", address="29 avenue de Bretagne")
+        offerer = offerers_models.Offerer.query.one()
+        assert offerer.city == "Nantes"
+        assert offerer.postalCode == "44000"
+        assert offerer.address == "29 avenue de Bretagne"
+
+        offerers_api.update_offerer(offerer, city="Naoned")
+        offerer = offerers_models.Offerer.query.one()
+        assert offerer.city == "Naoned"
+        assert offerer.postalCode == "44000"
+        assert offerer.address == "29 avenue de Bretagne"
+
+    def test_update_offerer_returns_modified_info(self):
+        offerer = offerers_factories.OffererFactory(city="Portus Namnetum", address="1 rue d'Armorique")
+
+        modified_info = offerers_api.update_offerer(offerer, city="Nantes", address="29 avenue de Bretagne")
+        assert modified_info == {
+            "city": {"new_info": "Nantes", "old_info": "Portus Namnetum"},
+            "address": {"new_info": "29 avenue de Bretagne", "old_info": "1 rue d'Armorique"},
+        }
+
+
 class ValidateOffererAttachmentTest:
     def test_offerer_attachment_is_validated(self):
         # Given

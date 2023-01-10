@@ -10,10 +10,12 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from markupsafe import Markup
 import pytz
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
+from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -50,10 +52,10 @@ offerer_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-@offerer_blueprint.route("", methods=["GET"])
-def get(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
-    basic_info = offerers_api.get_offerer_basic_info(offerer_id)
+def render_offerer_details(
+    offerer: offerers_models.Offerer, form: offerer_forms.EditOffererForm | None = None
+) -> utils.BackofficeResponse:
+    basic_info = offerers_api.get_offerer_basic_info(offerer.id)
 
     if not basic_info:
         raise NotFound()
@@ -66,13 +68,33 @@ def get(offerer_id: int) -> utils.BackofficeResponse:
         ok=bank_informations_ok, ko=bank_informations_ko
     )
 
+    if not form:
+        form = offerer_forms.EditOffererForm(
+            city=offerer.city,
+            postal_code=offerer.postalCode,
+            address=offerer.address,
+        )
+
+    dst = url_for(".update_offerer", offerer_id=offerer.id)
+
+    can_edit_user = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+
     return render_template(
         "offerer/get.html",
         offerer=offerer,
         region=regions_utils.get_region_name_from_postal_code(offerer.postalCode),
         bank_information_status=bank_information_status,
         is_collective_eligible=basic_info.is_collective_eligible,
+        form=form,
+        dst=dst,
+        can_edit_user=can_edit_user,
     )
+
+
+@offerer_blueprint.route("", methods=["GET"])
+def get(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    return render_offerer_details(offerer)
 
 
 def get_stats_data(offerer_id: int) -> serialization.OfferersStats:
@@ -145,6 +167,45 @@ def _get_add_pro_user_form(offerer: offerers_models.Offerer) -> offerer_forms.Ad
     form.pro_user_id.choices = [(user.id, f"{user.full_name} ({user.id})") for user in removed_users]
 
     return form
+
+
+@offerer_blueprint.route("", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    form = offerer_forms.EditOffererForm()
+
+    if not form.validate():
+        msg = Markup(
+            """
+            <button type="button"
+                    class="btn"
+                    data-bs-toggle="modal"
+                    data-bs-target="#edit-offerer-modal">
+                Les données envoyées comportent des erreurs. Afficher
+            </button>
+            """
+        ).format()
+        flash(msg, "warning")
+        return render_offerer_details(offerer=offerer, form=form)
+
+    modified_info = offerers_api.update_offerer(
+        offerer,
+        city=form.city.data,
+        postal_code=form.postal_code.data,
+        address=form.address.data,
+    )
+
+    if modified_info:
+        history_api.log_action(
+            history_models.ActionType.OFFERER_INFO_MODIFIED,
+            current_user,
+            offerer=offerer,
+            modified_info=modified_info,
+        )
+
+    flash("Informations mises à jour", "success")
+    return redirect(url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id), code=303)
 
 
 @offerer_blueprint.route("/details", methods=["GET"])

@@ -516,6 +516,34 @@ def grant_user_offerer_access(offerer: models.Offerer, user: users_models.User) 
     return models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.VALIDATED)
 
 
+def update_offerer(  # type: ignore [no-untyped-def]
+    offerer: models.Offerer,
+    city=UNCHANGED,
+    postal_code=UNCHANGED,
+    address=UNCHANGED,
+) -> dict[str, dict[str, str]]:
+    modified_info = {}
+
+    if city is not UNCHANGED:
+        if offerer.city != city:
+            modified_info["city"] = {"old_info": offerer.city, "new_info": city}
+            offerer.city = city
+    if postal_code is not UNCHANGED:
+        if offerer.postalCode != postal_code:
+            modified_info["postalCode"] = {"old_info": offerer.postalCode, "new_info": postal_code}
+            offerer.postalCode = postal_code
+    if address is not UNCHANGED:
+        if offerer.address != address:
+            modified_info["address"] = {"old_info": offerer.address, "new_info": address}
+            offerer.address = address
+
+    repository.save(offerer)
+
+    zendesk_sell.update_offerer(offerer)
+
+    return modified_info
+
+
 def validate_offerer_attachment(
     user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str | None = None
 ) -> None:

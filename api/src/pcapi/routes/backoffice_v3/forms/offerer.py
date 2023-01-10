@@ -23,6 +23,20 @@ def _get_tags_query() -> sa.orm.Query:
     )
 
 
+class EditOffererForm(FlaskForm):
+    address = fields.PCOptStringField(
+        "Adresse",
+        validators=(wtforms.validators.Length(max=200, message="doit contenir moins de %(max)d caractères"),),
+    )
+    city = fields.PCStringField(
+        "Ville",
+        validators=(
+            wtforms.validators.Length(min=1, max=50, message="doit contenir entre %(min)d et %(max)d caractères"),
+        ),
+    )
+    postal_code = fields.PCPostalCodeField("Code postal")
+
+
 class OffererValidationListForm(FlaskForm):
     class Meta:
         csrf = False
