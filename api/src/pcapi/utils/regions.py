@@ -1,3 +1,8 @@
+import typing
+
+from pcapi.utils.clean_accents import clean_accents
+
+
 REGION_DEPARTMENT_CODES = {
     "Auvergne-Rhône-Alpes": ("01", "03", "07", "15", "26", "38", "42", "43", "63", "69", "73", "74"),
     "Bourgogne-Franche-Comté": ("21", "25", "39", "58", "70", "71", "89", "90"),
@@ -49,3 +54,12 @@ def get_region_name_from_postal_code(postal_code: str) -> str:
     department_code = get_department_code_from_postal_code(postal_code)
     region = get_region_name_from_department(department_code)
     return region
+
+
+def get_all_regions() -> list[str]:
+    # sort without accents to avoid "Île-de-France" at the end
+    return sorted(REGION_DEPARTMENT_CODES.keys(), key=clean_accents)
+
+
+def get_department_codes_for_region(region: str) -> typing.Iterable[str]:
+    return REGION_DEPARTMENT_CODES.get(region, ())

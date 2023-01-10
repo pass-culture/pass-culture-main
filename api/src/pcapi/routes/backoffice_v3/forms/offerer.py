@@ -4,9 +4,14 @@ import wtforms
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.utils.regions import get_all_regions
 
 from . import fields
 from . import utils
+
+
+def _get_regions_choices() -> list[tuple]:
+    return [(key, key) for key in get_all_regions()]
 
 
 def _get_tags_query() -> sa.orm.Query:
@@ -23,6 +28,7 @@ class OffererValidationListForm(FlaskForm):
         csrf = False
 
     q = fields.PCOptSearchField("Nom de structure, SIREN, code postal, département, ville, email, nom de compte pro")
+    regions = fields.PCSelectMultipleField("Régions", choices=_get_regions_choices())
     tags = fields.PCQuerySelectMultipleField(
         "Tags", query_factory=_get_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
     )
@@ -53,7 +59,7 @@ class UserOffererValidationListForm(FlaskForm):
         csrf = False
 
     q = fields.PCOptSearchField("Nom de structure, SIREN, email, nom de compte pro")
-
+    regions = fields.PCSelectMultipleField("Régions", choices=_get_regions_choices())
     tags = fields.PCQuerySelectMultipleField(
         "Tags", query_factory=_get_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
     )
