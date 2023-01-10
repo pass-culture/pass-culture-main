@@ -136,6 +136,7 @@ export interface IOfferExtraData {
   musicType?: string
   musicSubType?: string
   performer?: string
+  ean?: string
   showType?: string
   showSubType?: string
   speaker?: string
@@ -182,6 +183,7 @@ export interface IOfferIndividual {
   offererId: string
   offererName: string
   performer: string
+  ean: string
   showSubType: string
   showType: string
   stageDirector: string

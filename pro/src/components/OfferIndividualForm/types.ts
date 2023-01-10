@@ -22,6 +22,7 @@ export interface IOfferIndividualFormValues {
   author?: string
   isbn?: string
   performer?: string
+  ean?: string
   speaker?: string
   stageDirector?: string
   visa?: string

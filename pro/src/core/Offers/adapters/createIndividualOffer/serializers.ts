@@ -24,6 +24,9 @@ export const serializeExtraData = (
   if (formValues.performer) {
     extraData.performer = formValues.performer
   }
+  if (formValues.ean) {
+    extraData.ean = formValues.ean
+  }
   if (formValues.showType) {
     extraData.showType = formValues.showType
   }
