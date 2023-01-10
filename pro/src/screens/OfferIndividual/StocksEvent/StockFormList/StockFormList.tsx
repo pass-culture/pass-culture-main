@@ -76,6 +76,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
                     today={today}
                     stockIndex={index}
                     isSynchronized={isSynchronized}
+                    mode={mode}
                   />
                 }
                 actions={[
