@@ -28,6 +28,7 @@ export type { ChangePasswordBodyModel } from './models/ChangePasswordBodyModel';
 export type { ChangeProEmailBody } from './models/ChangeProEmailBody';
 export { CollectiveBookingBankInformationStatus } from './models/CollectiveBookingBankInformationStatus';
 export type { CollectiveBookingByIdResponseModel } from './models/CollectiveBookingByIdResponseModel';
+export { CollectiveBookingCancellationReasons } from './models/CollectiveBookingCancellationReasons';
 export type { CollectiveBookingCollectiveStockResponseModel } from './models/CollectiveBookingCollectiveStockResponseModel';
 export type { CollectiveBookingEducationalRedactorResponseModel } from './models/CollectiveBookingEducationalRedactorResponseModel';
 export type { CollectiveBookingResponseModel } from './models/CollectiveBookingResponseModel';
