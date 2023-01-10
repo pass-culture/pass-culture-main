@@ -42,6 +42,7 @@ import { filterCategories } from './utils'
 import {
   getCategoryStatusFromOfferSubtype,
   getOfferSubtypeFromParams,
+  isOfferSubtypeEvent,
 } from './utils/filterCategories/filterCategories'
 
 export interface IInformationsProps {
@@ -206,7 +207,8 @@ const Informations = ({
   const [filteredCategories, filteredSubCategories] = filterCategories(
     categories,
     subCategories,
-    offerSubtype !== null ? categoryStatus : legacyCategoryStatus
+    offerSubtype !== null ? categoryStatus : legacyCategoryStatus,
+    isOfferSubtypeEvent(offerSubtype)
   )
 
   return (
