@@ -17,7 +17,6 @@ import OffererDetails from '../OffererDetails'
 jest.mock('apiClient/api', () => ({
   api: {
     getOfferer: jest.fn(),
-    getBusinessUnits: jest.fn(),
   },
 }))
 

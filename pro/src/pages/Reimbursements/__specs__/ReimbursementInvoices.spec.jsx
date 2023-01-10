@@ -21,7 +21,6 @@ jest.mock('utils/date', () => ({
 jest.mock('apiClient/api', () => ({
   api: {
     getVenues: jest.fn(),
-    getBusinessUnits: jest.fn(),
     getReimbursementPoints: jest.fn(),
     getInvoices: jest.fn(),
   },
@@ -109,7 +108,6 @@ describe('reimbursementsWithFilters', () => {
     props = { currentUser: { isAdmin: false } }
     jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: BASE_VENUES })
     jest.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
-    jest.spyOn(api, 'getBusinessUnits').mockResolvedValue([])
     jest.spyOn(api, 'getReimbursementPoints').mockResolvedValue([])
   })
 
@@ -121,7 +119,6 @@ describe('reimbursementsWithFilters', () => {
     })
     await userEvent.click(button)
     expect(api.getInvoices).toBeCalledWith(
-      undefined,
       '2020-11-15',
       '2020-12-15',
       undefined

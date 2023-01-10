@@ -7,7 +7,6 @@ import type { AttachImageResponseModel } from '../models/AttachImageResponseMode
 import type { BookingExportType } from '../models/BookingExportType';
 import type { BookingStatusFilter } from '../models/BookingStatusFilter';
 import type { BusinessUnitEditionBodyModel } from '../models/BusinessUnitEditionBodyModel';
-import type { BusinessUnitListResponseModel } from '../models/BusinessUnitListResponseModel';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
 import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
@@ -859,28 +858,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/features',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
-   * get_business_units <GET>
-   * @param offererId
-   * @returns BusinessUnitListResponseModel OK
-   * @throws ApiError
-   */
-  public getBusinessUnits(
-    offererId?: number | null,
-  ): CancelablePromise<BusinessUnitListResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/finance/business-units',
-      query: {
-        'offererId': offererId,
-      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

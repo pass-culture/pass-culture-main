@@ -21,7 +21,6 @@ jest.mock('apiClient/api', () => ({
     getOfferer: jest.fn(),
     listOfferersNames: jest.fn(),
     getVenueStats: jest.fn(),
-    getBusinessUnits: jest.fn().mockResolvedValue([{}]),
   },
 }))
 
