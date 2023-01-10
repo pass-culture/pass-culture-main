@@ -161,6 +161,7 @@ export const collectiveBookingRecapFactory = (
       phoneNumber: '0601020304',
     },
     stock: {
+      bookingLimitDatetime: new Date().toISOString(),
       eventBeginningDatetime: new Date().toISOString(),
       numberOfTickets: 1,
       offerIdentifier: '1',
