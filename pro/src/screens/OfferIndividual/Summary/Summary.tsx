@@ -6,7 +6,6 @@ import {
   IOfferAppPreviewProps,
   OfferAppPreview,
 } from 'components/OfferAppPreview'
-import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { SummaryLayout } from 'components/SummaryLayout'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
@@ -91,8 +90,8 @@ const Summary = (
         setOffer && setOffer(response.payload)
       }
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OfferBreadcrumbStep.SUMMARY,
-        to: OfferBreadcrumbStep.CONFIRMATION,
+        from: OFFER_WIZARD_STEP_IDS.SUMMARY,
+        to: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: true,
@@ -118,8 +117,8 @@ const Summary = (
   /* istanbul ignore next: DEBT, TO FIX */
   const handlePreviousStep = () => {
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OfferBreadcrumbStep.SUMMARY,
-      to: OfferBreadcrumbStep.STOCKS,
+      from: OFFER_WIZARD_STEP_IDS.SUMMARY,
+      to: OFFER_WIZARD_STEP_IDS.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
@@ -208,7 +207,7 @@ const Summary = (
                     /* istanbul ignore next: DEBT, TO FIX */
                     () =>
                       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                        from: OfferBreadcrumbStep.SUMMARY,
+                        from: OFFER_WIZARD_STEP_IDS.SUMMARY,
                         to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
                         used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
                         isEdition: true,

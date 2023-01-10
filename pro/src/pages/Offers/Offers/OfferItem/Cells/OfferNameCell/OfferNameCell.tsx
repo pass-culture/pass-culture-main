@@ -1,7 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   Events,
@@ -45,7 +44,7 @@ const OfferNameCell = ({
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OFFER_FORM_NAVIGATION_IN.OFFERS,
       to: !isDraft
-        ? OfferBreadcrumbStep.SUMMARY
+        ? OFFER_WIZARD_STEP_IDS.SUMMARY
         : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TITLE,
       isEdition: true,

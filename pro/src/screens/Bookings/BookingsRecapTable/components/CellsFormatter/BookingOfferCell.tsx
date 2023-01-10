@@ -6,7 +6,7 @@ import {
   BookingRecapResponseStockModel,
   CollectiveBookingCollectiveStockResponseModel,
 } from 'apiClient/v1'
-import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
@@ -48,7 +48,7 @@ const BookingOfferCell = ({ offer }: IBookingOfferCellProps) => {
         onClick={() =>
           logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
             from: OFFER_FORM_NAVIGATION_IN.BOOKINGS,
-            to: OfferBreadcrumbStep.SUMMARY,
+            to: OFFER_WIZARD_STEP_IDS.SUMMARY,
             used: OFFER_FORM_NAVIGATION_MEDIUM.BOOKINGS_TITLE,
             isEdition: true,
           })

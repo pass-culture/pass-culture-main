@@ -1,6 +1,5 @@
 import React from 'react'
 
-import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   Events,
@@ -64,7 +63,7 @@ const OfferIndividualConfirmation = ({
             isTracked: true,
             trackingFunction: () =>
               logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                from: OfferBreadcrumbStep.CONFIRMATION,
+                from: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
                 to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
                 used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_PREVIEW,
                 isEdition: false,
@@ -95,7 +94,7 @@ const OfferIndividualConfirmation = ({
           }}
           onClick={() =>
             logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-              from: OfferBreadcrumbStep.CONFIRMATION,
+              from: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
               to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
               used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_BUTTON_OFFER_LIST,
               isEdition: false,
