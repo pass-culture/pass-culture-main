@@ -13,7 +13,7 @@ from .serialization import features_toggle as serializers
 logger = logging.getLogger(__name__)
 
 
-@blueprint.native_v1.route("/features_toggle", methods=["PATCH"])
+@blueprint.native_v1.route("/features", methods=["PATCH"])
 @spectree_serialize(
     on_success_status=204,
     api=blueprint.api,
