@@ -27,7 +27,6 @@ jest.mock('utils/date', () => ({
 jest.mock('apiClient/api', () => ({
   api: {
     getVenues: jest.fn(),
-    getBusinessUnits: jest.fn(),
     getReimbursementPoints: jest.fn(),
     getInvoices: jest.fn(),
   },
@@ -162,10 +161,6 @@ describe('reimbursementsWithFilters', () => {
     invoices = BASE_INVOICES
     api.getVenues.mockResolvedValue({ venues })
     api.getInvoices.mockResolvedValue(invoices)
-    api.getBusinessUnits.mockResolvedValue([
-      { id: 1, name: 'Point de remboursement 1' },
-      { id: 2, name: 'Point de remboursement 2' },
-    ])
     api.getReimbursementPoints.mockResolvedValue([])
     storeOverride = {
       user: {

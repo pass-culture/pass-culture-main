@@ -32,7 +32,6 @@ jest.mock('apiClient/api', () => ({
     listOfferersNames: jest.fn(),
     getOfferer: jest.fn(),
     getVenueStats: jest.fn(),
-    getBusinessUnits: jest.fn(),
   },
 }))
 
@@ -167,7 +166,6 @@ describe('homepage', () => {
       id: offerer.id,
       name: offerer.name,
     }))
-    api.getBusinessUnits.mockResolvedValue([])
     api.getOfferer.mockResolvedValue(baseOfferers[0])
     api.listOfferersNames.mockResolvedValue({
       offerersNames: baseOfferersNames,
