@@ -585,6 +585,29 @@ def test_public_api(client):
                     "title": "FavoritesCountResponse",
                     "type": "object",
                 },
+                "FeatureToggle": {
+                    "properties": {
+                        "isActive": {"title": "Isactive", "type": "boolean"},
+                        "name": {"title": "Name","type": "string"}
+                    },
+                    "required": ["name", "isActive"],
+                    "title": "FeatureToggle",
+                    "type": "object"
+                },
+                "FeaturesToggleRequest": {
+                    "properties": {
+                        "features": {
+                            "items": {
+                                "$ref": "#/components/schemas/FeatureToggle"
+                            },
+                            "title": "Features",
+                            "type": "array"
+                        }
+                    },
+                    "required": ["features"],
+                    "title": "FeaturesToggleRequest",
+                    "type": "object"
+                },
                 "GenreType": {
                     "description": "An enumeration.",
                     "enum": ["BOOK", "MUSIC", "SHOW", "MOVIE"],
