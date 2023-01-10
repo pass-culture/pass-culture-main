@@ -181,13 +181,6 @@ offerer_comment_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-@offerer_comment_blueprint.route("", methods=["GET"])
-def new_comment(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
-    form = offerer_forms.CommentForm()
-    return render_template("offerer/comment.html", form=form, offerer=offerer)
-
-
 @offerer_comment_blueprint.route("", methods=["POST"])
 def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
@@ -195,10 +188,9 @@ def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.CommentForm()
     if not form.validate():
         flash("Les données envoyées comportent des erreurs", "warning")
-        return render_template("offerer/comment.html", form=form, offerer=offerer), 400
-
-    offerers_api.add_comment_to_offerer(offerer, current_user, comment=form.comment.data)
-    flash("Commentaire enregistré", "success")
+    else:
+        offerers_api.add_comment_to_offerer(offerer, current_user, comment=form.comment.data)
+        flash("Commentaire enregistré", "success")
 
     return redirect(url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_id), code=303)
 
