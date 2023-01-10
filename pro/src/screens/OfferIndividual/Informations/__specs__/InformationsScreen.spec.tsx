@@ -143,7 +143,8 @@ describe('screens:OfferIndividual::Informations', () => {
     expect(utils.filterCategories).toHaveBeenCalledWith(
       contextValue.categories,
       contextValue.subCategories,
-      CATEGORY_STATUS.ONLINE_OR_OFFLINE
+      CATEGORY_STATUS.ONLINE_OR_OFFLINE,
+      null
     )
   })
 
@@ -186,7 +187,8 @@ describe('screens:OfferIndividual::Informations', () => {
     expect(utils.filterCategories).toHaveBeenCalledWith(
       contextValue.categories,
       contextValue.subCategories,
-      CATEGORY_STATUS.OFFLINE
+      CATEGORY_STATUS.OFFLINE,
+      null
     )
   })
 

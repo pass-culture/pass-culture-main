@@ -36,7 +36,7 @@ describe('filterCategories', () => {
         id: 'A-A',
         categoryId: 'A',
         proLabel: 'Sous catégorie de A',
-        isEvent: false,
+        isEvent: true,
         conditionalFields: [],
         canBeDuo: false,
         canBeEducational: true,
@@ -72,7 +72,7 @@ describe('filterCategories', () => {
         id: 'C-A',
         categoryId: 'C',
         proLabel: 'Sous catégorie de C',
-        isEvent: false,
+        isEvent: true,
         conditionalFields: [],
         canBeDuo: false,
         canBeEducational: true,
@@ -84,7 +84,7 @@ describe('filterCategories', () => {
         id: 'C-B',
         categoryId: 'C',
         proLabel: 'Sous catégorie de C',
-        isEvent: false,
+        isEvent: true,
         conditionalFields: [],
         canBeDuo: false,
         canBeEducational: true,
@@ -96,7 +96,7 @@ describe('filterCategories', () => {
         id: 'C-C',
         categoryId: 'C',
         proLabel: 'Sous catégorie de C',
-        isEvent: false,
+        isEvent: true,
         conditionalFields: [],
         canBeDuo: false,
         canBeEducational: true,
@@ -108,7 +108,7 @@ describe('filterCategories', () => {
         id: 'C-D',
         categoryId: 'C',
         proLabel: 'Sous catégorie de C',
-        isEvent: false,
+        isEvent: true,
         conditionalFields: [],
         canBeDuo: false,
         canBeEducational: true,
@@ -123,7 +123,8 @@ describe('filterCategories', () => {
     const [filteredCategories, filteredSubCategories] = filterCategories(
       categories,
       subCategories,
-      CATEGORY_STATUS.ONLINE
+      CATEGORY_STATUS.ONLINE,
+      null
     )
 
     expect(
@@ -138,7 +139,8 @@ describe('filterCategories', () => {
     const [filteredCategories, filteredSubCategories] = filterCategories(
       categories,
       subCategories,
-      CATEGORY_STATUS.ONLINE_OR_OFFLINE
+      CATEGORY_STATUS.ONLINE_OR_OFFLINE,
+      null
     )
 
     expect(
@@ -153,7 +155,8 @@ describe('filterCategories', () => {
     const [filteredCategories, filteredSubCategories] = filterCategories(
       categories,
       subCategories,
-      CATEGORY_STATUS.ONLINE
+      CATEGORY_STATUS.ONLINE,
+      null
     )
 
     expect(filteredCategories.map((c: IOfferCategory) => c.id)).toEqual([
@@ -171,7 +174,8 @@ describe('filterCategories', () => {
     const [filteredCategories, filteredSubCategories] = filterCategories(
       categories,
       subCategories,
-      CATEGORY_STATUS.OFFLINE
+      CATEGORY_STATUS.OFFLINE,
+      null
     )
 
     expect(filteredCategories.map((c: IOfferCategory) => c.id)).toEqual([
@@ -182,6 +186,40 @@ describe('filterCategories', () => {
       'B-A',
       'C-A',
       'C-C',
+    ])
+  })
+
+  it('should return filter subcategories that are events', () => {
+    const [filteredCategories, filteredSubCategories] = filterCategories(
+      categories,
+      subCategories,
+      CATEGORY_STATUS.ONLINE_OR_OFFLINE,
+      true
+    )
+
+    expect(filteredCategories.map((c: IOfferCategory) => c.id)).toEqual([
+      'A',
+      'C',
+    ])
+    expect(filteredSubCategories.map((s: IOfferSubCategory) => s.id)).toEqual([
+      'A-A',
+      'C-A',
+      'C-B',
+      'C-C',
+    ])
+  })
+
+  it('should return filter subcategories that are not events', () => {
+    const [filteredCategories, filteredSubCategories] = filterCategories(
+      categories,
+      subCategories,
+      CATEGORY_STATUS.ONLINE_OR_OFFLINE,
+      false
+    )
+
+    expect(filteredCategories.map((c: IOfferCategory) => c.id)).toEqual(['B'])
+    expect(filteredSubCategories.map((s: IOfferSubCategory) => s.id)).toEqual([
+      'B-A',
     ])
   })
 })
