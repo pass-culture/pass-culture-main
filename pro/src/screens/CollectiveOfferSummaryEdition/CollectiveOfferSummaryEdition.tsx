@@ -29,7 +29,7 @@ import styles from './CollectiveOfferSummaryEdition.module.scss'
 interface CollectiveOfferSummaryEditionProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
   categories: EducationalCategories
-  reloadCollectiveOffer?: () => void
+  reloadCollectiveOffer: () => void
 }
 
 const CollectiveOfferSummaryEdition = ({
@@ -68,7 +68,7 @@ const CollectiveOfferSummaryEdition = ({
     }
 
     notify.success(message)
-    reloadCollectiveOffer?.()
+    reloadCollectiveOffer()
   }
 
   const { logEvent } = useAnalytics()
@@ -85,9 +85,9 @@ const CollectiveOfferSummaryEdition = ({
 
     if (response.isOk) {
       setIsActive(!isActive)
+      reloadCollectiveOffer()
       return notify.success(response.message)
     }
-
     notify.error(response.message)
   }
 
@@ -99,7 +99,7 @@ const CollectiveOfferSummaryEdition = ({
         isBooked={
           offer.isTemplate ? false : Boolean(offer.collectiveStock?.isBooked)
         }
-        isCancellable={offer.isCancellable}
+        offer={offer}
         isOfferActive={isActive}
         setIsOfferActive={setIsOfferActive}
       />

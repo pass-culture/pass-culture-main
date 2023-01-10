@@ -41,7 +41,6 @@ export interface IOfferEducationalProps {
   setIsOfferActive?: (isActive: boolean) => void
   isOfferBooked?: boolean
   isOfferActive?: boolean
-  isOfferCancellable?: boolean
   domainsOptions: SelectOption[]
   isTemplate: boolean
   isOfferCreated?: boolean
@@ -58,7 +57,6 @@ const OfferEducational = ({
   cancelActiveBookings,
   setIsOfferActive,
   isOfferBooked = false,
-  isOfferCancellable = false,
   isOfferActive = false,
   isTemplate,
 }: IOfferEducationalProps): JSX.Element => {
@@ -164,9 +162,9 @@ const OfferEducational = ({
           cancelActiveBookings={cancelActiveBookings}
           className={styles.actions}
           isBooked={isOfferBooked}
-          isCancellable={isOfferCancellable}
           isOfferActive={isOfferActive}
           setIsOfferActive={setIsOfferActive}
+          offer={offer}
         />
       )}
       <FormikProvider value={{ ...formik, resetForm }}>

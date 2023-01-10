@@ -12,7 +12,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface CollectiveOfferSummaryEditionProps {
   offer: CollectiveOffer | CollectiveOfferTemplate
-  reloadCollectiveOffer?: () => void
+  reloadCollectiveOffer: () => void
 }
 
 const CollectiveOfferSummaryEdition = ({

@@ -16,8 +16,11 @@ import styles from '../../OfferItem.module.scss'
 
 import style from './CollectiveOfferStatusCell.module.scss'
 
-const getCollectiveStatusLabel = (offer: Offer) => {
-  switch (offer.status) {
+export const getCollectiveStatusLabel = (
+  offerStatus: OfferStatus,
+  lastBookingStatus?: string
+) => {
+  switch (offerStatus) {
     case OfferStatus.PENDING:
       return (
         <CollectiveStatusLabel
@@ -52,7 +55,7 @@ const getCollectiveStatusLabel = (offer: Offer) => {
         />
       )
     case OfferStatus.SOLD_OUT:
-      return offer.educationalBooking?.booking_status == 'PENDING' ? (
+      return lastBookingStatus == 'PENDING' ? (
         <CollectiveStatusLabel
           className={style['status-pre-booked']}
           icon={
@@ -73,7 +76,7 @@ const getCollectiveStatusLabel = (offer: Offer) => {
         />
       )
     case OfferStatus.EXPIRED:
-      return offer.educationalBooking ? (
+      return lastBookingStatus ? (
         <CollectiveStatusLabel
           className={style['status-ended']}
           icon={<StatusEndedIcon className={style['status-label-icon']} />}
@@ -92,7 +95,12 @@ const getCollectiveStatusLabel = (offer: Offer) => {
 }
 
 const CollectiveOfferStatusCell = ({ offer }: { offer: Offer }) => (
-  <td className={styles['status-column']}>{getCollectiveStatusLabel(offer)}</td>
+  <td className={styles['status-column']}>
+    {getCollectiveStatusLabel(
+      offer.status,
+      offer.educationalBooking?.booking_status
+    )}
+  </td>
 )
 
 export default CollectiveOfferStatusCell
