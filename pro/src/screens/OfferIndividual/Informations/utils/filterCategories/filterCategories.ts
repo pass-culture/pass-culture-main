@@ -36,10 +36,27 @@ export const getCategoryStatusFromOfferSubtype = (
     : CATEGORY_STATUS.OFFLINE
 }
 
+export const isOfferSubtypeEvent = (
+  offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
+): boolean | null => {
+  if (offerSubtype === null) {
+    return null
+  }
+  return (
+    offerSubtype === INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT ||
+    offerSubtype === INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
+  )
+}
+
 const isSubcategoryMatchingCriteria = (
   subcategory: IOfferSubCategory,
-  onlineOfflinePlatform: CATEGORY_STATUS
+  onlineOfflinePlatform: CATEGORY_STATUS,
+  isEvent: boolean | null
 ) => {
+  if (isEvent !== null && subcategory.isEvent !== isEvent) {
+    return false
+  }
+
   if (onlineOfflinePlatform === CATEGORY_STATUS.ONLINE_OR_OFFLINE) {
     return true
   }
@@ -53,7 +70,8 @@ const isSubcategoryMatchingCriteria = (
 const filterCategories = (
   allCategories: IOfferCategory[],
   allSubCategories: IOfferSubCategory[],
-  onlineOfflinePlatform: CATEGORY_STATUS
+  onlineOfflinePlatform: CATEGORY_STATUS,
+  isEvent: boolean | null
 ): [IOfferCategory[], IOfferSubCategory[]] => {
   const subCategories: IOfferSubCategory[] = allSubCategories.filter(
     (subcategory: IOfferSubCategory) => {
@@ -61,7 +79,11 @@ const filterCategories = (
         return false
       }
 
-      return isSubcategoryMatchingCriteria(subcategory, onlineOfflinePlatform)
+      return isSubcategoryMatchingCriteria(
+        subcategory,
+        onlineOfflinePlatform,
+        isEvent
+      )
     }
   )
   const categories: IOfferCategory[] = allCategories.filter(
