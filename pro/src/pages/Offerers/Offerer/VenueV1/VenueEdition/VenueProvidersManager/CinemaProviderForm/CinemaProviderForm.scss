@@ -3,10 +3,11 @@
 .cinema-provider-form {
   .cpf-is-duo {
     margin-right: 0 !important;
+    margin-top: rem.torem(32px);
   }
 
   .cpf-tooltip {
     margin-left: rem.torem(4px);
-    margin-top: rem.torem(-2px);
+    display: flex;
   }
 }
