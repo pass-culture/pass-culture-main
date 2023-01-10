@@ -138,7 +138,7 @@ def test_delete_cascade_venue_should_remove_collective_offers_stocks_and_templat
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_venue_should_remove_bank_informations_of_venue():
     # Given
-    venue_to_delete = offerers_factories.VenueFactory(businessUnit=None)
+    venue_to_delete = offerers_factories.VenueFactory()
     finance_factories.BankInformationFactory(venue=venue_to_delete)
     finance_factories.BankInformationFactory()
 
