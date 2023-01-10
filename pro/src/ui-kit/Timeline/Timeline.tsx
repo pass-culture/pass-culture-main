@@ -13,6 +13,7 @@ export enum TimelineStepType {
   ERROR = 'ERROR',
   WAITING = 'WAITING',
   DISABLED = 'DISABLED',
+  CANCELLED = 'CANCELLED',
 }
 
 export interface ITimelineStep {
@@ -57,6 +58,13 @@ const getIconComponent = (type: TimelineStepType, hasErrorSteps: boolean) => {
         <DisabledSvg
           title="Étape non disponible"
           className={cn(styles.icon, styles['icon-disabled'])}
+        />
+      )
+    case TimelineStepType.CANCELLED:
+      return (
+        <ErrorSvg
+          title="Étape annulée"
+          className={cn(styles.icon, styles['icon-error'])}
         />
       )
     default:

@@ -66,4 +66,17 @@ describe('collective timeline', () => {
     renderCollectiveTimeLine(bookingRecap)
     expect(screen.getByText('Remboursement effectué')).toBeInTheDocument()
   })
+  it('should render steps for cancelled booking', () => {
+    const bookingRecap = collectiveBookingRecapFactory({
+      bookingStatus: BOOKING_STATUS.CANCELLED,
+      bookingStatusHistory: [
+        { date: new Date().toISOString(), status: BOOKING_STATUS.PENDING },
+        { date: new Date().toISOString(), status: BOOKING_STATUS.CANCELLED },
+      ],
+    })
+    renderCollectiveTimeLine(bookingRecap)
+    expect(
+      screen.getByText('Vous avez annulé la réservation')
+    ).toBeInTheDocument()
+  })
 })

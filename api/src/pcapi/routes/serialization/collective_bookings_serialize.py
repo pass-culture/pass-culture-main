@@ -22,6 +22,7 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
+from pcapi.core.educational import models as educational_models
 
 
 class CollectiveBookingRecapStatus(Enum):
@@ -110,7 +111,7 @@ class CollectiveBookingResponseModel(BaseModel):
     booking_amount: float
     booking_status_history: list[BookingStatusHistoryResponseModel]
     booking_identifier: str
-    cancellation_reason: str | None
+    booking_cancellation_reason: educational_models.CollectiveBookingCancellationReasons | None
 
     class Config:
         alias_generator = to_camel
