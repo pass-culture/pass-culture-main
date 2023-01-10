@@ -2,15 +2,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { BusinessUnitResponseModel } from './BusinessUnitResponseModel';
-
 export type VenueListItemResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingEmail?: string | null;
-  businessUnit?: BusinessUnitResponseModel | null;
-  businessUnitId?: number | null;
   id: string;
-  isBusinessUnitMainVenue?: boolean | null;
   isVirtual: boolean;
   managingOffererId: string;
   mentalDisabilityCompliant?: boolean | null;

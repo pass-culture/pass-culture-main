@@ -11,7 +11,6 @@ from pcapi.connectors import sirene
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.criteria.factories as criteria_factories
-import pcapi.core.finance.factories as finance_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
@@ -249,8 +248,7 @@ class EditVenueTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_update_venue_other_offer_id_at_provider(self, mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
-        business_unit = finance_factories.BusinessUnitFactory(siret="11111111111111")
-        venue = offerers_factories.VenueFactory(siret="22222222222222", businessUnit=business_unit)
+        venue = offerers_factories.VenueFactory(siret="22222222222222")
         id_at_providers = "id_at_provider_ne_contenant_pas_le_siret"
         stock = offers_factories.StockFactory(
             offer__venue=venue, idAtProviders=id_at_providers, offer__idAtProvider=id_at_providers
@@ -286,10 +284,7 @@ class EditVenueTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_update_venue_without_siret(self, mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
-        business_unit = finance_factories.BusinessUnitFactory(siret="11111111111111")
-        venue = offerers_factories.VenueFactory(
-            siret=None, comment="comment to allow null siret", businessUnit=business_unit
-        )
+        venue = offerers_factories.VenueFactory(siret=None, comment="comment to allow null siret")
 
         data = dict(
             name=venue.name,

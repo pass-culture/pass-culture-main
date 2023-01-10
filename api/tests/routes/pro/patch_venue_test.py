@@ -203,43 +203,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["siret"] == venue.siret
 
-    def test_add_business_unit_id(self, app) -> None:
-        user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-            businessUnit=None,
-        )
-
-        new_business_unit = finance_factories.BusinessUnitFactory(siret=f"{venue.managingOfferer.siren}11111")
-        venue_data = populate_missing_data_from_venue(
-            {"businessUnitId": new_business_unit.id},
-            venue,
-        )
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
-
-        assert response.status_code == 200
-        assert venue.businessUnit.id == new_business_unit.id
-
-        assert len(external_testing.sendinblue_requests) == 1
-
-    def test_remove_business_unit_id(self, app) -> None:
-        user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-        )
-        venue_data = populate_missing_data_from_venue(
-            {"businessUnitId": None},
-            venue,
-        )
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
-
-        assert response.status_code == 200
-        assert venue.businessUnitId == None
-
-        assert len(external_testing.sendinblue_requests) == 1
-
     def test_add_reimbursement_point(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, pricing_point="self")
@@ -282,24 +245,6 @@ class Returns200Test:
 
 
 class Returns400Test:
-    def test_error_add_business_unit_id(self, app) -> None:
-        user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-            businessUnit=None,
-        )
-
-        new_business_unit = finance_factories.BusinessUnitFactory()
-        venue_data = populate_missing_data_from_venue(
-            {"businessUnitId": new_business_unit.id},
-            venue,
-        )
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
-
-        assert response.status_code == 400
-        assert response.json["businessUnitId"] == ["Ce point de facturation n'est pas un choix valide pour ce lieu."]
-
     @pytest.mark.parametrize("data, key", venue_malformed_test_data)
     def test_update_venue_malformed(self, client, data, key):
         user_offerer = offerers_factories.UserOffererFactory()

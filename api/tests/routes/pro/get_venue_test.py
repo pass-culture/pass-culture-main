@@ -58,14 +58,6 @@ class Returns200Test:
             "audioDisabilityCompliant": venue.audioDisabilityCompliant,
             "bic": bank_information.bic,
             "bookingEmail": venue.bookingEmail,
-            "businessUnit": {
-                "bic": venue.businessUnit.bankAccount.bic,
-                "iban": venue.businessUnit.bankAccount.iban,
-                "id": venue.businessUnit.id,
-                "name": venue.businessUnit.name,
-                "siret": venue.businessUnit.siret,
-            },
-            "businessUnitId": venue.businessUnitId,
             "city": venue.city,
             "contact": {
                 "email": venue.contact.email,
@@ -90,7 +82,6 @@ class Returns200Test:
             "iban": bank_information.iban,
             "id": humanize(venue.id),
             "idAtProviders": venue.idAtProviders,
-            "isBusinessUnitMainVenue": True,
             "isPermanent": venue.isPermanent,
             "isVirtual": venue.isVirtual,
             "latitude": float(venue.latitude),

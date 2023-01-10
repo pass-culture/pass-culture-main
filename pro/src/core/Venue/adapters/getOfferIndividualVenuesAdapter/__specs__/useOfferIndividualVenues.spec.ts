@@ -41,8 +41,6 @@ describe('useGetOfferIndividualVenues', () => {
       apiVenue = {
         audioDisabilityCompliant: false,
         bookingEmail: '',
-        businessUnit: null,
-        businessUnitId: null,
         nonHumanizedId: 1,
         id: 'AAAA',
         isVirtual: false,

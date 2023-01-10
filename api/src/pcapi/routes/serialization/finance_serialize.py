@@ -6,27 +6,6 @@ from pcapi.routes.serialization import BaseModel
 import pcapi.serialization.utils as serialization_utils
 
 
-class BusinessUnitResponseModel(BaseModel):
-    class Config:
-        orm_mode = True
-
-    id: int
-    iban: str | None
-    bic: str | None
-    name: str
-    # FIXME (dbaty, 2021-12-15): SIRET may be NULL while we initialize
-    # business units. In a few months, all business units should have
-    # a SIRET and we should remove `Optional`.
-    siret: str | None
-
-    @classmethod
-    def from_orm(cls, business_unit: finance_models.BusinessUnit) -> "BusinessUnitResponseModel":
-        business_unit.iban = business_unit.bankAccount.iban  # type: ignore [union-attr]
-        business_unit.bic = business_unit.bankAccount.bic  # type: ignore [union-attr]
-        res = super().from_orm(business_unit)
-        return res
-
-
 class ReimbursementPointListQueryModel(BaseModel):
     class Config:
         alias_generator = serialization_utils.to_camel

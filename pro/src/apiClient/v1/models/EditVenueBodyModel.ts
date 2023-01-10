@@ -8,7 +8,6 @@ export type EditVenueBodyModel = {
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;
   bookingEmail?: string | null;
-  businessUnitId?: number | null;
   city?: string | null;
   comment?: string | null;
   contact?: VenueContactModel | null;
