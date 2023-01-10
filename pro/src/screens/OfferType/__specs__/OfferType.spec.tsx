@@ -97,7 +97,7 @@ describe('screens:OfferIndividual::OfferType', () => {
 
     expect(
       screen.queryByRole('heading', { name: 'Quel est le type de l’offre ?' })
-    ).not.toBeInTheDocument()
+    ).toBeInTheDocument()
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -122,7 +122,7 @@ describe('screens:OfferIndividual::OfferType', () => {
 
     expect(
       screen.queryByRole('heading', { name: 'Quel est le type de l’offre ?' })
-    ).not.toBeInTheDocument()
+    ).toBeInTheDocument()
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -140,5 +140,14 @@ describe('screens:OfferIndividual::OfferType', () => {
       pathname: '/offre/creation/collectif/vitrine',
       search: '',
     })
+  })
+
+  it('should display individual offer choices', async () => {
+    renderOfferTypes(store)
+
+    expect(screen.getByText('Un bien physique')).toBeInTheDocument()
+    expect(screen.getByText('Un bien numérique')).toBeInTheDocument()
+    expect(screen.getByText('Un évènement physique')).toBeInTheDocument()
+    expect(screen.getByText('Un évènement numérique')).toBeInTheDocument()
   })
 })
