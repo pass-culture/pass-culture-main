@@ -47,6 +47,7 @@ export enum Events {
   SIGNUP_FORM_SUCCESS = 'signupFormSuccess',
   TUTO_PAGE_VIEW = 'tutoPageView',
   DELETE_DRAFT_OFFER = 'DeleteDraftOffer',
+  CLICKED_NO_VENUE = 'hasClickedNoVenue',
 }
 export enum VenueEvents {
   CLICKED_VENUE_ACCORDION_BUTTON = 'hasClickedVenueAccordionButton',
@@ -81,6 +82,7 @@ export enum OFFER_FORM_NAVIGATION_MEDIUM {
   OFFERS_TRASH_ICON = 'OffersTrashicon',
   IMAGE_DELETE = 'ImageDelete',
   IMAGE_CREATION = 'ImageCreation',
+  VENUE_OFFER_STEPS = 'VenueOfferSteps',
 }
 
 export enum OFFER_FORM_NAVIGATION_OUT {

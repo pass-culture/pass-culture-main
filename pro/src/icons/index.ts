@@ -110,5 +110,5 @@ export { ReactComponent as DateIcon } from 'icons/ico-date.svg'
 export { ReactComponent as ThingIcon } from 'icons/ico-thing.svg'
 export { ReactComponent as VirtualEventIcon } from 'icons/ico-virtual-event.svg'
 export { ReactComponent as VirtualThingIcon } from 'icons/ico-virtual-thing.svg'
-
 export { ReactComponent as NotificationErrorIcon } from 'icons/ico-notification-error.svg'
+export { ReactComponent as CircleArrowIcon } from 'icons/ico-circle-arrow.svg'

@@ -22,6 +22,8 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import Icon from 'ui-kit/Icon/Icon'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
+import { VenueOfferSteps } from '../VenueOfferSteps'
+
 import VenueStat from './VenueStat'
 
 export interface IVenueProps {
@@ -269,44 +271,55 @@ const Venue = ({
               </ButtonLink>
             </div>
           </div>
-          {isStatOpen &&
-            (isStatLoaded ? (
-              <div className="venue-stats">
-                {venueStatData.map(stat => (
-                  <Fragment key={stat.label}>
-                    <VenueStat {...stat} />
-                  </Fragment>
-                ))}
-                <div className="h-card-col v-add-offer-link">
-                  <ButtonLink
-                    variant={ButtonVariant.TERNARY}
-                    link={{
-                      to: venueCreateOfferLink(offererId, id, isVirtual),
-                      isExternal: false,
-                    }}
-                    Icon={IcoPlus}
-                    onClick={() =>
-                      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                        from: OFFER_FORM_NAVIGATION_IN.HOME,
-                        to: OFFER_FORM_HOMEPAGE,
-                        used: isVirtual
-                          ? OFFER_FORM_NAVIGATION_MEDIUM.HOME_VIRTUAL_LINK
-                          : OFFER_FORM_NAVIGATION_MEDIUM.HOME_LINK,
-                        isEdition: false,
-                      })
-                    }
-                  >
-                    <div>
+          {isStatOpen && (
+            <>
+              {hasNewOfferCreationJourney &&
+                (hasMissingReimbursementPoint || !hasCreatedOffer) && (
+                  <VenueOfferSteps
+                    venueId={id}
+                    hasVenue={true}
+                    hasOffer={!!hasCreatedOffer}
+                    offererId={offererId}
+                    hasMissingReimbursementPoint={hasMissingReimbursementPoint}
+                  />
+                )}
+              {isStatLoaded ? (
+                <div className="venue-stats">
+                  {venueStatData.map(stat => (
+                    <Fragment key={stat.label}>
+                      <VenueStat {...stat} />
+                    </Fragment>
+                  ))}
+                  <div className="h-card-col v-add-offer-link">
+                    <ButtonLink
+                      variant={ButtonVariant.TERNARY}
+                      link={{
+                        to: venueCreateOfferLink(offererId, id, isVirtual),
+                        isExternal: false,
+                      }}
+                      Icon={IcoPlus}
+                      onClick={() =>
+                        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                          from: OFFER_FORM_NAVIGATION_IN.HOME,
+                          to: OFFER_FORM_HOMEPAGE,
+                          used: isVirtual
+                            ? OFFER_FORM_NAVIGATION_MEDIUM.HOME_VIRTUAL_LINK
+                            : OFFER_FORM_NAVIGATION_MEDIUM.HOME_LINK,
+                          isEdition: false,
+                        })
+                      }
+                    >
                       {isVirtual
                         ? 'Créer une nouvelle offre numérique'
                         : 'Créer une nouvelle offre'}
-                    </div>
-                  </ButtonLink>
+                    </ButtonLink>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <Spinner />
-            ))}
+              ) : (
+                <Spinner />
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
