@@ -1,85 +1,160 @@
 import { useCallback, useState } from 'react'
 
 import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
-import deleteCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferImageAdapter'
-import deleteCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferTemplateImageAdapter'
-import postCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferImageAdapter'
-import postCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferTemplateImageAdapter'
-import { IOfferCollectiveImage } from 'core/Offers/types'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { createThumbnailAdapter } from 'core/Offers/adapters/createThumbnailAdapter'
+import { deleteThumbnailAdapter } from 'core/Offers/adapters/deleteThumbnailAdapter'
+import { IOfferIndividualImage } from 'core/Offers/types'
+import { SENT_DATA_ERROR_MESSAGE } from 'core/shared'
+import { useOfferWizardMode } from 'hooks'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 
-export const useCollectiveOfferImageUpload = (
-  offer?: CollectiveOffer | CollectiveOfferTemplate,
-  isTemplate?: boolean
-) => {
+import { imageFileToDataUrl } from '../Informations/utils/files'
+
+export const useIndividualOfferImageUpload = () => {
   const notify = useNotification()
-  const [imageOffer, setImageOffer] = useState<IOfferCollectiveImage | null>(
-    offer !== undefined
-      ? { url: offer.imageUrl, credit: offer.imageCredit }
-      : null
-  )
-  const [imageToUpload, setImageToUpload] = useState<IOnImageUploadArgs | null>(
-    null
-  )
+  const { logEvent } = useAnalytics()
+  const mode = useOfferWizardMode()
+  const { offerId, offer, setOffer } = useOfferIndividualContext()
 
-  const onImageUpload = useCallback(async (image: IOnImageUploadArgs) => {
-    setImageToUpload(image)
-    setImageOffer({ url: image.imageCroppedDataUrl, credit: image.credit })
-  }, [])
-
-  const onImageDelete = useCallback(async () => {
-    setImageToUpload(null)
-    setImageOffer(null)
-  }, [])
+  const [imageOfferCreationArgs, setImageOfferCreationArgs] = useState<
+    IOnImageUploadArgs | undefined
+  >(undefined)
+  const [imageOffer, setImageOffer] = useState<
+    IOfferIndividualImage | undefined
+  >(offer && offer.image ? offer.image : undefined)
 
   const handleImageOnSubmit = useCallback(
-    async (offerId: string) => {
-      // Image field is empty
-      if (imageOffer === null) {
-        // Delete image if one was present before
-        if (offer?.imageUrl === undefined || offer?.imageUrl === null) {
-          return
-        }
-
-        const adapter = isTemplate
-          ? deleteCollectiveOfferTemplateImageAdapter
-          : deleteCollectiveOfferImageAdapter
-
-        const { isOk, message } = await adapter(offerId)
-        if (!isOk) {
-          notify.error(message)
-        }
-
+    async (imageOfferId: string) => {
+      if (imageOfferCreationArgs === undefined) {
         return
       }
+      const { imageFile, credit, cropParams } = imageOfferCreationArgs
 
-      // If imageOffer is not empty and imageToUpload is null
-      // it means that the image was not changed
-      if (imageToUpload === null) {
-        return
-      }
-
-      const adapter = isTemplate
-        ? postCollectiveOfferTemplateImageAdapter
-        : postCollectiveOfferImageAdapter
-      const { isOk, message, payload } = await adapter({
-        offerId,
-        imageFile: imageToUpload?.imageFile,
-        credit: imageToUpload?.credit,
-        cropParams: imageToUpload?.cropParams,
+      const response = await createThumbnailAdapter({
+        offerId: imageOfferId,
+        credit,
+        imageFile,
+        cropParams,
       })
 
-      if (!isOk) {
-        return notify.error(message)
+      if (response.isOk) {
+        setImageOffer({
+          originalUrl: response.payload.url,
+          url: response.payload.url,
+          credit: response.payload.credit,
+        })
+        if (setOffer && offer) {
+          setOffer({
+            ...offer,
+            image: {
+              originalUrl: response.payload.url,
+              url: response.payload.url,
+              credit: response.payload.credit,
+            },
+          })
+        }
+        return Promise.resolve()
       }
-      setImageOffer({
-        url: payload.imageUrl,
-        credit: imageToUpload?.credit,
-      })
+      return Promise.reject()
     },
-    [imageOffer, imageToUpload]
+    [imageOfferCreationArgs]
   )
+
+  const onImageUpload = async ({
+    imageFile,
+    imageCroppedDataUrl,
+    credit,
+    cropParams,
+  }: IOnImageUploadArgs) => {
+    if (offerId === null) {
+      setImageOfferCreationArgs({
+        imageFile,
+        credit,
+        cropParams,
+      })
+      imageFileToDataUrl(imageFile, imageUrl => {
+        setImageOffer({
+          originalUrl: imageUrl,
+          url: imageCroppedDataUrl || imageUrl,
+          credit,
+          cropParams: cropParams
+            ? {
+                xCropPercent: cropParams.x,
+                yCropPercent: cropParams.y,
+                heightCropPercent: cropParams.height,
+                widthCropPercent: cropParams.width,
+              }
+            : undefined,
+        })
+      })
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_CREATION,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        offerId: undefined,
+      })
+    } else {
+      handleImageOnSubmit(offerId)
+        .then(() => {
+          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_CREATION,
+            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+            isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+            offerId: offerId,
+          })
+        })
+        .catch(() => {
+          notify.error(SENT_DATA_ERROR_MESSAGE)
+        })
+      return Promise.resolve()
+    }
+  }
+
+  const onImageDelete = async () => {
+    /* istanbul ignore next: DEBT, TO FIX */
+    if (!offerId) {
+      /* istanbul ignore next: DEBT, TO FIX */
+      setImageOffer(undefined)
+      /* istanbul ignore next: DEBT, TO FIX */
+      setImageOfferCreationArgs(undefined)
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_DELETE,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        offerId: undefined,
+      })
+    } else {
+      const response = await deleteThumbnailAdapter({ offerId })
+      if (response.isOk) {
+        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+          from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_DELETE,
+          isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+          isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+          offerId: offerId,
+        })
+        setImageOffer(undefined)
+      } else {
+        notify.error(response.message)
+      }
+    }
+    Promise.resolve()
+  }
 
   return {
     imageOffer,
