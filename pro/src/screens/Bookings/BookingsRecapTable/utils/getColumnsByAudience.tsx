@@ -58,7 +58,13 @@ export const getColumnsByAudience = <
     id: 'stock',
     accessor: 'stock',
     Header: 'Nom de l’offre',
-    Cell: ({ value }) => <BookingOfferCell offer={value} />,
+    Cell: ({ value, row }) => (
+      <BookingOfferCell
+        offer={value}
+        isCollective={audience !== Audience.INDIVIDUAL}
+        bookingRecapInfo={row}
+      />
+    ),
     defaultCanSort: true,
     sortType: sortByOfferName,
     className:
