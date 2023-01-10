@@ -65,14 +65,14 @@ class GetInvoicesQueryTest:
         pro = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         reimbursement_point1 = offerers_factories.VenueFactory(managingOfferer=offerer, reimbursement_point="self")
-        invoice1 = factories.InvoiceFactory(businessUnit=None, reimbursementPoint=reimbursement_point1)
+        invoice1 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point1)
         reimbursement_point2 = offerers_factories.VenueFactory(managingOfferer=offerer, reimbursement_point="self")
-        invoice2 = factories.InvoiceFactory(businessUnit=None, reimbursementPoint=reimbursement_point2)
+        invoice2 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point2)
         _other_reimbursement_point = offerers_factories.VenueFactory(reimbursement_point="self")
-        _other_invoice = factories.InvoiceFactory(businessUnit=None, reimbursementPoint=_other_reimbursement_point)
+        _other_invoice = factories.InvoiceFactory(reimbursementPoint=_other_reimbursement_point)
 
         reimbursement_point3 = offerers_factories.VenueFactory(reimbursement_point="self")
-        factories.InvoiceFactory(businessUnit=None, reimbursementPoint=reimbursement_point3, amount=-15000000)
+        factories.InvoiceFactory(reimbursementPoint=reimbursement_point3, amount=-15000000)
         offerer2 = reimbursement_point3.managingOfferer
         offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer2)
 
@@ -85,17 +85,14 @@ class GetInvoicesQueryTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         reimbursement_point = offerers_factories.VenueFactory(managingOfferer=offerer, reimbursement_point="self")
         _invoice_before = factories.InvoiceFactory(
-            businessUnit=None,
             reimbursementPoint=reimbursement_point,
             date=datetime.date(2021, 6, 15),
         )
         invoice_within = factories.InvoiceFactory(
-            businessUnit=None,
             reimbursementPoint=reimbursement_point,
             date=datetime.date(2021, 7, 1),
         )
         _invoice_after = factories.InvoiceFactory(
-            businessUnit=None,
             reimbursementPoint=reimbursement_point,
             date=datetime.date(2021, 8, 1),
         )
@@ -112,9 +109,9 @@ class GetInvoicesQueryTest:
         pro = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         reimbursement_point1 = offerers_factories.VenueFactory(managingOfferer=offerer, reimbursement_point="self")
-        invoice1 = factories.InvoiceFactory(businessUnit=None, reimbursementPoint=reimbursement_point1)
+        invoice1 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point1)
         reimbursement_point2 = offerers_factories.VenueFactory(managingOfferer=offerer, reimbursement_point="self")
-        _invoice2 = factories.InvoiceFactory(businessUnit=None, reimbursementPoint=reimbursement_point2)
+        _invoice2 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point2)
 
         invoices = repository.get_invoices_query(
             pro,
@@ -129,10 +126,10 @@ class GetInvoicesQueryTest:
         pro1 = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro1, offerer=offerer)
         reimbursement_point = offerers_factories.VenueFactory(managingOfferer=offerer, reimbursement_point="self")
-        _invoice1 = factories.InvoiceFactory(businessUnit=None, reimbursementPoint=reimbursement_point)
+        _invoice1 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point)
 
         other_reimbursement_point = offerers_factories.VenueFactory(reimbursement_point="self")
-        _invoice2 = factories.InvoiceFactory(businessUnit=None, reimbursementPoint=other_reimbursement_point)
+        _invoice2 = factories.InvoiceFactory(reimbursementPoint=other_reimbursement_point)
 
         invoices = repository.get_invoices_query(
             pro1,
@@ -142,9 +139,9 @@ class GetInvoicesQueryTest:
 
     def test_admin_filter_on_reimbursement_point(self):
         reimbursement_point1 = offerers_factories.VenueFactory(reimbursement_point="self")
-        invoice1 = factories.InvoiceFactory(businessUnit=None, reimbursementPoint=reimbursement_point1)
+        invoice1 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point1)
         reimbursement_point2 = offerers_factories.VenueFactory(reimbursement_point="self")
-        _invoice2 = factories.InvoiceFactory(businessUnit=None, reimbursementPoint=reimbursement_point2)
+        _invoice2 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point2)
 
         admin = users_factories.AdminFactory()
 
@@ -155,9 +152,7 @@ class GetInvoicesQueryTest:
         assert list(invoices) == [invoice1]
 
     def test_admin_without_filter(self):
-        factories.InvoiceFactory(
-            businessUnit=None,
-        )
+        factories.InvoiceFactory()
         admin = users_factories.AdminFactory()
 
         invoices = repository.get_invoices_query(admin)

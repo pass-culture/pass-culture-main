@@ -202,7 +202,7 @@ class BankInformationsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_update_bank_informations_when_bank_informations_already_exist_for_venue(self, app):
         # given
-        venue = offerers_factories.VenueFactory(businessUnit=None)
+        venue = offerers_factories.VenueFactory()
         finance_factories.BankInformationFactory(
             venue=venue,
             applicationId=9,

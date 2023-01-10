@@ -38,7 +38,6 @@ const ReimbursementsInvoices = ({
     )
     return {
       reimbursementPoint: ALL_REIMBURSEMENT_POINT_OPTION_ID,
-      businessUnit: ALL_REIMBURSEMENT_POINT_OPTION_ID,
       periodStart: oneMonthAgo,
       periodEnd: today,
     }
@@ -106,7 +105,7 @@ const ReimbursementsInvoices = ({
             ? formatBrowserTimezonedDateAsUTC(periodEnd, FORMAT_ISO_DATE_ONLY)
             : undefined,
           // @ts-expect-error type string is not assignable to type number
-          reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.businessUnitId
+          reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
             ? reimbursmentPoint
             : undefined
         )
