@@ -13,10 +13,6 @@ import {
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
-import {
-  setFormReadOnlyFields,
-  setInitialFormValues,
-} from 'components/OfferIndividualForm'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   IOfferIndividualContext,
@@ -265,8 +261,8 @@ describe('screens:OfferIndividual::Informations:draft', () => {
     }
 
     props = {
-      initialValues: setInitialFormValues(offer, subCategories),
-      readOnlyFields: setFormReadOnlyFields(offer, false),
+      offererId: venue.managingOffererId,
+      venueId: venue.id,
     }
 
     jest
@@ -315,8 +311,8 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       withdrawalType: null,
     }
     props = {
-      initialValues: setInitialFormValues(contextOverride.offer, subCategories),
-      readOnlyFields: setFormReadOnlyFields(contextOverride.offer, false),
+      offererId: offer.venue.offerer.id,
+      venueId: offer.venue.id,
     }
 
     renderInformationsScreen(props, store, contextOverride)

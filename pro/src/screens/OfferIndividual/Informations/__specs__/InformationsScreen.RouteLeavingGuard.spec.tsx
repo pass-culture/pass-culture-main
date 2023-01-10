@@ -13,10 +13,6 @@ import {
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
-import {
-  FORM_DEFAULT_VALUES,
-  setInitialFormValues,
-} from 'components/OfferIndividualForm'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   IOfferIndividualContext,
@@ -25,7 +21,7 @@ import {
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
+import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
@@ -294,7 +290,8 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     }
 
     props = {
-      initialValues: FORM_DEFAULT_VALUES,
+      venueId: offer.venue.id,
+      offererId: offer.venue.offerer.id,
     }
 
     jest
@@ -392,10 +389,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       offer: offer,
     }
 
-    props.initialValues = setInitialFormValues(
-      offer,
-      contextOverride.subCategories as IOfferSubCategory[]
-    )
+    props.offererId = offer.id
     renderInformationsScreen(props, store, contextOverride)
 
     const nameField = screen.getByLabelText('Titre de l’offre')
@@ -421,10 +415,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       offer: offer,
     }
 
-    props.initialValues = setInitialFormValues(
-      offer,
-      contextOverride.subCategories as IOfferSubCategory[]
-    )
+    props.offererId = offer.id
     renderInformationsScreen(
       props,
       store,
@@ -461,10 +452,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       offer: offer,
     }
 
-    props.initialValues = setInitialFormValues(
-      offer,
-      contextOverride.subCategories as IOfferSubCategory[]
-    )
+    props.offererId = offer.id
     renderInformationsScreen(
       props,
       store,
