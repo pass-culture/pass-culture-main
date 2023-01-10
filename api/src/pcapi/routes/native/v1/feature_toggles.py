@@ -1,6 +1,7 @@
 import logging
 
 from pcapi import settings
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import Feature
 from pcapi.serialization.decorator import spectree_serialize
@@ -22,3 +23,4 @@ def feature_toggles(body: serializers.FeaturesToggleRequest) -> None:
         raise ApiErrors({"code": "not found"}, status_code=404)
     for feature in body.features:
         Feature.query.filter_by(name=feature.name).update({"isActive": feature.isActive})
+        db.session.commit()
