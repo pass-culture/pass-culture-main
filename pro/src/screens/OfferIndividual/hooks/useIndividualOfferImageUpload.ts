@@ -45,25 +45,26 @@ export const useIndividualOfferImageUpload = () => {
         cropParams,
       })
 
-      if (response.isOk) {
-        setImageOffer({
-          originalUrl: response.payload.url,
-          url: response.payload.url,
-          credit: response.payload.credit,
-        })
-        if (setOffer && offer) {
-          setOffer({
-            ...offer,
-            image: {
-              originalUrl: response.payload.url,
-              url: response.payload.url,
-              credit: response.payload.credit,
-            },
-          })
-        }
-        return Promise.resolve()
+      if (!response.isOk) {
+        return Promise.reject()
       }
-      return Promise.reject()
+
+      setImageOffer({
+        originalUrl: response.payload.url,
+        url: response.payload.url,
+        credit: response.payload.credit,
+      })
+      if (setOffer && offer) {
+        setOffer({
+          ...offer,
+          image: {
+            originalUrl: response.payload.url,
+            url: response.payload.url,
+            credit: response.payload.credit,
+          },
+        })
+      }
+      return Promise.resolve()
     },
     [imageOfferCreationArgs]
   )
@@ -104,21 +105,19 @@ export const useIndividualOfferImageUpload = () => {
         offerId: undefined,
       })
     } else {
-      handleImageOnSubmit(offerId)
-        .then(() => {
-          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-            from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_CREATION,
-            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-            isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-            offerId: offerId,
-          })
+      try {
+        await handleImageOnSubmit(offerId)
+        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+          from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_CREATION,
+          isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+          isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+          offerId: offerId,
         })
-        .catch(() => {
-          notify.error(SENT_DATA_ERROR_MESSAGE)
-        })
-      return Promise.resolve()
+      } catch {
+        notify.error(SENT_DATA_ERROR_MESSAGE)
+      }
     }
   }
 
@@ -153,7 +152,6 @@ export const useIndividualOfferImageUpload = () => {
         notify.error(response.message)
       }
     }
-    Promise.resolve()
   }
 
   return {
