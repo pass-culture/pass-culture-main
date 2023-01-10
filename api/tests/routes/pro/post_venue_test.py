@@ -4,7 +4,6 @@ import pytest
 
 from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.users import testing as external_testing
 from pcapi.core.users.factories import ProFactory
@@ -58,29 +57,6 @@ venue_malformed_test_data = [
 
 
 class Returns201Test:
-    @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
-    def test_register_new_venue_with_a_business_unit(self, client):
-        # given
-        user = ProFactory()
-        client = client.with_session_auth(email=user.email)
-        venue_data = create_valid_venue_data(user)
-        offerer = offerers_models.Offerer.query.all()[0]
-        existing_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        venue_data["businessUnitId"] = existing_venue.businessUnit.id
-
-        # when
-        response = client.post("/venues", json=venue_data)
-
-        # then
-        assert response.status_code == 201
-        idx = response.json["id"]
-
-        venue = Venue.query.filter_by(id=dehumanize(idx)).one()
-        assert venue.businessUnitId == venue_data["businessUnitId"]
-
-        assert len(external_testing.sendinblue_requests) == 1
-        assert external_testing.zendesk_sell_requests == [{"action": "create", "type": "Venue", "id": dehumanize(idx)}]
-
     @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
     def test_register_new_venue(self, client):
         user = ProFactory()
