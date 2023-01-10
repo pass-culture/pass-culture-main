@@ -77,7 +77,6 @@ const CollectiveOfferEdition = ({
       isOfferBooked={
         offer?.isTemplate ? false : offer?.collectiveStock?.isBooked
       }
-      isOfferCancellable={offer && offer.isCancellable}
       mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
       setIsOfferActive={setIsOfferActive}
       isTemplate={offer.isTemplate}
