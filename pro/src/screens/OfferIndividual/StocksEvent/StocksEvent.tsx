@@ -31,7 +31,7 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
 import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
-import { useNotifyFormError } from '../hooks/useNotifyFormErrors'
+import { useNotifyFormError } from '../hooks'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 import { getSuccessMessage } from '../utils'
 import { logTo } from '../utils/logTo'
