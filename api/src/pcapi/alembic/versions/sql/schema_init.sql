@@ -5410,6 +5410,7 @@ INSERT INTO public.feature VALUES (42, 'ALLOW_IDCHECK_UNDERAGE_REGISTRATION', 'A
 INSERT INTO public.feature VALUES (43, 'DISABLE_STORE_REVIEW', 'Désactive la demande de notation sur les stores à la suite d’une réservation', false);
 INSERT INTO public.feature VALUES (44, 'ENABLE_CDS_IMPLEMENTATION', 'Permet la réservation de place de cinéma avec l''API CDS', false);
 INSERT INTO public.feature VALUES (45, 'ENABLE_FRONT_IMAGE_RESIZING', 'Active le redimensionnement sur demande des images par l''app et le web', false);
+INSERT INTO public.feature VALUES (46, 'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON', 'Active le multi-téléchargement des réservations', true);
 INSERT INTO public.feature VALUES (47, 'WIP_IMAGE_COLLECTIVE_OFFER', 'Active les images dans les offres collectives et les offres vitrines.', false);
 INSERT INTO public.feature VALUES (48, 'ENFORCE_BANK_INFORMATION_WITH_SIRET', 'Forcer les informations banquaires à être liées à un SIRET.', false);
 INSERT INTO public.feature VALUES (49, 'ENABLE_CULTURAL_SURVEY', 'Activer l''affichage du questionnaire des pratiques initiales pour les bénéficiaires', false);
@@ -9711,3 +9712,4 @@ ALTER TABLE ONLY public.venue
 --
 -- PostgreSQL database dump complete
 --
+
