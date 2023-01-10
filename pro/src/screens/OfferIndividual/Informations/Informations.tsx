@@ -2,7 +2,6 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
@@ -26,11 +25,8 @@ import {
   getOfferIndividualAdapter,
   updateIndividualOffer,
 } from 'core/Offers/adapters'
-import { createThumbnailAdapter } from 'core/Offers/adapters/createThumbnailAdapter'
-import { deleteThumbnailAdapter } from 'core/Offers/adapters/deleteThumbnailAdapter'
-import { IOfferIndividualImage } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
-import { FORM_ERROR_MESSAGE, SENT_DATA_ERROR_MESSAGE } from 'core/shared'
+import { FORM_ERROR_MESSAGE } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useNavigate, useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
@@ -38,10 +34,10 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
+import { useIndividualOfferImageUpload } from '../hooks'
 import { logTo } from '../utils/logTo'
 
 import { filterCategories } from './utils'
-import { imageFileToDataUrl } from './utils/files'
 
 export interface IInformationsProps {
   offererId: string
@@ -58,7 +54,6 @@ const Informations = ({
   const mode = useOfferWizardMode()
   const { logEvent } = useAnalytics()
   const {
-    offerId,
     offer,
     categories,
     subCategories,
@@ -68,12 +63,9 @@ const Informations = ({
     shouldTrack,
     setShouldTrack,
   } = useOfferIndividualContext()
-  const [imageOfferCreationArgs, setImageOfferCreationArgs] = useState<
-    IOnImageUploadArgs | undefined
-  >(undefined)
-  const [imageOffer, setImageOffer] = useState<
-    IOfferIndividualImage | undefined
-  >(offer && offer.image ? offer.image : undefined)
+  const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
+    useIndividualOfferImageUpload()
+
   const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
   const [
     isSubmittingFromRouteLeavingGuard,
@@ -103,137 +95,6 @@ const Informations = ({
       }
     }
 
-  // FIXME: find a way to test FileReader
-  /* istanbul ignore next: DEBT, TO FIX */
-  const submitImage = async ({
-    imageOfferId,
-    imageFile,
-    credit,
-    cropParams,
-  }: IOnImageUploadArgs & { imageOfferId: string }) => {
-    const response = await createThumbnailAdapter({
-      offerId: imageOfferId,
-      credit,
-      imageFile,
-      cropParams,
-    })
-
-    if (response.isOk) {
-      setImageOffer({
-        originalUrl: response.payload.url,
-        url: response.payload.url,
-        credit: response.payload.credit,
-      })
-      if (setOffer && offer) {
-        setOffer({
-          ...offer,
-          image: {
-            originalUrl: response.payload.url,
-            url: response.payload.url,
-            credit: response.payload.credit,
-          },
-        })
-      }
-      return Promise.resolve()
-    }
-    return Promise.reject()
-  }
-
-  // FIXME: find a way to test FileReader
-  /* istanbul ignore next: DEBT, TO FIX */
-  const onImageUpload = async ({
-    imageFile,
-    imageCroppedDataUrl,
-    credit,
-    cropParams,
-  }: IOnImageUploadArgs) => {
-    if (offerId === null) {
-      setImageOfferCreationArgs({
-        imageFile,
-        credit,
-        cropParams,
-      })
-      imageFileToDataUrl(imageFile, imageUrl => {
-        setImageOffer({
-          originalUrl: imageUrl,
-          url: imageCroppedDataUrl || imageUrl,
-          credit,
-          cropParams: cropParams
-            ? {
-                xCropPercent: cropParams.x,
-                yCropPercent: cropParams.y,
-                heightCropPercent: cropParams.height,
-                widthCropPercent: cropParams.width,
-              }
-            : undefined,
-        })
-      })
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_CREATION,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-        offerId: undefined,
-      })
-    } else {
-      submitImage({
-        imageOfferId: offerId,
-        imageFile,
-        credit,
-        cropParams,
-      })
-        .then(() => {
-          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-            from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_CREATION,
-            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-            isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-            offerId: offerId,
-          })
-        })
-        .catch(() => {
-          notify.error(SENT_DATA_ERROR_MESSAGE)
-        })
-      return Promise.resolve()
-    }
-  }
-
-  const onImageDelete = async () => {
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (!offerId) {
-      /* istanbul ignore next: DEBT, TO FIX */
-      setImageOffer(undefined)
-      /* istanbul ignore next: DEBT, TO FIX */
-      setImageOfferCreationArgs(undefined)
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_DELETE,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-        offerId: undefined,
-      })
-    } else {
-      const response = await deleteThumbnailAdapter({ offerId })
-      if (response.isOk) {
-        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-          from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_DELETE,
-          isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-          isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-          offerId: offerId,
-        })
-        setImageOffer(undefined)
-      } else {
-        notify.error(response.message)
-      }
-    }
-    Promise.resolve()
-  }
-
   const onSubmitOffer = async (
     formValues: IOfferIndividualFormValues
   ): Promise<void> => {
@@ -252,11 +113,8 @@ const Informations = ({
       const receivedOfferId = payload.id
       // FIXME: find a way to test FileReader
       /* istanbul ignore next: DEBT, TO FIX */
-      imageOfferCreationArgs &&
-        (await submitImage({
-          ...imageOfferCreationArgs,
-          imageOfferId: receivedOfferId,
-        }))
+      await handleImageOnSubmit(receivedOfferId)
+
       const response = await getOfferIndividualAdapter(payload.id)
       // This do not trigger a visal change, it's complicated to test
       /* istanbul ignore next: DEBT, TO FIX */
