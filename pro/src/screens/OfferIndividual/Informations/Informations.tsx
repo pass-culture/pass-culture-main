@@ -111,8 +111,6 @@ const Informations = ({
 
     if (isOk) {
       const receivedOfferId = payload.id
-      // FIXME: find a way to test FileReader
-      /* istanbul ignore next: DEBT, TO FIX */
       await handleImageOnSubmit(receivedOfferId)
 
       const response = await getOfferIndividualAdapter(payload.id)
