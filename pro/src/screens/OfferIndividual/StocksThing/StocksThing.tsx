@@ -39,7 +39,7 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
 import { DialogStockDeleteConfirm } from '../DialogStockDeleteConfirm'
-import { useNotifyFormError } from '../hooks/useNotifyFormErrors'
+import { useNotifyFormError } from '../hooks'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 import { getSuccessMessage } from '../utils'
 import { logTo } from '../utils/logTo'
