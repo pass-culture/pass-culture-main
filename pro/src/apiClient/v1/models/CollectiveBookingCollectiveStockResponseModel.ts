@@ -3,7 +3,6 @@
 /* eslint-disable */
 
 export type CollectiveBookingCollectiveStockResponseModel = {
-  booking_limit_datetime?: string | null;
   event_beginning_datetime: string;
   number_of_tickets: number;
   offer_identifier: string;
