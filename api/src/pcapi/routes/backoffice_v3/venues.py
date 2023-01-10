@@ -252,9 +252,8 @@ def comment(venue_id: int) -> utils.BackofficeResponse:
     form = forms.CommentForm()
     if not form.validate():
         flash("Les données envoyées comportent des erreurs", "warning")
-        return render_template("venue/comment.html", form=form, venue=venue), 400
-
-    offerers_api.add_comment_to_venue(venue, current_user, comment=form.comment.data)
-    flash("Commentaire enregistré", "success")
+    else:
+        offerers_api.add_comment_to_venue(venue, current_user, comment=form.comment.data)
+        flash("Commentaire enregistré", "success")
 
     return redirect(url_for("backoffice_v3_web.venue.get", venue_id=venue_id), code=303)

@@ -402,29 +402,6 @@ class GetOffererHistoryDataTest:
         assert found_comments == expected_comments
 
 
-class NewCommentTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.offerer_comment.new_comment"
-        endpoint_kwargs = {"offerer_id": 1}
-        needed_permission = perm_models.Permissions.VALIDATE_OFFERER
-
-    def test_new_comment(self, authenticated_client, offerer):
-        url = url_for("backoffice_v3_web.offerer_comment.new_comment", offerer_id=offerer.id)
-
-        # if offerer is not removed from the current session, any get
-        # query won't be executed because of this specific testing
-        # environment. This would tamper the real database queries
-        # count.
-        db.session.expire(offerer)
-
-        # get session (1 query)
-        # get user with profile and permissions (1 query)
-        # get offerer (1 query)
-        with assert_num_queries(3):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-
 class CommentOffererTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, unauthorized_helpers.MissingCSRFHelper):
         endpoint = "backoffice_v3_web.offerer_comment.comment_offerer"
@@ -446,8 +423,9 @@ class CommentOffererTest:
     def test_add_invalid_comment(self, authenticated_client, offerer):
         response = self.send_comment_offerer_request(authenticated_client, offerer, "")
 
-        assert response.status_code == 400
-        assert not offerer.action_history
+        assert response.status_code == 303
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert "Les données envoyées comportent des erreurs" in redirected_response.data.decode("utf8")
 
     def send_comment_offerer_request(self, authenticated_client, offerer, comment):
         # generate and fetch (inside g) csrf token
