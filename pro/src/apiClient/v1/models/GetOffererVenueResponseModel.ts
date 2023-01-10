@@ -8,7 +8,6 @@ export type GetOffererVenueResponseModel = {
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;
   bookingEmail?: string | null;
-  businessUnitId?: number | null;
   city?: string | null;
   comment?: string | null;
   departementCode?: string | null;

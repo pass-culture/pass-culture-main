@@ -10,7 +10,6 @@ interface IVenueListProps {
     id: string
     name: string
     publicName?: string
-    businessUnitId?: string
     hasMissingReimbursementPoint: boolean
     hasCreatedOffer: boolean
   }[]

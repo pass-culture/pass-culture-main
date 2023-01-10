@@ -16,16 +16,6 @@ MAX_LATITUDE = 90
 VENUE_BANNER_MAX_SIZE = 10_000_000
 
 
-# FUTURE-NEW-BANK-DETAILS: remove when new bank details journey is complete
-def check_existing_business_unit(business_unit_id: int, offerer: models.Offerer) -> None:
-    business_unit = finance_models.BusinessUnit.query.filter_by(id=business_unit_id).one_or_none()
-    if not business_unit:
-        raise ApiErrors(errors={"businessUnitId": ["Ce point de facturation n'existe pas."]})
-
-    if business_unit.siret[:9] != offerer.siren:
-        raise ApiErrors(errors={"businessUnitId": ["Ce point de facturation n'est pas un choix valide pour ce lieu."]})
-
-
 def validate_coordinates(raw_latitude: float | str, raw_longitude: float | str) -> None:
     api_errors = ApiErrors()
 
@@ -39,7 +29,6 @@ def validate_coordinates(raw_latitude: float | str, raw_longitude: float | str) 
         raise api_errors
 
 
-# FUTURE-NEW-BANK-DETAILS: cleanup ifs when new bank details journey is complete
 def check_venue_creation(data: dict[str, typing.Any]) -> None:
     offerer_id = dehumanize(data.get("managingOffererId"))
     if not offerer_id:
@@ -60,7 +49,6 @@ def check_venue_creation(data: dict[str, typing.Any]) -> None:
 def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venue) -> None:
     managing_offerer_id = modifications.get("managingOffererId")
     siret = modifications.get("siret")
-    business_unit_id = modifications.get("businessUnitId")
     reimbursement_point_id = modifications.get("reimbursementPointId")
 
     venue_disability_compliance = [
@@ -78,7 +66,6 @@ def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venu
 
     allowed_virtual_venue_modifications = {
         "reimbursementPointId",
-        "businessUnitId",  # FUTURE-NEW-BANK-DETAILS: remove when new bank details journey is complete
     }
     if venue.isVirtual and modifications.keys() - allowed_virtual_venue_modifications:
         raise ApiErrors(
@@ -98,8 +85,6 @@ def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venu
 
     if reimbursement_point_id:
         check_venue_can_be_linked_to_reimbursement_point(venue, reimbursement_point_id)
-    elif business_unit_id:
-        check_existing_business_unit(business_unit_id, offerer=venue.managingOfferer)
 
 
 def _validate_longitude(api_errors: ApiErrors, raw_longitude: float | str) -> None:
