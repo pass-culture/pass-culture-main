@@ -100,6 +100,9 @@ class CollectiveBookingResponseModel(BaseModel):
     booking_status_history: list[BookingStatusHistoryResponseModel]
     booking_identifier: str
 
+    class Config:
+        alias_generator = to_camel
+
 
 class ListCollectiveBookingsResponseModel(BaseModel):
     bookingsRecap: list[CollectiveBookingResponseModel]
@@ -250,32 +253,32 @@ def serialize_collective_booking(collective_booking: models.CollectiveBooking) -
     return CollectiveBookingResponseModel(
         stock=serialize_collective_booking_stock(collective_booking),
         institution=serialize_collective_booking_institution(collective_booking),
-        booking_id=collective_booking.id,
-        booking_date=typing.cast(
+        bookingId=collective_booking.id,
+        bookingDate=typing.cast(
             datetime,
             convert_real_booking_dates_utc_to_venue_timezone(collective_booking.dateCreated, collective_booking),
         ).isoformat(),
-        booking_cancellation_limit_date=typing.cast(
+        bookingCancellationLimitDate=typing.cast(
             datetime,
             convert_real_booking_dates_utc_to_venue_timezone(
                 collective_booking.cancellationLimitDate, collective_booking
             ),
         ).isoformat(),
-        booking_confirmation_date=typing.cast(
+        bookingConfirmationDate=typing.cast(
             datetime,
             convert_real_booking_dates_utc_to_venue_timezone(collective_booking.confirmationDate, collective_booking),
         ).isoformat()
         if collective_booking.confirmationDate
         else "",
-        booking_confirmation_limit_date=typing.cast(
+        bookingConfirmationLimitDate=typing.cast(
             datetime,
             convert_real_booking_dates_utc_to_venue_timezone(
                 collective_booking.confirmationLimitDate, collective_booking
             ),
         ).isoformat(),
-        booking_status=_serialize_collective_booking_recap_status(collective_booking).value,
-        booking_amount=collective_booking.collectiveStock.price,
-        booking_status_history=build_status_history(
+        bookingStatus=_serialize_collective_booking_recap_status(collective_booking).value,
+        bookingAmount=collective_booking.collectiveStock.price,
+        bookingStatusHistory=build_status_history(
             booking_status=collective_booking.status,
             booking_date=typing.cast(
                 datetime,
@@ -296,7 +299,7 @@ def serialize_collective_booking(collective_booking: models.CollectiveBooking) -
             ),
             is_confirmed=collective_booking.isConfirmed,  # type: ignore[arg-type]
         ),
-        booking_identifier=humanize(collective_booking.id),
+        bookingIdentifier=humanize(collective_booking.id),
     )
 
 
