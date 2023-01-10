@@ -1,6 +1,6 @@
-{% extends "layouts/pro.html" %}
-
 {% from "components/badges.html" import build_pro_user_badges %}
+
+{% extends "layouts/pro.html" %}
 
 {% block pro_main_content %}
 <div class="row row-cols-1 g-4 py-3">
@@ -58,19 +58,12 @@
                                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                     <div class="modal-content">
                                         <div class="modal-header fs-5" id="editProUserModalLabel">
-                                            Éditer les informations
+                                            Modification des informations
                                             de {{ user.firstName }} {{ user.lastName | upper }}</div>
                                         <form action="{{ dst }}" method="POST">
                                             <div class="modal-body">
                                                 <div class="form-group">
-                                                    {% for form_field in form %}
-                                                        <div class="w-100 my-4">
-                                                            {% for error in form_field.errors %}
-                                                                <p class="text-warning lead">{{ error }}</p>
-                                                            {% endfor %}
-                                                        </div>
-                                                        {{ form_field }}
-                                                    {% endfor %}
+                                                    {% include "components/form_body.html" %}
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -78,7 +71,7 @@
                                                         data-bs-dismiss="modal">
                                                     Annuler
                                                 </button>
-                                                <button type="submit" class="btn btn-primary">Valider</button>
+                                                <button type="submit" class="btn btn-primary">Enregistrer</button>
                                             </div>
                                         </form>
                                     </div>

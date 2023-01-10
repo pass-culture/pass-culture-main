@@ -81,11 +81,7 @@ class GetOffererTest:
         # count.
         db.session.expire(offerer)
 
-        # get session (1 query)
-        # get user with profile and permissions (1 query)
-        # get offerer (1 query)
-        # get offerer basic info (1 query)
-        with assert_num_queries(4):
+        with assert_no_duplicated_queries():
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -94,7 +90,72 @@ class GetOffererTest:
         assert offerer.name in content
         assert str(offerer.id) in content
         assert offerer.siren in content
+        assert offerer.city in content
+        assert offerer.postalCode in content
+        assert offerer.address in content
         assert "Structure" in content
+
+
+class UpdateOffererTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.offerer.update_offerer"
+        endpoint_kwargs = {"offerer_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_update_offerer(self, authenticated_client):
+        offerer_to_edit = offerers_factories.OffererFactory()
+
+        old_city = offerer_to_edit.city
+        new_city = "Brest"
+        old_postal_code = offerer_to_edit.postalCode
+        new_postal_code = "29000"
+        expected_new_region = "Bretagne"
+        old_address = offerer_to_edit.address
+        new_address = "1 Rue de Siam"
+
+        base_form = {
+            "city": new_city,
+            "postal_code": new_postal_code,
+            "address": new_address,
+        }
+
+        response = self.update_offerer(authenticated_client, offerer_to_edit, base_form)
+        assert response.status_code == 303
+
+        # Test redirection
+        expected_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_to_edit.id, _external=True)
+        assert response.location == expected_url
+
+        # Test region update
+        response = authenticated_client.get(expected_url)
+        content = response.data.decode("utf-8")
+        assert expected_new_region in content
+
+        # Test history
+        history_url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer_to_edit.id)
+        response = authenticated_client.get(history_url)
+
+        offerer_to_edit = offerers_models.Offerer.query.get(offerer_to_edit.id)
+        assert offerer_to_edit.city == new_city
+        assert offerer_to_edit.postalCode == new_postal_code
+        assert offerer_to_edit.address == new_address
+
+        content = response.data.decode("utf-8")
+        assert history_models.ActionType.OFFERER_INFO_MODIFIED.value in content
+        assert f"{old_city} =&gt; {offerer_to_edit.city}" in content
+        assert f"{old_postal_code} =&gt; {offerer_to_edit.postalCode}" in content
+        assert f"{old_address} =&gt; {offerer_to_edit.address}" in content
+
+    def update_offerer(self, authenticated_client, offerer_to_edit, form):
+        # generate csrf token
+        edit_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_to_edit.id)
+        authenticated_client.get(edit_url)
+
+        url = url_for("backoffice_v3_web.offerer.update_offerer", offerer_id=offerer_to_edit.id)
+
+        form["csrf_token"] = g.get("csrf_token", "")
+        return authenticated_client.post(url, form=form)
 
 
 class GetOffererStatsTest:

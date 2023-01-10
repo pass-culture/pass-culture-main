@@ -59,6 +59,10 @@ def i18n_column_name(term: str) -> str:
             return "Code postal"
         case "phonenumber":
             return "Téléphone"
+        case "city":
+            return "Ville"
+        case "address":
+            return "Adresse"
         case _:
             return term.replace("_", " ").capitalize()
 
