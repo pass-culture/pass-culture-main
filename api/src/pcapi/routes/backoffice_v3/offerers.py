@@ -257,6 +257,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
 
     offerers = offerers_api.list_offerers_to_be_validated(
         form.q.data,
+        form.regions.data,
         form.tags.data,
         form.status.data,
         _date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time()),
@@ -400,6 +401,7 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
 
     users_offerers = offerers_api.list_users_offerers_to_be_validated(
         form.q.data,
+        form.regions.data,
         form.tags.data,
         form.status.data,
         form.offerer_status.data,

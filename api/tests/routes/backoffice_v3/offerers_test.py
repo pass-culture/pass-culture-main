@@ -623,6 +623,27 @@ class ListOfferersToValidateTest:
             )
 
         @pytest.mark.parametrize(
+            "region_filter, expected_offerer_names",
+            (
+                (["Bretagne"], {"A", "B", "D", "E"}),
+                (["Normandie", "Pays de la Loire"], {"C", "F"}),
+            ),
+        )
+        def test_list_filtering_by_region(
+            self, authenticated_client, region_filter, expected_offerer_names, offerers_to_be_validated
+        ):
+            # when
+            with assert_no_duplicated_queries():
+                response = authenticated_client.get(
+                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", regions=region_filter)
+                )
+
+            # then
+            assert response.status_code == 200
+            rows = html_parser.extract_table_rows(response.data)
+            assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
+
+        @pytest.mark.parametrize(
             "tag_filter, expected_offerer_names",
             (
                 (["Top acteur"], {"B", "E", "F"}),
@@ -719,13 +740,13 @@ class ListOfferersToValidateTest:
             # when
             with assert_no_duplicated_queries():
                 response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="29200")
+                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="35400")
                 )
 
             # then
             assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom de la structure"] for row in rows} == {"C", "F"}
+            assert {row["Nom de la structure"] for row in rows} == {"E"}
 
         def test_list_search_by_department_code(self, authenticated_client, offerers_to_be_validated):
             # when
@@ -1323,6 +1344,29 @@ class ListUserOffererToValidateTest:
             assert {row["Email Compte pro"] for row in rows} == expected_users_emails
         else:
             assert html_parser.count_table_rows(response.data) == 0
+
+    @pytest.mark.parametrize(
+        "region_filter, expected_users_emails",
+        (
+            (["Martinique"], {"a@example.com", "d@example.com"}),
+            (["Guadeloupe", "Provence-Alpes-Côte d'Azur"], {"b@example.com", "e@example.com"}),
+        ),
+    )
+    def test_list_filtering_by_region(
+        self, authenticated_client, region_filter, expected_users_emails, user_offerer_to_be_validated
+    ):
+        # when
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(
+                url_for(
+                    "backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", regions=region_filter
+                )
+            )
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Email Compte pro"] for row in rows} == expected_users_emails
 
     @pytest.mark.parametrize(
         "tag_filter, expected_users_emails",

@@ -44,6 +44,7 @@ from pcapi.utils import image_conversion
 from pcapi.utils.clean_accents import clean_accents
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
+from pcapi.utils.regions import get_department_codes_for_region
 
 from . import exceptions
 from . import models
@@ -1377,6 +1378,7 @@ def list_offerers_to_be_validated_legacy(
 
 def _apply_query_filters(
     query: sa.orm.Query,
+    regions: list[str] | None,
     tags: list[offerers_models.OffererTag] | None,
     status: list[ValidationStatus] | None,
     from_datetime: datetime | None,
@@ -1414,11 +1416,18 @@ def _apply_query_filters(
     if to_datetime:
         query = query.filter(cls.dateCreated <= to_datetime)
 
+    if regions:
+        department_codes: list[str] = []
+        for region in regions:
+            department_codes += get_department_codes_for_region(region)
+        query = query.filter(offerers_models.Offerer.departementCode.in_(department_codes))  # type: ignore [attr-defined]
+
     return query
 
 
 def list_offerers_to_be_validated(
     q: str | None,  # search query
+    regions: list[str] | None = None,
     tags: list[offerers_models.OffererTag] | None = None,
     status: list[ValidationStatus] | None = None,
     from_datetime: datetime | None = None,
@@ -1465,7 +1474,7 @@ def list_offerers_to_be_validated(
             )
 
     query = _apply_query_filters(
-        query, tags, status, from_datetime, to_datetime, offerers_models.Offerer, offerers_models.Offerer.id
+        query, regions, tags, status, from_datetime, to_datetime, offerers_models.Offerer, offerers_models.Offerer.id
     )
 
     return query.distinct()
@@ -1498,6 +1507,7 @@ def list_users_offerers_to_be_validated_legacy(filter_: list[dict[str, typing.An
 
 def list_users_offerers_to_be_validated(
     q: str | None,  # search query
+    regions: list[str] | None = None,
     tags: list[offerers_models.OffererTag] | None = None,
     status: list[ValidationStatus] | None = None,
     offerer_status: list[ValidationStatus] | None = None,
@@ -1548,6 +1558,7 @@ def list_users_offerers_to_be_validated(
 
     return _apply_query_filters(
         query,
+        regions,
         tags,
         status,
         from_datetime,

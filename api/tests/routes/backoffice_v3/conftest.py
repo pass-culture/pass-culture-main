@@ -379,7 +379,7 @@ def offerers_to_be_validated_fixture(offerer_tags):
         name="B", siren="123002002", validationStatus=ValidationStatus.PENDING, postalCode="29000", city="Quimper"
     )
     collec = offerers_factories.NotValidatedOffererFactory(
-        name="C", siren="123003003", postalCode="29200", city="Brest"
+        name="C", siren="123003003", postalCode="50170", city="Le Mont-Saint-Michel"
     )
     public = offerers_factories.NotValidatedOffererFactory(
         name="D", siren="123004004", validationStatus=ValidationStatus.PENDING, postalCode="29300", city="Quimperlé"
@@ -388,7 +388,7 @@ def offerers_to_be_validated_fixture(offerer_tags):
         name="E", siren="123005005", postalCode="35400", city="Saint-Malo"
     )
     top_public = offerers_factories.NotValidatedOffererFactory(
-        name="F", siren="123006006", validationStatus=ValidationStatus.PENDING, postalCode="29200", city="Brest"
+        name="F", siren="123006006", validationStatus=ValidationStatus.PENDING, postalCode="44000", city="Nantes"
     )
 
     for offerer in (top, top_collec, top_public):
@@ -420,24 +420,26 @@ def user_offerer_to_be_validated_fixture(offerer_tags):
     top_tag, collec_tag, public_tag = offerer_tags
 
     no_tag = offerers_factories.NotValidatedUserOffererFactory(
-        user__email="a@example.com", offerer__validationStatus=ValidationStatus.NEW
+        user__email="a@example.com", offerer__validationStatus=ValidationStatus.NEW, offerer__postalCode="97200"
     )
     top = offerers_factories.NotValidatedUserOffererFactory(
         user__email="b@example.com",
         offerer__validationStatus=ValidationStatus.NEW,
         validationStatus=ValidationStatus.PENDING,
+        offerer__postalCode="97100",
     )
-    collec = offerers_factories.NotValidatedUserOffererFactory(user__email="c@example.com")
+    collec = offerers_factories.NotValidatedUserOffererFactory(user__email="c@example.com", offerer__postalCode="29200")
     public = offerers_factories.NotValidatedUserOffererFactory(
         user__email="d@example.com",
         offerer__validationStatus=ValidationStatus.PENDING,
         validationStatus=ValidationStatus.PENDING,
+        offerer__postalCode="97290",
     )
     top_collec = offerers_factories.NotValidatedUserOffererFactory(
-        user__email="e@example.com", offerer__validationStatus=ValidationStatus.PENDING
+        user__email="e@example.com", offerer__validationStatus=ValidationStatus.PENDING, offerer__postalCode="06400"
     )
     top_public = offerers_factories.NotValidatedUserOffererFactory(
-        user__email="f@example.com", validationStatus=ValidationStatus.PENDING
+        user__email="f@example.com", validationStatus=ValidationStatus.PENDING, offerer__postalCode="97400"
     )
 
     for user_offerer in (top, top_collec, top_public):
