@@ -156,20 +156,22 @@
 
     &:focus,
     &:focus-visible {
-      outline: 0;
-      position: relative;
-      border-color: colors.$black;
+      &:not(.button-disabled) {
+        outline: 0;
+        position: relative;
+        border-color: colors.$black;
 
-      &::before {
-        display: block;
-        content: "";
-        position: absolute;
-        left: rem.torem(-4px);
-        right: rem.torem(-4px);
-        top: rem.torem(-4px);
-        bottom: rem.torem(-4px);
-        border: 1px solid colors.$input-text-color;
-        border-radius: rem.torem(8px);
+        &::before {
+          display: block;
+          content: "";
+          position: absolute;
+          left: rem.torem(-4px);
+          right: rem.torem(-4px);
+          top: rem.torem(-4px);
+          bottom: rem.torem(-4px);
+          border: 1px solid colors.$input-text-color;
+          border-radius: rem.torem(8px);
+        }
       }
     }
 

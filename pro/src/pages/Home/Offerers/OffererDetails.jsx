@@ -8,7 +8,7 @@ import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-fill
 import { ReactComponent as ClosedEyeSvg } from 'icons/ico-eye-full-close.svg'
 import { ReactComponent as OpenedEyeSvg } from 'icons/ico-eye-full-open.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
-import { Banner, ButtonLink, Button } from 'ui-kit'
+import { Banner, Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Select from 'ui-kit/form_raw/Select'
 

@@ -15,6 +15,7 @@ import { CLOSE_JOB_HIGHLIGHTS_BANNER_KEY } from 'components/JobHighlightsBanner/
 import { RemoteContextProvider } from 'context/remoteConfigContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { configureTestStore } from 'store/testUtils'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
@@ -46,6 +47,11 @@ jest.mock('@firebase/remote-config', () => ({
 jest.mock('hooks/useRemoteConfig', () => ({
   __esModule: true,
   default: () => ({ remoteConfig: {} }),
+}))
+
+jest.mock('hooks/useNewOfferCreationJourney', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue(false),
 }))
 
 const renderHomePage = store => {
@@ -179,6 +185,31 @@ describe('homepage', () => {
   })
 
   describe('it should render', () => {
+    describe('new venue offer journey', () => {
+      beforeEach(() => {
+        jest.spyOn(useNewOfferCreationJourney, 'default').mockReturnValue(true)
+      })
+
+      it('the user should see the home offer steps if they do not have any venues', async () => {
+        api.getOfferer.mockResolvedValue(baseOfferers[1])
+        api.listOfferersNames.mockResolvedValue({
+          offerersNames: [baseOfferersNames[1]],
+        })
+
+        renderHomePage(store)
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+        expect(screen.getByTestId('home-offer-steps')).toBeInTheDocument()
+      })
+
+      it('the user should not see the home offer steps if they have some venues', async () => {
+        renderHomePage(store)
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+        expect(screen.queryByTestId('home-offer-steps')).not.toBeInTheDocument()
+      })
+    })
+
     describe('when clicking on anchor link to profile', () => {
       let scrollIntoViewMock
       beforeEach(async () => {
