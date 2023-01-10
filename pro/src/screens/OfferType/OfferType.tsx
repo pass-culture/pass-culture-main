@@ -52,7 +52,7 @@ const OfferType = (): JSX.Element => {
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           mode: OFFER_WIZARD_MODE.CREATION,
         }),
-        search: location.search,
+        search: `${location.search}&offer-type=${individualOfferSubtype}`,
       })
     }
 
