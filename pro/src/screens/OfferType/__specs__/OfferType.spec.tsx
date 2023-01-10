@@ -88,7 +88,7 @@ describe('screens:OfferIndividual::OfferType', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         isCreation: true,
       }),
-      search: '',
+      search: '&offer-type=PHYSICAL_GOOD',
     })
   })
 
@@ -149,5 +149,65 @@ describe('screens:OfferIndividual::OfferType', () => {
     expect(screen.getByText('Un bien numérique')).toBeInTheDocument()
     expect(screen.getByText('Un évènement physique')).toBeInTheDocument()
     expect(screen.getByText('Un évènement numérique')).toBeInTheDocument()
+  })
+
+  it('should select physical good', async () => {
+    renderOfferTypes(store)
+
+    await userEvent.click(screen.getByText('Un bien physique'))
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+
+    expect(mockHistoryPush).toHaveBeenCalledWith({
+      pathname: '/offre/creation/individuel',
+      search: '&offer-type=PHYSICAL_GOOD',
+    })
+  })
+
+  it('should select virtual good', async () => {
+    renderOfferTypes(store)
+
+    await userEvent.click(screen.getByText('Un bien numérique'))
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+
+    expect(mockHistoryPush).toHaveBeenCalledWith({
+      pathname: '/offre/creation/individuel',
+      search: '&offer-type=VIRTUAL_GOOD',
+    })
+  })
+
+  it('should select physical event', async () => {
+    renderOfferTypes(store)
+
+    await userEvent.click(screen.getByText('Un évènement physique'))
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+
+    expect(mockHistoryPush).toHaveBeenCalledWith({
+      pathname: '/offre/creation/individuel',
+      search: '&offer-type=PHYSICAL_EVENT',
+    })
+  })
+
+  it('should select physical good', async () => {
+    renderOfferTypes(store)
+
+    await userEvent.click(screen.getByText('Un évènement numérique'))
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+
+    expect(mockHistoryPush).toHaveBeenCalledWith({
+      pathname: '/offre/creation/individuel',
+      search: '&offer-type=VIRTUAL_EVENT',
+    })
   })
 })
