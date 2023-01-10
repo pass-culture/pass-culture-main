@@ -2230,33 +2230,21 @@ def test_public_api(client):
                     "parameters": [],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/FeaturesToggleRequest"
-                                }
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/FeaturesToggleRequest"}}
                         }
                     },
                     "responses": {
-                        "204": {
-                            "description": "No ""Content"
-                        },
-                        "403": {
-                            "description": "Forbidden"
-                        },
+                        "204": {"description": "No " "Content"},
+                        "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "$ref": "#/components/schemas/ValidationError"
-                                    }
-                                }
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
-                            "description": "Unprocessable ""Entity"
-                        }
+                            "description": "Unprocessable " "Entity",
+                        },
                     },
-                    "summary": "toggle_feature_toggles ""<PATCH>",
-                    "tags":[]
+                    "summary": "toggle_feature_toggles " "<PATCH>",
+                    "tags": [],
                 }
             },
             "/native/v1/me": {
