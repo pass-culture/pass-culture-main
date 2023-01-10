@@ -1,5 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import FormLayout from 'components/FormLayout'
 import {
@@ -38,6 +39,10 @@ import { useIndividualOfferImageUpload } from '../hooks'
 import { logTo } from '../utils/logTo'
 
 import { filterCategories } from './utils'
+import {
+  getCategoryStatusFromOfferSubtype,
+  getOfferSubtypeFromParams,
+} from './utils/filterCategories/filterCategories'
 
 export interface IInformationsProps {
   offererId: string
@@ -188,14 +193,20 @@ const Informations = ({
     venue => venue.id === initialValues.venueId
   )
 
-  const [filteredCategories, filteredSubCategories] = filterCategories(
-    categories,
-    subCategories,
+  const { search } = useLocation()
+  const offerSubtype = getOfferSubtypeFromParams(search)
+  const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
+  // TODO to remove once the hub that always redirects to the good url with query params is in prod
+  const legacyCategoryStatus =
     initialVenue === undefined
       ? CATEGORY_STATUS.ONLINE_OR_OFFLINE
       : initialVenue.isVirtual
       ? CATEGORY_STATUS.ONLINE
       : CATEGORY_STATUS.OFFLINE
+  const [filteredCategories, filteredSubCategories] = filterCategories(
+    categories,
+    subCategories,
+    offerSubtype !== null ? categoryStatus : legacyCategoryStatus
   )
 
   return (
