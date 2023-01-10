@@ -5,7 +5,6 @@ import React from 'react'
 
 import formRowStyles from 'components/StockEventFormRow/SharedStockEventFormRow.module.scss'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { useOfferWizardMode } from 'hooks'
 import { IcoEuro } from 'icons'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
 
@@ -17,14 +16,15 @@ export interface IStockEventFormProps {
   today: Date
   stockIndex: number
   isSynchronized?: boolean
+  mode?: OFFER_WIZARD_MODE
 }
 
 const StockEventForm = ({
   today,
   stockIndex,
   isSynchronized = false,
+  mode,
 }: IStockEventFormProps): JSX.Element => {
-  const mode = useOfferWizardMode()
   const { values, setFieldValue, setTouched } = useFormikContext<{
     stocks: IStockEventFormValues[]
   }>()
