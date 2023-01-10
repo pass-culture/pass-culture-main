@@ -189,7 +189,8 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     }
 
     props = {
-      initialValues: FORM_DEFAULT_VALUES,
+      offererId: venue.managingOffererId,
+      venueId: venue.id,
     }
 
     jest

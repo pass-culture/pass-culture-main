@@ -4,8 +4,12 @@ import React, { useEffect, useState } from 'react'
 import FormLayout from 'components/FormLayout'
 import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import {
+  FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
   OfferIndividualForm,
+  setDefaultInitialFormValues,
+  setFormReadOnlyFields,
+  setInitialFormValues,
   validationSchema,
 } from 'components/OfferIndividualForm'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
@@ -30,6 +34,7 @@ import { FORM_ERROR_MESSAGE, SENT_DATA_ERROR_MESSAGE } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useNavigate, useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
+import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
@@ -39,15 +44,16 @@ import { filterCategories } from './utils'
 import { imageFileToDataUrl } from './utils/files'
 
 export interface IInformationsProps {
-  initialValues: IOfferIndividualFormValues
-  readOnlyFields?: string[]
+  offererId: string
+  venueId: string
 }
 
 const Informations = ({
-  initialValues,
-  readOnlyFields = [],
+  offererId,
+  venueId,
 }: IInformationsProps): JSX.Element => {
   const notify = useNotification()
+  const { currentUser } = useCurrentUser()
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
   const { logEvent } = useAnalytics()
@@ -296,6 +302,18 @@ const Informations = ({
     }
     setIsClickingFromActionBar(false)
   }
+
+  const initialValues: IOfferIndividualFormValues =
+    offer === null
+      ? setDefaultInitialFormValues(
+          FORM_DEFAULT_VALUES,
+          offererNames,
+          offererId,
+          venueId,
+          venueList
+        )
+      : setInitialFormValues(offer, subCategories)
+  const readOnlyFields = setFormReadOnlyFields(offer, currentUser.isAdmin)
 
   const formik = useFormik({
     initialValues,
