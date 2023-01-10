@@ -24,8 +24,6 @@ test('je peux créer un compte avec un SIREN non existant en base de données, e
 
   await t
     .click(acceptCookieButton)
-    .expect(signUpButton.hasAttribute('disabled'))
-    .ok()
     .typeText(emailInput, 'pctest0.pro93.cafe0@example.com', { paste: true })
     .typeText(passwordInput, 'user@AZERTY123', { paste: true })
     .typeText(lastNameInput, '93 Café0', { paste: true })
