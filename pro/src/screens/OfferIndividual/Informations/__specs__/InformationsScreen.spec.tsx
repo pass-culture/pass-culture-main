@@ -6,7 +6,6 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { FORM_DEFAULT_VALUES } from 'components/OfferIndividualForm'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
@@ -107,7 +106,8 @@ describe('screens:OfferIndividual::Informations', () => {
     ]
 
     props = {
-      initialValues: FORM_DEFAULT_VALUES,
+      venueId: '',
+      offererId: '',
     }
 
     contextValue = {
@@ -162,7 +162,7 @@ describe('screens:OfferIndividual::Informations', () => {
         none: true,
       },
     }
-    props.initialValues.venueId = venue.id
+    props.venueId = venue.id
     contextValue.venueList = [
       venue,
       {
@@ -206,7 +206,7 @@ describe('screens:OfferIndividual::Informations', () => {
           none: true,
         },
       }
-      props.initialValues.venueId = venue.id
+      props.venueId = venue.id
       contextValue.venueList = [
         venue,
         {

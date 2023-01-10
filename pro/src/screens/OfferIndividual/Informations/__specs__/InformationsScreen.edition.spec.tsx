@@ -13,10 +13,6 @@ import {
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
-import {
-  setFormReadOnlyFields,
-  setInitialFormValues,
-} from 'components/OfferIndividualForm'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   IOfferIndividualContext,
@@ -276,8 +272,8 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     }
 
     props = {
-      initialValues: setInitialFormValues(offer, subCategories),
-      readOnlyFields: setFormReadOnlyFields(offer, false),
+      venueId: venue.id,
+      offererId: venue.managingOffererId,
     }
 
     jest
@@ -358,8 +354,8 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       withdrawalType: null,
     }
     props = {
-      initialValues: setInitialFormValues(contextOverride.offer, subCategories),
-      readOnlyFields: setFormReadOnlyFields(contextOverride.offer, false),
+      venueId: offer.venue.id,
+      offererId: offer.venue.offerer.id,
     }
 
     renderInformationsScreen(props, store, contextOverride)
@@ -419,8 +415,8 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       },
     }
     props = {
-      initialValues: setInitialFormValues(contextOverride.offer, subCategories),
-      readOnlyFields: setFormReadOnlyFields(contextOverride.offer, false),
+      venueId: offer.venue.id,
+      offererId: offer.venue.offerer.id,
     }
     renderInformationsScreen(props, store, contextOverride)
     await screen.findByRole('heading', { name: /Type d’offre/ })
@@ -446,8 +442,8 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       },
     }
     props = {
-      initialValues: setInitialFormValues(contextOverride.offer, subCategories),
-      readOnlyFields: setFormReadOnlyFields(contextOverride.offer, false),
+      venueId: offer.venue.id,
+      offererId: offer.venue.offerer.id,
     }
 
     renderInformationsScreen(props, store, contextOverride)
