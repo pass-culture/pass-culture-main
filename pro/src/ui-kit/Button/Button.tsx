@@ -56,14 +56,28 @@ const Button = ({
       )}
       {hasTooltip ? (
         <div className={styles['visually-hidden']}>
-          {isLoading ? <SpinnerIcon /> : children}
+          {isLoading ? (
+            <div className={styles['spinner-icon']}>
+              <SpinnerIcon />
+            </div>
+          ) : (
+            children
+          )}
         </div>
       ) : variant === ButtonVariant.BOX ? (
         <div className={styles['button-arrow-content']}>
-          {isLoading ? <SpinnerIcon /> : children}
+          {isLoading ? (
+            <div className={styles['spinner-icon']}>
+              <SpinnerIcon />
+            </div>
+          ) : (
+            children
+          )}
         </div>
       ) : isLoading ? (
-        <SpinnerIcon />
+        <div className={styles['spinner-icon']}>
+          <SpinnerIcon />
+        </div>
       ) : (
         children
       )}

@@ -201,6 +201,11 @@
   }
 }
 
+.spinner-icon {
+  height: rem.torem(20px);
+  width: rem.torem(20px);
+}
+
 .loading-spinner {
   @media screen and (prefers-reduced-motion: reduce) {
     svg {
