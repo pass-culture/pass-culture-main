@@ -78,7 +78,7 @@ const BASE_INVOICES = [
     date: '13-02-2022',
     amount: 100,
     url: 'J123456789.invoice',
-    businessUnitName: 'First business Unit',
+    reimbursementPointName: 'First business Unit',
     cashflowLabels: ['VIR7', 'VIR5'],
   },
   {
@@ -86,7 +86,7 @@ const BASE_INVOICES = [
     date: '11-03-2022',
     amount: 50,
     url: 'J666666666.invoice',
-    businessUnitName: 'Second business Unit',
+    reimbursementPointName: 'Second business Unit',
     cashflowLabels: ['VIR4'],
   },
   {
@@ -94,7 +94,7 @@ const BASE_INVOICES = [
     date: '10-02-2022',
     amount: 75,
     url: 'J987654321.invoice',
-    businessUnitName: 'First business Unit',
+    reimbursementPointName: 'First business Unit',
     cashflowLabels: ['VIR9, VIR12'],
   },
 ]
