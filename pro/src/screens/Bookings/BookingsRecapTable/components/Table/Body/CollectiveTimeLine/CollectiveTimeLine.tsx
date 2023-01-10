@@ -20,9 +20,9 @@ const CollectiveTimeLine = ({
   bookingRecap,
 }: ICollectiveBookingDetailsProps) => {
   const bookingDate = getDateToFrenchText(bookingRecap.booking_date)
-  const confirmationDate = getDateToFrenchText(
-    bookingRecap.booking_confirmation_date
-  )
+  const confirmationDate =
+    bookingRecap.booking_confirmation_date &&
+    getDateToFrenchText(bookingRecap.booking_confirmation_date)
   const confirmationLimitDate = getDateToFrenchText(
     bookingRecap.booking_confirmation_limit_date
   )
