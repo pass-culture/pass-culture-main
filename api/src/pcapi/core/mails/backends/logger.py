@@ -53,7 +53,7 @@ Subject: e-mail test #%s
             smtp_obj.connect("localhost", 1025)
             smtp_obj.sendmail(from_addr, recipients, message)
             logger.info("Successfully sent email")
-        except smtplib.SMTPException as exc:
+        except Exception as exc:
             log = "If you need to receive those email: docker run -p 1080:1080 -p 1025:1025 maildev/maildev (%s)" % exc
             logger.info(log)
 
