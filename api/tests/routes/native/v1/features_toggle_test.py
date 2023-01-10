@@ -4,7 +4,7 @@ import pytest
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class CookiesConsentTest:
+class FeaturesToggleTest:
     def test_patch_success(self, client):
         response = client.patch(
             "/native/v1/features_toggle",
