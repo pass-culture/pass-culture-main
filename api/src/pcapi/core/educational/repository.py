@@ -683,6 +683,7 @@ def get_filtered_collective_booking_report(
             educational_models.CollectiveOffer.name.label("offerName"),
             educational_models.CollectiveStock.price,
             educational_models.CollectiveStock.beginningDatetime.label("stockBeginningDatetime"),
+            educational_models.CollectiveStock.beginningDatetime.label("stockBookingLimitDatetime"),
             educational_models.EducationalRedactor.firstName,
             educational_models.EducationalRedactor.lastName,
             educational_models.EducationalRedactor.email,

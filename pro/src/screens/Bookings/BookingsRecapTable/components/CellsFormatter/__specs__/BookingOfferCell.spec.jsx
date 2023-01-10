@@ -1,10 +1,12 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
+import { add } from 'date-fns'
 import React from 'react'
 import { Provider } from 'react-redux'
 
 import { configureTestStore } from 'store/testUtils'
+import { collectiveBookingRecapFactory } from 'utils/collectiveApiFactories'
 
 import BookingOfferCell from '../BookingOfferCell'
 
@@ -14,6 +16,11 @@ const renderOfferCell = (props, store) =>
       <BookingOfferCell {...props} />
     </Provider>
   )
+
+jest.mock('hooks/useActiveFeature', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue(true),
+}))
 
 describe('bookings offer cell', () => {
   describe('should always display', () => {
@@ -92,6 +99,65 @@ describe('bookings offer cell', () => {
       const offer_name_link = offer_name.closest('a')
       expect(offer_name_link.href).toContain('offre/individuelle/A2')
       expect(offer_name_link.target).toContain('_blank')
+    })
+
+    it('should display warning when limit booking date is in less than 7 days', () => {
+      const tomorrowFns = add(new Date(), {
+        days: 1,
+      })
+
+      const eventOffer = collectiveBookingRecapFactory({
+        stock: {
+          bookingLimitDatetime: tomorrowFns,
+          eventBeginningDatetime: new Date().toISOString(),
+          numberOfTickets: 1,
+          offerIdentifier: '1',
+          offerIsEducational: true,
+          offerIsbn: null,
+          offerName: 'ma super offre collective',
+        },
+      })
+
+      renderOfferCell(
+        {
+          offer: eventOffer.stock,
+          bookingRecapInfo: { values: eventOffer },
+          isCollective: true,
+        },
+        store
+      )
+
+      const warningIco = screen.queryByAltText('Attention')
+      expect(warningIco).not.toBeNull()
+    })
+
+    it('should not display warning when limit booking date is in more than 7 days', () => {
+      const eightDaysFns = add(new Date(), {
+        days: 8,
+      })
+
+      const eventOffer = collectiveBookingRecapFactory({
+        stock: {
+          bookingLimitDatetime: eightDaysFns,
+          eventBeginningDatetime: new Date().toISOString(),
+          numberOfTickets: 1,
+          offerIdentifier: '1',
+          offerIsEducational: true,
+          offerIsbn: null,
+          offerName: 'ma super offre collective 2',
+        },
+      })
+      renderOfferCell(
+        {
+          offer: eventOffer.stock,
+          bookingRecapInfo: { values: eventOffer },
+          isCollective: true,
+        },
+        store
+      )
+
+      const warningIco = screen.queryByAltText('Attention')
+      expect(warningIco).toBeNull()
     })
   })
 })

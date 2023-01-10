@@ -17,7 +17,7 @@ export class AppClient {
 
   constructor(config?: Partial<OpenAPIConfig>, HttpRequest: HttpRequestConstructor = FetchHttpRequest) {
     this.request = new HttpRequest({
-      BASE: config?.BASE ?? 'https://backend.testing.passculture.team',
+      BASE: config?.BASE ?? 'http://localhost:5001',
       VERSION: config?.VERSION ?? '1',
       WITH_CREDENTIALS: config?.WITH_CREDENTIALS ?? false,
       CREDENTIALS: config?.CREDENTIALS ?? 'include',
