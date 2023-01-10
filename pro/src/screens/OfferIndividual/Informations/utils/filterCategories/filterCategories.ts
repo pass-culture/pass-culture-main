@@ -36,22 +36,32 @@ export const getCategoryStatusFromOfferSubtype = (
     : CATEGORY_STATUS.OFFLINE
 }
 
+const isSubcategoryMatchingCriteria = (
+  subcategory: IOfferSubCategory,
+  onlineOfflinePlatform: CATEGORY_STATUS
+) => {
+  if (onlineOfflinePlatform === CATEGORY_STATUS.ONLINE_OR_OFFLINE) {
+    return true
+  }
+
+  return (
+    subcategory.onlineOfflinePlatform === CATEGORY_STATUS.ONLINE_OR_OFFLINE ||
+    subcategory.onlineOfflinePlatform === onlineOfflinePlatform
+  )
+}
+
 const filterCategories = (
   allCategories: IOfferCategory[],
   allSubCategories: IOfferSubCategory[],
   onlineOfflinePlatform: CATEGORY_STATUS
 ): [IOfferCategory[], IOfferSubCategory[]] => {
   const subCategories: IOfferSubCategory[] = allSubCategories.filter(
-    (s: IOfferSubCategory) => {
-      if (onlineOfflinePlatform === CATEGORY_STATUS.ONLINE_OR_OFFLINE) {
-        return s.isSelectable
+    (subcategory: IOfferSubCategory) => {
+      if (!subcategory.isSelectable) {
+        return false
       }
 
-      return (
-        s.isSelectable &&
-        (s.onlineOfflinePlatform === CATEGORY_STATUS.ONLINE_OR_OFFLINE ||
-          s.onlineOfflinePlatform === onlineOfflinePlatform)
-      )
+      return isSubcategoryMatchingCriteria(subcategory, onlineOfflinePlatform)
     }
   )
   const categories: IOfferCategory[] = allCategories.filter(
