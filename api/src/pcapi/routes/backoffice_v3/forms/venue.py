@@ -53,4 +53,4 @@ class EditVenueForm(EditVirtualVenueForm):
 
 
 class CommentForm(FlaskForm):
-    comment = fields.PCCommentField("Commentaire interne pour la structure")
+    comment = fields.PCCommentField("Commentaire interne pour le lieu")

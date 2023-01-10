@@ -2,39 +2,68 @@
 
 {% extends "layouts/pro.html" %}
 
-{% block pro_extra_header %}
-    {% if request.referrer is not none %}
-        <div class="d-flex justify-content-between align-items-center">
-            <a href="{{ request.referrer | parse_referrer }}" class="btn btn-sm btn-outline-primary py-1 px-2">
-                <i class="bi bi-chevron-left"></i>
-                Retour
-            </a>
-        </div>
-    {% endif %}
-{% endblock %}
-
 {% block pro_main_content %}
 <div class="row row-cols-1 g-4 py-3">
     <div class="col">
         <div class="card">
             <div class="card-body">
-                <h2 class="card-title mb-3">
-                    <a href="{{ offerer | pc_pro_offerer_link }}" target="_blank"
-                       class="link-primary">
-                        {{ offerer.name | escape }}
-                    </a>
-
-                    <span class="fs-5 ps-4 mb-3 align-middle">
-                        {{ build_offerer_badges(offerer) }}
-                    </span>
-                </h2>
+                <div class="row justify-content-start align-items-center">
+                    <div class="col d-flex align-items-center justify-content-start">
+                        <h2 class="card-title text-primary me-3">
+                            <a href="{{ offerer | pc_pro_offerer_link }}" target="_blank"
+                            class="link-primary">
+                                {{ offerer.name | escape }}
+                            </a>
+                        </h2>
+                        <span class="fs-5 ps-4 mb-3 align-middle">
+                            {{ build_offerer_badges(offerer) }}
+                        </span>
+                    </div>
+                    <div class="col-2">
+                        {% if can_edit_user %}
+                            <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
+                                    data-bs-target="#edit-offerer-modal" type="button">
+                                Modifier les informations
+                            </button>
+                            <div class="modal modal-lg fade" id="edit-offerer-modal" tabindex="-1"
+                                 aria-describedby="edit-offerer-modal-label" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header fs-5" id="edit-offerer-modal-label">
+                                            Modifier les informations de la structure</div>
+                                        <form action="{{ dst }}" method="POST">
+                                            <div class="modal-body">
+                                                <div class="form-group">
+                                                    {% include "components/form_body.html" %}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                                                    Annuler
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
 
                 <p class="card-subtitle text-muted mb-3 h5">
                     User ID : {{ offerer.id }}
                 </p>
 
                 <p class="card-subtitle text-muted mb-3 h5">
-                    SIREN : {{ offerer.siren | empty_string_if_null }}
+                    SIREN :
+                    {% if offerer.siren %}
+                        <a href="https://www.societe.com/cgi-bin/fiche?rncs={{ offerer.siren }}"
+                            target="_blank"
+                            title="Visualiser sur societe.com">
+                            {{ offerer.siren | empty_string_if_null }}
+                        </a>
+                    {% endif %}
                 </p>
 
                 <div class="row pt-3">
@@ -66,6 +95,20 @@
                                 <span class="fw-bold">Région :</span>
                                 {{ region }}
                             </p>
+                            {% if offerer.address %}
+                                <p class="mb-1">
+                                    <span class="fw-bold">Adresse :</span>
+                                    {{ offerer.address }}
+                                </p>
+                            {% endif %}
+                            <p class="mb-1">
+                                <span class="fw-bold">Ville :</span>
+                                {{ offerer.city }}
+                            </p>
+                            <p class="mb-1">
+                                <span class="fw-bold">Code postal :</span>
+                                {{ offerer.postalCode }}
+                            </p>
                         </div>
                     </div>
 
@@ -75,9 +118,12 @@
                             {{ bank_information_status.ok }} OK
                             / {{ bank_information_status.ko }} KO
                         </p>
+                        <p class="mb-1">
+                            <span class="fw-bold">Tags structure :</span>
+                            {{ offerer.tags | format_offerer_tags | escape }}
+                        </p>
                     </div>
-
-                    <div class="col-lg-4 d-flex justify-content-center">
+                    <div class="col-lg-4 justify-content-center">
                         <a href="#" class="card-link btn btn-outline-primary lead fw-bold mt-2">
                             ACCÉDER AU DOSSIER DMS
                         </a>

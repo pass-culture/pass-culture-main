@@ -8,6 +8,7 @@ import pytz
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.utils import urls
@@ -125,6 +126,10 @@ def format_offer_category(subcategory_id: str) -> str:
     return ""
 
 
+def format_offerer_tags(offerer_tags: list[offerers_models.OffererTag]) -> str:
+    return ", ".join([tag.label for tag in offerer_tags])
+
+
 def parse_referrer(url: str) -> str:
     """
     Ensure that a relative path is used, which will be understood.
@@ -146,6 +151,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_string_list"] = format_string_list
     app.jinja_env.filters["format_date"] = format_date
     app.jinja_env.filters["format_offer_category"] = format_offer_category
+    app.jinja_env.filters["format_offerer_tags"] = format_offerer_tags
     app.jinja_env.filters["format_phone_number"] = format_phone_number
     app.jinja_env.filters["format_role"] = format_role
     app.jinja_env.filters["format_state"] = format_state
