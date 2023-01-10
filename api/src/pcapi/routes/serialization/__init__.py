@@ -1,3 +1,5 @@
+from datetime import datetime
+from decimal import Decimal
 from math import isfinite
 
 
@@ -16,6 +18,7 @@ from pcapi.serialization import utils as serialization_utils
 
 
 __all__ = ("as_dict", "serialize")
+_missing = object()
 
 
 class BaseModel(PydanticBaseModel):
@@ -27,6 +30,27 @@ class BaseModel(PydanticBaseModel):
         if field.outer_type_ is float and not isfinite(v):
             raise errors.DecimalIsNotFiniteError()
         return v
+
+    @classmethod
+    def build_model(cls, obj: object, **replacements: dict) -> "BaseModel":
+        if not cls.__config__.orm_mode:
+            raise ValueError("You must have the config attribute orm_mode=True to use build_model")
+
+        kwargs = {}
+
+        for name, model_field in cls.__fields__.items():
+            field_type = model_field.type_
+            if name in replacements:
+                kwargs[name] = replacements[name]
+                continue
+            value = getattr(obj, name, _missing)
+            if not value is _missing:
+                # recursive models
+                if issubclass(field_type, BaseModel) and not isinstance(value, dict):
+                    value = field_type.build_model(value)
+                kwargs[name] = value  # type: ignore [assignment]
+
+        return cls(**kwargs)
 
     class Config:
         @staticmethod
