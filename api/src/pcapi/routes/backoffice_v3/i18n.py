@@ -26,7 +26,7 @@ def i18n_public_account(term: str) -> str:
         case "rejected":  # pro
             return "Rejeté"
         case _:
-            return term.replace("_", " ").capitalize()
+            return term.replace("_", " ")
 
 
 def i18n_subscription_type(term: str) -> str:
