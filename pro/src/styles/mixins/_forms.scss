@@ -21,8 +21,8 @@
   transition: background 150ms ease, box-shadow 150ms ease;
 
   &:focus {
-    border: solid forms.$input-border-width-focus forms.$input-border-color-focus;
-    padding: 0 rem.torem(15px);
+    outline: solid size.$input-border-width forms.$input-border-color-focus;
+    border-color: forms.$input-border-color-focus;
   }
 
   &:hover:not(:focus) {
