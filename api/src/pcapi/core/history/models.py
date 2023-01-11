@@ -19,6 +19,8 @@ if typing.TYPE_CHECKING:
 class ActionType(enum.Enum):
     # Single comment from admin, on any resource, without status change:
     COMMENT = "Commentaire interne"
+    # Update:
+    INFO_MODIFIED = "Modification des informations"
     # Validation process for offerers:
     OFFERER_NEW = "Nouvelle structure"
     OFFERER_PENDING = "Structure mise en attente"
@@ -26,15 +28,11 @@ class ActionType(enum.Enum):
     OFFERER_REJECTED = "Structure rejetée"
     OFFERER_SUSPENDED = "Structure désactivée"
     OFFERER_UNSUSPENDED = "Structure réactivée"
-    # Modification of offerer info:
-    OFFERER_INFO_MODIFIED = "Modification des informations"
     # Validation process for user-offerer relationships:
     USER_OFFERER_NEW = "Nouveau rattachement"
     USER_OFFERER_PENDING = "Rattachement mis en attente"
     USER_OFFERER_VALIDATED = "Rattachement validé"
     USER_OFFERER_REJECTED = "Rattachement rejeté"
-    # Modification of user info:
-    USER_INFO_MODIFIED = "Modification des informations"
     # User account status changes:
     USER_CREATED = "Création du compte"
     USER_SUSPENDED = "Compte suspendu"
