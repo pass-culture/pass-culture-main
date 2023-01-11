@@ -143,7 +143,7 @@ class UpdateOffererTest:
 
         history_rows = html_parser.extract_table_rows(response.data, parent_id="pills-home")
         assert len(history_rows) == 1
-        assert history_rows[0]["Type"] == history_models.ActionType.OFFERER_INFO_MODIFIED.value
+        assert history_rows[0]["Type"] == history_models.ActionType.INFO_MODIFIED.value
         assert f"Ville : {old_city} => {offerer_to_edit.city}" in history_rows[0]["Commentaire"]
         assert f"Code postal : {old_postal_code} => {offerer_to_edit.postalCode}" in history_rows[0]["Commentaire"]
         assert f"Adresse : {old_address} => {offerer_to_edit.address}" in history_rows[0]["Commentaire"]
@@ -178,7 +178,7 @@ class UpdateOffererTest:
 
         history_rows = html_parser.extract_table_rows(response.data, parent_id="pills-home")
         assert len(history_rows) == 1
-        assert history_rows[0]["Type"] == history_models.ActionType.OFFERER_INFO_MODIFIED.value
+        assert history_rows[0]["Type"] == history_models.ActionType.INFO_MODIFIED.value
         assert history_rows[0]["Auteur"] == legit_user.full_name
         assert "Premier tag => Deuxième tag, Troisième tag" in history_rows[0]["Commentaire"]
         for item in ("Adresse", "Code postal", "Ville"):

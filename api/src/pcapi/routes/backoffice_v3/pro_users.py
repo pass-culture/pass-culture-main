@@ -92,7 +92,7 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
 
     if modified_info:
         history_api.log_action(
-            history_models.ActionType.USER_INFO_MODIFIED,
+            history_models.ActionType.INFO_MODIFIED,
             current_user,
             user=user,
             modified_info=modified_info,
