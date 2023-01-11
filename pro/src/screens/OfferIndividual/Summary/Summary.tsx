@@ -73,6 +73,13 @@ const Summary = (
   const newOfferCreation = useNewOfferCreationJourney()
 
   const { logEvent } = useAnalytics()
+
+  const offerConfirmationStepUrl = getOfferIndividualUrl({
+    offerId,
+    step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+    mode,
+  })
+
   const publishOffer = async () => {
     // edition mode offers are already publish
     /* istanbul ignore next: DEBT, TO FIX */
@@ -100,13 +107,7 @@ const Summary = (
       if (newOfferCreation && isFirstOffer) {
         setDisplayRedirectDialog(true)
       } else {
-        navigate(
-          getOfferIndividualUrl({
-            offerId,
-            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-            mode,
-          })
-        )
+        navigate(offerConfirmationStepUrl)
       }
     } else {
       notification.error("Une erreur s'est produite, veuillez réessayer")
@@ -225,7 +226,7 @@ const Summary = (
         <RedirectDialog
           icon={IcoParty}
           onCancel={() => {
-            navigate('/accueil')
+            navigate(offerConfirmationStepUrl)
           }}
           title="Félicitations, vous avez créé votre offre !"
           redirectText="Renseigner des coordonnées bancaires"
