@@ -4,7 +4,9 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
+import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
+import useAnalytics from 'hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import Icon from 'ui-kit/Icon/Icon'
 
@@ -61,9 +63,13 @@ const FilterByBookingStatus = <
     useState(bookingStatuses)
   const [isToolTipVisible, setIsToolTipVisible] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const { logEvent } = useAnalytics()
 
   function showFilter() {
     setIsToolTipVisible(true)
+    logEvent?.(Events.CLICKED_SHOW_STATUS_FILTER, {
+      from: location.pathname,
+    })
   }
 
   function hideFilters() {

@@ -11,7 +11,9 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
+import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
+import useAnalytics from 'hooks/useAnalytics'
 
 import TableBody from '../Body'
 import TableHead from '../Head'
@@ -66,17 +68,24 @@ const TableWrapper = <
     useExpanded,
     usePagination
   )
+  const { logEvent } = useAnalytics()
 
   const pageCount = Math.ceil(nbBookings / nbBookingsPerPage)
 
   const goToNextPage = () => {
     nextPage()
     updateCurrentPage(pageIndex + 1)
+    logEvent?.(Events.CLICKED_PAGINATION_NEXT_PAGE, {
+      from: location.pathname,
+    })
   }
 
   const goToPreviousPage = () => {
     previousPage()
     updateCurrentPage(pageIndex - 1)
+    logEvent?.(Events.CLICKED_PAGINATION_PREVIOUS_PAGE, {
+      from: location.pathname,
+    })
   }
 
   return (
