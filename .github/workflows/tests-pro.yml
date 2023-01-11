@@ -1,5 +1,6 @@
 name: Tests pro
 on: workflow_call
+  secrets: inherit
 
 env:
   use_cache: ${{ github.ref != 'refs/heads/master' }}
@@ -117,10 +118,15 @@ jobs:
         with:
           path: ./${{ env.folder }}/.jest_cache
           key: node-${{ needs.read-node-version.outputs.node_version }}-jest-cache
-      - if: ${{ github.ref == 'refs/heads/master' }}
-        run: yarn test:unit:ci
-      - if: ${{ github.ref != 'refs/heads/master' }}
-        run: yarn test:unit:ci --coverage --changedSince=master --coverageThreshold='{"global":{"statements":"100","branches":"100","functions":"100","lines":"100"}}'
+      - name: Run tests with coverage
+        run: yarn test:unit:ci --coverage
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: pro
       - if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: rtCamp/action-slack-notify@v2
         env:
