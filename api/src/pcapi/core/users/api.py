@@ -524,9 +524,9 @@ def update_user_info(
     phone_number: str | T_UNCHANGED = UNCHANGED,
     public_name: str | T_UNCHANGED = UNCHANGED,
     postal_code: str | T_UNCHANGED = UNCHANGED,
-) -> dict[str, dict[str, str | None]]:
+) -> history_api.FormattedSnapshot:
     old_email = None
-    modified_info = {}
+    modified_info = history_api.UpdateSnapshot()
 
     if cultural_survey_filled_date is not UNCHANGED:
         user.culturalSurveyFilledDate = cultural_survey_filled_date
@@ -537,24 +537,24 @@ def update_user_info(
         user.email = email_utils.sanitize_email(email)
     if first_name is not UNCHANGED:
         if user.firstName != first_name:
-            modified_info["firstName"] = {"old_info": user.firstName, "new_info": first_name}
+            modified_info.set("firstName", old=user.firstName, new=first_name)
         user.firstName = first_name
     if last_name is not UNCHANGED:
         if user.lastName != last_name:
-            modified_info["lastName"] = {"old_info": user.lastName, "new_info": last_name}
+            modified_info.set("lastName", old=user.lastName, new=last_name)
         user.lastName = last_name
     if needs_to_fill_cultural_survey is not UNCHANGED:
         user.needsToFillCulturalSurvey = needs_to_fill_cultural_survey
     if phone_number is not UNCHANGED:
         user_phone_number = typing.cast(str, user.phoneNumber)
         if user_phone_number != phone_number:
-            modified_info["phoneNumber"] = {"old_info": user_phone_number, "new_info": phone_number}
+            modified_info.set("phoneNumber", old=user_phone_number, new=phone_number)
         user.phoneNumber = phone_number  # type: ignore [assignment]
     if public_name is not UNCHANGED:
         user.publicName = public_name
     if postal_code is not UNCHANGED:
         if user.postalCode != postal_code:
-            modified_info["postalCode"] = {"old_info": user.postalCode, "new_info": postal_code}
+            modified_info.set("postalCode", old=user.postalCode, new=postal_code)
         user.postalCode = postal_code
         user.departementCode = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
 
@@ -565,7 +565,7 @@ def update_user_info(
         external_attributes_api.update_external_pro(old_email)
     external_attributes_api.update_external_user(user)
 
-    return modified_info
+    return modified_info.to_dict()
 
 
 def add_comment_to_user(user: models.User, author_user: models.User, comment: str) -> None:
