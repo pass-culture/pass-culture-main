@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
     on_success_status=204,
     api=blueprint.api,
 )
-def toggle_feature_toggles(body: serializers.FeaturesToggleRequest) -> None:
+def set_feature(body: serializers.FeaturesToggleRequest) -> None:
     if not (settings.IS_DEV or settings.IS_RUNNING_TESTS):
         raise ApiErrors({"code": "not found"}, status_code=404)
     for feature in body.features:
