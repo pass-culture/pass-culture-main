@@ -161,7 +161,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     )
 
     expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/creation/individuel',
+      pathname: '/offre/individuelle/creation/informations',
       search: '&offer-type=PHYSICAL_GOOD',
     })
   })
@@ -176,7 +176,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     )
 
     expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/creation/individuel',
+      pathname: '/offre/individuelle/creation/informations',
       search: '&offer-type=VIRTUAL_GOOD',
     })
   })
@@ -191,7 +191,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     )
 
     expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/creation/individuel',
+      pathname: '/offre/individuelle/creation/informations',
       search: '&offer-type=PHYSICAL_EVENT',
     })
   })
@@ -206,7 +206,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     )
 
     expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/creation/individuel',
+      pathname: '/offre/individuelle/creation/informations',
       search: '&offer-type=VIRTUAL_EVENT',
     })
   })
