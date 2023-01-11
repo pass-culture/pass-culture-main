@@ -189,7 +189,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
     if modified_info:
         history_api.log_action(
-            history_models.ActionType.OFFERER_INFO_MODIFIED,
+            history_models.ActionType.INFO_MODIFIED,
             current_user,
             offerer=offerer,
             modified_info=modified_info,

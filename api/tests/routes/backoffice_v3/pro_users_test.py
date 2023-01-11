@@ -105,7 +105,7 @@ class UpdateProUserTest:
 
         content = response.data.decode("utf-8")
 
-        assert history_models.ActionType.USER_INFO_MODIFIED.value in content
+        assert history_models.ActionType.INFO_MODIFIED.value in content
         assert f"{old_last_name} =&gt; {user_to_edit.lastName}" in content
         assert f"{old_email} =&gt; {user_to_edit.email}" in content
         assert f"{old_postal_code} =&gt; {user_to_edit.postalCode}" in content
