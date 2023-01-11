@@ -26,7 +26,7 @@
                         {% for info_name, modified_info in action.extraData.get('modified_info', {}).items() %}
                             <p>
                                 <span class="text-decoration-underline">{{ info_name | i18n_column_name }} :</span>
-                                 {{ modified_info['old_info'] | escape }} =&gt; {{ modified_info['new_info'] | escape }}
+                                {{ modified_info['old_info'] | i18n_column_value | escape }} =&gt; {{ modified_info['new_info'] | i18n_column_value | escape }}
                             </p>
                         {% endfor %}
                     {% elif action.actionType.name == "USER_SUSPENDED" %}

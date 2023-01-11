@@ -187,6 +187,10 @@ class Returns200Test:
             },
         )
 
+        assert len(venue.action_history) == 1
+        update_snapshot = venue.action_history[0].extraData["modified_info"]
+        assert update_snapshot["name"]["new_info"] == venue_data["name"]
+
     def when_siret_does_not_change(self, app) -> None:
         # Given
         user_offerer = offerers_factories.UserOffererFactory()

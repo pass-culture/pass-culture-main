@@ -63,7 +63,7 @@ def patch_user_identity(body: users_serializers.UserIdentityBodyModel) -> users_
         )
         raise errors
     attributes = body.dict()
-    users_api.update_user_info(user, **attributes)
+    users_api.update_user_info(user, author=current_user, **attributes)
     return users_serializers.UserIdentityResponseModel.from_orm(user)
 
 
@@ -80,7 +80,7 @@ def patch_user_phone(body: users_serializers.UserPhoneBodyModel) -> users_serial
         )
         raise errors
     attributes = body.dict()
-    users_api.update_user_info(user, **attributes)
+    users_api.update_user_info(user, author=current_user, **attributes)
     return users_serializers.UserPhoneResponseModel.from_orm(user)
 
 

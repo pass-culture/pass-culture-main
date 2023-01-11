@@ -1,3 +1,5 @@
+import typing
+
 from flask import Flask
 
 
@@ -63,11 +65,28 @@ def i18n_column_name(term: str) -> str:
             return "Ville"
         case "address":
             return "Adresse"
+        case "contact.email":
+            return "Email de contact"
+        case "contact.phone_number":
+            return "Numéro de téléphone de contact"
+        case "ispermanent":
+            return "Permanent"
         case _:
             return term.replace("_", " ").capitalize()
+
+
+def i18n_column_value(term: typing.Any) -> str:
+    if term is True:
+        return "Vrai"
+
+    if term is False:
+        return "Faux"
+
+    return term
 
 
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["i18n_public_account"] = i18n_public_account
     app.jinja_env.filters["i18n_subscription_type"] = i18n_subscription_type
     app.jinja_env.filters["i18n_column_name"] = i18n_column_name
+    app.jinja_env.filters["i18n_column_value"] = i18n_column_value

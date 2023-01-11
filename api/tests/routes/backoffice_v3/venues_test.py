@@ -217,6 +217,14 @@ class UpdateVenueTest:
         assert venue.contact.phone_number == data["phone_number"]
         assert venue.isPermanent == data["isPermanent"]
 
+        assert len(venue.action_history) == 1
+
+        update_snapshot = venue.action_history[0].extraData["modified_info"]
+
+        assert update_snapshot["city"]["new_info"] == data["city"]
+        assert update_snapshot["address"]["new_info"] == data["address"]
+        assert update_snapshot["contact.email"]["new_info"] == data["email"]
+
     def test_update_virtual_venue(self, authenticated_client, offerer):
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 

@@ -515,6 +515,7 @@ def update_password_and_external_user(user, new_password):  # type: ignore [no-u
 
 def update_user_info(
     user: users_models.User,
+    author: users_models.User,
     cultural_survey_filled_date: datetime.datetime | T_UNCHANGED = UNCHANGED,
     cultural_survey_id: int | T_UNCHANGED = UNCHANGED,
     email: str | T_UNCHANGED = UNCHANGED,
@@ -524,9 +525,9 @@ def update_user_info(
     phone_number: str | T_UNCHANGED = UNCHANGED,
     public_name: str | T_UNCHANGED = UNCHANGED,
     postal_code: str | T_UNCHANGED = UNCHANGED,
-) -> history_api.FormattedSnapshot:
+) -> history_api.ObjectUpdateSnapshot:
     old_email = None
-    modified_info = history_api.UpdateSnapshot()
+    snapshot = history_api.ObjectUpdateSnapshot(user, author)
 
     if cultural_survey_filled_date is not UNCHANGED:
         user.culturalSurveyFilledDate = cultural_survey_filled_date
@@ -537,24 +538,24 @@ def update_user_info(
         user.email = email_utils.sanitize_email(email)
     if first_name is not UNCHANGED:
         if user.firstName != first_name:
-            modified_info.set("firstName", old=user.firstName, new=first_name)
+            snapshot.set("firstName", old=user.firstName, new=first_name)
         user.firstName = first_name
     if last_name is not UNCHANGED:
         if user.lastName != last_name:
-            modified_info.set("lastName", old=user.lastName, new=last_name)
+            snapshot.set("lastName", old=user.lastName, new=last_name)
         user.lastName = last_name
     if needs_to_fill_cultural_survey is not UNCHANGED:
         user.needsToFillCulturalSurvey = needs_to_fill_cultural_survey
     if phone_number is not UNCHANGED:
         user_phone_number = typing.cast(str, user.phoneNumber)
         if user_phone_number != phone_number:
-            modified_info.set("phoneNumber", old=user_phone_number, new=phone_number)
+            snapshot.set("phoneNumber", old=user_phone_number, new=phone_number)
         user.phoneNumber = phone_number  # type: ignore [assignment]
     if public_name is not UNCHANGED:
         user.publicName = public_name
     if postal_code is not UNCHANGED:
         if user.postalCode != postal_code:
-            modified_info.set("postalCode", old=user.postalCode, new=postal_code)
+            snapshot.set("postalCode", old=user.postalCode, new=postal_code)
         user.postalCode = postal_code
         user.departementCode = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
 
@@ -565,7 +566,7 @@ def update_user_info(
         external_attributes_api.update_external_pro(old_email)
     external_attributes_api.update_external_user(user)
 
-    return modified_info.to_dict()
+    return snapshot
 
 
 def add_comment_to_user(user: models.User, author_user: models.User, comment: str) -> None:
