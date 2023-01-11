@@ -1,6 +1,8 @@
 import React, { ChangeEvent, useMemo } from 'react'
 
+import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
+import useAnalytics from 'hooks/useAnalytics'
 
 import { BookingsFilters } from '../../../types'
 import { EMPTY_FILTER_VALUE } from '../_constants'
@@ -29,6 +31,7 @@ const FilterByOmniSearch = ({
   updateFilters,
   audience,
 }: FilterByOmniSearchProps) => {
+  const { logEvent } = useAnalytics()
   const omnisearchFilters = useMemo(
     () =>
       audience === Audience.INDIVIDUAL
@@ -73,6 +76,10 @@ const FilterByOmniSearch = ({
   ) {
     const newOmniSearchCriteria = event.target.value.toLowerCase()
     updateOmniSearchKeywords(newOmniSearchCriteria, keywords)
+    logEvent?.(Events.CLICKED_OMNI_SEARCH_CRITERIA, {
+      from: location.pathname,
+      criteria: newOmniSearchCriteria,
+    })
   }
 
   const placeholderText = omnisearchFilters.find(
