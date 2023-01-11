@@ -139,6 +139,10 @@ class BoostPivotView(BaseAdminView):
         if not venue:
             form.venue_id.errors = [f"Lieu id={venue_id} n'existe pas"]
             return None
+        pivot = providers_models.CinemaProviderPivot.query.filter_by(venueId=venue_id).one_or_none()
+        if pivot:
+            form.venue_id.errors = [f"Des identifiants cinéma existent déjà pour ce lieu id={venue_id}"]
+            return None
 
         cinema_provider_pivot = providers_models.CinemaProviderPivot(
             venue=venue, provider=boost_provider, idAtProvider=cinema_id

@@ -107,6 +107,30 @@ class CreateBoostPivotTest:
         assert "Cet identifiant cinéma existe déjà pour un autre lieu" in response.data.decode("utf8")
         assert providers_models.CinemaProviderPivot.query.count() == 1
 
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_create_boost_information_when_venue_already_has_cinema_provider(self, _mocked_validate_csrf_token, app):
+        AdminFactory(email="user@example.com")
+        venue = offerers_factories.VenueFactory()
+        boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
+        _cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue, provider=boost_provider, idAtProvider="cinema1_test"
+        )
+
+        data = {
+            "venue_id": venue.id,
+            "cinema_id": "cinema2_test",
+            "username": "username_test",
+            "password": "password_test",
+            "cinema_url": "https://test.com",
+        }
+
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post("/pc/back-office/boost/new", form=data)
+        assert response.status_code == 200
+        assert "Des identifiants cinéma existent déjà pour ce lieu id=" in response.data.decode("utf8")
+        assert providers_models.CinemaProviderPivot.query.count() == 1
+
 
 class EditBoostPivotTest:
     @clean_database
