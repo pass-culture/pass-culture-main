@@ -235,7 +235,7 @@ def update(venue_id: int) -> utils.BackofficeResponse:
     contact_data = serialize_base.VenueContactModel(**contact_attrs)
 
     try:
-        offerers_api.update_venue(venue, contact_data, admin_update=True, **attrs)
+        offerers_api.update_venue(venue, author=current_user, contact_data=contact_data, admin_update=True, **attrs)
     except ApiErrors as api_errors:
         for error_key, error_details in api_errors.errors.items():
             for error_detail in error_details:

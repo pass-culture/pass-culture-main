@@ -595,12 +595,12 @@ class UpdateUserInfoTest:
     def test_update_user_info(self):
         user = users_factories.UserFactory(email="initial@example.com")
 
-        users_api.update_user_info(user, public_name="New Name")
+        users_api.update_user_info(user, author=user, public_name="New Name")
         user = users_models.User.query.one()
         assert user.email == "initial@example.com"
         assert user.publicName == "New Name"
 
-        users_api.update_user_info(user, email="new@example.com")
+        users_api.update_user_info(user, author=user, email="new@example.com")
         user = users_models.User.query.one()
         assert user.email == "new@example.com"
         assert user.publicName == "New Name"
@@ -608,15 +608,17 @@ class UpdateUserInfoTest:
     def test_update_user_info_sanitizes_email(self):
         user = users_factories.UserFactory(email="initial@example.com")
 
-        users_api.update_user_info(user, email="  NEW@example.com   ")
+        users_api.update_user_info(user, author=user, email="  NEW@example.com   ")
         user = users_models.User.query.one()
         assert user.email == "new@example.com"
 
     def test_update_user_info_returns_modified_info(self):
         user = users_factories.UserFactory(firstName="Noël", lastName="Flantier")
 
-        modified_info = users_api.update_user_info(user, first_name="Hubert", last_name="Bonisseur de la Bath")
-        assert modified_info == {
+        modified_info = users_api.update_user_info(
+            user, author=user, first_name="Hubert", last_name="Bonisseur de la Bath"
+        )
+        assert modified_info.to_dict() == {
             "firstName": {"new_info": "Hubert", "old_info": "Noël"},
             "lastName": {"new_info": "Bonisseur de la Bath", "old_info": "Flantier"},
         }

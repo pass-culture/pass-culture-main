@@ -33,6 +33,7 @@ from pcapi.core.external import zendesk_sell
 from pcapi.core.external.attributes.api import update_external_pro
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.validation as finance_validation
+import pcapi.core.history.api as history_api
 from pcapi.core.mails.transactional.pro.permanent_venue_needs_picture import send_permanent_venue_needs_picture
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.exceptions as offerers_exception
@@ -289,6 +290,10 @@ class VenueView(BaseAdminView):
             if hasattr(edit_venue_form, field) and getattr(edit_venue_form, field).data != getattr(venue, field)
         }
 
+        # not saved until update_model calls session.commit()
+        snapshot = history_api.ObjectUpdateSnapshot(venue, current_user)
+        snapshot.trace_update(edit_venue_form.data, filter_fields=True).log_update()
+
         # A failed update (invalid DB constraint for example) does not raise but returns False
         update_success = super().update_model(edit_venue_form, venue)
         if not update_success:
@@ -395,9 +400,11 @@ class VenueView(BaseAdminView):
             criteria: list[criteria_models.VenueCriterion] = change_form.data["tags"]
             remove_other_tags = change_form.data["remove_other_tags"]
 
-            Venue.query.filter(Venue.id.in_(venue_ids)).update(
-                values={"isPermanent": is_permanent}, synchronize_session=False
-            )
+            for venue in Venue.query.filter(Venue.id.in_(venue_ids)):
+                venue.isPermanent = is_permanent
+
+                snapshot = history_api.ObjectUpdateSnapshot(venue, current_user)
+                snapshot.trace_update({"isPermanent": is_permanent}).log_update(save=False)
 
             criteria_ids = [crit.id for crit in criteria]
             criteria_api.VenueUpdate(venue_ids, criteria_ids, replace_tags=remove_other_tags).run()
