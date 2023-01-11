@@ -19,8 +19,10 @@ import {
   GetVenuesAdapter,
   TPreFilters,
 } from 'core/Bookings'
+import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
 import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
@@ -66,6 +68,7 @@ const Bookings = <
 }: IBookingsProps): JSX.Element => {
   const { currentUser: user } = useCurrentUser()
   const notify = useNotification()
+  const { logEvent } = useAnalytics()
   const isBookingFiltersActive = useActiveFeature('ENABLE_NEW_BOOKING_FILTERS')
 
   const [appliedPreFilters, setAppliedPreFilters] = useState<TPreFilters>({
@@ -84,6 +87,9 @@ const Bookings = <
   const resetPreFilters = useCallback(() => {
     setWereBookingsRequested(false)
     setAppliedPreFilters({ ...DEFAULT_PRE_FILTERS })
+    logEvent?.(Events.CLICKED_RESET_FILTERS, {
+      from: location.pathname,
+    })
   }, [setWereBookingsRequested])
 
   const applyPreFilters = (filters: TPreFilters) => {
