@@ -176,6 +176,12 @@ const Offerers = ({ receivedOffererNames }: IOfferersProps) => {
   const isOffererSoftDeleted =
     selectedOfferer && selectedOfferer.isActive === false
   const userHasOfferers = offererOptions.length > 0
+  const creationLinkCondition =
+    (hasNewOfferCreationJourney && physicalVenues.length > 0) ||
+    (!hasNewOfferCreationJourney &&
+      isUserOffererValidated &&
+      !isOffererSoftDeleted &&
+      physicalVenues.length > 0)
   return (
     <>
       {userHasOfferers && selectedOfferer && (
@@ -243,22 +249,20 @@ const Offerers = ({ receivedOffererNames }: IOfferersProps) => {
         )
       }
       {!userHasOfferers && <OffererCreationLinks />}
-      {isUserOffererValidated &&
-        !isOffererSoftDeleted &&
-        physicalVenues.length > 0 && (
-          <VenueCreationLinks
-            hasPhysicalVenue={physicalVenues.length > 0}
-            hasVirtualOffers={
-              !!virtualVenue &&
-              !!selectedOfferer?.hasDigitalVenueAtLeastOneOffer
-            }
-            offererId={
-              /* istanbul ignore next: DEBT, TO FIX */ selectedOfferer
-                ? selectedOfferer.id
-                : null
-            }
-          />
-        )}
+      {creationLinkCondition && (
+        <VenueCreationLinks
+          hasPhysicalVenue={physicalVenues.length > 0}
+          hasVirtualOffers={
+            Boolean(virtualVenue) &&
+            Boolean(selectedOfferer?.hasDigitalVenueAtLeastOneOffer)
+          }
+          offererId={
+            /* istanbul ignore next: DEBT, TO FIX */ selectedOfferer
+              ? selectedOfferer.id
+              : null
+          }
+        />
+      )}
     </>
   )
 }
