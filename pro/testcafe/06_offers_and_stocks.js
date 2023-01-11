@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe'
 
 import { getPathname } from './helpers/location'
-import { navigateToNewIndividualOfferAs } from './helpers/navigations'
+import { navigateToOfferHubAS } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 
@@ -45,8 +45,15 @@ fixture('En créant des offres et des stocks,').before(async ctx => {
   ctx.validatedUserRole = validatedUserRole
 })
 
-test('je peux créer & éditer une offre ou un brouillon événement physique et supprimer un stock', async t => {
-  await navigateToNewIndividualOfferAs(t.fixtureCtx.validatedUserRole)(t)
+test('je peux créer & éditer une offre ou un brouillon évènement physique et supprimer un stock', async t => {
+  await navigateToOfferHubAS(t.fixtureCtx.validatedUserRole)(t)
+
+  // on hub
+  const radio = Selector('input').withAttribute(
+    'data-testid',
+    'radio-PHYSICAL_EVENT'
+  )
+  await t.click(radio).click(nextStep)
 
   // on info
   await t
@@ -113,15 +120,20 @@ test('je peux créer & éditer une offre ou un brouillon événement physique et
     .ok()
 })
 
-test('je peux créer & éditer une offre ou un brouillon événement virtuel', async t => {
-  await navigateToNewIndividualOfferAs(t.fixtureCtx.validatedUserRole)(t)
+test('je peux créer & éditer une offre ou un brouillon évènement virtuel', async t => {
+  await navigateToOfferHubAS(t.fixtureCtx.validatedUserRole)(t)
+
+  // on hub
+  const radio = Selector('input').withAttribute(
+    'data-testid',
+    'radio-VIRTUAL_EVENT'
+  )
+  await t.click(radio).click(nextStep)
 
   // on info
   await t
     .click(categoryInput)
     .click(categoryOption.withText('Musique live'))
-    .click(subcategoryInput)
-    .click(subcategoryOption.withText('Livestream musical'))
     .click(musicTypeInput)
     .click(musicTypeOption.withText('Blues'))
     .click(musicSubTypeInput)
@@ -172,7 +184,14 @@ test('je peux créer & éditer une offre ou un brouillon événement virtuel', a
 })
 
 test('je peux créer & éditer une offre ou un brouillon objet physique', async t => {
-  await navigateToNewIndividualOfferAs(t.fixtureCtx.validatedUserRole)(t)
+  await navigateToOfferHubAS(t.fixtureCtx.validatedUserRole)(t)
+
+  // on hub
+  const radio = Selector('input').withAttribute(
+    'data-testid',
+    'radio-PHYSICAL_GOOD'
+  )
+  await t.click(radio).click(nextStep)
 
   // on info
   await t
@@ -221,7 +240,14 @@ test('je peux créer & éditer une offre ou un brouillon objet physique', async 
 })
 
 test('je peux créer & éditer une offre ou un brouillon objet virtuel', async t => {
-  await navigateToNewIndividualOfferAs(t.fixtureCtx.validatedUserRole)(t)
+  await navigateToOfferHubAS(t.fixtureCtx.validatedUserRole)(t)
+
+  // on hub
+  const radio = Selector('input').withAttribute(
+    'data-testid',
+    'radio-VIRTUAL_GOOD'
+  )
+  await t.click(radio).click(nextStep)
 
   // on info
   await t
