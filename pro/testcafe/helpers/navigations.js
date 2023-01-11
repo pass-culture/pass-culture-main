@@ -105,14 +105,11 @@ export const navigateToNewOfferV2As =
     }
   }
 
-export const navigateToNewIndividualOfferAs = userRole => async t => {
+export const navigateToOfferHubAS = userRole => async t => {
   await t.useRole(userRole)
 
   const createOfferButton = Selector('a').withText('Créer une offre')
   await t.click(createOfferButton)
-
-  const startOfferCreation = Selector('button').withText('Étape suivante')
-  await t.click(startOfferCreation)
 }
 
 export const navigateToOfferEditionAs = (user, offer, userRole) => async t => {

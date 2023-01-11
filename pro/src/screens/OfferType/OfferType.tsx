@@ -109,6 +109,7 @@ const OfferType = (): JSX.Element => {
           description={description}
           onChange={handleIndividualOfferSubtypeChange}
           value={value}
+          dataTestid={`radio-${value}`}
         />
       </FormLayout.Row>
     )

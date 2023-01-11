@@ -18,6 +18,7 @@ export interface IRadioButtonWithImage {
   className?: string
   disabled?: boolean
   value: string
+  dataTestid?: string
 }
 
 const RadioButtonWithImage = ({
@@ -30,6 +31,7 @@ const RadioButtonWithImage = ({
   className,
   disabled = false,
   value,
+  dataTestid,
 }: IRadioButtonWithImage): JSX.Element => (
   <label
     className={cn(
@@ -58,6 +60,7 @@ const RadioButtonWithImage = ({
       onChange={onChange}
       type="radio"
       value={value}
+      data-testid={dataTestid}
     />
     <div className={styles['button-text']}>
       <div>{label}</div>
