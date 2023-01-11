@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -550,7 +550,7 @@ describe('screens:StocksEvent:Edition', () => {
     renderStockEventScreen({ storeOverride })
     await screen.findByRole('heading', { name: /Stock & Prix/ })
 
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(await screen.getByLabelText('Prix'), '20')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
@@ -564,7 +564,8 @@ describe('screens:StocksEvent:Edition', () => {
       .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
     renderStockEventScreen({ storeOverride })
     await screen.findByRole('heading', { name: /Stock & Prix/ })
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '20' } })
+    await expect(screen.getByLabelText('Prix')).toHaveValue(20)
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
