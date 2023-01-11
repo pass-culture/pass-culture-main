@@ -140,7 +140,9 @@ WITHDRAWAL_DETAILS_FIELD = pydantic.Field(
     alias="itemCollectionDetails",
 )
 LOCATION_FIELD = pydantic.Field(
-    ..., discriminator="type", description="Location where the offer will be available or will take place."
+    ...,
+    discriminator="type",
+    description="Location where the offer will be available or will take place. The location type must be compatible with the category",
 )
 NAME_FIELD = pydantic.Field(description="Offer title", example="Le Petit Prince", max_length=90)
 DURATION_MINUTES_FIELD = pydantic.Field(description="Event duration in minutes", example=60, alias="eventDuration")
