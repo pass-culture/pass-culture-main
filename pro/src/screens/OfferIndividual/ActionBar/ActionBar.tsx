@@ -26,6 +26,7 @@ export interface IActionBarProps {
   step: OFFER_WIZARD_STEP_IDS
   offerId?: string
   shouldTrack?: boolean
+  isFormEmpty?: boolean
 }
 
 const ActionBar = ({
@@ -36,6 +37,7 @@ const ActionBar = ({
   step,
   offerId,
   shouldTrack = true,
+  isFormEmpty = false,
 }: IActionBarProps) => {
   const offersSearchFilters = useSelector(
     (state: RootState) => state.offers.searchFilters
@@ -115,9 +117,15 @@ const ActionBar = ({
             >
               Annuler et quitter
             </ButtonLink>
-            <SubmitButton onClick={onClickNext} disabled={isDisabled}>
-              Enregistrer les modifications
-            </SubmitButton>
+            {isFormEmpty ? (
+              <Button onClick={onClickNext} disabled={isDisabled}>
+                Enregistrer les modifications
+              </Button>
+            ) : (
+              <SubmitButton onClick={onClickNext} disabled={isDisabled}>
+                Enregistrer les modifications
+              </SubmitButton>
+            )}
           </>
         )}
       </>
