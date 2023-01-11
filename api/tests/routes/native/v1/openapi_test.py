@@ -2243,7 +2243,7 @@ def test_public_api(client):
                             "description": "Unprocessable " "Entity",
                         },
                     },
-                    "summary": "toggle_feature_toggles " "<PATCH>",
+                    "summary": "set_feature " "<PATCH>",
                     "tags": [],
                 }
             },
