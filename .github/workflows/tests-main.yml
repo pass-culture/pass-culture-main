@@ -30,6 +30,7 @@ jobs:
   test-pro:
     name: Tests pro
     uses: ./.github/workflows/tests-pro.yml
+    secrets: inherit
 
   deploy-testing:
     name: "[testing] Deployment"
