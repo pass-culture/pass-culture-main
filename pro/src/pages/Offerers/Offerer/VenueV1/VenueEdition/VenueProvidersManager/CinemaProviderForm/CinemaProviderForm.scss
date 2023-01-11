@@ -1,13 +1,17 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .cinema-provider-form {
+  margin-bottom: 0;
+
   .cpf-is-duo {
     margin-right: 0 !important;
     margin-top: rem.torem(32px);
+    max-height: rem.torem(39px);
   }
 
   .cpf-tooltip {
     margin-left: rem.torem(4px);
+    margin-top: rem.torem(10px);
     display: flex;
   }
 }
