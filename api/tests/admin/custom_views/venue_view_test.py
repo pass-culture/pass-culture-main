@@ -70,6 +70,10 @@ class EditVenueTest:
             "user_email": "user@example.com",
         }
 
+        assert len(venue.action_history) == 1
+        update_snapshot = venue.action_history[0].extraData["modified_info"]
+        assert update_snapshot["siret"]["new_info"] == "88888888888888"
+
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")

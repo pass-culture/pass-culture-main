@@ -78,7 +78,8 @@ def create_digital_venue(offerer: models.Offerer) -> models.Venue:
 
 def update_venue(
     venue: models.Venue,
-    contact_data: serialize_base.VenueContactModel = None,
+    author: users_models.User,
+    contact_data: serialize_base.VenueContactModel | None = None,
     admin_update: bool = False,
     **attrs: typing.Any,
 ) -> models.Venue:
@@ -93,7 +94,10 @@ def update_venue(
         # user.
         validation.check_venue_edition(modifications, venue)
 
+    venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
+
     if contact_data:
+        venue_snapshot.trace_update(contact_data.dict(), target=venue.contact, field_name_template="contact.{}")
         upsert_venue_contact(venue, contact_data)
 
     if not modifications:
@@ -104,9 +108,16 @@ def update_venue(
 
     old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
 
+    venue_snapshot.trace_update(modifications)
     venue.populate_from_dict(modifications)
 
-    repository.save(venue)
+    history = venue_snapshot.log_update()
+
+    if history:
+        repository.save(venue, history)
+    else:
+        repository.save(venue)
+
     search.async_index_venue_ids([venue.id])
 
     indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)

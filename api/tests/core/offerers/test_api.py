@@ -111,6 +111,7 @@ class EditVenueTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def when_changes_on_name_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
         # Given
+        user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(
             name="old names",
             publicName="old name",
@@ -119,7 +120,7 @@ class EditVenueTest:
 
         # When
         json_data = {"name": "my new name"}
-        offerers_api.update_venue(venue, **json_data)
+        offerers_api.update_venue(venue, author=user, **json_data)
 
         # Then
         mocked_async_index_offers_of_venue_ids.assert_called_once_with([venue.id])
@@ -127,6 +128,7 @@ class EditVenueTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def when_changes_on_public_name_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
         # Given
+        user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(
             name="old names",
             publicName="old name",
@@ -135,7 +137,7 @@ class EditVenueTest:
 
         # When
         json_data = {"publicName": "my new name"}
-        offerers_api.update_venue(venue, **json_data)
+        offerers_api.update_venue(venue, author=user, **json_data)
 
         # Then
         mocked_async_index_offers_of_venue_ids.called_once_with([venue.id])
@@ -143,6 +145,7 @@ class EditVenueTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def when_changes_on_city_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
         # Given
+        user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(
             name="old names",
             publicName="old name",
@@ -151,7 +154,7 @@ class EditVenueTest:
 
         # When
         json_data = {"city": "My new city"}
-        offerers_api.update_venue(venue, **json_data)
+        offerers_api.update_venue(venue, author=user, **json_data)
 
         # Then
         mocked_async_index_offers_of_venue_ids.assert_called_once_with([venue.id])
@@ -161,6 +164,7 @@ class EditVenueTest:
         self, mocked_async_index_offers_of_venue_ids
     ):
         # Given
+        user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(
             name="old names",
             publicName="old name",
@@ -170,7 +174,7 @@ class EditVenueTest:
 
         # When
         json_data = {"bookingEmail": "new@email.com"}
-        offerers_api.update_venue(venue, **json_data)
+        offerers_api.update_venue(venue, author=user, **json_data)
 
         # Then
         mocked_async_index_offers_of_venue_ids.assert_not_called()
@@ -180,6 +184,7 @@ class EditVenueTest:
         self, mocked_async_index_offers_of_venue_ids
     ):
         # Given
+        user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(
             name="old names",
             publicName="old name",
@@ -188,13 +193,14 @@ class EditVenueTest:
 
         # When
         json_data = {"city": "old City"}
-        offerers_api.update_venue(venue, **json_data)
+        offerers_api.update_venue(venue, author=user, **json_data)
 
         # Then
         mocked_async_index_offers_of_venue_ids.assert_not_called()
 
     def test_empty_siret_is_editable(self, app) -> None:
         # Given
+        user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(
             comment="Pas de siret",
             siret=None,
@@ -205,13 +211,14 @@ class EditVenueTest:
         }
 
         # when
-        updated_venue = offerers_api.update_venue(venue, **venue_data)
+        updated_venue = offerers_api.update_venue(venue, author=user, **venue_data)
 
         # Then
         assert updated_venue.siret == venue_data["siret"]
 
     def test_existing_siret_is_not_editable(self, app) -> None:
         # Given
+        user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
 
         # when
@@ -219,13 +226,14 @@ class EditVenueTest:
             "siret": venue.managingOfferer.siren + "54321",
         }
         with pytest.raises(api_errors.ApiErrors) as error:
-            offerers_api.update_venue(venue, **venue_data)
+            offerers_api.update_venue(venue, author=user, **venue_data)
 
         # Then
         assert error.value.errors["siret"] == ["Vous ne pouvez pas modifier le siret d'un lieu"]
 
     def test_latitude_and_longitude_wrong_format(self, app) -> None:
         # given
+        user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(
             isVirtual=False,
         )
@@ -236,7 +244,7 @@ class EditVenueTest:
             "longitude": "112°3534",
         }
         with pytest.raises(api_errors.ApiErrors) as error:
-            offerers_api.update_venue(venue, **venue_data)
+            offerers_api.update_venue(venue, author=user, **venue_data)
 
         # Then
         assert error.value.errors["latitude"] == ["La latitude doit être comprise entre -90.0 et +90.0"]
@@ -244,6 +252,7 @@ class EditVenueTest:
 
     def test_accessibility_fields_are_updated(self, app) -> None:
         # given
+        user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
 
         # when
@@ -254,7 +263,7 @@ class EditVenueTest:
             "visualDisabilityCompliant": False,
         }
 
-        offerers_api.update_venue(venue, **venue_data)
+        offerers_api.update_venue(venue, author=user, **venue_data)
 
         venue = offerers_models.Venue.query.get(venue.id)
         assert venue.audioDisabilityCompliant
@@ -264,6 +273,7 @@ class EditVenueTest:
 
     def test_no_modifications(self, app) -> None:
         # given
+        user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
 
         # when
@@ -281,7 +291,7 @@ class EditVenueTest:
 
         # nothing has changed => nothing to save nor update
         with assert_num_queries(0):
-            offerers_api.update_venue(venue, contact_data, **venue_data)
+            offerers_api.update_venue(venue, contact_data=contact_data, author=user, **venue_data)
 
     def test_update_only_venue_contact(self, app):
         user_offerer = offerers_factories.UserOffererFactory(
@@ -291,7 +301,7 @@ class EditVenueTest:
 
         contact_data = serialize_base.VenueContactModel(email="other.contact@venue.com", phone_number="0788888888")
 
-        offerers_api.update_venue(venue, contact_data)
+        offerers_api.update_venue(venue, contact_data=contact_data, author=user_offerer.user)
 
         venue = offerers_models.Venue.query.get(venue.id)
         assert venue.contact
@@ -299,17 +309,19 @@ class EditVenueTest:
         assert venue.contact.email == contact_data.email
 
     def test_cannot_update_virtual_venue_name(self):
+        user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory(siren="000000000")
         virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
         venue_data = {"name": "Toto"}
         with pytest.raises(api_errors.ApiErrors) as error:
-            offerers_api.update_venue(virtual_venue, **venue_data)
+            offerers_api.update_venue(virtual_venue, author=user, **venue_data)
 
         msg = "Vous ne pouvez modifier que le point de remboursement du lieu Offre Numérique."
         assert error.value.errors == {"venue": [msg]}
 
     def test_edit_venue_with_pending_bank_info(self):
+        user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(
             pricing_point="self", reimbursement_point="self", publicName="Nom actuel"
         )
@@ -319,7 +331,7 @@ class EditVenueTest:
             "reimbursementPointId": venue.current_reimbursement_point_id,
             # all the other venue attributes should be in this dict
         }
-        offerers_api.update_venue(venue, **venue_data)
+        offerers_api.update_venue(venue, author=user, **venue_data)
 
         assert venue.publicName == "Nouveau nom"
 

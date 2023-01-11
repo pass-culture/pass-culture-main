@@ -7,8 +7,6 @@ from flask_login import current_user
 import sqlalchemy as sa
 
 from pcapi.core.external.attributes import api as external_attributes_api
-from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
 from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
@@ -69,8 +67,9 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
             400,
         )
 
-    modified_info = users_api.update_user_info(
+    snapshot = users_api.update_user_info(
         user,
+        author=current_user,
         first_name=form.first_name.data,
         last_name=form.last_name.data,
         phone_number=form.phone_number.data,
@@ -79,9 +78,10 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
 
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
         old_email = user.email
+        snapshot.set("email", old=old_email, new=form.email.data)
+
         try:
             email_update.request_email_update_from_admin(user, form.email.data)
-            modified_info["email"] = {"old_info": old_email, "new_info": user.email}
         except users_exceptions.EmailExistsError:
             form.email.errors.append("L'email est déjà associé à un autre utilisateur")
             dst = url_for(".update_pro_user", user_id=user.id)
@@ -90,13 +90,7 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
         external_attributes_api.update_external_pro(old_email)  # to delete previous user info from SendinBlue
         external_attributes_api.update_external_user(user)
 
-    if modified_info:
-        history_api.log_action(
-            history_models.ActionType.INFO_MODIFIED,
-            current_user,
-            user=user,
-            modified_info=modified_info,
-        )
+    snapshot.log_update(save=True)
 
     flash("Informations mises à jour", "success")
     return redirect(url_for(".get", user_id=user_id), code=303)
