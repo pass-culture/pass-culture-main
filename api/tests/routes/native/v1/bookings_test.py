@@ -196,6 +196,7 @@ class GetBookingsTest:
             "cancellationReason": None,
             "confirmationDate": "2021-03-02T00:00:00Z",
             "completedUrl": f"https://demo.pass/some/path?token={used2.token}&email=pascal.ture@example.com&offerId={humanize(used2.stock.offer.id)}",
+            "dateCreated": used2.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "dateUsed": "2021-03-02T00:00:00Z",
             "expirationDate": None,
             "quantity": 1,
