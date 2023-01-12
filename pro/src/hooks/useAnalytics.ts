@@ -7,7 +7,11 @@ import {
   setUserId,
 } from '@firebase/analytics'
 import * as firebase from '@firebase/app'
-import { fetchAndActivate, getRemoteConfig } from '@firebase/remote-config'
+import {
+  fetchAndActivate,
+  getAll,
+  getRemoteConfig,
+} from '@firebase/remote-config'
 import { useContext, useEffect, useState } from 'react'
 
 import { firebaseConfig } from 'config/firebase'
@@ -44,22 +48,28 @@ export const useConfigureFirebase = (currentUserId: string | undefined) => {
       const remoteConfig = getRemoteConfig(initializeApp)
       fetchAndActivate(remoteConfig).then(() => {
         setRemoteConfig && setRemoteConfig(remoteConfig)
+        setLogEvent &&
+          setLogEvent(
+            () =>
+              (
+                event: string,
+                params:
+                  | { [key: string]: string | boolean | string[] | undefined }
+                  | Record<string, never> = {}
+              ) => {
+                const remoteConfigValues = getAll(remoteConfig)
+                const remoteConfigParams: Record<string, string> = {}
+                Object.keys(remoteConfigValues).forEach(k => {
+                  remoteConfigParams[k] = remoteConfigValues[k].asString()
+                })
+                analyticsLogEvent(getAnalytics(app), event, {
+                  ...params,
+                  ...utmParameters,
+                  ...remoteConfigParams,
+                })
+              }
+          )
       })
-      setLogEvent &&
-        setLogEvent(
-          () =>
-            (
-              event: string,
-              params:
-                | { [key: string]: string | boolean | string[] | undefined }
-                | Record<string, never> = {}
-            ) => {
-              analyticsLogEvent(getAnalytics(app), event, {
-                ...params,
-                ...utmParameters,
-              })
-            }
-        )
     }
   }, [app, isFirebaseSupported])
 
