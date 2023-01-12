@@ -5,59 +5,40 @@
 {% block pro_main_content %}
 <div class="row row-cols-1 g-4 py-3">
     <div class="col">
-        <div class="card">
+        <div class="card shadow">
             <div class="card-body">
-                <h5 class="card-title">
-                    {{ user.firstName }} {{ user.lastName | upper }}
+                <div class="row justify-content-start align-items-center">
 
-                    {% for role in user.roles %}
-                        <span class="ms-5 me-2 badge rounded-pill text-bg-secondary align-middle">
-                            {{ role | format_role }}
-                        </span>
-                    {% endfor %}
-                    {% if not user.isActive %}
-                        <span class="badge rounded-pill text-bg-danger align-middle">
-                            {{ user.isActive | format_state }}
-                        </span>
-                    {% endif %}
-                    {{ build_pro_user_badges(user) }}
-                </h5>
+                    <div class="col d-flex align-items-center justify-content-start">
 
-                <h6 class="card-subtitle text-muted">
-                    User ID : {{ user.id }}
-                </h6>
-                <div class="row pt-3">
-
-                    <div class="col-4">
-                        <div class="fs-6">
-                            <p class="mb-1"><span class="fw-bold">E-mail :</span> {{ user.email }} </p>
-                            <p class="mb-1"><span
-                                    class="fw-bold">Tél :</span> {{ user.phoneNumber | format_phone_number }} </p>
+                        <h2 class="card-title mb-3 text-primary">
+                            {{ user.firstName }} {{ user.lastName | upper }}
+                        </h2>
+                        <div class="fs-5 ps-4 mb-3 align-middle">
+                            {% for role in user.roles %}
+                                <span class="badge rounded-pill text-bg-secondary align-middle">
+                                    {{ role | format_role }}
+                                </span>
+                            {% endfor %}
+                            {% if not user.isActive %}
+                                <span class="badge rounded-pill text-bg-danger align-middle">
+                                    {{ user.isActive | format_state }}
+                                </span>
+                            {% endif %}
+                            {{ build_pro_user_badges(user) }}
                         </div>
                     </div>
-
-                    <div class="col-4">
-                        <div class="fs-6">
-                            <p class="mb-1"><span
-                                    class="fw-bold">Code postal :</span> {{ user.postalCode | empty_string_if_null }}
-                            </p>
-                            <p class="mb-1"><span
-                                    class="fw-bold">Département :</span> {{ user.departementCode | empty_string_if_null }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="col-4">
+                    <div class="col-2">
                         {% if can_edit_user %}
                             <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
-                                    data-bs-target="#editProUserModal" type="button">
+                                    data-bs-target="#edit-pro-user-modal" type="button">
                                 Modifier les informations
                             </button>
-                            <div class="modal modal-lg fade " id="editProUserModal" tabindex="-1"
-                                 aria-describedby="editProUserModalLabel" aria-hidden="true">
+                            <div class="modal modal-lg fade " id="edit-pro-user-modal" tabindex="-1"
+                                 aria-describedby="edit-pro-user-modal-label" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                     <div class="modal-content">
-                                        <div class="modal-header fs-5" id="editProUserModalLabel">
+                                        <div class="modal-header fs-5" id="edit-pro-user-modal-label">
                                             Modification des informations
                                             de {{ user.firstName }} {{ user.lastName | upper }}</div>
                                         <form action="{{ dst }}" method="POST">
@@ -78,6 +59,30 @@
                                 </div>
                             </div>
                         {% endif %}
+                    </div>
+                </div>
+                <p class="card-subtitle text-muted mb-3 h5">
+                    User ID : {{ user.id }}
+                </p>
+                <div class="row pt-3">
+
+                    <div class="col-4">
+                        <div class="fs-6">
+                            <p class="mb-1"><span class="fw-bold">E-mail :</span> {{ user.email }} </p>
+                            <p class="mb-1"><span
+                                    class="fw-bold">Tél :</span> {{ user.phoneNumber | format_phone_number }} </p>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="fs-6">
+                            <p class="mb-1"><span
+                                    class="fw-bold">Code postal :</span> {{ user.postalCode | empty_string_if_null }}
+                            </p>
+                            <p class="mb-1"><span
+                                    class="fw-bold">Département :</span> {{ user.departementCode | empty_string_if_null }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

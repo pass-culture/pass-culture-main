@@ -5,43 +5,71 @@
 {% block pro_main_content %}
 <div class="row row-cols-1 g-4 py-3">
     <div class="col">
-        <div class="card">
+        <div class="card shadow">
             <div class="card-body">
-                <h2 class="card-title mb-3 d-flex justify-content-between align-items-start">
-                    <div>
-                        <a href="{{ venue | pc_pro_venue_link }}" target="_blank"
-                                                                  class="text-decoration-none hover-text-underline">
-                            {{ venue.name | escape }}
-                        </a>
-
+                <div class="row justify-content-start align-items-center">
+                    <div class="col d-flex align-items-center justify-content-start">
+                        <h2 class="card-title mb-3 text-primary">
+                            <a href="{{ venue | pc_pro_venue_link }}" target="_blank"
+                               class="link-primary">
+                                {{ venue.name | escape }}
+                            </a>
+                        </h2>
                         <span class="fs-5 ps-4 mb-3 align-middle">
                             {{ build_venue_badges(venue) }}
                         </span>
                     </div>
 
-                    <div>
-                        <button type="button"
-                                class="btn btn-outline-primary fw-bold"
+                    <div class="col-2">
+                        <button class="btn btn-outline-primary lead fw-bold mt-2"
                                 data-bs-toggle="modal"
                                 data-bs-target="#venue-edit-details">
                             Modifier les informations
                         </button>
+                        <div class="modal fade" id="venue-edit-details" tabindex="-1"
+                             aria-labelledby="venue-edit-details-label" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <form action="{{ url_for("backoffice_v3_web.manage_venue.update", venue_id=venue.id) }}"
+                                      method="POST" class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Modifier les informations du lieu</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Fermer"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <div class="form-floating my-3">
+                                            {% include "components/form_body.html" %}
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                                            Annuler
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                </h2>
+                </div>
 
                 <p class="card-subtitle text-muted mb-3 h5">
                     Venue ID : {{ venue.id }}
                 </p>
 
                 <p class="card-subtitle text-muted mb-3 h5">
+                    SIRET :
                     {% if venue.siret %}
-                        SIRET : {{ venue.siret }}
+                        {{ venue.siret }}
                     {% endif %}
                 </p>
 
                 <div class="row pt-3">
 
-                    <div class="col-lg-4">
+                    <div class="col-4">
                         <div class="fs-6">
                             {% if region %}
                                 <p class="mb-1">
@@ -81,7 +109,7 @@
                             {% if venue.contact %}
                                 {% if venue.contact.email %}
                                     <p class="mb-1">
-                                        <span class="fw-bold">Email :</span>
+                                        <span class="fw-bold">E-mail :</span>
                                         {{ venue.contact.email }}
                                     </p>
                                 {% endif %}
@@ -96,7 +124,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-4">
+                    <div class="col-4">
                         <p class="mb-1">
                             <span class="fw-bold">Éligible EAC :
                                 {% if venue.adageId %}
@@ -154,7 +182,7 @@
                         {% endif %}
                     </div>
 
-                    <div class="col-lg-4">
+                    <div class="col-4">
                         {% if dms_stats %}
                             <p class="mb-1">
                                 <span class="fw-bold">statut DMS :</span>
@@ -205,29 +233,6 @@
             </turbo-frame>
         </div>
 
-    </div>
-</div>
-
-<div class="modal fade" id="venue-edit-details" tabindex="-1" aria-labelledby="venue-edit-details-label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <form action="{{ url_for("backoffice_v3_web.manage_venue.update", venue_id=venue.id) }}" method="POST" class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Modifier les informations du lieu</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-            </div>
-
-            <div class="modal-body">
-                <div class="form-floating my-3">
-                    {% include "components/form_body.html" %}
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
-                <button type="submit" class="btn btn-primary">Enregistrer</button>
-            </div>
-
-        </form>
     </div>
 </div>
 
