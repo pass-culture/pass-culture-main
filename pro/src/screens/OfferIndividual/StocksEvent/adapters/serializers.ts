@@ -1,6 +1,5 @@
 import { set } from 'date-fns'
 import endOfDay from 'date-fns/endOfDay'
-import startOfDay from 'date-fns/startOfDay'
 
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
 import { IStockEventFormValues } from 'components/StockEventForm'
@@ -8,16 +7,26 @@ import { getToday, toISOStringWithoutMilliseconds } from 'utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
 
 const serializeBookingLimitDatetime = (
+  beginningDate: Date,
+  beginningTime: Date,
   bookingLimitDatetime: Date,
   departementCode: string
 ) => {
+  // If the bookingLimitDatetime is the same day as the start of the event
+  // the bookingLimitDatetime should be set to beginningDate and beginningTime
+  // ie : bookable until the event
+  if (beginningDate.toDateString() === bookingLimitDatetime.toDateString()) {
+    return serializeBeginningDateTime(
+      beginningDate,
+      beginningTime,
+      departementCode
+    )
+  }
   const endOfBookingLimitDayUtcDatetime = getUtcDateTimeFromLocalDepartement(
     endOfDay(bookingLimitDatetime),
     departementCode
   )
-  return toISOStringWithoutMilliseconds(
-    startOfDay(endOfBookingLimitDayUtcDatetime)
-  )
+  return toISOStringWithoutMilliseconds(endOfBookingLimitDayUtcDatetime)
 }
 
 const buildDateTime = (date: Date, time: Date) =>
@@ -62,6 +71,8 @@ export const serializeStockEvent = (
     beginningDatetime: serializedbeginningDatetime,
     bookingLimitDatetime: formValues.bookingLimitDatetime
       ? serializeBookingLimitDatetime(
+          formValues.beginningDate,
+          formValues.beginningTime,
           formValues.bookingLimitDatetime,
           departementCode
         )
