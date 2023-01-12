@@ -52,7 +52,7 @@ describe('DuplicateOfferCell', () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'false')
     renderDuplicateOfferCell()
     const button = screen.getByRole('button', {
-      name: 'Créer une offre réservable pour un établissement',
+      name: 'Créer une offre réservable pour un établissement scolaire',
     })
 
     await userEvent.click(button)
@@ -68,7 +68,7 @@ describe('DuplicateOfferCell', () => {
       createFromTemplateUtils.createOfferFromTemplate
     ).not.toHaveBeenCalled()
     expect(
-      screen.queryByText(
+      screen.queryByLabelText(
         'Créer une offre réservable pour un établissement scolaire'
       )
     ).not.toBeInTheDocument()
@@ -78,7 +78,7 @@ describe('DuplicateOfferCell', () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'false')
     renderDuplicateOfferCell()
     const button = screen.getByRole('button', {
-      name: 'Créer une offre réservable pour un établissement',
+      name: 'Créer une offre réservable pour un établissement scolaire',
     })
 
     await userEvent.click(button)
@@ -105,7 +105,7 @@ describe('DuplicateOfferCell', () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'false')
     renderDuplicateOfferCell()
     const button = screen.getByRole('button', {
-      name: 'Créer une offre réservable pour un établissement',
+      name: 'Créer une offre réservable pour un établissement scolaire',
     })
     await userEvent.click(button)
 
@@ -126,7 +126,7 @@ describe('DuplicateOfferCell', () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
     renderDuplicateOfferCell()
     const button = screen.getByRole('button', {
-      name: 'Créer une offre réservable pour un établissement',
+      name: 'Créer une offre réservable pour un établissement scolaire',
     })
 
     jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')

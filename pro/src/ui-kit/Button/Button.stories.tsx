@@ -98,7 +98,7 @@ LinkButtonWithIcon.args = {
 export const WithTooltip = Template.bind({})
 WithTooltip.args = {
   ...DefaultButton.args,
-  children: 'Créer une offre réservable pour un établissement',
+  children: 'Créer une offre réservable pour un établissement scolaire',
   Icon: PenIcon,
   iconPosition: IconPositionEnum.CENTER,
   variant: ButtonLink.variant.SECONDARY,
