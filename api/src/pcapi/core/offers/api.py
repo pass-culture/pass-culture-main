@@ -484,48 +484,50 @@ def create_stock(
 
 def edit_stock(
     stock: Stock,
-    price: decimal.Decimal,
-    quantity: int | None,
-    beginning_datetime: datetime.datetime | None = None,
-    booking_limit_datetime: datetime.datetime | None = None,
+    price: decimal.Decimal = UNCHANGED,  # type: ignore [assignment]
+    quantity: int | None = UNCHANGED,  # type: ignore [assignment]
+    beginning_datetime: datetime.datetime | None = UNCHANGED,  # type: ignore [assignment]
+    booking_limit_datetime: datetime.datetime | None = UNCHANGED,  # type: ignore [assignment]
     editing_provider: providers_models.Provider | None = None,
 ) -> typing.Tuple[Stock, bool]:
-    if beginning_datetime is None:
-        beginning_datetime = stock.beginningDatetime
-    if booking_limit_datetime is None and stock.offer.isEvent:
-        booking_limit_datetime = stock.bookingLimitDatetime
-
-    validation.check_booking_limit_datetime(stock, beginning_datetime, booking_limit_datetime)
     validation.check_stock_is_updatable(stock, editing_provider)
-    validation.check_required_dates_for_stock(stock.offer, beginning_datetime, booking_limit_datetime)
-    validation.check_stock_price(price, stock.offer)
-    validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
-    validation.check_activation_codes_expiration_datetime_on_stock_edition(
-        stock.activationCodes,
-        booking_limit_datetime,
-    )
 
-    is_beginning_updated = beginning_datetime != stock.beginningDatetime
+    modifications: dict[str, typing.Any] = {}
 
-    updates = {
-        "price": price,
-        "quantity": quantity,
-        "beginningDatetime": beginning_datetime,
-        "bookingLimitDatetime": booking_limit_datetime,
-    }
+    if (UNCHANGED, UNCHANGED) != (beginning_datetime, booking_limit_datetime):
+        changed_beginning = beginning_datetime if beginning_datetime != UNCHANGED else stock.beginningDatetime
+        changed_booking_limit = (
+            booking_limit_datetime if booking_limit_datetime != UNCHANGED else stock.bookingLimitDatetime
+        )
+        validation.check_booking_limit_datetime(stock, changed_beginning, changed_booking_limit)
+        validation.check_required_dates_for_stock(stock.offer, changed_beginning, changed_booking_limit)
+
+    if price not in (UNCHANGED, stock.price):
+        modifications["price"] = price
+        validation.check_stock_price(price, stock.offer)
+
+    if quantity not in (UNCHANGED, stock.quantity):
+        modifications["quantity"] = quantity
+        validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
+
+    if booking_limit_datetime not in (UNCHANGED, stock.bookingLimitDatetime):
+        modifications["bookingLimitDatetime"] = booking_limit_datetime
+        validation.check_activation_codes_expiration_datetime_on_stock_edition(
+            stock.activationCodes,
+            booking_limit_datetime,
+        )
+
+    is_beginning_updated = False
+    if beginning_datetime not in (UNCHANGED, stock.beginningDatetime):
+        modifications["beginningDatetime"] = beginning_datetime
+        is_beginning_updated = True
 
     if stock.offer.isFromAllocine:
-        # fmt: off
-        updated_fields = {
-            attr
-            for attr, new_value in updates.items()
-            if new_value != getattr(stock, attr)
-        }
-        # fmt: on
+        updated_fields = set(modifications)
         validation.check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields)
         stock.fieldsUpdated = list(set(stock.fieldsUpdated) | updated_fields)
 
-    for model_attr, value in updates.items():
+    for model_attr, value in modifications.items():
         setattr(stock, model_attr, value)
 
     repository.add_to_session(stock)
