@@ -98,12 +98,3 @@ def edit_collective_stock(
             {"educationalStock": ["La date limite de confirmation ne peut être fixée après la date de l évènement"]},
             status_code=400,
         )
-    except offers_exceptions.EducationalOfferStockBookedAndBookingNotPending as error:
-        raise ApiErrors(
-            {
-                "educationalStockEdition": [
-                    f"Un stock lié à une offre éducationnelle, dont la réservation associée a le statut {error.booking_status.value}, ne peut être édité "
-                ]
-            },
-            status_code=400,
-        )
