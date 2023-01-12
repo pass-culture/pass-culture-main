@@ -11,11 +11,11 @@ from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.api.offer import notify_educational_redactor_on_collective_offer_or_stock_edit
 from pcapi.core.offers import validation as offer_validation
-from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.repository import transaction
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
+from pcapi.serialization import utils as serialization_utils
 
 
 logger = logging.getLogger(__name__)
@@ -70,9 +70,11 @@ def edit_collective_stock(
 ) -> educational_models.CollectiveStock:
 
     beginning = stock_data.get("beginningDatetime")
-    beginning = as_utc_without_timezone(beginning) if beginning else None
+    beginning = serialization_utils.as_utc_without_timezone(beginning) if beginning else None
     booking_limit_datetime = stock_data.get("bookingLimitDatetime")
-    booking_limit_datetime = as_utc_without_timezone(booking_limit_datetime) if booking_limit_datetime else None
+    booking_limit_datetime = (
+        serialization_utils.as_utc_without_timezone(booking_limit_datetime) if booking_limit_datetime else None
+    )
 
     updatable_fields = _extract_updatable_fields_from_stock_data(stock, stock_data, beginning, booking_limit_datetime)
 
