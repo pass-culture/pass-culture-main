@@ -10,102 +10,52 @@
   display: flex;
   padding: rem.torem(8px) rem.torem(10px);
 
-  .menu-button-icon {
+  &-icon {
     height: rem.torem(24px);
   }
 
   &:focus,
   &:focus-visible,
   &:hover {
-    .menu-button-icon {
+    &-icon {
       fill: colors.$primary;
     }
   }
 }
 
-.menu-item-text {
+.menu-list {
+  width: rem.torem(215px);
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(8px);
+  border: 1px solid colors.$grey-light;
+  border-radius: rem.torem(6px);
+  box-shadow: 0 3px 4px 0 #67686b1a;
+  padding: rem.torem(16px) 0;
+  background: colors.$white;
+}
+
+.menu-item[data-reach-menu-item] {
   @include fonts.button;
 
+  display: flex;
+  padding: 0 16px;
   color: colors.$black;
 
-  .menu-item-disabled & {
+  &[data-selected] {
+    background: colors.$grey-medium;
     color: colors.$black;
+    cursor: pointer;
   }
 }
 
 .menu-item-icon {
-  max-height: rem.torem(20px);
-  max-width: rem.torem(20px);
+  width: rem.torem(20px);
+  height: rem.torem(20px);
   flex-shrink: 0;
   margin-right: rem.torem(8px);
-}
 
-.menu-item {
-  @include fonts.button;
-
-  background: colors.$white;
-  cursor: pointer;
-  align-items: center;
-  display: grid;
-  grid-template-columns: rem.torem(32px) 1fr;
-  margin-top: rem.torem(8px);
-  padding: 0 16px;
-
-  &:first-child {
-    margin-top: 0;
+  path {
+    fill: colors.$black;
   }
-
-  &[data-selected] {
-    background-color: transparent;
-    display: flex;
-    align-items: flex-start;
-
-    .menu-item-icon {
-      path {
-        fill: colors.$black;
-      }
-    }
-  }
-
-  &:not([data-selected]) {
-    display: flex;
-    align-items: flex-start;
-
-    path {
-      fill: colors.$black;
-    }
-  }
-
-  &.menu-item-disabled {
-    cursor: not-allowed;
-  }
-}
-
-.menu-list[data-reach-popover] {
-  border: 1px solid colors.$grey-light;
-  border-radius: rem.torem(6px);
-  padding: rem.torem(16px) 0;
-  white-space: pre-wrap;
-  width: rem.torem(215px);
-  background: colors.$white;
-
-  .menu-item {
-    padding: 0 rem.torem(16px);
-
-    &:hover {
-      background: colors.$grey-medium;
-    }
-
-    &.menu-item-disabled {
-      svg {
-        path {
-          fill: colors.$black;
-        }
-      }
-    }
-  }
-}
-
-div > [data-reach-popover] {
-  border: none;
 }
