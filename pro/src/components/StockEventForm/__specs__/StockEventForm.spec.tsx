@@ -5,8 +5,6 @@ import userEvent from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
-import { OFFER_WIZARD_MODE } from 'core/Offers'
-
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../constants'
 import StockEventForm, { IStockEventFormProps } from '../StockEventForm'
 
@@ -61,8 +59,7 @@ describe('StockEventForm', () => {
   })
 
   it('should render disabled fields for empty form with synchronized offer in edition mode', () => {
-    props.isSynchronized = true
-    props.mode = OFFER_WIZARD_MODE.EDITION
+    props.disableAllStockFields = true
     renderStockEventForm(props, {
       ...STOCK_EVENT_FORM_DEFAULT_VALUES,
     })
@@ -74,7 +71,6 @@ describe('StockEventForm', () => {
   })
 
   it('should not render disabled fields for empty form in edition mode for not synchronized offer', () => {
-    props.mode = OFFER_WIZARD_MODE.EDITION
     renderStockEventForm(props, {
       ...STOCK_EVENT_FORM_DEFAULT_VALUES,
     })

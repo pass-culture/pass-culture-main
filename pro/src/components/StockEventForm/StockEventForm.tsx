@@ -4,7 +4,6 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import formRowStyles from 'components/StockEventFormRow/SharedStockEventFormRow.module.scss'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IcoEuro } from 'icons'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
 
@@ -15,15 +14,13 @@ import { IStockEventFormValues } from './types'
 export interface IStockEventFormProps {
   today: Date
   stockIndex: number
-  isSynchronized?: boolean
-  mode?: OFFER_WIZARD_MODE
+  disableAllStockFields?: boolean
 }
 
 const StockEventForm = ({
   today,
   stockIndex,
-  isSynchronized = false,
-  mode,
+  disableAllStockFields = false,
 }: IStockEventFormProps): JSX.Element => {
   const { values, setFieldValue, setTouched } = useFormikContext<{
     stocks: IStockEventFormValues[]
@@ -31,11 +28,7 @@ const StockEventForm = ({
 
   const stockFormValues = values.stocks[stockIndex]
 
-  if (
-    isSynchronized &&
-    mode === OFFER_WIZARD_MODE.EDITION &&
-    !stockFormValues.stockId
-  ) {
+  if (disableAllStockFields) {
     stockFormValues.readOnlyFields =
       STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS
   }
