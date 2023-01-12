@@ -5,7 +5,7 @@
 {% block pro_main_content %}
 <div class="row row-cols-1 g-4 py-3">
     <div class="col">
-        <div class="card">
+        <div class="card shadow">
             <div class="card-body">
                 <div class="row justify-content-start align-items-center">
                     <div class="col d-flex align-items-center justify-content-start">
@@ -68,14 +68,8 @@
 
                 <div class="row pt-3">
 
-                    <div class="col-lg-4">
+                    <div class="col-4">
                         <div class="fs-6">
-                            {% if is_collective_eligible is not none %}
-                                <p class="mb-1">
-                                    <span class="fw-bold">Éligible EAC :</span>
-                                    {{ is_collective_eligible | format_bool }}
-                                </p>
-                            {% endif %}
 
                             {% if offerer.email %}
                                 <p class="mb-1">
@@ -95,12 +89,6 @@
                                 <span class="fw-bold">Région :</span>
                                 {{ region }}
                             </p>
-                            {% if offerer.address %}
-                                <p class="mb-1">
-                                    <span class="fw-bold">Adresse :</span>
-                                    {{ offerer.address }}
-                                </p>
-                            {% endif %}
                             <p class="mb-1">
                                 <span class="fw-bold">Ville :</span>
                                 {{ offerer.city }}
@@ -109,10 +97,31 @@
                                 <span class="fw-bold">Code postal :</span>
                                 {{ offerer.postalCode }}
                             </p>
+                            {% if offerer.address %}
+                                <p class="mb-1">
+                                    <span class="fw-bold">Adresse :</span>
+                                    {{ offerer.address }}
+                                </p>
+                            {% endif %}
                         </div>
                     </div>
 
-                    <div class="col-lg-4">
+                    <div class="col-4">
+                        {% if is_collective_eligible is not none %}
+                            <p class="mb-1">
+                                <span class="fw-bold">Éligible EAC :</span>
+                                {% if is_collective_eligible %}
+                                    <span class="mx-2 pb-1 badge rounded-pill text-bg-success">
+                                        <i class="bi bi-check-circle"></i> Oui
+                                    </span>
+                                {% else %}
+                                    <span class="mx-2 pb-1 badge rounded-pill text-bg-dark">
+                                        <i class="bi bi-x-circle"></i> Non
+                                    </span>
+                                {% endif %}
+                            </p>
+                        {% endif %}
+
                         <p class="mb-1">
                             <span class="fw-bold">Présence CB dans les lieux :</span>
                             {{ bank_information_status.ok }} OK
@@ -123,7 +132,7 @@
                             {{ offerer.tags | format_offerer_tags | escape }}
                         </p>
                     </div>
-                    <div class="col-lg-4 justify-content-center">
+                    <div class="col-4 justify-content-center">
                         <a href="#" class="card-link btn btn-outline-primary lead fw-bold mt-2">
                             ACCÉDER AU DOSSIER DMS
                         </a>
