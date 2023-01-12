@@ -52,7 +52,7 @@ export { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.
 export { ReactComponent as IcoMoreCircle } from 'icons/ico-more-circle.svg'
 export { ReactComponent as IcoMoreHoriz } from 'icons/ico-more-horiz.svg'
 export { ReactComponent as IcoNext } from 'icons/ico-next-S.svg'
-export { ReactComponent as NotificationSuccessGreenIcon } from 'icons/ico-notification-success-green.svg'
+export { ReactComponent as NotificationSuccessGreenIcon } from 'icons/ico-notification-success.svg'
 export { ReactComponent as OffersIcon } from 'icons/ico-offers.svg'
 export { ReactComponent as IcoOuterPen } from 'icons/ico-outer-pen.svg'
 export { ReactComponent as IcoPassculture } from 'icons/ico-passculture.svg'
