@@ -21,7 +21,9 @@ from pcapi.workers.suspend_fraudulent_beneficiary_users_by_ids_job import (
 ALLOWED_EXTENSIONS = {".csv"}
 
 
-def allowed_file(filename):  # type: ignore [no-untyped-def]
+def allowed_file(filename: str | None) -> bool:
+    if not filename:
+        return False
     return pathlib.Path(filename).suffix.lower() in ALLOWED_EXTENSIONS
 
 
