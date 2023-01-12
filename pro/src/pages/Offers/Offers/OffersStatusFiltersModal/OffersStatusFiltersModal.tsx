@@ -89,8 +89,12 @@ export const OffersStatusFiltersModal = ({
           { label: 'Tous', value: ALL_STATUS },
           { label: 'Désactivée', value: CollectiveOfferStatus.INACTIVE },
           { label: 'Expirée', value: CollectiveOfferStatus.EXPIRED },
-          { label: 'Publiée sur ADAGE', value: CollectiveOfferStatus.ACTIVE },
           { label: 'Préréservée', value: CollectiveOfferStatus.PREBOOKED },
+          { label: 'Publiée sur ADAGE', value: CollectiveOfferStatus.ACTIVE },
+          {
+            label: 'Refusée',
+            value: CollectiveOfferStatus.REJECTED,
+          },
           {
             label: 'Réservée',
             value: CollectiveOfferStatus.BOOKED,
@@ -99,10 +103,6 @@ export const OffersStatusFiltersModal = ({
           {
             label: 'Validation en attente',
             value: CollectiveOfferStatus.PENDING,
-          },
-          {
-            label: 'Refusée',
-            value: CollectiveOfferStatus.REJECTED,
           },
         ]
   return (
