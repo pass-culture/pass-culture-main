@@ -13,9 +13,6 @@
 
   .fw-first-line {
     border-radius: rem.torem(20px);
-    box-shadow:
-      rem.torem(2px) rem.torem(2px) rem.torem(6px) 0
-      colors.$black-shadow;
     display: flex;
     justify-content: flex-start;
     margin-bottom: rem.torem(32px);
@@ -133,8 +130,7 @@
 
       .field-date {
         border: rem.torem(1px) solid colors.$grey-medium;
-        box-shadow:
-          rem.torem(2px) rem.torem(2px) rem.torem(6px) 0
+        box-shadow: rem.torem(2px) rem.torem(2px) rem.torem(6px) 0
           colors.$black-shadow;
         margin-top: rem.torem(16px);
         padding: 0 rem.torem(1px);
@@ -190,11 +186,11 @@
         @include fonts.body;
 
         appearance: none;
-        background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92% 56%;
+        background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92%
+          56%;
         border: rem.torem(1px) solid colors.$grey-medium;
         border-radius: rem.torem(20px);
-        box-shadow:
-          rem.torem(1px) rem.torem(2px) rem.torem(6px) 0
+        box-shadow: rem.torem(1px) rem.torem(2px) rem.torem(6px) 0
           colors.$black-shadow;
         height: rem.torem(40px);
         margin-top: rem.torem(16px);
