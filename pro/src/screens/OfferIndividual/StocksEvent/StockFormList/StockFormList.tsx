@@ -67,49 +67,58 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
           </Button>
 
           <div className={styles['form-list']}>
-            {values.stocks.map((stockValues: IStockEventFormValues, index) => (
-              <StockEventFormRow
-                key={`${stockValues.stockId}-${index}`}
-                stockIndex={index}
-                actions={[
-                  {
-                    callback: async () => {
-                      if (stockValues.stockId) {
-                        /* istanbul ignore next: DEBT, TO FIX */
-                        if (parseInt(stockValues.bookingsQuantity, 10) > 0) {
-                          setDeletingStockData({
-                            deletingStock: stockValues,
-                            deletingIndex: index,
-                          })
-                          deleteConfirmShow()
-                        } else {
-                          /* istanbul ignore next: DEBT, TO FIX */
-                          onDeleteStock(stockValues, index)
-                        }
-                      } else {
-                        arrayHelpers.remove(index)
-                        /* istanbul ignore next: DEBT, TO FIX */
-                        if (values.stocks.length === 1) {
-                          arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)
-                        }
-                      }
-                    },
-                    label: 'Supprimer le stock',
-                    disabled: !stockValues.isDeletable || isDisabled,
-                    Icon: TrashFilledIcon,
-                  },
-                ]}
-                actionDisabled={false}
-                showStockInfo={mode === OFFER_WIZARD_MODE.EDITION}
-              >
-                <StockEventForm
-                  today={today}
+            {values.stocks.map((stockValues: IStockEventFormValues, index) => {
+              const disableAllStockFields =
+                isSynchronized &&
+                mode === OFFER_WIZARD_MODE.EDITION &&
+                !stockValues.stockId
+
+              return (
+                <StockEventFormRow
+                  key={`${stockValues.stockId}-${index}`}
                   stockIndex={index}
-                  isSynchronized={isSynchronized}
-                  mode={mode}
-                />
-              </StockEventFormRow>
-            ))}
+                  actions={[
+                    {
+                      callback: async () => {
+                        if (stockValues.stockId) {
+                          /* istanbul ignore next: DEBT, TO FIX */
+                          if (parseInt(stockValues.bookingsQuantity, 10) > 0) {
+                            setDeletingStockData({
+                              deletingStock: stockValues,
+                              deletingIndex: index,
+                            })
+                            deleteConfirmShow()
+                          } else {
+                            /* istanbul ignore next: DEBT, TO FIX */
+                            onDeleteStock(stockValues, index)
+                          }
+                        } else {
+                          arrayHelpers.remove(index)
+                          /* istanbul ignore next: DEBT, TO FIX */
+                          if (values.stocks.length === 1) {
+                            arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)
+                          }
+                        }
+                      },
+                      label: 'Supprimer le stock',
+                      disabled:
+                        !stockValues.isDeletable ||
+                        isDisabled ||
+                        disableAllStockFields,
+                      Icon: TrashFilledIcon,
+                    },
+                  ]}
+                  actionDisabled={false}
+                  showStockInfo={mode === OFFER_WIZARD_MODE.EDITION}
+                >
+                  <StockEventForm
+                    today={today}
+                    stockIndex={index}
+                    disableAllStockFields={disableAllStockFields}
+                  />
+                </StockEventFormRow>
+              )
+            })}
           </div>
 
           {deleteConfirmVisible && (
