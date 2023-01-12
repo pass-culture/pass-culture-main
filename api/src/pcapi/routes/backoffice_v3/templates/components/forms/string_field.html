@@ -1,7 +1,7 @@
 <div class="form-floating my-3">
     <input type="text" id="{{ field.name }}" name="{{ field.name }}" class="form-control" value="{{ field.data | empty_string_if_null }}"
         {% if field.flags.required %}required{% endif %}
-        {% if field.flags.minlength %}minlength="{{ minlength }}"{% endif %}
-        {% if field.flags.maxlength %}maxlength="{{ maxlength }}"{% endif %}/>
+        {% if field.flags.minlength %}minlength="{{ field.flags.minlength }}"{% endif %}
+        {% if field.flags.maxlength %}maxlength="{{ field.flags.maxlength }}"{% endif %}/>
     <label for="floatingInput">{{ field.label }}</label>
 </div>

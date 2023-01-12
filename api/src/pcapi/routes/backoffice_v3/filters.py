@@ -140,8 +140,12 @@ def format_offer_category(subcategory_id: str) -> str:
     return ""
 
 
-def format_offerer_tags(offerer_tags: list[offerers_models.OffererTag]) -> str:
-    return ", ".join([tag.label for tag in offerer_tags])
+def format_tag_object_list(
+    objects_with_label_attribute: list[offerers_models.OffererTag] | list[offerers_models.OffererTagCategory],
+) -> str:
+    if objects_with_label_attribute:
+        return ", ".join([(obj.label or obj.name) for obj in objects_with_label_attribute])
+    return ""
 
 
 def parse_referrer(url: str) -> str:
@@ -166,7 +170,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_string_list"] = format_string_list
     app.jinja_env.filters["format_date"] = format_date
     app.jinja_env.filters["format_offer_category"] = format_offer_category
-    app.jinja_env.filters["format_offerer_tags"] = format_offerer_tags
+    app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
     app.jinja_env.filters["format_phone_number"] = format_phone_number
     app.jinja_env.filters["format_role"] = format_role
     app.jinja_env.filters["format_state"] = format_state
