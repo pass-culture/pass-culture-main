@@ -49,7 +49,7 @@ const PasswordInput = ({
         type={isPasswordHidden ? 'password' : 'text'}
         hideFooter={displayLocalErrors}
         rightButton={() => (
-          <button onClick={handleToggleHidden}>
+          <button onClick={handleToggleHidden} type="button">
             {isPasswordHidden ? (
               <IcoEyeClose className={styles['password-input-eye-ico']}>
                 Afficher le mot de passe
