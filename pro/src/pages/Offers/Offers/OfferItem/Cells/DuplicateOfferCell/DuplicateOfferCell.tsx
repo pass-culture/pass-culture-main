@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useHistory } from 'react-router'
 
 import {
@@ -25,6 +25,7 @@ const DuplicateOfferCell = ({
 }) => {
   const history = useHistory()
   const notify = useNotification()
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const { logEvent } = useAnalytics()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const shouldDisplayModal =
@@ -47,6 +48,7 @@ const DuplicateOfferCell = ({
       })
       createOfferFromTemplate(history, notify, templateOfferId)
     }
+    buttonRef.current?.blur()
     setIsModalOpen(true)
   }
 
@@ -59,9 +61,10 @@ const DuplicateOfferCell = ({
           onClick={handleCreateOfferClick}
           Icon={PlusIcon}
           iconPosition={IconPositionEnum.CENTER}
+          innerRef={buttonRef}
           hasTooltip
         >
-          Créer une offre réservable pour un établissement
+          Créer une offre réservable pour un établissement scolaire
         </Button>
         {isModalOpen && shouldDisplayModal && (
           <DuplicateOfferDialog

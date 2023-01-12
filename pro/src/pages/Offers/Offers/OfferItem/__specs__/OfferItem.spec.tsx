@@ -534,7 +534,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props, store)
 
         const duplicateButton = screen.queryByRole('button', {
-          name: 'Créer une offre réservable pour un établissement',
+          name: 'Créer une offre réservable pour un établissement scolaire',
         })
 
         expect(duplicateButton).not.toBeInTheDocument()
@@ -547,14 +547,14 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props, store)
 
         const duplicateButton = screen.getByRole('button', {
-          name: 'Créer une offre réservable pour un établissement',
+          name: 'Créer une offre réservable pour un établissement scolaire',
         })
         await userEvent.click(duplicateButton)
 
-        const modalTitle = screen.getByText(
+        const modalTitle = screen.getAllByText(
           'Créer une offre réservable pour un établissement scolaire'
         )
-        expect(modalTitle).toBeInTheDocument()
+        expect(modalTitle.length > 1).toBeTruthy()
       })
 
       it('should not display confirm dialog when clicking on duplicate button when user did see the modal', async () => {
@@ -565,11 +565,11 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props, store)
 
         const duplicateButton = screen.getByRole('button', {
-          name: 'Créer une offre réservable pour un établissement',
+          name: 'Créer une offre réservable pour un établissement scolaire',
         })
         await userEvent.click(duplicateButton)
 
-        const modalTitle = screen.queryByText(
+        const modalTitle = screen.queryByLabelText(
           'Créer une offre réservable pour un établissement scolaire'
         )
         expect(modalTitle).not.toBeInTheDocument()
