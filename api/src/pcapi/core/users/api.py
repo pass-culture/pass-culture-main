@@ -2,6 +2,7 @@ from collections import defaultdict
 from dataclasses import asdict
 import datetime
 from decimal import Decimal
+import enum
 import logging
 import secrets
 import typing
@@ -28,6 +29,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.email.update as email_update
+import pcapi.core.users.models as users_models
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
 from pcapi.domain.password import random_hashed_password
@@ -54,7 +56,12 @@ if typing.TYPE_CHECKING:
     from pcapi.routes.native.v1.serialization import account as account_serialization
 
 
-UNCHANGED = object()
+class T_UNCHANGED(enum.Enum):
+    TOKEN = 0
+
+
+UNCHANGED = T_UNCHANGED.TOKEN
+
 logger = logging.getLogger(__name__)
 
 
@@ -506,18 +513,18 @@ def update_password_and_external_user(user, new_password):  # type: ignore [no-u
     repository.save(user)
 
 
-def update_user_info(  # type: ignore [no-untyped-def]
-    user,
-    cultural_survey_filled_date=UNCHANGED,
-    cultural_survey_id=UNCHANGED,
-    email=UNCHANGED,
-    first_name=UNCHANGED,
-    last_name=UNCHANGED,
-    needs_to_fill_cultural_survey=UNCHANGED,
-    phone_number=UNCHANGED,
-    public_name=UNCHANGED,
-    postal_code=UNCHANGED,
-) -> dict[str, dict[str, str]]:
+def update_user_info(
+    user: users_models.User,
+    cultural_survey_filled_date: datetime.datetime | T_UNCHANGED = UNCHANGED,
+    cultural_survey_id: int | T_UNCHANGED = UNCHANGED,
+    email: str | T_UNCHANGED = UNCHANGED,
+    first_name: str | T_UNCHANGED = UNCHANGED,
+    last_name: str | T_UNCHANGED = UNCHANGED,
+    needs_to_fill_cultural_survey: bool | T_UNCHANGED = UNCHANGED,
+    phone_number: str | T_UNCHANGED = UNCHANGED,
+    public_name: str | T_UNCHANGED = UNCHANGED,
+    postal_code: str | T_UNCHANGED = UNCHANGED,
+) -> dict[str, dict[str, str | None]]:
     old_email = None
     modified_info = {}
 
@@ -539,9 +546,10 @@ def update_user_info(  # type: ignore [no-untyped-def]
     if needs_to_fill_cultural_survey is not UNCHANGED:
         user.needsToFillCulturalSurvey = needs_to_fill_cultural_survey
     if phone_number is not UNCHANGED:
-        if user.phoneNumber != phone_number:
-            modified_info["phoneNumber"] = {"old_info": user.phoneNumber, "new_info": phone_number}
-        user.phoneNumber = phone_number
+        user_phone_number = typing.cast(str, user.phoneNumber)
+        if user_phone_number != phone_number:
+            modified_info["phoneNumber"] = {"old_info": user_phone_number, "new_info": phone_number}
+        user.phoneNumber = phone_number  # type: ignore [assignment]
     if public_name is not UNCHANGED:
         user.publicName = public_name
     if postal_code is not UNCHANGED:

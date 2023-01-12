@@ -6,6 +6,7 @@ import logging
 from typing import TYPE_CHECKING
 from typing import Union
 
+from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
@@ -146,7 +147,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     educationalPriceDetail = sa.Column(sa.Text, nullable=True)
 
     @property
-    def isBookable(self):  # type: ignore [no-untyped-def]
+    def isBookable(self) -> bool:
         return self._bookable and self.offer.isReleased
 
     @sa.ext.hybrid.hybrid_property
@@ -158,7 +159,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         return sa.and_(sa.not_(cls.isExpired), sa.not_(cls.isSoldOut))
 
     @property
-    def is_forbidden_to_underage(self):  # type: ignore [no-untyped-def]
+    def is_forbidden_to_underage(self) -> bool:
         return (self.price > 0 and not self.offer.subcategory.is_bookable_by_underage_when_not_free) or (
             self.price == 0 and not self.offer.subcategory.is_bookable_by_underage_when_free
         )
@@ -224,7 +225,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         )
 
     @classmethod
-    def queryNotSoftDeleted(cls):  # type: ignore [no-untyped-def]
+    def queryNotSoftDeleted(cls) -> BaseQuery:
         return Stock.query.filter_by(isSoftDeleted=False)
 
     @staticmethod
@@ -241,7 +242,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         return PcObject.restize_internal_error(internal_error)
 
     @property
-    def canHaveActivationCodes(self):  # type: ignore [no-untyped-def]
+    def canHaveActivationCodes(self) -> bool:
         return self.offer.isDigital
 
 

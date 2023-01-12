@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import enum
 import logging
 import typing
 
@@ -75,7 +76,13 @@ logger = logging.getLogger(__name__)
 
 
 OFFERS_RECAP_LIMIT = 501
-UNCHANGED = object()
+
+
+class T_UNCHANGED(enum.Enum):
+    TOKEN = 0
+
+
+UNCHANGED = T_UNCHANGED.TOKEN
 
 
 def list_offers_for_pro_user(
@@ -197,27 +204,27 @@ def should_retrieve_book_from_isbn(subcategory_id: str) -> bool:
 
 def update_offer(
     offer: Offer,
-    bookingEmail: str | None = UNCHANGED,  # type: ignore [assignment]
-    description: str | None = UNCHANGED,  # type: ignore [assignment]
-    isNational: bool = UNCHANGED,  # type: ignore [assignment]
-    name: str = UNCHANGED,  # type: ignore [assignment]
-    extraData: dict | None = UNCHANGED,  # type: ignore [assignment]
-    externalTicketOfficeUrl: str | None = UNCHANGED,  # type: ignore [assignment]
-    url: str | None = UNCHANGED,  # type: ignore [assignment]
-    withdrawalDetails: str | None = UNCHANGED,  # type: ignore [assignment]
-    withdrawalType: WithdrawalTypeEnum | None = UNCHANGED,  # type: ignore [assignment]
-    withdrawalDelay: int | None = UNCHANGED,  # type: ignore [assignment]
-    isActive: bool = UNCHANGED,  # type: ignore [assignment]
-    isDuo: bool = UNCHANGED,  # type: ignore [assignment]
-    durationMinutes: int | None = UNCHANGED,  # type: ignore [assignment]
-    mediaUrls: list[str] | None = UNCHANGED,  # type: ignore [assignment]
-    ageMin: int | None = UNCHANGED,  # type: ignore [assignment]
-    ageMax: int | None = UNCHANGED,  # type: ignore [assignment]
-    conditions: str | None = UNCHANGED,  # type: ignore [assignment]
-    audioDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
-    mentalDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
-    motorDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
-    visualDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
+    ageMax: int | None | T_UNCHANGED = UNCHANGED,
+    ageMin: int | None | T_UNCHANGED = UNCHANGED,
+    audioDisabilityCompliant: bool | T_UNCHANGED = UNCHANGED,
+    bookingEmail: str | None | T_UNCHANGED = UNCHANGED,
+    conditions: str | None | T_UNCHANGED = UNCHANGED,
+    description: str | None | T_UNCHANGED = UNCHANGED,
+    durationMinutes: int | None | T_UNCHANGED = UNCHANGED,
+    externalTicketOfficeUrl: str | None | T_UNCHANGED = UNCHANGED,
+    extraData: dict | None | T_UNCHANGED = UNCHANGED,
+    isActive: bool | T_UNCHANGED = UNCHANGED,
+    isDuo: bool | T_UNCHANGED = UNCHANGED,
+    isNational: bool | T_UNCHANGED = UNCHANGED,
+    mediaUrls: list[str] | None | T_UNCHANGED = UNCHANGED,
+    mentalDisabilityCompliant: bool | T_UNCHANGED = UNCHANGED,
+    motorDisabilityCompliant: bool | T_UNCHANGED = UNCHANGED,
+    name: str | T_UNCHANGED = UNCHANGED,
+    url: str | None | T_UNCHANGED = UNCHANGED,
+    visualDisabilityCompliant: bool | T_UNCHANGED = UNCHANGED,
+    withdrawalDelay: int | None | T_UNCHANGED = UNCHANGED,
+    withdrawalDetails: str | None | T_UNCHANGED = UNCHANGED,
+    withdrawalType: WithdrawalTypeEnum | None | T_UNCHANGED = UNCHANGED,
 ) -> Offer:
     modifications = {
         field: new_value
@@ -230,14 +237,14 @@ def update_offer(
         return offer
 
     validation.check_validation_status(offer)
-    if extraData != UNCHANGED:
+    if extraData is not UNCHANGED:
         validation.check_offer_extra_data(offer.subcategoryId, extraData)
-    if isDuo != UNCHANGED:
+    if isDuo is not UNCHANGED:
         validation.check_is_duo_compliance(isDuo, offer.subcategory)
 
-    if (UNCHANGED, UNCHANGED) != (withdrawalType, withdrawalDelay):
-        changed_withdrawalType = withdrawalType if withdrawalType != UNCHANGED else offer.withdrawalType
-        changed_withdrawalDelay = withdrawalDelay if withdrawalDelay != UNCHANGED else offer.withdrawalDelay
+    if withdrawalType is not UNCHANGED or withdrawalDelay is not UNCHANGED:
+        changed_withdrawalType = withdrawalType if withdrawalType is not UNCHANGED else offer.withdrawalType
+        changed_withdrawalDelay = withdrawalDelay if withdrawalDelay is not UNCHANGED else offer.withdrawalDelay
         validation.check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)
 
     if offer.isFromProvider:
@@ -316,7 +323,7 @@ def _update_collective_offer(
     return updated_fields
 
 
-def batch_update_offers(query, update_fields):  # type: ignore [no-untyped-def]
+def batch_update_offers(query: BaseQuery, update_fields: dict) -> None:
     raw_results = (
         query.filter(Offer.validation == OfferValidationStatus.APPROVED).with_entities(Offer.id, Offer.venueId).all()
     )
@@ -329,18 +336,13 @@ def batch_update_offers(query, update_fields):  # type: ignore [no-untyped-def]
         extra={"updated_fields": update_fields, "nb_offers": len(offer_ids), "venue_ids": venue_ids},
     )
     if "isActive" in update_fields.keys():
-        if update_fields["isActive"]:
-            logger.info(
-                "Offers has been activated",
-                extra={"offer_ids": offer_ids, "venue_id": venue_ids},
-                technical_message_id="offers.activated",
-            )
-        else:
-            logger.info(
-                "Offers has been deactivated",
-                extra={"offer_ids": offer_ids, "venue_id": venue_ids},
-                technical_message_id="offers.deactivated",
-            )
+        message = "Offers has been activated" if update_fields["isActive"] else "Offers has been deactivated"
+        technical_message_id = "offers.activated" if update_fields["isActive"] else "offers.deactivated"
+        logger.info(  # type: ignore [call-arg]
+            message,
+            extra={"offer_ids": offer_ids, "venue_id": venue_ids},
+            technical_message_id=technical_message_id,
+        )
 
     number_of_offers_to_update = len(offer_ids)
     batch_size = 1000
@@ -356,7 +358,7 @@ def batch_update_offers(query, update_fields):  # type: ignore [no-untyped-def]
         search.async_index_offer_ids(offer_ids_batch)
 
 
-def batch_update_collective_offers(query, update_fields):  # type: ignore [no-untyped-def]
+def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
     collective_offer_ids_tuples = query.filter(
         educational_models.CollectiveOffer.validation == OfferValidationStatus.APPROVED
     ).with_entities(educational_models.CollectiveOffer.id)
@@ -379,7 +381,7 @@ def batch_update_collective_offers(query, update_fields):  # type: ignore [no-un
         search.async_index_collective_offer_ids(collective_offer_ids_batch)
 
 
-def batch_update_collective_offers_template(query, update_fields):  # type: ignore [no-untyped-def]
+def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
     collective_offer_ids_tuples = query.filter(
         educational_models.CollectiveOfferTemplate.validation == OfferValidationStatus.APPROVED
     ).with_entities(educational_models.CollectiveOfferTemplate.id)
@@ -402,7 +404,7 @@ def batch_update_collective_offers_template(query, update_fields):  # type: igno
         search.async_index_collective_offer_template_ids(collective_offer_template_ids_batch)
 
 
-def _notify_pro_upon_stock_edit_for_event_offer(stock: Stock, bookings: typing.List[Booking]):  # type: ignore [no-untyped-def]
+def _notify_pro_upon_stock_edit_for_event_offer(stock: Stock, bookings: typing.List[Booking]) -> None:
     if stock.offer.isEvent:
         if not transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings)):
             logger.warning(

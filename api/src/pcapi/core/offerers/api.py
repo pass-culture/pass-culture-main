@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+import enum
 import logging
 import secrets
 import time
@@ -54,7 +55,12 @@ from . import validation
 
 logger = logging.getLogger(__name__)
 
-UNCHANGED = object()
+
+class T_UNCHANGED(enum.Enum):
+    TOKEN = 0
+
+
+UNCHANGED = T_UNCHANGED.TOKEN
 VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "postalCode", "city", "latitude", "longitude", "criteria"]
 API_KEY_SEPARATOR = "_"
 APE_TAG_MAPPING = {
@@ -520,27 +526,24 @@ def _format_tags(tags: typing.Iterable[models.OffererTag]) -> str:
     return ", ".join(sorted(tag.label for tag in tags))
 
 
-def update_offerer(  # type: ignore [no-untyped-def]
+def update_offerer(
     offerer: models.Offerer,
-    city=UNCHANGED,
-    postal_code=UNCHANGED,
-    address=UNCHANGED,
-    tags=UNCHANGED,
-) -> dict[str, dict[str, str]]:
-    modified_info = {}
+    city: str | T_UNCHANGED = UNCHANGED,
+    postal_code: str | T_UNCHANGED = UNCHANGED,
+    address: str | T_UNCHANGED = UNCHANGED,
+    tags: list[models.OffererTag] | T_UNCHANGED = UNCHANGED,
+) -> dict[str, dict[str, str | None]]:
+    modified_info: dict[str, dict[str, str | None]] = {}
 
-    if city is not UNCHANGED:
-        if offerer.city != city:
-            modified_info["city"] = {"old_info": offerer.city, "new_info": city}
-            offerer.city = city
-    if postal_code is not UNCHANGED:
-        if offerer.postalCode != postal_code:
-            modified_info["postalCode"] = {"old_info": offerer.postalCode, "new_info": postal_code}
-            offerer.postalCode = postal_code
-    if address is not UNCHANGED:
-        if offerer.address != address:
-            modified_info["address"] = {"old_info": offerer.address, "new_info": address}
-            offerer.address = address
+    if city is not UNCHANGED and offerer.city != city:
+        modified_info["city"] = {"old_info": offerer.city, "new_info": city}
+        offerer.city = city
+    if postal_code is not UNCHANGED and offerer.postalCode != postal_code:
+        modified_info["postalCode"] = {"old_info": offerer.postalCode, "new_info": postal_code}
+        offerer.postalCode = postal_code
+    if address is not UNCHANGED and offerer.address != address:
+        modified_info["address"] = {"old_info": offerer.address, "new_info": address}
+        offerer.address = address
     if tags is not UNCHANGED:
         if set(offerer.tags) != set(tags):
             modified_info["tags"] = {"old_info": _format_tags(offerer.tags), "new_info": _format_tags(tags)}
