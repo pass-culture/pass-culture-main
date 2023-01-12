@@ -14,7 +14,11 @@ def _get_regions_choices() -> list[tuple]:
     return [(key, key) for key in get_all_regions()]
 
 
-def _get_tags_query() -> sa.orm.Query:
+def _get_all_tags_query() -> sa.orm.Query:
+    return offerers_models.OffererTag.query.order_by(offerers_models.OffererTag.label)
+
+
+def _get_validation_tags_query() -> sa.orm.Query:
     return (
         offerers_models.OffererTag.query.join(offerers_models.OffererTagCategoryMapping)
         .join(offerers_models.OffererTagCategory)
@@ -24,6 +28,9 @@ def _get_tags_query() -> sa.orm.Query:
 
 
 class EditOffererForm(FlaskForm):
+    tags = fields.PCQuerySelectMultipleField(
+        "Tags", query_factory=_get_all_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
+    )
     address = fields.PCOptStringField(
         "Adresse",
         validators=(wtforms.validators.Length(max=200, message="doit contenir moins de %(max)d caractères"),),
@@ -44,7 +51,7 @@ class OffererValidationListForm(FlaskForm):
     q = fields.PCOptSearchField("Nom de structure, SIREN, code postal, département, ville, email, nom de compte pro")
     regions = fields.PCSelectMultipleField("Régions", choices=_get_regions_choices())
     tags = fields.PCQuerySelectMultipleField(
-        "Tags", query_factory=_get_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
+        "Tags", query_factory=_get_validation_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
     )
     status = fields.PCSelectMultipleField("États", choices=utils.choices_from_enum(ValidationStatus))
     from_date = fields.PCDateField("Demande à partir du", validators=(wtforms.validators.Optional(),))
@@ -75,7 +82,7 @@ class UserOffererValidationListForm(FlaskForm):
     q = fields.PCOptSearchField("Nom de structure, SIREN, email, nom de compte pro")
     regions = fields.PCSelectMultipleField("Régions", choices=_get_regions_choices())
     tags = fields.PCQuerySelectMultipleField(
-        "Tags", query_factory=_get_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
+        "Tags", query_factory=_get_validation_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
     )
     status = fields.PCSelectMultipleField(
         "États de la demande de rattachement", choices=utils.choices_from_enum(ValidationStatus)

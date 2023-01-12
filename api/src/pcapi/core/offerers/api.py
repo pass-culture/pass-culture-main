@@ -516,11 +516,16 @@ def grant_user_offerer_access(offerer: models.Offerer, user: users_models.User) 
     return models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.VALIDATED)
 
 
+def _format_tags(tags: typing.Iterable[models.OffererTag]) -> str:
+    return ", ".join(sorted(tag.label for tag in tags))
+
+
 def update_offerer(  # type: ignore [no-untyped-def]
     offerer: models.Offerer,
     city=UNCHANGED,
     postal_code=UNCHANGED,
     address=UNCHANGED,
+    tags=UNCHANGED,
 ) -> dict[str, dict[str, str]]:
     modified_info = {}
 
@@ -536,6 +541,10 @@ def update_offerer(  # type: ignore [no-untyped-def]
         if offerer.address != address:
             modified_info["address"] = {"old_info": offerer.address, "new_info": address}
             offerer.address = address
+    if tags is not UNCHANGED:
+        if set(offerer.tags) != set(tags):
+            modified_info["tags"] = {"old_info": _format_tags(offerer.tags), "new_info": _format_tags(tags)}
+            offerer.tags = tags
 
     repository.save(offerer)
 
