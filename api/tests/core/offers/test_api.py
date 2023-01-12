@@ -232,11 +232,10 @@ class CreateStockTest:
 class EditStockTest:
     def test_edit_stock(self):
         # Given
-        offer = factories.ThingOfferFactory()
-        existing_stock = factories.StockFactory(offer=offer, price=10)
+        existing_stock = factories.StockFactory(price=10)
 
         # When
-        edited_stock, update_info = api.edit_stock(offer=offer, price=5, quantity=7, stock_id=existing_stock.id)
+        edited_stock, update_info = api.edit_stock(stock=existing_stock, price=5, quantity=7)
 
         # Then
         assert edited_stock == models.Stock.query.filter_by(id=existing_stock.id).first()
@@ -255,10 +254,9 @@ class EditStockTest:
 
         # When
         edited_stock, update_info = api.edit_stock(
-            offer=existing_stock.offer,
+            stock=existing_stock,
             price=12,
             quantity=77,
-            stock_id=existing_stock.id,
             beginning_datetime=new_beginning,
             booking_limit_datetime=previous_booking_limit,
         )
@@ -282,10 +280,9 @@ class EditStockTest:
 
         # When
         edited_stock, update_info = api.edit_stock(
-            offer=existing_stock.offer,
+            stock=existing_stock,
             price=10,
             quantity=7,
-            stock_id=existing_stock.id,
             beginning_datetime=beginning,
             booking_limit_datetime=new_booking_limit,
         )
@@ -307,47 +304,28 @@ class EditStockTest:
             offer__lastProviderId=allocine_provider.id,
         )
 
-        edited_stock, _ = api.edit_stock(offer=stock.offer, stock_id=stock.id, price=stock.price, quantity=50)
+        edited_stock, _ = api.edit_stock(stock=stock, price=stock.price, quantity=50)
 
         assert edited_stock == models.Stock.query.filter_by(id=stock.id).first()
         assert set(stock.fieldsUpdated) == {"quantity", "price"}
 
-    def test_does_not_allow_edition_of_stock_of_another_offer_than_given(self):
-        # Given
-        offer = factories.ThingOfferFactory()
-        other_offer = factories.ThingOfferFactory()
-        existing_stock_on_other_offer = factories.StockFactory(offer=other_offer, price=10)
-
-        # When
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.edit_stock(offer=offer, stock_id=existing_stock_on_other_offer.id, price=30, quantity=None)
-
-        # Then
-        assert error.value.status_code == 403
-        assert error.value.errors == {
-            "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
-        }
-
     def test_does_not_allow_invalid_quantity(self):
         # Given
-        offer = factories.ThingOfferFactory()
-        existing_stock = factories.StockFactory(offer=offer, price=10)
+        existing_stock = factories.StockFactory(price=10)
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.edit_stock(offer=offer, quantity=-4, stock_id=existing_stock.id, price=30)
+            api.edit_stock(stock=existing_stock, quantity=-4, price=30)
 
         # Then
         assert error.value.errors == {"quantity": ["Le stock doit être positif"]}
 
     def test_does_not_allow_invalid_price(self):
-        # Given
-        offer = factories.ThingOfferFactory()
-        existing_stock = factories.StockFactory(offer=offer, price=10)
+        existing_stock = factories.StockFactory(price=10)
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.edit_stock(offer=offer, stock_id=existing_stock.id, price=-3, quantity=existing_stock.quantity)
+            api.edit_stock(stock=existing_stock, price=-3, quantity=existing_stock.quantity)
 
         # Then
         assert error.value.errors == {"price": ["Le prix doit être positif"]}
@@ -358,9 +336,7 @@ class EditStockTest:
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.edit_stock(
-                offer=existing_stock.offer, price=301, quantity=existing_stock.quantity, stock_id=existing_stock.id
-            )
+            api.edit_stock(stock=existing_stock, price=301, quantity=existing_stock.quantity)
 
         # Then
         assert error.value.errors == {
@@ -375,8 +351,7 @@ class EditStockTest:
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
             api.edit_stock(
-                offer=existing_stock.offer,
-                stock_id=existing_stock.id,
+                stock=existing_stock,
                 price=301,
                 quantity=None,
                 beginning_datetime=now,
@@ -391,7 +366,7 @@ class EditStockTest:
         finance_factories.CustomReimbursementRuleFactory(offer=stock.offer)
 
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.edit_stock(offer=stock.offer, stock_id=stock.id, price=9, quantity=None)
+            api.edit_stock(stock=stock, price=9, quantity=None)
         assert error.value.errors["price"][0].startswith("Vous ne pouvez pas modifier le prix")
 
     def test_does_not_allow_beginning_datetime_for_thing_offers(self):
@@ -403,10 +378,9 @@ class EditStockTest:
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
             api.edit_stock(
-                offer=offer,
+                stock=existing_stock,
                 price=0,
                 quantity=None,
-                stock_id=existing_stock.id,
                 beginning_datetime=beginning_date,
                 booking_limit_datetime=beginning_date,
             )
@@ -418,13 +392,12 @@ class EditStockTest:
 
     def test_validate_booking_limit_datetime_with_expiration_datetime(self):
         # Given
-        offer = factories.DigitalOfferFactory()
-        existing_stock = factories.StockFactory(offer=offer)
+        existing_stock = factories.StockFactory()
         factories.ActivationCodeFactory(expirationDate=datetime.utcnow(), stock=existing_stock)
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.edit_stock(offer=offer, stock_id=existing_stock.id, price=0, quantity=None, booking_limit_datetime=None)
+            api.edit_stock(stock=existing_stock, price=0, quantity=None, booking_limit_datetime=None)
 
         # Then
         assert error.value.errors == {
@@ -438,13 +411,11 @@ class EditStockTest:
 
     def test_does_not_allow_a_negative_remaining_quantity(self):
         # Given
-        offer = factories.ThingOfferFactory()
-        booking = bookings_factories.BookingFactory(stock__offer=offer, stock__quantity=10)
-        existing_stock = booking.stock
+        booking = bookings_factories.BookingFactory(stock__quantity=10)
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.edit_stock(offer=offer, price=10, quantity=0, stock_id=existing_stock.id)
+            api.edit_stock(stock=booking.stock, price=10, quantity=0)
 
         # Then
         assert error.value.errors == {"quantity": ["Le stock total ne peut être inférieur au nombre de réservations"]}
@@ -462,8 +433,7 @@ class EditStockTest:
         # When
         with pytest.raises(exceptions.BookingLimitDatetimeTooLate):
             api.edit_stock(
-                offer=existing_stock.offer,
-                stock_id=existing_stock.id,
+                stock=existing_stock,
                 beginning_datetime=beginning_date,
                 booking_limit_datetime=booking_limit,
                 price=10,
@@ -482,10 +452,9 @@ class EditStockTest:
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
             api.edit_stock(
-                offer=existing_stock.offer,
+                stock=existing_stock,
                 price=4,
                 beginning_datetime=date_in_the_past,
-                stock_id=existing_stock.id,
                 quantity=1,
             )
 
@@ -493,7 +462,6 @@ class EditStockTest:
         assert error.value.errors == {"global": ["Les évènements passés ne sont pas modifiables"]}
 
     def test_allow_edition_of_price_and_quantity_for_stocks_of_offers_synchronized_with_allocine(self):
-        # Given
         offer = factories.EventOfferFactory(
             lastProvider=providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         )
@@ -502,8 +470,7 @@ class EditStockTest:
 
         # When
         api.edit_stock(
-            offer=offer,
-            stock_id=existing_stock.id,
+            stock=existing_stock,
             price=4,
             quantity=None,
             beginning_datetime=existing_stock.beginningDatetime,
@@ -527,8 +494,7 @@ class EditStockTest:
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
             api.edit_stock(
-                offer=offer,
-                stock_id=existing_stock.id,
+                stock=existing_stock,
                 price=10,
                 quantity=None,
                 beginning_datetime=other_date_in_the_future,
@@ -547,7 +513,7 @@ class EditStockTest:
         existing_stock = factories.StockFactory(offer=offer, price=10)
 
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.edit_stock(offer=offer, stock_id=existing_stock.id, price=5, quantity=7)
+            api.edit_stock(stock=existing_stock, price=5, quantity=7)
 
         assert error.value.errors == {
             "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]

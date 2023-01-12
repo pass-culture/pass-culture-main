@@ -9,7 +9,6 @@ from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
 import sentry_sdk
 import sqlalchemy.exc as sqla_exc
-import sqlalchemy.orm as sqla_orm
 import yaml
 from yaml.scanner import ScannerError
 
@@ -55,7 +54,6 @@ from pcapi.domain import admin_emails
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
 from pcapi.models import feature
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
@@ -486,26 +484,13 @@ def create_stock(
 
 
 def edit_stock(
-    offer: Offer,
+    stock: Stock,
     price: decimal.Decimal,
     quantity: int | None,
-    stock_id: int,
     beginning_datetime: datetime.datetime | None = None,
     booking_limit_datetime: datetime.datetime | None = None,
     editing_provider: providers_models.Provider | None = None,
 ) -> typing.Tuple[Stock, bool]:
-    stock = (
-        Stock.queryNotSoftDeleted()
-        .filter_by(id=stock_id)
-        .options(sqla_orm.joinedload(Stock.activationCodes))
-        .first_or_404()
-    )
-    if stock.offerId != offer.id:
-        errors = ApiErrors()
-        errors.add_error("global", "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information.")
-        errors.status_code = 403
-        raise errors
-
     if beginning_datetime is None:
         beginning_datetime = stock.beginningDatetime
     if booking_limit_datetime is None and stock.offer.isEvent:
