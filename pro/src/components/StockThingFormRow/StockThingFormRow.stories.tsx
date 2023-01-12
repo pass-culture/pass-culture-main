@@ -50,7 +50,9 @@ const renderStockFormRow =
                 marginBottom: '24px',
               }}
             >
-              <StockFormRow {...args} />
+              <StockFormRow {...args}>
+                <StockThingForm today={today} />
+              </StockFormRow>
             </div>
             <SubmitButton onClick={handleSubmit} isLoading={isSubmitting}>
               Valider
@@ -67,7 +69,6 @@ const actionsCallBack = (name: string) => () => {
 }
 export const Create = Template.bind({})
 Create.args = {
-  Form: <StockThingForm today={today} />,
   actions: [
     {
       callback: actionsCallBack('one'),
@@ -123,7 +124,6 @@ Edite.args = {
 
 export const WithoutActions = Template.bind({})
 WithoutActions.args = {
-  Form: <StockThingForm today={today} />,
   actions: [],
   actionDisabled: false,
   showStockInfo: false,

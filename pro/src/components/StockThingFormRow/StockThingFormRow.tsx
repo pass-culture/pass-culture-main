@@ -8,21 +8,21 @@ import { IStockFormRowAction } from '../StockFormActions/types'
 import styles from './StockThingFormRow.module.scss'
 
 export interface IStockThingFormRowProps {
-  Form: React.ReactNode
+  children?: React.ReactNode
   actions?: IStockFormRowAction[]
   actionDisabled: boolean
   showStockInfo?: boolean
 }
 
 const StockThingFormRow = ({
-  Form,
+  children,
   actions,
   actionDisabled,
   showStockInfo = false,
 }: IStockThingFormRowProps): JSX.Element => {
   return (
     <div className={styles['stock-form-row']}>
-      <div className={styles['stock-form']}>{Form}</div>
+      <div className={styles['stock-form']}>{children}</div>
 
       {showStockInfo && <StockFormInfo className={styles['stock-form-info']} />}
 
