@@ -1,0 +1,100 @@
+{% extends "layouts/connected.html" %}
+
+{% block page %}
+    <div class="pt-3 px-5">
+        <h2 class="fw-light">Tags structure</h2>
+        <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
+                data-bs-target="#create-offerer-tag-modal" type="button">
+            Créer un tag structure
+        </button>
+        {% set form = create_tag_form %}
+        <div class="modal modal-lg fade" id="create-offerer-tag-modal" tabindex="-1"
+                aria-describedby="create-offerer-tag-modal-label" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form action="{{ url_for("backoffice_v3_web.offerer_tag.create_offerer_tag") }}" method="POST" data-turbo="false">
+                        <div class="modal-header" id="create-offerer-tag-modal-label">
+                            <h5 class="modal-title">Créer un tag structure</h5>
+                        </div>
+                        <div class="modal-body row">
+                            <div class="form-group">
+                                {% include "components/form_body.html" %}
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                                Annuler
+                            </button>
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div>
+            <table class="table mb-4">
+                <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Libellé</th>
+                    <th scope="col" class="col-5">Description</th>
+                    <th scope="col">Catégories</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for offerer_tag in rows %}
+                    <tr>
+                        <td>
+                            <div class="dropdown">
+                                <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                        class="btn p-0"><i
+                                        class="bi bi-three-dots-vertical"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-item p-0">
+                                        <a class="btn btn-sm d-block w-100 text-start px-3"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#edit-offerer-tag-modal-{{ offerer_tag.id }}">
+                                                Modifier le tag structure
+                                        </a>
+                                    </li>
+                                </ul>
+                                {% set form = forms[offerer_tag.id] %}
+                                <div class="modal modal-lg fade" id="edit-offerer-tag-modal-{{ offerer_tag.id }}" tabindex="-1"
+                                    aria-labelledby="edit-offerer-tag-modal-{{ offerer_tag.id }}-label" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <form action="{{ url_for("backoffice_v3_web.offerer_tag.update_offerer_tag", offerer_tag_id=offerer_tag.id) }}"
+                                                method="POST" data-turbo="false">
+                                                <div class="modal-header" id="edit-offerer-tag-modal-{{ offerer_tag.id }}-label">
+                                                    <h5 class="modal-title">Modifier le tag {{ offerer_tag.name }}</h5>
+                                                </div>
+                                                <div class="modal-body row">
+                                                    <div class="form-group">
+                                                        {% include "components/form_body.html" %}
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
+                                                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ offerer_tag.id }}</td>
+                        <td>{{ offerer_tag.name }}</td>
+                        <td>{{ offerer_tag.label }}</td>
+                        <td>{{ offerer_tag.description | empty_string_if_null}}</td>
+                        <td>{{ offerer_tag.categories | format_tag_object_list }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

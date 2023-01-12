@@ -1861,3 +1861,212 @@ def send_request(authenticated_client, offerer_id, url, form_data=None):
     form = {"csrf_token": g.get("csrf_token", ""), **form_data}
 
     return authenticated_client.post(url, form=form)
+
+
+class ListOffererTagsTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+        endpoint = "backoffice_v3_web.offerer_tag.list_offerer_tags"
+        endpoint_kwargs = {"offerer_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_list_offerer_tags(self, authenticated_client):
+        # given
+        category = offerers_factories.OffererTagCategoryFactory(label="indépendant")
+        offerer_tag = offerers_factories.OffererTagFactory(
+            name="scottish-tag",
+            label="Taggy McTagface",
+            description="FREEDOOOOOOOOOM",
+            categories=[category],
+        )
+
+        # when
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url_for("backoffice_v3_web.offerer_tag.list_offerer_tags"))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom"] == offerer_tag.name
+        assert rows[0]["Libellé"] == offerer_tag.label
+        assert rows[0]["Description"] == offerer_tag.description
+        assert rows[0]["Catégories"] == category.label
+
+
+class UpdateOffererTagTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.offerer_tag.update_offerer_tag"
+        endpoint_kwargs = {"offerer_tag_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_update_offerer(self, authenticated_client):
+        offerer_tag_not_to_edit = offerers_factories.OffererTagFactory(name="zzzzzzzz-end-of-the-list")
+        category_to_keep = offerers_factories.OffererTagCategoryFactory(label="AAA")
+        category_to_remove = offerers_factories.OffererTagCategoryFactory(label="BBB")
+        category_to_add = offerers_factories.OffererTagCategoryFactory(label="ZZZ")
+        offerer_tag_to_edit = offerers_factories.OffererTagFactory(
+            name="tag-you-are-it",
+            label="C'est toi le loup",
+            description="Le jeu du loup c'est le 'tag' en anglais hihi",
+            categories=[category_to_keep, category_to_remove],
+        )
+
+        new_name = "very-serious-tag"
+        new_label = "Tag très sérieux"
+        new_description = "Pas le temps de jouer"
+        new_categories = [category_to_keep.id, category_to_add.id]
+
+        base_form = {
+            "name": new_name,
+            "label": new_label,
+            "description": new_description,
+            "categories": new_categories,
+        }
+        response = self.update_offerer_tag(authenticated_client, offerer_tag_to_edit, base_form)
+        assert response.status_code == 303
+
+        # Test redirection
+        expected_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", _external=True)
+        assert response.location == expected_url
+
+        response = authenticated_client.get(expected_url)
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert html_parser.count_table_rows(response.data) == 2
+        assert rows[0]["Nom"] == new_name
+        assert rows[0]["Libellé"] == new_label
+        assert rows[0]["Description"] == new_description
+        assert rows[0]["Catégories"] == ", ".join([category_to_keep.label, category_to_add.label])
+
+        assert rows[1]["Nom"] == offerer_tag_not_to_edit.name
+
+    def test_update_with_wrong_data(self, authenticated_client):
+        offerer_tag_to_edit = offerers_factories.OffererTagFactory(
+            name="tag-alog",
+            label="Le tagalog c'est du philippin",
+        )
+        base_form = {
+            "name": "",
+            "label": "Le tagalog c'est du philippin",
+        }
+        response = self.update_offerer_tag(authenticated_client, offerer_tag_to_edit, base_form)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", _external=True)
+        assert response.location == expected_url
+
+        response = authenticated_client.get(expected_url)
+
+        assert "Les données envoyées comportent des erreurs" in html_parser.extract_alert(response.data)
+        assert offerer_tag_to_edit.name != ""
+
+    def test_update_with_already_existing_tag(self, authenticated_client):
+        offerers_factories.OffererTagFactory(
+            name="i-was-here-first",
+        )
+        offerer_tag_to_edit = offerers_factories.OffererTagFactory(
+            name="a-silly-name",
+        )
+        base_form = {
+            "name": "i-was-here-first",
+            "label": "",
+            "description": "",
+            "categories": [],
+        }
+
+        response = self.update_offerer_tag(authenticated_client, offerer_tag_to_edit, base_form)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", _external=True)
+        response = authenticated_client.get(expected_url)
+
+        assert html_parser.extract_alert(response.data) == "Ce nom de tag existe déjà"
+        assert offerer_tag_to_edit.name == "a-silly-name"
+
+    def update_offerer_tag(self, authenticated_client, offerer_tag_to_edit, form):
+        # generate csrf token
+        edit_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags")
+        authenticated_client.get(edit_url)
+
+        url = url_for("backoffice_v3_web.offerer_tag.update_offerer_tag", offerer_tag_id=offerer_tag_to_edit.id)
+
+        form["csrf_token"] = g.get("csrf_token", "")
+        return authenticated_client.post(url, form=form)
+
+
+class CreateOffererTagTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.offerer_tag.create_offerer_tag"
+        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_create_offerer(self, authenticated_client):
+        category = offerers_factories.OffererTagCategoryFactory(label="La catégorie des sucreries")
+
+        name = "tag-ada"
+        label = "Fraise Tag-ada"
+        description = "Un tag délicieux mais dangereux"
+        categories = [category.id]
+
+        base_form = {
+            "name": name,
+            "label": label,
+            "description": description,
+            "categories": categories,
+        }
+        response = self.create_offerer_tag(authenticated_client, base_form)
+        assert response.status_code == 303
+
+        # Test redirection
+        expected_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", _external=True)
+        assert response.location == expected_url
+
+        response = authenticated_client.get(expected_url)
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert html_parser.count_table_rows(response.data) == 1
+        assert rows[0]["Nom"] == name
+        assert rows[0]["Libellé"] == label
+        assert rows[0]["Description"] == description
+        assert rows[0]["Catégories"] == category.label
+
+    def test_create_with_wrong_data(self, authenticated_client):
+        base_form = {
+            "name": "",
+            "label": "Mon nom est Personne",
+        }
+        response = self.create_offerer_tag(authenticated_client, base_form)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", _external=True)
+        response = authenticated_client.get(expected_url)
+
+        assert "Les données envoyées comportent des erreurs" in html_parser.extract_alert(response.data)
+        assert html_parser.count_table_rows(response.data) == 0
+
+    def test_create_with_already_existing_tag(self, authenticated_client):
+        offerers_factories.OffererTagFactory(
+            name="i-was-here-first",
+        )
+        base_form = {
+            "name": "i-was-here-first",
+        }
+        response = self.create_offerer_tag(authenticated_client, base_form)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", _external=True)
+        response = authenticated_client.get(expected_url)
+
+        assert html_parser.extract_alert(response.data) == "Ce tag existe déjà"
+        assert html_parser.count_table_rows(response.data) == 1
+
+    def create_offerer_tag(self, authenticated_client, form):
+        # generate csrf token
+        edit_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags")
+        authenticated_client.get(edit_url)
+
+        url = url_for("backoffice_v3_web.offerer_tag.create_offerer_tag")
+
+        form["csrf_token"] = g.get("csrf_token", "")
+        return authenticated_client.post(url, form=form)
