@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React, { ReactNode } from 'react'
 
 import { ReactComponent as ErrorSvg } from 'icons/ico-clear.svg'
-import { ReactComponent as SuccessSvg } from 'icons/ico-notification-success-green.svg'
+import { ReactComponent as SuccessSvg } from 'icons/ico-notification-success.svg'
 
 import { ReactComponent as DisabledSvg } from './disabled.svg'
 import styles from './Timeline.module.scss'
@@ -24,10 +24,20 @@ export interface ITimelineProps {
   steps: ITimelineStep[]
 }
 
-const getIconComponent = (type: TimelineStepType) => {
+const getIconComponent = (type: TimelineStepType, hasErrorSteps: boolean) => {
   switch (type) {
     case TimelineStepType.SUCCESS:
-      return <SuccessSvg title="Étape en succès" className={styles.icon} />
+      return (
+        <SuccessSvg
+          title="Étape en succès"
+          className={cn(
+            styles.icon,
+            hasErrorSteps
+              ? styles['icon-success-disabled']
+              : styles['icon-success']
+          )}
+        />
+      )
     case TimelineStepType.ERROR:
       return (
         <ErrorSvg
@@ -36,10 +46,18 @@ const getIconComponent = (type: TimelineStepType) => {
         />
       )
     case TimelineStepType.WAITING:
-      return <WaitingSvg title="Étape en attente" className={styles.icon} />
+      return (
+        <WaitingSvg
+          title="Étape en attente"
+          className={cn(styles.icon, styles['icon-waiting'])}
+        />
+      )
     case TimelineStepType.DISABLED:
       return (
-        <DisabledSvg title="Étape non disponible" className={styles.icon} />
+        <DisabledSvg
+          title="Étape non disponible"
+          className={cn(styles.icon, styles['icon-disabled'])}
+        />
       )
     default:
       throw new Error(`Unsupported step type: ${type}`)
@@ -48,7 +66,8 @@ const getIconComponent = (type: TimelineStepType) => {
 
 const getLineStyle = (
   stepType: TimelineStepType,
-  nextStepType?: TimelineStepType
+  nextStepType?: TimelineStepType,
+  hasErrorSteps?: boolean
 ) => {
   // No line if last step
   if (nextStepType === undefined) {
@@ -63,7 +82,7 @@ const getLineStyle = (
 
   switch (nextStepType) {
     case TimelineStepType.SUCCESS:
-      return styles['line-success']
+      return hasErrorSteps ? styles['line-error'] : styles['line-success']
     case TimelineStepType.ERROR:
       return styles['line-error']
     case TimelineStepType.WAITING:
@@ -76,6 +95,8 @@ const getLineStyle = (
 }
 
 const Timeline = ({ steps }: ITimelineProps): JSX.Element => {
+  const hasErrorSteps =
+    steps.filter(x => x.type === TimelineStepType.ERROR).length > 0
   return (
     <ol className={styles.container}>
       {steps.map((step, index) => {
@@ -84,10 +105,10 @@ const Timeline = ({ steps }: ITimelineProps): JSX.Element => {
             key={index}
             className={cn(
               styles.step,
-              getLineStyle(step.type, steps[index + 1]?.type)
+              getLineStyle(step.type, steps[index + 1]?.type, hasErrorSteps)
             )}
           >
-            {getIconComponent(step.type)}
+            {getIconComponent(step.type, hasErrorSteps)}
             {step.content}
           </li>
         )

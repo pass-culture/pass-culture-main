@@ -31,7 +31,23 @@ $time-line-width: rem.torem(2px);
 }
 
 .icon-error path {
-  fill: colors.$primary;
+  fill: colors.$red-warning;
+}
+
+.icon-success {
+  fill: colors.$green-valid;
+}
+
+.icon-success-disabled {
+  fill: colors.$grey-semi-dark;
+}
+
+.icon-waiting {
+  fill: colors.$grey-dark;
+}
+
+.icon-disabled {
+  fill: colors.$grey-medium;
 }
 
 .step {
@@ -57,12 +73,12 @@ $time-line-width: rem.torem(2px);
 
 .line-success::after {
   border-style: solid;
-  border-color: colors.$green-valid-light;
+  border-color: colors.$green-valid;
 }
 
 .line-error::after {
   border-style: solid;
-  border-color: colors.$grey-dark;
+  border-color: colors.$grey-semi-dark;
 }
 
 .line-waiting::after {
