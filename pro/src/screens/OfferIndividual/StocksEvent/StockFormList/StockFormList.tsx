@@ -71,14 +71,6 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
               <StockEventFormRow
                 key={`${stockValues.stockId}-${index}`}
                 stockIndex={index}
-                Form={
-                  <StockEventForm
-                    today={today}
-                    stockIndex={index}
-                    isSynchronized={isSynchronized}
-                    mode={mode}
-                  />
-                }
                 actions={[
                   {
                     callback: async () => {
@@ -109,7 +101,14 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
                 ]}
                 actionDisabled={false}
                 showStockInfo={mode === OFFER_WIZARD_MODE.EDITION}
-              />
+              >
+                <StockEventForm
+                  today={today}
+                  stockIndex={index}
+                  isSynchronized={isSynchronized}
+                  mode={mode}
+                />
+              </StockEventFormRow>
             ))}
           </div>
 

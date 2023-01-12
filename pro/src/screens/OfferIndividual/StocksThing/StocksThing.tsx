@@ -224,18 +224,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     )
   }
 
-  const renderStockForm = () => {
-    return (
-      <StockThingForm
-        today={today}
-        readOnlyFields={setFormReadOnlyFields(offer, formik.values)}
-        showExpirationDate={
-          formik.values.activationCodesExpirationDatetime !== null
-        }
-      />
-    )
-  }
-
   const onConfirmDeleteStock = async () => {
     /* istanbul ignore next: DEBT, TO FIX */
     if (formik.values.stockId === undefined) {
@@ -277,7 +265,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       offer.subcategoryId === LIVRE_PAPIER_SUBCATEGORY_ID ? '10' : '30'
     } jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.`
   } else {
-    description = `Les bénéficiaires ont 30 jours pour annuler leurs réservations d’offres numériques. 
+    description = `Les bénéficiaires ont 30 jours pour annuler leurs réservations d’offres numériques.
 
     Dans le cas d’offres avec codes d’activation, les bénéficiaires ne peuvent pas annuler leurs réservations. Toute réservation est définitive et sera immédiatement validée.`
 
@@ -347,13 +335,20 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         >
           <form onSubmit={formik.handleSubmit}>
             <StockThingFormRow
-              Form={renderStockForm()}
               actions={actions}
               actionDisabled={false}
               showStockInfo={
                 mode === OFFER_WIZARD_MODE.EDITION && offer.stocks.length > 0
               }
-            />
+            >
+              <StockThingForm
+                today={today}
+                readOnlyFields={setFormReadOnlyFields(offer, formik.values)}
+                showExpirationDate={
+                  formik.values.activationCodesExpirationDatetime !== null
+                }
+              />
+            </StockThingFormRow>
 
             <ActionBar
               onClickNext={handleNextStep()}

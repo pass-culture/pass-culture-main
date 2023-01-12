@@ -23,7 +23,9 @@ const renderStockFormRow = ({
   return render(
     <Formik initialValues={initialValues} onSubmit={() => {}}>
       <Form>
-        <StockFormRow {...props} />
+        <StockFormRow {...props}>
+          <StockThingForm today={new Date()} />
+        </StockFormRow>
       </Form>
     </Formik>
   )
@@ -35,7 +37,6 @@ describe('StockFormRow', () => {
 
   beforeEach(() => {
     props = {
-      Form: <StockThingForm today={new Date()} />,
       actions: [
         {
           callback: () => {},
