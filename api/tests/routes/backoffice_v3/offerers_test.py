@@ -103,7 +103,7 @@ class UpdateOffererTest:
         endpoint_kwargs = {"offerer_id": 1}
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
-    def test_update_offerer(self, authenticated_client):
+    def test_update_offerer(self, legit_user, authenticated_client):
         offerer_to_edit = offerers_factories.OffererFactory()
 
         old_city = offerer_to_edit.city
@@ -118,6 +118,7 @@ class UpdateOffererTest:
             "city": new_city,
             "postal_code": new_postal_code,
             "address": new_address,
+            "tags": [tag.id for tag in offerer_to_edit.tags],
         }
 
         response = self.update_offerer(authenticated_client, offerer_to_edit, base_form)
@@ -129,8 +130,7 @@ class UpdateOffererTest:
 
         # Test region update
         response = authenticated_client.get(expected_url)
-        content = response.data.decode("utf-8")
-        assert expected_new_region in content
+        assert f"Région : {expected_new_region}" in html_parser.content_as_text(response.data)
 
         # Test history
         history_url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer_to_edit.id)
@@ -141,11 +141,48 @@ class UpdateOffererTest:
         assert offerer_to_edit.postalCode == new_postal_code
         assert offerer_to_edit.address == new_address
 
-        content = response.data.decode("utf-8")
-        assert history_models.ActionType.OFFERER_INFO_MODIFIED.value in content
-        assert f"{old_city} =&gt; {offerer_to_edit.city}" in content
-        assert f"{old_postal_code} =&gt; {offerer_to_edit.postalCode}" in content
-        assert f"{old_address} =&gt; {offerer_to_edit.address}" in content
+        history_rows = html_parser.extract_table_rows(response.data, parent_id="pills-home")
+        assert len(history_rows) == 1
+        assert history_rows[0]["Type"] == history_models.ActionType.OFFERER_INFO_MODIFIED.value
+        assert f"Ville : {old_city} => {offerer_to_edit.city}" in history_rows[0]["Commentaire"]
+        assert f"Code postal : {old_postal_code} => {offerer_to_edit.postalCode}" in history_rows[0]["Commentaire"]
+        assert f"Adresse : {old_address} => {offerer_to_edit.address}" in history_rows[0]["Commentaire"]
+
+    def test_update_offerer_tags(self, legit_user, authenticated_client):
+        offerer_to_edit = offerers_factories.OffererFactory(
+            address="Place de la Liberté", postalCode="29200", city="Brest"
+        )
+        tag1 = offerers_factories.OffererTagFactory(label="Premier tag")
+        tag2 = offerers_factories.OffererTagFactory(label="Deuxième tag")
+        tag3 = offerers_factories.OffererTagFactory(label="Troisième tag")
+        offerers_factories.OffererTagMappingFactory(tagId=tag1.id, offererId=offerer_to_edit.id)
+
+        base_form = {
+            "city": offerer_to_edit.city,
+            "postal_code": offerer_to_edit.postalCode,
+            "address": offerer_to_edit.address,
+            "tags": [tag2.id, tag3.id],
+        }
+
+        response = self.update_offerer(authenticated_client, offerer_to_edit, base_form)
+        assert response.status_code == 303
+
+        # Test history
+        history_url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer_to_edit.id)
+        response = authenticated_client.get(history_url)
+
+        updated_offerer = offerers_models.Offerer.query.get(offerer_to_edit.id)
+        assert updated_offerer.city == "Brest"
+        assert updated_offerer.postalCode == "29200"
+        assert updated_offerer.address == "Place de la Liberté"
+
+        history_rows = html_parser.extract_table_rows(response.data, parent_id="pills-home")
+        assert len(history_rows) == 1
+        assert history_rows[0]["Type"] == history_models.ActionType.OFFERER_INFO_MODIFIED.value
+        assert history_rows[0]["Auteur"] == legit_user.full_name
+        assert "Premier tag => Deuxième tag, Troisième tag" in history_rows[0]["Commentaire"]
+        for item in ("Adresse", "Code postal", "Ville"):
+            assert item not in history_rows[0]["Commentaire"]
 
     def update_offerer(self, authenticated_client, offerer_to_edit, form):
         # generate csrf token

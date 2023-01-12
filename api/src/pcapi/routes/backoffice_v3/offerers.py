@@ -73,6 +73,7 @@ def render_offerer_details(
             city=offerer.city,
             postal_code=offerer.postalCode,
             address=offerer.address,
+            tags=offerer.tags,
         )
 
     dst = url_for(".update_offerer", offerer_id=offerer.id)
@@ -194,6 +195,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
         city=form.city.data,
         postal_code=form.postal_code.data,
         address=form.address.data,
+        tags=form.tags.data,
     )
 
     if modified_info:
