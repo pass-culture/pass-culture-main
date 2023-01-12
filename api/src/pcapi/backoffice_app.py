@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import typing
+
 from flask import render_template
 from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
@@ -24,7 +26,7 @@ csrf.init_app(app)
 
 
 @app.errorhandler(CSRFError)
-def handle_csrf_error(error):  # type: ignore
+def handle_csrf_error(error: typing.Any) -> tuple[str, int]:
     return render_template("errors/csrf.html"), 400
 
 

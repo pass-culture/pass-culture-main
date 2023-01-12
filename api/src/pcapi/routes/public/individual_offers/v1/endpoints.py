@@ -489,7 +489,7 @@ def edit_product(product_id: int, body: serialization.ProductOfferEdition) -> se
     with repository.transaction():
         offers_api.update_offer(
             offer,
-            extraData=serialization.compute_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))  # type: ignore[arg-type]
+            extraData=serialization.compute_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
             if body.category_related_fields
             else offers_api.UNCHANGED,
             isActive=update_body.get("is_active", offers_api.UNCHANGED),
