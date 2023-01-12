@@ -2,6 +2,7 @@ import { Menu, MenuButton, MenuItem, MenuPopover } from '@reach/menu-button'
 import { positionRight } from '@reach/popover'
 import cn from 'classnames'
 import React from 'react'
+import '@reach/menu-button/styles.css'
 
 import { ReactComponent as OptionMenuIcon } from 'icons/ico-more-horiz.svg'
 
@@ -50,7 +51,7 @@ const StockFormActions = ({
                   className={styles['menu-item-icon']}
                 />
               )}
-              <span className={styles['menu-item-text']}>{action.label}</span>
+              <span>{action.label}</span>
             </MenuItem>
           ))}
         </MenuPopover>
