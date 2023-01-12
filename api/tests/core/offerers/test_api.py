@@ -1264,3 +1264,16 @@ class CountOfferersByValidationStatusTest:
 
         # then
         assert stats == {"NEW": 0, "PENDING": 0, "VALIDATED": 0, "REJECTED": 0}
+
+
+class UpdateOffererTagTest:
+    def test_update_offerer_tag(self):
+        offerer_tag = offerers_factories.OffererTagFactory(name="serious-tag-name", label="Serious Tag")
+
+        offerers_api.update_offerer_tag(
+            offerer_tag, name="not-so-serious-tag-name", label="Taggy McTagface", description="Why so serious ?"
+        )
+        offerer_tag = offerers_models.OffererTag.query.one()
+        assert offerer_tag.name == "not-so-serious-tag-name"
+        assert offerer_tag.label == "Taggy McTagface"
+        assert offerer_tag.description == "Why so serious ?"

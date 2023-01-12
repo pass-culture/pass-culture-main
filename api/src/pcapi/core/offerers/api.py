@@ -1526,6 +1526,28 @@ def list_users_offerers_to_be_validated(
     )
 
 
+def update_offerer_tag(
+    offerer_tag: models.OffererTag,
+    name: str | T_UNCHANGED = UNCHANGED,
+    label: str | T_UNCHANGED = UNCHANGED,
+    description: str | T_UNCHANGED = UNCHANGED,
+    categories: list[models.OffererTagCategory] | T_UNCHANGED = UNCHANGED,
+) -> None:
+
+    if name is not UNCHANGED:
+        offerer_tag.name = name
+    if label is not UNCHANGED:
+        offerer_tag.label = label
+    if description is not UNCHANGED:
+        offerer_tag.description = description
+    if categories is not UNCHANGED:
+        if set(offerer_tag.categories) != set(categories):
+            offerer_tag.categories = categories
+
+    db.session.add(offerer_tag)
+    db.session.commit()
+
+
 def get_metabase_stats_iframe_url(
     offerer: models.Offerer,
     venues: typing.Sequence[models.Venue],

@@ -10,6 +10,9 @@ from . import fields
 from . import utils
 
 
+TAG_NAME_REGEX = r"^[^\s]+$"
+
+
 def _get_regions_choices() -> list[tuple]:
     return [(key, key) for key in get_all_regions()]
 
@@ -29,7 +32,10 @@ def _get_validation_tags_query() -> sa.orm.Query:
 
 class EditOffererForm(FlaskForm):
     tags = fields.PCQuerySelectMultipleField(
-        "Tags", query_factory=_get_all_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
+        "Tags",
+        query_factory=_get_all_tags_query,
+        get_pk=lambda tag: tag.id,
+        get_label=lambda tag: tag.label or tag.name,
     )
     address = fields.PCOptStringField(
         "Adresse",
@@ -51,7 +57,10 @@ class OffererValidationListForm(FlaskForm):
     q = fields.PCOptSearchField("Nom de structure, SIREN, code postal, département, ville, email, nom de compte pro")
     regions = fields.PCSelectMultipleField("Régions", choices=_get_regions_choices())
     tags = fields.PCQuerySelectMultipleField(
-        "Tags", query_factory=_get_validation_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
+        "Tags",
+        query_factory=_get_validation_tags_query,
+        get_pk=lambda tag: tag.id,
+        get_label=lambda tag: tag.label or tag.name,
     )
     status = fields.PCSelectMultipleField("États", choices=utils.choices_from_enum(ValidationStatus))
     from_date = fields.PCDateField("Demande à partir du", validators=(wtforms.validators.Optional(),))
@@ -82,7 +91,10 @@ class UserOffererValidationListForm(FlaskForm):
     q = fields.PCOptSearchField("Nom de structure, SIREN, code postal, département, ville, email, nom de compte pro")
     regions = fields.PCSelectMultipleField("Régions", choices=_get_regions_choices())
     tags = fields.PCQuerySelectMultipleField(
-        "Tags", query_factory=_get_validation_tags_query, get_pk=lambda tag: tag.id, get_label=lambda tag: tag.label
+        "Tags",
+        query_factory=_get_validation_tags_query,
+        get_pk=lambda tag: tag.id,
+        get_label=lambda tag: tag.label or tag.name,
     )
     status = fields.PCSelectMultipleField(
         "États de la demande de rattachement", choices=utils.choices_from_enum(ValidationStatus)
@@ -133,3 +145,23 @@ class AddProUserForm(FlaskForm):
         if not pro_user_id.data:
             raise wtforms.validators.ValidationError("Aucun compte pro n'est sélectionné")
         return pro_user_id
+
+
+class EditOffererTagForm(FlaskForm):
+    name = fields.PCStringField(
+        "Nom",
+        validators=(
+            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.Length(min=1, max=140, message="Doit contenir moins de %(max)d caractères"),
+            wtforms.validators.Regexp(TAG_NAME_REGEX, message="Le nom ne doit contenir aucun caractère d'espacement"),
+        ),
+    )
+    label = fields.PCOptStringField(
+        "Libellé", validators=(wtforms.validators.Length(max=140, message="Doit contenir moins de %(max)d caractères"),)
+    )
+    description = fields.PCOptStringField(
+        "Description",
+        validators=(wtforms.validators.Length(max=1024, message="Doit contenir moins de %(max)d caractères"),),
+    )
+    # choices added later so as to query the categories only once
+    categories = fields.PCSelectMultipleField("Catégories", coerce=int)
