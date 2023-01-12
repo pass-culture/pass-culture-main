@@ -413,11 +413,17 @@ def _notify_pro_upon_stock_edit_for_event_offer(stock: Stock, bookings: typing.L
             )
 
 
-def _notify_beneficiaries_upon_stock_edit(stock: Stock, bookings: typing.List[Booking]):  # type: ignore [no-untyped-def]
+def _notify_beneficiaries_upon_stock_edit(stock: Stock, bookings: typing.List[Booking]) -> None:
     if bookings:
-        bookings = update_cancellation_limit_dates(bookings, stock.beginningDatetime)  # type: ignore [arg-type]
+        if stock.beginningDatetime is None:
+            logger.error(
+                "Could not notify beneficiaries about update of stock. No beginningDatetime in stock.",
+                extra={"stock": stock.id},
+            )
+            return
+        bookings = update_cancellation_limit_dates(bookings, stock.beginningDatetime)
         date_in_two_days = datetime.datetime.utcnow() + datetime.timedelta(days=2)
-        check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days  # type: ignore [operator]
+        check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days
         if check_event_is_in_more_than_48_hours:
             bookings = _invalidate_bookings(bookings)
         if not transactional_mails.send_batch_booking_postponement_email_to_users(bookings):
