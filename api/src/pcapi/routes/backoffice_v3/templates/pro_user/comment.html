@@ -1,13 +1,13 @@
 {% macro build_comment_modal(dst, form) %}
     <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
-        data-bs-target="#addCommentProUserModal" type="button">
+        data-bs-target="#add-comment-pro-user-modal" type="button">
         Ajouter un commentaire
     </button>
-    <div class="modal modal-lg fade" id="addCommentProUserModal" tabindex="-1"
-        aria-describedby="addCommentProUserModalLabel" aria-hidden="true">
+    <div class="modal modal-lg fade" id="add-comment-pro-user-modal" tabindex="-1"
+        aria-describedby="add-comment-pro-user-modal-label" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
-                <div class="modal-header fs-5" id="addCommentProUserModalLabel">
+                <div class="modal-header fs-5" id="add-comment-pro-user-modal-label">
                     {{ caller() }}
                 </div>
                 <form action="{{ dst }}" method="POST">
