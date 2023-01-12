@@ -43,7 +43,6 @@
 .menu-item {
   @include fonts.button;
 
-  width: rem.torem(240px);
   background: colors.$white;
   cursor: pointer;
   align-items: center;
@@ -83,6 +82,8 @@
 }
 
 .menu-list[data-reach-popover] {
+  border: 1px solid colors.$grey-light;
+  border-radius: rem.torem(6px);
   padding: rem.torem(16px) 0;
   white-space: pre-wrap;
   width: rem.torem(215px);
