@@ -191,12 +191,6 @@ class ReportMalformed(OfferReportError):
     code = "REPORT_MALFORMED"
 
 
-class EducationalOfferStockBookedAndBookingNotPending(Exception):
-    def __init__(self, status, booking_id):  # type: ignore [no-untyped-def]
-        self.booking_status = status
-        super().__init__()
-
-
 class BookingLimitDatetimeTooLate(Exception):
     pass
 
