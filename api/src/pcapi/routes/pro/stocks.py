@@ -45,6 +45,22 @@ def get_stocks(offer_id: str) -> StocksResponseModel:
     )
 
 
+def _get_existing_stocks(
+    offer_id: int, stocks_payload: list[stock_serialize.StockCreationBodyModel | stock_serialize.StockEditionBodyModel]
+) -> dict[int, Stock]:
+    existing_stocks = Stock.query.filter(
+        Stock.offerId == offer_id,
+        Stock.id.in_(
+            [
+                stock_payload.id
+                for stock_payload in stocks_payload
+                if isinstance(stock_payload, stock_serialize.StockEditionBodyModel)
+            ]
+        ),
+    ).all()
+    return {existing_stocks.id: existing_stocks for existing_stocks in existing_stocks}
+
+
 @private_api.route("/stocks/bulk", methods=["POST"])
 @login_required
 @spectree_serialize(on_success_status=201, response_model=StocksResponseModel, api=blueprint.pro_private_schema)
@@ -56,16 +72,20 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StocksResponseModel:
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     offer = Offer.query.get(body.offer_id)
+    existing_stocks = _get_existing_stocks(body.offer_id, body.stocks)
     upserted_stocks = []
     edited_stocks_with_update_info: list[tuple[Stock, bool]] = []
     try:
         with transaction():
             for stock_payload in body.stocks:
                 if isinstance(stock_payload, stock_serialize.StockEditionBodyModel):
+                    if stock_payload.id not in existing_stocks:
+                        raise ApiErrors(
+                            {"stock_id": ["Le stock avec l'id %s n'existe pas" % stock_payload.id]}, status_code=400
+                        )
                     edited_stock, is_beginning_updated = offers_api.edit_stock(
-                        offer,
+                        existing_stocks[stock_payload.id],
                         price=decimal.Decimal(stock_payload.price),
-                        stock_id=stock_payload.id,
                         quantity=stock_payload.quantity,
                         beginning_datetime=stock_payload.beginning_datetime,
                         booking_limit_datetime=stock_payload.booking_limit_datetime,

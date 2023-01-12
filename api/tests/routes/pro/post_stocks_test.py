@@ -570,6 +570,19 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["global"] == ["Impossible de créer des codes d'activation sur une offre non-numérique"]
 
+    def test_when_stock_does_not_belong_to_offer(self, client):
+        offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        existing_stock = offers_factories.StockFactory(price=10)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [{"humanizedId": humanize(existing_stock.id), "price": 20}],
+        }
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        assert response.status_code == 400
+        assert response.json == {"stock_id": [f"Le stock avec l'id {existing_stock.id} n'existe pas"]}
+
     @pytest.mark.parametrize("price_str", [float("NaN"), float("inf"), float("-inf")])
     def test_create_one_stock_with_invalid_prices(self, price_str, app):
         # Given
