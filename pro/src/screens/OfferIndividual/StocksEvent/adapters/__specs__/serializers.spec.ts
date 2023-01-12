@@ -25,7 +25,7 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
         remainingQuantity: STOCK_EVENT_FORM_DEFAULT_VALUES.remainingQuantity,
         bookingsQuantity: STOCK_EVENT_FORM_DEFAULT_VALUES.bookingsQuantity,
         quantity: 12,
-        bookingLimitDatetime: new Date('2022-10-26T23:00:00+0200'),
+        bookingLimitDatetime: new Date('2022-10-26T00:00:00'),
         price: 10,
         isDeletable: true,
         readOnlyFields: [],
@@ -37,7 +37,7 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
   it('should serialize data for stock event creation', async () => {
     const expectedApiStockEvent: StockCreationBodyModel = {
       beginningDatetime: '2022-10-26T13:00:00Z',
-      bookingLimitDatetime: '2022-10-26T00:00:00Z',
+      bookingLimitDatetime: '2022-10-26T13:00:00Z',
       price: 10,
       quantity: 12,
     }
@@ -72,8 +72,8 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
   it('should serialize data for stock event edition', async () => {
     const expectedApiStockEvent: StockEditionBodyModel = {
       humanizedId: 'STOCK_ID',
-      beginningDatetime: '2022-10-26T13:00:00Z',
-      bookingLimitDatetime: '2022-10-26T00:00:00Z',
+      beginningDatetime: '2022-10-11T13:00:00Z',
+      bookingLimitDatetime: '2022-10-10T21:59:59Z',
       price: 10,
       quantity: 12,
     }
@@ -83,6 +83,9 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
         ...formValuesList.map((formValues: IStockEventFormValues) => ({
           ...formValues,
           stockId: 'STOCK_ID',
+          beginningDate: new Date('2022-10-11T00:00:00.0200'),
+          beginningTime: new Date('2022-10-11T15:00:00.0200'),
+          bookingLimitDatetime: new Date('2022-10-10T00:00:00'),
         })),
       ],
       departementCode
