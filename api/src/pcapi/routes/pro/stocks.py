@@ -20,6 +20,7 @@ from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
 from pcapi.routes.serialization.stock_serialize import StockResponseModel
 from pcapi.routes.serialization.stock_serialize import StocksResponseModel
 from pcapi.routes.serialization.stock_serialize import StocksUpsertBodyModel
+from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -87,8 +88,14 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StocksResponseModel:
                         existing_stocks[stock_payload.id],
                         price=decimal.Decimal(stock_payload.price),
                         quantity=stock_payload.quantity,
-                        beginning_datetime=stock_payload.beginning_datetime,
-                        booking_limit_datetime=stock_payload.booking_limit_datetime,
+                        beginning_datetime=serialization_utils.as_utc_without_timezone(stock_payload.beginning_datetime)
+                        if stock_payload.beginning_datetime
+                        else None,
+                        booking_limit_datetime=serialization_utils.as_utc_without_timezone(
+                            stock_payload.booking_limit_datetime
+                        )
+                        if stock_payload.booking_limit_datetime
+                        else None,
                     )
                     upserted_stocks.append(edited_stock)
                     edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))

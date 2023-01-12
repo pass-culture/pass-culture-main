@@ -122,12 +122,23 @@ def string_length_validator(field_name: str, *, length: int) -> classmethod:
     return pydantic.validator(field_name, pre=False, allow_reuse=True)(check_string_length_wrapper(length=length))
 
 
+def as_utc_without_timezone(d: datetime.datetime) -> datetime.datetime:
+    # FIXME (dbaty, 2020-11-25): We need this ugly workaround because
+    # the api users send us datetimes like "2020-12-03T14:00:00Z"
+    # (note the "Z" suffix). Pydantic deserializes it as a datetime
+    # *with* a timezone. However, datetimes are stored in the database
+    # as UTC datetimes *without* any timezone. We need to remove the timezone to prevent from errors like:
+    # - wrongly detection of a change for a datetime field
+    # - we compare this "timezone aware" datetime with another one that is not
+    return d.astimezone(pytz.utc).replace(tzinfo=None)
+
+
 def check_and_remove_timezone(value: datetime.datetime | None) -> datetime.datetime | None:
     if not value:
         return None
     if value.tzinfo is None:
         raise ValueError("The datetime must be timezone-aware.")
-    return value.astimezone(pytz.utc).replace(tzinfo=None)
+    return as_utc_without_timezone(value)
 
 
 def validate_datetime(field_name: str) -> classmethod:

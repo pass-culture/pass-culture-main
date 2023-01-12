@@ -45,7 +45,6 @@ from pcapi.core.offers.offer_validation import compute_offer_validation_score
 from pcapi.core.offers.offer_validation import parse_offer_validation_config
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.repository import update_stock_quantity_to_dn_booked_quantity
-from pcapi.core.offers.utils import as_utc_without_timezone
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
 from pcapi.core.users.models import ExpenseDomain
@@ -497,20 +496,6 @@ def edit_stock(
         booking_limit_datetime = stock.bookingLimitDatetime
 
     validation.check_booking_limit_datetime(stock, beginning_datetime, booking_limit_datetime)
-
-    # FIXME (dbaty, 2020-11-25): We need this ugly workaround because
-    # the frontend sends us datetimes like "2020-12-03T14:00:00Z"
-    # (note the "Z" suffix). Pydantic deserializes it as a datetime
-    # *with* a timezone. However, datetimes are stored in the database
-    # as UTC datetimes *without* any timezone. Thus, we wrongly detect
-    # a change for the "beginningDatetime" field for Allocine stocks:
-    # because we do not allow it to be changed, we raise an error when
-    # we should not.
-    if beginning_datetime:
-        beginning_datetime = as_utc_without_timezone(beginning_datetime)
-    if booking_limit_datetime:
-        booking_limit_datetime = as_utc_without_timezone(booking_limit_datetime)
-
     validation.check_stock_is_updatable(stock, editing_provider)
     validation.check_required_dates_for_stock(stock.offer, beginning_datetime, booking_limit_datetime)
     validation.check_stock_price(price, stock.offer)
