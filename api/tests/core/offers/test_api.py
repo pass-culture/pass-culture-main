@@ -392,7 +392,7 @@ class EditStockTest:
 
     def test_validate_booking_limit_datetime_with_expiration_datetime(self):
         # Given
-        existing_stock = factories.StockFactory()
+        existing_stock = factories.StockFactory(bookingLimitDatetime=datetime.utcnow())
         factories.ActivationCodeFactory(expirationDate=datetime.utcnow(), stock=existing_stock)
 
         # When

@@ -349,39 +349,6 @@ class Returns201Test:
         assert created_stock.price == 20
         assert created_stock.bookingLimitDatetime == None
 
-    def test_update_event_stock_without_booking_limit_date(self, app):
-        # If no bookingLimitDatetime is provided for event Stock, it should not change.
-        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
-        beginning = datetime(2019, 2, 14)
-        booking_limit = datetime(2019, 2, 1)
-        existing_stock = offers_factories.StockFactory(
-            offer=offer, price=10, bookingLimitDatetime=booking_limit, beginningDatetime=beginning
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-        # When
-        stock_data = {
-            "humanizedOfferId": humanize(offer.id),
-            "stocks": [
-                {
-                    "price": 20,
-                    "humanizedId": humanize(existing_stock.id),
-                    "beginningDatetime": serialize(beginning),
-                }
-            ],
-        }
-
-        response = (
-            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        )
-
-        created_stock = Stock.query.get(dehumanize(response.json["stocks"][0]["id"]))
-        assert offer.id == created_stock.offerId
-        assert created_stock.price == 20
-        assert created_stock.bookingLimitDatetime == booking_limit
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
