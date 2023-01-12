@@ -35,6 +35,9 @@ jest.mock('@firebase/app', () => ({
 jest.mock('@firebase/remote-config', () => ({
   fetchAndActivate: jest.fn().mockResolvedValue({}),
   getRemoteConfig: jest.fn(),
+  getAll: () => {
+    return { A: { asString: () => 'true' } }
+  },
 }))
 
 const FakeApp = (): JSX.Element => {
@@ -121,6 +124,7 @@ test('should trigger a logEvent', async () => {
         traffic_campaign: 'push_offre_local',
         traffic_medium: 'batch',
         traffic_source: 'push',
+        A: 'true',
       }
     )
   })
