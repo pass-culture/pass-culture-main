@@ -73,8 +73,9 @@ def _create_offers(provider_name: str, provider: Provider, provider_type: str = 
         booking_duo = IndividualBookingFactory(
             quantity=2, stock=stock_duo, user=user_bene, individualBooking__user=user_bene
         )
-        ExternalBookingFactory(booking=booking_duo, seat="A_1")
-        ExternalBookingFactory(booking=booking_duo, seat="A_2")
+        if provider.isCinemaProvider:
+            ExternalBookingFactory(booking=booking_duo, seat="A_1")
+            ExternalBookingFactory(booking=booking_duo, seat="A_2")
     else:
         offer_solo = ThingOfferFactory(
             name=f"Livre ({provider_name})",
@@ -100,7 +101,8 @@ def _create_offers(provider_name: str, provider: Provider, provider_type: str = 
     booking_solo = IndividualBookingFactory(
         quantity=1, stock=stock_solo, user=user_bene, individualBooking__user=user_bene
     )
-    ExternalBookingFactory(booking=booking_solo)
+    if provider.isCinemaProvider:
+        ExternalBookingFactory(booking=booking_solo)
     return venue
 
 
@@ -131,19 +133,19 @@ def create_offerer_with_boost_venue_provider_and_external_bookings() -> None:
 
 
 def create_offerer_with_allocine_venue_provider_and_external_bookings() -> None:
-    logger.info("create_offerer_with_allocine_venue_provider_and_external_bookings")
+    logger.info("create_offerer_with_allocine_venue_provider")
     allocine_provider = get_provider_by_local_class("AllocineStocks")
     venue = _create_offers(allocine_provider.name, allocine_provider, provider_type="allocine")
     allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, provider=allocine_provider)
     providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
     providers_factories.AllocinePivotFactory(venue=venue, internalId=allocine_venue_provider.internalId)
-    logger.info("created 3 ExternalBookings for Boost-synced offers")
+    logger.info("created Offerer with allocine venueProvider")
 
 
 def create_offerer_with_titelive_venue_provider_and_external_bookings() -> None:
-    logger.info("create_offerer_with_boost_venue_provider_and_external_bookings")
+    logger.info("create_offerer_with_titelive_venue_provider")
     provider = get_provider_by_local_class("TiteLiveThings")
     provider_name = "TiteLiveThings"
     venue = _create_offers(provider_name, provider, provider_type="book")
     providers_factories.VenueProviderFactory(venue=venue, provider=provider)
-    logger.info("created 3 ExternalBookings for TiteLive-synced offers")
+    logger.info("created Offerer with TiteLive-synced offers")
