@@ -470,7 +470,10 @@ def compute_accessibility_edition_fields(accessibility_payload: dict | None) -> 
     api=blueprint.v1_schema, tags=[PRODUCT_OFFERS_TAG], response_model=serialization.ProductOfferResponse
 )
 @api_key_required
-def edit_product(product_id: int, body: serialization.ProductOfferEdition) -> serialization.ProductOfferResponse:
+@public_utils.individual_offers_api_provider
+def edit_product(
+    individual_offers_provider: providers_models.Provider, product_id: int, body: serialization.ProductOfferEdition
+) -> serialization.ProductOfferResponse:
     """
     Edit a product offer.
 
@@ -497,5 +500,30 @@ def edit_product(product_id: int, body: serialization.ProductOfferEdition) -> se
             withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
             **compute_accessibility_edition_fields(update_body.get("accessibility")),
         )
+        if "stock" in update_body:
+            existing_stock = next((stock for stock in offer.activeStocks), None)
+            if body.stock is None:
+                if existing_stock:
+                    offers_api.delete_stock(existing_stock)
+            else:
+                if not existing_stock:
+                    if not body.stock.price:
+                        raise api_errors.ApiErrors({"stock.price": ["Required"]})
+                    offers_api.create_stock(
+                        offer=offer,
+                        price=finance_utils.to_euros(body.stock.price),
+                        quantity=body.stock.quantity if body.stock.quantity != "unlimited" else None,
+                        booking_limit_datetime=body.stock.booking_limit_datetime,
+                        creating_provider=individual_offers_provider,
+                    )
+                else:
+                    price = update_body["stock"].get("price", offers_api.UNCHANGED)
+                    offers_api.edit_stock(
+                        existing_stock,
+                        quantity=update_body["stock"].get("quantity", offers_api.UNCHANGED),
+                        price=finance_utils.to_euros(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,  # type: ignore[arg-type]
+                        booking_limit_datetime=update_body["stock"].get("booking_limit_datetime", offers_api.UNCHANGED),
+                        editing_provider=individual_offers_provider,
+                    )
 
     return serialization.ProductOfferResponse.build_product_offer(offer)
