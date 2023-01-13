@@ -36,69 +36,73 @@ def create_offers_with_status() -> None:
 
 
 def create_offers_fully_booked(user_bene: User, venue: Venue) -> None:
-    offer_event = EventOfferFactory(
-        name="Séance ciné complétement réservée",
-        venue=venue,
-        subcategoryId=subcategories.SEANCE_CINE.id,
-    )
-    stock_event = EventStockFactory(offer=offer_event, quantity=1)
-    IndividualBookingFactory(quantity=1, stock=stock_event, user=user_bene, individualBooking__user=user_bene)
+    for i in range(0, 10):
 
-    offer_thing = ThingOfferFactory(
-        name=" Livre complétement réservé",
-        venue=venue,
-        subcategoryId=subcategories.LIVRE_PAPIER.id,
-    )
-    stock_thing = ThingStockFactory(offer=offer_thing, quantity=1)
-    IndividualBookingFactory(quantity=1, stock=stock_thing, user=user_bene, individualBooking__user=user_bene)
+        offer_event = EventOfferFactory(
+            name=f"Ciné complétement réservé {i}",
+            venue=venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        stock_event = EventStockFactory(offer=offer_event, quantity=1)
+        IndividualBookingFactory(quantity=1, stock=stock_event, user=user_bene, individualBooking__user=user_bene)
 
-    offer_with_past_stock = EventOfferFactory(
-        name="Séance ciné avec 1 stock passé complétement réservé",
-        venue=venue,
-        subcategoryId=subcategories.SEANCE_CINE.id,
-    )
-    EventStockFactory(offer=offer_with_past_stock)
-    stock_past = EventStockFactory(
-        offer=offer_with_past_stock,
-        beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0) - datetime.timedelta(days=5),
-        quantity=1,
-    )
-    IndividualBookingFactory(quantity=1, stock=stock_past, user=user_bene, individualBooking__user=user_bene)
+        offer_thing = ThingOfferFactory(
+            name=f"Livre complétement réservé {i}",
+            venue=venue,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+        stock_thing = ThingStockFactory(offer=offer_thing, quantity=1)
+        IndividualBookingFactory(quantity=1, stock=stock_thing, user=user_bene, individualBooking__user=user_bene)
+
+        offer_with_past_stock = EventOfferFactory(
+            name=f"Ciné avec 1 stock passé complétement réservé {i}",
+            venue=venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        EventStockFactory(offer=offer_with_past_stock)
+        stock_past = EventStockFactory(
+            offer=offer_with_past_stock,
+            beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0) - datetime.timedelta(days=5),
+            quantity=1,
+        )
+        IndividualBookingFactory(quantity=1, stock=stock_past, user=user_bene, individualBooking__user=user_bene)
+
     logger.info("create_offers_fully_booked")
 
 
 def create_offers_expired(venue: Venue) -> None:
-    offer_event = EventOfferFactory(
-        name="Séance ciné expirée",
-        venue=venue,
-        subcategoryId=subcategories.SEANCE_CINE.id,
-    )
-    EventStockFactory(
-        offer=offer_event,
-        quantity=1,
-        beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0) - datetime.timedelta(days=5),
-    )
-
+    for i in range(0, 10):
+        offer_event = EventOfferFactory(
+            name=f"Ciné expiré {i}",
+            venue=venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        EventStockFactory(
+            offer=offer_event,
+            quantity=1,
+            beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0) - datetime.timedelta(days=5),
+        )
     logger.info("create_offers_expired")
 
 
 def create_offers_pending_and_refused(venue: Venue) -> None:
-    offer_event = EventOfferFactory(
-        name="Séance ciné en attente de validation",
-        venue=venue,
-        subcategoryId=subcategories.SEANCE_CINE.id,
-        validation=OfferValidationStatus.PENDING,
-    )
-    EventStockFactory(
-        offer=offer_event,
-    )
+    for i in range(0, 10):
+        offer_event = EventOfferFactory(
+            name=f"Ciné en attente de validation {i}",
+            venue=venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            validation=OfferValidationStatus.PENDING,
+        )
+        EventStockFactory(
+            offer=offer_event,
+        )
 
-    offer_event = EventOfferFactory(
-        name="Séance ciné rejetée",
-        venue=venue,
-        subcategoryId=subcategories.SEANCE_CINE.id,
-        validation=OfferValidationStatus.REJECTED,
-    )
-    EventStockFactory(offer=offer_event)
+        offer_event = EventOfferFactory(
+            name=f"Ciné rejeté {i}",
+            venue=venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            validation=OfferValidationStatus.REJECTED,
+        )
+        EventStockFactory(offer=offer_event)
 
     logger.info("create_offers_pending_refused")
