@@ -7,6 +7,7 @@ from pydantic import Field
 from pydantic import HttpUrl
 from pydantic import root_validator
 from pydantic import validator
+from pydantic.utils import GetterDict
 
 from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
@@ -25,6 +26,13 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_isbn_is_valid
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
+
+
+class SubcategoryGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        if key == "conditional_fields":
+            return list(self._obj.conditional_fields.keys())
+        return super().get(key, default)
 
 
 class SubcategoryResponseModel(BaseModel):
@@ -47,6 +55,7 @@ class SubcategoryResponseModel(BaseModel):
     class Config:
         alias_generator = to_camel
         allow_population_by_field_name = True
+        getter_dict = SubcategoryGetterDict
         orm_mode = True
 
 

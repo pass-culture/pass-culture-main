@@ -1,7 +1,7 @@
 import logging
 import random
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.domain.music_types import music_types
@@ -24,7 +24,7 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
 
     thing_products_by_name = {}
 
-    thing_subcategories = [s for s in subcategories.ALL_SUBCATEGORIES if not s.is_event]
+    thing_subcategories = [s for s in subcategories_v2.ALL_SUBCATEGORIES if not s.is_event]
 
     id_at_providers = 1234
 
@@ -50,9 +50,14 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
 
             extraData = {}
             extra_data_index = 0
-            for conditionalField in thing_product.subcategory.conditional_fields:
+            for conditionalField_name in thing_product.subcategory.conditional_fields:
                 conditional_index = product_creation_counter + thing_subcategories_list_index + extra_data_index
-                if conditionalField in ["author", "performer", "speaker", "stageDirector"]:
+                if conditionalField_name in [
+                    subcategories_v2.ExtraDataFieldEnum.AUTHOR.value,
+                    subcategories_v2.ExtraDataFieldEnum.PERFORMER.value,
+                    subcategories_v2.ExtraDataFieldEnum.SPEAKER.value,
+                    subcategories_v2.ExtraDataFieldEnum.STAGE_DIRECTOR.value,
+                ]:
                     mock_first_name_index = (
                         product_creation_counter + thing_subcategories_list_index + extra_data_index
                     ) % len(MOCK_FIRST_NAMES)
@@ -62,16 +67,16 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
                     ) % len(MOCK_LAST_NAMES)
                     mock_last_name = MOCK_LAST_NAMES[mock_last_name_index]
                     mock_name = "{} {}".format(mock_first_name, mock_last_name)
-                    extraData[conditionalField] = mock_name
-                elif conditionalField == "musicType":
+                    extraData[conditionalField_name] = mock_name
+                elif conditionalField_name == "musicType":
                     music_type_index: int = conditional_index % len(music_types)
                     music_type = music_types[music_type_index]
-                    extraData[conditionalField] = str(music_type.code)
+                    extraData[conditionalField_name] = str(music_type.code)
                     music_sub_type_index: int = conditional_index % len(music_type.children)
                     music_sub_type = music_type.children[music_sub_type_index]
                     extraData["musicSubType"] = str(music_sub_type.code)
-                elif conditionalField == "isbn":
-                    extraData[conditionalField] = "".join(random.choices("123456789-", k=13))
+                elif conditionalField_name == "isbn":
+                    extraData[conditionalField_name] = "".join(random.choices("123456789-", k=13))
                 extra_data_index += 1
             thing_product.extraData = extraData
             thing_products_by_name[name] = thing_product

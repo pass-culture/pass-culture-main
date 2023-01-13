@@ -4,6 +4,8 @@ import pytest
 
 from pcapi.core.categories import categories
 from pcapi.core.categories.subcategories import Subcategory
+from pcapi.core.categories.subcategories_v2 import ConditionalField
+from pcapi.core.categories.subcategories_v2 import ExtraDataFieldEnum
 from pcapi.core.categories.subcategories_v2 import NativeCategory
 import pcapi.core.users.factories as users_factories
 
@@ -20,7 +22,7 @@ import pcapi.core.users.factories as users_factories
             search_group_name="LIVRE",
             homepage_label_name="LIVRE",
             is_event=False,
-            conditional_fields=[],
+            conditional_fields={},
             can_expire=True,
             can_be_duo=False,
             can_be_educational=False,
@@ -38,7 +40,11 @@ import pcapi.core.users.factories as users_factories
             search_group_name="CINEMA",
             homepage_label_name="CINEMA",
             is_event=True,
-            conditional_fields=["author", "visa", "stageDirector"],
+            conditional_fields={
+                ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
+                ExtraDataFieldEnum.VISA.value: ConditionalField(),
+                ExtraDataFieldEnum.STAGE_DIRECTOR.value: ConditionalField(),
+            },
             can_expire=False,
             can_be_duo=True,
             can_be_educational=True,
