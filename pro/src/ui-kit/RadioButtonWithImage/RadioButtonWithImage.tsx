@@ -19,6 +19,7 @@ export interface IRadioButtonWithImage {
   disabled?: boolean
   value: string
   dataTestid?: string
+  transparent?: boolean
 }
 
 const RadioButtonWithImage = ({
@@ -32,6 +33,7 @@ const RadioButtonWithImage = ({
   disabled = false,
   value,
   dataTestid,
+  transparent = false,
 }: IRadioButtonWithImage): JSX.Element => (
   <label
     className={cn(
@@ -51,7 +53,12 @@ const RadioButtonWithImage = ({
     ) : (
       <RadioOffIcon className={styles['button-radio-off']} />
     )}
-    <Icon className={styles['button-icon']} />
+    <Icon
+      className={cn(
+        styles['button-icon'],
+        transparent && styles['button-icon-transparent']
+      )}
+    />
     <input
       checked={isChecked}
       className={styles['button-radio']}
