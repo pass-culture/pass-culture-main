@@ -564,6 +564,7 @@ describe('screens:StocksEvent:Edition', () => {
       .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
     renderStockEventScreen({ storeOverride })
     await screen.findByRole('heading', { name: /Stock & Prix/ })
+    // FireEvent.change instead of userEvent.type because userEvent change value but the test doesn"t work (it probably doesn't set touched at true for price field, only with inputs type number)
     fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '20' } })
     await expect(screen.getByLabelText('Prix')).toHaveValue(20)
     await userEvent.click(

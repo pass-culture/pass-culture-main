@@ -10,6 +10,7 @@ export interface ISubmitButtonProps extends SharedButtonProps {
   buttonRef?: ForwardedRef<HTMLButtonElement | null>
   onClick?(): void
   children?: React.ReactNode
+  type?: 'submit' | 'button'
 }
 
 const SubmitButton = ({
@@ -19,6 +20,7 @@ const SubmitButton = ({
   isLoading = false,
   buttonRef,
   onClick,
+  type = 'submit',
   ...buttonAttrs
 }: ISubmitButtonProps): JSX.Element => (
   <Button
@@ -26,7 +28,7 @@ const SubmitButton = ({
     disabled={disabled || isLoading}
     onClick={onClick}
     ref={buttonRef}
-    type="submit"
+    type={type}
     variant={ButtonVariant.PRIMARY}
     isLoading={isLoading}
     {...buttonAttrs}
