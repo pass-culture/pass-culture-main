@@ -1,11 +1,11 @@
 name: Tests main
 on:
   push:
+    branches:
+      - master
+  pull_request:
     branches-ignore:
       - docs
-      - integration
-      - production
-      - staging
 
 concurrency:
   # cancel previous workflow of the same branch except on master

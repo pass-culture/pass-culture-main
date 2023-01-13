@@ -81,7 +81,7 @@ describe('components | SiretOrCommentFields', () => {
     }
   })
 
-  it('should display Siret by default', async () => {
+  it('should display siret by default', async () => {
     await renderSiretOrComment({
       initialValues,
       onSubmit,
