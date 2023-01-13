@@ -1159,7 +1159,6 @@ def test_public_api(client):
                         "MEDIA_PRESSE",
                         "MUSEES_VISITES_CULTURELLES",
                         "NONE",
-                        "PLATEFORMES_EN_LIGNE",
                         "RENCONTRES_CONFERENCES",
                         "SPECTACLES",
                     ],
