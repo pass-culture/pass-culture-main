@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import type { Row } from 'react-table'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
@@ -7,10 +6,10 @@ import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/Collecti
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import { RowExpandedContext } from 'screens/Bookings/BookingsRecapTable/BookingsRecapTable'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
-import { EMPTY_FILTER_VALUE } from '../../../Filters'
 import CollectiveBookingDetails from '../CollectiveBookingDetails'
 import OldCollectiveBookingDetails from '../OldCollectiveBookingDetails'
 
@@ -31,11 +30,9 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
   const isImproveCollectiveStatusActive = useActiveFeature(
     'WIP_IMPROVE_COLLECTIVE_STATUS'
   )
-  const location = useLocation()
-  const queryParams = new URLSearchParams(location.search)
-  const defaultBookingId = queryParams.get('bookingId') || EMPTY_FILTER_VALUE
 
   const detailsRef = useRef<HTMLTableRowElement | null>(null)
+  const rowToExpandContext = useContext(RowExpandedContext)
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
@@ -60,16 +57,20 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
   }
 
   useEffect(() => {
-    // We expand row if bookingId match the one in query params and if there is only one row
-    if (defaultBookingId === row.original.booking_id && row.index == 0) {
+    // We expand row if bookingId match the one in the context
+    if (rowToExpandContext.rowToExpandId == row.original.booking_id) {
       row.toggleRowExpanded(true)
-      if (detailsRef.current && !isLoading) {
-        detailsRef.current?.scrollIntoView({
-          behavior: doesUserPreferReducedMotion() ? 'auto' : 'smooth',
-        })
-      }
     }
-  }, [row, defaultBookingId, detailsRef.current, isLoading])
+  }, [row, rowToExpandContext])
+
+  useEffect(() => {
+    if (detailsRef.current && !isLoading && rowToExpandContext.shouldScroll) {
+      detailsRef.current?.scrollIntoView({
+        behavior: doesUserPreferReducedMotion() ? 'auto' : 'smooth',
+      })
+      rowToExpandContext.setShouldScroll(false)
+    }
+  }, [rowToExpandContext.shouldScroll, detailsRef.current, isLoading])
 
   return (
     <>

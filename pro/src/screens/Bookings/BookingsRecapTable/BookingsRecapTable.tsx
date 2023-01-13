@@ -1,4 +1,11 @@
-import React, { Fragment, useEffect, useMemo, useState } from 'react'
+import React, {
+  Fragment,
+  createContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { useLocation } from 'react-router'
 import type { Column } from 'react-table'
 
@@ -35,7 +42,16 @@ interface IBookingsRecapTableProps<
   audience: Audience
   reloadBookings: () => void
 }
-
+interface IRowExpandedContext {
+  rowToExpandId: string
+  shouldScroll: boolean
+  setShouldScroll: (shouldScroll: boolean) => void
+}
+export const RowExpandedContext = createContext<IRowExpandedContext>({
+  rowToExpandId: '',
+  shouldScroll: false,
+  setShouldScroll: () => {},
+})
 const BookingsRecapTable = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 >({
@@ -65,10 +81,26 @@ const BookingsRecapTable = <
     bookingInstitution: EMPTY_FILTER_VALUE,
     bookingId: defaultBookingId,
   })
+  const hasAlreadyExpandedDetails = useRef(false)
+  const [rowToExpandId, setRowToExpandId] = useState<string>('')
+  const [shouldScroll, setShouldScroll] = useState(false)
 
   useEffect(() => {
     applyFilters()
   }, [bookingsRecap])
+
+  useEffect(() => {
+    if (!hasAlreadyExpandedDetails.current) {
+      setRowToExpandId(defaultBookingId)
+      if (defaultBookingId) {
+        setShouldScroll(true)
+      }
+
+      hasAlreadyExpandedDetails.current = true
+    } else {
+      setRowToExpandId('')
+    }
+  }, [defaultBookingId, filters])
 
   const updateCurrentPage = (currentPage: number) => {
     setCurrentPage(currentPage)
@@ -160,16 +192,24 @@ const BookingsRecapTable = <
             bookingsRecapFilteredLength={filteredBookings.length}
             isLoading={isLoading}
           />
-          <TableWrapper
-            columns={columns}
-            currentPage={currentPage}
-            data={filteredBookings}
-            nbBookings={nbBookings}
-            nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
-            updateCurrentPage={updateCurrentPage}
-            audience={audience}
-            reloadBookings={reloadBookings}
-          />
+          <RowExpandedContext.Provider
+            value={{
+              rowToExpandId: rowToExpandId,
+              shouldScroll: shouldScroll,
+              setShouldScroll: setShouldScroll,
+            }}
+          >
+            <TableWrapper
+              columns={columns}
+              currentPage={currentPage}
+              data={filteredBookings}
+              nbBookings={nbBookings}
+              nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
+              updateCurrentPage={updateCurrentPage}
+              audience={audience}
+              reloadBookings={reloadBookings}
+            />
+          </RowExpandedContext.Provider>
         </Fragment>
       ) : (
         <NoFilteredBookings resetFilters={resetAllFilters} />
