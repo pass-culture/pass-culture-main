@@ -55,54 +55,59 @@ def _create_offers(provider_name: str, provider: Provider, provider_type: str = 
         VirtualVenueFactory(name=f"Livre - {provider_name} Lieu Virtuel", managingOfferer=book_user_offerer.offerer)
 
     user_bene = BeneficiaryGrant18Factory(email=f"jeune-has-{provider_name}-external-bookings@example.com")
-    if provider_type != "book":
-        offer_solo = EventOfferFactory(
-            name=f"Séance ciné solo ({provider_name})",
-            venue=venue,
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            lastProvider=provider,
-        )
-        stock_solo = CinemaStockProviderFactory(offer=offer_solo)
-        offer_duo = EventOfferFactory(
-            name=f"Séance ciné duo ({provider_name})",
-            venue=venue,
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            lastProvider=provider,
-        )
-        stock_duo = CinemaStockProviderFactory(offer=offer_duo)
-        booking_duo = IndividualBookingFactory(
-            quantity=2, stock=stock_duo, user=user_bene, individualBooking__user=user_bene
+    for i in range(0, 10):
+        if provider_type != "book":
+            offer_solo = EventOfferFactory(
+                name=f"Ciné solo ({provider_name}) {i}",
+                venue=venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProvider=provider,
+            )
+            stock_solo = CinemaStockProviderFactory(offer=offer_solo)
+            offer_duo = EventOfferFactory(
+                name=f"Ciné duo ({provider_name}) {i}",
+                venue=venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProvider=provider,
+            )
+            stock_duo = CinemaStockProviderFactory(offer=offer_duo)
+            booking_duo = IndividualBookingFactory(
+                quantity=2, stock=stock_duo, user=user_bene, individualBooking__user=user_bene
+            )
+            if provider.isCinemaProvider:
+                ExternalBookingFactory(booking=booking_duo, seat="A_1")
+                ExternalBookingFactory(booking=booking_duo, seat="A_2")
+        # for allocine we want to be able to test that we can update stock with also a past stock
+        elif provider_type == "allocine":
+            offer_with_past_stock = EventOfferFactory(
+                name=f"Ciné avec stock passé ({provider_name}) {i}",
+                venue=venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProvider=provider,
+            )
+            CinemaStockProviderFactory(offer=offer_with_past_stock)
+            CinemaStockProviderFactory(
+                offer=offer_with_past_stock,
+                beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0)
+                - datetime.timedelta(days=5),
+            )
+        else:
+            offer_solo = ThingOfferFactory(
+                name=f"Livre ({provider_name}) {i}",
+                venue=venue,
+                subcategoryId=subcategories.LIVRE_PAPIER.id,
+                lastProvider=provider,
+            )
+            stock_solo = ThingStockFactory(offer=offer_solo)
+
+            booking_solo = IndividualBookingFactory(
+                quantity=1, stock=stock_solo, user=user_bene, individualBooking__user=user_bene
+            )
+        booking_solo = IndividualBookingFactory(
+            quantity=1, stock=stock_solo, user=user_bene, individualBooking__user=user_bene
         )
         if provider.isCinemaProvider:
-            ExternalBookingFactory(booking=booking_duo, seat="A_1")
-            ExternalBookingFactory(booking=booking_duo, seat="A_2")
-    else:
-        offer_solo = ThingOfferFactory(
-            name=f"Livre ({provider_name})",
-            venue=venue,
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-            lastProvider=provider,
-        )
-        stock_solo = ThingStockFactory(offer=offer_solo)
-
-    # for allocine we want to be able to test that we can update stock with also a past stock
-    if provider_type == "allocine":
-        offer_with_past_stock = EventOfferFactory(
-            name=f"Séance ciné with past stock ({provider_name})",
-            venue=venue,
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            lastProvider=provider,
-        )
-        CinemaStockProviderFactory(offer=offer_with_past_stock)
-        CinemaStockProviderFactory(
-            offer=offer_with_past_stock,
-            beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0) - datetime.timedelta(days=5),
-        )
-    booking_solo = IndividualBookingFactory(
-        quantity=1, stock=stock_solo, user=user_bene, individualBooking__user=user_bene
-    )
-    if provider.isCinemaProvider:
-        ExternalBookingFactory(booking=booking_solo)
+            ExternalBookingFactory(booking=booking_solo)
     return venue
 
 
@@ -129,7 +134,7 @@ def create_offerer_with_boost_venue_provider_and_external_bookings() -> None:
     )
     providers_factories.BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
     providers_factories.VenueProviderFactory(venue=venue, provider=boost_provider)
-    logger.info("created 3 ExternalBookings for Boost-synced offers")
+    logger.info("created ExternalBookings for Boost-synced offers")
 
 
 def create_offerer_with_allocine_venue_provider_and_external_bookings() -> None:
