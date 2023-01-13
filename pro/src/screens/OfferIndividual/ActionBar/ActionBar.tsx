@@ -117,15 +117,13 @@ const ActionBar = ({
             >
               Annuler et quitter
             </ButtonLink>
-            {isFormEmpty ? (
-              <Button onClick={onClickNext} disabled={isDisabled}>
-                Enregistrer les modifications
-              </Button>
-            ) : (
-              <SubmitButton onClick={onClickNext} disabled={isDisabled}>
-                Enregistrer les modifications
-              </SubmitButton>
-            )}
+            <SubmitButton
+              onClick={onClickNext}
+              disabled={isDisabled}
+              type={isFormEmpty ? 'button' : 'submit'}
+            >
+              Enregistrer les modifications
+            </SubmitButton>
           </>
         )}
       </>
