@@ -95,8 +95,8 @@ class OffersTest:
                 {
                     "id": bookableStock.id,
                     "price": 1234,
-                    "beginningDatetime": "2020-01-06T00:00:00Z",
-                    "bookingLimitDatetime": "2020-01-05T23:00:00Z",
+                    "beginningDatetime": "2020-01-31T00:00:00Z",
+                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
                     "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
                     "isBookable": True,
                     "isForbiddenToUnderage": False,
@@ -119,8 +119,8 @@ class OffersTest:
                 {
                     "id": exhaustedStock.id,
                     "price": 8900,
-                    "beginningDatetime": "2020-01-06T00:00:00Z",
-                    "bookingLimitDatetime": "2020-01-05T23:00:00Z",
+                    "beginningDatetime": "2020-01-31T00:00:00Z",
+                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
                     "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
                     "isBookable": False,
                     "isForbiddenToUnderage": False,
