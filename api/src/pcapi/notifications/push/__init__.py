@@ -1,8 +1,14 @@
+import enum
+
 from pcapi import settings
 from pcapi.notifications.push.backends.batch import BatchAPI
 from pcapi.notifications.push.backends.batch import UserUpdateData
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
 from pcapi.utils.module_loading import import_string
+
+
+class BatchEvent(enum.Enum):
+    USER_DEPOSIT_ACTIVATED = "user_deposit_activated"
 
 
 def update_user_attributes(
@@ -33,8 +39,10 @@ def delete_user_attributes(user_id: int, can_be_asynchronously_retried: bool = F
     backend().delete_user_attributes(user_id, can_be_asynchronously_retried=can_be_asynchronously_retried)
 
 
-def track_deposit_activated_event(user_id: int, can_be_asynchronously_retried: bool = False) -> None:
+def track_event(
+    user_id: int, event: BatchEvent, event_payload: dict, can_be_asynchronously_retried: bool = False
+) -> None:
     backend = import_string(settings.PUSH_NOTIFICATION_BACKEND)
     backend().track_event(
-        user_id, "user_deposit_activated", can_be_asynchronously_retried=can_be_asynchronously_retried
+        user_id, event.value, event_payload, can_be_asynchronously_retried=can_be_asynchronously_retried
     )

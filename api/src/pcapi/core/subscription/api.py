@@ -3,6 +3,7 @@ import logging
 import typing
 
 from pcapi import settings
+from pcapi.core.external import batch
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
@@ -24,7 +25,6 @@ from pcapi.core.users import utils as users_utils
 from pcapi.core.users import young_status as young_status_module
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-import pcapi.notifications.push as push_notifications
 import pcapi.repository as pcapi_repository
 import pcapi.utils.postal_code as postal_code_utils
 from pcapi.workers import apps_flyer_job
@@ -81,7 +81,7 @@ def activate_beneficiary_for_eligibility(
         logger.warning("Could not send accepted as beneficiary email to user", extra={"user": user.id})
 
     external_attributes_api.update_external_user(user)
-    push_notifications.track_deposit_activated_event(user.id, can_be_asynchronously_retried=True)
+    batch.track_deposit_activated_event(user.id, deposit)
 
     if "apps_flyer" in user.externalIds:  # type: ignore [operator]
         apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
