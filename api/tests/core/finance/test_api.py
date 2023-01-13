@@ -642,7 +642,21 @@ class DeleteDependentPricingsTest:
         assert not b2.pricings
 
     def test_raise_if_a_pricing_is_not_deletable(self):
-        booking = create_booking_with_undeletable_dependent(stock__offer__venue__pricing_point="self")
+        # Simulate a venue that changed its pricing point. There was a
+        # bug in that case in the handling of
+        # FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS.
+        pricing_point1 = offerers_factories.VenueFactory()
+        offerer = pricing_point1.managingOfferer
+        venue = offerers_factories.VenueFactory(
+            siret=None,
+            comment="no SIRET",
+            managingOfferer=offerer,
+            pricing_point=pricing_point1,
+        )
+        pricing_point2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_api.link_venue_to_pricing_point(venue, pricing_point2.id, force_link=True)
+
+        booking = create_booking_with_undeletable_dependent(stock__offer__venue=venue)
         pricing = models.Pricing.query.one()
         with pytest.raises(exceptions.NonCancellablePricingError):
             api._delete_dependent_pricings(booking, "some log message")
@@ -650,7 +664,7 @@ class DeleteDependentPricingsTest:
 
         # With the appropriate setting, don't raise and don't
         # delete the pricing.
-        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[booking.venue.id]):
+        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[pricing_point2.id]):
             api._delete_dependent_pricings(booking, "some log message")
         assert models.Pricing.query.one() == pricing
 

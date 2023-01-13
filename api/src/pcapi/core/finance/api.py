@@ -535,12 +535,16 @@ def _delete_dependent_pricings(
         sqla.func.ROW(*_PRICE_BOOKINGS_ORDER_CLAUSE) > sqla.func.ROW(*_booking_comparison_tuple(booking)),
     )
 
-    pricings = pricings.with_entities(
-        models.Pricing.id,
-        models.Pricing.bookingId,
-        models.Pricing.status,
-        bookings_models.Booking.stockId,
-    ).all()
+    pricings = (
+        pricings.with_entities(
+            models.Pricing.id,
+            models.Pricing.bookingId,
+            models.Pricing.status,
+            bookings_models.Booking.stockId,
+        )
+        .distinct()
+        .all()
+    )
     if not pricings:
         return
     pricing_ids = {p.id for p in pricings}
