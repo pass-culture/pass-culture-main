@@ -305,9 +305,8 @@ BOOKING_LIMIT_DATETIME_FIELD = pydantic.Field(
     description="Timezone aware datetime after which the offer can no longer be booked.",
     example="2023-01-01T00:00:00+01:00",
 )
-PRICE_FIELD = pydantic.Field(..., description="Offer price in euro cents.", example=1000)
+PRICE_FIELD = pydantic.Field(description="Offer price in euro cents.", example=1000)
 QUANTITY_FIELD = pydantic.Field(
-    ...,
     description="Quantity of items allocated to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
     example=10,
 )
@@ -334,6 +333,24 @@ class StockCreation(BaseStockCreation):
     booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
 
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
+
+
+class StockEdition(serialization.ConfiguredBaseModel):
+    booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
+    price: pydantic.StrictInt | None = PRICE_FIELD
+    quantity: pydantic.StrictInt | typing.Literal["unlimited"] | None = QUANTITY_FIELD
+
+    @pydantic.validator("price")
+    def price_must_be_positive(cls, value: int | None) -> int | None:
+        if value and value < 0:
+            raise ValueError("Value must be positive")
+        return value
+
+    @pydantic.validator("quantity")
+    def quantity_must_be_positive(cls, quantity: int | str | None) -> int | str | None:
+        if isinstance(quantity, int) and quantity < 0:
+            raise ValueError("Value must be positive")
+        return quantity
 
 
 class DateCreation(BaseStockCreation):
@@ -397,6 +414,9 @@ class ProductOfferEdition(OfferEditionBase):
     category_related_fields: product_category_edition_fields | None = pydantic.Field(
         None,
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
+    )
+    stock: StockEdition | None = pydantic.Field(
+        description="If stock is set to None, all cancellable bookings (i.e not used) will be cancelled. To prevent from further bookings, you may alternatively set stock.quantity to the bookedQuantity (but not below)."
     )
 
 

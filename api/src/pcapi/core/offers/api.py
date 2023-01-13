@@ -484,33 +484,33 @@ def create_stock(
 
 def edit_stock(
     stock: Stock,
-    price: decimal.Decimal = UNCHANGED,  # type: ignore [assignment]
-    quantity: int | None = UNCHANGED,  # type: ignore [assignment]
-    beginning_datetime: datetime.datetime | None = UNCHANGED,  # type: ignore [assignment]
-    booking_limit_datetime: datetime.datetime | None = UNCHANGED,  # type: ignore [assignment]
+    price: decimal.Decimal | T_UNCHANGED = UNCHANGED,
+    quantity: int | None | T_UNCHANGED = UNCHANGED,
+    beginning_datetime: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
+    booking_limit_datetime: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
     editing_provider: providers_models.Provider | None = None,
 ) -> typing.Tuple[Stock, bool]:
     validation.check_stock_is_updatable(stock, editing_provider)
 
     modifications: dict[str, typing.Any] = {}
 
-    if (UNCHANGED, UNCHANGED) != (beginning_datetime, booking_limit_datetime):
-        changed_beginning = beginning_datetime if beginning_datetime != UNCHANGED else stock.beginningDatetime
+    if beginning_datetime is not UNCHANGED or booking_limit_datetime is not UNCHANGED:
+        changed_beginning = beginning_datetime if beginning_datetime is not UNCHANGED else stock.beginningDatetime
         changed_booking_limit = (
-            booking_limit_datetime if booking_limit_datetime != UNCHANGED else stock.bookingLimitDatetime
+            booking_limit_datetime if booking_limit_datetime is not UNCHANGED else stock.bookingLimitDatetime
         )
         validation.check_booking_limit_datetime(stock, changed_beginning, changed_booking_limit)
         validation.check_required_dates_for_stock(stock.offer, changed_beginning, changed_booking_limit)
 
-    if price not in (UNCHANGED, stock.price):
+    if price is not UNCHANGED and price != stock.price:
         modifications["price"] = price
         validation.check_stock_price(price, stock.offer)
 
-    if quantity not in (UNCHANGED, stock.quantity):
+    if quantity is not UNCHANGED and quantity != stock.quantity:
         modifications["quantity"] = quantity
         validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
 
-    if booking_limit_datetime not in (UNCHANGED, stock.bookingLimitDatetime):
+    if booking_limit_datetime is not UNCHANGED and booking_limit_datetime != stock.bookingLimitDatetime:
         modifications["bookingLimitDatetime"] = booking_limit_datetime
         validation.check_activation_codes_expiration_datetime_on_stock_edition(
             stock.activationCodes,

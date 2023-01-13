@@ -10,6 +10,7 @@ import pytest
 from pcapi import settings
 from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
@@ -1612,3 +1613,110 @@ class PatchProductTest:
             "musicType": "501",
             "performer": "Pink Pâtisserie",
         }
+
+    def test_create_stock(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            lastProvider=individual_offers_api_provider,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/{product_offer.id}",
+            json={"stock": {"price": 1000, "quantity": 1}},
+        )
+        assert response.status_code == 200
+        assert response.json["stock"] == {
+            "bookedQuantity": 0,
+            "bookingLimitDatetime": None,
+            "price": 1000,
+            "quantity": 1,
+        }
+        assert product_offer.activeStocks[0].quantity == 1
+        assert product_offer.activeStocks[0].price == 10
+
+    def test_update_stock_quantity(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            lastProvider=individual_offers_api_provider,
+        )
+        stock = offers_factories.StockFactory(offer=product_offer, quantity=None, price=10)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/{product_offer.id}",
+            json={"stock": {"quantity": 100}},
+        )
+        assert response.status_code == 200
+        assert response.json["stock"] == {
+            "bookedQuantity": 0,
+            "bookingLimitDatetime": None,
+            "price": 1000,
+            "quantity": 100,
+        }
+        assert len(product_offer.activeStocks) == 1
+        assert product_offer.activeStocks[0] == stock
+        assert product_offer.activeStocks[0].quantity == 100
+
+    def test_remove_stock_booking_limit_datetime(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            lastProvider=individual_offers_api_provider,
+        )
+        stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime="2021-01-15T00:00:00Z")
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/{product_offer.id}",
+            json={"stock": {"bookingLimitDatetime": None}},
+        )
+        assert response.status_code == 200
+        assert response.json["stock"]["bookingLimitDatetime"] == None
+
+        assert len(product_offer.activeStocks) == 1
+        assert product_offer.activeStocks[0] == stock
+        assert product_offer.activeStocks[0].bookingLimitDatetime == None
+
+    def test_update_stock_booking_limit_datetime(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            lastProvider=individual_offers_api_provider,
+        )
+        stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime=None)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/{product_offer.id}",
+            json={"stock": {"bookingLimitDatetime": "2021-01-15T00:00:00Z"}},
+        )
+        assert response.status_code == 200
+        assert response.json["stock"]["bookingLimitDatetime"] == "2021-01-15T00:00:00Z"
+
+        assert len(product_offer.activeStocks) == 1
+        assert product_offer.activeStocks[0] == stock
+        assert product_offer.activeStocks[0].bookingLimitDatetime == datetime.datetime(2021, 1, 15, 0, 0, 0)
+
+    def test_delete_stock(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            lastProvider=individual_offers_api_provider,
+        )
+        stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime=None)
+        confirmed_booking = bookings_factories.IndividualBookingFactory(
+            stock=stock, status=bookings_models.BookingStatus.CONFIRMED
+        )
+        used_booking = bookings_factories.IndividualBookingFactory(
+            stock=stock, status=bookings_models.BookingStatus.USED
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/{product_offer.id}",
+            json={"stock": None},
+        )
+        assert response.status_code == 200
+        assert response.json["stock"] == None
+
+        assert len(product_offer.activeStocks) == 0
+        assert confirmed_booking.status == bookings_models.BookingStatus.CANCELLED
+        assert used_booking.status == bookings_models.BookingStatus.USED
