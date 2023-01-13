@@ -12,7 +12,6 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers import validation as offers_validation
 from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import offer_mixin
@@ -192,10 +191,10 @@ def compute_category_fields_model(
     without duplicating categories declaration
     """
     specific_fields: dict[typing.Any, typing.Any] = {}
-    for field_name, model_field in ExtraDataModel.__fields__.items():
-        if field_name in subcategory.conditional_fields:
-            is_required = field_name in offers_validation.OFFER_EXTRA_DATA_MANDATORY_FIELDS and method == Method.create
-            specific_fields[field_name] = (model_field.type_, ... if is_required else model_field.default)
+    for field_name, conditional_field in subcategory.conditional_fields.items():
+        is_required = conditional_field.is_required_in_external_form and method == Method.create
+        model_field = ExtraDataModel.__fields__[field_name]
+        specific_fields[field_name] = (model_field.type_, ... if is_required else model_field.default)
 
     specific_fields["subcategory_id"] = (
         typing.Literal[subcategory.id],  # pyright: ignore (pylance error message)
@@ -227,10 +226,10 @@ def compute_extra_data(
     for field_name, field_value in category_related_fields.dict(exclude_unset=True).items():
         if field_name == "subcategory_id":
             continue
-        if field_name == "musicType":
+        if field_name == subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value:
             extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[field_value].code)
             extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[field_value].code)
-        elif field_name == "showType":
+        elif field_name == subcategories.ExtraDataFieldEnum.SHOW_TYPE.value:
             extra_data["showSubType"] = str(show_types.SHOW_SUB_TYPES_BY_SLUG[field_value].code)
             extra_data["showType"] = str(show_types.SHOW_TYPES_BY_SLUG[field_value].code)
         else:
