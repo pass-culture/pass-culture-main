@@ -193,8 +193,12 @@ class ReportMalformed(OfferReportError):
     code = "REPORT_MALFORMED"
 
 
-class BookingLimitDatetimeTooLate(Exception):
-    pass
+class BookingLimitDatetimeTooLate(OfferCreationBaseException):
+    def __init__(self) -> None:
+        super().__init__(
+            "bookingLimitDatetime",
+            "The bookingLimitDatetime must be before the beginning of the event",
+        )
 
 
 class OfferNotFound(Exception):
