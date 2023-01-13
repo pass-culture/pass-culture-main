@@ -38,7 +38,7 @@ if (SENTRY_SERVER_URL) {
       ;(h.hj.q = h.hj.q || []).push(arguments)
     }
   h._hjSettings = {
-    hjid: ENVIRONMENT_NAME === 'production' ? 2925982 : 2968316,
+    hjid: 2925982,
     hjsv: 6,
   }
   a = o.getElementsByTagName('head')[0]
