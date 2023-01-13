@@ -47,17 +47,11 @@ def get_stocks(offer_id: str) -> StocksResponseModel:
 
 
 def _get_existing_stocks(
-    offer_id: int, stocks_payload: list[stock_serialize.StockCreationBodyModel | stock_serialize.StockEditionBodyModel]
+    offer_id: int, stocks_payload: list[stock_serialize.StockEditionBodyModel]
 ) -> dict[int, Stock]:
     existing_stocks = Stock.query.filter(
         Stock.offerId == offer_id,
-        Stock.id.in_(
-            [
-                stock_payload.id
-                for stock_payload in stocks_payload
-                if isinstance(stock_payload, stock_serialize.StockEditionBodyModel)
-            ]
-        ),
+        Stock.id.in_([stock_payload.id for stock_payload in stocks_payload]),
     ).all()
     return {existing_stocks.id: existing_stocks for existing_stocks in existing_stocks}
 
@@ -73,43 +67,48 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StocksResponseModel:
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     offer = Offer.query.get(body.offer_id)
-    existing_stocks = _get_existing_stocks(body.offer_id, body.stocks)
+
+    stocks_to_edit = [stock for stock in body.stocks if isinstance(stock, stock_serialize.StockEditionBodyModel)]
+    stocks_to_create = [stock for stock in body.stocks if isinstance(stock, stock_serialize.StockCreationBodyModel)]
+    if stocks_to_edit:
+        existing_stocks = _get_existing_stocks(body.offer_id, stocks_to_edit)
+
     upserted_stocks = []
     edited_stocks_with_update_info: list[tuple[Stock, bool]] = []
     try:
         with transaction():
-            for stock_payload in body.stocks:
-                if isinstance(stock_payload, stock_serialize.StockEditionBodyModel):
-                    if stock_payload.id not in existing_stocks:
-                        raise ApiErrors(
-                            {"stock_id": ["Le stock avec l'id %s n'existe pas" % stock_payload.id]}, status_code=400
-                        )
-                    edited_stock, is_beginning_updated = offers_api.edit_stock(
-                        existing_stocks[stock_payload.id],
-                        price=decimal.Decimal(stock_payload.price),
-                        quantity=stock_payload.quantity,
-                        beginning_datetime=serialization_utils.as_utc_without_timezone(stock_payload.beginning_datetime)
-                        if stock_payload.beginning_datetime
-                        else None,
-                        booking_limit_datetime=serialization_utils.as_utc_without_timezone(
-                            stock_payload.booking_limit_datetime
-                        )
-                        if stock_payload.booking_limit_datetime
-                        else None,
+            for stock_to_edit in stocks_to_edit:
+                if stock_to_edit.id not in existing_stocks:
+                    raise ApiErrors(
+                        {"stock_id": ["Le stock avec l'id %s n'existe pas" % stock_to_edit.id]}, status_code=400
                     )
-                    upserted_stocks.append(edited_stock)
-                    edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
-                else:
-                    created_stock = offers_api.create_stock(
-                        offer,
-                        price=decimal.Decimal(stock_payload.price),
-                        activation_codes=stock_payload.activation_codes,
-                        activation_codes_expiration_datetime=stock_payload.activation_codes_expiration_datetime,
-                        quantity=stock_payload.quantity,
-                        beginning_datetime=stock_payload.beginning_datetime,
-                        booking_limit_datetime=stock_payload.booking_limit_datetime,
+                edited_stock, is_beginning_updated = offers_api.edit_stock(
+                    existing_stocks[stock_to_edit.id],
+                    price=decimal.Decimal(stock_to_edit.price),
+                    quantity=stock_to_edit.quantity,
+                    beginning_datetime=serialization_utils.as_utc_without_timezone(stock_to_edit.beginning_datetime)
+                    if stock_to_edit.beginning_datetime
+                    else None,
+                    booking_limit_datetime=serialization_utils.as_utc_without_timezone(
+                        stock_to_edit.booking_limit_datetime
                     )
-                    upserted_stocks.append(created_stock)
+                    if stock_to_edit.booking_limit_datetime
+                    else None,
+                )
+                upserted_stocks.append(edited_stock)
+                edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
+
+            for stock_to_create in stocks_to_create:
+                created_stock = offers_api.create_stock(
+                    offer,
+                    price=decimal.Decimal(stock_to_create.price),
+                    activation_codes=stock_to_create.activation_codes,
+                    activation_codes_expiration_datetime=stock_to_create.activation_codes_expiration_datetime,
+                    quantity=stock_to_create.quantity,
+                    beginning_datetime=stock_to_create.beginning_datetime,
+                    booking_limit_datetime=stock_to_create.booking_limit_datetime,
+                )
+                upserted_stocks.append(created_stock)
 
     except offers_exceptions.BookingLimitDatetimeTooLate:
         raise ApiErrors(
