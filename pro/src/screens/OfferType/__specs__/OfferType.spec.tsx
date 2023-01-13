@@ -6,10 +6,12 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { configureTestStore } from 'store/testUtils'
+import { collectiveOfferFactory } from 'utils/apiFactories'
 
 import OfferType from '../OfferType'
 
@@ -30,6 +32,11 @@ jest.mock('react-router-dom', () => ({
   useHistory: () => ({
     push: mockHistoryPush,
   }),
+}))
+
+jest.mock('hooks/useActiveFeature', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue(true),
 }))
 
 describe('screens:OfferIndividual::OfferType', () => {
@@ -186,4 +193,102 @@ describe('screens:OfferIndividual::OfferType', () => {
       })
     }
   )
+
+  it('should select virtual good', async () => {
+    renderOfferTypes(store)
+
+    await userEvent.click(screen.getByText('Un bien numérique'))
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+
+    expect(mockHistoryPush).toHaveBeenCalledWith({
+      pathname: '/offre/individuelle/creation/informations',
+      search: '?offer-type=VIRTUAL_GOOD',
+    })
+  })
+
+  it('should select physical event', async () => {
+    renderOfferTypes(store)
+
+    await userEvent.click(screen.getByText('Un évènement physique'))
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+
+    expect(mockHistoryPush).toHaveBeenCalledWith({
+      pathname: '/offre/individuelle/creation/informations',
+      search: '?offer-type=PHYSICAL_EVENT',
+    })
+  })
+
+  it('should select physical good', async () => {
+    renderOfferTypes(store)
+
+    await userEvent.click(screen.getByText('Un évènement numérique'))
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+
+    expect(mockHistoryPush).toHaveBeenCalledWith({
+      pathname: '/offre/individuelle/creation/informations',
+      search: '?offer-type=VIRTUAL_EVENT',
+    })
+  })
+
+  it('should select duplicate template offer', async () => {
+    const offersRecap = [collectiveOfferFactory()]
+    jest
+      .spyOn(api, 'getCollectiveOffers')
+      // @ts-expect-error FIX ME
+      .mockResolvedValue(offersRecap)
+
+    renderOfferTypes(store)
+
+    await userEvent.click(
+      screen.getByRole('radio', { name: 'À un groupe scolaire' })
+    )
+
+    expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      'template'
+    )
+
+    await userEvent.click(
+      screen.getByRole('radio', {
+        name: 'Une offre réservable Cette offre a une date et un prix. Vous pouvez choisir de la rendre visible par tous les établissements scolaires ou par un seul.',
+      })
+    )
+
+    expect(
+      screen.queryByRole('heading', {
+        name: 'Créer une nouvelle offre ou dupliquer une offre ?',
+      })
+    ).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByRole('radio', {
+        name: 'Dupliquer les informations d’une d’offre vitrine Créez une offre réservable en dupliquant les informations d’une offre vitrine existante.',
+      })
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+
+    expect(mockHistoryPush).toHaveBeenCalledWith({
+      pathname: '/offre/creation/collectif/selection',
+      search: '',
+    })
+  })
 })
