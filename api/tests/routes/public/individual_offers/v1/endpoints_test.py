@@ -182,6 +182,7 @@ class PostProductTest:
                 "categoryRelatedFields": {
                     "author": "Maurice",
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "ean": "12345678",
                     "musicType": "JAZZ-FUSION",
                     "performer": "Pink Pâtisserie",
                     "stageDirector": "Alfred",  # field not applicable
@@ -222,6 +223,7 @@ class PostProductTest:
         assert created_offer.isDuo is False
         assert created_offer.extraData == {
             "author": "Maurice",
+            "ean": "12345678",
             "musicType": "501",
             "musicSubType": "511",
             "performer": "Pink Pâtisserie",
@@ -250,6 +252,7 @@ class PostProductTest:
             "bookingEmail": "spam@example.com",
             "categoryRelatedFields": {
                 "author": "Maurice",
+                "ean": "12345678",
                 "category": "SUPPORT_PHYSIQUE_MUSIQUE",
                 "musicType": "JAZZ-FUSION",
                 "performer": "Pink Pâtisserie",
@@ -288,7 +291,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
+                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": "12345678"},
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -318,7 +321,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
+                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": "12345678"},
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -340,7 +343,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
+                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": "12345678"},
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -362,7 +365,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
+                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": "12345678"},
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -503,7 +506,11 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_MUSIQUE", "musicType": "CHANSON_VARIETE-OTHER"},
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "ean": "12345678",
+                    "musicType": "CHANSON_VARIETE-OTHER",
+                },
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -1088,7 +1095,7 @@ class GetProductTest:
         assert response.status_code == 200
         assert response.json == {
             "bookingEmail": None,
-            "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM"},
+            "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": None},
             "description": "Un livre de contrepèterie",
             "accessibility": {
                 "audioDisabilityCompliant": False,
@@ -1703,6 +1710,7 @@ class PatchProductTest:
         assert response.status_code == 200
         assert response.json["categoryRelatedFields"] == {
             "author": "Maurice",
+            "ean": None,
             "category": "SUPPORT_PHYSIQUE_MUSIQUE",
             "musicType": "JAZZ-ACID_JAZZ",
             "performer": "Pink Pâtisserie",
