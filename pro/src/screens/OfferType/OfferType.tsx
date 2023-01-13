@@ -1,4 +1,9 @@
-import React, { FunctionComponent, SVGProps, useState } from 'react'
+import React, {
+  FunctionComponent,
+  SVGProps,
+  useCallback,
+  useState,
+} from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import FormLayout from 'components/FormLayout'
@@ -10,15 +15,24 @@ import {
   OFFER_TYPES,
   OFFER_WIZARD_MODE,
 } from 'core/Offers'
+import {
+  COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
+  DEFAULT_SEARCH_FILTERS,
+} from 'core/Offers/constants'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useNotification from 'hooks/useNotification'
 import { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.svg'
 import { ReactComponent as CaseIcon } from 'icons/ico-case.svg'
 import { ReactComponent as DateIcon } from 'icons/ico-date.svg'
+import { ReactComponent as DuplicateOfferIcon } from 'icons/ico-duplicate-offer.svg'
+import { ReactComponent as NewOfferIcon } from 'icons/ico-new-offer.svg'
 import { ReactComponent as TemplateOfferIcon } from 'icons/ico-template-offer.svg'
 import { ReactComponent as ThingIcon } from 'icons/ico-thing.svg'
 import { ReactComponent as VirtualEventIcon } from 'icons/ico-virtual-event.svg'
 import { ReactComponent as VirtualThingIcon } from 'icons/ico-virtual-thing.svg'
 import { ReactComponent as PhoneIcon } from 'icons/info-phone.svg'
+import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
 
 import ActionsBar from './ActionsBar/ActionsBar'
@@ -36,13 +50,40 @@ interface IrenderIndividualChoice {
 const OfferType = (): JSX.Element => {
   const history = useHistory()
   const location = useLocation()
+  const notify = useNotification()
+  const isDuplicateOfferSelectionActive = useActiveFeature(
+    'WIP_DUPLICATE_OFFER_SELECTION'
+  )
   const [offerType, setOfferType] = useState(OFFER_TYPES.INDIVIDUAL_OR_DUO)
   const [collectiveOfferSubtype, setCollectiveOfferSubtype] = useState(
     COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE
   )
+  const [collectiveOfferSubtypeDuplicate, setCollectiveOfferSubtypeDuplicate] =
+    useState(COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER)
   const [individualOfferSubtype, setIndividualOfferSubtype] = useState(
     INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
   )
+  const [hasCollectiveTemplateOffer, setHasCollectiveTemplateOffer] =
+    useState(false)
+
+  const getTemplateCollectiveOffers = useCallback(async () => {
+    const apiFilters = {
+      ...DEFAULT_SEARCH_FILTERS,
+      collectiveOfferType: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE.toLowerCase(),
+    }
+    const { isOk, message, payload } = await getFilteredCollectiveOffersAdapter(
+      apiFilters
+    )
+
+    if (!isOk) {
+      setHasCollectiveTemplateOffer(false)
+      return notify.error(message)
+    }
+
+    if (payload.offers.length > 0) {
+      setHasCollectiveTemplateOffer(true)
+    }
+  }, [offerType])
 
   const getNextPageHref = () => {
     if (offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
@@ -59,6 +100,15 @@ const OfferType = (): JSX.Element => {
     }
 
     // Offer type is EDUCATIONAL
+    if (
+      collectiveOfferSubtypeDuplicate ===
+      COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
+    ) {
+      return history.push({
+        pathname: '/offre/creation/collectif/selection',
+        search: location.search,
+      })
+    }
     if (collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.TEMPLATE) {
       return history.push({
         pathname: '/offre/creation/collectif/vitrine',
@@ -76,6 +126,12 @@ const OfferType = (): JSX.Element => {
   ) => {
     const selectedOfferType = event.target.value as OFFER_TYPES
     setOfferType(selectedOfferType)
+    if (
+      isDuplicateOfferSelectionActive &&
+      selectedOfferType === OFFER_TYPES.EDUCATIONAL
+    ) {
+      getTemplateCollectiveOffers()
+    }
   }
 
   const handleCollectiveOfferSubtypeChange = (
@@ -84,6 +140,14 @@ const OfferType = (): JSX.Element => {
     const selectedCollectiveOfferSubtype = event.target
       .value as COLLECTIVE_OFFER_SUBTYPE
     setCollectiveOfferSubtype(selectedCollectiveOfferSubtype)
+  }
+
+  const handleCollectiveOfferSubtypeDuplicateChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const selectedCollectiveOfferSubtypeDuplicate = event.target
+      .value as COLLECTIVE_OFFER_SUBTYPE_DUPLICATE
+    setCollectiveOfferSubtypeDuplicate(selectedCollectiveOfferSubtypeDuplicate)
   }
 
   const handleIndividualOfferSubtypeChange = (
@@ -212,6 +276,44 @@ const OfferType = (): JSX.Element => {
             </>
           )}
         </FormLayout.Section>
+        {isDuplicateOfferSelectionActive &&
+          collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE &&
+          hasCollectiveTemplateOffer && (
+            <FormLayout.Section
+              title="Créer une nouvelle offre ou dupliquer une offre ?"
+              className={styles['subtype-section']}
+            >
+              <FormLayout.Row inline>
+                <RadioButtonWithImage
+                  name="offer-duplicate"
+                  Icon={NewOfferIcon}
+                  isChecked={
+                    collectiveOfferSubtypeDuplicate ===
+                    COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER
+                  }
+                  label="Créer une nouvelle offre"
+                  description="Créer une nouvelle offre réservable en partant d’un formulaire vierge."
+                  onChange={handleCollectiveOfferSubtypeDuplicateChange}
+                  value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER}
+                />
+              </FormLayout.Row>
+              <FormLayout.Row inline>
+                <RadioButtonWithImage
+                  name="offer-duplicate"
+                  transparent
+                  Icon={DuplicateOfferIcon}
+                  isChecked={
+                    collectiveOfferSubtypeDuplicate ===
+                    COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
+                  }
+                  label="Dupliquer les informations d’une d’offre vitrine"
+                  description="Créez une offre réservable en dupliquant les informations d’une offre vitrine existante."
+                  onChange={handleCollectiveOfferSubtypeDuplicateChange}
+                  value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE}
+                />
+              </FormLayout.Row>
+            </FormLayout.Section>
+          )}
 
         <ActionsBar getNextPageHref={getNextPageHref} />
       </FormLayout>

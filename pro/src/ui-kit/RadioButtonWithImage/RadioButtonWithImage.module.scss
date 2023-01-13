@@ -32,6 +32,10 @@
     height: rem.torem(44px);
   }
 
+  &-icon-transparent {
+    fill: transparent;
+  }
+
   &:hover {
     box-shadow: 0 3px 4px 0 #67686b29;
     cursor: pointer;
