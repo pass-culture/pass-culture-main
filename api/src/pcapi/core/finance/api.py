@@ -636,6 +636,7 @@ def _delete_dependent_pricings(
                         "booking_being_priced_or_cancelled": booking.id,
                         "older_pricing": pricing.id,
                         "older_pricing_status": pricing.status,
+                        "pricing_point": pricing_point_id,
                     },
                 )
                 raise exceptions.NonCancellablePricingError()
