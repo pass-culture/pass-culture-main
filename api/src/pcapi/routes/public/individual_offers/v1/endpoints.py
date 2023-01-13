@@ -489,41 +489,48 @@ def edit_product(
         raise api_errors.ApiErrors({"product_id": ["The product offer could not be found"]}, status_code=404)
 
     update_body = body.dict(exclude_unset=True)
-    with repository.transaction():
-        offers_api.update_offer(
-            offer,
-            extraData=serialization.compute_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
-            if body.category_related_fields
-            else offers_api.UNCHANGED,
-            isActive=update_body.get("is_active", offers_api.UNCHANGED),
-            isDuo=update_body.get("is_duo", offers_api.UNCHANGED),
-            withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
-            **compute_accessibility_edition_fields(update_body.get("accessibility")),
-        )
-        if "stock" in update_body:
-            existing_stock = next((stock for stock in offer.activeStocks), None)
-            if body.stock is None:
-                if existing_stock:
-                    offers_api.delete_stock(existing_stock)
-            else:
-                if not existing_stock:
-                    if not body.stock.price:
-                        raise api_errors.ApiErrors({"stock.price": ["Required"]})
-                    offers_api.create_stock(
-                        offer=offer,
-                        price=finance_utils.to_euros(body.stock.price),
-                        quantity=body.stock.quantity if body.stock.quantity != "unlimited" else None,
-                        booking_limit_datetime=body.stock.booking_limit_datetime,
-                        creating_provider=individual_offers_provider,
-                    )
+    try:
+        with repository.transaction():
+            offers_api.update_offer(
+                offer,
+                extraData=serialization.compute_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
+                if body.category_related_fields
+                else offers_api.UNCHANGED,
+                isActive=update_body.get("is_active", offers_api.UNCHANGED),
+                isDuo=update_body.get("is_duo", offers_api.UNCHANGED),
+                withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
+                **compute_accessibility_edition_fields(update_body.get("accessibility")),
+            )
+            if "stock" in update_body:
+                existing_stock = next((stock for stock in offer.activeStocks), None)
+                if body.stock is None:
+                    if existing_stock:
+                        offers_api.delete_stock(existing_stock)
                 else:
-                    price = update_body["stock"].get("price", offers_api.UNCHANGED)
-                    offers_api.edit_stock(
-                        existing_stock,
-                        quantity=update_body["stock"].get("quantity", offers_api.UNCHANGED),
-                        price=finance_utils.to_euros(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,  # type: ignore[arg-type]
-                        booking_limit_datetime=update_body["stock"].get("booking_limit_datetime", offers_api.UNCHANGED),
-                        editing_provider=individual_offers_provider,
-                    )
+                    if not existing_stock:
+                        if not body.stock.price:
+                            raise api_errors.ApiErrors({"stock.price": ["Required"]})
+                        offers_api.create_stock(
+                            offer=offer,
+                            price=finance_utils.to_euros(body.stock.price),
+                            quantity=body.stock.quantity if body.stock.quantity != "unlimited" else None,
+                            booking_limit_datetime=body.stock.booking_limit_datetime,
+                            creating_provider=individual_offers_provider,
+                        )
+                    else:
+                        price = update_body["stock"].get("price", offers_api.UNCHANGED)
+                        offers_api.edit_stock(
+                            existing_stock,
+                            quantity=update_body["stock"].get("quantity", offers_api.UNCHANGED),
+                            price=finance_utils.to_euros(price)
+                            if price != offers_api.UNCHANGED
+                            else offers_api.UNCHANGED,
+                            booking_limit_datetime=update_body["stock"].get(
+                                "booking_limit_datetime", offers_api.UNCHANGED
+                            ),
+                            editing_provider=individual_offers_provider,
+                        )
+    except offers_exceptions.OfferCreationBaseException as e:
+        raise api_errors.ApiErrors(e.errors, status_code=400)
 
     return serialization.ProductOfferResponse.build_product_offer(offer)
