@@ -140,7 +140,9 @@ class BatchBackend:
                 can_be_asynchronously_retried=can_be_asynchronously_retried,
             )
 
-    def track_event(self, user_id: int, event_name: str, can_be_asynchronously_retried: bool = False) -> None:
+    def track_event(
+        self, user_id: int, event_name: str, event_payload: dict, can_be_asynchronously_retried: bool = False
+    ) -> None:
         def make_post_request(api: BatchAPI) -> None:
             self.handle_request(
                 "POST",
@@ -150,6 +152,7 @@ class BatchBackend:
                     "events": [
                         {
                             "name": f"ue.{event_name}",
+                            "attributes": event_payload,
                         }
                     ]
                 },

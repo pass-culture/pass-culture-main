@@ -2,6 +2,8 @@ from datetime import datetime
 import logging
 
 from pcapi.core.external.attributes import models as attributes_models
+import pcapi.core.finance.models as finance_models
+import pcapi.notifications.push as push_notifications
 from pcapi.tasks import batch_tasks
 
 
@@ -63,3 +65,10 @@ def format_user_attributes(user_attributes: attributes_models.UserAttributes) ->
 
 def _format_date(date: datetime | None) -> str | None:
     return date.strftime(BATCH_DATETIME_FORMAT) if date else None
+
+
+def track_deposit_activated_event(user_id: int, deposit: finance_models.Deposit) -> None:
+    event_name = push_notifications.BatchEvent.USER_DEPOSIT_ACTIVATED.value
+    event_payload = {"depositType": deposit.type.value, "depositAmount": deposit.amount}
+    payload = batch_tasks.TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user_id)
+    batch_tasks.track_event_task.delay(payload)
