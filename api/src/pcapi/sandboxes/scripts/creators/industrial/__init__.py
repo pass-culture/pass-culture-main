@@ -37,6 +37,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venues import
 from pcapi.sandboxes.scripts.creators.industrial.create_offer_with_thousand_stocks import (
     create_offer_with_thousand_stocks,
 )
+from pcapi.sandboxes.scripts.creators.industrial.create_offerer_with_several_venues import (
+    create_offerer_with_several_venues,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_offerer_with_venue_provider_and_external_bookings import (
     create_industrial_provider_external_bookings,
 )
@@ -118,3 +121,5 @@ def save_industrial_sandbox() -> None:
     create_offers_with_status()
 
     create_offer_with_thousand_stocks()
+
+    create_offerer_with_several_venues()
