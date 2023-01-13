@@ -1,7 +1,7 @@
 from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import IndividualBooking
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.utils.mailing import format_booking_date_for_email
@@ -22,7 +22,7 @@ def get_new_booking_to_pro_email_data(
         event_date = ""
         event_hour = ""
 
-    if "isbn" in offer.subcategory.conditional_fields:
+    if subcategories.ExtraDataFieldEnum.ISBN.value in offer.subcategory.conditional_fields:
         isbn = offer.extraData.get("isbn", "") if offer.extraData is not None else ""
         offer_subcategory = "book"
     else:

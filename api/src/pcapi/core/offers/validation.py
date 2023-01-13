@@ -12,6 +12,8 @@ from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.categories.subcategories import WITHDRAWABLE_SUBCATEGORIES
+from pcapi.core.categories.subcategories_v2 import ExtraDataFieldEnum
+from pcapi.core.categories.subcategories_v2 import Subcategory
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
@@ -83,11 +85,6 @@ VALUE_VALIDATION_CONFIG = {
     "operator": [">", ">=", "<", "<=", "==", "!=", "is", "in", "not in", "contains", "contains-exact"],
     "comparated": [str, bool, float, int, list, None],
     "minimum_score": [float, int],
-}
-
-OFFER_EXTRA_DATA_MANDATORY_FIELDS = {
-    "showType",
-    "musicType",
 }
 
 
@@ -409,19 +406,24 @@ def check_booking_limit_datetime(
         raise exceptions.BookingLimitDatetimeTooLate()
 
 
-def check_offer_extra_data(subcategory_id: str, extra_data: dict | None) -> None:
+def check_offer_extra_data(subcategory_id: str, extra_data: dict[str, Any] | None) -> None:
     api_errors = ApiErrors()
-    subcategory = ALL_SUBCATEGORIES_DICT[subcategory_id]
-    mandatory_fields = OFFER_EXTRA_DATA_MANDATORY_FIELDS & set(subcategory.conditional_fields)
-    if not extra_data:
+
+    if extra_data is None:
         extra_data = {}
 
+    subcategory = ALL_SUBCATEGORIES_DICT[subcategory_id]
+    mandatory_fields = [
+        name
+        for name, conditional_field in subcategory.conditional_fields.items()
+        if conditional_field.is_required_in_internal_form
+    ]
     for field in mandatory_fields:
         if not extra_data.get(field):
             api_errors.add_error(field, "Ce champ est obligatoire")
 
     try:
-        check_ean_field(extra_data.get("ean"))
+        check_ean_field(subcategory, extra_data)
     except exceptions.EanFormatException as e:
         api_errors.add_client_error(e)
 
@@ -429,7 +431,8 @@ def check_offer_extra_data(subcategory_id: str, extra_data: dict | None) -> None
         raise api_errors
 
 
-def check_ean_field(ean: Any) -> None:
+def check_ean_field(subcategory: Subcategory, extra_data: dict[str, Any]) -> None:
+    ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
     if ean is None or ean == "":
         return
 

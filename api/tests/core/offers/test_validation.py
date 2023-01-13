@@ -415,6 +415,12 @@ class CheckOfferWithdrawalTest:
 
 
 class CheckOfferExtraDataTest:
+    def test_missing_required_extra_data(self):
+        with pytest.raises(ApiErrors) as error:
+            validation.check_offer_extra_data(subcategories.FESTIVAL_MUSIQUE.id, {})
+
+        assert error.value.errors["musicType"] == ["Ce champ est obligatoire"]
+
     def test_invalid_ean_extra_data(self):
         with pytest.raises(ApiErrors) as error:
             validation.check_offer_extra_data(subcategories.JEU_EN_LIGNE.id, {"ean": 12345678})
