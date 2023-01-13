@@ -641,6 +641,46 @@ class DeleteDependentPricingsTest:
         api._delete_dependent_pricings(b1, "dummy")
         assert not b2.pricings
 
+    def test_scenario5(self):
+        # 0. Venue is linked to pricing point 1.
+        # 1. Booking B1 and B2 are used on 2022-12-15.
+        # 2. Venue is linked to pricing point 2.
+        # B2 should be priced after B1 (order on their id).
+        venue = offerers_factories.VenueFactory(
+            siret=None,
+            comment="no SIRET",
+        )
+        offerer = venue.managingOfferer
+        ppoint1 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_api.link_venue_to_pricing_point(
+            venue,
+            ppoint1.id,
+            datetime.datetime(2022, 1, 1),
+        )
+        ppoint2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_api.link_venue_to_pricing_point(
+            venue,
+            ppoint2.id,
+            datetime.datetime(2022, 12, 20),
+            force_link=True,
+        )
+
+        used_at = datetime.datetime(2022, 12, 15)  # during ppoint1 link period
+        b1 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, dateUsed=used_at)
+        b2 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, dateUsed=used_at)
+
+        # Suppose that we priced b2 first (which we should not).
+        factories.PricingFactory(booking=b2, pricingPoint=ppoint1)
+        # If we were to price b1 now, that should delete b2's pricing
+        # because b1 must be priced before b2.
+        api.price_booking(b1)
+        assert not b2.pricings
+        # Now price b2...
+        api.price_booking(b2)
+        assert b2.pricings
+        # The pricing of b1 should not be deleted.
+        assert b1.pricings
+
     def test_raise_if_a_pricing_is_not_deletable(self):
         # Simulate a venue that changed its pricing point. There was a
         # bug in that case in the handling of

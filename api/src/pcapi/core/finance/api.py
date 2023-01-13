@@ -529,22 +529,21 @@ def _delete_dependent_pricings(
     )
 
     pricings = pricings.join(offerers_models.Venue.pricing_point_links)
+    pricings = pricings.filter(
+        offerers_models.VenuePricingPointLink.timespan.contains(bookings_models.Booking.dateUsed)
+    )
 
     pricings = pricings.filter(
         models.Pricing.valueDate.between(revenue_period_start, revenue_period_end),
         sqla.func.ROW(*_PRICE_BOOKINGS_ORDER_CLAUSE) > sqla.func.ROW(*_booking_comparison_tuple(booking)),
     )
 
-    pricings = (
-        pricings.with_entities(
-            models.Pricing.id,
-            models.Pricing.bookingId,
-            models.Pricing.status,
-            bookings_models.Booking.stockId,
-        )
-        .distinct()
-        .all()
-    )
+    pricings = pricings.with_entities(
+        models.Pricing.id,
+        models.Pricing.bookingId,
+        models.Pricing.status,
+        bookings_models.Booking.stockId,
+    ).all()
     if not pricings:
         return
     pricing_ids = {p.id for p in pricings}
