@@ -19,7 +19,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 logger = logging.getLogger(__name__)
 
 
-def create_offers_with_specific_status() -> None:
+def create_offers_with_status() -> None:
     user_offerer = UserOffererFactory(offerer__name="Offerer avec offres spécifiques")
     venue = VenueFactory(
         name="Lieu avec offres spécifiques",
@@ -32,7 +32,7 @@ def create_offers_with_specific_status() -> None:
     create_offers_fully_booked(user_bene, venue)
     create_offers_expired(venue)
     create_offers_pending_and_refused(venue)
-    logger.info("create_offers")
+    logger.info("create_offers with status")
 
 
 def create_offers_fully_booked(user_bene: User, venue: Venue) -> None:

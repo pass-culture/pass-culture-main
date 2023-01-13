@@ -363,6 +363,9 @@ def create_industrial_educational_bookings() -> None:
         siren="123456782",
         name="Bonne structure pour l'EAC (siren)",
     )
+    offerers_factories.VirtualVenueFactory(
+        name="Lieu virtuel Bonne structure pour l'EAC", managingOfferer=offerer_with_right_siren
+    )
 
     for adage_id, name in VENUE_EDUCATIONAL_STATUS.items():
         offerers_factories.VenueEducationalStatusFactory(id=adage_id, name=name)
