@@ -13,5 +13,5 @@ jobs:
   update-api-client:
     uses: ./.github/workflows/update-api-client-template.yml
     with:
-      trigger-only-on-api-change: true
+      trigger-only-on-api-change: false
       trigger-only-on-dependency-change: false
