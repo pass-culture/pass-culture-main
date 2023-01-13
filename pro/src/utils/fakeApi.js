@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import { api } from 'apiClient/api'
 
 export const bulkFakeApiCreateOrEditStock = ({ ...stockIds }) =>

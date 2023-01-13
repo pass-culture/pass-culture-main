@@ -1,4 +1,3 @@
-/* istanbul ignore file: DEBT, TO FIX */
 import { ITableData } from 'screens/CsvTable'
 import csvConverter from 'utils/csvConverter'
 

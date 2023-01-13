@@ -1,10 +1,8 @@
-/* istanbul ignore file: DEBT, TO FIX */
 import { PostOfferBodyModel } from 'apiClient/v1'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { IOfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
-/* istanbul ignore next: DEBT, TO FIX */
 export const serializeExtraData = (
   formValues: IOfferIndividualFormValues
 ): IOfferExtraData => {
@@ -47,17 +45,14 @@ export const serializeExtraData = (
 }
 
 const serializeDurationMinutes = (durationHour: string): number | null => {
-  /* istanbul ignore next: DEBT, TO FIX */
   if (durationHour.trim().length === 0) {
     return null
   }
 
-  /* istanbul ignore next: DEBT, TO FIX */
   const [hours, minutes] = durationHour
     .split(':')
     .map((s: string) => parseInt(s, 10))
 
-  /* istanbul ignore next: DEBT, TO FIX */
   return minutes + hours * 60
 }
 

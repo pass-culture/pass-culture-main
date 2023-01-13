@@ -45,7 +45,7 @@ const upsertStocksThingAdapter: TUpdateStocksAdapter = async ({
     }
   } catch (error) {
     let formErrors = {}
-    /* istanbul ignore next */
+
     if (isErrorAPIError(error)) {
       formErrors = error.body
     }

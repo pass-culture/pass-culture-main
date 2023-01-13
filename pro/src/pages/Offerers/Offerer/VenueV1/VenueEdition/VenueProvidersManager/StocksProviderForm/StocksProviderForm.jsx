@@ -21,7 +21,6 @@ const StocksProviderForm = ({
   }, [])
 
   const handleCloseConfirmDialog = useCallback(() => {
-    /* istanbul ignore next: DEBT, TO FIX */
     setIsConfirmDialogOpened(false)
   }, [])
 

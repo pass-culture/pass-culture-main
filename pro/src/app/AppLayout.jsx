@@ -53,10 +53,7 @@ const AppLayout = props => {
               })}
             >
               <DomainNameBanner />
-              {
-                /* istanbul ignore next: DEBT, TO FIX */
-                backTo && <GoBackLink to={backTo.path} title={backTo.label} />
-              }
+              {backTo && <GoBackLink to={backTo.path} title={backTo.label} />}
               {children}
             </div>
           </div>

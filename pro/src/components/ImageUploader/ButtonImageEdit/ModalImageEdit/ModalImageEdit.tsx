@@ -30,7 +30,6 @@ interface IModalImageEditProps {
   initialValues?: IUploadImageValues
 }
 // FIXME: find a way to test FileReader
-/* istanbul ignore next: DEBT, TO FIX */
 const ModalImageEdit = ({
   mode,
   onDismiss,

@@ -57,7 +57,6 @@ const Address = () => {
     }
   }, [selectedField.value])
 
-  /* istanbul ignore next: DEBT, TO FIX */
   const getSuggestions = async (search: string) => {
     if (search) {
       const response = await getAdressDataAdapter(search)

@@ -1,13 +1,11 @@
-/* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { UpdateVenueStocksBodyModel } from '../models/UpdateVenueStocksBodyModel';
+import type { UpdateVenueStocksBodyModel } from '../models/UpdateVenueStocksBodyModel'
 
-import type { CancelablePromise } from '../core/CancelablePromise';
-import type { BaseHttpRequest } from '../core/BaseHttpRequest';
+import type { CancelablePromise } from '../core/CancelablePromise'
+import type { BaseHttpRequest } from '../core/BaseHttpRequest'
 
 export class ApiStocksService {
-
   constructor(public readonly httpRequest: BaseHttpRequest) {}
 
   /**
@@ -20,13 +18,13 @@ export class ApiStocksService {
    */
   public updateStocks(
     venueId: number,
-    requestBody?: UpdateVenueStocksBodyModel,
+    requestBody?: UpdateVenueStocksBodyModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/v2/venue/{venue_id}/stocks',
       path: {
-        'venue_id': venueId,
+        venue_id: venueId,
       },
       body: requestBody,
       mediaType: 'application/json',
@@ -36,7 +34,6 @@ export class ApiStocksService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
-
 }

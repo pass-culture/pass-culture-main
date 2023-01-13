@@ -33,7 +33,6 @@ const StockThingForm = ({
     const quantity = event.target.value
     let remainingQuantity: number | string =
       // No need to test
-      /* istanbul ignore next */
       Number(quantity || 0) - Number(values.bookingsQuantity || 0)
 
     if (quantity === '') {

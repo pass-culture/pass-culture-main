@@ -15,7 +15,6 @@ interface IBookingDetailsProps {
 const BookingDetails = ({
   booking,
 }: IBookingDetailsProps): JSX.Element | null => {
-  /* istanbul ignore next: DEBT, TO FIX */
   const formattedBookingDate = (booking: IBooking): string => {
     return !booking.datetime
       ? 'Permanent'
@@ -50,23 +49,20 @@ const BookingDetails = ({
           {formattedBookingDate(booking)}
         </div>
       </div>
-      {
-        /* istanbul ignore next: DEBT, TO FIX */
-        booking.quantity === 2 ? (
-          <div>
-            <div className={styles['desk-label']}>{'Prix : '}</div>
-            <div className={cx(styles['desk-value'], styles['duo-price'])}>
-              {`${booking.price * 2} €`}
-              <DuoSvg title="Réservation DUO" />
-            </div>
+      {booking.quantity === 2 ? (
+        <div>
+          <div className={styles['desk-label']}>{'Prix : '}</div>
+          <div className={cx(styles['desk-value'], styles['duo-price'])}>
+            {`${booking.price * 2} €`}
+            <DuoSvg title="Réservation DUO" />
           </div>
-        ) : (
-          <div>
-            <div className={styles['desk-label']}>{'Prix : '}</div>
-            <div className={styles['desk-value']}>{`${booking.price} €`}</div>
-          </div>
-        )
-      }
+        </div>
+      ) : (
+        <div>
+          <div className={styles['desk-label']}>{'Prix : '}</div>
+          <div className={styles['desk-value']}>{`${booking.price} €`}</div>
+        </div>
+      )}
       {booking.ean13 !== null && (
         <div>
           <div className={styles['desk-label']}>{'ISBN : '}</div>

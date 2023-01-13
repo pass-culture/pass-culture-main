@@ -89,7 +89,6 @@ const OfferEducationalForm = ({
         }
 
         if (!isOk) {
-          /* istanbul ignore next: TO FIX -> issue when trying to mock useNotification */
           notify.error(message)
         }
 

@@ -22,7 +22,6 @@ interface IFieldLayoutProps {
   classNameLabel?: string
   classNameFooter?: string
 }
-/* istanbul ignore next: DEBT, TO FIX */
 const FieldLayout = ({
   children,
   label,

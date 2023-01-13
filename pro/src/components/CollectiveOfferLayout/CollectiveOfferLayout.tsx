@@ -43,21 +43,18 @@ const CollectiveOfferLayout = ({
         )}
       </div>
 
-      {
-        /* istanbul ignore next: DEBT, TO FIX */
-        breadCrumpProps && (
-          <CollectiveOfferBreadcrumb
-            activeStep={breadCrumpProps.activeStep}
-            className={cn(styles['eac-layout-breadcrumb'], {
-              [styles['stepper-breadcrumb']]: breadCrumpProps.isCreatingOffer,
-            })}
-            isCreatingOffer={breadCrumpProps.isCreatingOffer}
-            isOfferEducational
-            offerId={breadCrumpProps.offerId}
-            isTemplate={isTemplate}
-          />
-        )
-      }
+      {breadCrumpProps && (
+        <CollectiveOfferBreadcrumb
+          activeStep={breadCrumpProps.activeStep}
+          className={cn(styles['eac-layout-breadcrumb'], {
+            [styles['stepper-breadcrumb']]: breadCrumpProps.isCreatingOffer,
+          })}
+          isCreatingOffer={breadCrumpProps.isCreatingOffer}
+          isOfferEducational
+          offerId={breadCrumpProps.offerId}
+          isTemplate={isTemplate}
+        />
+      )}
       {children}
       <HelpLink />
     </div>

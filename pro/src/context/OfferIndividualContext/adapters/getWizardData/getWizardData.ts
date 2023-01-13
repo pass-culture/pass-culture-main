@@ -71,11 +71,9 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
   }
 
   const venuesResponse = await getOfferIndividualVenuesAdapter({ offererId })
-  /* istanbul ignore next: DEBT, TO FIX */
   if (venuesResponse.isOk) {
     successPayload.venueList = venuesResponse.payload
   } else {
-    /* istanbul ignore next: DEBT, TO FIX */
     return Promise.resolve(FAILING_RESPONSE)
   }
 
@@ -91,11 +89,9 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
     const offererResponse = await getOffererNamesAdapter({
       offererId: isAdmin ? offererId : undefined,
     })
-    /* istanbul ignore next: DEBT, TO FIX */
     if (offererResponse.isOk) {
       successPayload.offererNames = offererResponse.payload
     } else {
-      /* istanbul ignore next: DEBT, TO FIX */
       return Promise.resolve(FAILING_RESPONSE)
     }
   }
@@ -113,7 +109,6 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
       offersResponse.payload.offers.filter(o => o.status != OfferStatus.DRAFT)
         .length === 0
   } else {
-    /* istanbul ignore next: DEBT, TO FIX */
     return Promise.resolve(FAILING_RESPONSE)
   }
 

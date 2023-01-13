@@ -122,11 +122,9 @@ export const useIndividualOfferImageUpload = () => {
   }
 
   const onImageDelete = async () => {
-    /* istanbul ignore next: DEBT, TO FIX */
     if (!offerId) {
-      /* istanbul ignore next: DEBT, TO FIX */
       setImageOffer(undefined)
-      /* istanbul ignore next: DEBT, TO FIX */
+
       setImageOfferCreationArgs(undefined)
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,

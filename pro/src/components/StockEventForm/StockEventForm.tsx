@@ -36,12 +36,10 @@ const StockEventForm = ({
 
   const onChangeBeginningDate = (_name: string, date: Date | null) => {
     const stockBookingLimitDatetime = stockFormValues.bookingLimitDatetime
-    /* istanbul ignore next: DEBT to fix */
     if (stockBookingLimitDatetime === null) {
       return
     }
     // tested but coverage don't see it.
-    /* istanbul ignore next */
     if (date && isAfter(stockBookingLimitDatetime, date)) {
       setTouched({
         [`stocks[${stockIndex}]bookingLimitDatetime`]: true,

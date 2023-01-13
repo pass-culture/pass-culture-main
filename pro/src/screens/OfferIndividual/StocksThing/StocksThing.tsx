@@ -81,7 +81,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     showModal: deleteConfirmShow,
     hideModal: deleteConfirmHide,
   } = useModal()
-  /* istanbul ignore next: DEBT, TO FIX */
+
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
   const providerName = offer?.lastProviderName
 
@@ -93,7 +93,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       mode,
     })
 
-    /* istanbul ignore next: DEBT, TO FIX */
     if (isOk) {
       notify.success(message)
       const response = await getOfferIndividualAdapter(offer.id)
@@ -117,7 +116,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         })
       }
     } else {
-      /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors(payload.errors)
     }
     setIsClickingFromActionBar(false)
@@ -126,7 +124,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   let minQuantity = null
   // validation is test in getValidationSchema
   // and it's not possible as is to test it here
-  /* istanbul ignore next: DEBT, TO FIX */
+
   if (offer.stocks.length > 0) {
     minQuantity = offer.stocks[0].bookingsQuantity
   }
@@ -159,7 +157,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     ({ saveDraft = false } = {}) =>
     async () => {
       setIsClickingFromActionBar(true)
-      /* istanbul ignore next: DEBT, TO FIX */
+
       if (Object.keys(formik.errors).length !== 0) {
         setIsClickingFromActionBar(false)
       }
@@ -172,7 +170,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         return
       }
       // tested but coverage don't see it.
-      /* istanbul ignore next */
+
       setIsSubmittingDraft(saveDraft)
       const nextStepUrl = getOfferIndividualUrl({
         offerId: offer.id,
@@ -214,7 +212,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         offerId: offer.id,
       })
     }
-    /* istanbul ignore next: DEBT, TO FIX */
+
     navigate(
       getOfferIndividualUrl({
         offerId: offer.id,
@@ -225,7 +223,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   }
 
   const onConfirmDeleteStock = async () => {
-    /* istanbul ignore next: DEBT, TO FIX */
     if (formik.values.stockId === undefined) {
       formik.resetForm({ values: STOCK_THING_FORM_DEFAULT_VALUES })
       return
@@ -233,7 +230,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     try {
       await api.deleteStock(formik.values.stockId)
       const response = await getOfferIndividualAdapter(offer.id)
-      /* istanbul ignore next: DEBT, TO FIX */
+
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }
@@ -248,7 +245,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   const actions: IStockFormRowAction[] = [
     {
       callback:
-        /* istanbul ignore next: DEBT, TO FIX */
         formik.values.bookingsQuantity !== '0'
           ? deleteConfirmShow
           : onConfirmDeleteStock,

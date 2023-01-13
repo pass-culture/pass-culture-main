@@ -10,7 +10,6 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
     [AccessiblityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
     [AccessiblityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
   }
-  /* istanbul ignore next: DEBT, TO FIX */
   return {
     demarchesSimplifieesApplicationId:
       venue.demarchesSimplifieesApplicationId || null,
@@ -75,7 +74,6 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
 const serializeBannerMetaApi = (
   apiBannerMeta: BannerMetaModel
 ): IVenueBannerMetaProps => {
-  /* istanbul ignore next: DEBT, TO FIX */
   return {
     image_credit: apiBannerMeta.image_credit || '',
     original_image_url: apiBannerMeta.original_image_url || '',

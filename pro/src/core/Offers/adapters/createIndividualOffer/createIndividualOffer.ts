@@ -1,5 +1,3 @@
-/* istanbul ignore file: DEBT, TO FIX */
-
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
@@ -26,7 +24,6 @@ const createIndividualOffer: TCreateIndividualOffer = async formValues => {
     }
   } catch (error) {
     let formErrors = {}
-    /* istanbul ignore next: DEBT, TO FIX */
     if (isErrorAPIError(error)) {
       formErrors = error.body
     }

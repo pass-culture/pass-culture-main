@@ -47,7 +47,6 @@ const generateSiretValidationSchema = (
     }),
   }
 
-  /* istanbul ignore next */
   return yup
     .object()
     .shape(isSiretValued ? siretValidationSchema : commentValidationSchema)

@@ -1,5 +1,3 @@
-/* istanbul ignore file : no need to test styled html tag  */
-
 import cn from 'classnames'
 import React from 'react'
 

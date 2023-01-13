@@ -1,4 +1,3 @@
-/* istanbul ignore file : no need to test this file */
 import React from 'react'
 
 import Icon from 'ui-kit/Icon/Icon'

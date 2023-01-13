@@ -42,17 +42,14 @@ const CollectiveData = ({
         </div>
       )}
 
-      {
-        /* istanbul ignore next: DEBT, TO FIX */
-        venue.collectiveWebsite && (
-          <div className={styles['collective-data-row']}>
-            <Title className={styles['collective-data-title']} level={4}>
-              URL de votre site web :{' '}
-            </Title>
-            {venue.collectiveWebsite}
-          </div>
-        )
-      }
+      {venue.collectiveWebsite && (
+        <div className={styles['collective-data-row']}>
+          <Title className={styles['collective-data-title']} level={4}>
+            URL de votre site web :{' '}
+          </Title>
+          {venue.collectiveWebsite}
+        </div>
+      )}
 
       {venue.collectiveDomains && venue.collectiveDomains.length > 0 && (
         <div className={styles['collective-data-row']}>
@@ -63,18 +60,15 @@ const CollectiveData = ({
         </div>
       )}
 
-      {
-        /* istanbul ignore next: DEBT, TO FIX */
-        venue.collectiveInterventionArea &&
-          venue.collectiveInterventionArea.length > 0 && (
-            <div className={styles['collective-data-row']}>
-              <Title className={styles['collective-data-title']} level={4}>
-                Zone de mobilité :{' '}
-              </Title>
-              {getInterventionAreaLabels(venue.collectiveInterventionArea)}
-            </div>
-          )
-      }
+      {venue.collectiveInterventionArea &&
+        venue.collectiveInterventionArea.length > 0 && (
+          <div className={styles['collective-data-row']}>
+            <Title className={styles['collective-data-title']} level={4}>
+              Zone de mobilité :{' '}
+            </Title>
+            {getInterventionAreaLabels(venue.collectiveInterventionArea)}
+          </div>
+        )}
 
       {venue.collectiveLegalStatus && (
         <div className={styles['collective-data-row']}>
@@ -85,37 +79,30 @@ const CollectiveData = ({
         </div>
       )}
 
-      {
-        /* istanbul ignore next: DEBT, TO FIX */
-        venue.collectiveNetwork && venue.collectiveNetwork.length > 0 && (
-          <div className={styles['collective-data-row']}>
-            <Title className={styles['collective-data-title']} level={4}>
-              Réseau partenaire :{' '}
-            </Title>
-            {venue.collectiveNetwork
-              .map(partnerId => {
-                /* istanbul ignore next: DEBT, TO FIX */
-                return culturalPartners.find(
-                  culturalPartner =>
-                    partnerId === culturalPartner.value.toString()
-                )?.label
-              })
-              .join(', ')}
-          </div>
-        )
-      }
+      {venue.collectiveNetwork && venue.collectiveNetwork.length > 0 && (
+        <div className={styles['collective-data-row']}>
+          <Title className={styles['collective-data-title']} level={4}>
+            Réseau partenaire :{' '}
+          </Title>
+          {venue.collectiveNetwork
+            .map(partnerId => {
+              return culturalPartners.find(
+                culturalPartner =>
+                  partnerId === culturalPartner.value.toString()
+              )?.label
+            })
+            .join(', ')}
+        </div>
+      )}
 
-      {
-        /* istanbul ignore next: DEBT, TO FIX */
-        venue.collectivePhone && (
-          <div className={styles['collective-data-row']}>
-            <Title className={styles['collective-data-title']} level={4}>
-              Téléphone :{' '}
-            </Title>
-            {venue.collectivePhone}
-          </div>
-        )
-      }
+      {venue.collectivePhone && (
+        <div className={styles['collective-data-row']}>
+          <Title className={styles['collective-data-title']} level={4}>
+            Téléphone :{' '}
+          </Title>
+          {venue.collectivePhone}
+        </div>
+      )}
 
       {venue.collectiveEmail && (
         <div className={styles['collective-data-row']}>

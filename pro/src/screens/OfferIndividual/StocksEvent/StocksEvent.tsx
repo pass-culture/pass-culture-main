@@ -57,7 +57,7 @@ const hasChangesOnStockWithBookings = (
       return false
     }
     const stockTouched = touched.stocks[index]
-    /* istanbul ignore next: DEBT to fix */
+
     if (stockTouched === undefined) {
       return false
     }
@@ -118,7 +118,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       departementCode: offer.venue.departmentCode,
     })
 
-    /* istanbul ignore next: DEBT, TO FIX */
     if (isOk) {
       notify.success(getSuccessMessage(mode))
       const response = await getOfferIndividualAdapter(offer.id)
@@ -151,7 +150,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         })
       }
     } else {
-      /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors({ stocks: payload.errors })
     }
     setIsClickingFromActionBar(false)
@@ -162,14 +160,14 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     stockIndex: number
   ) => {
     const { isDeletable, stockId } = stockValues
-    /* istanbul ignore next: DEBT to fix */
+
     if (stockId === undefined || !isDeletable) {
       return
     }
     try {
       await api.deleteStock(stockId)
       const response = await getOfferIndividualAdapter(offer.id)
-      /* istanbul ignore next: DEBT to fix */
+
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }
@@ -186,7 +184,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
 
       // Set back possible user change.
       formStocks.splice(stockIndex, 1)
-      /* istanbul ignore next: DEBT to fix */
+
       formStocks.length
         ? formik.setValues({ stocks: formStocks })
         : formik.resetForm({
@@ -237,7 +235,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     async () => {
       setIsClickingFromActionBar(true)
       if (Object.keys(formik.errors).length !== 0) {
-        /* istanbul ignore next: DEBT, TO FIX */
         setIsClickingFromActionBar(false)
       }
 
@@ -249,7 +246,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         return
       }
       // tested but coverage don't see it.
-      /* istanbul ignore next */
+
       setIsSubmittingDraft(saveDraft)
       setAfterSubmitUrl(
         getOfferIndividualUrl({
@@ -266,9 +263,9 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       )
       if (hasSavedStock && !formik.dirty) {
         setIsClickingFromActionBar(false)
-        /* istanbul ignore next: DEBT to fix */
+
         notify.success(getSuccessMessage(mode))
-        /* istanbul ignore next: DEBT to fix */
+
         if (!saveDraft) {
           navigate(
             getOfferIndividualUrl({
@@ -305,7 +302,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         offerId: offer.id,
       })
     }
-    /* istanbul ignore next: DEBT, TO FIX */
+
     navigate(
       getOfferIndividualUrl({
         offerId: offer.id,

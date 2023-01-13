@@ -1,98 +1,96 @@
-/* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AdageCulturalPartnerResponseModel } from '../models/AdageCulturalPartnerResponseModel';
-import type { AdageCulturalPartnersResponseModel } from '../models/AdageCulturalPartnersResponseModel';
-import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
-import type { BookingExportType } from '../models/BookingExportType';
-import type { BookingStatusFilter } from '../models/BookingStatusFilter';
-import type { BusinessUnitEditionBodyModel } from '../models/BusinessUnitEditionBodyModel';
-import type { BusinessUnitListResponseModel } from '../models/BusinessUnitListResponseModel';
-import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
-import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
-import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
-import type { CollectiveBookingByIdResponseModel } from '../models/CollectiveBookingByIdResponseModel';
-import type { CollectiveBookingStatusFilter } from '../models/CollectiveBookingStatusFilter';
-import type { CollectiveOfferResponseIdModel } from '../models/CollectiveOfferResponseIdModel';
-import type { CollectiveOfferTemplateBodyModel } from '../models/CollectiveOfferTemplateBodyModel';
-import type { CollectiveOfferTemplateResponseIdModel } from '../models/CollectiveOfferTemplateResponseIdModel';
-import type { CollectiveOfferType } from '../models/CollectiveOfferType';
-import type { CollectiveStockCreationBodyModel } from '../models/CollectiveStockCreationBodyModel';
-import type { CollectiveStockEditionBodyModel } from '../models/CollectiveStockEditionBodyModel';
-import type { CollectiveStockResponseModel } from '../models/CollectiveStockResponseModel';
-import type { CreateOffererQueryModel } from '../models/CreateOffererQueryModel';
-import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResponseModel';
-import type { DeleteOfferRequestBody } from '../models/DeleteOfferRequestBody';
-import type { EditVenueBodyModel } from '../models/EditVenueBodyModel';
-import type { EditVenueCollectiveDataBodyModel } from '../models/EditVenueCollectiveDataBodyModel';
-import type { EducationalDomainsResponseModel } from '../models/EducationalDomainsResponseModel';
-import type { EducationalInstitutionsResponseModel } from '../models/EducationalInstitutionsResponseModel';
-import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApiKeyResponse';
-import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
-import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetCollectiveOfferTemplateResponseModel';
-import type { GetCollectiveVenueResponseModel } from '../models/GetCollectiveVenueResponseModel';
-import type { GetEducationalOfferersResponseModel } from '../models/GetEducationalOfferersResponseModel';
-import type { GetIndividualOfferResponseModel } from '../models/GetIndividualOfferResponseModel';
-import type { GetOffererResponseModel } from '../models/GetOffererResponseModel';
-import type { GetOfferersListResponseModel } from '../models/GetOfferersListResponseModel';
-import type { GetOfferersNamesResponseModel } from '../models/GetOfferersNamesResponseModel';
-import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
-import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
-import type { InvoiceListResponseModel } from '../models/InvoiceListResponseModel';
-import type { LinkVenueToPricingPointBodyModel } from '../models/LinkVenueToPricingPointBodyModel';
-import type { ListBookingsResponseModel } from '../models/ListBookingsResponseModel';
-import type { ListCollectiveBookingsResponseModel } from '../models/ListCollectiveBookingsResponseModel';
-import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
-import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
-import type { ListOffersResponseModel } from '../models/ListOffersResponseModel';
-import type { ListVenueProviderResponse } from '../models/ListVenueProviderResponse';
-import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
-import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
-import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
-import type { OfferType } from '../models/OfferType';
-import type { PatchAllCollectiveOffersActiveStatusBodyModel } from '../models/PatchAllCollectiveOffersActiveStatusBodyModel';
-import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
-import type { PatchCollectiveOfferActiveStatusBodyModel } from '../models/PatchCollectiveOfferActiveStatusBodyModel';
-import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOfferBodyModel';
-import type { PatchCollectiveOfferEducationalInstitution } from '../models/PatchCollectiveOfferEducationalInstitution';
-import type { PatchCollectiveOfferTemplateBodyModel } from '../models/PatchCollectiveOfferTemplateBodyModel';
-import type { PatchOfferActiveStatusBodyModel } from '../models/PatchOfferActiveStatusBodyModel';
-import type { PatchOfferBodyModel } from '../models/PatchOfferBodyModel';
-import type { PatchOfferPublishBodyModel } from '../models/PatchOfferPublishBodyModel';
-import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
-import type { PostCollectiveOfferTemplateBodyModel } from '../models/PostCollectiveOfferTemplateBodyModel';
-import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
-import type { PostVenueBodyModel } from '../models/PostVenueBodyModel';
-import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
-import type { ProUserCreationBodyModel } from '../models/ProUserCreationBodyModel';
-import type { ReimbursementPointListResponseModel } from '../models/ReimbursementPointListResponseModel';
-import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel';
-import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUserResponseModel';
-import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResponseModel';
-import type { SirenInfo } from '../models/SirenInfo';
-import type { SiretInfo } from '../models/SiretInfo';
-import type { StockIdResponseModel } from '../models/StockIdResponseModel';
-import type { StocksResponseModel } from '../models/StocksResponseModel';
-import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
-import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
-import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
-import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel';
-import type { UserIdentityResponseModel } from '../models/UserIdentityResponseModel';
-import type { UserPhoneBodyModel } from '../models/UserPhoneBodyModel';
-import type { UserPhoneResponseModel } from '../models/UserPhoneResponseModel';
-import type { UserResetEmailBodyModel } from '../models/UserResetEmailBodyModel';
-import type { VenueLabelListResponseModel } from '../models/VenueLabelListResponseModel';
-import type { VenueProviderResponse } from '../models/VenueProviderResponse';
-import type { VenueResponseModel } from '../models/VenueResponseModel';
-import type { VenuesEducationalStatusesResponseModel } from '../models/VenuesEducationalStatusesResponseModel';
-import type { VenueStatsResponseModel } from '../models/VenueStatsResponseModel';
-import type { VenueTypeListResponseModel } from '../models/VenueTypeListResponseModel';
+import type { AdageCulturalPartnerResponseModel } from '../models/AdageCulturalPartnerResponseModel'
+import type { AdageCulturalPartnersResponseModel } from '../models/AdageCulturalPartnersResponseModel'
+import type { AttachImageResponseModel } from '../models/AttachImageResponseModel'
+import type { BookingExportType } from '../models/BookingExportType'
+import type { BookingStatusFilter } from '../models/BookingStatusFilter'
+import type { BusinessUnitEditionBodyModel } from '../models/BusinessUnitEditionBodyModel'
+import type { BusinessUnitListResponseModel } from '../models/BusinessUnitListResponseModel'
+import type { CategoriesResponseModel } from '../models/CategoriesResponseModel'
+import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel'
+import type { ChangeProEmailBody } from '../models/ChangeProEmailBody'
+import type { CollectiveBookingByIdResponseModel } from '../models/CollectiveBookingByIdResponseModel'
+import type { CollectiveBookingStatusFilter } from '../models/CollectiveBookingStatusFilter'
+import type { CollectiveOfferResponseIdModel } from '../models/CollectiveOfferResponseIdModel'
+import type { CollectiveOfferTemplateBodyModel } from '../models/CollectiveOfferTemplateBodyModel'
+import type { CollectiveOfferTemplateResponseIdModel } from '../models/CollectiveOfferTemplateResponseIdModel'
+import type { CollectiveOfferType } from '../models/CollectiveOfferType'
+import type { CollectiveStockCreationBodyModel } from '../models/CollectiveStockCreationBodyModel'
+import type { CollectiveStockEditionBodyModel } from '../models/CollectiveStockEditionBodyModel'
+import type { CollectiveStockResponseModel } from '../models/CollectiveStockResponseModel'
+import type { CreateOffererQueryModel } from '../models/CreateOffererQueryModel'
+import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResponseModel'
+import type { DeleteOfferRequestBody } from '../models/DeleteOfferRequestBody'
+import type { EditVenueBodyModel } from '../models/EditVenueBodyModel'
+import type { EditVenueCollectiveDataBodyModel } from '../models/EditVenueCollectiveDataBodyModel'
+import type { EducationalDomainsResponseModel } from '../models/EducationalDomainsResponseModel'
+import type { EducationalInstitutionsResponseModel } from '../models/EducationalInstitutionsResponseModel'
+import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApiKeyResponse'
+import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel'
+import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetCollectiveOfferTemplateResponseModel'
+import type { GetCollectiveVenueResponseModel } from '../models/GetCollectiveVenueResponseModel'
+import type { GetEducationalOfferersResponseModel } from '../models/GetEducationalOfferersResponseModel'
+import type { GetIndividualOfferResponseModel } from '../models/GetIndividualOfferResponseModel'
+import type { GetOffererResponseModel } from '../models/GetOffererResponseModel'
+import type { GetOfferersListResponseModel } from '../models/GetOfferersListResponseModel'
+import type { GetOfferersNamesResponseModel } from '../models/GetOfferersNamesResponseModel'
+import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel'
+import type { GetVenueResponseModel } from '../models/GetVenueResponseModel'
+import type { InvoiceListResponseModel } from '../models/InvoiceListResponseModel'
+import type { LinkVenueToPricingPointBodyModel } from '../models/LinkVenueToPricingPointBodyModel'
+import type { ListBookingsResponseModel } from '../models/ListBookingsResponseModel'
+import type { ListCollectiveBookingsResponseModel } from '../models/ListCollectiveBookingsResponseModel'
+import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel'
+import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel'
+import type { ListOffersResponseModel } from '../models/ListOffersResponseModel'
+import type { ListVenueProviderResponse } from '../models/ListVenueProviderResponse'
+import type { LoginUserBodyModel } from '../models/LoginUserBodyModel'
+import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel'
+import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel'
+import type { OfferType } from '../models/OfferType'
+import type { PatchAllCollectiveOffersActiveStatusBodyModel } from '../models/PatchAllCollectiveOffersActiveStatusBodyModel'
+import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel'
+import type { PatchCollectiveOfferActiveStatusBodyModel } from '../models/PatchCollectiveOfferActiveStatusBodyModel'
+import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOfferBodyModel'
+import type { PatchCollectiveOfferEducationalInstitution } from '../models/PatchCollectiveOfferEducationalInstitution'
+import type { PatchCollectiveOfferTemplateBodyModel } from '../models/PatchCollectiveOfferTemplateBodyModel'
+import type { PatchOfferActiveStatusBodyModel } from '../models/PatchOfferActiveStatusBodyModel'
+import type { PatchOfferBodyModel } from '../models/PatchOfferBodyModel'
+import type { PatchOfferPublishBodyModel } from '../models/PatchOfferPublishBodyModel'
+import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel'
+import type { PostCollectiveOfferTemplateBodyModel } from '../models/PostCollectiveOfferTemplateBodyModel'
+import type { PostOfferBodyModel } from '../models/PostOfferBodyModel'
+import type { PostVenueBodyModel } from '../models/PostVenueBodyModel'
+import type { PostVenueProviderBody } from '../models/PostVenueProviderBody'
+import type { ProUserCreationBodyModel } from '../models/ProUserCreationBodyModel'
+import type { ReimbursementPointListResponseModel } from '../models/ReimbursementPointListResponseModel'
+import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel'
+import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUserResponseModel'
+import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResponseModel'
+import type { SirenInfo } from '../models/SirenInfo'
+import type { SiretInfo } from '../models/SiretInfo'
+import type { StockIdResponseModel } from '../models/StockIdResponseModel'
+import type { StocksResponseModel } from '../models/StocksResponseModel'
+import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel'
+import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel'
+import type { UserHasBookingResponse } from '../models/UserHasBookingResponse'
+import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel'
+import type { UserIdentityResponseModel } from '../models/UserIdentityResponseModel'
+import type { UserPhoneBodyModel } from '../models/UserPhoneBodyModel'
+import type { UserPhoneResponseModel } from '../models/UserPhoneResponseModel'
+import type { UserResetEmailBodyModel } from '../models/UserResetEmailBodyModel'
+import type { VenueLabelListResponseModel } from '../models/VenueLabelListResponseModel'
+import type { VenueProviderResponse } from '../models/VenueProviderResponse'
+import type { VenueResponseModel } from '../models/VenueResponseModel'
+import type { VenuesEducationalStatusesResponseModel } from '../models/VenuesEducationalStatusesResponseModel'
+import type { VenueStatsResponseModel } from '../models/VenueStatsResponseModel'
+import type { VenueTypeListResponseModel } from '../models/VenueTypeListResponseModel'
 
-import type { CancelablePromise } from '../core/CancelablePromise';
-import type { BaseHttpRequest } from '../core/BaseHttpRequest';
+import type { CancelablePromise } from '../core/CancelablePromise'
+import type { BaseHttpRequest } from '../core/BaseHttpRequest'
 
 export class DefaultService {
-
   constructor(public readonly httpRequest: BaseHttpRequest) {}
 
   /**
@@ -118,27 +116,27 @@ export class DefaultService {
     bookingPeriodEndingDate?: string | null,
     offerType?: OfferType | null,
     exportType?: BookingExportType | null,
-    extra: string = 'forbid',
+    extra: string = 'forbid'
   ): CancelablePromise<ListBookingsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/bookings/pro',
       query: {
-        'page': page,
-        'venueId': venueId,
-        'eventDate': eventDate,
-        'bookingStatusFilter': bookingStatusFilter,
-        'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
-        'bookingPeriodEndingDate': bookingPeriodEndingDate,
-        'offerType': offerType,
-        'exportType': exportType,
-        'extra': extra,
+        page: page,
+        venueId: venueId,
+        eventDate: eventDate,
+        bookingStatusFilter: bookingStatusFilter,
+        bookingPeriodBeginningDate: bookingPeriodBeginningDate,
+        bookingPeriodEndingDate: bookingPeriodEndingDate,
+        offerType: offerType,
+        exportType: exportType,
+        extra: extra,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -154,7 +152,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -176,25 +174,25 @@ export class DefaultService {
     bookingStatusFilter?: CollectiveBookingStatusFilter | null,
     bookingPeriodBeginningDate?: string | null,
     bookingPeriodEndingDate?: string | null,
-    extra: string = 'forbid',
+    extra: string = 'forbid'
   ): CancelablePromise<ListCollectiveBookingsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/collective/bookings/pro',
       query: {
-        'page': page,
-        'venueId': venueId,
-        'eventDate': eventDate,
-        'bookingStatusFilter': bookingStatusFilter,
-        'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
-        'bookingPeriodEndingDate': bookingPeriodEndingDate,
-        'extra': extra,
+        page: page,
+        venueId: venueId,
+        eventDate: eventDate,
+        bookingStatusFilter: bookingStatusFilter,
+        bookingPeriodBeginningDate: bookingPeriodBeginningDate,
+        bookingPeriodEndingDate: bookingPeriodEndingDate,
+        extra: extra,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -210,7 +208,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -220,19 +218,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveBookingById(
-    bookingId: string,
+    bookingId: string
   ): CancelablePromise<CollectiveBookingByIdResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/collective/bookings/{booking_id}',
       path: {
-        'booking_id': bookingId,
+        booking_id: bookingId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -248,7 +246,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -274,27 +272,27 @@ export class DefaultService {
     creationMode?: string | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
-    collectiveOfferType?: CollectiveOfferType | null,
+    collectiveOfferType?: CollectiveOfferType | null
   ): CancelablePromise<ListCollectiveOffersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/collective/offers',
       query: {
-        'nameOrIsbn': nameOrIsbn,
-        'offererId': offererId,
-        'status': status,
-        'venueId': venueId,
-        'categoryId': categoryId,
-        'creationMode': creationMode,
-        'periodBeginningDate': periodBeginningDate,
-        'periodEndingDate': periodEndingDate,
-        'collectiveOfferType': collectiveOfferType,
+        nameOrIsbn: nameOrIsbn,
+        offererId: offererId,
+        status: status,
+        venueId: venueId,
+        categoryId: categoryId,
+        creationMode: creationMode,
+        periodBeginningDate: periodBeginningDate,
+        periodEndingDate: periodEndingDate,
+        collectiveOfferType: collectiveOfferType,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -304,7 +302,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createCollectiveOffer(
-    requestBody?: PostCollectiveOfferBodyModel,
+    requestBody?: PostCollectiveOfferBodyModel
   ): CancelablePromise<CollectiveOfferResponseIdModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -315,7 +313,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -325,7 +323,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createCollectiveOfferTemplate(
-    requestBody?: PostCollectiveOfferTemplateBodyModel,
+    requestBody?: PostCollectiveOfferTemplateBodyModel
   ): CancelablePromise<CollectiveOfferResponseIdModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -336,7 +334,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -346,7 +344,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchCollectiveOffersTemplateActiveStatus(
-    requestBody?: PatchCollectiveOfferActiveStatusBodyModel,
+    requestBody?: PatchCollectiveOfferActiveStatusBodyModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -357,7 +355,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -367,19 +365,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOfferTemplate(
-    offerId: string,
+    offerId: string
   ): CancelablePromise<GetCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/collective/offers-template/{offer_id}',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -391,13 +389,13 @@ export class DefaultService {
    */
   public editCollectiveOfferTemplate(
     offerId: string,
-    requestBody?: PatchCollectiveOfferTemplateBodyModel,
+    requestBody?: PatchCollectiveOfferTemplateBodyModel
   ): CancelablePromise<GetCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/collective/offers-template/{offer_id}',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       body: requestBody,
       mediaType: 'application/json',
@@ -405,7 +403,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -417,13 +415,13 @@ export class DefaultService {
    */
   public createCollectiveOfferTemplateFromCollectiveOffer(
     offerId: string,
-    requestBody?: CollectiveOfferTemplateBodyModel,
+    requestBody?: CollectiveOfferTemplateBodyModel
   ): CancelablePromise<CollectiveOfferTemplateResponseIdModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/collective/offers-template/{offer_id}/',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       body: requestBody,
       mediaType: 'application/json',
@@ -433,7 +431,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -442,20 +440,18 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteOfferTemplateImage(
-    offerId: string,
-  ): CancelablePromise<void> {
+  public deleteOfferTemplateImage(offerId: string): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
       url: '/collective/offers-template/{offer_id}/image',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -465,19 +461,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public attachOfferTemplateImage(
-    offerId: string,
+    offerId: string
   ): CancelablePromise<AttachImageResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/collective/offers-template/{offer_id}/image',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -487,20 +483,20 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchCollectiveOfferTemplatePublication(
-    offerId: string,
+    offerId: string
   ): CancelablePromise<GetCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/collective/offers-template/{offer_id}/publish',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -510,7 +506,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchCollectiveOffersActiveStatus(
-    requestBody?: PatchCollectiveOfferActiveStatusBodyModel,
+    requestBody?: PatchCollectiveOfferActiveStatusBodyModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -521,7 +517,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -531,7 +527,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchAllCollectiveOffersActiveStatus(
-    requestBody?: PatchAllCollectiveOffersActiveStatusBodyModel,
+    requestBody?: PatchAllCollectiveOffersActiveStatusBodyModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -542,7 +538,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -552,19 +548,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOffer(
-    offerId: string,
+    offerId: string
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/collective/offers/{offer_id}',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -576,13 +572,13 @@ export class DefaultService {
    */
   public editCollectiveOffer(
     offerId: string,
-    requestBody?: PatchCollectiveOfferBodyModel,
+    requestBody?: PatchCollectiveOfferBodyModel
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/collective/offers/{offer_id}',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       body: requestBody,
       mediaType: 'application/json',
@@ -590,7 +586,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -600,13 +596,13 @@ export class DefaultService {
    * @throws ApiError
    */
   public cancelCollectiveOfferBooking(
-    offerId: string,
+    offerId: string
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/collective/offers/{offer_id}/cancel_booking',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         400: `Bad Request`,
@@ -614,7 +610,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -626,13 +622,13 @@ export class DefaultService {
    */
   public patchCollectiveOffersEducationalInstitution(
     offerId: string,
-    requestBody?: PatchCollectiveOfferEducationalInstitution,
+    requestBody?: PatchCollectiveOfferEducationalInstitution
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/collective/offers/{offer_id}/educational_institution',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       body: requestBody,
       mediaType: 'application/json',
@@ -641,7 +637,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -650,20 +646,18 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteOfferImage(
-    offerId: string,
-  ): CancelablePromise<void> {
+  public deleteOfferImage(offerId: string): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
       url: '/collective/offers/{offer_id}/image',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -673,19 +667,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public attachOfferImage(
-    offerId: string,
+    offerId: string
   ): CancelablePromise<AttachImageResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/collective/offers/{offer_id}/image',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -695,20 +689,20 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchCollectiveOfferPublication(
-    offerId: string,
+    offerId: string
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/collective/offers/{offer_id}/publish',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -718,19 +712,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveStock(
-    offerId: string,
+    offerId: string
   ): CancelablePromise<CollectiveStockResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/collective/offers/{offer_id}/stock',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -740,7 +734,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createCollectiveStock(
-    requestBody?: CollectiveStockCreationBodyModel,
+    requestBody?: CollectiveStockCreationBodyModel
   ): CancelablePromise<CollectiveStockResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -751,7 +745,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -763,13 +757,13 @@ export class DefaultService {
    */
   public editCollectiveStock(
     collectiveStockId: string,
-    requestBody?: CollectiveStockEditionBodyModel,
+    requestBody?: CollectiveStockEditionBodyModel
   ): CancelablePromise<CollectiveStockResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/collective/stocks/{collective_stock_id}',
       path: {
-        'collective_stock_id': collectiveStockId,
+        collective_stock_id: collectiveStockId,
       },
       body: requestBody,
       mediaType: 'application/json',
@@ -780,7 +774,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -790,13 +784,13 @@ export class DefaultService {
    * @throws ApiError
    */
   public getEducationalPartner(
-    siret: string,
+    siret: string
   ): CancelablePromise<AdageCulturalPartnerResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/cultural-partner/{siret}',
       path: {
-        'siret': siret,
+        siret: siret,
       },
       errors: {
         401: `Unauthorized`,
@@ -804,7 +798,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -821,7 +815,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -833,21 +827,21 @@ export class DefaultService {
    */
   public getEducationalInstitutions(
     perPageLimit: number = 1000,
-    page: number = 1,
+    page: number = 1
   ): CancelablePromise<EducationalInstitutionsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/educational_institutions',
       query: {
-        'perPageLimit': perPageLimit,
-        'page': page,
+        perPageLimit: perPageLimit,
+        page: page,
       },
       errors: {
         401: `Unauthorized`,
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -863,7 +857,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -873,19 +867,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public getBusinessUnits(
-    offererId?: number | null,
+    offererId?: number | null
   ): CancelablePromise<BusinessUnitListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/finance/business-units',
       query: {
-        'offererId': offererId,
+        offererId: offererId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -897,13 +891,13 @@ export class DefaultService {
    */
   public editBusinessUnit(
     businessUnitId: number,
-    requestBody?: BusinessUnitEditionBodyModel,
+    requestBody?: BusinessUnitEditionBodyModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/finance/business-units/{business_unit_id}',
       path: {
-        'business_unit_id': businessUnitId,
+        business_unit_id: businessUnitId,
       },
       body: requestBody,
       mediaType: 'application/json',
@@ -911,7 +905,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -927,22 +921,22 @@ export class DefaultService {
     businessUnitId?: number | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
-    reimbursementPointId?: number | null,
+    reimbursementPointId?: number | null
   ): CancelablePromise<InvoiceListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/finance/invoices',
       query: {
-        'businessUnitId': businessUnitId,
-        'periodBeginningDate': periodBeginningDate,
-        'periodEndingDate': periodEndingDate,
-        'reimbursementPointId': reimbursementPointId,
+        businessUnitId: businessUnitId,
+        periodBeginningDate: periodBeginningDate,
+        periodEndingDate: periodEndingDate,
+        reimbursementPointId: reimbursementPointId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -958,7 +952,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -972,22 +966,22 @@ export class DefaultService {
   public getOfferers(
     keywords?: string | null,
     page: number | null = 1,
-    paginate: number | null = 10,
+    paginate: number | null = 10
   ): CancelablePromise<GetOfferersListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers',
       query: {
-        'keywords': keywords,
-        'page': page,
-        'paginate': paginate,
+        keywords: keywords,
+        page: page,
+        paginate: paginate,
       },
       errors: {
         400: `Bad Request`,
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -997,7 +991,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createOfferer(
-    requestBody?: CreateOffererQueryModel,
+    requestBody?: CreateOffererQueryModel
   ): CancelablePromise<GetOffererResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1008,7 +1002,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1017,20 +1011,18 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteApiKey(
-    apiKeyPrefix: string,
-  ): CancelablePromise<void> {
+  public deleteApiKey(apiKeyPrefix: string): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
       url: '/offerers/api_keys/{api_key_prefix}',
       path: {
-        'api_key_prefix': apiKeyPrefix,
+        api_key_prefix: apiKeyPrefix,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1040,19 +1032,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public listEducationalOfferers(
-    offererId?: string | null,
+    offererId?: string | null
   ): CancelablePromise<GetEducationalOfferersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/educational',
       query: {
-        'offerer_id': offererId,
+        offerer_id: offererId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1066,21 +1058,21 @@ export class DefaultService {
   public listOfferersNames(
     validated?: boolean | null,
     validatedForUser?: boolean | null,
-    offererId?: string | null,
+    offererId?: string | null
   ): CancelablePromise<GetOfferersNamesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/names',
       query: {
-        'validated': validated,
-        'validated_for_user': validatedForUser,
-        'offerer_id': offererId,
+        validated: validated,
+        validated_for_user: validatedForUser,
+        offerer_id: offererId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1090,19 +1082,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public canOffererCreateEducationalOffer(
-    humanizedOffererId: string,
+    humanizedOffererId: string
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{humanized_offerer_id}/eac-eligibility',
       path: {
-        'humanized_offerer_id': humanizedOffererId,
+        humanized_offerer_id: humanizedOffererId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1112,19 +1104,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public getOfferer(
-    offererId: string,
+    offererId: string
   ): CancelablePromise<GetOffererResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{offerer_id}',
       path: {
-        'offerer_id': offererId,
+        offerer_id: offererId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1134,19 +1126,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public generateApiKeyRoute(
-    offererId: string,
+    offererId: string
   ): CancelablePromise<GenerateOffererApiKeyResponse> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/offerers/{offerer_id}/api_keys',
       path: {
-        'offerer_id': offererId,
+        offerer_id: offererId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1156,19 +1148,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public getOffererStatsDashboardUrl(
-    offererId: string,
+    offererId: string
   ): CancelablePromise<OffererStatsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{offerer_id}/dashboard',
       path: {
-        'offerer_id': offererId,
+        offerer_id: offererId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1178,19 +1170,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public getAvailableReimbursementPoints(
-    offererId: number,
+    offererId: number
   ): CancelablePromise<ReimbursementPointListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{offerer_id}/reimbursement-points',
       path: {
-        'offerer_id': offererId,
+        offerer_id: offererId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1216,27 +1208,27 @@ export class DefaultService {
     creationMode?: string | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
-    collectiveOfferType?: CollectiveOfferType | null,
+    collectiveOfferType?: CollectiveOfferType | null
   ): CancelablePromise<ListOffersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offers',
       query: {
-        'nameOrIsbn': nameOrIsbn,
-        'offererId': offererId,
-        'status': status,
-        'venueId': venueId,
-        'categoryId': categoryId,
-        'creationMode': creationMode,
-        'periodBeginningDate': periodBeginningDate,
-        'periodEndingDate': periodEndingDate,
-        'collectiveOfferType': collectiveOfferType,
+        nameOrIsbn: nameOrIsbn,
+        offererId: offererId,
+        status: status,
+        venueId: venueId,
+        categoryId: categoryId,
+        creationMode: creationMode,
+        periodBeginningDate: periodBeginningDate,
+        periodEndingDate: periodEndingDate,
+        collectiveOfferType: collectiveOfferType,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1246,7 +1238,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public postOffer(
-    requestBody?: PostOfferBodyModel,
+    requestBody?: PostOfferBodyModel
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1257,7 +1249,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1267,7 +1259,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchOffersActiveStatus(
-    requestBody?: PatchOfferActiveStatusBodyModel,
+    requestBody?: PatchOfferActiveStatusBodyModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1278,7 +1270,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1288,7 +1280,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchAllOffersActiveStatus(
-    requestBody?: PatchAllOffersActiveStatusBodyModel,
+    requestBody?: PatchAllOffersActiveStatusBodyModel
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1299,7 +1291,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1315,7 +1307,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1325,7 +1317,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public deleteDraftOffers(
-    requestBody?: DeleteOfferRequestBody,
+    requestBody?: DeleteOfferRequestBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1336,7 +1328,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1346,7 +1338,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchPublishOffer(
-    requestBody?: PatchOfferPublishBodyModel,
+    requestBody?: PatchOfferPublishBodyModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1358,7 +1350,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1374,7 +1366,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1383,20 +1375,18 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteThumbnail(
-    offerId: string,
-  ): CancelablePromise<void> {
+  public deleteThumbnail(offerId: string): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
       url: '/offers/thumbnails/{offer_id}',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1406,19 +1396,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public getOffer(
-    offerId: string,
+    offerId: string
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offers/{offer_id}',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1430,13 +1420,13 @@ export class DefaultService {
    */
   public patchOffer(
     offerId: string,
-    requestBody?: PatchOfferBodyModel,
+    requestBody?: PatchOfferBodyModel
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/offers/{offer_id}',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       body: requestBody,
       mediaType: 'application/json',
@@ -1444,7 +1434,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1453,20 +1443,18 @@ export class DefaultService {
    * @returns StocksResponseModel OK
    * @throws ApiError
    */
-  public getStocks(
-    offerId: string,
-  ): CancelablePromise<StocksResponseModel> {
+  public getStocks(offerId: string): CancelablePromise<StocksResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offers/{offer_id}/stocks',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1480,21 +1468,21 @@ export class DefaultService {
   public getReimbursementsCsv(
     venueId?: string,
     reimbursementPeriodBeginningDate?: string,
-    reimbursementPeriodEndingDate?: string,
+    reimbursementPeriodEndingDate?: string
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/reimbursements/csv',
       query: {
-        'venueId': venueId,
-        'reimbursementPeriodBeginningDate': reimbursementPeriodBeginningDate,
-        'reimbursementPeriodEndingDate': reimbursementPeriodEndingDate,
+        venueId: venueId,
+        reimbursementPeriodBeginningDate: reimbursementPeriodBeginningDate,
+        reimbursementPeriodEndingDate: reimbursementPeriodEndingDate,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1503,20 +1491,18 @@ export class DefaultService {
    * @returns SirenInfo OK
    * @throws ApiError
    */
-  public getSirenInfo(
-    siren: string,
-  ): CancelablePromise<SirenInfo> {
+  public getSirenInfo(siren: string): CancelablePromise<SirenInfo> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/sirene/siren/{siren}',
       path: {
-        'siren': siren,
+        siren: siren,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1525,20 +1511,18 @@ export class DefaultService {
    * @returns SiretInfo OK
    * @throws ApiError
    */
-  public getSiretInfo(
-    siret: string,
-  ): CancelablePromise<SiretInfo> {
+  public getSiretInfo(siret: string): CancelablePromise<SiretInfo> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/sirene/siret/{siret}',
       path: {
-        'siret': siret,
+        siret: siret,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1548,7 +1532,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public upsertStocks(
-    requestBody?: StocksUpsertBodyModel,
+    requestBody?: StocksUpsertBodyModel
   ): CancelablePromise<StocksResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1559,7 +1543,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1568,20 +1552,18 @@ export class DefaultService {
    * @returns StockIdResponseModel OK
    * @throws ApiError
    */
-  public deleteStock(
-    stockId: string,
-  ): CancelablePromise<StockIdResponseModel> {
+  public deleteStock(stockId: string): CancelablePromise<StockIdResponseModel> {
     return this.httpRequest.request({
       method: 'DELETE',
       url: '/stocks/{stock_id}',
       path: {
-        'stock_id': stockId,
+        stock_id: stockId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1597,7 +1579,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1607,7 +1589,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public postUserEmail(
-    requestBody?: UserResetEmailBodyModel,
+    requestBody?: UserResetEmailBodyModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1618,7 +1600,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1634,7 +1616,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1644,7 +1626,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchUserIdentity(
-    requestBody?: UserIdentityBodyModel,
+    requestBody?: UserIdentityBodyModel
   ): CancelablePromise<UserIdentityResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1655,7 +1637,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1665,7 +1647,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public postNewPassword(
-    requestBody?: NewPasswordBodyModel,
+    requestBody?: NewPasswordBodyModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1677,7 +1659,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1687,7 +1669,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public postChangePassword(
-    requestBody?: ChangePasswordBodyModel,
+    requestBody?: ChangePasswordBodyModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1699,7 +1681,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1709,7 +1691,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchUserPhone(
-    requestBody?: UserPhoneBodyModel,
+    requestBody?: UserPhoneBodyModel
   ): CancelablePromise<UserPhoneResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1720,7 +1702,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1730,7 +1712,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public resetPassword(
-    requestBody?: ResetPasswordBodyModel,
+    requestBody?: ResetPasswordBodyModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1741,7 +1723,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1757,7 +1739,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1767,7 +1749,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public signin(
-    requestBody?: LoginUserBodyModel,
+    requestBody?: LoginUserBodyModel
   ): CancelablePromise<SharedLoginUserResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1778,7 +1760,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1794,7 +1776,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1804,7 +1786,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public signupPro(
-    requestBody?: ProUserCreationBodyModel,
+    requestBody?: ProUserCreationBodyModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1815,7 +1797,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1824,21 +1806,19 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public checkActivationTokenExists(
-    token: string,
-  ): CancelablePromise<void> {
+  public checkActivationTokenExists(token: string): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/users/token/{token}',
       path: {
-        'token': token,
+        token: token,
       },
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1854,7 +1834,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1864,7 +1844,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchValidateEmail(
-    requestBody?: ChangeProEmailBody,
+    requestBody?: ChangeProEmailBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1875,7 +1855,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1884,20 +1864,18 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public validateUser(
-    token: string,
-  ): CancelablePromise<void> {
+  public validateUser(token: string): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/validate/user/{token}',
       path: {
-        'token': token,
+        token: token,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1913,7 +1891,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1929,7 +1907,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1939,19 +1917,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public listVenueProviders(
-    venueId: number,
+    venueId: number
   ): CancelablePromise<ListVenueProviderResponse> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/venueProviders',
       query: {
-        'venueId': venueId,
+        venueId: venueId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1961,7 +1939,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createVenueProvider(
-    requestBody?: PostVenueProviderBody,
+    requestBody?: PostVenueProviderBody
   ): CancelablePromise<VenueProviderResponse> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1972,7 +1950,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -1982,7 +1960,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public updateVenueProvider(
-    requestBody?: PostVenueProviderBody,
+    requestBody?: PostVenueProviderBody
   ): CancelablePromise<VenueProviderResponse> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -1993,7 +1971,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -2002,20 +1980,18 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteVenueProvider(
-    venueProviderId: string,
-  ): CancelablePromise<void> {
+  public deleteVenueProvider(venueProviderId: string): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
       url: '/venueProviders/{venue_provider_id}',
       path: {
-        'venue_provider_id': venueProviderId,
+        venue_provider_id: venueProviderId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -2031,22 +2007,22 @@ export class DefaultService {
     validatedForUser?: boolean | null,
     validated?: boolean | null,
     activeOfferersOnly?: boolean | null,
-    offererId?: string | null,
+    offererId?: string | null
   ): CancelablePromise<GetVenueListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/venues',
       query: {
-        'validatedForUser': validatedForUser,
-        'validated': validated,
-        'activeOfferersOnly': activeOfferersOnly,
-        'offererId': offererId,
+        validatedForUser: validatedForUser,
+        validated: validated,
+        activeOfferersOnly: activeOfferersOnly,
+        offererId: offererId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -2056,7 +2032,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public postCreateVenue(
-    requestBody?: PostVenueBodyModel,
+    requestBody?: PostVenueBodyModel
   ): CancelablePromise<VenueResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2067,7 +2043,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -2083,7 +2059,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -2093,19 +2069,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public getVenueStatsDashboardUrl(
-    humanizedVenueId: string,
+    humanizedVenueId: string
   ): CancelablePromise<OffererStatsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/venues/{humanized_venue_id}/dashboard',
       path: {
-        'humanized_venue_id': humanizedVenueId,
+        humanized_venue_id: humanizedVenueId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -2115,19 +2091,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public getVenueStats(
-    humanizedVenueId: string,
+    humanizedVenueId: string
   ): CancelablePromise<VenueStatsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/venues/{humanized_venue_id}/stats',
       path: {
-        'humanized_venue_id': humanizedVenueId,
+        humanized_venue_id: humanizedVenueId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -2136,20 +2112,18 @@ export class DefaultService {
    * @returns GetVenueResponseModel OK
    * @throws ApiError
    */
-  public getVenue(
-    venueId: string,
-  ): CancelablePromise<GetVenueResponseModel> {
+  public getVenue(venueId: string): CancelablePromise<GetVenueResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/venues/{venue_id}',
       path: {
-        'venue_id': venueId,
+        venue_id: venueId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -2161,13 +2135,13 @@ export class DefaultService {
    */
   public editVenue(
     venueId: string,
-    requestBody?: EditVenueBodyModel,
+    requestBody?: EditVenueBodyModel
   ): CancelablePromise<GetVenueResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/venues/{venue_id}',
       path: {
-        'venue_id': venueId,
+        venue_id: venueId,
       },
       body: requestBody,
       mediaType: 'application/json',
@@ -2175,7 +2149,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -2184,20 +2158,18 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteVenueBanner(
-    venueId: string,
-  ): CancelablePromise<void> {
+  public deleteVenueBanner(venueId: string): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
       url: '/venues/{venue_id}/banner',
       path: {
-        'venue_id': venueId,
+        venue_id: venueId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -2207,19 +2179,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public getVenueCollectiveData(
-    venueId: string,
+    venueId: string
   ): CancelablePromise<GetCollectiveVenueResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/venues/{venue_id}/collective-data',
       path: {
-        'venue_id': venueId,
+        venue_id: venueId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -2231,13 +2203,13 @@ export class DefaultService {
    */
   public editVenueCollectiveData(
     venueId: string,
-    requestBody?: EditVenueCollectiveDataBodyModel,
+    requestBody?: EditVenueCollectiveDataBodyModel
   ): CancelablePromise<GetVenueResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/venues/{venue_id}/collective-data',
       path: {
-        'venue_id': venueId,
+        venue_id: venueId,
       },
       body: requestBody,
       mediaType: 'application/json',
@@ -2245,7 +2217,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -2257,13 +2229,13 @@ export class DefaultService {
    */
   public linkVenueToPricingPoint(
     venueId: string,
-    requestBody?: LinkVenueToPricingPointBodyModel,
+    requestBody?: LinkVenueToPricingPointBodyModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/venues/{venue_id}/pricing-point',
       path: {
-        'venue_id': venueId,
+        venue_id: venueId,
       },
       body: requestBody,
       mediaType: 'application/json',
@@ -2271,7 +2243,6 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
-
 }

@@ -23,7 +23,6 @@ const getSingleValidationSchema = () => {
       .nullable()
       .required('Veuillez renseigner une date')
       .when(['readOnlyFields'], (readOnlyFields, schema) => {
-        /* istanbul ignore next: DEBT, TO FIX */
         if (readOnlyFields.includes('beginningDate')) {
           return schema
         }

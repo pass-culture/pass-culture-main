@@ -98,7 +98,7 @@ const PreFilters = ({
       if (updatedFilter.offerEventDate) {
         updatedFilter.bookingBeginningDate = null
         updatedFilter.bookingEndingDate = null
-        /* istanbul ignore next: DEBT to fix */
+
         if (updatedFilter.offerEventDate === appliedPreFilters.offerEventDate) {
           updatedFilter.bookingBeginningDate =
             appliedPreFilters.bookingBeginningDate
@@ -115,7 +115,6 @@ const PreFilters = ({
   )
 
   const requestFilteredBookings = useCallback(
-    /* istanbul ignore next: DEBT to fix */
     (event: any) => {
       event.preventDefault()
       applyPreFilters(selectedPreFilters)
@@ -138,13 +137,11 @@ const PreFilters = ({
     async (filters: TPreFilters, type: string) => {
       setIsDownloadingCSV(true)
 
-      /* istanbul ignore next: DEBT to fix */
       const { isOk, message } =
         type === 'CSV'
           ? await getBookingsCSVFileAdapter(filters)
           : await getBookingsXLSFileAdapter(filters)
 
-      /* istanbul ignore next: DEBT to fix */
       if (!isOk) {
         notify.error(message)
       }

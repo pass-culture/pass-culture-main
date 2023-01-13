@@ -1,10 +1,8 @@
-/* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
 
-import type { GetOffererNameResponseModel } from './GetOffererNameResponseModel';
+import type { GetOffererNameResponseModel } from './GetOffererNameResponseModel'
 
 export type GetOfferersNamesResponseModel = {
-  offerersNames: Array<GetOffererNameResponseModel>;
-};
-
+  offerersNames: Array<GetOffererNameResponseModel>
+}

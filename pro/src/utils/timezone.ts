@@ -34,7 +34,6 @@ export const getUtcDateTimeFromLocalDepartement: TGetUtcDateTimeFromLocalDeparte
 //    | ---------------- | ----------- | --------------------|
 //   9:00 ------------ 12:00 ------- 14:00 --------------- 16:00
 
-/* istanbul ignore next: DEBT, TO FIX */
 export const getDepartmentTimezone = (
   departementCode?: string | null
 ): string => {

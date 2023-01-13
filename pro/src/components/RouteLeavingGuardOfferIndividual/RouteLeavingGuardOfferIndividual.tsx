@@ -1,4 +1,3 @@
-/* istanbul ignore file : tested through OfferIndividual/Informations & Stocks */
 import React, { useState } from 'react'
 
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'

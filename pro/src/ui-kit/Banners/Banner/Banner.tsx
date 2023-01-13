@@ -31,10 +31,8 @@ const Banner = ({
   ...bannerLayoutProps
 }: IBannerProps): JSX.Element => {
   const isNewStyles = true
-  /* istanbul ignore next: DEBT to fix */
   const styles = isNewStyles ? newStyles : oldStyles
   const getLinkNode = (link: Link) => (
-    /* istanbul ignore next: DEBT to fix */
     <ButtonLink
       link={{
         isExternal: link.isExternal === undefined ? true : link.isExternal,
@@ -42,10 +40,7 @@ const Banner = ({
         target: link.targetLink || '_blank',
         rel: 'noopener noreferrer',
       }}
-      Icon={
-        /* istanbul ignore next: DEBT to fix */
-        link.hideLinkIcon ? undefined : link.Icon || ExternalSiteIcon
-      }
+      Icon={link.hideLinkIcon ? undefined : link.Icon || ExternalSiteIcon}
       className={styles['bi-link']}
     >
       {link.linkTitle}

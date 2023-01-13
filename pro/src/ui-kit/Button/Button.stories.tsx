@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import type { Story } from '@storybook/react'
 import React from 'react'
 

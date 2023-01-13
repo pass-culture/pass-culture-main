@@ -50,10 +50,8 @@ const ModalImageCrop = ({
   const notification = useNotification()
   const minWidth = modeValidationConstraints[mode].minWidth
   // getCropMaxDimension is tested on it's own.
-  /* istanbul ignore next: unable to test intercations with AvatarEditor  */
   const { width: maxWidth } = getCropMaxDimension({
     originalDimensions: { width, height },
-    /* istanbul ignore next */
     orientation: mode === UploaderModeEnum.VENUE ? 'landscape' : 'portrait',
   })
   const maxScale: number = Math.min(
@@ -98,14 +96,12 @@ const ModalImageCrop = ({
     },
   }[mode]
 
-  /* istanbul ignore next: DEBT, TO FIX */
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       handleNext()
     }
   }
 
-  /* istanbul ignore next: DEBT, TO FIX */
   const handleNext = useCallback(() => {
     try {
       if (editorRef.current) {

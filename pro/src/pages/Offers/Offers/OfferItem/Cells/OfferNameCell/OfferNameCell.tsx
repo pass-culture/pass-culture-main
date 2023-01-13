@@ -59,12 +59,11 @@ const OfferNameCell = ({
       venue: { departementCode },
     } = offer
     const { beginningDatetime } = stocks[0] || {}
-    /* istanbul ignore next: DEBT, TO FIX */
+
     if (offer.isShowcase || !beginningDatetime || !departementCode) {
       return null
     }
 
-    /* istanbul ignore next: DEBT, TO FIX */
     const stockSize = offer.stocks ? offer.stocks.length : 0
     return stockSize === 1
       ? formatLocalTimeDateString(

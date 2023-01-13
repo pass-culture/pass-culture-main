@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import { OfferStatus } from 'apiClient/v1'
 import { BookingRecapStatus } from 'apiClient/v1/models/BookingRecapStatus'
 

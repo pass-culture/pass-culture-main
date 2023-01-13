@@ -1,7 +1,7 @@
-/* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
 
-import type { CollectiveOfferResponseModel } from './CollectiveOfferResponseModel';
+import type { CollectiveOfferResponseModel } from './CollectiveOfferResponseModel'
 
-export type ListCollectiveOffersResponseModel = Array<CollectiveOfferResponseModel>;
+export type ListCollectiveOffersResponseModel =
+  Array<CollectiveOfferResponseModel>

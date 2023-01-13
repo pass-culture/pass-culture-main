@@ -1,4 +1,3 @@
-/* istanbul ignore next: DEBT, TO FIX */
 function getScaledCoordinates(coordinates) {
   const scaledCoordinates = [...coordinates]
   const dpr = window.devicePixelRatio
@@ -9,7 +8,6 @@ function getScaledCoordinates(coordinates) {
   return scaledCoordinates
 }
 
-/* istanbul ignore next: DEBT, TO FIX */
 class CanvasTools {
   constructor(context) {
     this.context = context

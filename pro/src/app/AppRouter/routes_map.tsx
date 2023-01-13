@@ -1,5 +1,4 @@
 /* No need to test this file */
-/* istanbul ignore file */
 import { Redirect, useLocation } from 'react-router-dom'
 
 import Bookings from 'pages/Bookings'

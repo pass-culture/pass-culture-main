@@ -50,19 +50,16 @@ export interface ISummaryProps {
   preview: IOfferAppPreviewProps
 }
 
-const Summary = (
-  /* istanbul ignore next: DEBT, TO FIX */
-  {
-    providerName,
-    offerId,
-    nonHumanizedOfferId,
-    offer,
-    stockThing,
-    stockEventList,
-    subCategories,
-    preview,
-  }: ISummaryProps
-): JSX.Element => {
+const Summary = ({
+  providerName,
+  offerId,
+  nonHumanizedOfferId,
+  offer,
+  stockThing,
+  stockEventList,
+  subCategories,
+  preview,
+}: ISummaryProps): JSX.Element => {
   const [isDisabled, setIsDisabled] = useState(false)
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
@@ -82,7 +79,7 @@ const Summary = (
 
   const publishOffer = async () => {
     // edition mode offers are already publish
-    /* istanbul ignore next: DEBT, TO FIX */
+
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       return
     }
@@ -115,7 +112,6 @@ const Summary = (
     setIsDisabled(false)
   }
 
-  /* istanbul ignore next: DEBT, TO FIX */
   const handlePreviousStep = () => {
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -159,14 +155,11 @@ const Summary = (
         providerName !== null) && (
         <div className={styles['offer-preview-banners']}>
           {mode !== OFFER_WIZARD_MODE.EDITION && <BannerSummary mode={mode} />}
-          {
-            /* istanbul ignore next: DEBT, TO FIX */
-            isDisabledOffer && (
-              <div className={styles['offer-preview-banner']}>
-                <OfferStatusBanner status={offer.status} />
-              </div>
-            )
-          }
+          {isDisabledOffer && (
+            <div className={styles['offer-preview-banner']}>
+              <OfferStatusBanner status={offer.status} />
+            </div>
+          )}
           {providerName !== null && (
             <div className={styles['offer-preview-banner']}>
               <SynchronizedProviderInformation providerName={providerName} />
@@ -204,17 +197,15 @@ const Summary = (
                 nonHumanizedId={offer.nonHumanizedId}
                 tracking={{
                   isTracked: true,
-                  trackingFunction:
-                    /* istanbul ignore next: DEBT, TO FIX */
-                    () =>
-                      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                        from: OFFER_WIZARD_STEP_IDS.SUMMARY,
-                        to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
-                        used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
-                        isEdition: true,
-                        isDraft: false,
-                        offerId: offerId,
-                      }),
+                  trackingFunction: () =>
+                    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                      from: OFFER_WIZARD_STEP_IDS.SUMMARY,
+                      to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
+                      used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
+                      isEdition: true,
+                      isDraft: false,
+                      offerId: offerId,
+                    }),
                 }}
                 variant={ButtonVariant.SECONDARY}
               />

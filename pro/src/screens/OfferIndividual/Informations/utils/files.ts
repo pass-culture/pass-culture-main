@@ -1,5 +1,4 @@
 // FIXME: find a way to test FileReader
-/* istanbul ignore next: DEBT, TO FIX */
 export const imageFileToDataUrl = (
   image: File,
   onLoad: (imageUrl: string) => void

@@ -26,7 +26,6 @@ export const getError = (error: ApiError): any => {
 
 // FIXME: find a way to test this by mocking ReadableStream
 // in fetch response
-/* istanbul ignore next */
 export const getFileFromURL = async (
   url: string,
   name = 'image.jpg'

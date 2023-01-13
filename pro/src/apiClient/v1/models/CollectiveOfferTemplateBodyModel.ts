@@ -1,8 +1,6 @@
-/* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
 
 export type CollectiveOfferTemplateBodyModel = {
-  educationalPriceDetail?: string | null;
-};
-
+  educationalPriceDetail?: string | null
+}

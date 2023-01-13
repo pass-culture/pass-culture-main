@@ -1,21 +1,22 @@
-/* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { BaseHttpRequest } from './core/BaseHttpRequest';
-import type { OpenAPIConfig } from './core/OpenAPI';
-import { FetchHttpRequest } from './core/FetchHttpRequest';
+import type { BaseHttpRequest } from './core/BaseHttpRequest'
+import type { OpenAPIConfig } from './core/OpenAPI'
+import { FetchHttpRequest } from './core/FetchHttpRequest'
 
-import { DefaultService } from './services/DefaultService';
+import { DefaultService } from './services/DefaultService'
 
-type HttpRequestConstructor = new (config: OpenAPIConfig) => BaseHttpRequest;
+type HttpRequestConstructor = new (config: OpenAPIConfig) => BaseHttpRequest
 
 export class AppClient {
+  public readonly default: DefaultService
 
-  public readonly default: DefaultService;
+  public readonly request: BaseHttpRequest
 
-  public readonly request: BaseHttpRequest;
-
-  constructor(config?: Partial<OpenAPIConfig>, HttpRequest: HttpRequestConstructor = FetchHttpRequest) {
+  constructor(
+    config?: Partial<OpenAPIConfig>,
+    HttpRequest: HttpRequestConstructor = FetchHttpRequest
+  ) {
     this.request = new HttpRequest({
       BASE: config?.BASE ?? 'http://localhost:5001',
       VERSION: config?.VERSION ?? '1',
@@ -26,9 +27,8 @@ export class AppClient {
       PASSWORD: config?.PASSWORD,
       HEADERS: config?.HEADERS,
       ENCODE_PATH: config?.ENCODE_PATH,
-    });
+    })
 
-    this.default = new DefaultService(this.request);
+    this.default = new DefaultService(this.request)
   }
 }
-

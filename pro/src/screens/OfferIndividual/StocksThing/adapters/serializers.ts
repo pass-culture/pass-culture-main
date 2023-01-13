@@ -35,7 +35,7 @@ export const serializeStockThingList = (
   }
   if (formValues.activationCodes.length > 0) {
     apiStock.activationCodes = formValues.activationCodes
-    /* istanbul ignore next */
+
     if (formValues.activationCodesExpirationDatetime) {
       apiStock.activationCodesExpirationDatetime =
         serializeThingBookingLimitDatetime(

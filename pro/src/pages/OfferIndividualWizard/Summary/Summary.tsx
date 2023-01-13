@@ -1,4 +1,3 @@
-/* istanbul ignore file: DEBT, TO FIX */
 import React from 'react'
 
 import PageTitle from 'components/PageTitle/PageTitle'

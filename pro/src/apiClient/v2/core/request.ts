@@ -1,6 +1,5 @@
 // overwrites request.ts to handle redirection to maintenance
 
-/* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
 import { ApiError } from './ApiError'

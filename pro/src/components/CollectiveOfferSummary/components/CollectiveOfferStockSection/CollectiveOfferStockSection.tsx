@@ -18,7 +18,6 @@ const CollectiveOfferStockSection = ({
   stock,
   venueDepartmentCode,
 }: ICollectiveOfferStockSectionProps) => {
-  /* istanbul ignore next: DEBT, TO FIX */
   const formatDateTime = (date: string, dateFormat: string) => {
     return format(
       getLocalDepartementDateTimeFromUtc(
@@ -28,7 +27,6 @@ const CollectiveOfferStockSection = ({
       dateFormat
     )
   }
-  /* istanbul ignore next: DEBT, TO FIX */
   return (
     <>
       <SummaryLayout.Row

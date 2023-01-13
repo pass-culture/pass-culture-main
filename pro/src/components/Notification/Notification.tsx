@@ -35,9 +35,7 @@ const Notification = (): JSX.Element | null => {
   useEffect(() => {
     if (!isVisible && notification && notification.text) {
       const timer = setTimeout(() => {
-        /* istanbul ignore next: DEBT, TO FIX */
         setIsInDom(false)
-        /* istanbul ignore next: DEBT, TO FIX */
         notificationHook.close()
       }, NOTIFICATION_TRANSITION_DURATION)
       return () => clearTimeout(timer)
@@ -51,7 +49,6 @@ const Notification = (): JSX.Element | null => {
 
   const { text, type } = notification
   let iconComponent = <SuccessIcon />
-  /* istanbul ignore next: DEBT, TO FIX */
   if (type === 'error') {
     iconComponent = <ErrorIcon />
   } else if (type === 'pending') {
@@ -63,21 +60,18 @@ const Notification = (): JSX.Element | null => {
     return (
       <div
         data-testid={`global-notification-${type}`}
-        className={
-          /* istanbul ignore next */
-          cn(
-            styles['notification'],
-            styles[
-              //graphic variation
-              /* istanbul ignore next */ `is-${type || 'success'}`
-            ],
-            /* istanbul ignore next: DEBT, TO FIX */ isVisible
-              ? styles['show']
-              : styles['hide'],
-            /* istanbul ignore next: DEBT, TO FIX */ isStickyBarOpen &&
-              styles['with-sticky-action-bar']
-          )
-        }
+        className={cn(
+          styles['notification'],
+          styles[
+            //graphic variation
+            /* istanbul ignore next */ `is-${type || 'success'}`
+          ],
+          /* istanbul ignore next: DEBT, TO FIX */ isVisible
+            ? styles['show']
+            : styles['hide'],
+          /* istanbul ignore next: DEBT, TO FIX */ isStickyBarOpen &&
+            styles['with-sticky-action-bar']
+        )}
       >
         {iconComponent}
         {text}

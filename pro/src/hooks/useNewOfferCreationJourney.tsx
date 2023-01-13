@@ -13,7 +13,6 @@ function useNewOfferCreationJourney() {
 
   const { remoteConfig } = useRemoteConfig()
   useEffect(() => {
-    /* istanbul ignore next: if FF we check remote config, else false */
     if (isNewOfferCreationJourneyActive) {
       setCanHaveNewOfferCreationJourney(
         remoteConfig

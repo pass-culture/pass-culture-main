@@ -27,7 +27,6 @@ const DeleteDraftCell = ({ offer, refreshOffers }: IDeleteDraftOffers) => {
   const { logEvent } = useAnalytics()
   const notification = useNotification()
   const closeDeleteDraftDialog = useCallback(() => {
-    /* istanbul ignore next */
     setIsConfirmDialogOpen(false)
   }, [])
 

@@ -83,7 +83,6 @@ const SelectAutocomplete = ({
     )
   }, [options])
 
-  /* istanbul ignore next */
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent): void => {
       if (!containerRef.current?.contains(e.target as Node)) {
@@ -108,7 +107,6 @@ const SelectAutocomplete = ({
     setHoveredOptionIndex(null)
   }, [searchField.value])
 
-  /* istanbul ignore next */
   const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = event => {
     switch (event.key) {
       case 'ArrowUp':
@@ -183,7 +181,6 @@ const SelectAutocomplete = ({
   }
 
   const openField = () => {
-    /* istanbul ignore next */
     if (!isOpen) {
       setIsOpen(true)
     }

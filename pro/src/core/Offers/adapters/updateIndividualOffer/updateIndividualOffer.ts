@@ -19,7 +19,6 @@ const updateIndividualOffer: TUpdateIndividualOffer = async ({
   offer,
   formValues,
 }) => {
-  /* istanbul ignore next: DEBT, TO FIX */
   try {
     let sentValues: Partial<IOfferIndividualFormValues> = formValues
     if (offer?.lastProvider) {

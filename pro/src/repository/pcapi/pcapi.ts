@@ -1,5 +1,4 @@
 // This file will be replace by apiClient
-/* istanbul ignore file */
 import {
   AttachImageResponseModel,
   CreateThumbnailResponseModel,

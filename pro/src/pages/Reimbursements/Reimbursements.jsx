@@ -23,8 +23,7 @@ const buildAndSortVenueFilterOptions = venues =>
       id: venue.id,
       displayName: venue.isVirtual
         ? `${venue.offererName} - Offre numérique`
-        : /* istanbul ignore next: TO FIX */
-          venue.publicName || venue.name,
+        : venue.publicName || venue.name,
     }))
   )
 
@@ -49,7 +48,6 @@ const Reimbursements = () => {
 
   const loadReimbursementPoints = useCallback(async () => {
     try {
-      /* istanbul ignore next: TO FIX */
       const reimbursementPointsResponse = await api.getReimbursementPoints()
       setReimbursementPointsOptions(
         sortByDisplayName(
@@ -60,7 +58,6 @@ const Reimbursements = () => {
         )
       )
     } catch (err) {
-      /* istanbul ignore next: TO FIX */
       // FIX ME
       // eslint-disable-next-line
       console.error(err)

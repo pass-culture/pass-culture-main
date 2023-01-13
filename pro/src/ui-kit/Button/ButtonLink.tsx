@@ -47,12 +47,9 @@ const ButtonLink = ({
 
   let body = (
     <>
-      {
-        /* istanbul ignore next: graphic variation */
-        Icon && iconPosition !== IconPositionEnum.RIGHT && (
-          <Icon className={styles['button-icon']} />
-        )
-      }
+      {Icon && iconPosition !== IconPositionEnum.RIGHT && (
+        <Icon className={styles['button-icon']} />
+      )}
       {hasTooltip ? (
         <div className={styles['visually-hidden']}>{children}</div>
       ) : /* istanbul ignore next: graphic variation */ variant ===
@@ -61,12 +58,9 @@ const ButtonLink = ({
       ) : (
         children
       )}
-      {
-        /* istanbul ignore next: graphic variation */
-        Icon && iconPosition === IconPositionEnum.RIGHT && (
-          <Icon className={styles['button-icon']} />
-        )
-      }
+      {Icon && iconPosition === IconPositionEnum.RIGHT && (
+        <Icon className={styles['button-icon']} />
+      )}
       {
         /* istanbul ignore next: graphic variation */ variant ===
           ButtonVariant.BOX && (

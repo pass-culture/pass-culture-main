@@ -33,7 +33,6 @@ const StockSection = ({
   const { logEvent } = useAnalytics()
 
   const logEditEvent = () => {
-    /* istanbul ignore next: DEBT, TO FIX */
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OFFER_WIZARD_STEP_IDS.SUMMARY,
       to: OFFER_WIZARD_STEP_IDS.STOCKS,

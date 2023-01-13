@@ -1,4 +1,3 @@
-/* istanbul ignore file: DEBT, TO FIX */
 import '@testing-library/jest-dom'
 
 import { api } from 'apiClient/api'

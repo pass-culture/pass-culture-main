@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import cn from 'classnames'
 import React, { useState } from 'react'
 

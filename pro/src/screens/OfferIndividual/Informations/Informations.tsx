@@ -86,7 +86,6 @@ const Informations = ({
       setIsClickingFromActionBar(true)
       setIsSubmittingDraft(saveDraft)
       if (Object.keys(formik.errors).length !== 0) {
-        /* istanbul ignore next: DEBT, TO FIX */
         setIsClickingFromActionBar(false)
         if (saveDraft) {
           notify.error(
@@ -121,7 +120,7 @@ const Informations = ({
 
       const response = await getOfferIndividualAdapter(payload.id)
       // This do not trigger a visal change, it's complicated to test
-      /* istanbul ignore next: DEBT, TO FIX */
+
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }

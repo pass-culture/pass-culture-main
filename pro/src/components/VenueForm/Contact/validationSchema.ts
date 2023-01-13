@@ -11,7 +11,6 @@ const validationSchema = {
       name: 'is-phone-valid',
       message: 'Veuillez entrer un numéro de téléphone valide',
       test: (phone?: string | null) => {
-        /* istanbul ignore next: DEBT, TO FIX */
         return phone ? isPhoneValid(phone) : true
       },
     }),
@@ -23,7 +22,6 @@ const validationSchema = {
       name: 'matchWebsiteUrl',
       message: 'Veuillez renseigner une URL valide. Ex : https://exemple.com',
       test: (url?: string | null) => {
-        /* istanbul ignore next: DEBT, TO FIX */
         return url ? url.match(urlRegex) !== null : true
       },
     }),

@@ -107,7 +107,6 @@ const Offerers = ({ receivedOffererNames }: IOfferersProps) => {
         setVirtualVenue(virtualVenue ?? null)
         setIsUserOffererValidated(true)
       } catch (error) {
-        /* istanbul ignore next: DEBT, TO FIX */
         if (hasStatusCode(error) && error.status === HTTP_STATUS.FORBIDDEN) {
           setSelectedOfferer({
             apiKey: {
@@ -243,11 +242,7 @@ const Offerers = ({ receivedOffererNames }: IOfferersProps) => {
           )}
         </>
       )}
-      {
-        /* istanbul ignore next: DEBT, TO FIX */ isOffererSoftDeleted && (
-          <SoftDeletedOffererWarning />
-        )
-      }
+      {isOffererSoftDeleted && <SoftDeletedOffererWarning />}
       {!userHasOfferers && <OffererCreationLinks />}
       {creationLinkCondition && (
         <VenueCreationLinks
@@ -256,11 +251,7 @@ const Offerers = ({ receivedOffererNames }: IOfferersProps) => {
             Boolean(virtualVenue) &&
             Boolean(selectedOfferer?.hasDigitalVenueAtLeastOneOffer)
           }
-          offererId={
-            /* istanbul ignore next: DEBT, TO FIX */ selectedOfferer
-              ? selectedOfferer.id
-              : null
-          }
+          offererId={selectedOfferer ? selectedOfferer.id : null}
         />
       )}
     </>

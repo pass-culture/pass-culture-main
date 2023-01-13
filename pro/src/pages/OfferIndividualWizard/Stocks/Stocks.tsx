@@ -16,7 +16,7 @@ const Stocks = (): JSX.Element | null => {
   const navigate = useNavigate()
 
   // if we've no offer, we are redirect from parent route.
-  /* istanbul ignore next: DEBT, TO FIX */
+
   if (offer === null) {
     navigate(
       getOfferIndividualUrl({

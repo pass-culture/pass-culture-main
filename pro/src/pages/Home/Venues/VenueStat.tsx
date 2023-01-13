@@ -18,13 +18,11 @@ interface IVenueStatProps {
 }
 const VenueStat = ({ count, label, link, onClick }: IVenueStatProps) => (
   <div className="h-card-col" data-testid="venue-stat">
-    {
-      /* istanbul ignore next: DEBT, TO FIX */ count ? (
-        <div className="venue-stat-count">{count}</div>
-      ) : (
-        <LoaderSvg className="venue-stat-spinner" title="Chargement en cours" />
-      )
-    }
+    {count ? (
+      <div className="venue-stat-count">{count}</div>
+    ) : (
+      <LoaderSvg className="venue-stat-spinner" title="Chargement en cours" />
+    )}
     <div>{label}</div>
     <ButtonLink
       className="tertiary-link"

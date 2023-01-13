@@ -46,7 +46,6 @@ const OfferType = (): JSX.Element => {
 
   const getNextPageHref = () => {
     if (offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
-      /* istanbul ignore next: condition will be removed when FF active in prod */
       return history.push({
         pathname: getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,

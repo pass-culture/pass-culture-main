@@ -124,10 +124,7 @@ const VenueForm = ({
           setIsSiretValued={setIsSiretValued}
           siren={offerer.siren}
         />
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          !!shouldDisplayImageVenueUploaderSection && <ImageUploaderVenue />
-        }
+        {!!shouldDisplayImageVenueUploaderSection && <ImageUploaderVenue />}
         {!initialIsVirtual && <Address />}
         <Activity
           venueTypes={venueTypes}

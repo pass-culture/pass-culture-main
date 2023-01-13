@@ -1,9 +1,6 @@
 import * as yup from 'yup'
 
-export const getValidationSchema = (
-  /* istanbul ignore next: DEBT, TO FIX */
-  minQuantity: number | null = null
-) => {
+export const getValidationSchema = (minQuantity: number | null = null) => {
   const validationSchema = {
     price: yup
       .number()

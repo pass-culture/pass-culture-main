@@ -74,7 +74,6 @@ const VenueFormScreen = ({
           })
         )
       : api.editVenue(
-          /* istanbul ignore next: there will always be a venue id on update screen */
           venue?.id || '',
           serializeEditVenueBodyModel(value, {
             hideSiret: venue?.siret.length === 0,
@@ -170,7 +169,6 @@ const VenueFormScreen = ({
             >
               <Button
                 variant={ButtonVariant.PRIMARY}
-                /* istanbul ignore next: DEBT, TO FIX */
                 onClick={() =>
                   logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                     from: OFFER_FORM_NAVIGATION_IN.VENUE,
@@ -187,29 +185,23 @@ const VenueFormScreen = ({
           )}
         </div>
         <Title level={2} className={style['venue-name']}>
-          {
-            /* istanbul ignore next: DEBT, TO FIX */ initialIsVirtual
-              ? `${offerer.name} (Offre numérique)`
-              : publicName || initialName
-          }
+          {initialIsVirtual
+            ? `${offerer.name} (Offre numérique)`
+            : publicName || initialName}
         </Title>
-        {
-          /* istanbul ignore next: DEBT, TO FIX */ !isCreatingVenue &&
-            venue &&
-            venue.dmsToken && (
-              <>
-                {/* For the screen reader to spell-out the id, we add a
+        {!isCreatingVenue && venue && venue.dmsToken && (
+          <>
+            {/* For the screen reader to spell-out the id, we add a
                 visually hidden span with a space between each character.
                 The other span will be hidden from the screen reader. */}
-                <span className={style['identifier-hidden']}>
-                  Identifiant du lieu : {venue.dmsToken.split('').join(' ')}
-                </span>
-                <span aria-hidden={true}>
-                  Identifiant du lieu : {venue.dmsToken}
-                </span>
-              </>
-            )
-        }
+            <span className={style['identifier-hidden']}>
+              Identifiant du lieu : {venue.dmsToken.split('').join(' ')}
+            </span>
+            <span aria-hidden={true}>
+              Identifiant du lieu : {venue.dmsToken}
+            </span>
+          </>
+        )}
       </div>
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit}>

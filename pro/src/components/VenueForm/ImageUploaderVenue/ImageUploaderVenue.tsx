@@ -13,7 +13,6 @@ import { postImageToVenue } from 'repository/pcapi/pcapi'
 
 import { IVenueFormValues } from '../types'
 
-/* istanbul ignore next: DEBT, TO FIX */
 const buildInitialValues = (
   bannerUrl?: string,
   bannerMeta?: IVenueBannerMetaProps
@@ -36,7 +35,6 @@ const buildInitialValues = (
   }
 }
 
-/* istanbul ignore next: DEBT, TO FIX */
 const ImageUploaderVenue = () => {
   const notify = useNotification()
   const {

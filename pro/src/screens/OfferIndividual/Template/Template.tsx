@@ -29,7 +29,6 @@ const Template = ({
   const mode = useOfferWizardMode()
   const notify = useNotification()
 
-  /* istanbul ignore next: DEBT, TO FIX */
   const reloadOffer = async () => {
     const response = await getOfferIndividualAdapter(offer?.id)
     if (response.isOk) {

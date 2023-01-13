@@ -1,23 +1,21 @@
-/* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CollectiveOffersListCategoriesResponseModel } from '../models/CollectiveOffersListCategoriesResponseModel';
-import type { CollectiveOffersListDomainsResponseModel } from '../models/CollectiveOffersListDomainsResponseModel';
-import type { CollectiveOffersListEducationalInstitutionResponseModel } from '../models/CollectiveOffersListEducationalInstitutionResponseModel';
-import type { CollectiveOffersListResponseModel } from '../models/CollectiveOffersListResponseModel';
-import type { CollectiveOffersListStudentLevelsResponseModel } from '../models/CollectiveOffersListStudentLevelsResponseModel';
-import type { CollectiveOffersListSubCategoriesResponseModel } from '../models/CollectiveOffersListSubCategoriesResponseModel';
-import type { CollectiveOffersListVenuesResponseModel } from '../models/CollectiveOffersListVenuesResponseModel';
-import type { GetPublicCollectiveOfferResponseModel } from '../models/GetPublicCollectiveOfferResponseModel';
-import type { OfferStatus } from '../models/OfferStatus';
-import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOfferBodyModel';
-import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
+import type { CollectiveOffersListCategoriesResponseModel } from '../models/CollectiveOffersListCategoriesResponseModel'
+import type { CollectiveOffersListDomainsResponseModel } from '../models/CollectiveOffersListDomainsResponseModel'
+import type { CollectiveOffersListEducationalInstitutionResponseModel } from '../models/CollectiveOffersListEducationalInstitutionResponseModel'
+import type { CollectiveOffersListResponseModel } from '../models/CollectiveOffersListResponseModel'
+import type { CollectiveOffersListStudentLevelsResponseModel } from '../models/CollectiveOffersListStudentLevelsResponseModel'
+import type { CollectiveOffersListSubCategoriesResponseModel } from '../models/CollectiveOffersListSubCategoriesResponseModel'
+import type { CollectiveOffersListVenuesResponseModel } from '../models/CollectiveOffersListVenuesResponseModel'
+import type { GetPublicCollectiveOfferResponseModel } from '../models/GetPublicCollectiveOfferResponseModel'
+import type { OfferStatus } from '../models/OfferStatus'
+import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOfferBodyModel'
+import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel'
 
-import type { CancelablePromise } from '../core/CancelablePromise';
-import type { BaseHttpRequest } from '../core/BaseHttpRequest';
+import type { CancelablePromise } from '../core/CancelablePromise'
+import type { BaseHttpRequest } from '../core/BaseHttpRequest'
 
 export class ApiOffresCollectivesBetaService {
-
   constructor(public readonly httpRequest: BaseHttpRequest) {}
 
   /**
@@ -33,7 +31,7 @@ export class ApiOffresCollectivesBetaService {
         401: `Authentification nécessaire`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -49,7 +47,7 @@ export class ApiOffresCollectivesBetaService {
         401: `Authentification nécessaire`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -69,25 +67,25 @@ export class ApiOffresCollectivesBetaService {
     institutionType?: string | null,
     city?: string | null,
     postalCode?: string | null,
-    limit: number = 20,
+    limit: number = 20
   ): CancelablePromise<CollectiveOffersListEducationalInstitutionResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/v2/collective/educational-institutions/',
       query: {
-        'id': id,
-        'name': name,
-        'institutionType': institutionType,
-        'city': city,
-        'postalCode': postalCode,
-        'limit': limit,
+        id: id,
+        name: name,
+        institutionType: institutionType,
+        city: city,
+        postalCode: postalCode,
+        limit: limit,
       },
       errors: {
         400: `Requête malformée`,
         401: `Authentification nécessaire`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -103,16 +101,16 @@ export class ApiOffresCollectivesBetaService {
     status?: OfferStatus | null,
     venueId?: number | null,
     periodBeginningDate?: string | null,
-    periodEndingDate?: string | null,
+    periodEndingDate?: string | null
   ): CancelablePromise<CollectiveOffersListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/v2/collective/offers/',
       query: {
-        'status': status,
-        'venueId': venueId,
-        'periodBeginningDate': periodBeginningDate,
-        'periodEndingDate': periodEndingDate,
+        status: status,
+        venueId: venueId,
+        periodBeginningDate: periodBeginningDate,
+        periodEndingDate: periodEndingDate,
       },
       errors: {
         401: `Authentification nécessaire`,
@@ -120,7 +118,7 @@ export class ApiOffresCollectivesBetaService {
         404: `L'offre collective n'existe pas`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -130,7 +128,7 @@ export class ApiOffresCollectivesBetaService {
    * @throws ApiError
    */
   public postCollectiveOfferPublic(
-    requestBody?: PostCollectiveOfferBodyModel,
+    requestBody?: PostCollectiveOfferBodyModel
   ): CancelablePromise<GetPublicCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -144,7 +142,7 @@ export class ApiOffresCollectivesBetaService {
         404: `L'une des resources pour la création de l'offre n'a pas été trouvée`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -154,13 +152,13 @@ export class ApiOffresCollectivesBetaService {
    * @throws ApiError
    */
   public getCollectiveOfferPublic(
-    offerId: number,
+    offerId: number
   ): CancelablePromise<GetPublicCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/v2/collective/offers/{offer_id}',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         401: `Authentification nécessaire`,
@@ -168,7 +166,7 @@ export class ApiOffresCollectivesBetaService {
         404: `L'offre collective n'existe pas`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -180,13 +178,13 @@ export class ApiOffresCollectivesBetaService {
    */
   public patchCollectiveOfferPublic(
     offerId: number,
-    requestBody?: PatchCollectiveOfferBodyModel,
+    requestBody?: PatchCollectiveOfferBodyModel
   ): CancelablePromise<GetPublicCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/v2/collective/offers/{offer_id}',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       body: requestBody,
       mediaType: 'application/json',
@@ -197,7 +195,7 @@ export class ApiOffresCollectivesBetaService {
         404: `L'une des resources pour la création de l'offre n'a pas été trouvée`,
         422: `Cetains champs ne peuvent pas être édités selon l'état de l'offre`,
       },
-    });
+    })
   }
 
   /**
@@ -213,7 +211,7 @@ export class ApiOffresCollectivesBetaService {
         401: `Authentification nécessaire`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -229,7 +227,7 @@ export class ApiOffresCollectivesBetaService {
         401: `Authentification nécessaire`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 
   /**
@@ -246,7 +244,6 @@ export class ApiOffresCollectivesBetaService {
         401: `Authentification nécessaire`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
-
 }

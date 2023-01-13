@@ -39,7 +39,6 @@ const TimePicker = ({
   const ref = createRef<HTMLInputElement>()
   const showError = meta.touched && !!meta.error
 
-  /* istanbul ignore next: DEBT, TO FIX */
   return (
     <FieldLayout
       className={className}
@@ -63,9 +62,7 @@ const TimePicker = ({
         dropdownMode="scroll"
         locale="fr"
         onChange={time => {
-          /* istanbul ignore next: DEBT, TO FIX */
           helpers.setTouched(true)
-          /* istanbul ignore next: DEBT, TO FIX */
           helpers.setValue(time)
         }}
         placeholderText="HH:MM"

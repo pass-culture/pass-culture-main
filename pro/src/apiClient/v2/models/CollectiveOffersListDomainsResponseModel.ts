@@ -1,7 +1,7 @@
-/* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
 
-import type { CollectiveOffersDomainResponseModel } from './CollectiveOffersDomainResponseModel';
+import type { CollectiveOffersDomainResponseModel } from './CollectiveOffersDomainResponseModel'
 
-export type CollectiveOffersListDomainsResponseModel = Array<CollectiveOffersDomainResponseModel>;
+export type CollectiveOffersListDomainsResponseModel =
+  Array<CollectiveOffersDomainResponseModel>
