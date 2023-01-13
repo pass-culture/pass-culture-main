@@ -88,7 +88,7 @@ describe('screens:OfferIndividual::OfferType', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         isCreation: true,
       }),
-      search: '&offer-type=PHYSICAL_GOOD',
+      search: '?offer-type=PHYSICAL_GOOD',
     })
   })
 
@@ -151,63 +151,39 @@ describe('screens:OfferIndividual::OfferType', () => {
     expect(screen.getByText('Un évènement numérique')).toBeInTheDocument()
   })
 
-  it('should select physical good', async () => {
-    renderOfferTypes(store)
+  const individualChoices = [
+    {
+      buttonClicked: 'Un bien physique',
+      expectedSearch: '?offer-type=PHYSICAL_GOOD',
+    },
+    {
+      buttonClicked: 'Un bien numérique',
+      expectedSearch: '?offer-type=VIRTUAL_GOOD',
+    },
+    {
+      buttonClicked: 'Un évènement physique',
+      expectedSearch: '?offer-type=PHYSICAL_EVENT',
+    },
+    {
+      buttonClicked: 'Un évènement physique',
+      expectedSearch: '?offer-type=PHYSICAL_EVENT',
+    },
+  ]
+  it.each(individualChoices)(
+    'should select and redirect fine case : %s',
+    async ({ buttonClicked, expectedSearch }) => {
+      renderOfferTypes(store)
 
-    await userEvent.click(screen.getByText('Un bien physique'))
+      await userEvent.click(screen.getByText(buttonClicked))
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Étape suivante' })
+      )
 
-    expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/individuelle/creation/informations',
-      search: '&offer-type=PHYSICAL_GOOD',
-    })
-  })
-
-  it('should select virtual good', async () => {
-    renderOfferTypes(store)
-
-    await userEvent.click(screen.getByText('Un bien numérique'))
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
-
-    expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/individuelle/creation/informations',
-      search: '&offer-type=VIRTUAL_GOOD',
-    })
-  })
-
-  it('should select physical event', async () => {
-    renderOfferTypes(store)
-
-    await userEvent.click(screen.getByText('Un évènement physique'))
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
-
-    expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/individuelle/creation/informations',
-      search: '&offer-type=PHYSICAL_EVENT',
-    })
-  })
-
-  it('should select physical good', async () => {
-    renderOfferTypes(store)
-
-    await userEvent.click(screen.getByText('Un évènement numérique'))
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
-
-    expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/individuelle/creation/informations',
-      search: '&offer-type=VIRTUAL_EVENT',
-    })
-  })
+      expect(mockHistoryPush).toHaveBeenCalledWith({
+        pathname: '/offre/individuelle/creation/informations',
+        search: expectedSearch,
+      })
+    }
+  )
 })
