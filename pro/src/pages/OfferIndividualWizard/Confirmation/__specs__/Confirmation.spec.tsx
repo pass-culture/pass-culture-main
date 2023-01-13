@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { generatePath, MemoryRouter, Route } from 'react-router'
@@ -9,18 +10,20 @@ import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OfferStatus } from 'apiClient/v2'
 import Notification from 'components/Notification/Notification'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { Events } from 'core/FirebaseEvents/constants'
 import { IOfferIndividual } from 'core/Offers/types'
-import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
 import Confirmation from '../Confirmation'
+
+const mockLogEvent = jest.fn()
+window.open = jest.fn()
 
 jest.mock('utils/config', () => {
   return {
@@ -71,7 +74,7 @@ const renderOffer = (
   )
 }
 
-describe('Summary', () => {
+describe('Confirmation', () => {
   let store: any
   let contextOverride: Partial<IOfferIndividualContext>
   let offer: IOfferIndividual
@@ -100,10 +103,15 @@ describe('Summary', () => {
     contextOverride = {
       offer: offer,
     }
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
   })
+
   it('should display a pending message when offer is pending for validation', () => {
     offer.status = OfferStatus.PENDING
     renderOffer(contextOverride, store)
@@ -117,18 +125,13 @@ describe('Summary', () => {
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
     ).toHaveAttribute(
       'href',
-      generatePath(
-        getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-          isCreation: true,
-        }) + '?structure=OFID&lieu=VID physical'
-      )
+      generatePath('/offre/creation?structure=OFID&lieu=VID physical')
     )
     expect(
       screen.getByText('Voir la liste des offres', { selector: 'a' })
     ).toHaveAttribute('href', `/offres`)
   })
+
   it('should display a success message when offer is accepted', () => {
     renderOffer(contextOverride, store)
     expect(screen.getByText('Offre publiée !')).toBeInTheDocument()
@@ -141,13 +144,75 @@ describe('Summary', () => {
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
     ).toHaveAttribute(
       'href',
-      generatePath(
-        getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-          isCreation: true,
-        }) + '?structure=OFID&lieu=VID physical'
-      )
+      generatePath('/offre/creation?structure=OFID&lieu=VID physical')
     )
+  })
+
+  describe('trackers', () => {
+    it('should track when clicking on see offer', async () => {
+      renderOffer(contextOverride, store)
+
+      await userEvent.click(
+        screen.getByText('Visualiser l’offre dans l’application', {
+          selector: 'a',
+        })
+      )
+
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'confirmation',
+          isEdition: false,
+          to: 'AppPreview',
+          used: 'ConfirmationPreview',
+        }
+      )
+    })
+
+    it('should track when clicking on create new offer', async () => {
+      renderOffer(contextOverride, store)
+
+      await userEvent.click(
+        screen.getByText('Créer une nouvelle offre', {
+          selector: 'a',
+        })
+      )
+
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'confirmation',
+          isEdition: false,
+          to: 'OfferFormHomepage',
+          used: 'ConfirmationButtonNewOffer',
+        }
+      )
+    })
+
+    it('should track when clicking on see offers list', async () => {
+      renderOffer(contextOverride, store)
+
+      await userEvent.click(
+        screen.getByText('Voir la liste des offres', {
+          selector: 'a',
+        })
+      )
+
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'confirmation',
+          isEdition: false,
+          to: 'Offers',
+          used: 'ConfirmationButtonOfferList',
+        }
+      )
+    })
   })
 })

@@ -3,12 +3,12 @@ import React from 'react'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import {
   Events,
+  OFFER_FORM_HOMEPAGE,
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_STATUS_PENDING, OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_STATUS_PENDING } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
-import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as PendingIcon } from 'icons/pending.svg'
@@ -76,14 +76,18 @@ const OfferIndividualConfirmation = ({
       <div className={styles['confirmation-actions']}>
         <ButtonLink
           link={{
-            to:
-              getOfferIndividualUrl({
-                step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-                mode: OFFER_WIZARD_MODE.CREATION,
-              }) + queryString,
+            to: '/offre/creation' + queryString,
             isExternal: true,
           }}
           variant={ButtonVariant.SECONDARY}
+          onClick={() =>
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+              to: OFFER_FORM_HOMEPAGE,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_BUTTON_NEW_OFFER,
+              isEdition: false,
+            })
+          }
         >
           Créer une nouvelle offre
         </ButtonLink>
