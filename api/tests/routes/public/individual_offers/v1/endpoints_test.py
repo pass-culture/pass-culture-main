@@ -1737,6 +1737,21 @@ class PatchProductTest:
         assert confirmed_booking.status == bookings_models.BookingStatus.CANCELLED
         assert used_booking.status == bookings_models.BookingStatus.USED
 
+    def test_update_subcategory_raises_error(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            subcategoryId=subcategories.ABO_LUDOTHEQUE.id,
+            lastProvider=individual_offers_api_provider,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/{product_offer.id}",
+            json={"categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"}},
+        )
+        assert response.status_code == 400
+        assert response.json == {"categoryRelatedFields.category": ["the category cannot be changed"]}
+
 
 @pytest.mark.usefixtures("db_session")
 class DeleteDateTest:
