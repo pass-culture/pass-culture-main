@@ -129,13 +129,13 @@ def get_bookings(user: User) -> BookingsResponse:
         )
         .options(joinedload(IndividualBooking.booking).joinedload(Booking.activationCode))
         .options(joinedload(IndividualBooking.booking).joinedload(Booking.externalBookings))
-        .options(
-            joinedload(IndividualBooking.booking).joinedload(Booking.deposit).load_only(finance_models.Deposit.type)
-        )
+        .options(joinedload(IndividualBooking.deposit).load_only(finance_models.Deposit.type))
     ).all()
 
     has_bookings_after_18 = any(
-        booking for booking in individual_bookings if booking.deposit.type == finance_models.DepositType.GRANT_18
+        booking
+        for booking in individual_bookings
+        if not booking.deposit or booking.deposit.type == finance_models.DepositType.GRANT_18
     )
     ended_bookings = []
     ongoing_bookings = []
