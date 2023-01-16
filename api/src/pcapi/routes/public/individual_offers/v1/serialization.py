@@ -148,7 +148,7 @@ NAME_FIELD = pydantic.Field(description="Offer title", example="Le Petit Prince"
 DURATION_MINUTES_FIELD = pydantic.Field(description="Event duration in minutes", example=60, alias="eventDuration")
 TICKET_COLLECTION_FIELD = pydantic.Field(
     None,
-    description="How the ticket will be collected. Left empty if there is no ticket. Only some categories are compatible with tickets.",
+    description="How the ticket will be collected. Leave empty if there is no ticket. Only some categories are compatible with tickets.",
     discriminator="way",
 )
 EVENT_DATES_FIELD = pydantic.Field(
@@ -261,6 +261,11 @@ event_category_creation_models = {
     for subcategory in subcategories.ALL_SUBCATEGORIES
     if subcategory.is_event and subcategory.is_selectable
 }
+event_category_edition_models = {
+    subcategory.id: compute_category_fields_model(subcategory, Method.edit)
+    for subcategory in subcategories.ALL_SUBCATEGORIES
+    if subcategory.is_event and subcategory.is_selectable
+}
 event_category_reading_models = {
     subcategory.id: compute_category_fields_model(subcategory, Method.read)
     for subcategory in subcategories.ALL_SUBCATEGORIES
@@ -272,6 +277,7 @@ if typing.TYPE_CHECKING:
     product_category_creation_fields = CategoryRelatedFields
     product_category_reading_fields = CategoryRelatedFields
     event_category_creation_fields = CategoryRelatedFields
+    event_category_edition_fields = CategoryRelatedFields
     event_category_reading_fields = CategoryRelatedFields
     product_category_edition_fields = CategoryRelatedFields
 else:
@@ -290,6 +296,10 @@ else:
     event_category_creation_fields = typing_extensions.Annotated[
         typing.Union[tuple(event_category_creation_models.values())],
         pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
+    ]
+    event_category_edition_fields = typing_extensions.Annotated[
+        typing.Union[tuple(event_category_edition_models.values())],
+        pydantic.Field(discriminator="subcategory_id"),
     ]
     event_category_reading_fields = typing_extensions.Annotated[
         typing.Union[tuple(event_category_reading_models.values())],
@@ -418,6 +428,15 @@ class ProductOfferEdition(OfferEditionBase):
     stock: StockEdition | None = pydantic.Field(
         description="If stock is set to null, all cancellable bookings (i.e not used) will be cancelled. To prevent from further bookings, you may alternatively set stock.quantity to the bookedQuantity (but not below)."
     )
+
+
+class EventOfferEdition(OfferEditionBase):
+    category_related_fields: event_category_edition_fields | None = pydantic.Field(
+        None,
+        description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
+    )
+    duration_minutes: int | None = DURATION_MINUTES_FIELD
+    ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = TICKET_COLLECTION_FIELD
 
 
 class DatesCreation(serialization.ConfiguredBaseModel):

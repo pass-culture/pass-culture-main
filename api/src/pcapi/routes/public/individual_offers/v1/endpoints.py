@@ -568,3 +568,49 @@ def delete_event_date(event_id: int, date_id: int) -> None:
         raise api_errors.ApiErrors({"date_id": ["The date could not be found"]}, status_code=404)
 
     offers_api.delete_stock(stock_to_delete)
+
+
+@blueprint.v1_blueprint.route("/events/<int:event_id>", methods=["PATCH"])
+@spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG], response_model=serialization.EventOfferResponse)
+@api_key_required
+def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serialization.EventOfferResponse:
+    """
+    Edit a event offer.
+
+    Leave fields undefined to keep their current value.
+    """
+    offer: offers_models.Offer | None = (
+        _retrieve_offer_relations_query(_retrieve_offer_query(event_id))
+        .filter(offers_models.Offer.isEvent == True)
+        .one_or_none()
+    )
+
+    if not offer:
+        raise api_errors.ApiErrors({"event_id": ["The event offer could not be found"]}, status_code=404)
+    _check_offer_subcategory(body, offer.subcategoryId)
+
+    update_body = body.dict(exclude_unset=True)
+
+    withdrawal_type, withdrawal_delay = (
+        _deserialize_ticket_collection(body.ticket_collection, offer.subcategoryId)
+        if update_body.get("ticket_collection")
+        else (offers_api.UNCHANGED, offers_api.UNCHANGED)
+    )
+
+    with repository.transaction():
+        offers_api.update_offer(
+            offer,
+            bookingEmail=update_body.get("booking_email", offers_api.UNCHANGED),
+            durationMinutes=update_body.get("durationMinutes", offers_api.UNCHANGED),
+            extraData=serialization.compute_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
+            if body.category_related_fields
+            else offers_api.UNCHANGED,
+            isActive=update_body.get("is_active", offers_api.UNCHANGED),
+            isDuo=update_body.get("is_duo", offers_api.UNCHANGED),
+            withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
+            withdrawalType=withdrawal_type,
+            withdrawalDelay=withdrawal_delay,
+            **compute_accessibility_edition_fields(update_body.get("accessibility")),
+        )
+
+    return serialization.EventOfferResponse.build_event_offer(offer)
