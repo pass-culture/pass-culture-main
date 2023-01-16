@@ -6,6 +6,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
@@ -70,6 +71,7 @@ class Returns200Test:
                     "event_beginning_datetime": "2022-05-15T12:15:00+02:00",
                     "offer_isbn": None,
                     "number_of_tickets": collective_stock.numberOfTickets,
+                    "booking_limit_datetime": "2022-05-15T11:15:00+02:00",
                 },
                 "institution": {
                     "id": institution.id,
@@ -90,6 +92,7 @@ class Returns200Test:
                 "bookingToken": None,
                 "bookingStatus": "confirmed",
                 "bookingIsDuo": False,
+                "cancellationReason": None,
                 "bookingStatusHistory": [
                     {
                         "status": "pending",
@@ -200,6 +203,7 @@ class Returns200Test:
             dateCreated=booking_date,
             confirmationDate=booking_date + timedelta(days=1, hours=2),
             cancellationDate=booking_date + timedelta(days=45, minutes=32),
+            cancellationReason=None,
         )
 
         # When
@@ -252,6 +256,7 @@ class Returns200Test:
             dateCreated=booking_date,
             confirmationDate=None,
             cancellationDate=booking_date + timedelta(days=5, minutes=32),
+            cancellationReason=None,
         )
 
         # When
@@ -414,6 +419,7 @@ class Returns200Test:
                     "event_beginning_datetime": "2022-05-15T12:15:00+02:00",
                     "offer_isbn": None,
                     "number_of_tickets": collective_stock.numberOfTickets,
+                    "booking_limit_datetime": "2022-05-15T11:15:00+02:00",
                 },
                 "institution": {
                     "id": institution.id,
@@ -434,6 +440,7 @@ class Returns200Test:
                 "bookingToken": None,
                 "bookingStatus": "confirmed",
                 "bookingIsDuo": False,
+                "cancellationReason": None,
                 "bookingStatusHistory": [
                     {
                         "status": "pending",
@@ -501,6 +508,7 @@ class Returns200Test:
                     "event_beginning_datetime": "2022-05-15T12:15:00+02:00",
                     "offer_isbn": None,
                     "number_of_tickets": collective_stock.numberOfTickets,
+                    "booking_limit_datetime": "2022-05-15T11:15:00+02:00",
                 },
                 "institution": {
                     "id": institution.id,
@@ -521,6 +529,7 @@ class Returns200Test:
                 "bookingToken": None,
                 "bookingStatus": "confirmed",
                 "bookingIsDuo": False,
+                "cancellationReason": None,
                 "bookingStatusHistory": [
                     {
                         "status": "pending",
@@ -590,6 +599,7 @@ class Returns200Test:
                     "event_beginning_datetime": "2022-03-10T11:15:00+01:00",
                     "offer_isbn": None,
                     "number_of_tickets": collective_stock.numberOfTickets,
+                    "booking_limit_datetime": "2022-03-10T10:15:00+01:00",
                 },
                 "institution": {
                     "id": institution.id,
@@ -610,6 +620,7 @@ class Returns200Test:
                 "bookingToken": None,
                 "bookingStatus": "validated",
                 "bookingIsDuo": False,
+                "cancellationReason": None,
                 "bookingStatusHistory": [
                     {
                         "status": "pending",
@@ -662,4 +673,55 @@ class Returns400Test:
         ]
         assert response.json["bookingPeriodEndingDate"] == [
             "Ce champ est obligatoire si la date d'évènement n'est renseignée"
+        ]
+
+    @freeze_time("2022-05-01 15:00:00")
+    def test_when_cancellation_reason_is_not_none(self, client):
+        # Given
+        booking_date = datetime(2022, 3, 11, 10, 15, 0)
+        event_date = datetime(2022, 5, 15, 20, 00, 0)
+        pro_user = users_factories.ProFactory()
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
+        institution = educational_factories.EducationalInstitutionFactory()
+
+        collective_stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__name="Le chant des cigales",
+            collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            beginningDatetime=event_date,
+            price=1200,
+        )
+        educational_factories.CancelledCollectiveBookingFactory(
+            educationalInstitution=institution,
+            collectiveStock=collective_stock,
+            dateCreated=booking_date,
+            confirmationDate=booking_date + timedelta(days=1, hours=2),
+            cancellationDate=booking_date + timedelta(days=45, minutes=32),
+            cancellationReason=CollectiveBookingCancellationReasons.FRAUD,
+        )
+
+        # When
+        client = client.with_session_auth(pro_user.email)
+        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+
+        # Then
+        assert response.status_code == 200
+        booking_recap = response.json["bookingsRecap"][0]
+        assert booking_recap["bookingStatus"] == "cancelled"
+        assert booking_recap["bookingStatusHistory"] == [
+            {
+                "status": "pending",
+                "date": "2022-03-11T11:15:00+01:00",
+            },
+            {
+                "status": "booked",
+                "date": "2022-03-12T13:15:00+01:00",
+            },
+            {
+                "status": "confirmed",
+                "date": "2022-04-30T22:00:00+02:00",
+            },
+            {
+                "status": "cancelled",
+                "date": "2022-04-25T12:47:00+02:00",
+            },
         ]
