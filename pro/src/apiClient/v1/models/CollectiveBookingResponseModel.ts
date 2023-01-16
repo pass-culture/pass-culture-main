@@ -18,6 +18,7 @@ export type CollectiveBookingResponseModel = {
   booking_status: string;
   booking_status_history: Array<BookingStatusHistoryResponseModel>;
   booking_token?: string | null;
+  cancellation_reason?: string | null;
   institution: EducationalInstitutionResponseModel;
   stock: CollectiveBookingCollectiveStockResponseModel;
 };

@@ -21,7 +21,6 @@ export type PatchOfferBodyModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;
-  productId?: string | null;
   url?: string | null;
   venueId?: string | null;
   visualDisabilityCompliant?: boolean | null;
