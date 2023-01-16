@@ -16,6 +16,7 @@ import CollectiveOfferCreation from 'pages/CollectiveOfferCreation'
 import CollectiveOfferStockCreation from 'pages/CollectiveOfferStockCreation'
 import CollectiveOfferSummaryCreation from 'pages/CollectiveOfferSummaryCreation'
 import CollectiveOfferVisibilityCreation from 'pages/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
+import CollectiveOfferSelectionDuplication from 'screens/CollectiveOfferSelectionDuplication'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { getActiveStep } from '../utils/getActiveStep'
@@ -68,6 +69,9 @@ const CollectiveOfferCreationRoutes = ({
       >
         <PageTitle title="Confirmation" />
         {offer ? <CollectiveOfferConfirmation offer={offer} /> : <Spinner />}
+      </Route>
+      <Route path="/offre/creation/collectif/selection">
+        <CollectiveOfferSelectionDuplication />
       </Route>
       <Route
         path={[
