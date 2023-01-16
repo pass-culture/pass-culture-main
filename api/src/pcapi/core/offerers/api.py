@@ -1354,6 +1354,7 @@ def list_offerers_to_be_validated_legacy(
 
 def _apply_query_filters(
     query: sa.orm.Query,
+    q: str | None,  # search query
     regions: list[str] | None,
     tags: list[offerers_models.OffererTag] | None,
     status: list[ValidationStatus] | None,
@@ -1362,6 +1363,36 @@ def _apply_query_filters(
     cls: typing.Type[offerers_models.Offerer | offerers_models.UserOfferer],
     offerer_id_column: sa.orm.InstrumentedAttribute,
 ) -> sa.orm.Query:
+    if q:
+        sanitized_q = email_utils.sanitize_email(q)
+
+        if sanitized_q.isnumeric():
+            num_digits = len(sanitized_q)
+            if num_digits == 9:
+                query = query.filter(offerers_models.Offerer.siren == sanitized_q)
+            elif num_digits == 5:
+                query = query.filter(offerers_models.Offerer.postalCode == sanitized_q)
+            elif num_digits in (2, 3):
+                query = query.filter(offerers_models.Offerer.departementCode == sanitized_q)
+            else:
+                raise exceptions.InvalidSiren(
+                    "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
+                )
+        elif email_utils.is_valid_email(sanitized_q):
+            query = query.filter(users_models.User.email == sanitized_q)
+        else:
+            name = q.replace(" ", "%").replace("-", "%")
+            name = clean_accents(name)
+            query = query.filter(
+                sa.or_(
+                    sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{name}%"),
+                    sa.func.unaccent(offerers_models.Offerer.city).ilike(f"%{name}%"),
+                    sa.func.unaccent(
+                        sa.func.concat(users_models.User.firstName, " ", users_models.User.lastName)
+                    ).ilike(f"%{name}%"),
+                )
+            )
+
     if status:
         query = query.filter(cls.validationStatus.in_(status))  # type: ignore [union-attr]
 
@@ -1416,41 +1447,15 @@ def list_offerers_to_be_validated(
     )
 
     if q:
-        sanitized_q = email_utils.sanitize_email(q)
-
-        if sanitized_q.isnumeric():
-            num_digits = len(sanitized_q)
-            if num_digits == 9:
-                query = query.filter(offerers_models.Offerer.siren == sanitized_q)
-            elif num_digits == 5:
-                query = query.filter(offerers_models.Offerer.postalCode == sanitized_q)
-            elif num_digits in (2, 3):
-                query = query.filter(offerers_models.Offerer.departementCode == sanitized_q)
-            else:
-                raise exceptions.InvalidSiren(
-                    "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
-                )
-        elif email_utils.is_valid_email(sanitized_q):
+        if email_utils.is_valid_email(email_utils.sanitize_email(q)):
             # Filter by attached user email address
             query = query.join(offerers_models.UserOfferer).join(users_models.User)
-            query = query.filter(users_models.User.email == sanitized_q)
         else:
-            name = q.replace(" ", "%").replace("-", "%")
-            name = clean_accents(name)
             # outerjoin so that we filter on offerer name entities which may have no user attached
             query = query.outerjoin(offerers_models.UserOfferer).outerjoin(users_models.User)
-            query = query.filter(
-                sa.or_(
-                    sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{name}%"),
-                    sa.func.unaccent(offerers_models.Offerer.city).ilike(f"%{name}%"),
-                    sa.func.unaccent(
-                        sa.func.concat(users_models.User.firstName, " ", users_models.User.lastName)
-                    ).ilike(f"%{name}%"),
-                )
-            )
 
     query = _apply_query_filters(
-        query, regions, tags, status, from_datetime, to_datetime, offerers_models.Offerer, offerers_models.Offerer.id
+        query, q, regions, tags, status, from_datetime, to_datetime, offerers_models.Offerer, offerers_models.Offerer.id
     )
 
     return query.distinct()
@@ -1508,32 +1513,9 @@ def list_users_offerers_to_be_validated(
     if offerer_status:
         query = query.filter(offerers_models.Offerer.validationStatus.in_(offerer_status))
 
-    if q:
-        sanitized_q = email_utils.sanitize_email(q)
-
-        if sanitized_q.isnumeric():
-            if len(sanitized_q) == 9:
-                query = query.filter(offerers_models.Offerer.siren == sanitized_q)
-            else:
-                raise exceptions.InvalidSiren("Le nombre de chiffres ne correspond pas à un SIREN")
-        elif email_utils.is_valid_email(sanitized_q):
-            query = query.filter(users_models.User.email == sanitized_q)
-        else:
-
-            name = q.replace(" ", "%").replace("-", "%")
-            name = clean_accents(name)
-
-            query = query.filter(
-                sa.or_(
-                    sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{name}%"),
-                    sa.func.unaccent(
-                        sa.func.concat(users_models.User.firstName, " ", users_models.User.lastName)
-                    ).ilike(f"%{name}%"),
-                )
-            )
-
     return _apply_query_filters(
         query,
+        q,
         regions,
         tags,
         status,

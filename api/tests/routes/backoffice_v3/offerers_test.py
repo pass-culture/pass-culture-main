@@ -1543,6 +1543,42 @@ class ListUserOffererToValidateTest:
         rows = html_parser.extract_table_rows(response.data)
         assert [int(row["ID Compte pro"]) for row in rows] == [uo.user.id for uo in (user_offerer_3, user_offerer_2)]
 
+    def test_list_search_by_postal_code(self, authenticated_client, user_offerer_to_be_validated):
+        # when
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(
+                url_for("backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", q="97100")
+            )
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Email Compte pro"] for row in rows} == {"b@example.com"}
+
+    def test_list_search_by_department_code(self, authenticated_client, user_offerer_to_be_validated):
+        # when
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(
+                url_for("backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", q="972")
+            )
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Email Compte pro"] for row in rows} == {"a@example.com", "d@example.com"}
+
+    def test_list_search_by_city(self, authenticated_client, user_offerer_to_be_validated):
+        # when
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(
+                url_for("backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", q="Fort De France")
+            )
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Email Compte pro"] for row in rows} == {"a@example.com"}
+
     def test_list_search_by_email(self, authenticated_client, user_offerer_to_be_validated):
         # when
         with assert_no_duplicated_queries():
