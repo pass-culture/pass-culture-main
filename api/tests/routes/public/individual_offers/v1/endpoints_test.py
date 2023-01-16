@@ -1554,6 +1554,22 @@ class PatchProductTest:
         assert product_offer.withdrawalDetails is None
         assert product_offer.bookingEmail == "notify@example.com"
 
+    def test_updates_booking_email(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            bookingEmail="notify@example.com",
+            lastProvider=individual_offers_api_provider,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/{product_offer.id}",
+            json={"bookingEmail": "spam@example.com"},
+        )
+
+        assert response.status_code == 200
+        assert product_offer.bookingEmail == "spam@example.com"
+
     def test_sets_accessibility_partially(self, individual_offers_api_provider, client):
         api_key = offerers_factories.ApiKeyFactory()
         product_offer = offers_factories.ThingOfferFactory(
