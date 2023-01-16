@@ -12,7 +12,7 @@ import xlsxwriter
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.bookings.utils import convert_real_booking_dates_utc_to_venue_timezone
 from pcapi.core.educational import models
-from pcapi.core.educational.repository import COLLECTIVE_BOOKING_STATUS_LABELS
+from pcapi.core.educational import repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.collective_offers_serialize import CollectiveOfferOfferVenueResponseModel
@@ -115,8 +115,8 @@ class ListCollectiveBookingsResponseModel(BaseModel):
 def _get_booking_status(status: models.CollectiveBookingStatus, is_confirmed: bool) -> str:
     cancellation_limit_date_exists_and_past = is_confirmed
     if cancellation_limit_date_exists_and_past and status == models.CollectiveBookingStatus.CONFIRMED:
-        return COLLECTIVE_BOOKING_STATUS_LABELS["confirmed"]
-    return COLLECTIVE_BOOKING_STATUS_LABELS[status]
+        return repository.COLLECTIVE_BOOKING_STATUS_LABELS["confirmed"]
+    return repository.COLLECTIVE_BOOKING_STATUS_LABELS[status]
 
 
 def build_status_history(
@@ -409,6 +409,7 @@ class CollectiveBookingByIdResponseModel(BaseModel):
     numberOfTickets: int
     venuePostalCode: str | None
     isCancellable: bool
+    bankInformationStatus: repository.CollectiveBookingBankInformationStatus
 
     class Config:
         orm_mode = True
@@ -426,4 +427,5 @@ class CollectiveBookingByIdResponseModel(BaseModel):
             numberOfTickets=booking.collectiveStock.numberOfTickets,
             venuePostalCode=booking.venue.postalCode,
             isCancellable=booking.is_cancellable_from_offerer,
+            bankInformationStatus=repository.get_banking_information_status_for_booking(booking.id),
         )
