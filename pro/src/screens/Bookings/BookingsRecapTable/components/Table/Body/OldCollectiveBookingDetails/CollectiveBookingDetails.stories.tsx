@@ -1,7 +1,11 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { OfferAddressType, StudentLevels } from 'apiClient/v1'
+import {
+  CollectiveBookingBankInformationStatus,
+  OfferAddressType,
+  StudentLevels,
+} from 'apiClient/v1'
 
 import CollectiveBookingDetails, {
   ICollectiveBookingDetailsProps,
@@ -20,6 +24,7 @@ export const Default = Template.bind({})
 Default.args = {
   bookingDetails: {
     id: 1,
+    bankInformationStatus: CollectiveBookingBankInformationStatus.ACCEPTED,
     beginningDatetime: new Date('2022-01-23T10:30:00').toISOString(),
     venuePostalCode: '75017',
     offerVenue: {

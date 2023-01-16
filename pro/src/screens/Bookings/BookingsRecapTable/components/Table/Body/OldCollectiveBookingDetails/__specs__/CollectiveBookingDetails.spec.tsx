@@ -7,7 +7,11 @@ import { Router } from 'react-router-dom'
 import '@testing-library/jest-dom'
 
 import { api } from 'apiClient/api'
-import { OfferAddressType, StudentLevels } from 'apiClient/v1'
+import {
+  CollectiveBookingBankInformationStatus,
+  OfferAddressType,
+  StudentLevels,
+} from 'apiClient/v1'
 import { configureTestStore } from 'store/testUtils'
 
 import CollectiveBookingDetails from '../CollectiveBookingDetails'
@@ -20,6 +24,7 @@ jest.mock('apiClient/api', () => ({
 
 const bookingDetails = {
   id: 1,
+  bankInformationStatus: CollectiveBookingBankInformationStatus.ACCEPTED,
   beginningDatetime: new Date('2022-01-23T10:30:00').toISOString(),
   venuePostalCode: '75017',
   offerVenue: {
