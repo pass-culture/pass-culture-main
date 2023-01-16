@@ -1,5 +1,10 @@
 import { api } from 'apiClient/api'
-import { ApiError, OfferAddressType, StudentLevels } from 'apiClient/v1'
+import {
+  ApiError,
+  CollectiveBookingBankInformationStatus,
+  OfferAddressType,
+  StudentLevels,
+} from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
@@ -25,6 +30,7 @@ describe('getCollectiveBookingAdapter', () => {
 
   it('should return booking details', async () => {
     const booking = {
+      bankInformationStatus: CollectiveBookingBankInformationStatus.ACCEPTED,
       beginningDatetime: '2022-01-01T00:00:00',
       educationalInstitution: {
         city: 'Paris',

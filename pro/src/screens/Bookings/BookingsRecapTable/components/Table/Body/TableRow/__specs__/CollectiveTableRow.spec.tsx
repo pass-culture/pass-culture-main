@@ -9,6 +9,7 @@ import type { Row } from 'react-table'
 import { api } from 'apiClient/api'
 import {
   CancelablePromise,
+  CollectiveBookingBankInformationStatus,
   CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
   OfferAddressType,
@@ -44,6 +45,7 @@ describe('CollectiveTableRow', () => {
   beforeAll(() => {
     jest.spyOn(api, 'getCollectiveBookingById').mockResolvedValue({
       id: 1,
+      bankInformationStatus: CollectiveBookingBankInformationStatus.ACCEPTED,
       beginningDatetime: new Date('2022-01-23T10:30:00').toISOString(),
       venuePostalCode: '75017',
       offerVenue: {
