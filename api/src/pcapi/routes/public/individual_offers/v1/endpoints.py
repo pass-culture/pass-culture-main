@@ -535,3 +535,27 @@ def edit_product(
         raise api_errors.ApiErrors(e.errors, status_code=400)
 
     return serialization.ProductOfferResponse.build_product_offer(offer)
+
+
+@blueprint.v1_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["DELETE"])
+@spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG], on_success_status=204)
+@api_key_required
+def delete_event_date(event_id: int, date_id: int) -> None:
+    """
+    Delete an event date.
+
+    All cancellable bookings (i.e not used) will be cancelled. To prevent from further bookings, you may alternatively update the date's quantity to the bookedQuantity (but not below).
+    """
+    offer = (
+        _retrieve_offer_query(event_id)
+        .filter(offers_models.Offer.isEvent == True)
+        .options(sqla_orm.joinedload(offers_models.Offer.stocks))
+        .one_or_none()
+    )
+    if not offer:
+        raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
+    stock_to_delete = next((stock for stock in offer.stocks if stock.id == date_id and not stock.isSoftDeleted), None)
+    if not stock_to_delete:
+        raise api_errors.ApiErrors({"date_id": ["The date could not be found"]}, status_code=404)
+
+    offers_api.delete_stock(stock_to_delete)
