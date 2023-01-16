@@ -4,12 +4,14 @@
 
 .base-radio {
   display: inline-flex;
-  cursor: pointer;
   align-items: center;
+  cursor: pointer;
   width: 100%;
 
   &-label {
     line-height: rem.torem(16px);
+    flex-grow: 1;
+    cursor: pointer;
 
     :disabled + & {
       color: forms.$input-text-color-disabled;
@@ -79,4 +81,19 @@
         );
     }
   }
+}
+
+.with-border {
+  border: rem.torem(1px) solid colors.$black;
+  border-radius: rem.torem(8px);
+  padding:  0 0 0 rem.torem(16px);
+
+  .base-radio-label {
+    padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) 0;
+  }
+}
+
+.with-border-primary {
+  border: rem.torem(1px) solid colors.$primary;
+  color: colors.$primary;
 }
