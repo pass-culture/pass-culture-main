@@ -80,17 +80,17 @@ class Returns200Test:
                     "phoneNumber": institution.phoneNumber,
                     "institutionId": institution.institutionId,
                 },
-                "booking_identifier": humanize(booking.id),
-                "booking_cancellation_limit_date": "2022-04-30T12:15:00+02:00",
-                "booking_confirmation_date": "2022-03-12T11:15:00+01:00",
-                "booking_confirmation_limit_date": "2022-04-30T17:00:00+02:00",
-                "booking_date": "2022-03-11T11:15:00+01:00",
-                "booking_id": str(booking.id),
-                "booking_amount": 1200.00,
-                "booking_token": None,
-                "booking_status": "confirmed",
-                "booking_is_duo": False,
-                "booking_status_history": [
+                "bookingIdentifier": humanize(booking.id),
+                "bookingCancellationLimitDate": "2022-04-30T12:15:00+02:00",
+                "bookingConfirmationDate": "2022-03-12T11:15:00+01:00",
+                "bookingConfirmationLimitDate": "2022-04-30T17:00:00+02:00",
+                "bookingDate": "2022-03-11T11:15:00+01:00",
+                "bookingId": str(booking.id),
+                "bookingAmount": 1200.00,
+                "bookingToken": None,
+                "bookingStatus": "confirmed",
+                "bookingIsDuo": False,
+                "bookingStatusHistory": [
                     {
                         "status": "pending",
                         "date": "2022-03-11T11:15:00+01:00",
@@ -169,8 +169,8 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         booking_recap = response.json["bookingsRecap"][0]
-        assert booking_recap["booking_status"] == "pending"
-        assert booking_recap["booking_status_history"] == [
+        assert booking_recap["bookingStatus"] == "pending"
+        assert booking_recap["bookingStatusHistory"] == [
             {
                 "status": "pending",
                 "date": "2022-03-11T11:15:00+01:00",
@@ -209,8 +209,8 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         booking_recap = response.json["bookingsRecap"][0]
-        assert booking_recap["booking_status"] == "cancelled"
-        assert booking_recap["booking_status_history"] == [
+        assert booking_recap["bookingStatus"] == "cancelled"
+        assert booking_recap["bookingStatusHistory"] == [
             {
                 "status": "pending",
                 "date": "2022-03-11T11:15:00+01:00",
@@ -261,8 +261,8 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         booking_recap = response.json["bookingsRecap"][0]
-        assert booking_recap["booking_status"] == "cancelled"
-        assert booking_recap["booking_status_history"] == [
+        assert booking_recap["bookingStatus"] == "cancelled"
+        assert booking_recap["bookingStatusHistory"] == [
             {
                 "status": "pending",
                 "date": "2022-03-11T11:15:00+01:00",
@@ -307,8 +307,8 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         booking_recap = response.json["bookingsRecap"][0]
-        assert booking_recap["booking_status"] == "reimbursed"
-        assert booking_recap["booking_status_history"] == [
+        assert booking_recap["bookingStatus"] == "reimbursed"
+        assert booking_recap["bookingStatusHistory"] == [
             {
                 "status": "pending",
                 "date": "2022-03-11T11:15:00+01:00",
@@ -362,8 +362,8 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         booking_recap = response.json["bookingsRecap"][0]
-        assert booking_recap["booking_status"] == "pending"
-        assert booking_recap["booking_status_history"] == [
+        assert booking_recap["bookingStatus"] == "pending"
+        assert booking_recap["bookingStatusHistory"] == [
             {
                 "status": "pending",
                 "date": "2022-03-11T11:15:00+01:00",
@@ -424,17 +424,17 @@ class Returns200Test:
                     "phoneNumber": institution.phoneNumber,
                     "institutionId": institution.institutionId,
                 },
-                "booking_identifier": humanize(booking.id),
-                "booking_cancellation_limit_date": "2022-04-30T12:15:00+02:00",
-                "booking_confirmation_date": "2022-03-12T11:15:00+01:00",
-                "booking_confirmation_limit_date": "2022-04-30T17:00:00+02:00",
-                "booking_date": "2022-03-11T11:15:00+01:00",
-                "booking_id": str(booking.id),
-                "booking_amount": 1200.00,
-                "booking_token": None,
-                "booking_status": "confirmed",
-                "booking_is_duo": False,
-                "booking_status_history": [
+                "bookingIdentifier": humanize(booking.id),
+                "bookingCancellationLimitDate": "2022-04-30T12:15:00+02:00",
+                "bookingConfirmationDate": "2022-03-12T11:15:00+01:00",
+                "bookingConfirmationLimitDate": "2022-04-30T17:00:00+02:00",
+                "bookingDate": "2022-03-11T11:15:00+01:00",
+                "bookingId": str(booking.id),
+                "bookingAmount": 1200.00,
+                "bookingToken": None,
+                "bookingStatus": "confirmed",
+                "bookingIsDuo": False,
+                "bookingStatusHistory": [
                     {
                         "status": "pending",
                         "date": "2022-03-11T11:15:00+01:00",
@@ -511,17 +511,17 @@ class Returns200Test:
                     "phoneNumber": institution.phoneNumber,
                     "institutionId": institution.institutionId,
                 },
-                "booking_identifier": humanize(booking.id),
-                "booking_cancellation_limit_date": "2022-04-30T12:15:00+02:00",
-                "booking_confirmation_date": "2022-03-12T11:15:00+01:00",
-                "booking_confirmation_limit_date": "2022-04-30T17:00:00+02:00",
-                "booking_date": "2022-03-11T11:15:00+01:00",
-                "booking_id": str(booking.id),
-                "booking_amount": 1200.00,
-                "booking_token": None,
-                "booking_status": "confirmed",
-                "booking_is_duo": False,
-                "booking_status_history": [
+                "bookingIdentifier": humanize(booking.id),
+                "bookingCancellationLimitDate": "2022-04-30T12:15:00+02:00",
+                "bookingConfirmationDate": "2022-03-12T11:15:00+01:00",
+                "bookingConfirmationLimitDate": "2022-04-30T17:00:00+02:00",
+                "bookingDate": "2022-03-11T11:15:00+01:00",
+                "bookingId": str(booking.id),
+                "bookingAmount": 1200.00,
+                "bookingToken": None,
+                "bookingStatus": "confirmed",
+                "bookingIsDuo": False,
+                "bookingStatusHistory": [
                     {
                         "status": "pending",
                         "date": "2022-03-11T11:15:00+01:00",
@@ -600,17 +600,17 @@ class Returns200Test:
                     "phoneNumber": institution.phoneNumber,
                     "institutionId": institution.institutionId,
                 },
-                "booking_identifier": humanize(booking.id),
-                "booking_date": "2022-02-11T11:15:00+01:00",
-                "booking_cancellation_limit_date": "2022-02-23T11:15:00+01:00",
-                "booking_confirmation_date": "2022-02-12T11:15:00+01:00",
-                "booking_confirmation_limit_date": "2022-05-08T17:00:00+02:00",
-                "booking_id": str(booking.id),
-                "booking_amount": 1200.00,
-                "booking_token": None,
-                "booking_status": "validated",
-                "booking_is_duo": False,
-                "booking_status_history": [
+                "bookingIdentifier": humanize(booking.id),
+                "bookingDate": "2022-02-11T11:15:00+01:00",
+                "bookingCancellationLimitDate": "2022-02-23T11:15:00+01:00",
+                "bookingConfirmationDate": "2022-02-12T11:15:00+01:00",
+                "bookingConfirmationLimitDate": "2022-05-08T17:00:00+02:00",
+                "bookingId": str(booking.id),
+                "bookingAmount": 1200.00,
+                "bookingToken": None,
+                "bookingStatus": "validated",
+                "bookingIsDuo": False,
+                "bookingStatusHistory": [
                     {
                         "status": "pending",
                         "date": "2022-02-11T11:15:00+01:00",
