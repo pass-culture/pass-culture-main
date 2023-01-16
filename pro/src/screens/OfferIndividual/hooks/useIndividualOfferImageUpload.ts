@@ -32,11 +32,14 @@ export const useIndividualOfferImageUpload = () => {
   >(offer && offer.image ? offer.image : undefined)
 
   const handleImageOnSubmit = useCallback(
-    async (imageOfferId: string) => {
-      if (imageOfferCreationArgs === undefined) {
+    async (imageOfferId: string, imageCreationArgs?: IOnImageUploadArgs) => {
+      // Param is passed through state when the offer is not created yet and through param
+      // in edition, which is not ideal. We should only have one flow here
+      const creationArgs = imageOfferCreationArgs ?? imageCreationArgs
+      if (creationArgs === undefined) {
         return
       }
-      const { imageFile, credit, cropParams } = imageOfferCreationArgs
+      const { imageFile, credit, cropParams } = creationArgs
 
       const response = await createThumbnailAdapter({
         offerId: imageOfferId,
@@ -75,12 +78,13 @@ export const useIndividualOfferImageUpload = () => {
     credit,
     cropParams,
   }: IOnImageUploadArgs) => {
+    const creationArgs = {
+      imageFile,
+      credit,
+      cropParams,
+    }
     if (offerId === null) {
-      setImageOfferCreationArgs({
-        imageFile,
-        credit,
-        cropParams,
-      })
+      setImageOfferCreationArgs(creationArgs)
       imageFileToDataUrl(imageFile, imageUrl => {
         setImageOffer({
           originalUrl: imageUrl,
@@ -106,7 +110,7 @@ export const useIndividualOfferImageUpload = () => {
       })
     } else {
       try {
-        await handleImageOnSubmit(offerId)
+        await handleImageOnSubmit(offerId, creationArgs)
         logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
           from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
