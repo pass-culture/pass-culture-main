@@ -17,6 +17,7 @@ class Return200Test:
             institutionType="toto",
         )
         institution2 = EducationalInstitutionFactory(name="zzzzzzzzzzzzzzzzz", institutionType="tata")
+        EducationalInstitutionFactory(isActive=False)
         pro_user = users_factories.ProFactory()
 
         client.with_session_auth(pro_user.email)
