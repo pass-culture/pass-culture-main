@@ -149,6 +149,7 @@ describe('OfferIndividualForm', () => {
       readOnlyFields: [],
       onImageUpload: jest.fn(),
       onImageDelete: jest.fn(),
+      offerSubtype: null,
     }
   })
 

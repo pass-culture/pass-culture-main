@@ -8,6 +8,7 @@ import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
+import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { InfoBox, Select } from 'ui-kit'
 
@@ -16,6 +17,7 @@ import styles from '../OfferIndividualForm.module.scss'
 import { useSubcategoryOptions } from './hooks/useSubcategoryOptions'
 import useSubCategoryUpdates from './hooks/useSubCategoryUpdates/useSubCategoryUpdates'
 import { MusicTypes } from './MusicTypes'
+import { OfferSubtypeTag } from './OfferSubtypeTag/OfferSubtypeTag'
 import { ShowTypes } from './ShowTypes'
 
 export interface ICategoriesProps {
@@ -23,6 +25,7 @@ export interface ICategoriesProps {
   subCategories: IOfferSubCategory[]
   readOnlyFields?: string[]
   showAddVenueBanner?: boolean
+  offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
 }
 
 const buildCategoryOptions = (categories: IOfferCategory[]) => {
@@ -39,6 +42,7 @@ const Categories = ({
   subCategories,
   readOnlyFields = [],
   showAddVenueBanner = false,
+  offerSubtype,
 }: ICategoriesProps): JSX.Element => {
   const {
     values: { categoryId, subCategoryFields, offererId },
@@ -73,7 +77,19 @@ const Categories = ({
   const hasShowType = subCategoryFields.includes('showType')
 
   return (
-    <FormLayout.Section title="Type d’offre">
+    <FormLayout.Section
+      title={
+        <>
+          <span>Type d’offre</span>
+          {offerSubtype !== null && (
+            <OfferSubtypeTag
+              className={styles['offer-type-tag']}
+              offerSubtype={offerSubtype}
+            />
+          )}
+        </>
+      }
+    >
       <FormLayout.Row
         className={cn({
           [styles['category-row']]: !(hasSubCategory || showAddVenueBanner),

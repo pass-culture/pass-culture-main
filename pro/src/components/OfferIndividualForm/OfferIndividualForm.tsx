@@ -6,7 +6,7 @@ import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/Mod
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { TOffererName } from 'core/Offerers/types'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
 import {
   IOfferCategory,
   IOfferIndividualImage,
@@ -36,6 +36,7 @@ export interface IOfferIndividualFormProps {
   onImageDelete: () => Promise<void>
   readOnlyFields?: string[]
   imageOffer?: IOfferIndividualImage
+  offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
 }
 
 const OfferIndividualForm = ({
@@ -47,6 +48,7 @@ const OfferIndividualForm = ({
   onImageUpload,
   onImageDelete,
   imageOffer,
+  offerSubtype,
 }: IOfferIndividualFormProps) => {
   const {
     currentUser: { isAdmin },
@@ -92,6 +94,7 @@ const OfferIndividualForm = ({
         subCategories={subCategories}
         readOnlyFields={readOnlyFields}
         showAddVenueBanner={showAddVenueBanner}
+        offerSubtype={offerSubtype}
       />
       {showFullForm && (
         <>

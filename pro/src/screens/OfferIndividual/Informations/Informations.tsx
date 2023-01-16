@@ -41,7 +41,7 @@ import { logTo } from '../utils/logTo'
 import { filterCategories } from './utils'
 import {
   getCategoryStatusFromOfferSubtype,
-  getOfferSubtypeFromParams,
+  getOfferSubtypeFromParamsOrOffer,
   isOfferSubtypeEvent,
 } from './utils/filterCategories/filterCategories'
 
@@ -195,7 +195,7 @@ const Informations = ({
   )
 
   const { search } = useLocation()
-  const offerSubtype = getOfferSubtypeFromParams(search)
+  const offerSubtype = getOfferSubtypeFromParamsOrOffer(search, offer)
   const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
   // TODO to remove once the hub that always redirects to the good url with query params is in prod
   const legacyCategoryStatus =
@@ -224,6 +224,7 @@ const Informations = ({
             onImageUpload={onImageUpload}
             onImageDelete={onImageDelete}
             imageOffer={imageOffer}
+            offerSubtype={offerSubtype}
           />
           <ActionBar
             onClickNext={handleNextStep()}
