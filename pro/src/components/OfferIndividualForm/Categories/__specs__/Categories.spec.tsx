@@ -8,7 +8,7 @@ import * as yup from 'yup'
 
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { SubmitButton } from 'ui-kit'
 
@@ -103,7 +103,11 @@ describe('OfferIndividual section: Categories', () => {
         isSelectable: true,
       },
     ]
-    props = { categories, subCategories }
+    props = {
+      categories,
+      subCategories,
+      offerSubtype: INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT,
+    }
   })
 
   it('should render the component', async () => {
