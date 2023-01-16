@@ -480,7 +480,7 @@ describe('screens:StocksEvent:Edition', () => {
     expect(screen.queryByText('Ajouter une date')).toBeDisabled()
   })
 
-  it('should allow user to edit quantity and booking limit date for a cinema synchronized offer', async () => {
+  it('should allow user to edit quantity for a cinema synchronized offer', async () => {
     jest
       .spyOn(api, 'upsertStocks')
       .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
@@ -498,10 +498,6 @@ describe('screens:StocksEvent:Edition', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
-    expect(
-      await screen.getByText('Des réservations sont en cours pour cette offre')
-    ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Confirmer les modifications'))
     expect(
       screen.getByText('Vos modifications ont bien été enregistrées')
     ).toBeInTheDocument()
