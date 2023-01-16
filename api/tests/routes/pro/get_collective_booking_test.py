@@ -2,6 +2,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.utils.human_ids import dehumanize
@@ -30,7 +31,51 @@ class Returns200Test:
             "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": ""},
             "beginningDatetime": "2022-05-02T15:00:00",
             "students": ["Lycée - Seconde"],
-            "price": int(booking.collectiveStock.price),
+            "bankInformationStatus": "MISSING",
+            "price": float(booking.collectiveStock.price),
+            "educationalInstitution": {
+                "id": booking.educationalInstitution.id,
+                "institutionType": booking.educationalInstitution.institutionType,
+                "name": booking.educationalInstitution.name,
+                "city": booking.educationalInstitution.city,
+                "postalCode": booking.educationalInstitution.postalCode,
+                "phoneNumber": booking.educationalInstitution.phoneNumber,
+                "institutionId": booking.educationalInstitution.institutionId,
+            },
+            "educationalRedactor": {
+                "id": booking.educationalRedactor.id,
+                "civility": booking.educationalRedactor.civility,
+                "email": booking.educationalRedactor.email,
+                "firstName": booking.educationalRedactor.firstName,
+                "lastName": booking.educationalRedactor.lastName,
+            },
+            "numberOfTickets": booking.collectiveStock.numberOfTickets,
+            "venuePostalCode": booking.venue.postalCode,
+            "isCancellable": booking.is_cancellable_from_offerer,
+        }
+
+    @freeze_time("2022-05-01 15:00:00")
+    def test_get_collective_booking_with_banking_informations(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+        )
+        offerers_factories.VenueReimbursementPointLinkFactory(
+            venue=booking.collectiveStock.collectiveOffer.venue,
+            reimbursementPoint__bankInformation=finance_factories.BankInformationFactory(status="DRAFT"),
+        )
+
+        client = client.with_session_auth(user_offerer.user.email)
+        response = client.get(f"collective/bookings/{humanize(booking.id)}")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "id": booking.id,
+            "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": ""},
+            "beginningDatetime": "2022-05-02T15:00:00",
+            "students": ["Lycée - Seconde"],
+            "bankInformationStatus": "DRAFT",
+            "price": float(booking.collectiveStock.price),
             "educationalInstitution": {
                 "id": booking.educationalInstitution.id,
                 "institutionType": booking.educationalInstitution.institutionType,
