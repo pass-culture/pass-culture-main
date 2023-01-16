@@ -848,9 +848,12 @@ def get_all_educational_domains_ordered_by_name() -> list[educational_models.Edu
 
 
 def get_all_educational_institutions(offset: int = 0, limit: int = 0) -> tuple[tuple, int]:
-    total = db.session.query(sa.func.count(educational_models.EducationalInstitution.id)).one()[0]
+    query = db.session.query(sa.func.count(educational_models.EducationalInstitution.id))
+    query = query.filter(educational_models.EducationalInstitution.isActive == True)
+    total = query.one()[0]
 
     query = educational_models.EducationalInstitution.query
+    query = query.filter(educational_models.EducationalInstitution.isActive == True)
     query = query.order_by(educational_models.EducationalInstitution.name)
     query = query.with_entities(
         educational_models.EducationalInstitution.name,
