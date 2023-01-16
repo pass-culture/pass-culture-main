@@ -30,15 +30,6 @@ parameters:
   backoffice-front_cache_key:
     type: string
     default: 'node_modules-14.13-{{ checksum "backoffice/yarn.lock" }}'
-  run_measurement_workflow:
-    type: boolean
-    default: false
-  measure_workflow_id:
-    type: string
-    default: ''
-  has_run_e2e_test:
-    type: string
-    default: ''
 
 ###################
 #  EXECUTORS
@@ -1145,35 +1136,6 @@ jobs:
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
       - run: kubectl -n <<parameters.helm_environment>> rollout restart deploy
 
-  measure_workflow_execution_time:
-    docker:
-      - image: cimg/python:3.10
-        auth:
-          username: $DOCKERHUB_USER
-          password: $DOCKERHUB_PASSWORD
-    steps:
-      - checkout
-      - run:
-          name: Measure circle CI workflow execution time from workflow_id
-          command: |
-            pip install -U datetime tzlocal
-            python3 scripts/measure_workflow_execution_time.py $CIRCLE_CI_TOKEN $METRICS_ENDPOINT << pipeline.parameters.measure_workflow_id >> << pipeline.parameters.has_run_e2e_test >>
-
-  trigger_measure_workflow_execution_time:
-    docker:
-      - image: cimg/base:2021.04
-        auth:
-          username: $DOCKERHUB_USER
-          password: $DOCKERHUB_PASSWORD
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - run:
-          name: Trigger measure workflow execution time
-          command: |
-            HAS_RUN_E2E=$([[ -f "/tmp/workspace/e2e-test-launched.txt" ]] && echo "True" || echo "False")
-            curl --request POST --url https://circleci.com/api/v2/project/github/pass-culture/pass-culture-main/pipeline --header "Circle-Token: $CIRCLE_CI_TOKEN" --header 'content-type: application/json' --data "{\"parameters\":{\"run_measurement_workflow\":true, \"measure_workflow_id\":\"$CIRCLE_WORKFLOW_ID\", \"has_run_e2e_test\":\"$HAS_RUN_E2E\"}}"
-
 ###################
 #  WORKFLOWS
 ###################
@@ -1181,7 +1143,6 @@ jobs:
 workflows:
   version: 2
   commit:
-    unless: << pipeline.parameters.run_measurement_workflow >>
     jobs:
       - build-and-push-image:
           context:
@@ -1387,27 +1348,6 @@ workflows:
 #           - GCP_EHP
 #         app_environment: testing
 #         service_account_backoffice_key: GCP_BACKOFFICE_TESTING_KEY
-#      - trigger_measure_workflow_execution_time:
-#         filters:
-#           branches:
-#             ignore:
-#               - production
-#               - staging
-#               - integration
-#               - master
-#               - docs
-#         requires:
-#           - type-checking-pro
-#           - quality-pro
-#           - type-checking-adage-front
-#           - quality-adage-front
-#           - quality-api
-#           - tests-api
-#           - tests-adage-front
-#           - tests-pro-unit-tests
-#           - tests-pro-e2e-tests
-#         context:
-#           - CI_MEASURE
   gcp-ehp:
     jobs:
       - generate-pcapi-helm-values-files:
@@ -1510,9 +1450,3 @@ workflows:
           context:
             - GCP
             - GCP_PROD
-  measure_execution_time:
-    when: << pipeline.parameters.run_measurement_workflow >>
-    jobs:
-      - measure_workflow_execution_time:
-          context:
-            - CI_MEASURE
