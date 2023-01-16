@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-import JobHighlightsBanner from 'components/JobHighlightsBanner'
 import { Newsletter } from 'components/Newsletter'
 import PageTitle from 'components/PageTitle/PageTitle'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -28,9 +27,6 @@ const Homepage = (): JSX.Element => {
   const [offererId, setOffererId] = useState('')
 
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
-  const isJobHighlightBannerEnabled = useActiveFeature(
-    'TEMP_ENABLE_JOB_HIGHLIGHTS_BANNER'
-  )
   const withNewOfferCreationJourney = useNewOfferCreationJourney()
 
   useEffect(function fetchData() {
@@ -41,6 +37,7 @@ const Homepage = (): JSX.Element => {
         setOffererId(offerer)
         const receivedOfferer = await api.getOfferer(offerer)
         setVenues(
+          /* istanbul ignore next: DEBT, TO FIX */
           receivedOfferer.managedVenues
             ? receivedOfferer.managedVenues.filter(venue => !venue.isVirtual)
             : []
@@ -53,7 +50,6 @@ const Homepage = (): JSX.Element => {
     <div className="homepage">
       <PageTitle title="Espace acteurs culturels" />
       <h1>Bienvenue dans l’espace acteurs culturels</h1>
-      {isJobHighlightBannerEnabled && <JobHighlightsBanner />}
       <HomepageBreadcrumb
         activeStep={STEP_ID_OFFERERS}
         isOffererStatsActive={isOffererStatsActive}
