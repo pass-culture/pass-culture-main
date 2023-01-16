@@ -53,7 +53,7 @@ export const dataProvider: DataProvider = {
   },
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore TODO: (akarki) - reformat ${response} when API is ready for it
+  //@ts-expect-error TODO: (akarki) - reformat ${response} when API is ready for it
   async getOne(resource, params) {
     switch (resource) {
       case 'public_accounts': {

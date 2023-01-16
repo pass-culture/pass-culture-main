@@ -44,7 +44,6 @@ describe('updateAllCollectiveOffersActiveStatusAdapter', () => {
 
   it('should return an error when the update has failed', async () => {
     // given
-    // @ts-ignore
     jest
       .spyOn(api, 'patchAllCollectiveOffersActiveStatus')
       .mockRejectedValueOnce(

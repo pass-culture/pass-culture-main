@@ -64,7 +64,7 @@ export const CinemaProviderForm = ({
                   className="cpf-is-duo"
                   label="Accepter les réservations DUO"
                   name="isDuo"
-                  // @ts-ignore
+                  // @ts-expect-error
                   value={formik.values.isDuo}
                 />
                 <span

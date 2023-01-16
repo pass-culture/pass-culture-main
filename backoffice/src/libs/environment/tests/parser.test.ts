@@ -21,12 +21,12 @@ describe('parseEnvVariables', () => {
 
   it('convert "true" in string to true in boolean', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore TODO: replace with useful boolean when available
+    // @ts-expect-error TODO: replace with useful boolean when available
     expect(convertedConfig.TEST_BOOLEAN).toBe(true)
   })
   it('convert "false" in string to false in boolean', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore TODO: replace with useful boolean when available
+    // @ts-expect-error TODO: replace with useful boolean when available
     const { TEST_BOOLEAN } = parseEnvVariables({
       ...mockedConfig,
       TEST_BOOLEAN: 'false',

@@ -80,7 +80,7 @@ export const authProvider: AuthProvider = {
     const now = new Date()
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore 12356
+    // @ts-expect-error 12356
     if (now.getTime() > jwt.exp * 1000) {
       throw new Error(getErrorMessage('errors.token.expired'))
     }

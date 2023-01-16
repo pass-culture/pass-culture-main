@@ -106,7 +106,7 @@ const AllocineProviderParameters = ({
       </Button>
       {isOpenedFormDialog && (
         <AllocineProviderFormDialog
-          // @ts-ignore
+          // @ts-expect-error
           initialValues={initialValues}
           onCancel={closeFormDialog}
           onConfirm={onConfirmDialog}

@@ -54,7 +54,7 @@ const StockSection = ({
 
   const stockWarningText = hasNoStock
     ? 'Vous n’avez aucun stock renseigné.'
-    : // @ts-ignore Other OfferStatus make stockWarningText be undefined wich is expected
+    : // @ts-expect-error Other OfferStatus make stockWarningText be undefined wich is expected
       {
         [OfferStatus.SOLD_OUT]: 'Votre stock est épuisé.',
         [OfferStatus.EXPIRED]: 'Votre stock est expiré.',

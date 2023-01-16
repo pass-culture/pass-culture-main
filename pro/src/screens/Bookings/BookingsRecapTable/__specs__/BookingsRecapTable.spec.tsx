@@ -125,7 +125,7 @@ describe('components | BookingsRecapTable', () => {
 
   it('should render the expected table with max given number of hits per page', () => {
     // Given
-    // @ts-ignore
+    // @ts-expect-error
     // eslint-disable-next-line
     constants.NB_BOOKINGS_PER_PAGE = 1
     const bookingsRecap = [bookingRecapFactory(), bookingRecapFactory()]
@@ -154,7 +154,7 @@ describe('components | BookingsRecapTable', () => {
 
   it('should render the expected table for collective audience', () => {
     // Given
-    // @ts-ignore
+    // @ts-expect-error
     // eslint-disable-next-line
     constants.NB_BOOKINGS_PER_PAGE = 1
     const bookingRecap = bookingRecapFactory(bookingInstitutionCustom)

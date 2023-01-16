@@ -43,7 +43,7 @@ export const patchCollectiveOfferTemplateAdapter: patchCollectiveOfferTemplateAd
       return {
         isOk: false,
         message: `Une erreur est survenue lors de la modification de votre offre.${
-          // @ts-ignore
+          // @ts-expect-error
           error?.message ? ` ${error?.message}` : ''
         }`,
         payload: null,
