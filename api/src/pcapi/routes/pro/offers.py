@@ -218,10 +218,33 @@ def patch_offer(
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     offer = rest.load_or_404(Offer, human_id=offer_id)
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-
+    update_body = body.dict(exclude_unset=True)
     try:
         with repository.transaction():
-            offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
+            offer = offers_api.update_offer(
+                offer,
+                ageMax=update_body.get("ageMax", offers_api.UNCHANGED),
+                ageMin=update_body.get("ageMin", offers_api.UNCHANGED),
+                audioDisabilityCompliant=update_body.get("audioDisabilityCompliant", offers_api.UNCHANGED),
+                bookingEmail=update_body.get("bookingEmail", offers_api.UNCHANGED),
+                conditions=update_body.get("conditions", offers_api.UNCHANGED),
+                description=update_body.get("description", offers_api.UNCHANGED),
+                durationMinutes=update_body.get("durationMinutes", offers_api.UNCHANGED),
+                externalTicketOfficeUrl=update_body.get("externalTicketOfficeUrl", offers_api.UNCHANGED),
+                extraData=update_body.get("extraData", offers_api.UNCHANGED),
+                isActive=update_body.get("isActive", offers_api.UNCHANGED),
+                isDuo=update_body.get("isDuo", offers_api.UNCHANGED),
+                isNational=update_body.get("isNational", offers_api.UNCHANGED),
+                mediaUrls=update_body.get("mediaUrls", offers_api.UNCHANGED),
+                mentalDisabilityCompliant=update_body.get("mentalDisabilityCompliant", offers_api.UNCHANGED),
+                motorDisabilityCompliant=update_body.get("motorDisabilityCompliant", offers_api.UNCHANGED),
+                name=update_body.get("name", offers_api.UNCHANGED),
+                url=update_body.get("url", offers_api.UNCHANGED),
+                visualDisabilityCompliant=update_body.get("visualDisabilityCompliant", offers_api.UNCHANGED),
+                withdrawalDelay=update_body.get("withdrawalDelay", offers_api.UNCHANGED),
+                withdrawalDetails=update_body.get("withdrawalDetails", offers_api.UNCHANGED),
+                withdrawalType=update_body.get("withdrawalType", offers_api.UNCHANGED),
+            )
     except exceptions.OfferCreationBaseException as error:
         raise ApiErrors(error.errors, status_code=400)
 
