@@ -1,9 +1,14 @@
 import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import {
+  IOfferCategory,
+  IOfferIndividual,
+  IOfferSubCategory,
+} from 'core/Offers/types'
 import { parse } from 'utils/query-string'
 
-export const getOfferSubtypeFromParams = (
-  queryParams: string
+export const getOfferSubtypeFromParamsOrOffer = (
+  queryParams: string,
+  offer: IOfferIndividual | null
 ): INDIVIDUAL_OFFER_SUBTYPE | null => {
   const params = parse(queryParams)
 
@@ -19,7 +24,21 @@ export const getOfferSubtypeFromParams = (
     case INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT:
       return INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
     default:
-      return null
+  }
+
+  // If the parameter is not set, try to guess the subtype from the offer object
+  if (offer === null) {
+    return null
+  }
+
+  if (offer.isDigital) {
+    return offer.isEvent
+      ? INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
+      : INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD
+  } else {
+    return offer.isEvent
+      ? INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT
+      : INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
   }
 }
 

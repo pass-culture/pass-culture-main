@@ -32,10 +32,13 @@ export const useIndividualOfferImageUpload = () => {
   >(offer && offer.image ? offer.image : undefined)
 
   const handleImageOnSubmit = useCallback(
-    async (imageOfferId: string, imageCreationArgs?: IOnImageUploadArgs) => {
+    async (
+      imageOfferId: string,
+      imageEditionCreationArgs?: IOnImageUploadArgs
+    ) => {
       // Param is passed through state when the offer is not created yet and through param
       // in edition, which is not ideal. We should only have one flow here
-      const creationArgs = imageOfferCreationArgs ?? imageCreationArgs
+      const creationArgs = imageOfferCreationArgs ?? imageEditionCreationArgs
       if (creationArgs === undefined) {
         return
       }

@@ -1,8 +1,32 @@
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { offerFactory } from 'utils/apiFactories'
 
 import { filterCategories } from '..'
+import { getOfferSubtypeFromParamsOrOffer } from '../filterCategories'
+
+describe('getOfferSubtypeFromParamsOrOffer', () => {
+  const cases = [
+    INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT,
+    INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
+    INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT,
+    INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD,
+  ]
+
+  it.each(cases)(
+    'should deduce the offer subtype %s from the query param',
+    offerSubtype => {
+      expect(
+        getOfferSubtypeFromParamsOrOffer(
+          `offer-type=${offerSubtype}`,
+          // @ts-expect-error we need to fix the Offer types and factories by having only one type/factory
+          offerFactory()
+        )
+      ).toBe(offerSubtype)
+    }
+  )
+})
 
 describe('filterCategories', () => {
   let categories: IOfferCategory[]

@@ -13,7 +13,7 @@ import {
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { TOffererName } from 'core/Offerers/types'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
 import {
   IOfferCategory,
   IOfferIndividual,
@@ -178,6 +178,7 @@ describe('OfferIndividualForm', () => {
       venueList,
       onImageUpload: jest.fn(),
       onImageDelete: jest.fn(),
+      offerSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
     }
   })
 
