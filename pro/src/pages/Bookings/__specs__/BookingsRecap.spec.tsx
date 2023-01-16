@@ -727,17 +727,17 @@ describe('components | BookingsRecap | Pro user', () => {
     const bookingsRecap = { pages: 6, bookingsRecap: [] }
     jest
       .spyOn(api, 'getBookingsPro')
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 4 })
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 5 })
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 6 })
     await renderBookingsRecap(store)
 
@@ -758,15 +758,15 @@ describe('components | BookingsRecap | Pro user', () => {
     const bookingsRecap = { pages: 5, bookingsRecap: [] }
     jest
       .spyOn(api, 'getBookingsPro')
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 4 })
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 5 })
     await renderBookingsRecap(store)
 

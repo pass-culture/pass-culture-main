@@ -134,7 +134,7 @@ describe('route Offers', () => {
       },
     })
     offersRecap = [offerFactory({ venue: proVenues[0] })]
-    // @ts-ignore FIX ME
+    // @ts-expect-error FIX ME
     jest.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
   })
 
@@ -207,7 +207,7 @@ describe('route Offers', () => {
           // Given
           jest
             .spyOn(api, 'listOffers')
-            // @ts-ignore FIX ME
+            // @ts-expect-error FIX ME
             .mockResolvedValueOnce(offersRecap)
             .mockResolvedValueOnce([])
           await renderOffers(store)
@@ -315,7 +315,7 @@ describe('route Offers', () => {
           it('should reset and disable status filter when offerer filter is removed', async () => {
             // Given
             const offerer = { name: 'La structure', id: 'EF' }
-            // @ts-ignore FIX ME
+            // @ts-expect-error FIX ME
             jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               offererId: offerer.id,
@@ -347,7 +347,7 @@ describe('route Offers', () => {
             // Given
             const { id: venueId } = proVenues[0]
             const offerer = { name: 'La structure', id: 'EF' }
-            // @ts-ignore FIX ME
+            // @ts-expect-error FIX ME
             jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               venueId: venueId,
@@ -548,7 +548,7 @@ describe('route Offers', () => {
     it('should have page value when page value is not first page', async () => {
       // Given
       const offersRecap = Array.from({ length: 11 }, () => offerFactory())
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
       const { history } = await renderOffers(store)
       const nextPageIcon = screen.getByAltText('page suivante')
@@ -663,7 +663,7 @@ describe('route Offers', () => {
       // Given
 
       jest.spyOn(api, 'listOffers').mockResolvedValueOnce([
-        // @ts-ignore FIX ME
+        // @ts-expect-error FIX ME
         offerFactory(
           {
             id: 'KE',
@@ -691,7 +691,7 @@ describe('route Offers', () => {
     it('should have status value be removed when user ask for all status', async () => {
       // Given
       jest.spyOn(api, 'listOffers').mockResolvedValueOnce([
-        // @ts-ignore FIX ME
+        // @ts-expect-error FIX ME
         offerFactory(
           {
             id: 'KE',
@@ -717,7 +717,7 @@ describe('route Offers', () => {
     it('should have offerer filter when user filters by offerer', async () => {
       // Given
       const filters = { offererId: 'A4' }
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       jest.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
@@ -731,7 +731,7 @@ describe('route Offers', () => {
     it('should have offerer value be removed when user removes offerer filter', async () => {
       // Given
       const filters = { offererId: 'A4' }
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       jest.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
@@ -778,7 +778,7 @@ describe('route Offers', () => {
   describe('page navigation', () => {
     it('should redirect to collective offers when user click on collective offer link', async () => {
       // Given
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       jest.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
       const { history } = await renderOffers(store)
       screen.getByText('Lancer la recherche')
@@ -796,7 +796,7 @@ describe('route Offers', () => {
     it('should display next page when clicking on right arrow', async () => {
       // Given
       const offers = Array.from({ length: 11 }, () => offerFactory())
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
       await renderOffers(store)
       const nextIcon = screen.getByAltText('page suivante')
@@ -811,7 +811,7 @@ describe('route Offers', () => {
     it('should display previous page when clicking on left arrow', async () => {
       // Given
       const offers = Array.from({ length: 11 }, () => offerFactory())
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
       await renderOffers(store)
       const nextIcon = screen.getByAltText('page suivante')
@@ -837,7 +837,7 @@ describe('route Offers', () => {
 
     it('should not be able to click on next arrow when being on the last page', async () => {
       // Given
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
       // When
       await renderOffers(store)
@@ -855,7 +855,7 @@ describe('route Offers', () => {
         // Given
         jest
           .spyOn(api, 'listOffers')
-          // @ts-ignore FIX ME
+          // @ts-expect-error FIX ME
           .mockResolvedValueOnce(offersRecap)
         // When
         await renderOffers(store)
@@ -867,7 +867,7 @@ describe('route Offers', () => {
         // Given
         jest
           .spyOn(api, 'listOffers')
-          // @ts-ignore FIX ME
+          // @ts-expect-error FIX ME
           .mockResolvedValueOnce(offersRecap)
         await renderOffers(store)
         const nextIcon = screen.getByAltText('page suivante')
@@ -888,7 +888,7 @@ describe('route Offers', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
       jest
         .spyOn(api, 'listOffers')
-        // @ts-ignore FIX ME
+        // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
       await renderOffers(store)
@@ -952,7 +952,7 @@ describe('route Offers', () => {
     it('when clicking on "Réinitialiser les filtres"', async () => {
       jest
         .spyOn(api, 'listOffers')
-        // @ts-ignore FIX ME
+        // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
 

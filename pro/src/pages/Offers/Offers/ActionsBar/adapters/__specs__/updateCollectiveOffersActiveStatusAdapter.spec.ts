@@ -7,11 +7,11 @@ describe('updateCollectiveOffersActiveStatusAdapter', () => {
     // given
     jest
       .spyOn(api, 'patchCollectiveOffersActiveStatus')
-      // @ts-ignore
+      // @ts-expect-error
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
     jest
       .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
-      // @ts-ignore
+      // @ts-expect-error
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
     const response = await updateCollectiveOffersActiveStatusAdapter({
@@ -36,11 +36,11 @@ describe('updateCollectiveOffersActiveStatusAdapter', () => {
     // given
     jest
       .spyOn(api, 'patchCollectiveOffersActiveStatus')
-      // @ts-ignore
+      // @ts-expect-error
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
     jest
       .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
-      // @ts-ignore
+      // @ts-expect-error
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
     const response = await updateCollectiveOffersActiveStatusAdapter({
@@ -68,7 +68,7 @@ describe('updateCollectiveOffersActiveStatusAdapter', () => {
     })
     jest
       .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
-      // @ts-ignore
+      // @ts-expect-error
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
     // when

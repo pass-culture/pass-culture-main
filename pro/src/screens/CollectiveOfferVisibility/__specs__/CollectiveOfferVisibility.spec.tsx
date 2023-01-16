@@ -164,7 +164,7 @@ describe('CollectiveOfferVisibility', () => {
       .fn()
       .mockResolvedValue({ isOk: false, message: 'Ooops' })
     const notifyError = jest.fn()
-    // @ts-ignore
+    // @ts-expect-error
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       error: notifyError,
     }))
