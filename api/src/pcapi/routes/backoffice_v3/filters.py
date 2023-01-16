@@ -105,7 +105,7 @@ def format_booking_cancellation_reason(reason: bookings_models.BookingCancellati
             return ""
 
 
-def format_booking_status(status: bookings_models.BookingStatus) -> str:
+def format_booking_status_long(status: bookings_models.BookingStatus) -> str:
     match status:
         case bookings_models.BookingStatus.CONFIRMED:
             return "Réservation confirmée"
@@ -116,7 +116,21 @@ def format_booking_status(status: bookings_models.BookingStatus) -> str:
         case bookings_models.BookingStatus.REIMBURSED:
             return "AC remboursé"
         case _:
-            return ""
+            return status.value
+
+
+def format_booking_status(status: bookings_models.BookingStatus) -> str:
+    match status:
+        case bookings_models.BookingStatus.CONFIRMED:
+            return "Confirmée"
+        case bookings_models.BookingStatus.USED:
+            return "Validée"
+        case bookings_models.BookingStatus.CANCELLED:
+            return "Annulée"
+        case bookings_models.BookingStatus.REIMBURSED:
+            return "Remboursée"
+        case _:
+            return status.value
 
 
 def format_offer_category(subcategory_id: str) -> str:
@@ -147,6 +161,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_amount"] = format_amount
     app.jinja_env.filters["format_booking_cancellation_reason"] = format_booking_cancellation_reason
     app.jinja_env.filters["format_booking_status"] = format_booking_status
+    app.jinja_env.filters["format_booking_status_long"] = format_booking_status_long
     app.jinja_env.filters["format_bool"] = format_bool
     app.jinja_env.filters["format_string_list"] = format_string_list
     app.jinja_env.filters["format_date"] = format_date

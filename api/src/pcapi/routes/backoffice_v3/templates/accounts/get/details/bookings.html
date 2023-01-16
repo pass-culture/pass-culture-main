@@ -28,7 +28,7 @@
             {% if booking.stock.offer.isDuo %}(Duo){% endif %}
           </td>
           <td>{{ booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
-          <td>{{ booking.status | format_booking_status }}</td>
+          <td>{{ booking.status | format_booking_status_long }}</td>
           <td>{{ booking.token | empty_string_if_null }}</td>
         </tr>
         <tr class="collapse accordion-collapse" id="b{{ booking.id }}" data-bs-parent=".table">
