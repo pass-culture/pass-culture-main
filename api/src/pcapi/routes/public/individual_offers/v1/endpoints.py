@@ -465,6 +465,13 @@ def compute_accessibility_edition_fields(accessibility_payload: dict | None) -> 
     }
 
 
+def _check_offer_subcategory(
+    body: serialization.ProductOfferEdition | serialization.EventOfferEdition, offer_subcategory: str
+) -> None:
+    if body.category_related_fields is not None and (body.category_related_fields.subcategory_id != offer_subcategory):
+        raise api_errors.ApiErrors({"categoryRelatedFields.category": ["the category cannot be changed"]})
+
+
 @blueprint.v1_blueprint.route("/products/<int:product_id>", methods=["PATCH"])
 @spectree_serialize(
     api=blueprint.v1_schema, tags=[PRODUCT_OFFERS_TAG], response_model=serialization.ProductOfferResponse
@@ -487,6 +494,8 @@ def edit_product(
 
     if not offer:
         raise api_errors.ApiErrors({"product_id": ["The product offer could not be found"]}, status_code=404)
+
+    _check_offer_subcategory(body, offer.subcategoryId)
 
     update_body = body.dict(exclude_unset=True)
     try:
