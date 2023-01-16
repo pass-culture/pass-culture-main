@@ -1,9 +1,11 @@
 import React, { useCallback, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import PageTitle from 'components/PageTitle/PageTitle'
+import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import {
   INDIVIDUAL_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE,
@@ -16,6 +18,7 @@ import {
 } from 'core/Offers/constants'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import useActiveFeature from 'hooks/useActiveFeature'
+import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.svg'
 import { ReactComponent as CaseIcon } from 'icons/ico-case.svg'
@@ -28,7 +31,9 @@ import { ReactComponent as VirtualEventIcon } from 'icons/ico-virtual-event.svg'
 import { ReactComponent as VirtualThingIcon } from 'icons/ico-virtual-thing.svg'
 import { ReactComponent as PhoneIcon } from 'icons/info-phone.svg'
 import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
+import { Banner } from 'ui-kit'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import ActionsBar from './ActionsBar/ActionsBar'
 import styles from './OfferType.module.scss'
@@ -70,6 +75,9 @@ const OfferType = (): JSX.Element => {
       setHasCollectiveTemplateOffer(true)
     }
   }, [offerType])
+  const [isLoadingEligibility, setIsLoadingEligibility] = useState(false)
+  const [isEligible, setIsEligible] = useState(false)
+  const { currentUser } = useCurrentUser()
 
   const getNextPageHref = () => {
     if (offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
@@ -107,6 +115,29 @@ const OfferType = (): JSX.Element => {
     })
   }
 
+  const checkOffererEligibility = async () => {
+    setIsLoadingEligibility(true)
+    const offererNames = await api.listOfferersNames()
+    const queryParams = new URLSearchParams(location.search)
+    const queryOffererId = queryParams.get('structure')
+    const offererId = currentUser.isAdmin
+      ? queryOffererId
+      : offererNames.offerersNames[0].id
+    if (offererNames.offerersNames.length > 1) {
+      setIsEligible(true)
+    }
+    if (offererId) {
+      const { isOk, message, payload } =
+        await canOffererCreateCollectiveOfferAdapter(offererId)
+
+      if (!isOk) {
+        notify.error(message)
+      }
+      setIsEligible(payload.isOffererEligibleToEducationalOffer)
+    }
+    setIsLoadingEligibility(false)
+  }
+
   const handleOfferTypeChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -117,6 +148,7 @@ const OfferType = (): JSX.Element => {
       selectedOfferType === OFFER_TYPES.EDUCATIONAL
     ) {
       getTemplateCollectiveOffers()
+      checkOffererEligibility()
     }
   }
 
@@ -172,12 +204,13 @@ const OfferType = (): JSX.Element => {
           </FormLayout.Row>
         </FormLayout.Section>
 
-        <FormLayout.Section
-          title="Quel est le type de l’offre ?"
-          className={styles['subtype-section']}
-        >
-          {offerType === OFFER_TYPES.EDUCATIONAL ? (
-            <>
+        {offerType === OFFER_TYPES.EDUCATIONAL &&
+          (isEligible || !isDuplicateOfferSelectionActive) &&
+          !isLoadingEligibility && (
+            <FormLayout.Section
+              title="Quel est le type de l’offre ?"
+              className={styles['subtype-section']}
+            >
               <FormLayout.Row inline>
                 <RadioButtonWithImage
                   name="offer-subtype"
@@ -206,81 +239,85 @@ const OfferType = (): JSX.Element => {
                   value={COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
                 />
               </FormLayout.Row>
-            </>
-          ) : (
-            <>
-              <FormLayout.Row inline>
-                <RadioButtonWithImage
-                  className={styles['individual-radio-button']}
-                  name="offer-subtype"
-                  Icon={ThingIcon}
-                  isChecked={
-                    individualOfferSubtype ===
-                    INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
-                  }
-                  label="Un bien physique"
-                  description="Livre, vinyle, instrument de musique, pass musée..."
-                  onChange={handleIndividualOfferSubtypeChange}
-                  value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}
-                  dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}`}
-                />
-              </FormLayout.Row>
-
-              <FormLayout.Row inline>
-                <RadioButtonWithImage
-                  className={styles['individual-radio-button']}
-                  name="offer-subtype"
-                  Icon={VirtualThingIcon}
-                  isChecked={
-                    individualOfferSubtype ===
-                    INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD
-                  }
-                  label="Un bien numérique"
-                  description="Ebook, jeu vidéo, abonnement streaming, pass ciné..."
-                  onChange={handleIndividualOfferSubtypeChange}
-                  value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}
-                  dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}`}
-                />
-              </FormLayout.Row>
-
-              <FormLayout.Row inline>
-                <RadioButtonWithImage
-                  className={styles['individual-radio-button']}
-                  name="offer-subtype"
-                  Icon={DateIcon}
-                  isChecked={
-                    individualOfferSubtype ===
-                    INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT
-                  }
-                  label="Un évènement physique"
-                  description="Concert, spectacle vivant, conférence, cours..."
-                  onChange={handleIndividualOfferSubtypeChange}
-                  value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}
-                  dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}`}
-                />
-              </FormLayout.Row>
-
-              <FormLayout.Row inline>
-                <RadioButtonWithImage
-                  className={styles['individual-radio-button']}
-                  name="offer-subtype"
-                  Icon={VirtualEventIcon}
-                  isChecked={
-                    individualOfferSubtype ===
-                    INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
-                  }
-                  label="Un évènement numérique"
-                  description="Livestream, cours en ligne, conférence en ligne..."
-                  onChange={handleIndividualOfferSubtypeChange}
-                  value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}
-                  dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}`}
-                />
-              </FormLayout.Row>
-            </>
+            </FormLayout.Section>
           )}
-        </FormLayout.Section>
+        {offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
+          <FormLayout.Section
+            title="Quel est le type de l’offre ?"
+            className={styles['subtype-section']}
+          >
+            <FormLayout.Row inline>
+              <RadioButtonWithImage
+                className={styles['individual-radio-button']}
+                name="offer-subtype"
+                Icon={ThingIcon}
+                isChecked={
+                  individualOfferSubtype ===
+                  INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
+                }
+                label="Un bien physique"
+                description="Livre, vinyle, instrument de musique, pass musée..."
+                onChange={handleIndividualOfferSubtypeChange}
+                value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}
+                dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}`}
+              />
+            </FormLayout.Row>
+
+            <FormLayout.Row inline>
+              <RadioButtonWithImage
+                className={styles['individual-radio-button']}
+                name="offer-subtype"
+                Icon={VirtualThingIcon}
+                isChecked={
+                  individualOfferSubtype ===
+                  INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD
+                }
+                label="Un bien numérique"
+                description="Ebook, jeu vidéo, abonnement streaming, pass ciné..."
+                onChange={handleIndividualOfferSubtypeChange}
+                value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}
+                dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}`}
+              />
+            </FormLayout.Row>
+
+            <FormLayout.Row inline>
+              <RadioButtonWithImage
+                className={styles['individual-radio-button']}
+                name="offer-subtype"
+                Icon={DateIcon}
+                isChecked={
+                  individualOfferSubtype ===
+                  INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT
+                }
+                label="Un évènement physique"
+                description="Concert, spectacle vivant, conférence, cours..."
+                onChange={handleIndividualOfferSubtypeChange}
+                value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}
+                dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}`}
+              />
+            </FormLayout.Row>
+
+            <FormLayout.Row inline>
+              <RadioButtonWithImage
+                className={styles['individual-radio-button']}
+                name="offer-subtype"
+                Icon={VirtualEventIcon}
+                isChecked={
+                  individualOfferSubtype ===
+                  INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
+                }
+                label="Un évènement numérique"
+                description="Livestream, cours en ligne, conférence en ligne..."
+                onChange={handleIndividualOfferSubtypeChange}
+                value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}
+                dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}`}
+              />
+            </FormLayout.Row>
+          </FormLayout.Section>
+        )}
 
         {isDuplicateOfferSelectionActive &&
+          isEligible &&
           collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE &&
           hasCollectiveTemplateOffer && (
             <FormLayout.Section
@@ -319,7 +356,37 @@ const OfferType = (): JSX.Element => {
             </FormLayout.Section>
           )}
 
-        <ActionsBar getNextPageHref={getNextPageHref} />
+        {isLoadingEligibility && <Spinner />}
+        {offerType === OFFER_TYPES.EDUCATIONAL &&
+          !isEligible &&
+          !isLoadingEligibility &&
+          isDuplicateOfferSelectionActive && (
+            <Banner
+              links={[
+                {
+                  href: 'https://passculture.typeform.com/to/VtKospEg',
+                  linkTitle: 'Faire une demande de référencement',
+                },
+                {
+                  href: 'https://aide.passculture.app/hc/fr/articles/5700215550364',
+                  linkTitle:
+                    'Ma demande de référencement a été acceptée mais je ne peux toujours pas créer d’offres collectives',
+                },
+              ]}
+            >
+              Pour proposer des offres à destination d’un groupe scolaire, vous
+              devez être référencé auprès du ministère de l’Éducation Nationale
+              et du ministère de la Culture.
+            </Banner>
+          )}
+        <ActionsBar
+          getNextPageHref={getNextPageHref}
+          disableNextButton={
+            offerType === OFFER_TYPES.EDUCATIONAL &&
+            !isEligible &&
+            isDuplicateOfferSelectionActive
+          }
+        />
       </FormLayout>
     </div>
   )

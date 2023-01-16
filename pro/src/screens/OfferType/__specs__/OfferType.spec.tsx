@@ -34,6 +34,14 @@ jest.mock('react-router-dom', () => ({
   }),
 }))
 
+jest.mock('apiClient/api', () => ({
+  api: {
+    listOfferersNames: jest.fn(),
+    canOffererCreateEducationalOffer: jest.fn(),
+    getCollectiveOffers: jest.fn(),
+  },
+}))
+
 jest.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue(true),
@@ -100,6 +108,11 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should select collective offer', async () => {
+    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        { id: 'A1', nonHumanizedId: 1, name: 'Ma super structure' },
+      ],
+    })
     renderOfferTypes(store)
 
     expect(
@@ -125,6 +138,12 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should select template offer', async () => {
+    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        { id: 'A1', nonHumanizedId: 1, name: 'Ma super structure' },
+        { id: 'A2', nonHumanizedId: 2, name: 'Ma super structure #2' },
+      ],
+    })
     renderOfferTypes(store)
 
     expect(
@@ -134,6 +153,8 @@ describe('screens:OfferIndividual::OfferType', () => {
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
     )
+    expect(api.canOffererCreateEducationalOffer).toHaveBeenCalledTimes(1)
+
     await userEvent.click(
       screen.getByRole('radio', {
         name: 'Une offre vitrine Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée.',
@@ -147,6 +168,39 @@ describe('screens:OfferIndividual::OfferType', () => {
       pathname: '/offre/creation/collectif/vitrine',
       search: '',
     })
+  })
+
+  it('should display non eligible banner if offerer can not create collective offer', async () => {
+    store = {
+      ...store,
+      features: {
+        list: [
+          {
+            nameKey: 'WIP_DUPLICATE_OFFER_SELECTION',
+            isActive: true,
+          },
+        ],
+        initialized: true,
+      },
+    }
+    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        { id: 'A1', nonHumanizedId: 1, name: 'Ma super structure' },
+      ],
+    })
+    jest.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValue({})
+    renderOfferTypes(store)
+
+    await userEvent.click(
+      screen.getByRole('radio', { name: 'À un groupe scolaire' })
+    )
+    expect(api.canOffererCreateEducationalOffer).toHaveBeenCalledTimes(1)
+
+    expect(
+      await screen.findByText(
+        'Pour proposer des offres à destination d’un groupe scolaire, vous devez être référencé auprès du ministère de l’Éducation Nationale et du ministère de la Culture.'
+      )
+    ).toBeInTheDocument()
   })
 
   it('should display individual offer choices', async () => {
@@ -240,6 +294,12 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should select duplicate template offer', async () => {
+    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        { id: 'A1', nonHumanizedId: 1, name: 'Ma super structure' },
+      ],
+    })
+    jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
     const offersRecap = [collectiveOfferFactory()]
     jest
       .spyOn(api, 'getCollectiveOffers')
