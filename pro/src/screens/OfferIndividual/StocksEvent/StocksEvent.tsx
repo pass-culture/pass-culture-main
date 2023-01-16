@@ -1,5 +1,4 @@
 import { FormikProvider, useFormik } from 'formik'
-import type { FormikTouched } from 'formik'
 import React, { useState, useEffect } from 'react'
 
 import { api } from 'apiClient/api'
@@ -43,34 +42,43 @@ export interface IStocksEventProps {
   offer: IOfferIndividual
 }
 
-const hasChangesOnStockWithBookings = (
+export const hasChangesOnStockWithBookings = (
   values: { stocks: IStockEventFormValues[] },
-  touched: FormikTouched<{ stocks: IStockEventFormValues[] }>
+  initialValues: { stocks: IStockEventFormValues[] }
 ) => {
-  return values.stocks.some((stock, index) => {
+  const initialStocks: Record<
+    string,
+    Partial<IStockEventFormValues>
+  > = initialValues.stocks.reduce(
+    (dict: Record<string, Partial<IStockEventFormValues>>, stock) => {
+      dict[stock.stockId || 'IStockEventFormValuesnewStock'] = {
+        price: stock.price,
+        beginningDate: stock.beginningDate,
+        beginningTime: stock.beginningTime,
+      }
+      return dict
+    },
+    {}
+  )
+
+  return values.stocks.some(stock => {
     if (
       !stock.bookingsQuantity ||
       parseInt(stock.bookingsQuantity, 10) === 0 ||
-      touched.stocks === undefined ||
-      touched.stocks[index] === undefined
+      !stock.stockId
     ) {
       return false
     }
-    const stockTouched = touched.stocks[index]
-    /* istanbul ignore next: DEBT to fix */
-    if (stockTouched === undefined) {
-      return false
-    }
+    const initialStock = initialStocks[stock.stockId]
     const fieldsWithWarning: (keyof IStockEventFormValues)[] = [
       'price',
       'beginningDate',
       'beginningTime',
-      // TODO: ts remove as
-    ] as (keyof IStockEventFormValues)[]
+    ]
 
     return fieldsWithWarning.some(
       (fieldName: keyof IStockEventFormValues) =>
-        stockTouched[fieldName] === true
+        initialStock[fieldName] !== stock[fieldName]
     )
   })
 }
@@ -101,9 +109,10 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const onSubmit = async (formValues: { stocks: IStockEventFormValues[] }) => {
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       const changesOnStockWithBookings = hasChangesOnStockWithBookings(
-        formik.values,
-        formik.touched
+        formValues,
+        formik.initialValues
       )
+
       if (!visible && changesOnStockWithBookings) {
         showModal()
         return
@@ -262,41 +271,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
           mode,
         })
       )
-      if (mode !== OFFER_WIZARD_MODE.CREATION) {
-        const changesOnStockWithBookings = formik.values.stocks.some(
-          (stock, index) => {
-            if (
-              !stock.bookingsQuantity ||
-              parseInt(stock.bookingsQuantity, 10) === 0 ||
-              formik.touched.stocks === undefined ||
-              formik.touched.stocks[index] === undefined
-            ) {
-              return false
-            }
-            const stockTouched = formik.touched.stocks[index]
-            /* istanbul ignore next: DEBT, TO FIX */
-            if (stockTouched === undefined) {
-              return false
-            }
-            const fieldsWithWarning: (keyof IStockEventFormValues)[] = [
-              'price',
-              'beginningDate',
-              'beginningTime',
-            ] as (keyof IStockEventFormValues)[]
-
-            return fieldsWithWarning.some(
-              (fieldName: keyof IStockEventFormValues) =>
-                stockTouched[fieldName] === true
-            )
-          }
-        )
-        if (!visible && changesOnStockWithBookings) {
-          showModal()
-          return
-        } else {
-          hideModal()
-        }
-      }
 
       const hasSavedStock = formik.values.stocks.some(
         stock => stock.stockId !== undefined
