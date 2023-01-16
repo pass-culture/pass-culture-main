@@ -8,9 +8,13 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 interface IActionsBar {
   getNextPageHref: () => void
+  disableNextButton?: boolean
 }
 
-const ActionsBar = ({ getNextPageHref }: IActionsBar): JSX.Element => {
+const ActionsBar = ({
+  getNextPageHref,
+  disableNextButton = false,
+}: IActionsBar): JSX.Element => {
   return (
     <ActionsBarSticky>
       <ActionsBarSticky.Left>
@@ -26,6 +30,7 @@ const ActionsBar = ({ getNextPageHref }: IActionsBar): JSX.Element => {
           onClick={getNextPageHref}
           Icon={IcoMiniArrowRight}
           iconPosition={IconPositionEnum.RIGHT}
+          disabled={disableNextButton}
         >
           Étape suivante
         </Button>
