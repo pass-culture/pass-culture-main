@@ -32,7 +32,7 @@ export const patchIsCollectiveOfferActiveAdapter: PatchIsOfferActiveAdapter =
         message: `Une erreur est survenue lors de ${
           isActive ? 'l’activation' : 'la désactivation'
         } de votre offre. ${
-          // @ts-ignore
+          // @ts-expect-error
           error?.message ?? ''
         }`,
         payload: null,

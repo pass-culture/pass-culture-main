@@ -37,7 +37,7 @@ const ActivationCodeFormDialog = ({
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       setIsFileInputDisabled(true)
 
-      // @ts-ignore next-line
+      // @ts-expect-error next-line
       const currentFile = e.currentTarget.files[0]
       if (currentFile == null) {
         setIsFileInputDisabled(false)

@@ -99,7 +99,7 @@ describe('OffererStatsScreen', () => {
 
   it('should display error message if api call fail', async () => {
     const notifyError = jest.fn()
-    // @ts-ignore
+    // @ts-expect-error
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       error: notifyError,
     }))

@@ -79,9 +79,9 @@ const PreFilters = ({
         DEFAULT_PRE_FILTERS[key] instanceof Date
       ) {
         if (
-          // @ts-ignore
+          // @ts-expect-error
           selectedPreFilters[key].getTime() !==
-          // @ts-ignore
+          // @ts-expect-error
           DEFAULT_PRE_FILTERS[key].getTime()
         ) {
           hasFilters = true

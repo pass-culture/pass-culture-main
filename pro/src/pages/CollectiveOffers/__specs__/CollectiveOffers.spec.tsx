@@ -148,7 +148,7 @@ describe('route CollectiveOffers', () => {
     offersRecap = [collectiveOfferFactory({ venue: proVenues[0] })]
     jest
       .spyOn(api, 'getCollectiveOffers')
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       .mockResolvedValue(offersRecap)
   })
 
@@ -199,7 +199,7 @@ describe('route CollectiveOffers', () => {
           // Given
           jest
             .spyOn(api, 'getCollectiveOffers')
-            // @ts-ignore FIX ME
+            // @ts-expect-error FIX ME
             .mockResolvedValueOnce(offersRecap)
             .mockResolvedValueOnce([])
           await renderOffers(store)
@@ -309,7 +309,7 @@ describe('route CollectiveOffers', () => {
           it('should reset and disable status filter when offerer filter is removed', async () => {
             // Given
             const offerer = { name: 'La structure', id: 'EF' }
-            // @ts-ignore FIX ME
+            // @ts-expect-error FIX ME
             jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               offererId: offerer.id,
@@ -342,7 +342,7 @@ describe('route CollectiveOffers', () => {
             // Given
             const { id: venueId } = proVenues[0]
             const offerer = { name: 'La structure', id: 'EF' }
-            // @ts-ignore FIX ME
+            // @ts-expect-error FIX ME
             jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               venueId: venueId,
@@ -553,7 +553,7 @@ describe('route CollectiveOffers', () => {
       )
       jest
         .spyOn(api, 'getCollectiveOffers')
-        // @ts-ignore FIX ME
+        // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
       const { history } = await renderOffers(store)
       const nextPageIcon = screen.getByAltText('page suivante')
@@ -639,7 +639,7 @@ describe('route CollectiveOffers', () => {
       // Given
       jest
         .spyOn(api, 'getCollectiveOffers')
-        // @ts-ignore FIX ME
+        // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
       jest.spyOn(api, 'getCategories').mockResolvedValue({
         categories: [
@@ -651,14 +651,14 @@ describe('route CollectiveOffers', () => {
           },
         ],
         subcategories: [
-          // @ts-ignore FIX ME
+          // @ts-expect-error FIX ME
           {
             id: 'test_sub_id_1',
             categoryId: 'test_id_1',
             isSelectable: true,
             canBeEducational: true,
           },
-          // @ts-ignore FIX ME
+          // @ts-expect-error FIX ME
           {
             id: 'test_sub_id_2',
             categoryId: 'test_id_2',
@@ -688,7 +688,7 @@ describe('route CollectiveOffers', () => {
     it('should have status value when user filters by status', async () => {
       // Given
       jest.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
-        // @ts-ignore FIX ME
+        // @ts-expect-error FIX ME
         collectiveOfferFactory(
           {
             id: 'KE',
@@ -716,7 +716,7 @@ describe('route CollectiveOffers', () => {
     it('should have status value be removed when user ask for all status', async () => {
       // Given
       jest.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
-        // @ts-ignore FIX ME
+        // @ts-expect-error FIX ME
         collectiveOfferFactory(
           {
             id: 'KE',
@@ -742,7 +742,7 @@ describe('route CollectiveOffers', () => {
     it('should have offerer filter when user filters by offerer', async () => {
       // Given
       const filters = { offererId: 'A4' }
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       jest.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
@@ -756,7 +756,7 @@ describe('route CollectiveOffers', () => {
     it('should have offerer value be removed when user removes offerer filter', async () => {
       // Given
       const filters = { offererId: 'A4' }
-      // @ts-ignore FIX ME
+      // @ts-expect-error FIX ME
       jest.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
@@ -775,7 +775,7 @@ describe('route CollectiveOffers', () => {
       // Given
 
       jest.spyOn(api, 'getCollectiveOffers').mockResolvedValue(
-        // @ts-ignore FIX ME
+        // @ts-expect-error FIX ME
         offersRecap
       )
       const { history } = await renderOffers(store)
@@ -808,7 +808,7 @@ describe('route CollectiveOffers', () => {
       const offers = Array.from({ length: 11 }, () => collectiveOfferFactory())
       jest
         .spyOn(api, 'getCollectiveOffers')
-        // @ts-ignore FIX ME
+        // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offers)
       await renderOffers(store)
       const nextIcon = screen.getByAltText('page suivante')
@@ -825,7 +825,7 @@ describe('route CollectiveOffers', () => {
       const offers = Array.from({ length: 11 }, () => collectiveOfferFactory())
       jest
         .spyOn(api, 'getCollectiveOffers')
-        // @ts-ignore FIX ME
+        // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offers)
       await renderOffers(store)
       const nextIcon = screen.getByAltText('page suivante')
@@ -853,7 +853,7 @@ describe('route CollectiveOffers', () => {
       // Given
       jest
         .spyOn(api, 'getCollectiveOffers')
-        // @ts-ignore FIX ME
+        // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
       // When
       await renderOffers(store)
@@ -873,7 +873,7 @@ describe('route CollectiveOffers', () => {
         // Given
         jest
           .spyOn(api, 'getCollectiveOffers')
-          // @ts-ignore FIX ME
+          // @ts-expect-error FIX ME
           .mockResolvedValueOnce(offersRecap)
         // When
         await renderOffers(store)
@@ -885,7 +885,7 @@ describe('route CollectiveOffers', () => {
         // Given
         jest
           .spyOn(api, 'getCollectiveOffers')
-          // @ts-ignore FIX ME
+          // @ts-expect-error FIX ME
           .mockResolvedValueOnce(offersRecap)
         await renderOffers(store)
         const nextIcon = screen.getByAltText('page suivante')
@@ -906,7 +906,7 @@ describe('route CollectiveOffers', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
       jest
         .spyOn(api, 'getCollectiveOffers')
-        // @ts-ignore FIX ME
+        // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
       await renderOffers(store)
@@ -973,7 +973,7 @@ describe('route CollectiveOffers', () => {
     it('when clicking on "Réinitialiser les filtres"', async () => {
       jest
         .spyOn(api, 'getCollectiveOffers')
-        // @ts-ignore FIX ME
+        // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
 

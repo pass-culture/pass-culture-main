@@ -56,7 +56,7 @@ const RouteLeavingGuard = ({
   leftButton = { text: 'Annuler' },
 }: IRouteLeavingGuardProps): JSX.Element => {
   const [isModalVisible, setIsModalVisible] = useState(false)
-  // @ts-ignore next FIX ME no any
+  // FIX ME no any
   const [nextLocation, setNextLocation] = useState<any>('')
   const [isConfirmedNavigation, setIsConfirmedNavigation] = useState(false)
   const history = useHistory()

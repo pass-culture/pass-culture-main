@@ -46,7 +46,6 @@ const base64 = (str: string): string => {
   try {
     return btoa(str)
   } catch (err) {
-    // @ts-ignore
     return Buffer.from(str).toString('base64')
   }
 }
