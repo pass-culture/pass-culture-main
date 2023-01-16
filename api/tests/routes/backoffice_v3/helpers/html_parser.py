@@ -113,3 +113,11 @@ def extract_alert(html_content: str) -> str:
     assert alert is not None
 
     return _filter_whitespaces(alert.text)
+
+
+def extract_warnings(html_content: str) -> list[str]:
+    soup = get_soup(html_content)
+
+    # form validation errors have "text-warning" class
+    warnings = soup.find_all("p", class_="text-warning")
+    return [_filter_whitespaces(p.text) for p in warnings]
