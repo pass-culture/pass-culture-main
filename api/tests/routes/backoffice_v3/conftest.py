@@ -420,26 +420,39 @@ def user_offerer_to_be_validated_fixture(offerer_tags):
     top_tag, collec_tag, public_tag = offerer_tags
 
     no_tag = offerers_factories.NotValidatedUserOffererFactory(
-        user__email="a@example.com", offerer__validationStatus=ValidationStatus.NEW, offerer__postalCode="97200"
+        user__email="a@example.com",
+        offerer__validationStatus=ValidationStatus.NEW,
+        offerer__postalCode="97200",
+        offerer__city="Fort-de-France",
     )
     top = offerers_factories.NotValidatedUserOffererFactory(
         user__email="b@example.com",
         offerer__validationStatus=ValidationStatus.NEW,
         validationStatus=ValidationStatus.PENDING,
         offerer__postalCode="97100",
+        offerer__city="Basse-Terre",
     )
-    collec = offerers_factories.NotValidatedUserOffererFactory(user__email="c@example.com", offerer__postalCode="29200")
+    collec = offerers_factories.NotValidatedUserOffererFactory(
+        user__email="c@example.com", offerer__postalCode="29200", offerer__city="Brest"
+    )
     public = offerers_factories.NotValidatedUserOffererFactory(
         user__email="d@example.com",
         offerer__validationStatus=ValidationStatus.PENDING,
         validationStatus=ValidationStatus.PENDING,
         offerer__postalCode="97290",
+        offerer__city="Le Marin",
     )
     top_collec = offerers_factories.NotValidatedUserOffererFactory(
-        user__email="e@example.com", offerer__validationStatus=ValidationStatus.PENDING, offerer__postalCode="06400"
+        user__email="e@example.com",
+        offerer__validationStatus=ValidationStatus.PENDING,
+        offerer__postalCode="06400",
+        offerer__city="Cannes",
     )
     top_public = offerers_factories.NotValidatedUserOffererFactory(
-        user__email="f@example.com", validationStatus=ValidationStatus.PENDING, offerer__postalCode="97400"
+        user__email="f@example.com",
+        validationStatus=ValidationStatus.PENDING,
+        offerer__postalCode="97400",
+        offerer__city="Saint-Denis",
     )
 
     for user_offerer in (top, top_collec, top_public):
