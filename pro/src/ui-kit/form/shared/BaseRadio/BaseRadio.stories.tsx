@@ -1,4 +1,4 @@
-import type { Story } from '@storybook/react'
+import type { ComponentStory } from '@storybook/react'
 import React from 'react'
 
 import BaseRadio from './BaseRadio'
@@ -8,12 +8,7 @@ export default {
   component: BaseRadio,
 }
 
-const Template: Story<{
-  label: string
-  hasError: boolean
-  disabled: boolean
-  checked: boolean
-}> = args => (
+const Template: ComponentStory<typeof BaseRadio> = args => (
   <div>
     <BaseRadio {...args} />
   </div>
@@ -26,4 +21,14 @@ Default.args = {
   hasError: false,
   disabled: false,
   checked: false,
+}
+
+export const WithBorder = Template.bind({})
+
+WithBorder.args = {
+  label: 'radio label',
+  hasError: false,
+  disabled: false,
+  checked: false,
+  withBorder: true,
 }

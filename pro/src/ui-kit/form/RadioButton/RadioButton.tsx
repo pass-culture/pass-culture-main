@@ -4,12 +4,10 @@ import React from 'react'
 
 import { BaseRadio } from '../shared'
 
-import style from './RadioButton.module.scss'
-
 interface IRadioButtonProps {
   disabled?: boolean
   name: string
-  label: string
+  label: string | JSX.Element
   value: string
   className?: string
   checked?: boolean
@@ -29,25 +27,17 @@ const RadioButton = ({
   const [field] = useField({ name, value, type: 'radio' })
 
   return (
-    <div
-      className={cn(className, {
-        [style['with-border']]: withBorder,
-        [style['with-border-primary']]: withBorder && field.checked,
-      })}
-    >
-      <BaseRadio
-        {...field}
-        disabled={disabled}
-        id={name}
-        label={label}
-        value={value}
-        className={cn(style['radio-input'], {
-          [style['radio-input-checked']]: field.checked,
-        })}
-        checked={field.checked}
-        hasError={hasError}
-      />
-    </div>
+    <BaseRadio
+      {...field}
+      disabled={disabled}
+      id={name}
+      label={label}
+      value={value}
+      className={cn(className)}
+      checked={field.checked}
+      hasError={hasError}
+      withBorder={withBorder}
+    />
   )
 }
 
