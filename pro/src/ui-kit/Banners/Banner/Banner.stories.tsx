@@ -1,8 +1,7 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as BannerImage } from 'components/JobHighlightsBanner/assets/job_highlights_banner.svg'
-
+import { ReactComponent as BannerImage } from './assets/job_highlights_banner.svg'
 import Banner, { IBannerProps } from './Banner'
 
 export default {
@@ -19,7 +18,14 @@ const Template: Story<IBannerProps> = props => (
 
 const ImageTemplate: Story<IBannerProps> = props => (
   <Banner {...props}>
-    <BannerImage />
+    <a
+      href="https://docsend.com/view/n9yniyrtusp82a9m"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="en savoir plus sur les temps fort des métiers de la culture"
+    >
+      <BannerImage />
+    </a>
   </Banner>
 )
 

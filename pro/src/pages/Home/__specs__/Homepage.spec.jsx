@@ -11,7 +11,6 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { CLOSE_JOB_HIGHLIGHTS_BANNER_KEY } from 'components/JobHighlightsBanner/constants'
 import { RemoteContextProvider } from 'context/remoteConfigContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -265,57 +264,6 @@ describe('homepage', () => {
           1,
           Events.CLICKED_BREADCRUMBS_STRUCTURES
         )
-      })
-    })
-
-    describe('Job Highlights Banner', () => {
-      beforeEach(() => {
-        store = configureTestStore({
-          user: {
-            currentUser: {
-              id: 'fake_id',
-              firstName: 'John',
-              lastName: 'Do',
-              email: 'john.do@dummy.xyz',
-              phoneNumber: '01 00 00 00 00',
-            },
-            initialized: true,
-          },
-          features: {
-            list: [
-              {
-                isActive: true,
-                nameKey: 'TEMP_ENABLE_JOB_HIGHLIGHTS_BANNER',
-              },
-            ],
-          },
-        })
-      })
-      it('should close the banner', async () => {
-        renderHomePage(store)
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-        expect(
-          screen.getByLabelText(/des métiers de la culture/)
-        ).toBeInTheDocument()
-
-        await userEvent.click(
-          screen.getByRole('button', { name: /Masquer le bandeau/ })
-        )
-        expect(
-          screen.queryByLabelText(/des métiers de la culture/)
-        ).not.toBeInTheDocument()
-      })
-
-      it('should not display if user has already seen', async () => {
-        localStorage.setItem(CLOSE_JOB_HIGHLIGHTS_BANNER_KEY, true)
-
-        renderHomePage(store)
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-        expect(
-          screen.queryByLabelText(/des métiers de la culture/)
-        ).not.toBeInTheDocument()
       })
     })
 
