@@ -380,6 +380,28 @@ class ValidatePhoneNumberTest:
         assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
         assert "flask-admin: Manual phone validation" in caplog.messages
 
+    def should_activate_user_if_phone_validation_is_the_last_step(self, client):
+        admin = users_factories.AdminFactory()
+        user = users_factories.UserFactory(
+            phoneValidationStatus=None,
+            isEmailValidated=True,
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.PROFILE_COMPLETION, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        client.with_session_auth(admin.email)
+        response = client.post(f"/pc/back-office/support_beneficiary/validate/beneficiary/phone_number/{user.id}")
+        assert response.status_code == 302
+        assert user.has_beneficiary_role is True
+
 
 @pytest.mark.usefixtures("db_session")
 class BeneficiaryActivationStatusTest:
