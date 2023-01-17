@@ -2,11 +2,12 @@ name: Test main
 run-name: Test main${{ github.ref == 'refs/heads/master' && ' and deploy to testing' || '' }}
 on:
   push:
+    branches:
+      - master
+      - "maint/**"
+  pull_request:
     branches-ignore:
       - docs
-      - integration
-      - production
-      - staging
 
 concurrency:
   # cancel previous workflow of the same branch except on master
