@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - id: folder-check-changed-files
-        uses: tj-actions/changed-files@v32
+        uses: tj-actions/changed-files@v35
         with:
           files: |
             ${{ inputs.folder }}/**
