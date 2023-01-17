@@ -110,9 +110,9 @@ const CollectiveTimeLine = ({
           À partir du {cancellationLimitDate.toString()}, la réservation ne sera
           plus annulable par l’établissement scolaire. <br />
           <br />
-          15 jours avant la date de l’événement, l’établissement scolaire ne
+          15 jours avant la date de l’évènement, l’établissement scolaire ne
           peut plus annuler. De votre côté, vous pouvez annuler la réservation
-          jusqu’à 48 heures après la date de l’événement.
+          jusqu’à 48 heures après la date de l’évènement.
         </div>
       </>
     ),
@@ -136,7 +136,7 @@ const CollectiveTimeLine = ({
           {eventDate}
           <br />
           <br />
-          Nous espérons que votre événement s’est bien déroulé.
+          Nous espérons que votre évènement s’est bien déroulé.
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
@@ -198,7 +198,7 @@ const CollectiveTimeLine = ({
           Remboursement à venir
         </div>
         <div>
-          À compter du jour de l'événement, le virement sera exécuté dans un
+          À compter du jour de l'évènement, le virement sera exécuté dans un
           délai de 2 à 3 semaines.
         </div>
       </>
