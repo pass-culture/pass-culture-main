@@ -885,6 +885,8 @@ def test_synchronize_adage_ids_on_venues(db_session):
     venue2 = offerers_factories.VenueFactory()
     venue3 = offerers_factories.VenueFactory()
     venue4 = offerers_factories.VenueFactory()
+    venue5 = offerers_factories.VenueFactory(adageId="11")
+    venue6 = offerers_factories.VenueFactory(adageId="1252")
 
     BASE_DATA = {
         "siret": "",
@@ -917,6 +919,7 @@ def test_synchronize_adage_ids_on_venues(db_session):
     venue2_data = {**BASE_DATA, "id": 128029, "venueId": venue2.id}
     venue3_data = {**BASE_DATA, "id": 128030, "venueId": venue3.id, "synchroPass": 0}
     venue4_data = {**BASE_DATA, "id": 128031, "venueId": None}
+    venue5_data = {**BASE_DATA, "id": 128030, "venueId": venue5.id, "synchroPass": 0}
 
     with requests_mock.Mocker() as request_mock:
         request_mock.get(
@@ -925,7 +928,7 @@ def test_synchronize_adage_ids_on_venues(db_session):
                 "X-omogen-api-key": "adage-api-key",
             },
             status_code=200,
-            json=[venue1_data, venue2_data, venue3_data, venue4_data],
+            json=[venue1_data, venue2_data, venue3_data, venue4_data, venue5_data],
         )
         educational_api_adage.synchronize_adage_ids_on_venues()
 
@@ -933,6 +936,8 @@ def test_synchronize_adage_ids_on_venues(db_session):
     assert venue2.adageId == "128029"
     assert venue3.adageId is None
     assert venue4.adageId is None
+    assert venue5.adageId is None
+    assert venue6.adageId is None
 
 
 @freeze_time("2020-01-05 10:00:00")
