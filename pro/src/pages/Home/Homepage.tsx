@@ -66,7 +66,7 @@ const Homepage = (): JSX.Element => {
       {withNewOfferCreationJourney &&
         receivedOffererNames?.offerersNames.length === 1 &&
         venues.length === 0 && (
-          <section className="h-section">
+          <section className="step-section">
             <VenueOfferSteps
               hasVenue={venues.length > 0}
               offererId={offererId}
