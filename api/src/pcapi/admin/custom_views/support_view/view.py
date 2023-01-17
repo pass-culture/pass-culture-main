@@ -20,9 +20,9 @@ import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.users.models as users_models
-from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.feature import DisabledFeatureError
+from pcapi.repository import repository
 
 
 logger = logging.getLogger(__name__)
@@ -249,9 +249,14 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             flask.flash("Cet utilisateur n'existe pas", "error")
             return flask.redirect(flask.url_for(".index_view"))
 
-        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-        db.session.add(user)
-        db.session.commit()
+        _manually_validate_phone_number(user)
+
         logger.info("flask-admin: Manual phone validation", extra={"validated_user": user.id})
         flask.flash(f"Le n° de téléphone de l'utilisateur {user.id} {user.full_name} est validé")
         return flask.redirect(flask.url_for(".details_view", id=user_id))
+
+
+def _manually_validate_phone_number(user: users_models.User) -> None:
+    user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+    repository.save(user)
+    subscription_api.activate_beneficiary_if_no_missing_step(user)
