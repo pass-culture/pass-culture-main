@@ -86,7 +86,7 @@ La mise à jour de ce fichier est en principe automatiquement effectuée par un 
 pc alembic upgrade e7b46b06f6dd:head --sql
 ```
 
-## Do/Don't
+## Standards
 
 ### Format de la migration
 
@@ -102,7 +102,7 @@ soit par les fonctions fournies par la bibliothèque alembic:
 op.add_column('venue_provider', sa.Column('syncWorkerId', sa.VARCHAR(24), nullable=True))
 ```
 
-### Typing
+### Typage
 
 Pour un meilleur typage des colonnes de type "ARRAY", utiliser `sqlalchemy.dialects.postgresql.ARRAY` plutôt que `sqlalchemy.typing`.
 

@@ -1,6 +1,3 @@
 # Package `validation.models`
 
-Les modules de ce package contiennent des fonctions de validation d'un modèle
-(cf. le CONTRIBUTING à la racine du projet pour savoir les différents niveaux d'erreur).
-Il ne faut pas les appeler directement, tout passe par la fonction `validate`
-qui, en fonction du type de modèle, achemine les bonnes erreurs à remonter.
+Ce package est obsolète. Les modèles et validateurs doivent être placés dans les fichiers `core/*/models.py` et `core/*/validation.py`.
