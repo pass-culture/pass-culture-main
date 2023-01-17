@@ -3,6 +3,10 @@
 .card-wrapper {
   margin-left: 0 !important;
 
+  &.no-shadow {
+    box-shadow: none;
+  }
+
   h4 {
     margin-bottom: rem.torem(24px);
   }

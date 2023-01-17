@@ -13,7 +13,7 @@ import {
 } from '../../../core/FirebaseEvents/constants'
 import useActiveFeature from '../../../hooks/useActiveFeature'
 import useAnalytics from '../../../hooks/useAnalytics'
-import { CircleArrowIcon, IcoAlertGrey } from '../../../icons'
+import { CircleArrowIcon, HelpSIcon } from '../../../icons'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 
 import styles from './VenueOfferSteps.module.scss'
@@ -40,7 +40,9 @@ const VenueOfferSteps = ({
 
   return (
     <div
-      className={cn(styles['card-wrapper'], 'h-card')}
+      className={cn(styles['card-wrapper'], 'h-card', {
+        [styles['no-shadow']]: hasVenue,
+      })}
       data-testid={hasVenue ? 'venue-offer-steps' : 'home-offer-steps'}
     >
       <div className="h-card-inner">
@@ -75,7 +77,7 @@ const VenueOfferSteps = ({
                   rel: 'noopener noreferrer',
                   target: '_blank',
                 }}
-                Icon={IcoAlertGrey}
+                Icon={HelpSIcon}
                 onClick={() => {
                   logEvent?.(Events.CLICKED_NO_VENUE, {
                     from: location.pathname,
