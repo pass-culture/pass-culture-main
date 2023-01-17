@@ -1,6 +1,6 @@
 # pass-culture-api
 
-Voici le backend de l'application Pass Culture; il est lancé via `docker-compose` en utilisant le fichier
+Voici le backend de l'application pass Culture; il est lancé via `docker-compose` en utilisant le fichier
 `docker-compose-app.yml` du répertoire parent de `api`: `pass-culture-main`.
 
 Plus de détails sur le lancement de l'infra docker-compose sont accessibles dans le
@@ -17,6 +17,7 @@ Spectree:
 * [API privée et API publique dépréciée](https://backend.passculture.app/apidoc/swagger)
 * [API pro publique v2](https://backend.passculture.app/v2/swagger)
 * [API pro privée](https://backend.passculture.app/pro/swagger)
+* [API publique d'offres individuelles](https://backend.passculture.app/public/offers/v1/swagger)
 
 ## Tests
 
@@ -57,7 +58,7 @@ cimg/postgres:12.9-postgis
 
 docker run -d --name redis -p 6379:6379 \
     -v redis_local_data:/data \
-    redis redis-server 
+    redis redis-server
 ```
 
 * Soit en démarrant les services postgresql et redis, par exemple lorsqu'ils ont été installés via _Homebrew_:
@@ -109,8 +110,8 @@ Il faut les ajouter dans le fichier `api/.env.local.secret` .
 ### Scan du repo par GitGuardian
 
 Une Github Action est lancée à chaque push sur le repo, lançant un scan de fuites de secrets GitGuardian.
-Pour ignorer un faux positif, il convient d'ajouter un commentaire _inline_ dans le code: `# gg ignore`, car les 
-directives de `.gitguardian.yaml` permettent seulement d'ignorer lors des scans de la CLI `ggshield` 
+Pour ignorer un faux positif, il convient d'ajouter un commentaire _inline_ dans le code: `# gg ignore`, car les
+directives de `.gitguardian.yaml` permettent seulement d'ignorer lors des scans de la CLI `ggshield`
 cf https://github.com/GitGuardian/ggshield#in-code
 
 ## Démarrage du serveur back api
