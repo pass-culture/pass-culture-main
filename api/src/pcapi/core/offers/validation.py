@@ -50,6 +50,7 @@ EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER = {
     "bookingEmail",
     "extraData",
     "withdrawalDetails",
+    "durationMinutes",
     "withdrawalDelay",
     "withdrawalType",
 } | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER

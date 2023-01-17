@@ -1916,22 +1916,34 @@ class PatchEventTest:
             "stageDirector": "Robert",
         }
 
-    def test_patch_generic_fields(self, individual_offers_api_provider, client):
+    def test_patch_all_fields(self, individual_offers_api_provider, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(
             venue__managingOfferer=api_key.offerer,
             bookingEmail="notify@passq.com",
             subcategoryId="CONCERT",
+            durationMinutes=20,
+            isDuo=False,
             lastProvider=individual_offers_api_provider,
             withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
             withdrawalDelay=86400,
+            withdrawalDetails="Around there",
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{event_offer.id}",
-            json={"ticketCollection": {"way": "on_site", "minutesBeforeEvent": 60}, "bookingEmail": "test@myemail.com"},
+            json={
+                "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 60},
+                "bookingEmail": "test@myemail.com",
+                "eventDuration": 40,
+                "enableDoubleBookings": "true",
+                "itemCollectionDetails": "Here !",
+            },
         )
         assert response.status_code == 200
         assert event_offer.withdrawalType == offers_models.WithdrawalTypeEnum.ON_SITE
         assert event_offer.withdrawalDelay == 3600
+        assert event_offer.durationMinutes == 40
+        assert event_offer.isDuo == True
         assert event_offer.bookingEmail == "test@myemail.com"
+        assert event_offer.withdrawalDetails == "Here !"
