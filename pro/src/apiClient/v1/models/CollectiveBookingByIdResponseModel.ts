@@ -19,6 +19,8 @@ export type CollectiveBookingByIdResponseModel = {
   offerVenue: CollectiveOfferOfferVenueResponseModel;
   price: number;
   students: Array<StudentLevels>;
+  venueDMSApplicationId?: number | null;
+  venueDMSToken?: string | null;
   venuePostalCode?: string | null;
 };
 
