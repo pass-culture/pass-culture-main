@@ -29,12 +29,36 @@ logger = logging.getLogger(__name__)
 
 PRODUCT_OFFERS_TAG = "Product offers"
 EVENT_OFFERS_TAG = "Event offers"
+OFFERER_VENUES_TAG = "Offerer and Venues"
 
 MIN_IMAGE_WIDTH = 400
 MAX_IMAGE_WIDTH = 800
 MIN_IMAGE_HEIGHT = 600
 MAX_IMAGE_HEIGHT = 1200
 ASPECT_RATIO = image_conversion.ImageRatio.PORTRAIT
+
+
+@blueprint.v1_blueprint.route("/offerer_venues", methods=["GET"])
+@spectree_serialize(api=blueprint.v1_schema, tags=[OFFERER_VENUES_TAG])
+@api_key_required
+def get_offerer_venues() -> serialization.GetOffererVenuesResponse:
+    """
+    Get offerer attached the API key used and its venues.
+    """
+    offerer = (
+        offerers_models.Offerer.query.filter(
+            offerers_models.Offerer.id == current_api_key.offererId  # type: ignore[attr-defined]
+        )
+        .options(sqla_orm.joinedload(offerers_models.Offerer.managedVenues))
+        .one()
+    )
+    return serialization.GetOffererVenuesResponse(
+        offerer=offerer,
+        venues=[
+            serialization.VenueResponse.build_model(venue)
+            for venue in sorted(offerer.managedVenues, key=lambda venue: venue.id)
+        ],
+    )
 
 
 def _retrieve_venue_from_location(
