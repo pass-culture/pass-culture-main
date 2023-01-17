@@ -194,7 +194,7 @@ const OffererDetails = ({
                   </strong>
                   <br />
                   Nous vous invitons à créer un lieu afin de pouvoir proposer
-                  des offres physiques ou des événements. Vous pouvez dès à
+                  des offres physiques ou des évènements. Vous pouvez dès à
                   présent créer des offres numériques.
                   <br />
                   L’ensemble de ces offres seront publiées sous réserve de
