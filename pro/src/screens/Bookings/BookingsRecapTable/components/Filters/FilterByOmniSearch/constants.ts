@@ -46,7 +46,7 @@ export const bookingIdOmnisearchFilter: OmnisearchFilter = {
   id: 'booking_id',
   placeholderText: 'Rechercher par numéro de réservation',
   stateKey: 'bookingId',
-  selectOptionText: 'Réservation',
+  selectOptionText: 'Numéro de réservation',
 }
 
 export const INDIVIDUAL_OMNISEARCH_FILTERS: OmnisearchFilter[] = [
