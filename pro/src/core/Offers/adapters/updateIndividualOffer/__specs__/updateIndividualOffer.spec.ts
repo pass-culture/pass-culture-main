@@ -148,7 +148,6 @@ describe('updateIndividualOffer', () => {
       motorDisabilityCompliant: true,
       name: undefined,
       url: undefined,
-      venueId: undefined,
       visualDisabilityCompliant: true,
       withdrawalDelay: null,
       withdrawalDetails: null,
