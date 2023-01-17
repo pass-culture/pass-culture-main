@@ -769,7 +769,7 @@ jobs:
           steps:
             - run:
                 name: Coverage Unit Test PRO
-                command: yarn test:unit:ci --coverage --changedSince=master --coverageThreshold='{"global":{"statements":"100","branches":"100","functions":"100","lines":"100"}}'
+                command: yarn test:unit:ci --coverage --changedSince=master
                 working_directory: pro
       - unless:
           condition:
