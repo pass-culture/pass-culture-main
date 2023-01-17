@@ -61,7 +61,7 @@ def authorize():  # type: ignore
     if user and not user.isActive:
         return werkzeug.exceptions.Forbidden()
 
-    if settings.IS_TESTING or settings.IS_DEV:
+    if settings.IS_TESTING or settings.IS_DEV or settings.IS_INTEGRATION:
         if not user:
             user = create_local_admin_user(
                 email=google_user["email"],
