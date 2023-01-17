@@ -370,12 +370,12 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
           <FormLayout.Section
             title="Stock & Prix"
             description={
-              'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’événement. \n Vous pouvez annuler un événement en supprimant la ligne de stock associée. Cette action est irréversible.'
+              'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’évènement. \n Vous pouvez annuler un évènement en supprimant la ligne de stock associée. Cette action est irréversible.'
             }
             links={[
               {
                 href: 'https://aide.passculture.app/hc/fr/articles/4411992053649--Acteurs-Culturels-Comment-annuler-ou-reporter-un-%C3%A9v%C3%A9nement-',
-                linkTitle: 'Comment reporter ou annuler un événement ?',
+                linkTitle: 'Comment reporter ou annuler un évènement ?',
               },
             ]}
             descriptionAsBanner={mode === OFFER_WIZARD_MODE.EDITION}
