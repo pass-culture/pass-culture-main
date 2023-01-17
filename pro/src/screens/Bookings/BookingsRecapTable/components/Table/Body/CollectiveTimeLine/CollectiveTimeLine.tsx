@@ -1,6 +1,10 @@
 import React from 'react'
 
-import { CollectiveBookingResponseModel } from 'apiClient/v1'
+import {
+  CollectiveBookingBankInformationStatus,
+  CollectiveBookingByIdResponseModel,
+  CollectiveBookingResponseModel,
+} from 'apiClient/v1'
 import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
 import { BOOKING_STATUS } from 'core/Bookings'
 import { ReactComponent as ExternalLinkIcon } from 'icons/ico-external-site-filled.svg'
@@ -15,6 +19,7 @@ import styles from './CollectiveTimeLine.module.scss'
 
 export interface ICollectiveBookingDetailsProps {
   bookingRecap: CollectiveBookingResponseModel
+  bookingDetails: CollectiveBookingByIdResponseModel
 }
 
 const cancellationReasonTitle = (
@@ -39,6 +44,7 @@ const cancellationReasonTitle = (
 
 const CollectiveTimeLine = ({
   bookingRecap,
+  bookingDetails,
 }: ICollectiveBookingDetailsProps) => {
   const bookingDate = getDateToFrenchText(bookingRecap.bookingDate)
   const confirmationDate =
@@ -58,7 +64,6 @@ const CollectiveTimeLine = ({
       bookingRecap.bookingStatusHistory.length - 1
     ].date
   )
-
   const pendingStep = {
     type: TimelineStepType.SUCCESS,
     content: (
@@ -262,6 +267,57 @@ const CollectiveTimeLine = ({
       </>
     ),
   }
+  const waitingMissingBankInfo = {
+    type: TimelineStepType.WAITING,
+    content: (
+      <>
+        <div className={styles['timeline-step-title']}>
+          Remboursement en attente
+        </div>
+        <div>
+          Vous devez renseigner des coordonnées bancaires pour percevoir le
+          remboursement.
+        </div>
+        <ButtonLink
+          variant={ButtonVariant.TERNARY}
+          link={{
+            to: `/structures/${bookingDetails.offererId}/lieux/${bookingDetails.venueId}?modification#reimbursement-section`,
+            isExternal: false,
+          }}
+          Icon={ExternalLinkIcon}
+          className={styles['button-important']}
+        >
+          Renseigner mes coordonnées bancaires
+        </ButtonLink>
+      </>
+    ),
+  }
+
+  const waitingPendingBankInfo = {
+    type: TimelineStepType.WAITING,
+    content: (
+      <>
+        <div className={styles['timeline-step-title']}>
+          Remboursement en attente
+        </div>
+        <div>
+          Les coordonnées bancaires de votre lieu sont en cours de validation
+          par notre service financier. Vos remboursements seront rétroactifs une
+          fois vos coordonnées bancaires ajoutées.
+        </div>
+        <ButtonLink
+          variant={ButtonVariant.TERNARY}
+          link={{
+            to: `https://www.demarches-simplifiees.fr/dossiers/${bookingDetails.venueDMSApplicationId}`,
+            isExternal: true,
+          }}
+          Icon={ExternalLinkIcon}
+        >
+          Voir le dossier en cours
+        </ButtonLink>
+      </>
+    ),
+  }
 
   const arrayHistoryStep: Array<ITimelineStep> =
     bookingRecap.bookingStatusHistory.map(el => {
@@ -282,6 +338,20 @@ const CollectiveTimeLine = ({
           throw new Error('Invalid booking history status')
       }
     })
+
+  let lastValidatedStep = waitingReimbursedStep
+  if (
+    bookingDetails.bankInformationStatus ==
+    CollectiveBookingBankInformationStatus.DRAFT
+  ) {
+    lastValidatedStep = waitingPendingBankInfo
+  }
+  if (
+    bookingDetails.bankInformationStatus ==
+    CollectiveBookingBankInformationStatus.MISSING
+  ) {
+    lastValidatedStep = waitingMissingBankInfo
+  }
 
   switch (bookingRecap.bookingStatus) {
     case BOOKING_STATUS.PENDING:
@@ -328,7 +398,7 @@ const CollectiveTimeLine = ({
             confirmationStep,
             confirmedStep,
             endedStep,
-            waitingReimbursedStep,
+            lastValidatedStep,
           ]}
         />
       )

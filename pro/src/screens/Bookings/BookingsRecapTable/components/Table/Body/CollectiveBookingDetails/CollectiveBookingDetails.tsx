@@ -28,7 +28,10 @@ const CollectiveBookingDetails = ({
     <>
       <div className={styles.container}>
         <div className={styles['details-column']}>
-          <CollectiveTimeLine bookingRecap={bookingRecap} />
+          <CollectiveTimeLine
+            bookingRecap={bookingRecap}
+            bookingDetails={bookingDetails}
+          />
         </div>
         <div className={styles['details-column']}>
           <div className={styles['contact-details']}>
