@@ -68,15 +68,18 @@
 
 <div class="row">
     <div class="col">
-        {% if has_filled_identity_check and (current_user.is_super_admin()) %}
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userValidationModal">
-            Soumettre une revue manuelle
-        </button>
-        {% else %}
-        <button type="button" class="btn btn-danger" disabled>
-            Revue manuelle non disponible (aucun fraud check avec nom, prénom, date de naissance)
-        </button>
-        {% endif %}
+        {% if current_user.is_super_admin() %}
+            {% if has_filled_identity_check %}
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userValidationModal">
+                Soumettre une revue manuelle
+            </button>
+            {% else %}
+            <button type="button" class="btn btn-danger" disabled>
+                Revue manuelle non disponible (aucun fraud check avec nom, prénom, date de naissance)
+            </button>
+            {% endif %}
+        {% endif %}  
+        
         {% if current_user.has_admin_role %}
         <button name="submit" form="validate_form_button" type="submit" class="btn btn-primary">Valider le n° de
             téléphone
