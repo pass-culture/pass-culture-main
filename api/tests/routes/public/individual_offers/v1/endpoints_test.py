@@ -1947,3 +1947,100 @@ class PatchEventTest:
         assert event_offer.isDuo == True
         assert event_offer.bookingEmail == "test@myemail.com"
         assert event_offer.withdrawalDetails == "Here !"
+
+
+@pytest.mark.usefixtures("db_session")
+class PatchDateTest:
+    def test_find_no_stock_returns_404(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            lastProvider=individual_offers_api_provider,
+        )
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_offer.id}/dates/12",
+            json={"beginningDatetime": "2022-02-01T12:00:00+02:00"},
+        )
+        assert response.status_code == 404
+        assert response.json == {"date_id": ["No date could be found"]}
+
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_update_all_fields_dates(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_stock = offers_factories.EventStockFactory(
+            offer__venue__managingOfferer=api_key.offerer,
+            offer__lastProvider=individual_offers_api_provider,
+            quantity=10,
+            price=12,
+            bookingLimitDatetime=datetime.datetime(2022, 1, 7),
+            beginningDatetime=datetime.datetime(2022, 1, 12),
+        )
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
+            json={
+                "beginningDatetime": "2022-02-01T15:00:00+02:00",
+                "bookingLimitDatetime": "2022-01-20T12:00:00+02:00",
+                "price": 2012,
+                "quantity": 24,
+            },
+        )
+        assert response.status_code == 200
+        assert event_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 20, 10)
+        assert event_stock.beginningDatetime == datetime.datetime(2022, 2, 1, 13)
+        assert event_stock.price == decimal.Decimal("20.12")
+        assert event_stock.quantity == 24
+
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_update_only_one_field(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_stock = offers_factories.EventStockFactory(
+            offer__venue__managingOfferer=api_key.offerer,
+            offer__lastProvider=individual_offers_api_provider,
+            quantity=10,
+            price=12,
+            bookingLimitDatetime=datetime.datetime(2022, 1, 7),
+            beginningDatetime=datetime.datetime(2022, 1, 12),
+        )
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
+            json={
+                "bookingLimitDatetime": "2022-01-09T12:00:00+02:00",
+            },
+        )
+        assert response.status_code == 200
+        assert event_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 9, 10)
+        assert event_stock.beginningDatetime == datetime.datetime(2022, 1, 12)
+        assert event_stock.price == decimal.Decimal("12")
+        assert event_stock.quantity == 10
+
+    def test_update_with_error(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_stock = offers_factories.EventStockFactory(
+            offer__venue__managingOfferer=api_key.offerer,
+            offer__lastProvider=individual_offers_api_provider,
+            quantity=10,
+            dnBookedQuantity=8,
+        )
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
+            json={
+                "quantity": 3,
+            },
+        )
+        assert response.status_code == 400
+        assert response.json == {"quantity": ["Le stock total ne peut être inférieur au nombre de réservations"]}
+
+    def test_does_not_accept_extra_fields(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_stock = offers_factories.EventStockFactory(
+            offer__venue__managingOfferer=api_key.offerer,
+            offer__lastProvider=individual_offers_api_provider,
+        )
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
+            json={
+                "testForbidField": "test",
+            },
+        )
+        assert response.status_code == 400
+        assert response.json == {"testForbidField": ["Vous ne pouvez pas changer cette information"]}
