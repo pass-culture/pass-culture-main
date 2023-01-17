@@ -9,7 +9,12 @@ import {
 } from 'apiClient/v1'
 import RedirectDialog from 'components/Dialog/RedirectDialog'
 import SoftDeletedOffererWarning from 'components/SoftDeletedOffererWarning'
-import { Events } from 'core/FirebaseEvents/constants'
+import {
+  Events,
+  OFFER_FORM_HOMEPAGE,
+  OFFER_FORM_NAVIGATION_IN,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import { useNewOfferCreationJourney } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as StatusPendingFullIcon } from 'icons/ico-status-pending-full.svg'
@@ -199,12 +204,12 @@ const Offerers = ({ receivedOffererNames }: IOfferersProps) => {
               title="Félicitations,"
               secondTitle="vous avez créé votre lieu !"
               onRedirect={() =>
-                logEvent?.(
-                  Events.CLICKED_CREATE_OFFER_FROM_SUCCESS_VENUE_CREATION_MODAL,
-                  {
-                    from: location.pathname,
-                  }
-                )
+                logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                  from: OFFER_FORM_NAVIGATION_IN.HOME,
+                  to: OFFER_FORM_HOMEPAGE,
+                  used: OFFER_FORM_NAVIGATION_MEDIUM.CREATE_OFFER_POPIN,
+                  isEdition: false,
+                })
               }
               onCancel={() => {
                 removeSuccessParams()

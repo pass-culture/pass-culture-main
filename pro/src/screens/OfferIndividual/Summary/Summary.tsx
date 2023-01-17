@@ -13,6 +13,7 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
+  VenueEvents,
 } from 'core/FirebaseEvents/constants'
 import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
@@ -226,6 +227,12 @@ const Summary = (
         <RedirectDialog
           icon={IcoParty}
           onCancel={() => {
+            logEvent?.(
+              Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL,
+              {
+                from: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              }
+            )
             navigate(offerConfirmationStepUrl)
           }}
           title="Félicitations, vous avez créé votre offre !"
@@ -234,6 +241,12 @@ const Summary = (
             to: `/structures/${offerOfferer?.id}/lieux/${venueId}?modification#remboursement`,
             isExternal: false,
           }}
+          onRedirect={() =>
+            logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
+              venue_id: venueId,
+              from: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            })
+          }
           cancelText="Plus tard"
           withRedirectLinkIcon={false}
         >
