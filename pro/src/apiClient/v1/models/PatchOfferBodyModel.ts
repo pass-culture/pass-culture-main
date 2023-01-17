@@ -22,7 +22,6 @@ export type PatchOfferBodyModel = {
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;
   url?: string | null;
-  venueId?: string | null;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDelay?: number | null;
   withdrawalDetails?: string | null;
