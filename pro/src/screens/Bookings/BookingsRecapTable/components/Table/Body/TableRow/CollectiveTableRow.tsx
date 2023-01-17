@@ -38,7 +38,7 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
     const fetchBookingDetails = async () => {
       setIsLoading(true)
       const bookingResponse = await getCollectiveBookingAdapter(
-        row.original.booking_identifier
+        row.original.bookingIdentifier
       )
       if (bookingResponse.isOk) {
         setBookingDetails(bookingResponse.payload)
@@ -58,7 +58,7 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
 
   useEffect(() => {
     // We expand row if bookingId match the one in the context
-    if (rowToExpandContext.rowToExpandId == row.original.booking_id) {
+    if (rowToExpandContext.rowToExpandId == row.original.bookingId) {
       row.toggleRowExpanded(true)
     }
   }, [row, rowToExpandContext])

@@ -51,12 +51,12 @@ const CollectiveActionButtons = ({
             onClick={() => setIsModalOpen(true)}
           >
             Annuler la{' '}
-            {bookingRecap.booking_status === BOOKING_STATUS.PENDING
+            {bookingRecap.bookingStatus === BOOKING_STATUS.PENDING
               ? 'préréservation'
               : 'réservation'}
           </Button>
         )}
-        {bookingRecap.booking_status === BOOKING_STATUS.PENDING && (
+        {bookingRecap.bookingStatus === BOOKING_STATUS.PENDING && (
           <ButtonLink
             link={{ isExternal: false, to: offerEditionUrl }}
             variant={ButtonVariant.PRIMARY}

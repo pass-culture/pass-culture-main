@@ -24,7 +24,7 @@ const doesBookingIdMatchFilter = <T extends CollectiveBookingResponseModel>(
   booking: T
 ): boolean => {
   if (bookingId !== EMPTY_FILTER_VALUE) {
-    const offerNameFromBooking = _sanitize(booking.booking_id)
+    const offerNameFromBooking = _sanitize(booking.bookingId)
     return offerNameFromBooking.includes(_sanitize(bookingId))
   }
   return true
@@ -94,10 +94,10 @@ const doesBookingTokenMatchFilter = <
 ): boolean => {
   if (bookingToken === EMPTY_FILTER_VALUE) {
     return true
-  } else if (booking.booking_token === null) {
+  } else if (booking.bookingToken === null) {
     return false
   } else {
-    const bookingTokenFromBooking = booking.booking_token?.toLowerCase()
+    const bookingTokenFromBooking = booking.bookingToken?.toLowerCase()
     return Boolean(
       bookingTokenFromBooking?.includes(bookingToken.toLowerCase().trim())
     )
@@ -125,7 +125,7 @@ const doesBookingStatusMatchFilter = <
   booking: T
 ): boolean => {
   if (statuses) {
-    return !statuses.includes(booking.booking_status)
+    return !statuses.includes(booking.bookingStatus)
   }
   return true
 }

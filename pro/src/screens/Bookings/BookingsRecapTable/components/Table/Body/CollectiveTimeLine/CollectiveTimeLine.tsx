@@ -19,15 +19,15 @@ export interface ICollectiveBookingDetailsProps {
 const CollectiveTimeLine = ({
   bookingRecap,
 }: ICollectiveBookingDetailsProps) => {
-  const bookingDate = getDateToFrenchText(bookingRecap.booking_date)
+  const bookingDate = getDateToFrenchText(bookingRecap.bookingDate)
   const confirmationDate =
-    bookingRecap.booking_confirmation_date &&
-    getDateToFrenchText(bookingRecap.booking_confirmation_date)
+    bookingRecap.bookingConfirmationDate &&
+    getDateToFrenchText(bookingRecap.bookingConfirmationDate)
   const confirmationLimitDate = getDateToFrenchText(
-    bookingRecap.booking_confirmation_limit_date
+    bookingRecap.bookingConfirmationLimitDate
   )
   const cancellationLimitDate = getDateToFrenchText(
-    bookingRecap.booking_cancellation_limit_date
+    bookingRecap.bookingCancellationLimitDate
   )
   const eventDate = getDateToFrenchText(
     bookingRecap.stock.event_beginning_datetime
@@ -213,7 +213,7 @@ const CollectiveTimeLine = ({
     ),
   }
 
-  switch (bookingRecap.booking_status) {
+  switch (bookingRecap.bookingStatus) {
     case BOOKING_STATUS.PENDING:
       return (
         <Timeline

@@ -31,7 +31,7 @@ const BookingStatusCell = ({
 
   if (isImproveCollectiveStatusActive && isCollectiveStatus) {
     const lastBookingStatus =
-      bookingRecapInfo.original.booking_status_history.slice(-1)[0].status
+      bookingRecapInfo.original.bookingStatusHistory.slice(-1)[0].status
     const bookingDisplayInfo =
       getCollectiveBookingStatusDisplayInformations(lastBookingStatus)
     const tooltipId = `tooltip-${bookingRecapInfo.id}`
@@ -50,13 +50,13 @@ const BookingStatusCell = ({
   }
 
   const bookingDisplayInfo = getBookingStatusDisplayInformations(
-    bookingRecapInfo.original.booking_status
+    bookingRecapInfo.original.bookingStatus
   )
   const offerName = bookingRecapInfo.original.stock.offer_name
 
   const statusClassName = bookingDisplayInfo?.statusClassName
   const statusName = bookingDisplayInfo?.status
-  const amount = computeBookingAmount(bookingRecapInfo.original.booking_amount)
+  const amount = computeBookingAmount(bookingRecapInfo.original.bookingAmount)
   const icon = bookingDisplayInfo?.svgIconFilename
 
   function computeBookingAmount(amount: number) {
@@ -78,9 +78,7 @@ const BookingStatusCell = ({
         </div>
         <div className="bs-history-title">Historique</div>
         <BookingStatusCellHistory
-          bookingStatusHistory={
-            bookingRecapInfo.original.booking_status_history
-          }
+          bookingStatusHistory={bookingRecapInfo.original.bookingStatusHistory}
         />
       </div>
     </div>

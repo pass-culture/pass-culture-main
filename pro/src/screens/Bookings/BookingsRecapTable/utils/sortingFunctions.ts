@@ -59,8 +59,8 @@ export const sortByBookingDate = <
   firstRow: Row<T>,
   secondRow: Row<T>
 ) => {
-  const bookingDateOne = new Date(firstRow.original.booking_date)
-  const bookingDateTwo = new Date(secondRow.original.booking_date)
+  const bookingDateOne = new Date(firstRow.original.bookingDate)
+  const bookingDateTwo = new Date(secondRow.original.bookingDate)
   if (bookingDateOne > bookingDateTwo) {
     return 1
   } else if (bookingDateOne < bookingDateTwo) {

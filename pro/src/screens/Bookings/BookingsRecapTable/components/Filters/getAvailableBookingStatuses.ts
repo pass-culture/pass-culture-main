@@ -9,7 +9,7 @@ export function getAvailableBookingStatuses<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 >(bookingsRecap: T[]) {
   const presentBookingStatues = Array.from(
-    new Set(bookingsRecap.map(bookingRecap => bookingRecap.booking_status))
+    new Set(bookingsRecap.map(bookingRecap => bookingRecap.bookingStatus))
   ).map(bookingStatus => ({
     title: getBookingStatusDisplayInformations(bookingStatus)?.status ?? '',
     value: bookingStatus,
