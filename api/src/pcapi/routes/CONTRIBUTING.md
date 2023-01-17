@@ -1,46 +1,30 @@
 # Package `routes`
 
-Les modules de ce package contiennent des fonctions python de type _controller_ ainsi que le _binding_ de ces fonctions
-avec les routes d'API grâce au _framework Flask_.
+Les modules de ce package contiennent :
+- des fichiers définissant les contrôleurs des routes : `routes/*/endpoints/*.py`
+- des fichiers définissant les modèles d'entrée et sortie des routes : `routes/*/serialization/*.py`
 
-## Do
+## Standards
 
-Ces fonctions doivent contenir : des appels à des fontions de `domain`, `connectors` ou `repository` ainsi que
-les différents _HTTP status codes_ que l'ont souhaite retourner.
+Le contrôleurs peuvent contenir : des appels à des fontions de `api`, `connectors` ou `repository`.
 
-Par exemple :
-
-```python
-@private_api.route("/users/current", methods=["GET"])
-@login_required
-def get_profile():
-    user = as_dict(current_user, includes=USER_INCLUDES)
-    user['expenses'] = get_expenses(current_user.userBookings)
-    return jsonify(user), 200
-```
-
-## Don't
-
-Ces fonctions ne doivent pas contenir : des règles de gestion, des _queries_ vers la base de données ou des appels à des
-web services.
-
-Par exemple :
+On utilise la librairie `pydantic` pour sérialiser les données.
 
 ```python
-@private_api.route('/eventOccurrences', methods=['POST'])
-@login_required
-def create_event_occurrence():
-    product = Product.query \
-        .join(Offer) \
-        .filter(Offer.id == dehumanize(request.json['offerId'])) \
-        .first_or_404()
+@blueprint.native_v1.route("/me", methods=["GET"])
+@spectree_serialize(
+    response_model=serializers.UserProfileResponse,
+    on_success_status=200,
+    api=blueprint.api,
+)
+@authenticated_and_active_user_required
+def get_user_profile(user: users_models.User) -> serializers.UserProfileResponse:
+    return serializers.UserProfileResponse.from_orm(user)
 
-    occurrence = EventOccurrence(from_dict=request.json)
-    repository.save(occurrence)
-    return jsonify(as_dict(occurrence, includes=EVENT_OCCURRENCE_INCLUDES)), 201
 ```
 
-## Testing
+
+### Tests
 
 Ces fonctions sont testées au travers des routes, avec des tests fonctionnels. Ces tests utilisent des appels HTTP et
 se positionnent donc "du point de vue du client".
@@ -57,27 +41,23 @@ Ils n'ont pas pour objectifs de :
 - tester l'intégralité des cas passants ou non-passants possibles. Ces cas là seront testés plus près du code, dans des
   modules de `domain` ou de `repository` par exemple.
 
-Par exemple :
+Pour chaque route, ajouter une classe de tests. Les sous-méthodes testent les différents cas souhaité.
 
 ```python
-class Get:
-    class Returns200:
-        @clean_database
-        def test_offers_are_paginated_by_chunks_of_10(self, app):
-            # Given
-            user = UserFactory()
-            offer = OfferFactory(user, 20)
+class GetRoute:
+    @pytest.mark.usefixtures("db_session")
+    def test_offers_are_paginated_by_chunks_of_10(self, client, app):
+        user = UserFactory()
+        offer = OfferFactory(user, 20)
 
-            # when
-            response = TestClient(app.test_client()) \
-                .with_session_auth(email='user@test.com') \
-                .get('/offers')
+        response = client.with_session_auth(email='user@test.com').get('/offers')
 
-            # then
-            assert response.status_code == 200
-            assert len(response.json()) == 10
+        assert response.status_code == 200
+        assert len(response.json()) == 10
 ```
 
-## Pour en savoir plus
+# Troubleshooting
 
-- http://flask.pocoo.org/docs/1.0/quickstart/#routing
+## Ajout d'un nouveau fichier de route
+
+Pour que les routes d'un nouveau fichier de routes soient exposées, il faut bien s'assurer que ce fichier soit initialisé dans le fichier `__init__.py` situé au même niveau dans l'arborescence de fichiers, jusqu'au fichier `__init__.py` du package `pcapi.routes`.
