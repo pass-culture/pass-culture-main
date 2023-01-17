@@ -846,7 +846,10 @@ def get_all_educational_institutions(offset: int = 0, limit: int = 0) -> tuple[t
 
     query = educational_models.EducationalInstitution.query
     query = query.filter(educational_models.EducationalInstitution.isActive == True)
-    query = query.order_by(educational_models.EducationalInstitution.name)
+    query = query.order_by(
+        educational_models.EducationalInstitution.name,
+        educational_models.EducationalInstitution.id,
+    )
     query = query.with_entities(
         educational_models.EducationalInstitution.name,
         educational_models.EducationalInstitution.id,
