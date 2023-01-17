@@ -1,7 +1,5 @@
-import {
-  GetCollectiveOfferVenueResponseModel,
-  OfferAddressType,
-} from 'apiClient/v1'
+import { OfferAddressType } from 'apiClient/v1'
+import { IVenue } from 'core/Venue'
 import { EVENT_ADDRESS_SCHOOL_LABEL } from 'screens/OfferEducational/constants/labels'
 
 import { formatOfferEventAddress } from '../formatOfferEventAddress'
@@ -22,7 +20,7 @@ describe('formatOfferEventAddress', () => {
           postalCode: '75000',
           city: 'Paris',
           address: '12 rue Duhesme',
-        } as GetCollectiveOfferVenueResponseModel
+        } as IVenue
       )
     ).toBe('Offerer venue, 12 rue Duhesme, 75000, Paris')
   })
@@ -42,7 +40,7 @@ describe('formatOfferEventAddress', () => {
           postalCode: '75000',
           city: 'Paris',
           address: '12 rue Duhesme',
-        } as GetCollectiveOfferVenueResponseModel
+        } as IVenue
       )
     ).toBe(EVENT_ADDRESS_SCHOOL_LABEL)
   })
@@ -62,7 +60,7 @@ describe('formatOfferEventAddress', () => {
           postalCode: '75000',
           city: 'Paris',
           address: '12 rue Duhesme',
-        } as GetCollectiveOfferVenueResponseModel
+        } as IVenue
       )
     ).toBe('A la mairie')
   })
