@@ -137,14 +137,14 @@ class Returns200Test:
                     "lastname": "Granger",
                     "phonenumber": "+33100000000",
                 },
-                "booking_date": format_into_timezoned_date(
+                "bookingDate": format_into_timezoned_date(
                     booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),
                 ),
-                "booking_amount": 10.0,
-                "booking_token": "ABCDEF",
-                "booking_status": "validated",
-                "booking_is_duo": False,
-                "booking_status_history": [
+                "bookingAmount": 10.0,
+                "bookingToken": "ABCDEF",
+                "bookingStatus": "validated",
+                "bookingIsDuo": False,
+                "bookingStatusHistory": [
                     {
                         "status": "booked",
                         "date": format_into_timezoned_date(
@@ -184,7 +184,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert len(response.json["bookingsRecap"]) == 1
-        assert response.json["bookingsRecap"][0]["booking_token"] == booking.token
+        assert response.json["bookingsRecap"][0]["bookingToken"] == booking.token
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
@@ -207,7 +207,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert len(response.json["bookingsRecap"]) == 1
-        assert response.json["bookingsRecap"][0]["booking_date"] == datetime.isoformat(
+        assert response.json["bookingsRecap"][0]["bookingDate"] == datetime.isoformat(
             utc_datetime_to_department_timezone(booking.dateCreated, booking.venue.departementCode)
         )
         assert response.json["page"] == 1
@@ -228,7 +228,7 @@ class Returns200Test:
         response = client.with_session_auth(pro_user.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
 
         assert response.status_code == 200
-        assert response.json["bookingsRecap"][0]["booking_token"] is None
+        assert response.json["bookingsRecap"][0]["bookingToken"] is None
 
 
 @pytest.mark.usefixtures("db_session")

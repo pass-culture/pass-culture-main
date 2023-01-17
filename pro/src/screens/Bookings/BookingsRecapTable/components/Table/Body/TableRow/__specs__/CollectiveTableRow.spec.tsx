@@ -79,11 +79,11 @@ describe('CollectiveTableRow', () => {
   it('should not render booking details if row is not expanded', async () => {
     const row = {
       original: {
-        booking_identifier: 'A1',
+        bookingIdentifier: 'A1',
         stock: {
           offer_identifier: 'A1',
         },
-        booking_status: 'booked',
+        bookingStatus: 'booked',
       },
       isExpanded: false,
     } as Row<CollectiveBookingResponseModel>
@@ -98,11 +98,11 @@ describe('CollectiveTableRow', () => {
   it('should render loader while fetching data', async () => {
     const row = {
       original: {
-        booking_identifier: 'A1',
+        bookingIdentifier: 'A1',
         stock: {
           offer_identifier: 'A1',
         },
-        booking_status: 'booked',
+        bookingStatus: 'booked',
       },
       isExpanded: true,
     } as Row<CollectiveBookingResponseModel>
@@ -126,11 +126,11 @@ describe('CollectiveTableRow', () => {
   it('should display booking details if row is expanded', async () => {
     const row = {
       original: {
-        booking_identifier: 'A1',
+        bookingIdentifier: 'A1',
         stock: {
           offer_identifier: 'A1',
         },
-        booking_status: 'booked',
+        bookingStatus: 'booked',
       },
       isExpanded: true,
     } as Row<CollectiveBookingResponseModel>

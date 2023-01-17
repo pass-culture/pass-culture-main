@@ -47,8 +47,8 @@ export const getColumnsByAudience = <
   }
 
   const bookingIdColumn: CollectiveColumnType = {
-    id: 'booking_id',
-    accessor: 'booking_id',
+    id: 'bookingId',
+    accessor: 'bookingId',
     Cell: ({ value }) => <BookingIdCell id={value} />,
     Header: 'Réservation',
     className: 'column-booking-id',
@@ -90,8 +90,8 @@ export const getColumnsByAudience = <
   }
 
   const isDuoColumn: IndividualColumnType = {
-    id: 'booking_is_duo',
-    accessor: 'booking_is_duo',
+    id: 'bookingIsDuo',
+    accessor: 'bookingIsDuo',
     Header: '',
     Cell: ({ value }) => <BookingIsDuoCell isDuo={value} />,
     disableSortBy: true,
@@ -100,8 +100,8 @@ export const getColumnsByAudience = <
 
   const bookingDateColumn: IndividualColumnType = {
     Header: 'Réservation',
-    id: 'booking_date',
-    accessor: 'booking_date',
+    id: 'bookingDate',
+    accessor: 'bookingDate',
     Cell: ({ value }) => <BookingDateCell bookingDateTimeIsoString={value} />,
     defaultCanSort: true,
     sortType: sortByBookingDate,
@@ -110,15 +110,15 @@ export const getColumnsByAudience = <
 
   const bookingTokenColumn: IndividualColumnType = {
     Header: 'Contremarque',
-    id: 'booking_token',
-    accessor: 'booking_token',
+    id: 'bookingToken',
+    accessor: 'bookingToken',
     Cell: ({ value }) => <BookingTokenCell bookingToken={value} />,
     disableSortBy: true,
     className: 'column-booking-token',
   }
   const bookingStatusColumn: IndividualColumnType = {
-    id: 'booking_status',
-    accessor: 'booking_status',
+    id: 'bookingStatus',
+    accessor: 'bookingStatus',
     Cell: ({ row }) => {
       return (
         <BookingStatusCell
@@ -140,8 +140,8 @@ export const getColumnsByAudience = <
   }
 
   const numberOfTicketsAndPriceColumn: CollectiveColumnType = {
-    id: 'booking_amount',
-    accessor: 'booking_amount',
+    id: 'bookingAmount',
+    accessor: 'bookingAmount',
     Cell: ({ row }) => <NumberOfTicketsAndPriceCell bookingRecapInfo={row} />,
     Header: 'Places et prix',
     disableSortBy: true,
@@ -149,8 +149,8 @@ export const getColumnsByAudience = <
   }
 
   const detailsColumn: CollectiveColumnType = {
-    id: 'booking_details',
-    accessor: 'booking_amount',
+    id: 'bookingDetails',
+    accessor: 'bookingAmount',
     Cell: ({ row }) => <DetailsButtonCell bookingRow={row} />,
     Header: '',
     disableSortBy: true,

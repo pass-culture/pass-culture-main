@@ -84,12 +84,12 @@ describe('utils | sortingFunctions', () => {
       // given
       const firstRow = {
         original: {
-          booking_date: '2020-04-22T11:17:12+02:00',
+          bookingDate: '2020-04-22T11:17:12+02:00',
         },
       }
       const secondRow = {
         original: {
-          booking_date: '2020-04-23T13:17:12+02:00',
+          bookingDate: '2020-04-23T13:17:12+02:00',
         },
       }
 
@@ -104,12 +104,12 @@ describe('utils | sortingFunctions', () => {
       // given
       const firstRow = {
         original: {
-          booking_date: '2020-04-22T11:17:12+02:00',
+          bookingDate: '2020-04-22T11:17:12+02:00',
         },
       }
       const secondRow = {
         original: {
-          booking_date: '2020-04-22T12:16:12+03:00',
+          bookingDate: '2020-04-22T12:16:12+03:00',
         },
       }
 
@@ -123,13 +123,13 @@ describe('utils | sortingFunctions', () => {
     it('should return 0 when first row bookingDate is the same as second row bookingDate', () => {
       const firstRow = {
         original: {
-          booking_date: '2020-04-22T11:17:12+02:00',
+          bookingDate: '2020-04-22T11:17:12+02:00',
         },
       }
       // given
       const secondRow = {
         original: {
-          booking_date: '2020-04-22T11:17:12+02:00',
+          bookingDate: '2020-04-22T11:17:12+02:00',
         },
       }
 

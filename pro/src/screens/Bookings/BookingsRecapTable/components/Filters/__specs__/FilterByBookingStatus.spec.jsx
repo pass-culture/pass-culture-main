@@ -20,12 +20,12 @@ describe('components | FilterByBookingStatus', () => {
             firstname: 'Sonia',
             email: 'sonia.klepi@example.com',
           },
-          booking_date: '2020-04-03T12:00:00Z',
-          booking_token: 'ZEHBGD',
-          booking_status: 'booked',
-          booking_is_duo: false,
-          venue_identifier: 'AE',
-          booking_status_history: [
+          bookingDate: '2020-04-03T12:00:00Z',
+          bookingToken: 'ZEHBGD',
+          bookingStatus: 'booked',
+          bookingIsDuo: false,
+          venueIdentifier: 'AE',
+          bookingStatusHistory: [
             {
               status: 'booked',
               date: '2020-04-03T12:00:00Z',
@@ -42,12 +42,12 @@ describe('components | FilterByBookingStatus', () => {
             firstname: 'Sonia',
             email: 'sonia.klepi@example.com',
           },
-          booking_date: '2020-04-03T12:00:00Z',
-          booking_token: 'ZEHBGD',
-          booking_status: 'validated',
-          booking_is_duo: true,
-          venue_identifier: 'AF',
-          booking_status_history: [
+          bookingDate: '2020-04-03T12:00:00Z',
+          bookingToken: 'ZEHBGD',
+          bookingStatus: 'validated',
+          bookingIsDuo: true,
+          venueIdentifier: 'AF',
+          bookingStatusHistory: [
             {
               status: 'booked',
               date: '2020-04-03T12:00:00Z',

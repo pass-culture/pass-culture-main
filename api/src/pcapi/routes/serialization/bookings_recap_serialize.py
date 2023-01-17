@@ -58,6 +58,9 @@ class BookingRecapResponseModel(BaseModel):
     booking_token: str | None
     stock: BookingRecapResponseStockModel
 
+    class Config:
+        alias_generator = to_camel
+
 
 class ListBookingsResponseModel(BaseModel):
     bookingsRecap: list[BookingRecapResponseModel]
@@ -140,12 +143,12 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapRespons
             "email": booking_recap.beneficiary_email or booking_recap.redactor_email,
             "phonenumber": booking_recap.beneficiary_phonenumber,
         },
-        booking_token=booking_recap.booking_token,
-        booking_date=format_into_timezoned_date(booking_recap.booking_date),
-        booking_status=booking_recap.booking_status.value,
-        booking_is_duo=booking_recap.booking_is_duo,
-        booking_amount=booking_recap.booking_amount,
-        booking_status_history=_serialize_booking_status_history(booking_recap.booking_status_history),
+        bookingToken=booking_recap.booking_token,
+        bookingDate=format_into_timezoned_date(booking_recap.booking_date),
+        bookingStatus=booking_recap.booking_status.value,
+        bookingIsDuo=booking_recap.booking_is_duo,
+        bookingAmount=booking_recap.booking_amount,
+        bookingStatusHistory=_serialize_booking_status_history(booking_recap.booking_status_history),
     )
 
     return serialized_booking_recap
