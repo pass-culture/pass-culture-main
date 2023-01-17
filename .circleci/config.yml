@@ -10,7 +10,8 @@ orbs:
 workflows:
   build:
     jobs:
-      - build
+      - build:
+          context: CI_MEASURE
 
 jobs:
   build:
