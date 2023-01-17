@@ -33,6 +33,13 @@ class CollectiveBookingRecapStatus(Enum):
     pending = "pending"
 
 
+class CollectiveBookingBankInformationStatus(Enum):
+    ACCEPTED = "ACCEPTED"
+    DRAFT = "DRAFT"
+    MISSING = "MISSING"
+    REJECTED = "REJECTED"
+
+
 class ListCollectiveBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: int | None
@@ -412,13 +419,23 @@ class CollectiveBookingByIdResponseModel(BaseModel):
     numberOfTickets: int
     venuePostalCode: str | None
     isCancellable: bool
-    bankInformationStatus: repository.CollectiveBookingBankInformationStatus
+    bankInformationStatus: CollectiveBookingBankInformationStatus
+    venueDMSToken: str | None
+    venueDMSApplicationId: int | None
 
     class Config:
         orm_mode = True
 
     @classmethod
     def from_orm(cls, booking: models.CollectiveBooking) -> "CollectiveBookingByIdResponseModel":
+        reimbursement_point = repository.get_reimbursement_venue_for_booking(booking.id)
+        if reimbursement_point and reimbursement_point.bankInformation:
+            bank_information_status = getattr(
+                CollectiveBookingBankInformationStatus, reimbursement_point.bankInformation.status.value
+            )
+        else:
+            bank_information_status = CollectiveBookingBankInformationStatus.MISSING
+
         return cls(
             id=booking.id,
             offerVenue=booking.collectiveStock.collectiveOffer.offerVenue,
@@ -430,5 +447,9 @@ class CollectiveBookingByIdResponseModel(BaseModel):
             numberOfTickets=booking.collectiveStock.numberOfTickets,
             venuePostalCode=booking.venue.postalCode,
             isCancellable=booking.is_cancellable_from_offerer,
-            bankInformationStatus=repository.get_banking_information_status_for_booking(booking.id),
+            bankInformationStatus=bank_information_status,
+            venueDMSToken=reimbursement_point.dmsToken if reimbursement_point else None,
+            venueDMSApplicationId=reimbursement_point.demarchesSimplifieesApplicationId
+            if reimbursement_point
+            else None,
         )

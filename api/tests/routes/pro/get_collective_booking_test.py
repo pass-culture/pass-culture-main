@@ -32,6 +32,8 @@ class Returns200Test:
             "beginningDatetime": "2022-05-02T15:00:00",
             "students": ["Lycée - Seconde"],
             "bankInformationStatus": "MISSING",
+            "venueDMSApplicationId": None,
+            "venueDMSToken": None,
             "price": float(booking.collectiveStock.price),
             "educationalInstitution": {
                 "id": booking.educationalInstitution.id,
@@ -62,7 +64,10 @@ class Returns200Test:
         )
         offerers_factories.VenueReimbursementPointLinkFactory(
             venue=booking.collectiveStock.collectiveOffer.venue,
-            reimbursementPoint__bankInformation=finance_factories.BankInformationFactory(status="DRAFT"),
+            reimbursementPoint__dmsToken="7490b4f8d5e3",
+            reimbursementPoint__bankInformation=finance_factories.BankInformationFactory(
+                status="DRAFT", applicationId=24881014
+            ),
         )
 
         client = client.with_session_auth(user_offerer.user.email)
@@ -75,6 +80,8 @@ class Returns200Test:
             "beginningDatetime": "2022-05-02T15:00:00",
             "students": ["Lycée - Seconde"],
             "bankInformationStatus": "DRAFT",
+            "venueDMSApplicationId": 24881014,
+            "venueDMSToken": "7490b4f8d5e3",
             "price": float(booking.collectiveStock.price),
             "educationalInstitution": {
                 "id": booking.educationalInstitution.id,
