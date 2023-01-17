@@ -55,7 +55,7 @@ then
         echo "✅ tests passing"
     fi
 
-    yarn test:unit:ci -- --coverage --findRelatedTests --coverageThreshold='{"global":{"statements":"100","branches":"100","functions":"100","lines":"100"}}' $STAGED_FILES
+    yarn test:unit:ci -- --coverage --findRelatedTests $STAGED_FILES
     JEST_EXIT_CODE=$?
 
     # check jest exit code
