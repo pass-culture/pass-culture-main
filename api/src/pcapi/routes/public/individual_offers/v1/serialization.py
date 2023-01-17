@@ -10,6 +10,7 @@ import typing_extensions
 from pcapi import settings
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import utils as finance_utils
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.domain import music_types
@@ -65,9 +66,7 @@ class PartialAccessibility(serialization.ConfiguredBaseModel):
 
 class PhysicalLocation(serialization.ConfiguredBaseModel):
     type: typing.Literal["physical"] = "physical"
-    venue_id: int = pydantic.Field(
-        ..., example=1, description="You can get the list of your venues with the route GET /venues"
-    )
+    venue_id: int = pydantic.Field(..., example=1, description="List of venues is available at GET /offerer_venues")
 
 
 class DigitalLocation(serialization.ConfiguredBaseModel):
@@ -676,6 +675,71 @@ class EventOffersResponse(serialization.ConfiguredBaseModel):
 class GetDatesResponse(serialization.ConfiguredBaseModel):
     dates: typing.List[DateResponse]
     pagination: Pagination
+
+    class Config:
+        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
+
+
+class OffererResponse(serialization.ConfiguredBaseModel):
+    id: int
+    dateCreated: datetime.datetime = pydantic.Field(..., alias="createdDatetime")
+    name: str
+    siren: str | None
+
+
+class VenuePhysicalLocation(serialization.ConfiguredBaseModel):
+    address: str | None
+    city: str | None
+    postalCode: str | None
+    type: typing.Literal["physical"] = "physical"
+
+
+class VenueDigitalLocation(serialization.ConfiguredBaseModel):
+    type: typing.Literal["digital"] = "digital"
+
+
+class VenueResponse(serialization.ConfiguredBaseModel):
+    comment: str | None = pydantic.Field(
+        None,
+        description="Applicable if siret is null and venue is physical.",
+        alias="siretComment",
+    )
+    dateCreated: datetime.datetime = pydantic.Field(..., alias="createdDatetime")
+    id: int
+    location: VenuePhysicalLocation | VenueDigitalLocation = pydantic.Field(
+        ...,
+        description="Location where the offers will be available or will take place. There is exactly one digital venue per offerer, which is listed although its id is not required to create a digital offer (see DigitalLocation model).",
+        discriminator="type",
+    )
+    name: str = pydantic.Field(alias="legalName")
+    publicName: str | None = pydantic.Field(..., description="If null, legalName is used")
+    siret: str | None = pydantic.Field(description="Null when venue is digital or when siretComment field is not null.")
+    venueTypeCode: offerers_models.VenueTypeCode | None = pydantic.Field(alias="activityDomain")
+
+    @classmethod
+    def build_model(cls, venue: offerers_models.Venue) -> "VenueResponse":
+        return cls(
+            comment=venue.comment,
+            dateCreated=venue.dateCreated,
+            id=venue.id,
+            location=VenuePhysicalLocation(address=venue.address, city=venue.city, postalCode=venue.postalCode)
+            if not venue.isVirtual
+            else VenueDigitalLocation(),
+            name=venue.name,
+            publicName=venue.publicName,
+            siret=venue.siret,
+            venueTypeCode=venue.venueTypeCode,
+        )
+
+    class Config:
+        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
+
+
+class GetOffererVenuesResponse(serialization.ConfiguredBaseModel):
+    offerer: OffererResponse = pydantic.Field(
+        ..., description="Offerer to which the venues belong. Entity linked to the api key used."
+    )
+    venues: typing.List[VenueResponse]
 
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
