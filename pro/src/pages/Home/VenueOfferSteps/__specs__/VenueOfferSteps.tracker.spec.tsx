@@ -107,6 +107,7 @@ describe('VenueOfferSteps', () => {
       VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
       {
         venue_id: 'CD',
+        from: 'Home',
       }
     )
   })

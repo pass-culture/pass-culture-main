@@ -8,13 +8,19 @@ import { MemoryRouter } from 'react-router'
 
 import { OfferStatus } from 'apiClient/v1'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { Events } from 'core/FirebaseEvents/constants'
+import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useOfferWizardMode from 'hooks/useOfferWizardMode'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
+import { api } from '../../../../apiClient/api'
+import {
+  IOfferIndividualContext,
+  OfferIndividualContext,
+} from '../../../../context/OfferIndividualContext'
+import * as useNewOfferCreationJourney from '../../../../hooks/useNewOfferCreationJourney'
 import Summary, { ISummaryProps } from '../Summary'
 
 const mockLogEvent = jest.fn()
@@ -24,12 +30,28 @@ jest.mock('apiClient/api', () => ({
   api: { patchPublishOffer: jest.fn().mockResolvedValue({}) },
 }))
 
+const defaultContext: IOfferIndividualContext = {
+  offerId: null,
+  offer: null,
+  venueList: [],
+  offererNames: [],
+  categories: [],
+  subCategories: [],
+  setOffer: () => {},
+  setShouldTrack: () => {},
+  shouldTrack: true,
+  setVenueId: () => {},
+  isFirstOffer: false,
+}
+
 const renderSummary = ({
   props,
   overrideStore = {},
+  context = defaultContext,
 }: {
   props: ISummaryProps
   overrideStore?: Partial<RootState>
+  context?: IOfferIndividualContext
 }) => {
   const store = configureTestStore({
     user: {
@@ -45,7 +67,9 @@ const renderSummary = ({
   return render(
     <Provider store={store}>
       <MemoryRouter>
-        <Summary {...props} />
+        <OfferIndividualContext.Provider value={context}>
+          <Summary {...props} />
+        </OfferIndividualContext.Provider>
       </MemoryRouter>
     </Provider>
   )
@@ -532,6 +556,79 @@ describe('Summary trackers', () => {
           used: 'DraftButtons',
           isDraft: true,
           offerId: 'AB',
+        }
+      )
+    })
+  })
+
+  describe('First offer Pop in', () => {
+    beforeEach(async () => {
+      props.offer.status = OfferStatus.DRAFT
+      jest
+        .spyOn(useOfferWizardMode, 'default')
+        .mockImplementation(() => OFFER_WIZARD_MODE.CREATION)
+
+      jest.spyOn(useNewOfferCreationJourney, 'default').mockReturnValue(true)
+      jest.spyOn(api, 'patchPublishOffer').mockResolvedValue()
+
+      const context = defaultContext
+      context.isFirstOffer = true
+      const overrideStore: Partial<RootState> = {
+        features: {
+          initialized: true,
+          list: [
+            {
+              isActive: true,
+              nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
+            },
+          ],
+        },
+      }
+
+      renderSummary({
+        props,
+        overrideStore,
+        context,
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: /Publier l’offre/ })
+      )
+    })
+
+    it("Should track user click on 'later' button", async () => {
+      expect(
+        screen.getByText('Félicitations, vous avez créé votre offre !')
+      ).toBeInTheDocument()
+
+      await userEvent.click(await screen.findByText('Plus tard'))
+
+      // then
+      expect(mockLogEvent).toHaveBeenCalledTimes(2)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        2,
+        Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL,
+        {
+          from: 'recapitulatif',
+        }
+      )
+    })
+
+    it("Should track user click on 'add pricing point' button", async () => {
+      expect(
+        screen.getByText('Félicitations, vous avez créé votre offre !')
+      ).toBeInTheDocument()
+      await userEvent.click(
+        await screen.findByText('Renseigner des coordonnées bancaires')
+      )
+
+      // then
+      expect(mockLogEvent).toHaveBeenCalledTimes(2)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        2,
+        VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
+        {
+          from: 'recapitulatif',
         }
       )
     })

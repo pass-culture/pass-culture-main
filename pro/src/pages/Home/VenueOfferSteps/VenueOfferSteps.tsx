@@ -121,6 +121,7 @@ const VenueOfferSteps = ({
               onClick={() => {
                 logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
                   venue_id: venueId || '',
+                  from: OFFER_FORM_NAVIGATION_IN.HOME,
                 })
               }}
             >

@@ -13,8 +13,8 @@ export enum Events {
   CLICKED_NO_PRICING_POINT_SELECTED_YET = 'hasClickedNoPricingPointSelectedYet',
   CLICKED_ADD_VENUE_IN_OFFERER = 'hasClickedAddVenueInOfferer',
   CLICKED_ADD_FIRST_VENUE_IN_OFFERER = 'hasClickedAddFirstVenueInOfferer',
-  CLICKED_CREATE_OFFER_FROM_SUCCESS_VENUE_CREATION_MODAL = 'hasClickedCreateOfferFromSuccessVenueCreationModal',
   CLICKED_SEE_LATER_FROM_SUCCESS_VENUE_CREATION_MODAL = 'hasClickedSeeLaterFromSuccessVenueCreationModal',
+  CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL = 'hasClickedSeeLaterFromSuccessOfferCreationModal',
   CLICKED_SAVE_VENUE = 'hasClickedSaveVenue',
   CLICKED_DOWNLOAD_BOOKINGS = 'hasClickedDownloadBooking',
   CLICKED_DOWNLOAD_BOOKINGS_CSV = 'hasClickedDownloadBookingCsv',
@@ -90,6 +90,7 @@ export enum OFFER_FORM_NAVIGATION_MEDIUM {
   IMAGE_DELETE = 'ImageDelete',
   IMAGE_CREATION = 'ImageCreation',
   VENUE_OFFER_STEPS = 'VenueOfferSteps',
+  CREATE_OFFER_POPIN = 'CreateVenuePopin',
 }
 
 export enum OFFER_FORM_NAVIGATION_OUT {
