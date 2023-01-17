@@ -15,7 +15,7 @@ const NumberOfTicketsAndPriceCell = ({
       <div>
         {numberOfTickets} {pluralizeString('place', numberOfTickets)}
       </div>
-      <div>{bookingRecapInfo.original.booking_amount}€</div>
+      <div>{bookingRecapInfo.original.bookingAmount}€</div>
     </div>
   )
 }

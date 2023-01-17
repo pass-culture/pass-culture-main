@@ -93,10 +93,10 @@ describe('filterBookingsRecap', () => {
   describe('by token', () => {
     it('should return list containing only BookingRecap matching token keywords', () => {
       // given
-      const bookingRecap1 = bookingRecapFactory({ booking_token: 'ABCDEF' })
-      const bookingRecap2 = bookingRecapFactory({ booking_token: 'ZACBGQ' })
+      const bookingRecap1 = bookingRecapFactory({ bookingToken: 'ABCDEF' })
+      const bookingRecap2 = bookingRecapFactory({ bookingToken: 'ZACBGQ' })
       const bookingRecapWithNoToken = bookingRecapFactory({
-        booking_token: null,
+        bookingToken: null,
       })
       const bookingsRecap = [
         bookingRecap1,
@@ -114,10 +114,10 @@ describe('filterBookingsRecap', () => {
 
     it('should return list containing only BookingRecap matching token keywords with surrounding space', () => {
       // given
-      const bookingRecap1 = bookingRecapFactory({ booking_token: 'ABCDEF' })
-      const bookingRecap2 = bookingRecapFactory({ booking_token: 'ZACBGD' })
+      const bookingRecap1 = bookingRecapFactory({ bookingToken: 'ABCDEF' })
+      const bookingRecap2 = bookingRecapFactory({ bookingToken: 'ZACBGD' })
       const bookingRecapWithNoToken = bookingRecapFactory({
-        booking_token: null,
+        bookingToken: null,
       })
       const bookingsRecap = [
         bookingRecap1,
@@ -135,10 +135,10 @@ describe('filterBookingsRecap', () => {
 
     it('should return list containing only BookingRecap matching token keywords with different case', () => {
       // given
-      const bookingRecap1 = bookingRecapFactory({ booking_token: 'ABCDEF' })
-      const bookingRecap2 = bookingRecapFactory({ booking_token: 'ZACBGQ' })
+      const bookingRecap1 = bookingRecapFactory({ bookingToken: 'ABCDEF' })
+      const bookingRecap2 = bookingRecapFactory({ bookingToken: 'ZACBGQ' })
       const bookingRecapWithNoToken = bookingRecapFactory({
-        booking_token: null,
+        bookingToken: null,
       })
       const bookingsRecap = [
         bookingRecap1,

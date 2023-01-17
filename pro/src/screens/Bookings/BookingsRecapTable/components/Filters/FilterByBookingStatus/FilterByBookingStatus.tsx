@@ -24,7 +24,7 @@ function getAvailableBookingStatuses<
       ? getBookingStatusDisplayInformations
       : getCollectiveBookingStatusDisplayInformations
   const presentBookingStatues = Array.from(
-    new Set(bookingsRecap.map(bookingRecap => bookingRecap.booking_status))
+    new Set(bookingsRecap.map(bookingRecap => bookingRecap.bookingStatus))
   ).map(bookingStatus => ({
     title: titleFormatter(bookingStatus)?.status ?? '',
     value: bookingStatus,

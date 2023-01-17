@@ -9,12 +9,12 @@ import type { BookingRecapStatus } from './BookingRecapStatus';
 
 export type BookingRecapResponseModel = {
   beneficiary: BookingRecapResponseBeneficiaryModel;
-  booking_amount: number;
-  booking_date: string;
-  booking_is_duo: boolean;
-  booking_status: BookingRecapStatus;
-  booking_status_history: Array<BookingRecapResponseBookingStatusHistoryModel>;
-  booking_token?: string | null;
+  bookingAmount: number;
+  bookingDate: string;
+  bookingIsDuo: boolean;
+  bookingStatus: BookingRecapStatus;
+  bookingStatusHistory: Array<BookingRecapResponseBookingStatusHistoryModel>;
+  bookingToken?: string | null;
   stock: BookingRecapResponseStockModel;
 };
 

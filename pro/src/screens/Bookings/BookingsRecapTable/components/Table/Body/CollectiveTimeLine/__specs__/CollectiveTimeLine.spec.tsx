@@ -27,7 +27,7 @@ const renderCollectiveTimeLine = (
 describe('collective timeline', () => {
   it('should render steps for pending booking', () => {
     const bookingRecap = collectiveBookingRecapFactory({
-      booking_status: BOOKING_STATUS.PENDING,
+      bookingStatus: BOOKING_STATUS.PENDING,
     })
     renderCollectiveTimeLine(bookingRecap)
     expect(
@@ -36,7 +36,7 @@ describe('collective timeline', () => {
   })
   it('should render steps for booked booking', () => {
     const bookingRecap = collectiveBookingRecapFactory({
-      booking_status: BOOKING_STATUS.BOOKED,
+      bookingStatus: BOOKING_STATUS.BOOKED,
     })
     renderCollectiveTimeLine(bookingRecap)
     expect(
@@ -45,14 +45,14 @@ describe('collective timeline', () => {
   })
   it('should render steps for confirmed booking', () => {
     const bookingRecap = collectiveBookingRecapFactory({
-      booking_status: BOOKING_STATUS.CONFIRMED,
+      bookingStatus: BOOKING_STATUS.CONFIRMED,
     })
     renderCollectiveTimeLine(bookingRecap)
     expect(screen.getByText('Réservation confirmée')).toBeInTheDocument()
   })
   it('should render steps for validated booking', () => {
     const bookingRecap = collectiveBookingRecapFactory({
-      booking_status: BOOKING_STATUS.VALIDATED,
+      bookingStatus: BOOKING_STATUS.VALIDATED,
     })
     renderCollectiveTimeLine(bookingRecap)
     expect(
@@ -61,7 +61,7 @@ describe('collective timeline', () => {
   })
   it('should render steps for reimbursed booking', () => {
     const bookingRecap = collectiveBookingRecapFactory({
-      booking_status: BOOKING_STATUS.REIMBURSED,
+      bookingStatus: BOOKING_STATUS.REIMBURSED,
     })
     renderCollectiveTimeLine(bookingRecap)
     expect(screen.getByText('Remboursement effectué')).toBeInTheDocument()

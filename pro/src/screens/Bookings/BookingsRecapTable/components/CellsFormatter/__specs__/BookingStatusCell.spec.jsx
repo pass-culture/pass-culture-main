@@ -32,16 +32,16 @@ describe('bookings | bookingsStatusCell', () => {
             offer_name: 'Matrix',
             type: 'event',
           },
-          booking_is_duo: true,
+          bookingIsDuo: true,
           beneficiary: {
             email: 'loulou.duck@example.com',
             firstname: 'Loulou',
             lastname: 'Duck',
           },
-          booking_date: '2020-01-04T20:31:12+01:00',
-          booking_token: '5U7M6U',
-          booking_status: 'validated',
-          booking_status_history: [
+          bookingDate: '2020-01-04T20:31:12+01:00',
+          bookingToken: '5U7M6U',
+          bookingStatus: 'validated',
+          bookingStatusHistory: [
             {
               status: 'booked',
               date: '2020-01-04T20:31:12+01:00',
@@ -69,16 +69,16 @@ describe('bookings | bookingsStatusCell', () => {
             offer_name: 'Matrix',
             type: 'event',
           },
-          booking_is_duo: true,
+          bookingIsDuo: true,
           beneficiary: {
             email: 'loulou.duck@example.com',
             firstname: 'Loulou',
             lastname: 'Duck',
           },
-          booking_date: '2020-01-04T20:31:12+01:00',
-          booking_token: '5U7M6U',
-          booking_status: 'pending',
-          booking_status_history: [
+          bookingDate: '2020-01-04T20:31:12+01:00',
+          bookingToken: '5U7M6U',
+          bookingStatus: 'pending',
+          bookingStatusHistory: [
             {
               status: 'pending',
               date: '2020-01-04T20:31:12+01:00',
@@ -108,17 +108,17 @@ describe('bookings | bookingsStatusCell', () => {
               offer_name: 'Matrix',
               type: 'event',
             },
-            booking_is_duo: true,
+            bookingIsDuo: true,
             beneficiary: {
               email: 'loulou.duck@example.com',
               firstname: 'Loulou',
               lastname: 'Duck',
             },
-            booking_date: '2020-01-04T20:31:12+01:00',
-            booking_token: '5U7M6U',
-            booking_status: 'booked',
-            booking_amount: '10',
-            booking_status_history: [
+            bookingDate: '2020-01-04T20:31:12+01:00',
+            bookingToken: '5U7M6U',
+            bookingStatus: 'booked',
+            bookingAmount: '10',
+            bookingStatusHistory: [
               {
                 status: 'booked',
                 date: '2020-01-04T20:31:12+01:00',
@@ -150,17 +150,17 @@ describe('bookings | bookingsStatusCell', () => {
               offer_name: 'Matrix',
               type: 'event',
             },
-            booking_is_duo: true,
+            bookingIsDuo: true,
             beneficiary: {
               email: 'loulou.duck@example.com',
               firstname: 'Loulou',
               lastname: 'Duck',
             },
-            booking_date: '2020-01-04T20:31:12+01:00',
-            booking_token: '5U7M6U',
-            booking_status: 'booked',
-            booking_amount: '10',
-            booking_status_history: [
+            bookingDate: '2020-01-04T20:31:12+01:00',
+            bookingToken: '5U7M6U',
+            bookingStatus: 'booked',
+            bookingAmount: '10',
+            bookingStatusHistory: [
               {
                 status: 'booked',
                 date: '2020-01-04T20:31:12+01:00',
@@ -190,16 +190,16 @@ describe('bookings | bookingsStatusCell', () => {
               offer_name: 'Matrix',
               type: 'event',
             },
-            booking_is_duo: true,
+            bookingIsDuo: true,
             beneficiary: {
               email: 'loulou.duck@example.com',
               firstname: 'Loulou',
               lastname: 'Duck',
             },
-            booking_date: '2020-01-04T20:31:12+01:00',
-            booking_token: '5U7M6U',
-            booking_status: 'booked',
-            booking_status_history: [
+            bookingDate: '2020-01-04T20:31:12+01:00',
+            bookingToken: '5U7M6U',
+            bookingStatus: 'booked',
+            bookingStatusHistory: [
               {
                 status: 'booked',
                 date: '2020-01-04T20:31:12+01:00',
@@ -230,16 +230,16 @@ describe('bookings | bookingsStatusCell', () => {
               offer_name: 'Matrix',
               type: 'event',
             },
-            booking_is_duo: true,
+            bookingIsDuo: true,
             beneficiary: {
               email: 'loulou.duck@example.com',
               firstname: 'Loulou',
               lastname: 'Duck',
             },
-            booking_date: '2020-01-04T20:31:12+01:00',
-            booking_token: '5U7M6U',
-            booking_status: 'booked',
-            booking_status_history: [
+            bookingDate: '2020-01-04T20:31:12+01:00',
+            bookingToken: '5U7M6U',
+            bookingStatus: 'booked',
+            bookingStatusHistory: [
               {
                 status: 'booked',
                 date: '2020-01-04T20:31:12+01:00',

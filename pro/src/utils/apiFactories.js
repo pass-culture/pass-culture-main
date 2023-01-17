@@ -129,18 +129,18 @@ export const bookingRecapFactory = (customBookingRecap = {}) => {
       lastname: 'Last',
       phonenumber: '0606060606',
     },
-    booking_amount: 0,
-    booking_date: '2020-04-12T19:31:12Z',
-    booking_is_duo: false,
-    booking_id: '1',
-    booking_status: BookingRecapStatus.BOOKED,
-    booking_status_history: [
+    bookingAmount: 0,
+    bookingDate: '2020-04-12T19:31:12Z',
+    bookingIsDuo: false,
+    bookingId: '1',
+    bookingStatus: BookingRecapStatus.BOOKED,
+    bookingStatusHistory: [
       {
         date: '2020-04-12T19:31:12Z',
         status: BookingRecapStatus.BOOKED,
       },
     ],
-    booking_token: `TOKEN${bookingId++}`,
+    bookingToken: `TOKEN${bookingId++}`,
     stock: {
       offer_identifier: offer.id,
       offer_nonHumanizedId: offer.nonHumanizedId,

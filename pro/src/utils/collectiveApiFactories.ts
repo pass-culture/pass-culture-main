@@ -135,19 +135,19 @@ export const collectiveBookingRecapFactory = (
 ): CollectiveBookingResponseModel => {
   const currentBookingId = bookingId++
   return {
-    booking_amount: 1,
-    booking_cancellation_limit_date: new Date().toISOString(),
-    booking_confirmation_date: new Date().toISOString(),
-    booking_confirmation_limit_date: new Date().toISOString(),
-    booking_date: new Date().toISOString(),
-    booking_id: currentBookingId.toString(),
-    booking_identifier: currentBookingId.toString(),
-    booking_is_duo: false,
-    booking_status: BOOKING_STATUS.PENDING,
-    booking_status_history: [
+    bookingAmount: 1,
+    bookingCancellationLimitDate: new Date().toISOString(),
+    bookingConfirmationDate: new Date().toISOString(),
+    bookingConfirmationLimitDate: new Date().toISOString(),
+    bookingDate: new Date().toISOString(),
+    bookingId: currentBookingId.toString(),
+    bookingIdentifier: currentBookingId.toString(),
+    bookingIsDuo: false,
+    bookingStatus: BOOKING_STATUS.PENDING,
+    bookingStatusHistory: [
       { date: new Date().toISOString(), status: BOOKING_STATUS.PENDING },
     ],
-    booking_token: null,
+    bookingToken: null,
     institution: {
       city: 'PARIS',
       id: 1,
