@@ -307,7 +307,6 @@ else:
     ]
 
 BEGINNING_DATETIME_FIELD = pydantic.Field(
-    ...,
     description="Timezone aware datetime of the event.",
     example="2023-01-02T00:00:00+01:00",
 )
@@ -430,6 +429,13 @@ class ProductOfferEdition(OfferEditionBase):
     )
 
 
+class DateEdition(StockEdition):
+    beginning_datetime: datetime.datetime | None = BEGINNING_DATETIME_FIELD
+
+    class Config:
+        extra = "forbid"
+
+
 class EventOfferEdition(OfferEditionBase):
     category_related_fields: event_category_edition_fields | None = pydantic.Field(
         None,
@@ -470,7 +476,7 @@ class DateResponse(BaseStockResponse):
     booking_limit_datetime: datetime.datetime = BOOKING_LIMIT_DATETIME_FIELD
 
     @classmethod
-    def build_date(cls, stock: offers_models.Stock) -> "BaseStockResponse":
+    def build_date(cls, stock: offers_models.Stock) -> "DateResponse":
         stock_response = BaseStockResponse.build_stock(stock)
         return cls(
             id=stock.id,

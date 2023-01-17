@@ -617,3 +617,42 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.EventOfferResponse.build_event_offer(offer)
+
+
+@blueprint.v1_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["PATCH"])
+@spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG], response_model=serialization.DateResponse)
+@api_key_required
+@public_utils.individual_offers_api_provider
+def patch_event_date(
+    individual_offers_provider: providers_models.Provider,
+    event_id: int,
+    date_id: int,
+    body: serialization.DateEdition,
+) -> serialization.DateResponse:
+    offer: offers_models.Offer | None = (
+        _retrieve_offer_relations_query(_retrieve_offer_query(event_id))
+        .filter(offers_models.Offer.isEvent == True)
+        .one_or_none()
+    )
+    if not offer:
+        raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
+
+    stock_to_edit = next((stock for stock in offer.stocks if stock.id == date_id and not stock.isSoftDeleted), None)
+    if not stock_to_edit:
+        raise api_errors.ApiErrors({"date_id": ["No date could be found"]}, status_code=404)
+
+    update_body = body.dict(exclude_unset=True)
+    try:
+        with repository.transaction():
+            price = update_body.get("price", offers_api.UNCHANGED)
+            edited_date, _ = offers_api.edit_stock(
+                stock_to_edit,
+                quantity=update_body.get("quantity", offers_api.UNCHANGED),
+                price=finance_utils.to_euros(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,
+                booking_limit_datetime=update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
+                beginning_datetime=update_body.get("beginning_datetime", offers_api.UNCHANGED),
+                editing_provider=individual_offers_provider,
+            )
+    except offers_exceptions.OfferCreationBaseException as error:
+        raise api_errors.ApiErrors(error.errors, status_code=400)
+    return serialization.DateResponse.build_date(edited_date)
