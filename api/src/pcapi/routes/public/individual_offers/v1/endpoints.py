@@ -597,20 +597,23 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
         else (offers_api.UNCHANGED, offers_api.UNCHANGED)
     )
 
-    with repository.transaction():
-        offer = offers_api.update_offer(
-            offer,
-            bookingEmail=update_body.get("booking_email", offers_api.UNCHANGED),
-            durationMinutes=update_body.get("duration_minutes", offers_api.UNCHANGED),
-            extraData=serialization.compute_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
-            if body.category_related_fields
-            else offers_api.UNCHANGED,
-            isActive=update_body.get("is_active", offers_api.UNCHANGED),
-            isDuo=update_body.get("is_duo", offers_api.UNCHANGED),
-            withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
-            withdrawalType=withdrawal_type,
-            withdrawalDelay=withdrawal_delay,
-            **compute_accessibility_edition_fields(update_body.get("accessibility")),
-        )
+    try:
+        with repository.transaction():
+            offer = offers_api.update_offer(
+                offer,
+                bookingEmail=update_body.get("booking_email", offers_api.UNCHANGED),
+                durationMinutes=update_body.get("duration_minutes", offers_api.UNCHANGED),
+                extraData=serialization.compute_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
+                if body.category_related_fields
+                else offers_api.UNCHANGED,
+                isActive=update_body.get("is_active", offers_api.UNCHANGED),
+                isDuo=update_body.get("is_duo", offers_api.UNCHANGED),
+                withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
+                withdrawalType=withdrawal_type,
+                withdrawalDelay=withdrawal_delay,
+                **compute_accessibility_edition_fields(update_body.get("accessibility")),
+            )
+    except offers_exceptions.OfferCreationBaseException as error:
+        raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.EventOfferResponse.build_event_offer(offer)
