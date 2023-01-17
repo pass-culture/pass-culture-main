@@ -19,7 +19,7 @@ jobs:
     name: Check adage folder changes
     uses: ./.github/workflows/check-folder-changes.yml
     with:
-      folder: adage
+      folder: adage-front
 
   check-api-folder-changes:
     name: Check api folder changes
