@@ -38,3 +38,11 @@
     }
   }
 }
+
+.button-important {
+  color: colors.$primary;
+
+  svg {
+    fill: colors.$primary !important;
+  }
+}

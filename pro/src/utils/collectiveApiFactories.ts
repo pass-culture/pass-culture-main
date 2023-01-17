@@ -1,4 +1,6 @@
 import {
+  CollectiveBookingBankInformationStatus,
+  CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
   GetCollectiveOfferCollectiveStockResponseModel,
   GetCollectiveOfferManagingOffererResponseModel,
@@ -16,6 +18,7 @@ let stockId = 1
 let venueId = 1
 let offererId = 1
 let bookingId = 1
+let bookingDetailsId = 1
 
 const sharedCollectiveOfferData = {
   isActive: true,
@@ -166,5 +169,46 @@ export const collectiveBookingRecapFactory = (
       offerName: 'ma super offre collective',
     },
     ...customBookingRecap,
+  }
+}
+
+export const collectiveBookingDetailsFactory = (
+  customBookingDetails?: Partial<CollectiveBookingByIdResponseModel>
+): CollectiveBookingByIdResponseModel => {
+  const currentBookingDetailsId = bookingDetailsId++
+  return {
+    bankInformationStatus: CollectiveBookingBankInformationStatus.ACCEPTED,
+    beginningDatetime: new Date().toISOString(),
+    educationalInstitution: {
+      city: 'Paris',
+      id: 1,
+      institutionId: '1',
+      institutionType: 'LYCEE',
+      name: 'De Paris',
+      phoneNumber: '0601020304',
+      postalCode: '75000',
+    },
+    educationalRedactor: {
+      civility: 'Mr',
+      email: 'test@example.com',
+      firstName: 'Jean',
+      id: 1,
+      lastName: 'Dupont',
+    },
+    id: currentBookingDetailsId,
+    isCancellable: true,
+    numberOfTickets: 1,
+    offerVenue: {
+      addressType: OfferAddressType.SCHOOL,
+      otherAddress: '',
+      venueId: 'V1',
+    },
+    offererId: 'O1',
+    price: 100,
+    students: [StudentLevels.LYC_E_SECONDE],
+    venueDMSApplicationId: 1,
+    venueId: 'V1',
+    venuePostalCode: '75000',
+    ...customBookingDetails,
   }
 }

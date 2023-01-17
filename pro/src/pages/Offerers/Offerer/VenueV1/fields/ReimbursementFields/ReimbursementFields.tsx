@@ -37,7 +37,7 @@ const ReimbursementFields = ({
   }, [])
   return (
     <>
-      <div ref={scrollToReimbursementSection}>
+      <div ref={scrollToReimbursementSection} id="reimbursement-section">
         <FormLayout.Section title="Remboursement">
           {!venueHaveSiret && !offererHaveVenueWithSiret ? (
             <InternalBanner
