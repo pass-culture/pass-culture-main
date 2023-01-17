@@ -3,7 +3,6 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from decimal import Decimal
-from enum import Enum
 from typing import Iterable
 from typing import Tuple
 
@@ -39,13 +38,6 @@ BOOKING_DATE_STATUS_MAPPING: dict[educational_models.CollectiveBookingStatusFilt
     educational_models.CollectiveBookingStatusFilter.VALIDATED: educational_models.CollectiveBooking.dateUsed,
     educational_models.CollectiveBookingStatusFilter.REIMBURSED: educational_models.CollectiveBooking.reimbursementDate,
 }
-
-
-class CollectiveBookingBankInformationStatus(Enum):
-    ACCEPTED = "ACCEPTED"
-    DRAFT = "DRAFT"
-    MISSING = "MISSING"
-    REJECTED = "REJECTED"
 
 
 def find_bookings_happening_in_x_days(number_of_days: int) -> list[educational_models.CollectiveBooking]:
@@ -977,7 +969,7 @@ def get_paginated_active_collective_offer_template_ids(limit: int, page: int) ->
     return [offer_id for offer_id, in query]
 
 
-def get_banking_information_status_for_booking(booking_id: int) -> CollectiveBookingBankInformationStatus:
+def get_reimbursement_venue_for_booking(booking_id: int) -> offerers_models.Venue | None:
     reimbursement_point = sa.orm.aliased(offerers_models.Venue)
 
     query = educational_models.CollectiveBooking.query.join(
@@ -990,9 +982,6 @@ def get_banking_information_status_for_booking(booking_id: int) -> CollectiveBoo
         sa.func.upper(offerers_models.VenueReimbursementPointLink.timespan).is_(None),
         educational_models.CollectiveBooking.id == booking_id,
     )
-    query = query.with_entities(finance_models.BankInformation.status)
-    status_tuple = query.first()
-    if status_tuple:
-        status = status_tuple[0]
-        return getattr(CollectiveBookingBankInformationStatus, status.value)
-    return CollectiveBookingBankInformationStatus.MISSING
+    query = query.with_entities(reimbursement_point)
+    query = query.options(sa.orm.joinedload(reimbursement_point.bankInformation))
+    return query.one_or_none()
