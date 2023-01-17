@@ -13,6 +13,7 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.models import offer_mixin
@@ -29,6 +30,89 @@ ACCESSIBILITY_FIELDS = {
     "motorDisabilityCompliant": True,
     "visualDisabilityCompliant": True,
 }
+
+
+@pytest.mark.usefixtures("db_session")
+class GetOffererVenuesTest:
+    def test_get_offerer_venues(self, client):
+        offerer = offerers_factories.OffererFactory(
+            name="Offreur de fleurs", dateCreated=datetime.datetime(2022, 2, 22, 22, 22, 22), siren="123456789"
+        )
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
+        digital_venue = offerers_factories.VirtualVenueFactory(
+            managingOfferer=api_key.offerer,
+            dateCreated=datetime.datetime(2023, 1, 16),
+            name="Do you diji",
+            publicName="Diji",
+            venueTypeCode=offerers_models.VenueTypeCode.ARTISTIC_COURSE,
+        )
+        physical_venue = offerers_factories.VenueFactory(
+            managingOfferer=api_key.offerer,
+            dateCreated=datetime.datetime(2023, 1, 16, 1, 1, 1),
+            name="Coiffeur Librairie",
+            publicName="Tiff tuff",
+            siret="12345678912345",
+            venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            "/public/offers/v1/offerer_venues",
+        )
+
+        assert response.status_code == 200
+        assert response.json["offerer"] == {
+            "createdDatetime": "2022-02-22T22:22:22Z",
+            "id": offerer.id,
+            "name": "Offreur de fleurs",
+            "siren": "123456789",
+        }
+        assert response.json["venues"] == [
+            {
+                "activityDomain": "ARTISTIC_COURSE",
+                "createdDatetime": "2023-01-16T00:00:00Z",
+                "publicName": "Diji",
+                "id": digital_venue.id,
+                "legalName": "Do you diji",
+                "location": {"type": "digital"},
+                "siret": None,
+                "siretComment": None,
+            },
+            {
+                "activityDomain": "BOOKSTORE",
+                "createdDatetime": "2023-01-16T01:01:01Z",
+                "publicName": "Tiff tuff",
+                "id": physical_venue.id,
+                "legalName": "Coiffeur Librairie",
+                "location": {
+                    "address": "1 boulevard Poissonnière",
+                    "city": "Paris",
+                    "postalCode": "75000",
+                    "type": "physical",
+                },
+                "siret": "12345678912345",
+                "siretComment": None,
+            },
+        ]
+
+    def test_when_no_venues(self, client):
+        offerer = offerers_factories.OffererFactory(
+            name="Offreur sans fleurs", dateCreated=datetime.datetime(2022, 2, 22, 22, 22, 22), siren="123456789"
+        )
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            "/public/offers/v1/offerer_venues",
+        )
+        assert response == 200
+        assert response.json == {
+            "offerer": {
+                "createdDatetime": "2022-02-22T22:22:22Z",
+                "id": offerer.id,
+                "name": "Offreur sans fleurs",
+                "siren": "123456789",
+            },
+            "venues": [],
+        }
 
 
 class PostProductTest:
