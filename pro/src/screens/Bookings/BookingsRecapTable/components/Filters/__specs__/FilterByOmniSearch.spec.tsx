@@ -52,7 +52,7 @@ describe('components | FilterByOmniSearch', () => {
     expect(options[0]).toHaveValue('offre')
     expect(options[1]).toHaveTextContent('Établissement')
     expect(options[1]).toHaveValue('établissement')
-    expect(options[2]).toHaveTextContent('Réservation')
+    expect(options[2]).toHaveTextContent('Numéro de réservation')
     expect(options[2]).toHaveValue('booking_id')
   })
 
