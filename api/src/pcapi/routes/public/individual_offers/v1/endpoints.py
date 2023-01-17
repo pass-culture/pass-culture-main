@@ -598,10 +598,10 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     )
 
     with repository.transaction():
-        offers_api.update_offer(
+        offer = offers_api.update_offer(
             offer,
             bookingEmail=update_body.get("booking_email", offers_api.UNCHANGED),
-            durationMinutes=update_body.get("durationMinutes", offers_api.UNCHANGED),
+            durationMinutes=update_body.get("duration_minutes", offers_api.UNCHANGED),
             extraData=serialization.compute_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
             if body.category_related_fields
             else offers_api.UNCHANGED,
