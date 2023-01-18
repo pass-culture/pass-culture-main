@@ -1,9 +1,7 @@
 import React from 'react'
 
-import {
-  CollectiveBookingCancellationReasons,
-  CollectiveBookingResponseModel,
-} from 'apiClient/v1'
+import { CollectiveBookingResponseModel } from 'apiClient/v1'
+import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
 import { BOOKING_STATUS } from 'core/Bookings'
 import { ReactComponent as ExternalLinkIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as IcoPen } from 'icons/ico-pen.svg'
@@ -19,12 +17,24 @@ export interface ICollectiveBookingDetailsProps {
   bookingRecap: CollectiveBookingResponseModel
 }
 
-export enum CancellationReasonType {
-  OFFERER = 'OFFERER',
-  BENEFICIARY = 'BENEFICIARY',
-  EXPIRED = 'EXPIRED',
-  REFUSED_BY_INSTITUTE = 'REFUSED_BY_INSTITUTE',
-  REFUSED_BY_HEADMASTER = 'REFUSED_BY_HEADMASTER',
+const cancellationReasonTitle = (
+  bookingRecap: CollectiveBookingResponseModel
+): string | null => {
+  if (!bookingRecap.bookingCancellationReason) {
+    return null
+  }
+  switch (bookingRecap.bookingCancellationReason) {
+    case CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE:
+    case CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER:
+      return 'Annulé par l’établisssement scolaire'
+    case CollectiveBookingCancellationReasons.OFFERER:
+    case CollectiveBookingCancellationReasons.BENEFICIARY:
+      return 'Vous avez annulé la réservation'
+    case CollectiveBookingCancellationReasons.EXPIRED:
+      return 'Annulé automatiquement'
+    default:
+      throw new Error('Invalid cancellation reason')
+  }
 }
 
 const CollectiveTimeLine = ({
@@ -229,32 +239,12 @@ const CollectiveTimeLine = ({
     ),
   }
 
-  const cancellationReasonTitle = () => {
-    if (!bookingRecap.bookingCancellationReason) {
-      return null
-    }
-    switch (bookingRecap.bookingCancellationReason) {
-      case CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE:
-        return 'Annulé par l’établisssement scolaire'
-      case CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER:
-        return 'Annulé par l’établisssement scolaire'
-      case CollectiveBookingCancellationReasons.OFFERER:
-        return 'Vous avez annulé la réservation'
-      case CollectiveBookingCancellationReasons.BENEFICIARY:
-        return 'Vous avez annulé la réservation'
-      case CollectiveBookingCancellationReasons.EXPIRED:
-        return 'Annulé automatiquement'
-      default:
-        throw new Error('Invalid cancellation reason')
-    }
-  }
-
   const cancelledStep = {
     type: TimelineStepType.ERROR,
     content: (
       <>
         <div className={styles['timeline-step-title']}>
-          {cancellationReasonTitle()}
+          {cancellationReasonTitle(bookingRecap)}
         </div>
         <div>
           {cancelledDate}
@@ -262,7 +252,7 @@ const CollectiveTimeLine = ({
           <br />
           {bookingRecap.bookingCancellationReason ===
             CollectiveBookingCancellationReasons.EXPIRED &&
-            'L’établissement scolaire n’a pas confirmé la préréservation avant la date limite de réservation fixée au 17/11/2022.'}
+            `L’établissement scolaire n’a pas confirmé la préréservation avant la date limite de réservation fixée au ${cancellationLimitDate}.`}
           <div>
             Votre offre a été automatiquement désactivée, elle n’est plus
             visible sur ADAGE. Vous pouvez la republier en modifiant votre
@@ -273,29 +263,25 @@ const CollectiveTimeLine = ({
     ),
   }
 
-  const getHistoryStep = () => {
-    const arrayHistoryStep: Array<ITimelineStep> = []
+  const arrayHistoryStep: Array<ITimelineStep> =
     bookingRecap.bookingStatusHistory.map(el => {
       switch (el.status) {
         case BOOKING_STATUS.PENDING:
-          return arrayHistoryStep.push(pendingStep)
+          return pendingStep
         case BOOKING_STATUS.BOOKED:
-          return arrayHistoryStep.push(confirmationStep)
+          return confirmationStep
         case BOOKING_STATUS.CONFIRMED:
-          return arrayHistoryStep.push(confirmedStep)
+          return confirmedStep
         case BOOKING_STATUS.VALIDATED:
-          return arrayHistoryStep.push(passedEndedStep)
+          return passedEndedStep
         case BOOKING_STATUS.REIMBURSED:
-          return arrayHistoryStep.push(reimbursedStep)
+          return reimbursedStep
         case BOOKING_STATUS.CANCELLED:
-          return arrayHistoryStep.push(cancelledStep)
+          return cancelledStep
         default:
           throw new Error('Invalid booking history status')
       }
     })
-
-    return arrayHistoryStep
-  }
 
   switch (bookingRecap.bookingStatus) {
     case BOOKING_STATUS.PENDING:
@@ -359,7 +345,7 @@ const CollectiveTimeLine = ({
         />
       )
     case BOOKING_STATUS.CANCELLED:
-      return <Timeline steps={getHistoryStep()} />
+      return <Timeline steps={arrayHistoryStep} />
     default:
       throw new Error('Invalid booking status')
   }

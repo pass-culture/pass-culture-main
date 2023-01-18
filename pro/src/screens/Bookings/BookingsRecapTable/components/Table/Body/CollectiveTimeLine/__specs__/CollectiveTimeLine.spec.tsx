@@ -6,6 +6,7 @@ import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
+import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
 import { BOOKING_STATUS } from 'core/Bookings'
 import { configureTestStore } from 'store/testUtils'
 import { collectiveBookingRecapFactory } from 'utils/collectiveApiFactories'
@@ -69,6 +70,8 @@ describe('collective timeline', () => {
   it('should render steps for cancelled booking', () => {
     const bookingRecap = collectiveBookingRecapFactory({
       bookingStatus: BOOKING_STATUS.CANCELLED,
+      bookingConfirmationDate: null,
+      bookingCancellationReason: CollectiveBookingCancellationReasons.OFFERER,
       bookingStatusHistory: [
         { date: new Date().toISOString(), status: BOOKING_STATUS.PENDING },
         { date: new Date().toISOString(), status: BOOKING_STATUS.CANCELLED },
