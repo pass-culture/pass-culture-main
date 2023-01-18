@@ -91,6 +91,7 @@ describe('OfferIndividual section: venue', () => {
         motor: false,
         none: false,
       },
+      hasMissingReimbursementPoint: false,
     }
     const venueNotAccessible: TOfferIndividualVenue = {
       id: 'AABB',
@@ -105,6 +106,7 @@ describe('OfferIndividual section: venue', () => {
         motor: false,
         none: true,
       },
+      hasMissingReimbursementPoint: false,
     }
     const venueList: TOfferIndividualVenue[] = [
       venueAccessible,

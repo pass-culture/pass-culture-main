@@ -10,7 +10,7 @@ import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
-import { VENUE_DEFAULT_VALUES, Venue, validationSchema } from '..'
+import { validationSchema, Venue, VENUE_DEFAULT_VALUES } from '..'
 import { IVenueProps } from '../Venue'
 
 const renderVenue = ({
@@ -71,6 +71,7 @@ describe('OfferIndividual section: venue', () => {
           motor: false,
           none: true,
         },
+        hasMissingReimbursementPoint: false,
       },
       {
         id: 'BBAA',
@@ -85,6 +86,7 @@ describe('OfferIndividual section: venue', () => {
           motor: false,
           none: true,
         },
+        hasMissingReimbursementPoint: false,
       },
       {
         id: 'CCAA',
@@ -99,6 +101,7 @@ describe('OfferIndividual section: venue', () => {
           motor: false,
           none: true,
         },
+        hasMissingReimbursementPoint: false,
       },
       {
         id: 'CCBB',
@@ -113,6 +116,7 @@ describe('OfferIndividual section: venue', () => {
           motor: false,
           none: true,
         },
+        hasMissingReimbursementPoint: false,
       },
     ]
 
