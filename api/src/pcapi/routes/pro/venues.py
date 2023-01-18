@@ -79,27 +79,8 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
         offerer_id=offerer_id,
         validated_offerer=query.validated,
     )
-
     return venues_serialize.GetVenueListResponseModel(
-        venues=[
-            venues_serialize.VenueListItemResponseModel(
-                id=venue.id,
-                nonHumanizedId=venue.id,
-                managingOffererId=venue.managingOfferer.id,
-                name=venue.name,
-                offererName=venue.managingOfferer.name,
-                publicName=venue.publicName,
-                isVirtual=venue.isVirtual,
-                bookingEmail=venue.bookingEmail,
-                withdrawalDetails=venue.withdrawalDetails,
-                audioDisabilityCompliant=venue.audioDisabilityCompliant,
-                mentalDisabilityCompliant=venue.mentalDisabilityCompliant,
-                motorDisabilityCompliant=venue.motorDisabilityCompliant,
-                visualDisabilityCompliant=venue.visualDisabilityCompliant,
-                siret=venue.siret,
-            )
-            for venue in venue_list
-        ]
+        venues=[venues_serialize.VenueListItemResponseModel.from_orm(venue) for venue in venue_list]
     )
 
 

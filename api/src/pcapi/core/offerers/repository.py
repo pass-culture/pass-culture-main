@@ -202,6 +202,8 @@ def get_filtered_venues(
         .join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id)
         .options(sqla_orm.joinedload(models.Venue.managingOfferer))
         .options(sqla_orm.joinedload(models.Venue.collectiveDomains))
+        .options(sqla_orm.joinedload(models.Venue.reimbursement_point_links))
+        .options(sqla_orm.joinedload(models.Venue.bankInformation))
     )
     if not user_is_admin:
         query = query.filter(
