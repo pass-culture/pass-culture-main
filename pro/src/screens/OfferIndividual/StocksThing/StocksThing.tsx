@@ -168,7 +168,9 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       // we display a success notification even if nothing is done
       if (isFormEmpty() && (saveDraft || mode === OFFER_WIZARD_MODE.EDITION)) {
         setIsClickingFromActionBar(false)
-        notify.success('Brouillon sauvegardé dans la liste des offres')
+        saveDraft
+          ? notify.success('Brouillon sauvegardé dans la liste des offres')
+          : notify.success(getSuccessMessage(mode))
         return
       }
       // tested but coverage don't see it.
@@ -252,7 +254,8 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
           // tested but coverage don't see it.
           /* istanbul ignore next */
           mode === OFFER_WIZARD_MODE.EDITION &&
-          formik.values.stockId !== undefined
+          formik.values.stockId !== undefined &&
+          parseInt(formik.values.bookingsQuantity) > 0
         ) {
           deleteConfirmShow()
         } else {

@@ -436,7 +436,7 @@ describe('screens:StocksThing', () => {
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
     expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      screen.getByText('Vos modifications ont bien été enregistrées')
     ).toBeInTheDocument()
     expect(
       screen.queryByRole('heading', { name: /Stock & Prix/ })

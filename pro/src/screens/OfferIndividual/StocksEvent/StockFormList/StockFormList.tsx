@@ -82,7 +82,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
                       callback: async () => {
                         if (stockValues.stockId) {
                           /* istanbul ignore next: DEBT, TO FIX */
-                          if (parseInt(stockValues.bookingsQuantity, 10) > 0) {
+                          if (parseInt(stockValues.bookingsQuantity) > 0) {
                             setDeletingStockData({
                               deletingStock: stockValues,
                               deletingIndex: index,
