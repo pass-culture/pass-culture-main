@@ -15,11 +15,11 @@ from pcapi.core.offers.repository import get_stocks_for_offer
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization import stock_serialize
-from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
-from pcapi.routes.serialization.stock_serialize import StockResponseModel
-from pcapi.routes.serialization.stock_serialize import StocksResponseModel
-from pcapi.routes.serialization.stock_serialize import StocksUpsertBodyModel
+from pcapi.routes.public.books_stocks import serialization
+from pcapi.routes.public.books_stocks.serialization import StockIdResponseModel
+from pcapi.routes.public.books_stocks.serialization import StockResponseModel
+from pcapi.routes.public.books_stocks.serialization import StocksResponseModel
+from pcapi.routes.public.books_stocks.serialization import StocksUpsertBodyModel
 from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
@@ -46,9 +46,7 @@ def get_stocks(offer_id: str) -> StocksResponseModel:
     )
 
 
-def _get_existing_stocks(
-    offer_id: int, stocks_payload: list[stock_serialize.StockEditionBodyModel]
-) -> dict[int, Stock]:
+def _get_existing_stocks(offer_id: int, stocks_payload: list[serialization.StockEditionBodyModel]) -> dict[int, Stock]:
     existing_stocks = Stock.query.filter(
         Stock.offerId == offer_id,
         Stock.id.in_([stock_payload.id for stock_payload in stocks_payload]),
@@ -68,8 +66,8 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StocksResponseModel:
 
     offer = Offer.query.get(body.offer_id)
 
-    stocks_to_edit = [stock for stock in body.stocks if isinstance(stock, stock_serialize.StockEditionBodyModel)]
-    stocks_to_create = [stock for stock in body.stocks if isinstance(stock, stock_serialize.StockCreationBodyModel)]
+    stocks_to_edit = [stock for stock in body.stocks if isinstance(stock, serialization.StockEditionBodyModel)]
+    stocks_to_create = [stock for stock in body.stocks if isinstance(stock, serialization.StockCreationBodyModel)]
     if stocks_to_edit:
         existing_stocks = _get_existing_stocks(body.offer_id, stocks_to_edit)
 
