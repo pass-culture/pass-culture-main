@@ -41,6 +41,7 @@ interface IBookingsRecapTableProps<
   }
   audience: Audience
   reloadBookings: () => void
+  resetBookings: () => void
 }
 interface IRowExpandedContext {
   rowToExpandId: string
@@ -60,6 +61,7 @@ const BookingsRecapTable = <
   locationState,
   audience,
   reloadBookings,
+  resetBookings,
 }: IBookingsRecapTableProps<T>) => {
   const [filteredBookings, setFilteredBookings] = useState(bookingsRecap)
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_INDEX)
@@ -191,6 +193,8 @@ const BookingsRecapTable = <
           <Header
             bookingsRecapFilteredLength={filteredBookings.length}
             isLoading={isLoading}
+            queryBookingId={defaultBookingId}
+            resetBookings={resetBookings}
           />
           <RowExpandedContext.Provider
             value={{
