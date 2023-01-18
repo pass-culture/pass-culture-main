@@ -32,6 +32,8 @@ Default.args = {
       otherAddress: '',
       venueId: 'V1',
     },
+    venueId: 'A1',
+    offererId: 'O1',
     numberOfTickets: 10,
     price: 0,
     students: [StudentLevels.COLL_GE_4E],
