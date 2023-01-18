@@ -125,7 +125,7 @@ class Returns401Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json["identifier"] == ["none is not an allowed value"]
+        assert response.json["identifier"] == ["Ce champ ne peut pas être nul"]
 
     @pytest.mark.usefixtures("db_session")
     def when_identifier_is_incorrect(self, client):
@@ -151,7 +151,7 @@ class Returns401Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json["password"] == ["none is not an allowed value"]
+        assert response.json["password"] == ["Ce champ ne peut pas être nul"]
 
     @pytest.mark.usefixtures("db_session")
     def when_password_is_incorrect(self, client):
