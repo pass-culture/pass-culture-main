@@ -33,7 +33,6 @@ class Returns200Test:
             "students": ["Lycée - Seconde"],
             "bankInformationStatus": "MISSING",
             "venueDMSApplicationId": None,
-            "venueDMSToken": None,
             "price": float(booking.collectiveStock.price),
             "educationalInstitution": {
                 "id": booking.educationalInstitution.id,
@@ -54,6 +53,8 @@ class Returns200Test:
             "numberOfTickets": booking.collectiveStock.numberOfTickets,
             "venuePostalCode": booking.venue.postalCode,
             "isCancellable": booking.is_cancellable_from_offerer,
+            "venueId": humanize(booking.venueId),
+            "offererId": humanize(booking.venue.managingOffererId),
         }
 
     @freeze_time("2022-05-01 15:00:00")
@@ -81,7 +82,6 @@ class Returns200Test:
             "students": ["Lycée - Seconde"],
             "bankInformationStatus": "DRAFT",
             "venueDMSApplicationId": 24881014,
-            "venueDMSToken": "7490b4f8d5e3",
             "price": float(booking.collectiveStock.price),
             "educationalInstitution": {
                 "id": booking.educationalInstitution.id,
@@ -102,6 +102,8 @@ class Returns200Test:
             "numberOfTickets": booking.collectiveStock.numberOfTickets,
             "venuePostalCode": booking.venue.postalCode,
             "isCancellable": booking.is_cancellable_from_offerer,
+            "venueId": humanize(booking.venueId),
+            "offererId": humanize(booking.venue.managingOffererId),
         }
 
 
