@@ -82,10 +82,6 @@
     }
   }
 
-  .offers-count {
-    margin-bottom: rem.torem(33px);
-  }
-
   table {
     width: 100%;
 
@@ -184,29 +180,6 @@
           padding-top: 0;
         }
       }
-    }
-  }
-
-  .pagination {
-    @include fonts.caption;
-
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    margin-top: rem.torem(35px);
-
-    button {
-      background: none;
-      border: none;
-      height: rem.torem(24px);
-
-      &:disabled {
-        cursor: not-allowed;
-      }
-    }
-
-    span {
-      margin: 0 rem.torem(15px);
     }
   }
 
