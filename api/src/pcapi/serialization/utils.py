@@ -26,6 +26,7 @@ def before_handler(
     """
     error_messages = {
         "type_error.integer": "Saisissez un nombre valide",
+        "type_error.none.not_allowed": "Ce champ ne peut pas être nul",
         "value_error.datetime": "Format de date invalide",
         "value_error.extra": "Vous ne pouvez pas changer cette information",
         "value_error.missing": "Ce champ est obligatoire",
