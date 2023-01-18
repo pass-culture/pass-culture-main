@@ -1,4 +1,5 @@
 {% from "components/badges.html" import build_user_offerer_badges %}
+{% from "components/external_links.html" import build_siren_link %}
 
 <table class="table table-hover my-4">
     <thead>
@@ -21,17 +22,7 @@
                         {{ user_offerer.offerer.name }}
                     </a>
                 </td>
-                <td>
-                    {% if user_offerer.offerer.siren %}
-                        <a href="https://www.societe.com/cgi-bin/fiche?rncs={{ user_offerer.offerer.siren }}"
-                           class="link-primary"
-                           target="_blank"
-                           title="Visualiser sur societe.com"
-                        >
-                            {{ user_offerer.offerer.siren }}
-                        </a>
-                    {% endif %}
-                </td>
+                <td>{{ build_siren_link(user_offerer.offerer) }}</td>
             </tr>
         {% endfor %}
     </tbody>

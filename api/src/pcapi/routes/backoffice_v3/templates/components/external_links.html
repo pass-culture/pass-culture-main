@@ -1,0 +1,21 @@
+{% macro build_siren_link(offerer) %}
+    {% if offerer.siren %}
+        <a href="https://www.societe.com/cgi-bin/fiche?rncs={{ offerer.siren }}"
+            target="_blank"
+            title="Visualiser sur societe.com"
+            class="link-primary">
+            {{ offerer.siren }}
+        </a>
+    {% endif %}
+{% endmacro %}
+
+{% macro build_siret_link(venue) %}
+    {% if venue.siret %}
+        <a href="https://www.societe.com/etablissement/{{ venue.name | lower | replace(" ", "-") }}-{{ venue.siret }}.html"
+            target="_blank"
+            title="Visualiser sur societe.com"
+            class="link-primary">
+            {{ venue.siret }}
+        </a>
+    {% endif %}
+{% endmacro %}

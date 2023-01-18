@@ -1,4 +1,5 @@
 {% from "components/badges.html" import build_venue_badges %}
+{% from "components/external_links.html" import build_siret_link %}
 
 {% extends "layouts/pro.html" %}
 
@@ -61,10 +62,7 @@
                 </p>
 
                 <p class="card-subtitle text-muted mb-3 h5">
-                    SIRET :
-                    {% if venue.siret %}
-                        {{ venue.siret }}
-                    {% endif %}
+                    SIRET : {{ build_siret_link(venue) }}
                 </p>
 
                 <div class="row pt-3">
