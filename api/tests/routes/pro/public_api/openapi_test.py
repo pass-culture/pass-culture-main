@@ -502,14 +502,13 @@ def test_public_api(client, app):
                     "properties": {
                         "available": {"minimum": 0, "title": "Available", "type": "integer"},
                         "price": {
-                            "description": "(Requis à partir du 10/12/2022) Prix en Euros avec 2 décimales possibles",
-                            "nullable": True,
+                            "exclusiveMinimum": 0,
                             "title": "Price",
                             "type": "number",
                         },
                         "ref": {"description": "Format: EAN13", "title": "ISBN", "type": "string"},
                     },
-                    "required": ["ref", "available"],
+                    "required": ["ref", "available", "price"],
                     "title": "Stock",
                     "type": "object",
                 },
@@ -1183,7 +1182,7 @@ def test_public_api(client, app):
             },
             "/v2/venue/{venue_id}/stocks": {
                 "post": {
-                    "description": 'Seuls les livres, préalablement présents dans le catalogue du pass Culture seront pris en compte, tous les autres stocks seront filtrés. Les stocks sont référencés par leur isbn au format EAN13. Le champ "available" représente la quantité de stocks disponible en librairie. Le champ "price" correspond au prix en euros. À partir du 10/12/2022, ce champ sera obligatoire. Le paramètre {venue_id} correspond à un lieu qui doit être attaché à la structure à laquelle la clé d\'API utilisée est reliée.',
+                    "description": 'Seuls les livres, préalablement présents dans le catalogue du pass Culture seront pris en compte, tous les autres stocks seront filtrés. Les stocks sont référencés par leur isbn au format EAN13. Le champ "available" représente la quantité de stocks disponible en librairie. Le champ "price" correspond au prix en euros. Le paramètre {venue_id} correspond à un lieu qui doit être attaché à la structure à laquelle la clé d\'API utilisée est reliée.',
                     "operationId": "UpdateStocks",
                     "parameters": [
                         {
