@@ -458,8 +458,9 @@ class CollectiveBookingByIdResponseModel(BaseModel):
     venuePostalCode: str | None
     isCancellable: bool
     bankInformationStatus: CollectiveBookingBankInformationStatus
-    venueDMSToken: str | None
     venueDMSApplicationId: int | None
+    venueId: str
+    offererId: str
 
     class Config:
         orm_mode = True
@@ -486,8 +487,9 @@ class CollectiveBookingByIdResponseModel(BaseModel):
             venuePostalCode=booking.venue.postalCode,
             isCancellable=booking.is_cancellable_from_offerer,
             bankInformationStatus=bank_information_status,
-            venueDMSToken=reimbursement_point.dmsToken if reimbursement_point else None,
             venueDMSApplicationId=reimbursement_point.demarchesSimplifieesApplicationId
             if reimbursement_point
             else None,
+            venueId=humanize(booking.venueId),
+            offererId=humanize(booking.venue.managingOffererId),
         )

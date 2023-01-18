@@ -243,6 +243,7 @@ def get_collective_booking_report(
 def get_collective_booking_by_id(booking_id: int) -> educational_models.CollectiveBooking:
     query = educational_models.CollectiveBooking.query.filter(educational_models.CollectiveBooking.id == booking_id)
     query = query.options(
+        sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock),
         sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock).joinedload(
             educational_models.CollectiveStock.collectiveOffer
         ),
