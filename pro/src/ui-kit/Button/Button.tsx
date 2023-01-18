@@ -48,7 +48,7 @@ const Button = ({
       ref={innerRef}
       type={type}
       data-testid={testId}
-      {...(hasTooltip ? { 'aria-describedBy': tooltipId } : {})}
+      {...(hasTooltip ? { 'aria-describedby': tooltipId } : {})}
       {...buttonAttrs}
     >
       {Icon && iconPosition !== IconPositionEnum.RIGHT && (
