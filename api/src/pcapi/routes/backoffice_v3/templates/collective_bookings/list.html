@@ -1,0 +1,69 @@
+{% extends "layouts/connected.html" %}
+
+{% block page %}
+    <div class="pt-3 px-5">
+        <h2 class="fw-light">Réservations collectives</h2>
+        <div id="filters">
+            {% include "components/filters_form.html" %}
+        </div>
+        <div>
+            {% if rows and rows.total > 0 %}
+                <div class="d-flex justify-content-between">
+                    <p class="lead num-results">{{ rows.total }} résultat{{ "s" if rows.total > 1 else "" }}</p>
+                    <div>
+                        {% include 'components/search/pagination.html' %}
+                    </div>
+                </div>
+                <table class="table mb-4">
+                    <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">ID résa</th>
+                        <th scope="col">Établissement</th>
+                        <th scope="col">Nom de l'offre</th>
+                        <th scope="col">ID offre</th>
+                        <th scope="col">Catégorie</th>
+                        <th scope="col">Sous-catégorie</th>
+                        <th scope="col">Statut</th>
+                        <th scope="col">Date de validation</th>
+                        <th scope="col">Date d'annulation</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for collective_booking in rows.items %}
+                        {% set collective_offer = collective_booking.collectiveStock.collectiveOffer %}
+                        <tr>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                            class="btn p-0"><i
+                                            class="bi bi-three-dots-vertical"></i></button>
+                                    <ul class="dropdown-menu">
+                                        <li class="dropdown-item p-0">Actions à venir</li>
+                                    </ul>
+                                </div>
+                            </td>
+                            <td>{{ collective_booking.id }}</td>
+                            <td>
+                                {{ collective_booking.educationalInstitution.name | escape }}
+                                ({{ collective_booking.educationalInstitution.id }})
+                            </td>
+                            <td>
+                                <a href="{{ collective_offer | pc_pro_offer_link }}" target="_blank" class="link-primary">
+                                  {{ collective_offer.name | escape }}
+                                </a>
+                            </td>
+                            <td>{{ collective_offer.id }}</td>
+                            <td>{{ collective_offer.subcategory.category.pro_label }}</td>
+                            <td>{{ collective_offer.subcategory.pro_label }}</td>
+                            <td>{{ collective_booking.status | format_booking_status }}</td>
+                            <td>{{ collective_booking.confirmationDate | format_date("%d/%m/%Y") }}</td>
+                            <td>{{ collective_booking.cancellationDate | format_date("%d/%m/%Y") }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

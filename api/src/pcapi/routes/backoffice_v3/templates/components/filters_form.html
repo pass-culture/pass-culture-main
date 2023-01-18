@@ -1,0 +1,38 @@
+<form action="{{ dst }}" method="GET" class="mb-4 mt-3">
+    <div class="row">
+        <div class="col-10">
+            {% set select_multiple = [] %}
+            {% for form_field in form %}
+                {% if form_field.type == "HiddenField" %}
+                    {{ form_field }}
+                {% elif form_field.type == 'PCSelectMultipleField' or form_field.type == "PCQuerySelectMultipleField" %}
+                    {% set _ = select_multiple.append(form_field) %}
+                {% endif %}
+            {% endfor %}
+            <div class="input-group mb-3">
+                {% for form_field in form %}
+                    {% if form_field.type != "HiddenField" and form_field.type != "PCSelectMultipleField" and form_field.type != "PCQuerySelectMultipleField" %}
+                        {{ form_field }}
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="input-group mb-1 ">
+                {% for form_field in select_multiple %}
+                    <div class="col-{{ (12/(select_multiple|length))|round|int }} p-1"> {{ form_field }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="py-2">
+                <button type="submit" class="btn btn-primary">Appliquer</button>
+            </div>
+        </div>
+    </div>
+    <div class="w-100 my-4">
+        {% for form_field in form %}
+            {% for error in form_field.errors %}
+                <p class="text-warning lead">{{ error }}</p>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</form>

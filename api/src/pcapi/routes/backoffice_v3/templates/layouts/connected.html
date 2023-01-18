@@ -69,8 +69,8 @@
 
                     <div class="nav nav-pills flex-column">
                         {% call menu_section("Réservations") %}
-                            {{ menu_section_item("Réservations individuelles", "backoffice_v3_web.bookings.list_individual_bookings") }}
-                            {# { menu_section_item("Réservations collectives", "backoffice_v3_web.bookings.list_collective_bookings") } #}
+                            {{ menu_section_item("Réservations individuelles", "backoffice_v3_web.individual_bookings.list_individual_bookings") }}
+                            {{ menu_section_item("Réservations collectives", "backoffice_v3_web.collective_bookings.list_collective_bookings") }}
                         {% endcall %}
 
                     </div>

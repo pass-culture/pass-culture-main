@@ -28,43 +28,7 @@
                 {{ stats_card(stats["VALIDATED"], "structure validée", "structures validées") }}
                 {{ stats_card(stats["REJECTED"], "structure rejetée", "structures rejetées") }}
             </div>
-            <form action="{{ dst }}" method="GET" class="mb-4 mt-3">
-                <div class="row">
-                    <div class="col-10">
-                        <div class="input-group mb-3">
-                            {% for form_field in form %}
-                                {% if form_field.type != "HiddenField" and form_field.type != "PCSelectMultipleField" and form_field.type != "PCQuerySelectMultipleField" %}
-                                    {{ form_field }}
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                        <div class="input-group mb-1 ">
-                            {% for form_field in form %}
-                                {% if form_field.type == 'PCSelectMultipleField' or form_field.type == "PCQuerySelectMultipleField" %}
-                                    <div class="col-4 p-1"> {{ form_field }}</div>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                        {% for form_field in form %}
-                            {% if form_field.type == "HiddenField" %}
-                                {{ form_field }}
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    <div class="col-2">
-                        <div class="py-2">
-                            <button type="submit" class="btn btn-primary">Appliquer</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="w-100 my-4">
-                    {% for form_field in form %}
-                        {% for error in form_field.errors %}
-                            <p class="text-warning lead">{{ error }}</p>
-                        {% endfor %}
-                    {% endfor %}
-                </div>
-            </form>
+            {% include "components/filters_form.html" %}
         </div>
         <div>
             {% if rows and rows.total > 0 %}
