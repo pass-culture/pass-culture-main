@@ -722,6 +722,7 @@ def _delete_dependent_pricings(
         extra={
             "booking_being_priced_or_cancelled": booking.id,
             "bookings_already_priced": bookings_already_priced,
+            "pricing_point": pricing_point_id,
         },
     )
 
