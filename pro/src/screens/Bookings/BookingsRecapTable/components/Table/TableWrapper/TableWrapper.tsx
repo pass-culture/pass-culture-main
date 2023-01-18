@@ -14,10 +14,10 @@ import {
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
+import { Pagination } from 'ui-kit/Pagination'
 
 import TableBody from '../Body'
 import TableHead from '../Head'
-import TablePagination from '../Paginate'
 
 interface TableWrapperProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
@@ -45,8 +45,6 @@ const TableWrapper = <
   reloadBookings,
 }: TableWrapperProps<T>): JSX.Element => {
   const {
-    canPreviousPage,
-    canNextPage,
     getTableProps,
     getTableBodyProps,
     headerGroups,
@@ -100,13 +98,12 @@ const TableWrapper = <
           reloadBookings={reloadBookings}
         />
       </table>
-      <TablePagination
-        canNextPage={canNextPage}
-        canPreviousPage={canPreviousPage}
+
+      <Pagination
         currentPage={pageIndex + 1}
-        nbPages={pageCount}
-        nextPage={goToNextPage}
-        previousPage={goToPreviousPage}
+        pageCount={pageCount}
+        onPreviousPageClick={goToPreviousPage}
+        onNextPageClick={goToNextPage}
       />
     </div>
   )
