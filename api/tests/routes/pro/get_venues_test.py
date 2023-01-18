@@ -40,6 +40,7 @@ def test_response_serialization(app):
         "motorDisabilityCompliant": venue.motorDisabilityCompliant,
         "visualDisabilityCompliant": venue.visualDisabilityCompliant,
         "siret": venue.siret,
+        "hasMissingReimbursementPoint": True,
     }
 
 
@@ -109,6 +110,7 @@ def test_admin_call_num_queries(app):
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.core.offerers.repository.get_filtered_venues")
 def test_invalid_offerer_id(mock_get_filtered_venues, app):
+
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
     offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
