@@ -3,6 +3,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_activation_of
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users_data import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import (
     associate_criterion_to_one_offer_with_mediation,
@@ -30,7 +31,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_search_object
     create_industrial_search_indexed_objects,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_offers import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_offers_data import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_products import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_products_data import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venue_types import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venues import *
@@ -49,33 +52,41 @@ def save_industrial_sandbox() -> None:
     admin_users_by_name = create_industrial_admin_users()
     pro_users_by_name = create_industrial_pro_users(offerers_by_name)
     app_users_by_name = create_industrial_app_users()
+    app_users_by_name_data =create_industrial_app_users_data()
 
     users_by_name = dict(dict(admin_users_by_name, **pro_users_by_name), **app_users_by_name)
-
+    users_by_name= dict(users_by_name, **app_users_by_name_data)
     venues_by_name = create_industrial_venues(offerers_by_name, venue_types)
 
     event_products_by_name = create_industrial_event_products()
 
     thing_products_by_name = create_industrial_thing_products()
 
+    thing_products_by_name_data = create_industrial_thing_products_data()
+
     event_offers_by_name = create_industrial_event_offers(event_products_by_name, offerers_by_name)
 
     thing_offers_by_name = create_industrial_thing_offers(thing_products_by_name, offerers_by_name, venues_by_name)
+    
+    thing_offers_by_name_data = create_industrial_thing_offers_data(thing_products_by_name_data, offerers_by_name, venues_by_name)
 
     create_industrial_draft_offers(offerers_by_name)
 
     create_industrial_offers_with_activation_codes()
 
     offers_by_name = dict(event_offers_by_name, **thing_offers_by_name)
+    offers_by_name_data = dict(event_offers_by_name, **thing_offers_by_name_data)
 
     event_occurrences_by_name = create_industrial_event_occurrences(event_offers_by_name)
 
     create_industrial_event_stocks(event_occurrences_by_name)
 
     create_industrial_thing_stocks(thing_offers_by_name)
+    create_industrial_thing_stocks(offers_by_name_data)
 
     prepare_mediations_folders()
     create_industrial_mediations(offers_by_name)
+    create_industrial_mediations(offers_by_name_data)
 
     criteria_by_name = create_industrial_criteria()
 

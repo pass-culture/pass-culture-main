@@ -23,8 +23,8 @@ def create_industrial_thing_stocks(thing_offers_by_name: dict[str, Offer]) -> No
 
     thing_offer_items = list(thing_offers_by_name.items())
 
-    thing_offer_items_with_stocks = remove_every(thing_offer_items, THING_OFFERS_WITH_STOCK_REMOVE_MODULO)
-
+    #thing_offer_items_with_stocks = remove_every(thing_offer_items, THING_OFFERS_WITH_STOCK_REMOVE_MODULO)
+    thing_offer_items_with_stocks=thing_offer_items
     for offer_name, offer in thing_offer_items_with_stocks:
         quantity = 20
 
