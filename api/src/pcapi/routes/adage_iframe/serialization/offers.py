@@ -100,6 +100,11 @@ class CollectiveOfferOfferVenue(BaseModel):
     addressType: OfferAddressType
     otherAddress: str
     venueId: str
+    name: str | None
+    publicName: str | None
+    address: str | None
+    postalCode: str | None
+    city: str | None
 
     class Config:
         alias_generator = to_camel
@@ -150,7 +155,9 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     imageUrl: str | None
 
     @classmethod
-    def from_orm(cls, offer: educational_models.CollectiveOffer) -> "CollectiveOfferResponseModel":
+    def from_orm(
+        cls, offer: educational_models.CollectiveOffer, offerVenue: offerers_models.Venue | None = None
+    ) -> "CollectiveOfferResponseModel":
         offer.subcategoryLabel = offer.subcategory.app_label
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
 
@@ -158,7 +165,14 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
 
         result.isSoldOut = offer.collectiveStock.isSoldOut
         result.educationalPriceDetail = offer.collectiveStock.priceDetail
-
+        result.offerVenue = CollectiveOfferOfferVenue(
+            name=offerVenue.name if offerVenue else None,
+            publicName=offerVenue.publicName if offerVenue else None,
+            address=offerVenue.address if offerVenue else None,
+            postalCode=offerVenue.postalCode if offerVenue else None,
+            city=offerVenue.city if offerVenue else None,
+            **offer.offerVenue,
+        )
         return result
 
     class Config:
@@ -191,7 +205,9 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     imageUrl: str | None
 
     @classmethod
-    def from_orm(cls, offer: educational_models.CollectiveOfferTemplate) -> "CollectiveOfferTemplateResponseModel":
+    def from_orm(
+        cls, offer: educational_models.CollectiveOfferTemplate, offerVenue: offerers_models.Venue | None = None
+    ) -> "CollectiveOfferTemplateResponseModel":
         offer.subcategoryLabel = offer.subcategory.app_label
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
 
@@ -199,7 +215,14 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
 
         result.isSoldOut = False
         result.educationalPriceDetail = offer.priceDetail
-
+        result.offerVenue = CollectiveOfferOfferVenue(
+            name=offerVenue.name if offerVenue else None,
+            publicName=offerVenue.publicName if offerVenue else None,
+            address=offerVenue.address if offerVenue else None,
+            postalCode=offerVenue.postalCode if offerVenue else None,
+            city=offerVenue.city if offerVenue else None,
+            **offer.offerVenue,
+        )
         return result
 
     class Config:
