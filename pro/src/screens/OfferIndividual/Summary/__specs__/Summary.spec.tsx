@@ -8,10 +8,10 @@ import { generatePath, MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
-  CancelablePromise,
-  OfferStatus,
   ApiError,
+  CancelablePromise,
   GetIndividualOfferResponseModel,
+  OfferStatus,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -48,8 +48,8 @@ const contextValues: IOfferIndividualContext = {
   setOffer: () => {},
   setShouldTrack: () => {},
   shouldTrack: true,
-  setVenueId: () => {},
   isFirstOffer: false,
+  venuesMissingReimbursementPoint: {},
 }
 
 const renderSummary = ({

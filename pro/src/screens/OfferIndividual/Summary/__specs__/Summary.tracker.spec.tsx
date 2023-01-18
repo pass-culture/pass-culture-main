@@ -40,8 +40,8 @@ const defaultContext: IOfferIndividualContext = {
   setOffer: () => {},
   setShouldTrack: () => {},
   shouldTrack: true,
-  setVenueId: () => {},
   isFirstOffer: false,
+  venuesMissingReimbursementPoint: {},
 }
 
 const renderSummary = ({

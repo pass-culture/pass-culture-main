@@ -121,7 +121,7 @@ describe('screens:OfferIndividual::Informations', () => {
       setShouldTrack: () => {},
       shouldTrack: true,
       isFirstOffer: false,
-      setVenueId: () => {},
+      venuesMissingReimbursementPoint: {},
     }
 
     jest
@@ -162,6 +162,7 @@ describe('screens:OfferIndividual::Informations', () => {
         motor: false,
         none: true,
       },
+      hasMissingReimbursementPoint: false,
     }
     props.venueId = venue.id
     contextValue.venueList = [
@@ -179,6 +180,7 @@ describe('screens:OfferIndividual::Informations', () => {
           motor: false,
           none: true,
         },
+        hasMissingReimbursementPoint: false,
       },
     ]
 
@@ -207,6 +209,7 @@ describe('screens:OfferIndividual::Informations', () => {
           motor: false,
           none: true,
         },
+        hasMissingReimbursementPoint: false,
       }
       props.venueId = venue.id
       contextValue.venueList = [
@@ -224,6 +227,7 @@ describe('screens:OfferIndividual::Informations', () => {
             motor: false,
             none: true,
           },
+          hasMissingReimbursementPoint: false,
         },
       ]
     })

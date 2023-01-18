@@ -33,8 +33,8 @@ const renderStocksScreen = ({
     setOffer: () => {},
     shouldTrack: true,
     setShouldTrack: () => {},
-    setVenueId: () => {},
     isFirstOffer: false,
+    venuesMissingReimbursementPoint: {},
     ...contextOverride,
   }
   return render(

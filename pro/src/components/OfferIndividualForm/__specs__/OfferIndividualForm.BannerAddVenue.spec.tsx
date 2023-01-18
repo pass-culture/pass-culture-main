@@ -15,9 +15,9 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 import { configureTestStore } from 'store/testUtils'
 
 import {
+  FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
   validationSchema,
-  FORM_DEFAULT_VALUES,
 } from '..'
 import OfferIndividualForm, {
   IOfferIndividualFormProps,
@@ -125,6 +125,7 @@ describe('OfferIndividualForm', () => {
           motor: false,
           none: true,
         },
+        hasMissingReimbursementPoint: false,
       },
       {
         id: 'virtual',
@@ -139,6 +140,7 @@ describe('OfferIndividualForm', () => {
           motor: false,
           none: true,
         },
+        hasMissingReimbursementPoint: false,
       },
     ]
     props = {
@@ -169,6 +171,7 @@ describe('OfferIndividualForm', () => {
             motor: false,
             none: true,
           },
+          hasMissingReimbursementPoint: false,
         },
       ]
       props = { ...props, venueList: onlyVirtualVenueList }
@@ -202,6 +205,7 @@ describe('OfferIndividualForm', () => {
             motor: false,
             none: true,
           },
+          hasMissingReimbursementPoint: false,
         },
       ]
       props = { ...props, venueList: onlyVirtualVenueList }

@@ -92,6 +92,7 @@ export const venueFactory = (
     publicName: 'Mon Lieu',
     offererName: 'Ma structure',
     departementCode: '973',
+    hasMissingReimbursementPoint: false,
     ...customVenue,
   }
 }

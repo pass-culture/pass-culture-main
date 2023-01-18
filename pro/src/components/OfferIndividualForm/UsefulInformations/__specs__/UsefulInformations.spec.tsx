@@ -72,6 +72,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
           motor: false,
           none: true,
         },
+        hasMissingReimbursementPoint: false,
       },
       {
         id: 'BBBB',
@@ -86,6 +87,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
           motor: false,
           none: true,
         },
+        hasMissingReimbursementPoint: false,
       },
     ]
     initialValues = {

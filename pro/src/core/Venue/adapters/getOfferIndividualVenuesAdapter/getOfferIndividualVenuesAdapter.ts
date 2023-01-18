@@ -21,6 +21,7 @@ const getOfferIndividualVenuesAdapter: TGetOfferIndividualVenuesAdapter =
       const serializeVenue = (
         venue: VenueListItemResponseModel
       ): TOfferIndividualVenue => {
+        /* istanbul ignore next: DEBT, TO FIX */
         const baseAccessibility = {
           [AccessiblityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
           [AccessiblityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
@@ -39,6 +40,7 @@ const getOfferIndividualVenuesAdapter: TGetOfferIndividualVenuesAdapter =
               !Object.values(baseAccessibility).includes(true),
           },
           bookingEmail: venue.bookingEmail || null,
+          hasMissingReimbursementPoint: venue.hasMissingReimbursementPoint,
         }
       }
 
