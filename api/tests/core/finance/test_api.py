@@ -20,7 +20,7 @@ from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.educational.factories import UsedCollectiveBookingFactory
-from pcapi.core.educational.models import CollectiveBookingStatus
+import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import Ministry
 from pcapi.core.finance import api
 from pcapi.core.finance import exceptions
@@ -1733,16 +1733,24 @@ class GenerateInvoiceTest:
         stock = individual_stock_factory()
         booking1 = bookings_factories.UsedBookingFactory(stock=stock)
         booking2 = bookings_factories.UsedBookingFactory(stock=stock)
-        api.price_booking(booking1)
-        api.price_booking(booking2)
+        venue = stock.offer.venue
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        collective_booking1 = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__beginningDatetime=past, collectiveStock__collectiveOffer__venue=venue
+        )
+        collective_booking2 = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__beginningDatetime=past, collectiveStock__collectiveOffer__venue=venue
+        )
+        for b in (booking1, booking2, collective_booking1, collective_booking2):
+            api.price_booking(b)
         api.generate_cashflows(datetime.datetime.utcnow())
         cashflow_ids = {cf.id for cf in models.Cashflow.query.all()}
         booking2.status = bookings_models.BookingStatus.CANCELLED
-        db.session.add(booking2)
+        collective_booking2.status = educational_models.CollectiveBookingStatus.CANCELLED
         db.session.commit()
 
         invoice = api._generate_invoice(
-            reimbursement_point_id=booking1.venue.current_reimbursement_point_id,
+            reimbursement_point_id=venue.current_reimbursement_point_id,
             cashflow_ids=cashflow_ids,
         )
 
@@ -1755,41 +1763,10 @@ class GenerateInvoiceTest:
         assert booking1.reimbursementDate == invoice.date  # updated
         assert booking2.status == bookings_models.BookingStatus.CANCELLED  # not updated
         assert booking2.reimbursementDate == invoice.date  # updated
-
-    def test_update_statuses_when_new_model_is_enabled(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        reimbursement_point = offerers_factories.VenueFactory()
-        factories.BankInformationFactory(venue=reimbursement_point)
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=reimbursement_point.managingOfferer,
-            pricing_point="self",
-            reimbursement_point=reimbursement_point,
-        )
-        collective_booking1 = UsedCollectiveBookingFactory(
-            collectiveStock__beginningDatetime=past,
-            collectiveStock__collectiveOffer__venue=venue,
-        )
-        collective_booking2 = UsedCollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__beginningDatetime=past,
-        )
-        api.price_booking(collective_booking1)
-        api.price_booking(collective_booking2)
-        api.generate_cashflows(datetime.datetime.utcnow() + datetime.timedelta(minutes=5))
-        cashflow_ids = {cf.id for cf in models.Cashflow.query.all()}
-
-        api._generate_invoice(
-            reimbursement_point_id=collective_booking1.venue.current_reimbursement_point_id,
-            cashflow_ids=cashflow_ids,
-        )
-
-        get_statuses = lambda model: {s for s, in model.query.with_entities(getattr(model, "status"))}
-        cashflow_statuses = get_statuses(models.Cashflow)
-        assert cashflow_statuses == {models.CashflowStatus.ACCEPTED}
-        pricing_statuses = get_statuses(models.Pricing)
-        assert pricing_statuses == {models.PricingStatus.INVOICED}
-        assert collective_booking1.status == CollectiveBookingStatus.REIMBURSED  # updated
-        assert collective_booking2.status == CollectiveBookingStatus.REIMBURSED  # updated
+        assert collective_booking1.status == educational_models.CollectiveBookingStatus.REIMBURSED  # updated
+        assert collective_booking1.reimbursementDate == invoice.date  # updated
+        assert collective_booking2.status == educational_models.CollectiveBookingStatus.CANCELLED  # not updated
+        assert collective_booking2.reimbursementDate == invoice.date  # updated
 
 
 class PrepareInvoiceContextTest:
