@@ -90,7 +90,7 @@ const ButtonLink = ({
     : {}
 
   const tooltipId = uniqId()
-  const tooltipProps = hasTooltip ? { 'aria-describedBy': tooltipId } : {}
+  const tooltipProps = hasTooltip ? { 'aria-describedby': tooltipId } : {}
 
   body = isExternal ? (
     <a
