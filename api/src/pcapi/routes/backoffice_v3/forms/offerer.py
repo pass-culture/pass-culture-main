@@ -131,6 +131,10 @@ class OptionalCommentForm(FlaskForm):
     comment = fields.PCOptCommentField("Commentaire interne")
 
 
+class BatchOptionalCommentForm(OptionalCommentForm):
+    object_ids = wtforms.HiddenField("Identifiants à traiter")
+
+
 class TopActorForm(FlaskForm):
     # Optional because the request is sent with an empty value when disabled, "on" when enabled
     is_top_actor = wtforms.HiddenField("Top acteur", validators=(wtforms.validators.Optional(),))
