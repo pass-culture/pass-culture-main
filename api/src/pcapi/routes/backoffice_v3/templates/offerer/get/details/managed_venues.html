@@ -1,3 +1,5 @@
+{% from "components/external_links.html" import build_siret_link %}
+
 <table class="table table-hover my-4">
     <thead>
         <tr>
@@ -23,7 +25,7 @@
                         {{ venue.publicName or venue.name }}
                     </a>
                 </td>
-                <td>{{ venue.siret | empty_string_if_null}}</td>
+                <td>{{ build_siret_link(venue) }}</td>
                 <td>{{ venue.venueType.label }}</td>
             </tr>
         {% endfor %}

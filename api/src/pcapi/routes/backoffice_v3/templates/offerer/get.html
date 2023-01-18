@@ -1,4 +1,5 @@
 {% from "components/badges.html" import build_offerer_badges %}
+{% from "components/external_links.html" import build_siren_link %}
 
 {% extends "layouts/pro.html" %}
 
@@ -56,14 +57,7 @@
                 </p>
 
                 <p class="card-subtitle text-muted mb-3 h5">
-                    SIREN :
-                    {% if offerer.siren %}
-                        <a href="https://www.societe.com/cgi-bin/fiche?rncs={{ offerer.siren }}"
-                            target="_blank"
-                            title="Visualiser sur societe.com">
-                            {{ offerer.siren | empty_string_if_null }}
-                        </a>
-                    {% endif %}
+                    SIREN : {{ build_siren_link(offerer) }}
                 </p>
 
                 <div class="row pt-3">
