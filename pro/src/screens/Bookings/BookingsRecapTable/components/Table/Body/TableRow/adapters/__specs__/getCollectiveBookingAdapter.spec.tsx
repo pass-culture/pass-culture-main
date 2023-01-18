@@ -54,6 +54,8 @@ describe('getCollectiveBookingAdapter', () => {
         otherAddress: 'Quelque part',
         venueId: '',
       },
+      venueId: 'A1',
+      offererId: 'O1',
       price: 100,
       students: [StudentLevels.CAP_1RE_ANN_E],
       venuePostalCode: '75017',
