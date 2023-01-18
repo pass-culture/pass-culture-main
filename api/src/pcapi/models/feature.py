@@ -111,7 +111,6 @@ class FeatureToggle(enum.Enum):
     )
     WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY = "Nouveau parcours de creation d'offre optimisé"
     WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
-    WIP_REQUIRE_PRICE_IN_STOCK_API = "Requiert le champ de prix dans l'API Stock"
     WIP_IMPROVE_COLLECTIVE_STATUS = "Améliorer le suivi des status des offres et réservations collectives"
     WIP_DUPLICATE_OFFER_SELECTION = "Active la sélection d'offre à dupliquer à la création d'une offre collective"
     WIP_ENABLE_MULTI_PRICE_STOCKS = "Active la fonctionnalité multi-tarif pour les offres individuelles"
@@ -169,7 +168,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.TEMP_DISABLE_OFFERER_VALIDATION_EMAIL,
     FeatureToggle.WIP_ENABLE_ALLOCINE_TELERAMA_FESTIVAL_SPECIAL_PRICE,
     FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY,
-    FeatureToggle.WIP_REQUIRE_PRICE_IN_STOCK_API,
     FeatureToggle.WIP_IMPROVE_COLLECTIVE_STATUS,
     FeatureToggle.WIP_DUPLICATE_OFFER_SELECTION,
     FeatureToggle.WIP_ENABLE_MULTI_PRICE_STOCKS,

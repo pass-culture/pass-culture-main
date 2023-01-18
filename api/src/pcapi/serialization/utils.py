@@ -25,6 +25,7 @@ def before_handler(
     This handler is automatically called through the ``spectree_serialize()`` decorator.
     """
     error_messages = {
+        "type_error.decimal": "Saisissez un nombre valide",
         "type_error.integer": "Saisissez un nombre valide",
         "type_error.none.not_allowed": "Ce champ ne peut pas être nul",
         "value_error.datetime": "Format de date invalide",
