@@ -85,6 +85,9 @@ class CollectiveBookingCollectiveStockResponseModel(BaseModel):
     number_of_tickets: int
     booking_limit_datetime: str | None
 
+    class Config:
+        alias_generator = to_camel
+
 
 class EducationalRedactorResponseModel(BaseModel):
     lastname: str
@@ -215,17 +218,17 @@ def serialize_collective_booking_stock(
     collective_booking: models.CollectiveBooking,
 ) -> CollectiveBookingCollectiveStockResponseModel:
     return CollectiveBookingCollectiveStockResponseModel(
-        offer_name=collective_booking.collectiveStock.collectiveOffer.name,
-        offer_identifier=humanize(collective_booking.collectiveStock.collectiveOfferId),
-        event_beginning_datetime=typing.cast(
+        offerName=collective_booking.collectiveStock.collectiveOffer.name,
+        offerIdentifier=humanize(collective_booking.collectiveStock.collectiveOfferId),
+        eventBeginningDatetime=typing.cast(
             datetime,
             convert_real_booking_dates_utc_to_venue_timezone(
                 collective_booking.collectiveStock.beginningDatetime, collective_booking
             ),
         ).isoformat(),
-        offer_is_educational=True,
-        number_of_tickets=collective_booking.collectiveStock.numberOfTickets,
-        booking_limit_datetime=typing.cast(
+        offerIsEducational=True,
+        numberOfTickets=collective_booking.collectiveStock.numberOfTickets,
+        bookingLimitDatetime=typing.cast(
             datetime,
             convert_real_booking_dates_utc_to_venue_timezone(
                 collective_booking.collectiveStock.bookingLimitDatetime, collective_booking

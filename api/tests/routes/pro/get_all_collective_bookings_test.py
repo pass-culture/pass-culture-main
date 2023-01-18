@@ -65,13 +65,13 @@ class Returns200Test:
         expected_bookings_recap = [
             {
                 "stock": {
-                    "offer_name": "Le chant des cigales",
-                    "offer_identifier": humanize(collective_stock.collectiveOfferId),
-                    "offer_is_educational": True,
-                    "event_beginning_datetime": "2022-05-15T12:15:00+02:00",
-                    "offer_isbn": None,
-                    "number_of_tickets": collective_stock.numberOfTickets,
-                    "booking_limit_datetime": "2022-05-15T11:15:00+02:00",
+                    "offerName": "Le chant des cigales",
+                    "offerIdentifier": humanize(collective_stock.collectiveOfferId),
+                    "offerIsEducational": True,
+                    "eventBeginningDatetime": "2022-05-15T12:15:00+02:00",
+                    "offerIsbn": None,
+                    "numberOfTickets": collective_stock.numberOfTickets,
+                    "bookingLimitDatetime": "2022-05-15T11:15:00+02:00",
                 },
                 "institution": {
                     "id": institution.id,
@@ -413,13 +413,13 @@ class Returns200Test:
         expected_bookings_recap = [
             {
                 "stock": {
-                    "offer_name": "Le chant des cigales",
-                    "offer_identifier": humanize(collective_stock.collectiveOfferId),
-                    "offer_is_educational": True,
-                    "event_beginning_datetime": "2022-05-15T12:15:00+02:00",
-                    "offer_isbn": None,
-                    "number_of_tickets": collective_stock.numberOfTickets,
-                    "booking_limit_datetime": "2022-05-15T11:15:00+02:00",
+                    "offerName": "Le chant des cigales",
+                    "offerIdentifier": humanize(collective_stock.collectiveOfferId),
+                    "offerIsEducational": True,
+                    "eventBeginningDatetime": "2022-05-15T12:15:00+02:00",
+                    "offerIsbn": None,
+                    "numberOfTickets": collective_stock.numberOfTickets,
+                    "bookingLimitDatetime": "2022-05-15T11:15:00+02:00",
                 },
                 "institution": {
                     "id": institution.id,
@@ -502,13 +502,13 @@ class Returns200Test:
         expected_bookings_recap = [
             {
                 "stock": {
-                    "offer_name": "Le chant des cigales",
-                    "offer_identifier": humanize(collective_stock.collectiveOfferId),
-                    "offer_is_educational": True,
-                    "event_beginning_datetime": "2022-05-15T12:15:00+02:00",
-                    "offer_isbn": None,
-                    "number_of_tickets": collective_stock.numberOfTickets,
-                    "booking_limit_datetime": "2022-05-15T11:15:00+02:00",
+                    "offerName": "Le chant des cigales",
+                    "offerIdentifier": humanize(collective_stock.collectiveOfferId),
+                    "offerIsEducational": True,
+                    "eventBeginningDatetime": "2022-05-15T12:15:00+02:00",
+                    "offerIsbn": None,
+                    "numberOfTickets": collective_stock.numberOfTickets,
+                    "bookingLimitDatetime": "2022-05-15T11:15:00+02:00",
                 },
                 "institution": {
                     "id": institution.id,
@@ -593,13 +593,13 @@ class Returns200Test:
         expected_bookings_recap = [
             {
                 "stock": {
-                    "offer_name": "Le chant des cigales",
-                    "offer_identifier": humanize(collective_stock.collectiveOfferId),
-                    "offer_is_educational": True,
-                    "event_beginning_datetime": "2022-03-10T11:15:00+01:00",
-                    "offer_isbn": None,
-                    "number_of_tickets": collective_stock.numberOfTickets,
-                    "booking_limit_datetime": "2022-03-10T10:15:00+01:00",
+                    "offerName": "Le chant des cigales",
+                    "offerIdentifier": humanize(collective_stock.collectiveOfferId),
+                    "offerIsEducational": True,
+                    "eventBeginningDatetime": "2022-03-10T11:15:00+01:00",
+                    "offerIsbn": None,
+                    "numberOfTickets": collective_stock.numberOfTickets,
+                    "bookingLimitDatetime": "2022-03-10T10:15:00+01:00",
                 },
                 "institution": {
                     "id": institution.id,
