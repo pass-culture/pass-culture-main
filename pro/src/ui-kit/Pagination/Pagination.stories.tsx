@@ -1,5 +1,5 @@
 import type { Story } from '@storybook/react'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 
 import { Pagination, PaginationProps } from './Pagination'
 
@@ -10,13 +10,15 @@ export default {
 
 const Template: Story<PaginationProps> = ({ currentPage, pageCount }) => {
   const [page, setPage] = useState(currentPage)
+  const previousPage = useCallback(() => setPage(page => page - 1), [])
+  const nextPage = useCallback(() => setPage(page => page + 1), [])
 
   return (
     <Pagination
       currentPage={page}
       pageCount={pageCount}
-      onPreviousPageClick={() => setPage(page => page - 1)}
-      onNextPageClick={() => setPage(page => page + 1)}
+      onPreviousPageClick={previousPage}
+      onNextPageClick={nextPage}
     />
   )
 }

@@ -556,7 +556,7 @@ describe('route CollectiveOffers', () => {
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
       const { history } = await renderOffers(store)
-      const nextPageIcon = screen.getByAltText('page suivante')
+      const nextPageIcon = screen.getByAltText('Page suivante')
       // When
       await userEvent.click(nextPageIcon)
       const urlSearchParams = parse(history.location.search.substring(1))
@@ -811,7 +811,7 @@ describe('route CollectiveOffers', () => {
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offers)
       await renderOffers(store)
-      const nextIcon = screen.getByAltText('page suivante')
+      const nextIcon = screen.getByAltText('Page suivante')
       // When
       await userEvent.click(nextIcon)
       // Then
@@ -828,8 +828,8 @@ describe('route CollectiveOffers', () => {
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offers)
       await renderOffers(store)
-      const nextIcon = screen.getByAltText('page suivante')
-      const previousIcon = screen.getByAltText('page précédente')
+      const nextIcon = screen.getByAltText('Page suivante')
+      const previousIcon = screen.getByAltText('Page précédente')
       await userEvent.click(nextIcon)
       // When
       await userEvent.click(previousIcon)
@@ -845,7 +845,7 @@ describe('route CollectiveOffers', () => {
       // When
       await renderOffers(store, filters)
       // Then
-      const previousIcon = screen.getByAltText('page précédente')
+      const previousIcon = screen.getByAltText('Page précédente')
       expect(previousIcon.closest('button')).toBeDisabled()
     })
 
@@ -858,7 +858,7 @@ describe('route CollectiveOffers', () => {
       // When
       await renderOffers(store)
       // Then
-      const nextIcon = screen.getByAltText('page suivante')
+      const nextIcon = screen.getByAltText('Page suivante')
       expect(nextIcon.closest('button')).toBeDisabled()
     })
 
@@ -888,7 +888,7 @@ describe('route CollectiveOffers', () => {
           // @ts-expect-error FIX ME
           .mockResolvedValueOnce(offersRecap)
         await renderOffers(store)
-        const nextIcon = screen.getByAltText('page suivante')
+        const nextIcon = screen.getByAltText('Page suivante')
         // When
         for (let i = 1; i < 51; i++) {
           await userEvent.click(nextIcon)
