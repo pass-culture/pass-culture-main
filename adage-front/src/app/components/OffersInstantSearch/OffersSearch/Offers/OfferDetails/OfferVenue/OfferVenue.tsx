@@ -1,30 +1,24 @@
 import React from 'react'
 
-import { OfferAddressType, OfferVenueResponse } from 'apiClient'
+import { CollectiveOfferOfferVenue, OfferAddressType } from 'apiClient'
 
 interface IOfferVenue {
-  offerVenue?: {
-    addressType: OfferAddressType
-    otherAddress: string
-    venueId: string
-  }
-  venue: OfferVenueResponse
+  offerVenue: CollectiveOfferOfferVenue
 }
 
-const OfferVenue = ({ offerVenue, venue }: IOfferVenue): JSX.Element => {
-  if (offerVenue) {
-    if (offerVenue.addressType === OfferAddressType.OTHER) {
-      return <div>{offerVenue.otherAddress}</div>
-    } else if (offerVenue.addressType === OfferAddressType.SCHOOL) {
-      return <div>Dans l’établissement scolaire</div>
-    }
+const OfferVenue = ({ offerVenue }: IOfferVenue): JSX.Element => {
+  if (offerVenue.addressType === OfferAddressType.OTHER) {
+    return <div>{offerVenue.otherAddress}</div>
+  }
+  if (offerVenue.addressType === OfferAddressType.SCHOOL) {
+    return <div>Dans l’établissement scolaire</div>
   }
 
   return (
     <div>
-      <div>{venue.name ?? venue.publicName}</div>
+      <div>{offerVenue.name ?? offerVenue.publicName}</div>
       <div>
-        {venue.address}, {venue.postalCode} {venue.city}
+        {offerVenue.address}, {offerVenue.postalCode} {offerVenue.city}
       </div>
     </div>
   )
