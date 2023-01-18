@@ -4,12 +4,14 @@ from sqlalchemy.orm import exc as orm_exc
 
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api.categories import get_educational_categories
+from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import offers as serializers
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.human_ids import dehumanize_or_raise
 
 
 logger = logging.getLogger(__name__)
@@ -45,7 +47,13 @@ def get_collective_offer(
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_NOT_FOUND"}, status_code=404)
 
-    return serializers.CollectiveOfferResponseModel.from_orm(offer)
+    offer_venue_id = offer.offerVenue.get("venueId", None)
+    if offer_venue_id:
+        offer_venue = get_venue_by_id(dehumanize_or_raise(offer_venue_id))
+    else:
+        offer_venue = None
+
+    return serializers.CollectiveOfferResponseModel.from_orm(offer, offer_venue)
 
 
 @blueprint.adage_iframe.route("/collective/offers-template/<int:offer_id>", methods=["GET"])
@@ -61,4 +69,10 @@ def get_collective_offer_template(
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
 
-    return serializers.CollectiveOfferTemplateResponseModel.from_orm(offer)
+    offer_venue_id = offer.offerVenue.get("venueId", None)
+    if offer_venue_id:
+        offer_venue = get_venue_by_id(dehumanize_or_raise(offer_venue_id))
+    else:
+        offer_venue = None
+
+    return serializers.CollectiveOfferTemplateResponseModel.from_orm(offer, offer_venue)

@@ -5,7 +5,9 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.utils.human_ids import humanize
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
@@ -62,7 +64,84 @@ class Returns200Test:
             "durationMinutes": None,
             "contactEmail": offer.contactEmail,
             "contactPhone": offer.contactPhone,
-            "offerVenue": offer.offerVenue,
+            "offerVenue": {
+                "addressType": "other",
+                "address": None,
+                "city": None,
+                "name": None,
+                "otherAddress": offer.offerVenue["otherAddress"],
+                "postalCode": None,
+                "publicName": None,
+                "venueId": offer.offerVenue["venueId"],
+            },
+            "students": ["Lycée - Seconde"],
+            "offerId": None,
+            "educationalPriceDetail": "détail du prix",
+            "domains": [{"id": offer.domains[0].id, "name": offer.domains[0].name}],
+            "imageUrl": None,
+            "imageCredit": None,
+        }
+
+    def test_get_collective_offer_template_with_offer_venue(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            name="offer name",
+            description="offer description",
+            priceDetail="détail du prix",
+            students=[StudentLevels.GENERAL2],
+            offerVenue={
+                "venueId": humanize(venue.id),
+                "addressType": "offererVenue",
+                "otherAddress": "",
+            },
+        )
+        offer_id = offer.id
+
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
+        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
+
+        # When
+        with assert_no_duplicated_queries():
+            response = client.get(f"/adage-iframe/collective/offers-template/{offer_id}")
+
+        # Then
+        assert response.status_code == 200
+        assert response.json == {
+            "description": "offer description",
+            "id": offer.id,
+            "isExpired": False,
+            "isSoldOut": False,
+            "name": "offer name",
+            "subcategoryLabel": offer.subcategory.app_label,
+            "venue": {
+                "address": "1 boulevard Poissonnière",
+                "city": "Paris",
+                "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
+                "id": offer.venue.id,
+                "name": offer.venue.name,
+                "postalCode": "75000",
+                "publicName": offer.venue.publicName,
+                "managingOfferer": {"name": offer.venue.managingOfferer.name},
+            },
+            "interventionArea": offer.interventionArea,
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "durationMinutes": None,
+            "contactEmail": offer.contactEmail,
+            "contactPhone": offer.contactPhone,
+            "offerVenue": {
+                "addressType": "offererVenue",
+                "address": venue.address,
+                "city": venue.city,
+                "name": venue.name,
+                "otherAddress": "",
+                "postalCode": venue.postalCode,
+                "publicName": venue.publicName,
+                "venueId": humanize(venue.id),
+            },
             "students": ["Lycée - Seconde"],
             "offerId": None,
             "educationalPriceDetail": "détail du prix",
