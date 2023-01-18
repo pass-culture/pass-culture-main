@@ -1,5 +1,7 @@
-import Icon from 'ui-kit/Icon/Icon'
 import React from 'react'
+
+import Icon from 'ui-kit/Icon/Icon'
+
 import styles from './Pagination.module.scss'
 
 export type PaginationProps = {
