@@ -174,4 +174,5 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["parse_referrer"] = parse_referrer
     app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link
     app.jinja_env.filters["pc_pro_offerer_link"] = urls.build_pc_pro_offerer_link
+    app.jinja_env.filters["pc_pro_venue_bookings_link"] = urls.build_pc_pro_venue_bookings_link
     app.jinja_env.filters["pc_pro_venue_link"] = urls.build_pc_pro_venue_link
