@@ -29,20 +29,7 @@ jest.mock('hooks/useNewOfferCreationJourney', () => ({
   default: jest.fn().mockReturnValue(false),
 }))
 
-const renderHomePage = async () => {
-  const store = configureTestStore({
-    user: {
-      currentUser: {
-        id: 'fake_id',
-        firstName: 'John',
-        lastName: 'Do',
-        email: 'john.do@dummy.xyz',
-        phoneNumber: '01 00 00 00 00',
-      },
-      initialized: true,
-    },
-  })
-
+const renderHomePage = async store => {
   render(
     <Provider store={store}>
       <MemoryRouter>
@@ -54,6 +41,8 @@ const renderHomePage = async () => {
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 describe('creationLinks', () => {
+  let store
+  let currentUser
   let baseOfferers
   let baseOfferersNames
   let virtualVenue
@@ -61,6 +50,21 @@ describe('creationLinks', () => {
   let physicalVenueWithPublicName
 
   beforeEach(() => {
+    currentUser = {
+      id: 'fake_id',
+      firstName: 'John',
+      lastName: 'Do',
+      email: 'john.do@dummy.xyz',
+      phoneNumber: '01 00 00 00 00',
+      roles: ['PRO'],
+      isAdmin: false,
+    }
+    store = configureTestStore({
+      user: {
+        currentUser,
+        initialized: true,
+      },
+    })
     virtualVenue = {
       id: 'test_venue_id_1',
       isVirtual: true,
@@ -172,11 +176,11 @@ describe('creationLinks', () => {
         },
       ]
       api.getOfferer.mockResolvedValue(baseOfferers[0])
-      await renderHomePage()
+      await renderHomePage(store)
       expect(screen.queryByText('Ajouter un lieu')).not.toBeInTheDocument()
     })
     it('Should display creation links when user has a venue created', async () => {
-      await renderHomePage()
+      await renderHomePage(store)
       expect(screen.getByText('Ajouter un lieu')).toBeInTheDocument()
     })
   })
@@ -196,7 +200,7 @@ describe('creationLinks', () => {
           },
         ]
         api.getOfferer.mockResolvedValue(baseOfferers[0])
-        await renderHomePage()
+        await renderHomePage(store)
 
         // Then
         expect(
@@ -230,7 +234,7 @@ describe('creationLinks', () => {
           },
         ]
         api.getOfferer.mockResolvedValue(baseOfferers[0])
-        await renderHomePage()
+        await renderHomePage(store)
 
         // Then
         expect(
@@ -263,7 +267,7 @@ describe('creationLinks', () => {
           },
         ]
         api.getOfferer.mockResolvedValue(baseOfferers[0])
-        await renderHomePage()
+        await renderHomePage(store)
 
         // Then
         expect(
@@ -296,7 +300,7 @@ describe('creationLinks', () => {
           },
         ]
         api.getOfferer.mockResolvedValue(baseOfferers[0])
-        await renderHomePage()
+        await renderHomePage(store)
 
         // Then
         expect(
@@ -322,7 +326,7 @@ describe('creationLinks', () => {
       beforeEach(async () => {
         api.listOfferersNames.mockResolvedValue({ offerersNames: [] })
 
-        await renderHomePage()
+        await renderHomePage(store)
       })
 
       it('should display offerer creation links', () => {
@@ -361,6 +365,75 @@ describe('creationLinks', () => {
         expect(
           screen.queryByRole('link', {
             name: 'Ajouter un lieu',
+          })
+        ).not.toBeInTheDocument()
+      })
+    })
+
+    describe('button to create an offer', () => {
+      it('should be displayed when user is an admin', async () => {
+        // Given
+        store = configureTestStore({
+          user: {
+            currentUser: {
+              ...currentUser,
+              roles: [],
+              isAdmin: true,
+            },
+            initialized: true,
+          },
+        })
+
+        // When
+        await renderHomePage(store)
+
+        // Then
+        expect(screen.queryByText('Créer une offre')).not.toBeNull()
+      })
+
+      it('should be displayed when user is not an admin', async () => {
+        store = configureTestStore({
+          user: {
+            currentUser: {
+              ...currentUser,
+              roles: ['PRO'],
+              isAdmin: false,
+            },
+            initialized: true,
+          },
+        })
+
+        // When
+        await renderHomePage(store)
+
+        // Then
+        expect(
+          screen.getByRole('link', {
+            name: 'Créer une offre',
+          })
+        ).toBeInTheDocument()
+      })
+
+      it('should not be displayed when user is not yet validated', async () => {
+        // Given
+        store = configureTestStore({
+          user: {
+            currentUser: {
+              ...currentUser,
+              roles: [],
+              isAdmin: false,
+            },
+            initialized: true,
+          },
+        })
+
+        // When
+        await renderHomePage(store)
+
+        // Then
+        expect(
+          screen.queryByRole('link', {
+            name: 'Créer une offre',
           })
         ).not.toBeInTheDocument()
       })

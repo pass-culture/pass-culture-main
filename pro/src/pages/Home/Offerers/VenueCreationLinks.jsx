@@ -10,6 +10,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import useCurrentUser from 'hooks/useCurrentUser'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
@@ -19,10 +20,12 @@ const VenueCreationLinks = ({
   hasVirtualOffers,
   offererId,
 }) => {
+  const { currentUser } = useCurrentUser()
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
+  /* istanbul ignore next: DEBT, TO FIX */
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${offererId}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
@@ -45,23 +48,25 @@ const VenueCreationLinks = ({
         >
           {!hasPhysicalVenue ? 'Créer un lieu' : 'Ajouter un lieu'}
         </ButtonLink>
-        <ButtonLink
-          variant={ButtonVariant.SECONDARY}
-          link={{
-            to: `/offre/creation?structure=${offererId}`,
-            isExternal: false,
-          }}
-          onClick={() =>
-            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-              from: OFFER_FORM_NAVIGATION_IN.HOME,
-              to: OFFER_FORM_HOMEPAGE,
-              used: OFFER_FORM_NAVIGATION_MEDIUM.HOME_BUTTON,
-              isEdition: false,
-            })
-          }
-        >
-          Créer une offre
-        </ButtonLink>
+        {(currentUser.isAdmin || currentUser?.roles?.length) && (
+          <ButtonLink
+            variant={ButtonVariant.SECONDARY}
+            link={{
+              to: `/offre/creation?structure=${offererId}`,
+              isExternal: false,
+            }}
+            onClick={() =>
+              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                from: OFFER_FORM_NAVIGATION_IN.HOME,
+                to: OFFER_FORM_HOMEPAGE,
+                used: OFFER_FORM_NAVIGATION_MEDIUM.HOME_BUTTON,
+                isEdition: false,
+              })
+            }
+          >
+            Créer une offre
+          </ButtonLink>
+        )}
       </div>
     )
   }
