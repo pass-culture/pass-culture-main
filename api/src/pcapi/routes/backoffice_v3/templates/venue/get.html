@@ -201,9 +201,16 @@
                             </p>
                         {% else %}
                             <p class="mb-1">
-                                <span class="fw-bold">Pas de dossier DMS<span>
+                                <span class="fw-bold">Pas de dossier DMS</span>
                             </p>
                         {% endif %}
+
+                        <p class="mb-1">
+                            <a href="{{ venue | pc_pro_venue_bookings_link }}" target="_blank"
+                               class="fw-bold link-primary">
+                                Réservations
+                            </a>
+                        </p>
                     </div>
                 </div>
             </div>
