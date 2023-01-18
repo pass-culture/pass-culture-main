@@ -36,15 +36,17 @@ def bookings_fixture() -> tuple:
 
 
 class ListIndividualBookingsTest:
+    endpoint = "backoffice_v3_web.individual_bookings.list_individual_bookings"
+
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.bookings.list_individual_bookings"
+        endpoint = "backoffice_v3_web.individual_bookings.list_individual_bookings"
         endpoint_kwargs = {"offerer_id": 1}
         needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
     def test_list_bookings_without_filter(self, authenticated_client, bookings):
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(url_for("backoffice_v3_web.bookings.list_individual_bookings"))
+            response = authenticated_client.get(url_for(self.endpoint))
 
         # then
         assert response.status_code == 200
@@ -53,9 +55,7 @@ class ListIndividualBookingsTest:
     def test_list_bookings_by_token(self, authenticated_client, bookings):
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.bookings.list_individual_bookings", q="WTRL00")
-            )
+            response = authenticated_client.get(url_for(self.endpoint, q="WTRL00"))
 
         # then
         assert response.status_code == 200
@@ -76,9 +76,7 @@ class ListIndividualBookingsTest:
     def test_list_bookings_by_invalid_token(self, authenticated_client, bookings):
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.bookings.list_individual_bookings", q="ELBE")
-            )
+            response = authenticated_client.get(url_for(self.endpoint, q="ELBE"))
 
         # then
         assert response.status_code == 400
@@ -88,9 +86,7 @@ class ListIndividualBookingsTest:
     def test_list_bookings_by_token_not_found(self, authenticated_client, bookings):
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.bookings.list_individual_bookings", q="IENA06")
-            )
+            response = authenticated_client.get(url_for(self.endpoint, q="IENA06"))
 
         # then
         assert response.status_code == 200

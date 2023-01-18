@@ -4,43 +4,7 @@
     <div class="pt-3 px-5">
         <h2 class="fw-light">Réservations individuelles</h2>
         <div id="filters">
-            <form action="{{ dst }}" method="GET" class="mb-4 mt-3">
-                <div class="row">
-                    <div class="col-10">
-                        <div class="input-group mb-3">
-                            {% for form_field in form %}
-                                {% if form_field.type != "HiddenField" and form_field.type != "PCSelectMultipleField" and form_field.type != "PCQuerySelectMultipleField" %}
-                                    {{ form_field }}
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                        <div class="input-group mb-1 ">
-                            {% for form_field in form %}
-                                {% if form_field.type == 'PCSelectMultipleField' or form_field.type == "PCQuerySelectMultipleField" %}
-                                    <div class="col-4 p-1"> {{ form_field }}</div>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                        {% for form_field in form %}
-                            {% if form_field.type == "HiddenField" %}
-                                {{ form_field }}
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    <div class="col-2">
-                        <div class="py-2">
-                            <button type="submit" class="btn btn-primary">Appliquer</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="w-100 my-4">
-                    {% for form_field in form %}
-                        {% for error in form_field.errors %}
-                            <p class="text-warning lead">{{ error }}</p>
-                        {% endfor %}
-                    {% endfor %}
-                </div>
-            </form>
+            {% include "components/filters_form.html" %}
         </div>
         <div>
             {% if rows and rows.total > 0 %}
@@ -81,9 +45,11 @@
                             </td>
                             <td>{{ booking.token }}</td>
                             <td>
-                                <a href="{{ url_for('backoffice_v3_web.get_public_account', user_id=booking.user.id) }}" class="link-primary">
-                                    {{ booking.user.full_name | escape }} ({{ booking.user.id }})
-                                </a>
+                                {% if booking.user %}
+                                    <a href="{{ url_for('backoffice_v3_web.get_public_account', user_id=booking.user.id) }}" class="link-primary">
+                                        {{ booking.user.full_name | escape }} ({{ booking.user.id }})
+                                    </a>
+                                {% endif %}
                             </td>
                             <td>
                                 <a href="{{ offer | pc_pro_offer_link }}" target="_blank" class="link-primary">
@@ -95,7 +61,7 @@
                             <td>{{ offer.subcategory.pro_label }}</td>
                             <td>{{ booking.stock.quantity }}</td>
                             <td>{{ booking.status | format_booking_status }}</td>
-                            <td>{{ booking.cancellationDate | empty_string_if_null }}</td>
+                            <td>{{ booking.cancellationDate | format_date("%d/%m/%Y") }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

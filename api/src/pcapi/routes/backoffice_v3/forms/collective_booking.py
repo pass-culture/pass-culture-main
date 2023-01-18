@@ -1,25 +1,20 @@
-import re
-
 from flask_wtf import FlaskForm
 import wtforms
 
 from . import fields
 
 
-BOOKING_TOKEN_RE = re.compile(r"^[\dA-Z]{6}$")
-
-
-class GetBookingListForm(FlaskForm):
+class GetCollectiveBookingListForm(FlaskForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("Code contremarque")
+    q = fields.PCOptSearchField("ID réservation collective")
     page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
     per_page = wtforms.HiddenField("Par page", default="100", validators=(wtforms.validators.Optional(),))
 
     def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
         if q.data:
             q.data = q.data.strip()
-            if not BOOKING_TOKEN_RE.match(q.data):
-                raise wtforms.validators.ValidationError("Le format de la contremarque est incorrect")
+            if not q.data.isnumeric():
+                raise wtforms.validators.ValidationError("Le format de l'ID de réservation est incorrect")
         return q
