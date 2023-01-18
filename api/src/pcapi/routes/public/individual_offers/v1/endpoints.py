@@ -1,3 +1,4 @@
+from collections import defaultdict
 import copy
 import logging
 
@@ -479,7 +480,7 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
 
 
 def compute_accessibility_edition_fields(accessibility_payload: dict | None) -> dict:
-    if not accessibility_payload:
+    if accessibility_payload is None:
         return {}
     return {
         "audioDisabilityCompliant": accessibility_payload.get("audio_disability_compliant", offers_api.UNCHANGED),
@@ -521,19 +522,21 @@ def edit_product(
 
     _check_offer_subcategory(body, offer.subcategoryId)
 
-    update_body = body.dict(exclude_unset=True)
+    update_body = defaultdict(lambda: offers_api.UNCHANGED, body.dict(exclude_unset=True))
     try:
         with repository.transaction():
             offers_api.update_offer(
                 offer,
-                bookingEmail=update_body.get("booking_email", offers_api.UNCHANGED),
+                bookingEmail=update_body["booking_email"],
                 extraData=serialization.compute_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
                 if body.category_related_fields
                 else offers_api.UNCHANGED,
-                isActive=update_body.get("is_active", offers_api.UNCHANGED),
-                isDuo=update_body.get("is_duo", offers_api.UNCHANGED),
-                withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
-                **compute_accessibility_edition_fields(update_body.get("accessibility")),
+                isActive=update_body["is_active"],
+                isDuo=update_body["is_duo"],
+                withdrawalDetails=update_body["withdrawal_details"],
+                **compute_accessibility_edition_fields(
+                    update_body["accessibility"] if "accessibility" in update_body else None
+                ),
             )
             if "stock" in update_body:
                 existing_stock = next((stock for stock in offer.activeStocks), None)
@@ -613,11 +616,11 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
         raise api_errors.ApiErrors({"event_id": ["The event offer could not be found"]}, status_code=404)
     _check_offer_subcategory(body, offer.subcategoryId)
 
-    update_body = body.dict(exclude_unset=True)
+    update_body = defaultdict(lambda: offers_api.UNCHANGED, body.dict(exclude_unset=True))
 
     withdrawal_type, withdrawal_delay = (
         _deserialize_ticket_collection(body.ticket_collection, offer.subcategoryId)
-        if update_body.get("ticket_collection")
+        if update_body["ticket_collection"] != offers_api.UNCHANGED
         else (offers_api.UNCHANGED, offers_api.UNCHANGED)
     )
 
@@ -625,17 +628,19 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
         with repository.transaction():
             offer = offers_api.update_offer(
                 offer,
-                bookingEmail=update_body.get("booking_email", offers_api.UNCHANGED),
-                durationMinutes=update_body.get("duration_minutes", offers_api.UNCHANGED),
+                bookingEmail=update_body["booking_email"],
+                durationMinutes=update_body["duration_minutes"],
                 extraData=serialization.compute_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
                 if body.category_related_fields
                 else offers_api.UNCHANGED,
-                isActive=update_body.get("is_active", offers_api.UNCHANGED),
-                isDuo=update_body.get("is_duo", offers_api.UNCHANGED),
-                withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
+                isActive=update_body["is_active"],
+                isDuo=update_body["is_duo"],
+                withdrawalDetails=update_body["withdrawal_details"],
                 withdrawalType=withdrawal_type,
                 withdrawalDelay=withdrawal_delay,
-                **compute_accessibility_edition_fields(update_body.get("accessibility")),
+                **compute_accessibility_edition_fields(
+                    update_body["accessibility"] if "accessibility" in update_body else None
+                ),
             )
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
