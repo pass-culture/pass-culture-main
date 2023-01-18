@@ -41,6 +41,14 @@ describe('components | BookingsRecapTable', () => {
   let store: Store<Partial<RootState>>
   type Props = ComponentProps<typeof BookingsRecapTable>
 
+  const defaultProps: Props = {
+    isLoading: false,
+    audience: Audience.INDIVIDUAL,
+    reloadBookings: jest.fn(),
+    resetBookings: jest.fn(),
+    bookingsRecap: [],
+  }
+
   const renderBookingRecap = (props: Props) => {
     return render(
       <MemoryRouter initialEntries={['/reservations/collectives']}>
@@ -50,7 +58,6 @@ describe('components | BookingsRecapTable', () => {
       </MemoryRouter>
     )
   }
-
   beforeEach(() => {
     store = configureTestStore({})
   })
@@ -61,10 +68,8 @@ describe('components | BookingsRecapTable', () => {
       bookingRecapFactory(),
     ]
     const props: Props = {
+      ...defaultProps,
       bookingsRecap: bookingsRecap,
-      isLoading: false,
-      audience: Audience.INDIVIDUAL,
-      reloadBookings: jest.fn(),
     }
     renderBookingRecap(props)
 
@@ -97,13 +102,11 @@ describe('components | BookingsRecapTable', () => {
   it('should filter bookings on render', () => {
     // Given
     const props: Props = {
+      ...defaultProps,
       bookingsRecap: [bookingRecapFactory()],
-      isLoading: false,
       locationState: {
         statuses: ['booked', 'cancelled'],
       },
-      audience: Audience.INDIVIDUAL,
-      reloadBookings: jest.fn(),
     }
     jest.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
 
@@ -131,10 +134,8 @@ describe('components | BookingsRecapTable', () => {
     const bookingsRecap = [bookingRecapFactory(), bookingRecapFactory()]
     jest.spyOn(filterBookingsRecap, 'default').mockReturnValue(bookingsRecap)
     const props: Props = {
+      ...defaultProps,
       bookingsRecap: bookingsRecap,
-      isLoading: false,
-      audience: Audience.INDIVIDUAL,
-      reloadBookings: jest.fn(),
     }
 
     // When
@@ -160,10 +161,9 @@ describe('components | BookingsRecapTable', () => {
     const bookingRecap = bookingRecapFactory(bookingInstitutionCustom)
     jest.spyOn(filterBookingsRecap, 'default').mockReturnValue([bookingRecap])
     const props: Props = {
-      bookingsRecap: [bookingRecap],
-      isLoading: false,
+      ...defaultProps,
       audience: Audience.COLLECTIVE,
-      reloadBookings: jest.fn(),
+      bookingsRecap: [bookingRecap],
     }
 
     // When
@@ -184,10 +184,8 @@ describe('components | BookingsRecapTable', () => {
   it('should not render a Header component when there is no filtered booking', async () => {
     // given
     const props: Props = {
+      ...defaultProps,
       bookingsRecap: [],
-      audience: Audience.INDIVIDUAL,
-      isLoading: false,
-      reloadBookings: jest.fn(),
     }
 
     // When
@@ -202,10 +200,8 @@ describe('components | BookingsRecapTable', () => {
   it('should reset filters when clicking on "afficher toutes les réservations"', async () => {
     // given
     const props: Props = {
-      audience: Audience.INDIVIDUAL,
+      ...defaultProps,
       bookingsRecap: [bookingRecapFactory()],
-      isLoading: false,
-      reloadBookings: jest.fn(),
     }
 
     renderBookingRecap(props)
@@ -227,12 +223,7 @@ describe('components | BookingsRecapTable', () => {
   it('should not show pagination when applying filters with no result', async () => {
     // given
     const bookingsRecap = [bookingRecapFactory(), bookingRecapFactory()]
-    const props: Props = {
-      audience: Audience.INDIVIDUAL,
-      bookingsRecap: bookingsRecap,
-      isLoading: false,
-      reloadBookings: jest.fn(),
-    }
+    const props: Props = { ...defaultProps, bookingsRecap: bookingsRecap }
     renderBookingRecap(props)
 
     await userEvent.click(screen.getAllByRole('button')[1])
@@ -251,10 +242,8 @@ describe('components | BookingsRecapTable', () => {
     spyOnFilterBookingsRecap.mockReturnValue(bookingsRecap)
 
     const props: Props = {
-      audience: Audience.INDIVIDUAL,
+      ...defaultProps,
       bookingsRecap: bookingsRecap,
-      isLoading: false,
-      reloadBookings: jest.fn(),
     }
 
     // When

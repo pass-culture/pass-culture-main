@@ -92,6 +92,11 @@ const Bookings = <
     })
   }, [setWereBookingsRequested])
 
+  const resetAndApplyPreFilters = useCallback(() => {
+    resetPreFilters()
+    updateUrl(appliedPreFilters)
+  }, [appliedPreFilters])
+
   const applyPreFilters = (filters: TPreFilters) => {
     setAppliedPreFilters(filters)
     loadBookingsRecap(filters)
@@ -283,6 +288,7 @@ const Bookings = <
             locationState={locationState}
             audience={audience}
             reloadBookings={reloadBookings}
+            resetBookings={resetAndApplyPreFilters}
           />
         ) : isTableLoading ? (
           <Spinner />
