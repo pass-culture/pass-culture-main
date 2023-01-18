@@ -337,9 +337,28 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     bookingEmail: str | None
     withdrawalDetails: str | None
     siret: str | None
+    hasMissingReimbursementPoint: bool
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
+
+    @classmethod
+    def from_orm(cls, venue: offerers_models.Venue) -> "VenueListItemResponseModel":
+        now = datetime.utcnow()
+        venue.offererName = venue.managingOfferer.name
+        venue.hasMissingReimbursementPoint = not (
+            any(
+                (
+                    now > link.timespan.lower and (link.timespan.upper is None or now < link.timespan.upper)
+                    for link in venue.reimbursement_point_links
+                )
+            )
+            or venue.hasPendingBankInformationApplication
+        )
+        return super().from_orm(venue)
+
+    class Config:
+        orm_mode = True
 
 
 class GetVenueListResponseModel(BaseModel):
