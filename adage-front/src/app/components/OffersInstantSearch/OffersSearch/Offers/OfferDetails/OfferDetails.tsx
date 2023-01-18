@@ -53,7 +53,6 @@ const OfferDetails = ({
 }): JSX.Element => {
   const {
     durationMinutes,
-    venue,
     audioDisabilityCompliant,
     mentalDisabilityCompliant,
     motorDisabilityCompliant,
@@ -93,10 +92,11 @@ const OfferDetails = ({
       {educationalPriceDetail && (
         <OfferSection title="Détails">{educationalPriceDetail}</OfferSection>
       )}
-
-      <OfferSection title="Adresse où se déroulera l’évènement">
-        <OfferVenue offerVenue={offerVenue} venue={venue} />
-      </OfferSection>
+      {offerVenue && (
+        <OfferSection title="Adresse où se déroulera l’évènement">
+          <OfferVenue offerVenue={offerVenue} />
+        </OfferSection>
+      )}
 
       {interventionArea?.length > 0 && (
         <OfferSection title="Zone de Mobilité">
