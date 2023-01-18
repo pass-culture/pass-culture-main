@@ -660,8 +660,6 @@ def _delete_dependent_pricings(
                         "older_pricing_status": pricing.status,
                     },
                 )
-            # FIXME (dbaty, 2022-07-06): temporarily disable pricing
-            # ordering to get back on our feet. See PC-16084.
             elif pricing_point_id in settings.FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS:
                 pricing_ids.remove(pricing.id)
                 bookings_already_priced.remove(pricing.bookingId)
