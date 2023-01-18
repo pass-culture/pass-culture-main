@@ -69,8 +69,13 @@ const Summary = (
   const notification = useNotification()
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
-  const { setOffer, isFirstOffer, venueId, offerOfferer } =
-    useOfferIndividualContext()
+  const {
+    setOffer,
+    isFirstOffer,
+    venueId,
+    offerOfferer,
+    venuesMissingReimbursementPoint,
+  } = useOfferIndividualContext()
   const newOfferCreation = useNewOfferCreationJourney()
 
   const { logEvent } = useAnalytics()
@@ -105,7 +110,11 @@ const Summary = (
         isDraft: true,
         offerId: offerId,
       })
-      if (newOfferCreation && isFirstOffer) {
+      if (
+        newOfferCreation &&
+        isFirstOffer &&
+        !venuesMissingReimbursementPoint[venueId || '']
+      ) {
         setDisplayRedirectDialog(true)
       } else {
         navigate(offerConfirmationStepUrl)

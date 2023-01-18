@@ -61,8 +61,8 @@ const renderInformationsScreen = (
     setOffer: () => {},
     setShouldTrack: () => {},
     shouldTrack: true,
-    setVenueId: () => {},
     isFirstOffer: false,
+    venuesMissingReimbursementPoint: {},
     ...contextOverride,
   }
   return render(
@@ -165,6 +165,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       },
       managingOffererId: 'OFID',
       withdrawalDetails: '',
+      hasMissingReimbursementPoint: false,
     }
 
     offer = {
@@ -254,6 +255,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
             motor: false,
             none: true,
           },
+          hasMissingReimbursementPoint: false,
         },
       ],
       offererNames: [{ id: 'OFID', nonHumanizedId: 1, name: 'Offerer name' }],

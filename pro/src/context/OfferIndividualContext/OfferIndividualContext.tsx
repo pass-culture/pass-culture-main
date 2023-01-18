@@ -27,8 +27,8 @@ export interface IOfferIndividualContext {
   setShouldTrack: (p: boolean) => void
   isFirstOffer: boolean
   venueId?: string | undefined
-  setVenueId: (venueId: string) => void
   offerOfferer?: TOffererName | null
+  venuesMissingReimbursementPoint: Record<string, boolean>
 }
 
 export const OfferIndividualContext = createContext<IOfferIndividualContext>({
@@ -42,7 +42,7 @@ export const OfferIndividualContext = createContext<IOfferIndividualContext>({
   shouldTrack: true,
   setShouldTrack: () => {},
   isFirstOffer: false,
-  setVenueId: () => {},
+  venuesMissingReimbursementPoint: {},
 })
 
 export const useOfferIndividualContext = () => {
@@ -77,6 +77,8 @@ export function OfferIndividualContextProvider({
   const [subCategories, setSubCategories] = useState<IOfferSubCategory[]>([])
   const [offererNames, setOffererNames] = useState<TOffererName[]>([])
   const [venueList, setVenueList] = useState<TOfferIndividualVenue[]>([])
+  const [venuesMissingReimbursementPoint, setVenuesMissingReimbursementPoint] =
+    useState<Record<string, boolean>>({})
 
   const setOffer = (offer: IOfferIndividual | null) => {
     setOfferState(offer)
@@ -120,6 +122,11 @@ export function OfferIndividualContextProvider({
         setSubCategories(response.payload.categoriesData.subCategories)
         setOffererNames(response.payload.offererNames)
         setVenueList(response.payload.venueList)
+        const venuesReimbursementPointStatus: Record<string, boolean> = {}
+        response.payload.venueList.forEach(v => {
+          venuesReimbursementPointStatus[v.id] = v.hasMissingReimbursementPoint
+        })
+        setVenuesMissingReimbursementPoint(venuesReimbursementPointStatus)
         setIsFirstOffer(response.payload.isFirstOffer)
       } else {
         setCategories([])
@@ -152,8 +159,8 @@ export function OfferIndividualContextProvider({
         setShouldTrack,
         isFirstOffer,
         venueId,
-        setVenueId,
         offerOfferer,
+        venuesMissingReimbursementPoint: venuesMissingReimbursementPoint,
       }}
     >
       {children}

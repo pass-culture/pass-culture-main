@@ -16,6 +16,7 @@ export type TOfferIndividualVenue = {
   withdrawalDetails: string | null
   accessibility: IAccessibiltyFormValues
   bookingEmail?: string | null
+  hasMissingReimbursementPoint: boolean
 }
 
 export type VenueCollectiveInformation = Pick<

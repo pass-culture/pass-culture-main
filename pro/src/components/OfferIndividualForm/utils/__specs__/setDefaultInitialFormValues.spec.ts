@@ -45,6 +45,7 @@ describe('setDefaultInitialFormValues', () => {
           mental: false,
           none: true,
         },
+        hasMissingReimbursementPoint: false,
       },
     ]
   })

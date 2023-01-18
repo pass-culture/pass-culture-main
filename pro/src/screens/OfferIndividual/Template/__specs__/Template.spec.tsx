@@ -42,8 +42,8 @@ const renderTemplate = ({
     setOffer: () => {},
     setShouldTrack: () => {},
     shouldTrack: true,
-    setVenueId: () => {},
     isFirstOffer: false,
+    venuesMissingReimbursementPoint: {},
     ...contextOverride,
   }
   return render(

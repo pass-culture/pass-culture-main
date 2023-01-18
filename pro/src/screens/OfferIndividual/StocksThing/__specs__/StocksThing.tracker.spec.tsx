@@ -96,7 +96,7 @@ describe('screens:StocksThing', () => {
       setShouldTrack: () => {},
       shouldTrack: true,
       isFirstOffer: false,
-      setVenueId: () => {},
+      venuesMissingReimbursementPoint: {},
     }
     jest
       .spyOn(api, 'getOffer')

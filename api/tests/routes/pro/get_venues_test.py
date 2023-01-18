@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.finance.factories import BankInformationFactory
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
@@ -25,6 +26,7 @@ def test_response_serialization(app):
 
     assert "venues" in response.json
     assert len(response.json["venues"]) == 1
+
     assert response.json["venues"][0] == {
         "id": humanize(venue.id),
         "nonHumanizedId": venue.id,
@@ -42,6 +44,33 @@ def test_response_serialization(app):
         "siret": venue.siret,
         "hasMissingReimbursementPoint": True,
     }
+
+
+@pytest.mark.usefixtures("db_session")
+def test_response_missing_reimbursement_point_serialization(app):
+    user_offerer = offerers_factories.UserOffererFactory(
+        user__email="user.pro@test.com",
+    )
+
+    offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, reimbursement_point=None, name="A")
+    venue_with_pending_application = offerers_factories.VenueFactory(
+        managingOfferer=user_offerer.offerer, reimbursement_point=None, name="B"
+    )
+    BankInformationFactory(venue=venue_with_pending_application, applicationId=4, status="DRAFT")
+    offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, reimbursement_point="self", name="C")
+
+    # when
+    response = TestClient(app.test_client()).with_session_auth(user_offerer.user.email).get("/venues")
+
+    # then
+    assert response.status_code == 200
+
+    assert "venues" in response.json
+    assert len(response.json["venues"]) == 3
+
+    assert response.json["venues"][0]["hasMissingReimbursementPoint"] == True
+    assert response.json["venues"][1]["hasMissingReimbursementPoint"] == False
+    assert response.json["venues"][2]["hasMissingReimbursementPoint"] == False
 
 
 @pytest.mark.usefixtures("db_session")

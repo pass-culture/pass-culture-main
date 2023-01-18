@@ -5,8 +5,8 @@ import { useSelector } from 'react-redux'
 import { NOTIFICATION_TRANSITION_DURATION } from 'core/Notification/constants'
 import useNotification from 'hooks/useNotification'
 import {
-  notificationSelector,
   isStickyBarOpenSelector,
+  notificationSelector,
 } from 'store/selectors/notificationSelector'
 
 import { ReactComponent as ErrorIcon } from './assets/notification-error-white.svg'
