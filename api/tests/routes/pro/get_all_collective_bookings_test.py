@@ -92,7 +92,7 @@ class Returns200Test:
                 "bookingToken": None,
                 "bookingStatus": "confirmed",
                 "bookingIsDuo": False,
-                "cancellationReason": None,
+                "bookingCancellationReason": None,
                 "bookingStatusHistory": [
                     {
                         "status": "pending",
@@ -256,7 +256,7 @@ class Returns200Test:
             dateCreated=booking_date,
             confirmationDate=None,
             cancellationDate=booking_date + timedelta(days=5, minutes=32),
-            cancellationReason=None,
+            cancellationReason=CollectiveBookingCancellationReasons.OFFERER,
         )
 
         # When
@@ -267,6 +267,7 @@ class Returns200Test:
         assert response.status_code == 200
         booking_recap = response.json["bookingsRecap"][0]
         assert booking_recap["bookingStatus"] == "cancelled"
+        assert booking_recap["bookingCancellationReason"] == "OFFERER"
         assert booking_recap["bookingStatusHistory"] == [
             {
                 "status": "pending",
@@ -440,7 +441,7 @@ class Returns200Test:
                 "bookingToken": None,
                 "bookingStatus": "confirmed",
                 "bookingIsDuo": False,
-                "cancellationReason": None,
+                "bookingCancellationReason": None,
                 "bookingStatusHistory": [
                     {
                         "status": "pending",
@@ -529,7 +530,7 @@ class Returns200Test:
                 "bookingToken": None,
                 "bookingStatus": "confirmed",
                 "bookingIsDuo": False,
-                "cancellationReason": None,
+                "bookingCancellationReason": None,
                 "bookingStatusHistory": [
                     {
                         "status": "pending",
@@ -620,7 +621,7 @@ class Returns200Test:
                 "bookingToken": None,
                 "bookingStatus": "validated",
                 "bookingIsDuo": False,
-                "cancellationReason": None,
+                "bookingCancellationReason": None,
                 "bookingStatusHistory": [
                     {
                         "status": "pending",

@@ -22,7 +22,6 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
-from pcapi.core.educational import models as educational_models
 
 
 class CollectiveBookingRecapStatus(Enum):
@@ -111,7 +110,7 @@ class CollectiveBookingResponseModel(BaseModel):
     booking_amount: float
     booking_status_history: list[BookingStatusHistoryResponseModel]
     booking_identifier: str
-    booking_cancellation_reason: educational_models.CollectiveBookingCancellationReasons | None
+    booking_cancellation_reason: models.CollectiveBookingCancellationReasons | None
 
     class Config:
         alias_generator = to_camel
@@ -268,32 +267,6 @@ def _serialize_collective_booking_recap_status(
     return CollectiveBookingRecapStatus.booked
 
 
-class CollectiveBookingCancellationReason(Enum):
-    offerer = "offerer"
-    beneficiary = "beneficiary"
-    expired = "expired"
-    fraud = "fraud"
-    refused_by_institute = "refused_by_institute"
-    refused_by_headmaster = "refused_by_headmaster"
-
-
-def _serialize_collective_booking_cancellation_reason(
-    collective_booking: models.CollectiveBooking,
-) -> CollectiveBookingCancellationReason:
-    if collective_booking.cancellationReason == models.CollectiveBookingCancellationReasons.OFFERER:
-        return CollectiveBookingCancellationReason.offerer
-    if collective_booking.cancellationReason == models.CollectiveBookingCancellationReasons.BENEFICIARY:
-        return CollectiveBookingCancellationReason.beneficiary
-    if collective_booking.cancellationReason == models.CollectiveBookingCancellationReasons.EXPIRED:
-        return CollectiveBookingCancellationReason.expired
-    if collective_booking.cancellationReason == models.CollectiveBookingCancellationReasons.FRAUD:
-        return CollectiveBookingCancellationReason.fraud
-    if collective_booking.cancellationReason == models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE:
-        return CollectiveBookingCancellationReason.refused_by_institute
-
-    return CollectiveBookingCancellationReason.refused_by_headmaster
-
-
 def serialize_collective_booking(collective_booking: models.CollectiveBooking) -> CollectiveBookingResponseModel:
     return CollectiveBookingResponseModel(
         stock=serialize_collective_booking_stock(collective_booking),
@@ -345,10 +318,7 @@ def serialize_collective_booking(collective_booking: models.CollectiveBooking) -
             is_confirmed=collective_booking.isConfirmed,  # type: ignore[arg-type]
         ),
         bookingIdentifier=humanize(collective_booking.id),
-        cancellationReason=_serialize_collective_booking_cancellation_reason(collective_booking).value
-        if _serialize_collective_booking_recap_status(collective_booking).value
-        == models.CollectiveBookingStatus.CANCELLED
-        else None,
+        bookingCancellationReason=collective_booking.cancellationReason,
     )
 
 
