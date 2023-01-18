@@ -9,22 +9,22 @@ from pcapi.core.permissions import models as perm_models
 
 from . import search_utils
 from . import utils
-from .forms import booking as booking_forms
+from .forms import individual_booking as individual_booking_forms
 
 
-bookings_blueprint = utils.child_backoffice_blueprint(
-    "bookings",
+individual_bookings_blueprint = utils.child_backoffice_blueprint(
+    "individual_bookings",
     __name__,
-    url_prefix="/bookings",
+    url_prefix="/individual_bookings",
     permission=perm_models.Permissions.MANAGE_BOOKINGS,
 )
 
 
-@bookings_blueprint.route("/individual", methods=["GET"])
+@individual_bookings_blueprint.route("", methods=["GET"])
 def list_individual_bookings() -> utils.BackofficeResponse:
-    form = booking_forms.GetBookingListForm(request.args)
+    form = individual_booking_forms.GetIndividualBookingListForm(request.args)
     if not form.validate():
-        return render_template("bookings/list.html", rows=[], form=form), 400
+        return render_template("individual_bookings/list.html", rows=[], form=form), 400
 
     bookings = bookings_models.Booking.query.filter(bookings_models.Booking.token == form.q.data).order_by(
         bookings_models.Booking.dateCreated.desc()
@@ -41,7 +41,7 @@ def list_individual_bookings() -> utils.BackofficeResponse:
     form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
 
     return render_template(
-        "bookings/list.html",
+        "individual_bookings/list.html",
         rows=paginated_bookings,
         form=form,
         next_pages_urls=next_pages_urls,

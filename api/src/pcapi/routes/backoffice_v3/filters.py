@@ -8,6 +8,7 @@ import pytz
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2
+from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -119,15 +120,17 @@ def format_booking_status_long(status: bookings_models.BookingStatus) -> str:
             return status.value
 
 
-def format_booking_status(status: bookings_models.BookingStatus) -> str:
+def format_booking_status(status: bookings_models.BookingStatus | educational_models.CollectiveBookingStatus) -> str:
     match status:
-        case bookings_models.BookingStatus.CONFIRMED:
+        case educational_models.CollectiveBookingStatus.PENDING:
+            return "Pré-réservée"
+        case bookings_models.BookingStatus.CONFIRMED | educational_models.CollectiveBookingStatus.CONFIRMED:
             return "Confirmée"
-        case bookings_models.BookingStatus.USED:
+        case bookings_models.BookingStatus.USED | educational_models.CollectiveBookingStatus.USED:
             return "Validée"
-        case bookings_models.BookingStatus.CANCELLED:
+        case bookings_models.BookingStatus.CANCELLED | educational_models.CollectiveBookingStatus.CANCELLED:
             return "Annulée"
-        case bookings_models.BookingStatus.REIMBURSED:
+        case bookings_models.BookingStatus.REIMBURSED | educational_models.CollectiveBookingStatus.REIMBURSED:
             return "Remboursée"
         case _:
             return status.value
