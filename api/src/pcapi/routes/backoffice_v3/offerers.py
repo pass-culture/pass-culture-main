@@ -599,6 +599,40 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
     return _redirect_after_user_offerer_validation_action(offerer.id)
 
 
+def _user_offerer_batch_action(
+    api_function: typing.Callable[[offerers_models.UserOfferer, users_models.User, str | None], None]
+) -> utils.BackofficeResponse:
+
+    form = offerer_forms.BatchOptionalCommentForm()
+    try:
+        user_offerer_ids = [int(id) for id in form.object_ids.data.split(",")]
+    except ValueError:
+        flash("Identifiant(s) invalide(s)")
+        return _redirect_after_offerer_validation_action(400)
+
+    user_offerers = offerers_models.UserOfferer.query.filter(offerers_models.UserOfferer.id.in_(user_offerer_ids)).all()
+
+    for user_offerer in user_offerers:
+        api_function(user_offerer, current_user, form.comment.data)
+
+    return _redirect_after_offerer_validation_action()
+
+
+@validate_offerer_blueprint.route("/user_offerer/batch-pending", methods=["POST"])
+def user_offerer_set_batch_pending() -> utils.BackofficeResponse:
+    return _user_offerer_batch_action(offerers_api.set_offerer_attachment_pending)
+
+
+@validate_offerer_blueprint.route("/user_offerer/batch-reject", methods=["POST"])
+def user_offerer_batch_reject() -> utils.BackofficeResponse:
+    return _user_offerer_batch_action(offerers_api.reject_offerer_attachment)
+
+
+@validate_offerer_blueprint.route("/user_offerer/batch-validate", methods=["POST"])
+def user_offerer_batch_validate() -> utils.BackofficeResponse:
+    return _user_offerer_batch_action(offerers_api.validate_offerer_attachment)
+
+
 offerer_tag_blueprint = utils.child_backoffice_blueprint(
     "offerer_tag",
     __name__,

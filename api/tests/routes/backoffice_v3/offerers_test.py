@@ -1851,6 +1851,129 @@ class AddUserOffererAndValidateTest:
         assert html_parser.extract_alert(redirected_response.data) == "Les données envoyées comportent des erreurs"
 
 
+class SetBatchOffererAttachmentPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+    method = "post"
+    endpoint = "backoffice_v3_web.validate_offerer.user_offerer_set_batch_pending"
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+
+class SetBatchOffererAttachmentPendingTest:
+    def test_batch_set_offerer_attachment_pending(self, legit_user, authenticated_client):
+        user_offerers = offerers_factories.NotValidatedUserOffererFactory.create_batch(10)
+        parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
+        url = url_for("backoffice_v3_web.validate_offerer.user_offerer_set_batch_pending")
+        response = send_request(
+            authenticated_client,
+            user_offerers[0].offerer.id,
+            url,
+            {"object_ids": parameter_ids, "comment": "test comment"},
+        )
+
+        assert response.status_code == 303
+        for user_offerer in user_offerers:
+            db.session.refresh(user_offerer)
+            assert not user_offerer.isValidated
+            assert user_offerer.validationStatus == ValidationStatus.PENDING
+            action = history_models.ActionHistory.query.filter(
+                history_models.ActionHistory.offererId == user_offerer.offererId,
+                history_models.ActionHistory.userId == user_offerer.userId,
+            ).one()
+            assert action.actionType == history_models.ActionType.USER_OFFERER_PENDING
+            assert action.actionDate is not None
+            assert action.authorUserId == legit_user.id
+            assert action.userId == user_offerer.user.id
+            assert action.offererId == user_offerer.offerer.id
+            assert action.venueId is None
+            assert action.comment == "test comment"
+
+
+class BatchOffererAttachmentValidateUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+    method = "post"
+    endpoint = "backoffice_v3_web.validate_offerer.user_offerer_batch_validate"
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+
+class BatchOffererAttachmentValidateTest:
+    def test_batch_set_offerer_attachment_validate(self, legit_user, authenticated_client):
+        user_offerers = offerers_factories.NotValidatedUserOffererFactory.create_batch(10)
+        parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
+        url = url_for("backoffice_v3_web.validate_offerer.user_offerer_batch_validate")
+        response = send_request(
+            authenticated_client,
+            user_offerers[0].offerer.id,
+            url,
+            {"object_ids": parameter_ids, "comment": "test comment"},
+        )
+
+        assert response.status_code == 303
+        for index, user_offerer in enumerate(user_offerers):
+            db.session.refresh(user_offerer)
+            assert user_offerer.isValidated
+            assert user_offerer.user.has_pro_role
+
+            action = history_models.ActionHistory.query.filter(
+                history_models.ActionHistory.offererId == user_offerer.offererId,
+                history_models.ActionHistory.userId == user_offerer.userId,
+            ).one()
+            assert action.actionType == history_models.ActionType.USER_OFFERER_VALIDATED
+            assert action.actionDate is not None
+            assert action.authorUserId == legit_user.id
+            assert action.userId == user_offerer.user.id
+            assert action.offererId == user_offerer.offerer.id
+            assert action.venueId is None
+
+            assert mails_testing.outbox[index].sent_data["To"] == user_offerer.user.email
+            assert (
+                mails_testing.outbox[index].sent_data["template"]
+                == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value.__dict__
+            )
+
+        assert len(mails_testing.outbox) == len(user_offerers)
+
+
+class BatchOffererAttachmentRejectUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+    method = "post"
+    endpoint = "backoffice_v3_web.validate_offerer.user_offerer_batch_reject"
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+
+class BatchOffererAttachmentRejectTest:
+    def test_batch_set_offerer_attachment_reject(self, legit_user, authenticated_client):
+        user_offerers = offerers_factories.NotValidatedUserOffererFactory.create_batch(10)
+        parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
+        url = url_for("backoffice_v3_web.validate_offerer.user_offerer_batch_reject")
+        response = send_request(
+            authenticated_client,
+            user_offerers[0].offerer.id,
+            url,
+            {"object_ids": parameter_ids, "comment": "test comment"},
+        )
+
+        assert response.status_code == 303
+        users_offerers = offerers_models.UserOfferer.query.all()
+        assert len(users_offerers) == 0
+
+        for index, user_offerer in enumerate(user_offerers):
+            action = history_models.ActionHistory.query.filter(
+                history_models.ActionHistory.offererId == user_offerer.offererId,
+                history_models.ActionHistory.userId == user_offerer.userId,
+            ).one()
+            assert action.actionType == history_models.ActionType.USER_OFFERER_REJECTED
+            assert action.actionDate is not None
+            assert action.authorUserId == legit_user.id
+            assert action.userId == user_offerer.user.id
+            assert action.offererId == user_offerer.offerer.id
+            assert action.venueId is None
+
+            assert mails_testing.outbox[index].sent_data["To"] == user_offerer.user.email
+            assert (
+                mails_testing.outbox[index].sent_data["template"]
+                == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_REJECTION.value.__dict__
+            )
+
+        assert len(mails_testing.outbox) == len(user_offerers)
+
+
 def send_request(authenticated_client, offerer_id, url, form_data=None):
     # generate and fetch (inside g) csrf token
     offerer_detail_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_id)
