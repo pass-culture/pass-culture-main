@@ -17,10 +17,11 @@ export type CollectiveBookingByIdResponseModel = {
   isCancellable: boolean;
   numberOfTickets: number;
   offerVenue: CollectiveOfferOfferVenueResponseModel;
+  offererId: string;
   price: number;
   students: Array<StudentLevels>;
   venueDMSApplicationId?: number | null;
-  venueDMSToken?: string | null;
+  venueId: string;
   venuePostalCode?: string | null;
 };
 
