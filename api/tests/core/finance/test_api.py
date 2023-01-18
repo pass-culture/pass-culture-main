@@ -1729,7 +1729,7 @@ class GenerateInvoiceTest:
         assert line2.rate == 0
         assert line2.label == "Montant remboursé"
 
-    def test_update_statuses(self):
+    def test_update_statuses_and_booking_reimbursement_date(self):
         stock = individual_stock_factory()
         booking1 = bookings_factories.UsedBookingFactory(stock=stock)
         booking2 = bookings_factories.UsedBookingFactory(stock=stock)
@@ -1741,7 +1741,7 @@ class GenerateInvoiceTest:
         db.session.add(booking2)
         db.session.commit()
 
-        api._generate_invoice(
+        invoice = api._generate_invoice(
             reimbursement_point_id=booking1.venue.current_reimbursement_point_id,
             cashflow_ids=cashflow_ids,
         )
@@ -1752,7 +1752,9 @@ class GenerateInvoiceTest:
         pricing_statuses = get_statuses(models.Pricing)
         assert pricing_statuses == {models.PricingStatus.INVOICED}
         assert booking1.status == bookings_models.BookingStatus.REIMBURSED  # updated
+        assert booking1.reimbursementDate == invoice.date  # updated
         assert booking2.status == bookings_models.BookingStatus.CANCELLED  # not updated
+        assert booking2.reimbursementDate == invoice.date  # updated
 
     def test_update_statuses_when_new_model_is_enabled(self):
         past = datetime.datetime.utcnow() - datetime.timedelta(days=1)

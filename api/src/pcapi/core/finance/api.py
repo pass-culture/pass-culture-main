@@ -1490,7 +1490,7 @@ def _generate_invoice(
             THEN CAST(:cancelled AS booking_status)
             ELSE CAST(:reimbursed AS booking_status)
             END,
-          "reimbursementDate" = :reimbursement_date
+          "reimbursementDate" = now()
         FROM pricing, cashflow_pricing
         WHERE
           booking.id = pricing."bookingId"
@@ -1514,7 +1514,7 @@ def _generate_invoice(
             THEN CAST(:cancelled AS bookingstatus)
             ELSE CAST(:reimbursed AS bookingstatus)
             END,
-        "reimbursementDate" = :reimbursement_date
+        "reimbursementDate" = now()
         FROM pricing, cashflow_pricing
         WHERE
         (
