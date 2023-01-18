@@ -3,12 +3,12 @@ import logging
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.routes.pro import blueprint
-from pcapi.routes.serialization.stock_serialize import UpdateVenueStockBodyModel
-from pcapi.routes.serialization.stock_serialize import UpdateVenueStocksBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.workers.synchronize_stocks_job import synchronize_stocks_job
+
+from . import serialization
 
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
     on_success_status=204, on_error_statuses=[401, 404], api=blueprint.pro_public_schema_v2, tags=["API Stocks"]
 )
 @api_key_required
-def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
+def update_stocks(venue_id: int, body: serialization.UpdateVenueStocksBodyModel) -> None:
     # in French, to be used by Swagger for the API documentation
     """Mise à jour des stocks d'un lieu enregistré auprès du pass Culture.
 
@@ -51,7 +51,7 @@ def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
     synchronize_stocks_job.delay(stock_details, venue.id)
 
 
-def _build_stock_details_from_body(raw_stocks: list[UpdateVenueStockBodyModel], venue_id: int) -> list:
+def _build_stock_details_from_body(raw_stocks: list[serialization.UpdateVenueStockBodyModel], venue_id: int) -> list:
     stock_details = {}
     for stock in raw_stocks:
         stock_details[stock.ref] = {
