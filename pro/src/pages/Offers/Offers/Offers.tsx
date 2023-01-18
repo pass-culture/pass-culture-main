@@ -10,9 +10,10 @@ import { Audience } from 'core/shared'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import NoResults from 'screens/Offers/NoResults'
 import { Banner } from 'ui-kit'
-import Icon from 'ui-kit/Icon/Icon'
+import { Pagination } from 'ui-kit/Pagination'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
+import styles from './Offers.module.scss'
 import OffersTableBody from './OffersTableBody/OffersTableBody'
 import OffersTableHead from './OffersTableHead/OffersTableHead'
 
@@ -30,7 +31,7 @@ type OffersProps = {
   hasOffers: boolean
   isLoading: boolean
   offersCount: number
-  pageCount?: number
+  pageCount: number
   resetFilters: () => void
   searchFilters: TSearchFilters
   selectedOfferIds: string[]
@@ -127,8 +128,6 @@ const Offers = ({
     toggleSelectAllCheckboxes()
   }
 
-  const isLastPage = currentPageNumber === pageCount
-
   return (
     <div aria-busy={isLoading} aria-live="polite" className="section">
       {isLoading ? (
@@ -141,13 +140,15 @@ const Offers = ({
               affiner votre recherche.
             </Banner>
           )}
+
           {hasOffers && (
-            <div className="offers-count">
+            <div className={styles['offers-count']}>
               {`${getOffersCountToDisplay(offersCount)} ${
                 offersCount <= 1 ? 'offre' : 'offres'
               }`}
             </div>
           )}
+
           <table>
             <OffersTableHead
               applyFilters={applyFilters}
@@ -168,25 +169,18 @@ const Offers = ({
               refreshOffers={refreshOffers}
             />
           </table>
+
           {hasOffers && (
-            <div className="pagination">
-              <button
-                disabled={currentPageNumber === 1}
-                onClick={onPreviousPageClick}
-                type="button"
-              >
-                <Icon alt="page précédente" svg="ico-left-arrow" />
-              </button>
-              <span>{`Page ${currentPageNumber}/${pageCount}`}</span>
-              <button
-                disabled={isLastPage}
-                onClick={onNextPageClick}
-                type="button"
-              >
-                <Icon alt="page suivante" svg="ico-right-arrow" />
-              </button>
+            <div className={styles['offers-pagination']}>
+              <Pagination
+                currentPage={currentPageNumber}
+                pageCount={pageCount}
+                onPreviousPageClick={onPreviousPageClick}
+                onNextPageClick={onNextPageClick}
+              />
             </div>
           )}
+
           {!hasOffers && hasSearchFilters(urlSearchFilters) && (
             <NoResults audience={audience} resetFilters={resetFilters} />
           )}
