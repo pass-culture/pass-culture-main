@@ -3,6 +3,8 @@ from datetime import timedelta
 
 import pytest
 
+from pcapi.core.educational.factories import CollectiveOfferFactory
+from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers import exceptions
@@ -407,6 +409,18 @@ class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
         # Rejected offerer with validation date => venue should not ve returned
         rejected_offerer_after_validation = offerers_factories.RejectedOffererFactory(dateValidated=five_days_ago)
         offerers_factories.VenueFactory(managingOfferer=rejected_offerer_after_validation)
+
+        # Offerer with two physical venues and one collective offer => venues should not be returned
+        offerer_with_two_venues = offerers_factories.OffererFactory(dateValidated=five_days_ago)
+        venue_with_offers = offerers_factories.VenueFactory(managingOfferer=offerer_with_two_venues)
+        offerers_factories.VenueFactory(managingOfferer=offerer_with_two_venues)
+        CollectiveOfferFactory(venue=venue_with_offers)
+
+        # Offerer with two physical venues and one collective template offer => venues should not be returned
+        offerer_with_two_venues = offerers_factories.OffererFactory(dateValidated=five_days_ago)
+        venue_with_offers = offerers_factories.VenueFactory(managingOfferer=offerer_with_two_venues)
+        offerers_factories.VenueFactory(managingOfferer=offerer_with_two_venues)
+        CollectiveOfferTemplateFactory(venue=venue_with_offers)
 
         venues = (
             repository.find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago(5)

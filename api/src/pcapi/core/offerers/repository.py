@@ -355,8 +355,12 @@ def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_va
         sqla.select(models.Venue.managingOffererId)
         .filter(models.Venue.managingOffererId.in_(validated_x_days_ago_with_physical_venue_offerers_ids_subquery))
         .outerjoin(Offer, models.Venue.id == Offer.venueId)
+        .outerjoin(CollectiveOffer, models.Venue.id == CollectiveOffer.venueId)
+        .outerjoin(CollectiveOfferTemplate, models.Venue.id == CollectiveOfferTemplate.venueId)
         .group_by(models.Venue.managingOffererId)
         .having(sqla.func.count(Offer.id) == 0)
+        .having(sqla.func.count(CollectiveOffer.id) == 0)
+        .having(sqla.func.count(CollectiveOfferTemplate.id) == 0)
     )
 
     return models.Venue.query.with_entities(models.Venue.id, models.Venue.bookingEmail).filter(
