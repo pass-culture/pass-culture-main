@@ -17,7 +17,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
@@ -356,7 +356,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
           >
             <StockFormList offer={offer} onDeleteStock={onDeleteStock} />
             <ActionBar
-              isDisabled={formik.isSubmitting}
+              isDisabled={formik.isSubmitting || isOfferDisabled(offer.status)}
               onClickNext={handleNextStep()}
               onClickPrevious={handlePreviousStep}
               onClickSaveDraft={handleNextStep({ saveDraft: true })}
