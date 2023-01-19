@@ -123,13 +123,13 @@ class Returns200Test:
         expected_bookings_recap = [
             {
                 "stock": {
-                    "offer_name": booking.stock.offer.name,
-                    "offer_identifier": humanize(booking.stock.offer.id),
-                    "offer_is_educational": False,
-                    "event_beginning_datetime": None,
-                    "offer_nonHumanizedId": booking.stock.offer.id,
-                    "offer_isbn": None,
-                    "stock_identifier": humanize(booking.stock.id),
+                    "offerName": booking.stock.offer.name,
+                    "offerIdentifier": humanize(booking.stock.offer.id),
+                    "offerIsEducational": False,
+                    "eventBeginningDatetime": None,
+                    "offerNonHumanizedId": booking.stock.offer.id,
+                    "offerIsbn": None,
+                    "stockIdentifier": humanize(booking.stock.id),
                 },
                 "beneficiary": {
                     "email": "beneficiary@example.com",
