@@ -365,7 +365,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
               onClickPrevious={handlePreviousStep}
               onClickSaveDraft={handleNextStep({ saveDraft: true })}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
-              isDisabled={formik.isSubmitting}
+              isDisabled={formik.isSubmitting || isDisabled}
               offerId={offer.id}
               shouldTrack={shouldTrack}
               isFormEmpty={isFormEmpty()}

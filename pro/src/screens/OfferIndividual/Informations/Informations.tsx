@@ -20,7 +20,11 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
+import {
+  CATEGORY_STATUS,
+  isOfferDisabled,
+  OFFER_WIZARD_MODE,
+} from 'core/Offers'
 import {
   createIndividualOffer,
   getOfferIndividualAdapter,
@@ -230,7 +234,10 @@ const Informations = ({
             onClickNext={handleNextStep()}
             onClickSaveDraft={handleNextStep({ saveDraft: true })}
             step={OFFER_WIZARD_STEP_IDS.INFORMATIONS}
-            isDisabled={formik.isSubmitting}
+            isDisabled={
+              formik.isSubmitting ||
+              Boolean(offer && isOfferDisabled(offer.status))
+            }
             offerId={offer?.id}
             shouldTrack={shouldTrack}
           />
