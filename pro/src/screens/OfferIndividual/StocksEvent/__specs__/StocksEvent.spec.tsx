@@ -16,23 +16,21 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
-import { IStockEventFormValues } from 'components/StockEventForm'
-import { stockEventFactory } from 'components/StockEventForm/stockEventFactory'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import {
-  IOfferIndividual,
-  IOfferIndividualStock,
-  IOfferIndividualVenue,
-} from 'core/Offers/types'
+import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 import { getToday } from 'utils/date'
-import { individualStockFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferFactory,
+  individualOfferVenueFactory,
+  individualStockFactory,
+} from 'utils/individualApiFactories'
 
 import { STOCKS_PER_PAGE } from '../StockFormList/StockFormList'
 import StocksEvent, { IStocksEventProps } from '../StocksEvent'
@@ -112,24 +110,23 @@ describe('screens:StocksEvent', () => {
   let props: IStocksEventProps
   let storeOverride: Partial<RootState>
   let contextValue: IOfferIndividualContext
-  let offer: Partial<IOfferIndividual>
+  let offer: IOfferIndividual
 
   beforeEach(() => {
-    offer = {
-      id: 'OFFER_ID',
-      venue: {
+    offer = individualOfferFactory(
+      { id: 'OFFER_ID', lastProviderName: null, stocks: [] },
+      undefined,
+      individualOfferVenueFactory({
         departmentCode: '75',
-      } as IOfferIndividualVenue,
-      stocks: [],
-      lastProviderName: null,
-    }
+      })
+    )
     props = {
-      offer: offer as IOfferIndividual,
+      offer: offer,
     }
     storeOverride = {}
     contextValue = {
       offerId: null,
-      offer: offer as IOfferIndividual,
+      offer: offer,
       venueList: [],
       offererNames: [],
       categories: [],
@@ -147,7 +144,7 @@ describe('screens:StocksEvent', () => {
 
   it('should render stock event', async () => {
     props.offer = {
-      ...(offer as IOfferIndividual),
+      ...offer,
       lastProviderName: 'Ciné Office',
       isDigital: false,
     }
@@ -202,7 +199,7 @@ describe('screens:StocksEvent', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'STOCK_ID' } as StockResponseModel],
     })
-    const stock = {
+    const stock = individualStockFactory({
       id: 'STOCK_ID',
       quantity: 10,
       price: 10.01,
@@ -210,10 +207,10 @@ describe('screens:StocksEvent', () => {
       bookingsQuantity: 4,
       isEventDeletable: true,
       beginningDatetime: '2023-03-10T00:00:00.0200',
-    }
+    })
     props.offer = {
-      ...(offer as IOfferIndividual),
-      stocks: [stock as IOfferIndividualStock],
+      ...offer,
+      stocks: [stock],
     }
     renderStockEventScreen({ props, storeOverride, contextValue })
 
@@ -298,6 +295,7 @@ describe('screens:StocksEvent', () => {
     //   screen.getByText('API bookingLimitDatetime ERROR')
     // ).toBeInTheDocument()
   })
+
   it('should show a success notification if nothing has been touched', async () => {
     renderStockEventScreen({ props, storeOverride, contextValue })
 
@@ -308,6 +306,7 @@ describe('screens:StocksEvent', () => {
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
   })
+
   it('should display draft success message on save draft button when stock form is empty', async () => {
     renderStockEventScreen({ props, storeOverride, contextValue })
 
@@ -323,12 +322,13 @@ describe('screens:StocksEvent', () => {
       screen.queryByRole('heading', { name: /Stock & Prix/ })
     ).toBeInTheDocument()
   })
+
   it('should not display any message when user delete empty stock', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'STOCK_ID' } as StockResponseModel],
     })
-    const stock = {
+    const stock = individualStockFactory({
       id: 'STOCK_ID',
       quantity: 10,
       price: 10.01,
@@ -336,10 +336,10 @@ describe('screens:StocksEvent', () => {
       bookingsQuantity: 0,
       isEventDeletable: true,
       beginningDatetime: '2023-03-10T00:00:00.0200',
-    }
+    })
     props.offer = {
-      ...(offer as IOfferIndividual),
-      stocks: [stock as IOfferIndividualStock],
+      ...offer,
+      stocks: [stock],
     }
     renderStockEventScreen({ props, storeOverride, contextValue })
     await screen.findByRole('heading', { name: /Stock & Prix/ })
@@ -351,13 +351,14 @@ describe('screens:StocksEvent', () => {
     expect(screen.queryByText('Le stock a été supprimé.')).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
+
   it('should not display any message when user delete empty stock', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'STOCK_ID' })
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'STOCK_ID' } as StockResponseModel],
     })
     props.offer = {
-      ...(offer as IOfferIndividual),
+      ...offer,
       stocks: [],
     }
     renderStockEventScreen({ props, storeOverride, contextValue })
@@ -380,7 +381,7 @@ describe('screens:StocksEvent', () => {
     }
 
     props.offer = {
-      ...(offer as IOfferIndividual),
+      ...offer,
       stocks,
     }
 
