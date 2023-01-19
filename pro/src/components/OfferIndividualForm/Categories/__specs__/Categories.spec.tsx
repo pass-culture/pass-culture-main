@@ -152,6 +152,7 @@ describe('OfferIndividual section: Categories', () => {
         durationMinutes: '',
         isEvent: false,
         isbn: '',
+        ean: '',
         musicSubType: '',
         musicType: '',
         performer: '',
