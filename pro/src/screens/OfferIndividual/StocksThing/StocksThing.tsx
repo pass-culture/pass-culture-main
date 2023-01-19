@@ -82,7 +82,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     hideModal: deleteConfirmHide,
   } = useModal()
   /* istanbul ignore next: DEBT, TO FIX */
-  const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
+  const isDisabled = isOfferDisabled(offer.status)
   const providerName = offer?.lastProviderName
 
   const onSubmit = async (formValues: IStockThingFormValues) => {
@@ -339,9 +339,11 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       <FormLayout>
         <FormLayout.Section
           title="Stock & Prix"
-          description={description}
-          links={links}
-          descriptionAsBanner={mode === OFFER_WIZARD_MODE.EDITION}
+          description={isDisabled ? undefined : description}
+          links={isDisabled ? undefined : links}
+          descriptionAsBanner={
+            !isDisabled && mode === OFFER_WIZARD_MODE.EDITION
+          }
         >
           <form onSubmit={formik.handleSubmit}>
             <StockThingFormRow
