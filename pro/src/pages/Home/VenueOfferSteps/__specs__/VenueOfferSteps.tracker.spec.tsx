@@ -22,7 +22,6 @@ const mockLogEvent = jest.fn()
 
 const renderVenueOfferSteps = (
   venueId: string | null = null,
-  hasOffer = false,
   hasMissingReimbursementPoint = true
 ) => {
   const currentUser = {
@@ -41,7 +40,6 @@ const renderVenueOfferSteps = (
           hasVenue={venueId != null}
           venueId={venueId}
           offererId="AB"
-          hasOffer={hasOffer}
           hasMissingReimbursementPoint={hasMissingReimbursementPoint}
         />
       </MemoryRouter>

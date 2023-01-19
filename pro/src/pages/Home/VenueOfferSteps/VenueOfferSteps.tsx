@@ -20,7 +20,6 @@ import styles from './VenueOfferSteps.module.scss'
 
 interface IVenueOfferStepsProps {
   hasVenue: boolean
-  hasOffer?: boolean
   hasMissingReimbursementPoint?: boolean
   offererId: string
   venueId?: string | null
@@ -28,7 +27,6 @@ interface IVenueOfferStepsProps {
 const VenueOfferSteps = ({
   offererId,
   hasVenue = false,
-  hasOffer = false,
   hasMissingReimbursementPoint = true,
   venueId = null,
 }: IVenueOfferStepsProps) => {
@@ -88,27 +86,25 @@ const VenueOfferSteps = ({
               </ButtonLink>
             </div>
           )}
-          {!hasOffer && (
-            <ButtonLink
-              isDisabled={!hasVenue}
-              variant={ButtonVariant.BOX}
-              Icon={CircleArrowIcon}
-              link={{
-                to: `/offre/creation?lieu=${venueId}&structure=${offererId}`,
-                isExternal: false,
-              }}
-              onClick={() =>
-                logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                  from: OFFER_FORM_NAVIGATION_IN.HOME,
-                  to: OFFER_FORM_HOMEPAGE,
-                  used: OFFER_FORM_NAVIGATION_MEDIUM.VENUE_OFFER_STEPS,
-                  isEdition: false,
-                })
-              }
-            >
-              Créer une offre
-            </ButtonLink>
-          )}
+          <ButtonLink
+            isDisabled={!hasVenue}
+            variant={ButtonVariant.BOX}
+            Icon={CircleArrowIcon}
+            link={{
+              to: `/offre/creation?lieu=${venueId}&structure=${offererId}`,
+              isExternal: false,
+            }}
+            onClick={() =>
+              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                from: OFFER_FORM_NAVIGATION_IN.HOME,
+                to: OFFER_FORM_HOMEPAGE,
+                used: OFFER_FORM_NAVIGATION_MEDIUM.VENUE_OFFER_STEPS,
+                isEdition: false,
+              })
+            }
+          >
+            Créer une offre
+          </ButtonLink>
           {hasMissingReimbursementPoint && (
             <ButtonLink
               isDisabled={!hasVenue}
