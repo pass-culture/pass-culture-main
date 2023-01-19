@@ -282,6 +282,14 @@ Il faut supprimer les fichiers de cache de pré-compilation de Python, par exemp
 find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
 ```
 
+### Nettoyage des images docker
+
+Lors d'un changement dans le fichier `requirements.py`, une nouvelle image docker de l'api est générée. Il convient de régulièrement supprimer les images "dangling" pour ne pas qu'elles prennent trop de place sur le disque local. (cf [doc docker](https://docs.docker.com/config/pruning/#prune-images)).
+
+```
+docker image prune
+```
+
 ## IDE
 
 ### PyCharm(IntelliJ)
