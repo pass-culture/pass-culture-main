@@ -98,7 +98,10 @@ def check_confirmation_limit_date_has_not_passed(booking: models.CollectiveBooki
 
 def check_collective_stock_is_editable(stock: models.CollectiveStock) -> None:
     offers_validation.check_validation_status(stock.collectiveOffer)
-    offers_validation.check_event_expiration(stock)
+    for booking in stock.collectiveBookings:
+        if booking.status is not models.CollectiveBookingStatus.CANCELLED:
+            offers_validation.check_event_expiration(stock)
+            break
 
 
 def check_collective_booking_status_pending(booking: models.CollectiveBooking) -> None:
