@@ -42,6 +42,9 @@ class BookingRecapResponseStockModel(BaseModel):
     offer_isbn: str | None
     offer_name: str
 
+    class Config:
+        alias_generator = to_camel
+
 
 class BookingRecapResponseBookingStatusHistoryModel(BaseModel):
     status: BookingRecapStatus
@@ -127,15 +130,15 @@ def _serialize_booking_status_history(
 def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapResponseModel:
     serialized_booking_recap = BookingRecapResponseModel(
         stock={
-            "offer_name": booking_recap.offer_name,
-            "offer_identifier": humanize(booking_recap.offer_identifier),
-            "offer_nonHumanizedId": booking_recap.offer_identifier,
-            "stock_identifier": humanize(booking_recap.stock_identifier),
-            "event_beginning_datetime": format_into_timezoned_date(booking_recap.event_beginning_datetime)
+            "offerName": booking_recap.offer_name,
+            "offerIdentifier": humanize(booking_recap.offer_identifier),
+            "offerNonHumanizedId": booking_recap.offer_identifier,
+            "stockIdentifier": humanize(booking_recap.stock_identifier),
+            "eventBeginningDatetime": format_into_timezoned_date(booking_recap.event_beginning_datetime)
             if booking_recap.event_beginning_datetime
             else None,
-            "offer_isbn": booking_recap.offer_isbn,
-            "offer_is_educational": False,
+            "offerIsbn": booking_recap.offer_isbn,
+            "offerIsEducational": False,
         },
         beneficiary={
             "lastname": booking_recap.beneficiary_lastname or booking_recap.redactor_lastname,
