@@ -71,18 +71,16 @@ def edit_collective_stock(
 
     beginning = stock_data.get("beginningDatetime")
     beginning = serialization_utils.as_utc_without_timezone(beginning) if beginning else None
-    booking_limit_datetime = stock_data.get("bookingLimitDatetime")
-    booking_limit_datetime = (
-        serialization_utils.as_utc_without_timezone(booking_limit_datetime) if booking_limit_datetime else None
-    )
+    booking_limit = stock_data.get("bookingLimitDatetime")
+    booking_limit = serialization_utils.as_utc_without_timezone(booking_limit) if booking_limit else None
 
-    updatable_fields = _extract_updatable_fields_from_stock_data(stock, stock_data, beginning, booking_limit_datetime)
+    updatable_fields = _extract_updatable_fields_from_stock_data(stock, stock_data, beginning, booking_limit)
 
     check_beginning = beginning
-    check_booking_limit_datetime = booking_limit_datetime
+    check_booking_limit_datetime = booking_limit
     if beginning is None:
         check_beginning = stock.beginningDatetime
-    if booking_limit_datetime is None:
+    if booking_limit is None:
         check_booking_limit_datetime = stock.bookingLimitDatetime
 
     offer_validation.check_booking_limit_datetime(stock, check_beginning, check_booking_limit_datetime)
@@ -98,7 +96,6 @@ def edit_collective_stock(
             educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CANCELLED
         ),
     ).one_or_none()
-
     if collective_stock_unique_booking:
         validation.check_collective_booking_status_pending(collective_stock_unique_booking)
 
@@ -166,7 +163,6 @@ def _update_educational_booking_educational_year_id(
     new_beginning_datetime: datetime.datetime,
 ) -> None:
     educational_year = educational_repository.find_educational_year_by_date(new_beginning_datetime)
-
     if educational_year is None:
         raise exceptions.EducationalYearNotFound()
 
