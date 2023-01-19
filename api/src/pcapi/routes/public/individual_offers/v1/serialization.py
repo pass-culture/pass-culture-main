@@ -376,6 +376,9 @@ class StockEdition(serialization.ConfiguredBaseModel):
             raise ValueError("Value must be positive")
         return quantity
 
+    class Config:
+        extra = "forbid"
+
 
 class DateCreation(BaseStockCreation):
     beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
@@ -415,11 +418,17 @@ class ProductOfferCreation(OfferCreationBase):
     category_related_fields: product_category_creation_fields
     stock: StockCreation | None
 
+    class Config:
+        extra = "forbid"
+
 
 class EventOfferCreation(OfferCreationBase):
     category_related_fields: event_category_creation_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = TICKET_COLLECTION_FIELD
+
+    class Config:
+        extra = "forbid"
 
 
 class OfferEditionBase(serialization.ConfiguredBaseModel):
@@ -433,6 +442,9 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
 
+    class Config:
+        extra = "forbid"
+
 
 class ProductOfferEdition(OfferEditionBase):
     category_related_fields: product_category_edition_fields | None = pydantic.Field(
@@ -443,12 +455,12 @@ class ProductOfferEdition(OfferEditionBase):
         description="If stock is set to null, all cancellable bookings (i.e not used) will be cancelled. To prevent from further bookings, you may alternatively set stock.quantity to the bookedQuantity (but not below)."
     )
 
+    class Config:
+        extra = "forbid"
+
 
 class DateEdition(StockEdition):
     beginning_datetime: datetime.datetime | None = BEGINNING_DATETIME_FIELD
-
-    class Config:
-        extra = "forbid"
 
 
 class EventOfferEdition(OfferEditionBase):
@@ -464,6 +476,9 @@ class DatesCreation(serialization.ConfiguredBaseModel):
     dates: typing.List[DateCreation] = pydantic.Field(
         description="Dates to add to the event. If there are different prices and quantity for the same date, you must add several date objects",
     )
+
+    class Config:
+        extra = "forbid"
 
 
 class BaseStockResponse(serialization.ConfiguredBaseModel):
