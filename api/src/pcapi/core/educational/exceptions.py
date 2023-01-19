@@ -139,3 +139,7 @@ class AdageEducationalInstitutionNotFound(Exception):
 
 class BookingIsAlreadyRefunded(Exception):
     pass
+
+
+class EducationalRedactorNotFound(Exception):
+    pass

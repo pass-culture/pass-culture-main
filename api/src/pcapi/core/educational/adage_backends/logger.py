@@ -147,3 +147,33 @@ class AdageLoggerClient(AdageClient):
                 )
             ]
         raise exceptions.AdageEducationalInstitutionNotFound("Requested educational institution not found for Adage")
+
+    def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
+        api_url = f"{self.base_url}/v1/etablissement-culturel/{uai}"
+        logger.info("Adage has been called at %s", api_url)
+
+        if uai in ("0470009E"):
+            response_content = [
+                {
+                    "civilite": "Mme.",
+                    "nom": "Skłodowska",
+                    "prenom": "Maria",
+                    "mail": "maria.sklodowska@example.com",
+                },
+                {
+                    "civilite": "M.",
+                    "nom": "Pointcaré",
+                    "prenom": "Raymond",
+                    "mail": "raymond.pointcare@example.com",
+                },
+                {
+                    "civilite": "M.",
+                    "nom": "Rày",
+                    "prenom": "Confusion",
+                    "mail": "confusion.ray@example.com",
+                },
+            ]
+        else:
+            raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
+
+        return response_content

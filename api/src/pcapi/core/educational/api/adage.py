@@ -1,3 +1,4 @@
+from functools import partial
 import json
 import typing
 
@@ -30,13 +31,13 @@ def get_cultural_partners(*, force_update: bool = False) -> venues_serialize.Ada
     CULTURAL_PARTNERS_CACHE_KEY = "api:adage_cultural_partner:cache"
     CULTURAL_PARTNERS_CACHE_TIMEOUT = 24 * 60 * 60  # 24h in seconds
 
-    def get_cultural_parters() -> str:
+    def _get_cultural_partners() -> str:
         adage_data = adage_client.get_cultural_partners()
         return json.dumps(adage_data)
 
     cultural_partners_json = get_from_cache(
         key_template=CULTURAL_PARTNERS_CACHE_KEY,
-        retriever=get_cultural_parters,
+        retriever=_get_cultural_partners,
         expire=CULTURAL_PARTNERS_CACHE_TIMEOUT,
         return_type=str,
         force_update=force_update,
@@ -124,3 +125,24 @@ def synchronize_adage_ids_on_venues() -> None:
 
 def _remove_venue_from_eac(venue: offerers_models.Venue) -> None:
     venue.adageId = None
+
+
+def get_adage_educational_redactors_for_uai(uai: str, *, force_update: bool = False) -> list[dict[str, str]]:
+    EDUCATIONAL_REDACTORS_CACHE_TIMEOUT = 60 * 60  # 1h in seconds
+    educational_redactors_cache_key = f"api:adage_educational_redactor_for_uai:{uai}"
+
+    def _get_adage_educational_redactors_for_uai(uai_code: str) -> str:
+        adage_data = adage_client.get_adage_educational_redactor_from_uai(uai_code)
+        return json.dumps(adage_data)
+
+    educational_redactors_json = get_from_cache(
+        key_template=educational_redactors_cache_key,
+        retriever=partial(_get_adage_educational_redactors_for_uai, uai_code=uai),
+        expire=EDUCATIONAL_REDACTORS_CACHE_TIMEOUT,
+        return_type=str,
+        force_update=force_update,
+    )
+
+    educational_redactors_json = typing.cast(str, educational_redactors_json)
+    educational_redactors = json.loads(educational_redactors_json)
+    return educational_redactors
