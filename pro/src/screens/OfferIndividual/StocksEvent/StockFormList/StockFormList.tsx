@@ -61,7 +61,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
             onClick={() =>
               arrayHelpers.unshift(STOCK_EVENT_FORM_DEFAULT_VALUES)
             }
-            disabled={isSynchronized}
+            disabled={isSynchronized || isDisabled}
           >
             Ajouter une date
           </Button>
