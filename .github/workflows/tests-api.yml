@@ -18,8 +18,8 @@ jobs:
       tests: true
     secrets: inherit
 
-  quality-api:
-    name: "Quality check"
+  quality-checks:
+    name: Quality checks
     runs-on: ubuntu-latest
     needs: build-tests-docker-image
     permissions:
@@ -56,11 +56,6 @@ jobs:
         with:
           image: ${{ env.tests_docker_image }}
           run: black . --check
-      - name: Run pylint
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ env.tests_docker_image }}
-          run: pylint src tests --jobs=2
       - name: Run mypy
         uses: addnab/docker-run-action@v3
         with:
@@ -75,7 +70,52 @@ jobs:
           SLACK_COLOR: ${{ job.status }}
           SLACK_USERNAME: Github Actions Bot
           SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-          SLACK_MESSAGE: "Les tests quality-api échouent sur master. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
+          SLACK_MESSAGE: "Les tests quality-checks échouent sur master. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
+          MSG_MINIMAL: true
+
+  pylint-check:
+    name: Pylint
+    runs-on: ubuntu-latest
+    needs: build-tests-docker-image
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - id: openid-auth
+        name: "OpenID Connect Authentication"
+        uses: "google-github-actions/auth@v0"
+        with:
+          create_credentials_file: false
+          token_format: "access_token"
+          workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - uses: docker/login-action@v2
+        with:
+          registry: "${{ env.region }}-docker.pkg.dev"
+          username: oauth2accesstoken
+          password: ${{ steps.openid-auth.outputs.access_token }}
+      - run: docker pull ${{ env.tests_docker_image }}
+      - name: Show installed Python packages
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ env.tests_docker_image }}
+          run: pip freeze
+      - name: Run pylint
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ env.tests_docker_image }}
+          run: pylint src tests --jobs=2
+      - name: Slack Notification
+        if: ${{ failure() && github.ref == 'refs/heads/master'  }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_ACCESS_TOKEN }}
+          SLACK_CHANNEL: dev
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_USERNAME: Github Actions Bot
+          SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          SLACK_MESSAGE: "Les tests pylint-checks échouent sur master. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
           MSG_MINIMAL: true
 
   tests-database:
