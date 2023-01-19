@@ -1749,22 +1749,22 @@ class PatchProductTest:
             venue__managingOfferer=api_key.offerer,
             lastProvider=individual_offers_api_provider,
         )
-        stock = offers_factories.StockFactory(offer=product_offer, quantity=None, price=10)
+        stock = offers_factories.StockFactory(offer=product_offer, quantity=30, price=10)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/products/{product_offer.id}",
-            json={"stock": {"quantity": 100}},
+            json={"stock": {"quantity": "unlimited"}},
         )
         assert response.status_code == 200
         assert response.json["stock"] == {
             "bookedQuantity": 0,
             "bookingLimitDatetime": None,
             "price": 1000,
-            "quantity": 100,
+            "quantity": "unlimited",
         }
         assert len(product_offer.activeStocks) == 1
         assert product_offer.activeStocks[0] == stock
-        assert product_offer.activeStocks[0].quantity == 100
+        assert product_offer.activeStocks[0].quantity == None
 
     def test_remove_stock_booking_limit_datetime(self, individual_offers_api_provider, client):
         api_key = offerers_factories.ApiKeyFactory()
