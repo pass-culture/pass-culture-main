@@ -62,16 +62,15 @@ class BookingRecapResponseModel(BaseModel):
         alias_generator = to_camel
 
 
+class UserHasBookingResponse(BaseModel):
+    hasBookings: bool
+
+
 class ListBookingsResponseModel(BaseModel):
     bookingsRecap: list[BookingRecapResponseModel]
     page: int
     pages: int
     total: int
-
-
-class PatchBookingByTokenQueryModel(BaseModel):
-    email: str | None
-    offer_id: str | None
 
 
 def _serialize_booking_status_info(
