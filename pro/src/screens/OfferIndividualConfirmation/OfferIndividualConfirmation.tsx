@@ -45,9 +45,13 @@ const OfferIndividualConfirmation = ({
           <p className={styles['confirmation-details']}>
             Votre offre est en cours de validation par l’équipe pass Culture.
             Nous vérifions actuellement son éligibilité.
-            <b> Cette vérification pourra prendre jusqu’à 72h.</b> Vous recevrez
-            un e-mail de confirmation une fois votre offre validée et disponible
-            à la réservation.
+            <b>
+              {' '}
+              Cette vérification pourra prendre jusqu’à 72h. Vous ne pouvez pas
+              effectuer de modification pour l’instant.{' '}
+            </b>
+            Vous recevrez un e-mail de confirmation une fois votre offre validée
+            et disponible à la réservation.
           </p>
         ) : (
           <p className={styles['confirmation-details']}>

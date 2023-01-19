@@ -10,6 +10,7 @@ import useNotification from 'hooks/useNotification'
 
 import { Status } from '../Status'
 
+import OfferStatusBanner from './OfferStatusBanner'
 import styles from './Template.module.scss'
 
 export interface ITemplateProps {
@@ -68,7 +69,7 @@ const Template = ({
           {offer && <h4>{offer.name}</h4>}
         </OfferFormLayout.TitleBlock>
       )}
-
+      {offer && <OfferStatusBanner status={offer.status} />}
       {withStepper && (
         <OfferFormLayout.Stepper>
           <OfferIndividualStepper shouldTrack={shouldTrack} />
