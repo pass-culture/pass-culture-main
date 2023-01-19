@@ -6,6 +6,7 @@ from typing import Iterable
 
 from pcapi.core import search
 from pcapi.core.logging import log_elapsed
+from pcapi.core.mails.transactional import send_venue_provider_deleted_email
 from pcapi.core.mails.transactional import send_venue_provider_disabled_email
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.repository import find_venue_by_id
@@ -123,6 +124,8 @@ def change_venue_provider(
 
 def delete_venue_provider(venue_provider: providers_models.VenueProvider) -> None:
     update_venue_synchronized_offers_active_status_job.delay(venue_provider.venueId, venue_provider.providerId, False)
+    if venue_provider.venue.bookingEmail:
+        send_venue_provider_deleted_email(venue_provider.venue.bookingEmail)
 
     if venue_provider.isFromAllocineProvider:
         for price_rule in venue_provider.priceRules:

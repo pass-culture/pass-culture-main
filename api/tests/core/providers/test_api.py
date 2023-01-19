@@ -424,6 +424,10 @@ class DeleteVenueProviderTest:
 
         api.delete_venue_provider(venue_provider)
 
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["To"] == venue.bookingEmail
+        assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.VENUE_SYNC_DELETED.value)
+
         assert not venue.venueProviders
         mocked_update_all_offers_active_status_job.assert_called_once_with(venue.id, venue_provider.providerId, False)
 
