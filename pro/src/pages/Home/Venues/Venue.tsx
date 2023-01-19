@@ -273,16 +273,14 @@ const Venue = ({
           </div>
           {isStatOpen && (
             <>
-              {hasNewOfferCreationJourney &&
-                (hasMissingReimbursementPoint || !hasCreatedOffer) && (
-                  <VenueOfferSteps
-                    venueId={id}
-                    hasVenue={true}
-                    hasOffer={!!hasCreatedOffer}
-                    offererId={offererId}
-                    hasMissingReimbursementPoint={hasMissingReimbursementPoint}
-                  />
-                )}
+              {hasNewOfferCreationJourney && !hasCreatedOffer && (
+                <VenueOfferSteps
+                  venueId={id}
+                  hasVenue={true}
+                  offererId={offererId}
+                  hasMissingReimbursementPoint={hasMissingReimbursementPoint}
+                />
+              )}
               {isStatLoaded ? (
                 <div className="venue-stats">
                   {venueStatData.map(stat => (
