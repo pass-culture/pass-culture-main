@@ -40,8 +40,9 @@ env:
 jobs:
   generate-pcapi-helm-secrets-file:
     name: "[pcapi] Generate helm secrets values file"
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     if: ${{ inputs.deploy_api }}
+    environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
@@ -67,7 +68,7 @@ jobs:
           registry: '${{ env.REGION }}-docker.pkg.dev'
           username: 'oauth2accesstoken'
           password: '${{ steps.openid-auth.outputs.access_token }}'
-          image: '${{ env.DOCKER_REPO }}/pcapi:${{ github.sha }}'
+          image: '${{ env.DOCKER_REPO }}/pcapi:${{ inputs.app_version }}'
           run: |
             su pcapi -c "flask print_secret_keys | base64 -w 0 > /tmp/helm_secrets_file_base64"
             cp /tmp/helm_secrets_file_base64 /workspace/helm_secrets_file_base64
@@ -77,7 +78,7 @@ jobs:
 
   deploy-api:
     name: Deploy api
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write
@@ -165,7 +166,7 @@ jobs:
       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
       inputs.deploy_backoffice == true
     environment: ${{ inputs.environment }}
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     permissions:
       id-token: write
       contents: read
@@ -180,7 +181,7 @@ jobs:
         with:
           create_credentials_file: false
           token_format: 'access_token'
-          workload_identity_provider: ${{ secrets.BACKOFFICE_TESTING_WORKLOAD_IDENTITY_PROVIDER }}
+          workload_identity_provider: ${{ secrets.BACKOFFICE_GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.BACKOFFICE_CI_SERVICE_ACCOUNT }}
       - run: echo "FIREBASE_TOKEN=${{ steps.openid-auth.outputs.access_token }}" >> $GITHUB_ENV
       - name: 'Set up Cloud SDK'
@@ -198,8 +199,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node_version }}
-          cache: 'yarn'
+          cache: 'npm'
           cache-dependency-path: backoffice/yarn.lock
+      - run: npm install --global yarn
       - run: yarn install
       - run: |
           set -a; source ../config/run_envs/${{ inputs.environment }};
@@ -212,7 +214,7 @@ jobs:
       inputs.environment == 'production' &&
       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped')
     environment: ${{ inputs.environment }}
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     defaults:
       run:
         working-directory: backoffice
