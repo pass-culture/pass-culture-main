@@ -222,6 +222,7 @@ jobs:
       REDIS_URL: redis://redis:6379
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         pytest_args:
           [
