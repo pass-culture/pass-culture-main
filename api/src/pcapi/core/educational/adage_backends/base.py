@@ -33,3 +33,6 @@ class AdageClient:
 
     def get_adage_educational_institutions(self, ansco: str) -> list[AdageEducationalInstitution]:
         raise NotImplementedError()
+
+    def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
+        raise NotImplementedError()
