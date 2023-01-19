@@ -43,6 +43,7 @@ from .pro.reminder_venue_creation import send_reminder_venue_creation_to_pro
 from .pro.reset_password_to_pro import send_reset_password_email_to_connected_pro
 from .pro.reset_password_to_pro import send_reset_password_email_to_pro
 from .pro.reset_password_to_pro import send_reset_password_link_to_admin_email
+from .pro.venue_provider_disabled import send_venue_provider_disabled_email
 from .pro.welcome_to_pro import send_welcome_to_pro_email
 from .send_transactional_email import send_transactional_email
 from .users.accepted_as_beneficiary import send_accepted_as_beneficiary_email

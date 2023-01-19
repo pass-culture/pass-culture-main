@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from decimal import Decimal
 from unittest import mock
 from unittest.mock import patch
@@ -8,6 +9,8 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.categories import subcategories
+import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -20,6 +23,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.exceptions import ProviderNotFound
 import pcapi.core.providers.factories as providers_factories
 from pcapi.local_providers.provider_api import synchronize_provider_api
+from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 
 
 class CreateVenueProviderTest:
@@ -422,3 +426,18 @@ class DeleteVenueProviderTest:
 
         assert not venue.venueProviders
         mocked_update_all_offers_active_status_job.assert_called_once_with(venue.id, venue_provider.providerId, False)
+
+
+class DisableVenueProviderTest:
+    @pytest.mark.usefixtures("db_session")
+    @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
+    def test_disable_venue_provider(self, mocked_update_all_offers_active_status_job):
+        venue_provider = providers_factories.VenueProviderFactory()
+        venue = venue_provider.venue
+
+        request = PostVenueProviderBody(venueId=venue.id, providerId=venue_provider.providerId, isActive=False)
+        api.update_venue_provider(venue_provider, request)
+
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
+        assert mails_testing.outbox[0].sent_data["To"] == venue.bookingEmail
+        assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.VENUE_SYNC_DISABLED.value)

@@ -6,6 +6,7 @@ from typing import Iterable
 
 from pcapi.core import search
 from pcapi.core.logging import log_elapsed
+from pcapi.core.mails.transactional import send_venue_provider_disabled_email
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.repository import find_venue_by_id
 import pcapi.core.offers.models as offers_models
@@ -144,6 +145,8 @@ def update_venue_provider(
 ) -> providers_models.VenueProvider:
     if venue_provider.isActive != venue_provider_payload.isActive:
         venue_provider.isActive = bool(venue_provider_payload.isActive)
+        if not venue_provider.isActive and venue_provider.venue.bookingEmail:
+            send_venue_provider_disabled_email(venue_provider.venue.bookingEmail)
         update_venue_synchronized_offers_active_status_job.delay(
             venue_provider.venueId, venue_provider.providerId, venue_provider.isActive
         )
