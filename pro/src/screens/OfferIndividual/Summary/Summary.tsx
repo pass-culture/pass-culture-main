@@ -15,7 +15,7 @@ import {
   OFFER_FORM_NAVIGATION_OUT,
   VenueEvents,
 } from 'core/FirebaseEvents/constants'
-import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOffer'
 import { IOfferSubCategory } from 'core/Offers/types'
@@ -27,7 +27,6 @@ import useNotification from 'hooks/useNotification'
 import { IcoParty } from 'icons'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
 import { DisplayOfferInAppLink } from 'screens/OfferIndividual/Summary/DisplayOfferInAppLink'
-import OfferStatusBanner from 'screens/OfferIndividual/Summary/OfferStatusBanner'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 
@@ -160,23 +159,11 @@ const Summary = (
     ...offerConditionalFields,
   ]
 
-  const isDisabledOffer = isOfferDisabled(offer.status)
-
   return (
     <>
-      {(mode !== OFFER_WIZARD_MODE.EDITION ||
-        isDisabledOffer ||
-        providerName !== null) && (
+      {(mode !== OFFER_WIZARD_MODE.EDITION || providerName !== null) && (
         <div className={styles['offer-preview-banners']}>
           {mode !== OFFER_WIZARD_MODE.EDITION && <BannerSummary mode={mode} />}
-          {
-            /* istanbul ignore next: DEBT, TO FIX */
-            isDisabledOffer && (
-              <div className={styles['offer-preview-banner']}>
-                <OfferStatusBanner status={offer.status} />
-              </div>
-            )
-          }
           {providerName !== null && (
             <div className={styles['offer-preview-banner']}>
               <SynchronizedProviderInformation providerName={providerName} />
