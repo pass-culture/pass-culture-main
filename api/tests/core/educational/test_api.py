@@ -321,33 +321,6 @@ class EditCollectiveOfferStocksTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.beginningDatetime == new_event_date.replace(tzinfo=None)
 
-    def test_does_not_allow_edition_of_an_expired_event_stock(self) -> None:
-        # Given
-        initial_event_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        initial_booking_limit_date = datetime.datetime.utcnow() - datetime.timedelta(days=10)
-        stock_to_be_updated = educational_factories.CollectiveStockFactory(
-            beginningDatetime=initial_event_date,
-            price=1200,
-            numberOfTickets=30,
-            bookingLimitDatetime=initial_booking_limit_date,
-        )
-        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            beginningDatetime=datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
-            + datetime.timedelta(days=7, hours=5),
-            numberOfTickets=35,
-        )
-
-        # When
-        with pytest.raises(offers_exceptions.ApiErrors) as error:
-            educational_api_stock.edit_collective_stock(
-                stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
-            )
-
-        # Then
-        assert error.value.errors == {"global": ["Les évènements passés ne sont pas modifiables"]}
-        stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).first()
-        assert stock.numberOfTickets == 30
-
     def test_edit_stock_of_non_approved_offer_fails(self) -> None:
         # Given
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
@@ -1028,3 +1001,84 @@ class NotifyProUserOneDayTest:
                 }
                 assert args.kwargs["recipients"] == [booking3.collectiveStock.collectiveOffer.bookingEmails[0]]
                 assert args.kwargs["bcc_recipients"] == booking3.collectiveStock.collectiveOffer.bookingEmails[1:]
+
+    def test_edit_offer_of_cancelled_booking(self) -> None:
+        # Given
+        offer = educational_factories.CollectiveOfferFactory()
+        initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
+        initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+        stock_to_be_updated = educational_factories.CollectiveStockFactory(
+            collectiveOffer=offer,
+            price=1200,
+            numberOfTickets=30,
+            beginningDatetime=initial_event_date,
+            bookingLimitDatetime=initial_booking_limit_date,
+        )
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock_to_be_updated,
+            status=CollectiveBookingStatus.CANCELLED,
+        )
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            beginningDatetime=datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+            + datetime.timedelta(days=7, hours=5),
+            totalPrice=1500,
+            numberOfTickets=35,
+            bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+            + datetime.timedelta(days=5, hours=16),
+        )
+
+        # When
+        educational_api_stock.edit_collective_stock(
+            stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
+        )
+
+        # Then
+        stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
+        assert stock.beginningDatetime == new_stock_data.beginningDatetime.replace(tzinfo=None)
+        assert stock.bookingLimitDatetime == new_stock_data.bookingLimitDatetime.replace(tzinfo=None)
+        assert stock.price == 1500
+        assert stock.numberOfTickets == 35
+
+    def test_edit_offer_of_other_status_booking(self) -> None:
+        # Given
+        offer = educational_factories.CollectiveOfferFactory()
+        initial_event_date = datetime.datetime.utcnow() - datetime.timedelta(days=5)
+        initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+        educational_year = educational_factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2020, 1, 10), expirationDate=datetime.datetime(2020, 12, 12)
+        )
+        stock_to_be_updated = educational_factories.CollectiveStockFactory(
+            collectiveOffer=offer,
+            price=1200,
+            numberOfTickets=30,
+            beginningDatetime=initial_event_date,  # 2020-01-10 10:00:00
+            bookingLimitDatetime=initial_booking_limit_date,  # 2020-01-08 10:00:00
+        )
+
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock_to_be_updated,
+            status=CollectiveBookingStatus.CANCELLED,
+        )
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock_to_be_updated,
+            status=CollectiveBookingStatus.PENDING,
+            educationalYear=educational_year,
+        )
+
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            beginningDatetime=datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+            + datetime.timedelta(days=7, hours=5),  # 2020-01-12 15:00:00+00:00
+            totalPrice=1500,
+            numberOfTickets=35,
+            bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+            + datetime.timedelta(days=5, hours=16),  # 2020-01-11 02:00:00+00:00
+        )
+
+        # When
+        with pytest.raises(offers_exceptions.ApiErrors) as error:
+            educational_api_stock.edit_collective_stock(
+                stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
+            )
+
+        # Then
+        assert error.value.errors == {"global": ["Les évènements passés ne sont pas modifiables"]}

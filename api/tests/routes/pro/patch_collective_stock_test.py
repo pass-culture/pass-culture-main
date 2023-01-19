@@ -359,7 +359,7 @@ class Return400Test:
         edited_stock = CollectiveStock.query.get(stock.id)
         assert edited_stock.bookingLimitDatetime == stock.bookingLimitDatetime
 
-    def should_not_edit_stock_when_event_expired(self, client):
+    def should_edit_stock_when_event_expired(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(beginningDatetime=datetime.utcnow() - timedelta(minutes=1))
         offerers_factories.UserOffererFactory(
@@ -376,7 +376,7 @@ class Return400Test:
         response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
 
         # Then
-        assert response.status_code == 400
+        assert response.status_code == 200
 
     def should_not_allow_stock_edition_when_numberOfTickets_has_been_set_to_none(self, client):
         # Given
