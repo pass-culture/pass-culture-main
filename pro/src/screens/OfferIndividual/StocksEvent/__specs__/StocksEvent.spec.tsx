@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -16,6 +16,8 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { IStockEventFormValues } from 'components/StockEventForm'
+import { stockEventFactory } from 'components/StockEventForm/stockEventFactory'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
@@ -30,7 +32,9 @@ import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 import { getToday } from 'utils/date'
+import { individualStockFactory } from 'utils/individualApiFactories'
 
+import { STOCKS_PER_PAGE } from '../StockFormList/StockFormList'
 import StocksEvent, { IStocksEventProps } from '../StocksEvent'
 
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
@@ -367,5 +371,29 @@ describe('screens:StocksEvent', () => {
       screen.queryByText('Le stock a été supprimé.')
     ).not.toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
+  })
+
+  it('should go from page to page', async () => {
+    const stocks: IOfferIndividualStock[] = []
+    for (let i = 0; i < 30; i++) {
+      stocks.push(individualStockFactory())
+    }
+
+    props.offer = {
+      ...(offer as IOfferIndividual),
+      stocks,
+    }
+
+    renderStockEventScreen({ props, storeOverride, contextValue })
+
+    expect(
+      screen.queryAllByRole('button', { name: 'Opérations sur le stock' })
+    ).toHaveLength(STOCKS_PER_PAGE)
+    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
+    await waitFor(() => {
+      expect(
+        screen.queryAllByRole('button', { name: 'Opérations sur le stock' })
+      ).toHaveLength(10)
+    })
   })
 })
