@@ -32,11 +32,11 @@ describe('tracking bookings offer cell', () => {
     }))
     const props = {
       offer: {
-        offer_identifier: 'A1',
-        offer_name: 'Guitare acoustique',
+        offerIdentifier: 'A1',
+        offerName: 'Guitare acoustique',
         type: 'thing',
-        venue_department_code: '93',
-        offer_is_educational: false,
+        venueDepartmentCode: '93',
+        offerIsEducational: false,
       },
     }
 

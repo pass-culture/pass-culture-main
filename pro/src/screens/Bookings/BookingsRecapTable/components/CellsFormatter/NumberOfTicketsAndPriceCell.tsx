@@ -9,7 +9,7 @@ const NumberOfTicketsAndPriceCell = ({
 }: {
   bookingRecapInfo: Row<CollectiveBookingResponseModel>
 }) => {
-  const numberOfTickets = bookingRecapInfo.original.stock.number_of_tickets
+  const numberOfTickets = bookingRecapInfo.original.stock.numberOfTickets
   return (
     <div>
       <div>

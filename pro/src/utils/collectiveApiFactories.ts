@@ -158,12 +158,12 @@ export const collectiveBookingRecapFactory = (
       phoneNumber: '0601020304',
     },
     stock: {
-      event_beginning_datetime: new Date().toISOString(),
-      number_of_tickets: 1,
-      offer_identifier: '1',
-      offer_is_educational: true,
-      offer_isbn: null,
-      offer_name: 'ma super offre collective',
+      eventBeginningDatetime: new Date().toISOString(),
+      numberOfTickets: 1,
+      offerIdentifier: '1',
+      offerIsEducational: true,
+      offerIsbn: null,
+      offerName: 'ma super offre collective',
     },
     ...customBookingRecap,
   }
