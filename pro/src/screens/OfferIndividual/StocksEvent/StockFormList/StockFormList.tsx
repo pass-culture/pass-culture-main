@@ -1,5 +1,5 @@
 import { FieldArray, useFormikContext } from 'formik'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 
 import {
   StockEventForm,
@@ -16,6 +16,7 @@ import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { DialogStockDeleteConfirm } from 'screens/OfferIndividual/DialogStockDeleteConfirm'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Pagination } from 'ui-kit/Pagination'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
@@ -28,6 +29,8 @@ interface IStockFormListProps {
     stockIndex: number
   ) => Promise<void>
 }
+
+export const STOCKS_PER_PAGE = 20
 
 const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
   const {
@@ -50,6 +53,14 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
   const isSynchronized = Boolean(offer.lastProvider)
 
+  const [page, setPage] = useState(1)
+  const previousPage = useCallback(() => setPage(page - 1), [page])
+  const nextPage = useCallback(() => setPage(page + 1), [page])
+  const stocksPage = values.stocks.slice(
+    (page - 1) * STOCKS_PER_PAGE,
+    page * STOCKS_PER_PAGE
+  )
+
   return (
     <FieldArray
       name="stocks"
@@ -67,7 +78,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
           </Button>
 
           <div className={styles['form-list']}>
-            {values.stocks.map((stockValues: IStockEventFormValues, index) => {
+            {stocksPage.map((stockValues: IStockEventFormValues, index) => {
               const disableAllStockFields =
                 isSynchronized &&
                 mode === OFFER_WIZARD_MODE.EDITION &&
@@ -121,6 +132,13 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
             })}
           </div>
 
+          <Pagination
+            currentPage={page}
+            pageCount={Math.ceil(values.stocks.length / STOCKS_PER_PAGE)}
+            onPreviousPageClick={previousPage}
+            onNextPageClick={nextPage}
+          />
+
           {deleteConfirmVisible && (
             <DialogStockDeleteConfirm
               /* istanbul ignore next: DEBT, TO FIX */
@@ -139,7 +157,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
           )}
         </>
       )}
-    ></FieldArray>
+    />
   )
 }
 
