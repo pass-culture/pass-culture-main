@@ -2,81 +2,18 @@ from datetime import datetime
 from typing import cast
 
 from dateutil import parser
-from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
-import pcapi.core.bookings.api as bookings_api
-from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingExportType
 import pcapi.core.bookings.repository as booking_repository
-import pcapi.core.bookings.validation as bookings_validation
-from pcapi.routes.serialization import serialize
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel
-from pcapi.routes.serialization.bookings_recap_serialize import PatchBookingByTokenQueryModel
+from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingResponse
 from pcapi.routes.serialization.bookings_recap_serialize import _serialize_booking_recap
-from pcapi.routes.serialization.bookings_serialize import LegacyBookingResponse
-from pcapi.routes.serialization.bookings_serialize import UserHasBookingResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.human_ids import humanize
-from pcapi.utils.rest import check_user_has_access_to_offerer
-from pcapi.validation.routes.bookings import check_email_and_offer_id_for_anonymous_user
-from pcapi.validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided
-from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings
 
 from . import blueprint
-
-
-BASE_CODE_DESCRIPTIONS = {
-    "HTTP_401": (None, "Authentification nécessaire"),
-    "HTTP_403": (None, "Vous n'avez pas les droits nécessaires pour voir cette contremarque"),
-    "HTTP_404": (None, "La contremarque n'existe pas"),
-    "HTTP_410": (
-        None,
-        "Cette contremarque a été validée.\n En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.",
-    ),
-}
-
-# TODO (gvanneste, 2021-10-19) : retravailler cette fonction, notamment check_user_is_logged_in_or_email_is_provided
-# À brûler : juste checker si le user a droit de récupérer les bookings
-@blueprint.pro_public_api_v1.route("/bookings/token/<token>", methods=["GET"])
-@spectree_serialize(
-    response_model=LegacyBookingResponse,
-    on_success_status=200,
-    on_empty_status=204,
-)
-def get_booking_by_token(token: str) -> LegacyBookingResponse | None:
-    email: str | None = request.args.get("email", None)
-    offer_id = dehumanize(request.args.get("offer_id", None))
-
-    check_user_is_logged_in_or_email_is_provided(current_user, email)
-
-    booking = booking_repository.find_by(token, email, offer_id)
-
-    bookings_validation.check_is_usable(booking)
-
-    if check_user_can_validate_bookings(current_user, booking.offererId):
-        response = _create_response_to_get_booking_by_token(booking)
-        return LegacyBookingResponse(**response)
-
-    return None
-
-
-@blueprint.pro_public_api_v1.route("/bookings/token/<token>", methods=["PATCH"])
-@spectree_serialize(on_success_status=204)
-def patch_booking_by_token(token: str, query: PatchBookingByTokenQueryModel) -> None:
-    email = query.email
-    offer_id = dehumanize(query.offer_id)
-    booking = booking_repository.find_by(token, email, offer_id)
-
-    if current_user.is_authenticated:
-        check_user_has_access_to_offerer(current_user, booking.offererId)
-    else:
-        check_email_and_offer_id_for_anonymous_user(email, offer_id)
-
-    bookings_api.mark_as_used(booking)
 
 
 @blueprint.pro_private_api.route("/bookings/pro", methods=["GET"])
@@ -152,27 +89,6 @@ def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
 )
 def get_bookings_excel(query: ListBookingsQueryModel) -> bytes:
     return _create_booking_export_file(query, BookingExportType.EXCEL)
-
-
-def _create_response_to_get_booking_by_token(booking: Booking) -> dict:
-    offer_name = booking.stock.offer.product.name
-    date = None
-    offer = booking.stock.offer
-    is_event = offer.isEvent
-    if is_event:
-        date = serialize(booking.stock.beginningDatetime)
-    venue_departement_code = offer.venue.departementCode
-    response = {
-        "bookingId": humanize(booking.id),
-        "date": date,
-        "email": booking.email,
-        "isUsed": booking.is_used_or_reimbursed,
-        "offerName": offer_name,
-        "userName": booking.userName,
-        "venueDepartementCode": venue_departement_code,
-    }
-
-    return response
 
 
 def _create_booking_export_file(query: ListBookingsQueryModel, export_type: BookingExportType) -> bytes:
