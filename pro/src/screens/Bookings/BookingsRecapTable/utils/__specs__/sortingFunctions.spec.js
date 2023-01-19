@@ -11,14 +11,14 @@ describe('utils | sortingFunctions', () => {
       const firstRow = {
         original: {
           stock: {
-            offer_name: 'Zebre du Bengal',
+            offerName: 'Zebre du Bengal',
           },
         },
       }
       const secondRow = {
         original: {
           stock: {
-            offer_name: 'Babar, mon ami éléphant',
+            offerName: 'Babar, mon ami éléphant',
           },
         },
       }
@@ -34,7 +34,7 @@ describe('utils | sortingFunctions', () => {
       const firstRow = {
         original: {
           stock: {
-            offer_name: 'Babar, mon ami éléphant',
+            offerName: 'Babar, mon ami éléphant',
           },
         },
       }
@@ -42,7 +42,7 @@ describe('utils | sortingFunctions', () => {
       const secondRow = {
         original: {
           stock: {
-            offer_name: 'Zebre du Bengal',
+            offerName: 'Zebre du Bengal',
           },
         },
       }
@@ -58,7 +58,7 @@ describe('utils | sortingFunctions', () => {
       const firstRow = {
         original: {
           stock: {
-            offer_name: 'Babar, mon ami éléphant',
+            offerName: 'Babar, mon ami éléphant',
           },
         },
       }
@@ -66,7 +66,7 @@ describe('utils | sortingFunctions', () => {
       const secondRow = {
         original: {
           stock: {
-            offer_name: 'Babar, mon ami éléphant',
+            offerName: 'Babar, mon ami éléphant',
           },
         },
       }

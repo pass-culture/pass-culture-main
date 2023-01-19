@@ -25,12 +25,12 @@ interface IBookingOfferCellProps {
 const BookingOfferCell = ({ offer }: IBookingOfferCellProps) => {
   const { logEvent } = useAnalytics()
   const editionUrl = useOfferEditionURL(
-    offer.offer_is_educational,
-    offer.offer_identifier,
+    offer.offerIsEducational,
+    offer.offerIdentifier,
     true
   )
-  const eventBeginningDatetime = offer.event_beginning_datetime
-  const isbn = offer.offer_isbn
+  const eventBeginningDatetime = offer.eventBeginningDatetime
+  const isbn = offer.offerIsbn
 
   const eventDatetimeFormatted = eventBeginningDatetime
     ? format(
@@ -53,14 +53,14 @@ const BookingOfferCell = ({ offer }: IBookingOfferCellProps) => {
             isEdition: true,
           })
         }
-        title={`${offer.offer_name} (ouverture dans un nouvel onglet)`}
+        title={`${offer.offerName} (ouverture dans un nouvel onglet)`}
       >
         <div
           className={cn('booking-offer-name', {
-            'booking-offer-name-individual': !offer.offer_is_educational,
+            'booking-offer-name-individual': !offer.offerIsEducational,
           })}
         >
-          {offer.offer_name}
+          {offer.offerName}
         </div>
       </a>
       {isbn ||

@@ -52,7 +52,7 @@ const BookingStatusCell = ({
   const bookingDisplayInfo = getBookingStatusDisplayInformations(
     bookingRecapInfo.original.bookingStatus
   )
-  const offerName = bookingRecapInfo.original.stock.offer_name
+  const offerName = bookingRecapInfo.original.stock.offerName
 
   const statusClassName = bookingDisplayInfo?.statusClassName
   const statusName = bookingDisplayInfo?.status

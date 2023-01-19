@@ -27,12 +27,12 @@ describe('bookings offer cell', () => {
       // Given
       const props = {
         offer: {
-          offer_identifier: 'A0',
-          offer_isbn: '97834567654',
-          offer_name: 'La Guitare pour les nuls',
+          offerIdentifier: 'A0',
+          offerIsbn: '97834567654',
+          offerName: 'La Guitare pour les nuls',
           type: 'book',
-          venue_department_code: '93',
-          offer_is_educational: false,
+          venueDepartmentCode: '93',
+          offerIsEducational: false,
         },
       }
 
@@ -52,11 +52,11 @@ describe('bookings offer cell', () => {
       // Given
       const props = {
         offer: {
-          offer_identifier: 'A1',
-          offer_name: 'Guitare acoustique',
+          offerIdentifier: 'A1',
+          offerName: 'Guitare acoustique',
           type: 'thing',
-          venue_department_code: '93',
-          offer_is_educational: false,
+          venueDepartmentCode: '93',
+          offerIsEducational: false,
         },
       }
 
@@ -74,12 +74,12 @@ describe('bookings offer cell', () => {
       // Given
       const props = {
         offer: {
-          event_beginning_datetime: '2020-05-12T11:03:28.564687+04:00',
-          offer_identifier: 'A2',
-          offer_name: 'La danse des poireaux',
+          eventBeginningDatetime: '2020-05-12T11:03:28.564687+04:00',
+          offerIdentifier: 'A2',
+          offerName: 'La danse des poireaux',
           type: 'event',
-          venue_department_code: '93',
-          offer_is_educational: false,
+          venueDepartmentCode: '93',
+          offerIsEducational: false,
         },
       }
 

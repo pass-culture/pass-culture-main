@@ -3,12 +3,12 @@
 /* eslint-disable */
 
 export type BookingRecapResponseStockModel = {
-  event_beginning_datetime?: string | null;
-  offer_identifier: string;
-  offer_is_educational: boolean;
-  offer_isbn?: string | null;
-  offer_name: string;
-  offer_nonHumanizedId: number;
-  stock_identifier: string;
+  eventBeginningDatetime?: string | null;
+  offerIdentifier: string;
+  offerIsEducational: boolean;
+  offerIsbn?: string | null;
+  offerName: string;
+  offerNonHumanizedId: number;
+  stockIdentifier: string;
 };
 
