@@ -168,3 +168,4 @@ class TransactionalEmail(Enum):
     WELCOME_TO_PRO = models.TemplatePro(id_prod=481, id_not_prod=57, tags=["pro-bienvenue-pass"])
     VENUE_NEEDS_PICTURE = models.TemplatePro(id_prod=782, id_not_prod=113, tags=["pro_lieu_permanent"])
     VENUE_SYNC_DISABLED = models.TemplatePro(id_prod=883, id_not_prod=122, tags=["pro_pause_synchro"])
+    VENUE_SYNC_DELETED = models.TemplatePro(id_prod=865, id_not_prod=123, tags=["pro_suppression_synchro"])
