@@ -205,7 +205,7 @@ def post_product_offer(
                 offers_api.create_stock(
                     offer=created_offer,
                     price=finance_utils.to_euros(body.stock.price),
-                    quantity=body.stock.quantity if body.stock.quantity != "unlimited" else None,
+                    quantity=serialization.deserialize_quantity(body.stock.quantity),
                     booking_limit_datetime=body.stock.booking_limit_datetime,
                     creating_provider=individual_offers_provider,
                 )
@@ -303,7 +303,7 @@ def post_event_dates(
                     offers_api.create_stock(
                         offer=offer,
                         price=finance_utils.to_euros(date.price),
-                        quantity=date.quantity if date.quantity != "unlimited" else None,
+                        quantity=serialization.deserialize_quantity(date.quantity),
                         beginning_datetime=date.beginning_datetime,
                         booking_limit_datetime=date.booking_limit_datetime,
                         creating_provider=individual_offers_provider,
@@ -547,15 +547,16 @@ def edit_product(
                         offers_api.create_stock(
                             offer=offer,
                             price=finance_utils.to_euros(body.stock.price),
-                            quantity=body.stock.quantity if body.stock.quantity != "unlimited" else None,
+                            quantity=serialization.deserialize_quantity(body.stock.quantity),
                             booking_limit_datetime=body.stock.booking_limit_datetime,
                             creating_provider=individual_offers_provider,
                         )
                     else:
                         price = update_body["stock"].get("price", offers_api.UNCHANGED)
+                        quantity = update_body["stock"].get("quantity", offers_api.UNCHANGED)
                         offers_api.edit_stock(
                             existing_stock,
-                            quantity=update_body["stock"].get("quantity", offers_api.UNCHANGED),
+                            quantity=serialization.deserialize_quantity(quantity),
                             price=finance_utils.to_euros(price)
                             if price != offers_api.UNCHANGED
                             else offers_api.UNCHANGED,
@@ -669,9 +670,10 @@ def patch_event_date(
     try:
         with repository.transaction():
             price = update_body.get("price", offers_api.UNCHANGED)
+            quantity = update_body.get("quantity", offers_api.UNCHANGED)
             edited_date, _ = offers_api.edit_stock(
                 stock_to_edit,
-                quantity=update_body.get("quantity", offers_api.UNCHANGED),
+                quantity=serialization.deserialize_quantity(quantity),
                 price=finance_utils.to_euros(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,
                 booking_limit_datetime=update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
                 beginning_datetime=update_body.get("beginning_datetime", offers_api.UNCHANGED),
