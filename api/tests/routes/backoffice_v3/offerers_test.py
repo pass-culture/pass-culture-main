@@ -466,7 +466,7 @@ class GetOffererDetailsTest:
         other_offerer = offerers_factories.OffererFactory()
         venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
         venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer)
-        other_venue = offerers_factories.VenueFactory(managingOfferer=other_offerer)
+        offerers_factories.VenueFactory(managingOfferer=other_offerer)
 
         url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
 
@@ -474,19 +474,18 @@ class GetOffererDetailsTest:
             response = authenticated_client.get(url)
         assert response.status_code == 200
 
-        content = response.data.decode("utf-8")
+        rows = html_parser.extract_table_rows(response.data, "pills-managed-venues")
+        assert len(rows) == 2
 
-        assert str(venue_1.id) in content
-        assert venue_1.siret in content
-        assert venue_1.name in content
-        assert venue_1.venueType.label in content
+        assert rows[0]["ID"] == str(venue_1.id)
+        assert rows[0]["SIRET"] == venue_1.siret
+        assert rows[0]["Nom"] == venue_1.name
+        assert rows[0]["Type de lieu"] == venue_1.venueType.label
 
-        assert str(venue_2.id) in content
-        assert venue_2.siret in content
-        assert venue_2.name in content
-        assert venue_2.venueType.label in content
-
-        assert str(other_venue.id) not in content
+        assert rows[1]["ID"] == str(venue_2.id)
+        assert rows[1]["SIRET"] == venue_2.siret
+        assert rows[1]["Nom"] == venue_2.name
+        assert rows[1]["Type de lieu"] == venue_2.venueType.label
 
 
 class GetOffererHistoryDataTest:
