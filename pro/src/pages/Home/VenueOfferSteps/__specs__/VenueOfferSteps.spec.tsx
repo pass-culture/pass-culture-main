@@ -11,7 +11,6 @@ import { VenueOfferSteps } from '../index'
 
 const renderVenueOfferSteps = ({
   hasVenue = false,
-  hasOffer = false,
   hasMissingReimbursementPoint = true,
 }) => {
   const currentUser = {
@@ -29,7 +28,6 @@ const renderVenueOfferSteps = ({
         <VenueOfferSteps
           hasVenue={hasVenue}
           offererId="AB"
-          hasOffer={hasOffer}
           hasMissingReimbursementPoint={hasMissingReimbursementPoint}
         />
       </MemoryRouter>
@@ -50,10 +48,6 @@ describe('VenueOfferSteps', () => {
     renderVenueOfferSteps({ hasVenue: false })
     expect(screen.getByText('Créer une offre')).toBeInTheDocument()
   })
-  it('Should display not offer creation link if user has an offer on venue', async () => {
-    renderVenueOfferSteps({ hasVenue: false, hasOffer: true })
-    expect(screen.queryByText('Créer une offre')).not.toBeInTheDocument()
-  })
   it('Should display reimbursement link if user has no ReimbursementPoint on venue', async () => {
     renderVenueOfferSteps({ hasVenue: false })
     expect(
@@ -63,7 +57,6 @@ describe('VenueOfferSteps', () => {
   it('Should not display reimbursement link if user has ReimbursementPoint on venue', async () => {
     renderVenueOfferSteps({
       hasVenue: false,
-      hasOffer: false,
       hasMissingReimbursementPoint: false,
     })
     expect(
