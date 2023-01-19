@@ -7,8 +7,6 @@ from pcapi.core.bookings import validation as bookings_validation
 from pcapi.models import api_errors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.routes.pro import blueprint
-from pcapi.routes.serialization.bookings_serialize import GetBookingResponse
-from pcapi.routes.serialization.bookings_serialize import get_booking_response
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.rate_limiting import basic_auth_rate_limiter
@@ -19,6 +17,8 @@ from pcapi.validation.routes.users_authentifications import login_or_api_key_req
 from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_cancel_booking
 from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_validate_booking
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings_v2
+
+from . import serialization
 
 
 BASE_CODE_DESCRIPTIONS = {
@@ -42,13 +42,13 @@ BASE_CODE_DESCRIPTIONS = {
         **(
             BASE_CODE_DESCRIPTIONS
             | {
-                "HTTP_200": (GetBookingResponse, "La contremarque existe et n’est pas validée"),
+                "HTTP_200": (serialization.GetBookingResponse, "La contremarque existe et n’est pas validée"),
             }
         )
     ),
 )
 @login_or_api_key_required
-def get_booking_by_token_v2(token: str) -> GetBookingResponse:
+def get_booking_by_token_v2(token: str) -> serialization.GetBookingResponse:
     # in French, to be used by Swagger for the API documentation
     """Consultation d'une réservation.
 
@@ -70,7 +70,7 @@ def get_booking_by_token_v2(token: str) -> GetBookingResponse:
         raise ForbiddenError()
 
     bookings_validation.check_is_usable(booking)
-    return get_booking_response(booking)
+    return serialization.get_booking_response(booking)
 
 
 @blueprint.pro_public_api_v2.route("/bookings/use/token/<token>", methods=["PATCH"])

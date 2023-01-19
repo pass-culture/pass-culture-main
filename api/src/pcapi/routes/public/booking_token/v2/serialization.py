@@ -22,16 +22,6 @@ class BookingFormula(str, Enum):
     ABO = "ABO"
 
 
-class LegacyBookingResponse(BaseModel):
-    bookingId: str | None
-    date: str | None
-    email: str | None
-    isUsed: bool | None
-    offerName: str | None
-    userName: str | None
-    venueDepartementCode: str | None
-
-
 class GetBookingResponse(BaseModel):
     bookingId: str
     dateOfBirth: str | None
@@ -57,10 +47,6 @@ class GetBookingResponse(BaseModel):
     venueAddress: str | None
     venueDepartmentCode: str | None
     venueName: str
-
-
-class UserHasBookingResponse(BaseModel):
-    hasBookings: bool
 
 
 def get_booking_response(booking: Booking) -> GetBookingResponse:

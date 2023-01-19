@@ -16,7 +16,7 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_bookings_serialize
-from pcapi.routes.serialization.bookings_serialize import UserHasBookingResponse
+from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingResponse
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize_or_raise
 from pcapi.utils.rest import check_user_has_access_to_offerer
