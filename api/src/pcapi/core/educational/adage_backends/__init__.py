@@ -50,3 +50,9 @@ def get_adage_educational_institutions(ansco: str) -> list[AdageEducationalInsti
     backend = import_string(settings.ADAGE_BACKEND)
     result = backend().get_adage_educational_institutions(ansco)
     return result
+
+
+def get_adage_educational_redactor_from_uai(uai: str) -> list[dict[str, str]]:
+    backend = import_string(settings.ADAGE_BACKEND)
+    result = backend().get_adage_educational_redactor_from_uai(uai)
+    return result

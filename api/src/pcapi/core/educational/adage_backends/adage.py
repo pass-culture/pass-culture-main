@@ -216,3 +216,30 @@ class AdageHttpClient(AdageClient):
             page += 1
 
         return parse_obj_as(list[AdageEducationalInstitution], institutions)
+
+    def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
+        api_url = f"{self.base_url}/v1/etablissement-culturel/{uai}"
+        try:
+            api_response = requests.get(
+                api_url,
+                headers={self.header_key: self.api_key},
+            )
+        except ConnectionError as exp:
+            logger.info("could not connect to adage, error: %s", traceback.format_exc())
+            raise exceptions.AdageException(
+                status_code=502,
+                response_text="Connection Error",
+                message="Cannot establish connection to omogen api",
+            ) from exp
+
+        if api_response.status_code == 404:
+            raise exceptions.EducationalRedactorNotFound("Requested UAI not found")
+        if api_response.status_code != 200:
+            raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
+
+        response_content = api_response.json()
+
+        if len(response_content) == 0:
+            raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
+
+        return response_content

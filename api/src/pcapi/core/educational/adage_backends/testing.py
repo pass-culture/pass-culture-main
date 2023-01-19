@@ -1,4 +1,5 @@
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
+from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
@@ -141,3 +142,29 @@ class AdageSpyClient(AdageClient):
                 codePostal="75001",
             ),
         ]
+
+    def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
+        api_url = f"{self.base_url}/v1/etablissement-culturel/{uai}"
+        testing.adage_requests.append({"url": api_url, "sent_data": ""})
+        if uai in ("0470009E"):
+            return [
+                {
+                    "civilite": "Mme.",
+                    "nom": "SKLODOWSKA",
+                    "prenom": "MARIA",
+                    "mail": "maria.sklodowska@example.com",
+                },
+                {
+                    "civilite": "M.",
+                    "nom": "POINTCARE",
+                    "prenom": "RAYMOND",
+                    "mail": "raymond.pointcare@example.com",
+                },
+                {
+                    "civilite": "M.",
+                    "nom": "RAYMAR",
+                    "prenom": "CONFUSION",
+                    "mail": "confusion.raymar@example.com",
+                },
+            ]
+        raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
