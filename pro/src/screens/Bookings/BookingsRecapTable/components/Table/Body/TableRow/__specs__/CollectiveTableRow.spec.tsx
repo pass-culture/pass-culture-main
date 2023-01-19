@@ -83,7 +83,7 @@ describe('CollectiveTableRow', () => {
       original: {
         bookingIdentifier: 'A1',
         stock: {
-          offer_identifier: 'A1',
+          offerIdentifier: 'A1',
         },
         bookingStatus: 'booked',
       },
@@ -102,7 +102,7 @@ describe('CollectiveTableRow', () => {
       original: {
         bookingIdentifier: 'A1',
         stock: {
-          offer_identifier: 'A1',
+          offerIdentifier: 'A1',
         },
         bookingStatus: 'booked',
       },
@@ -130,7 +130,7 @@ describe('CollectiveTableRow', () => {
       original: {
         bookingIdentifier: 'A1',
         stock: {
-          offer_identifier: 'A1',
+          offerIdentifier: 'A1',
         },
         bookingStatus: 'booked',
       },

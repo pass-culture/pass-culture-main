@@ -143,12 +143,12 @@ export const bookingRecapFactory = (customBookingRecap = {}) => {
     ],
     bookingToken: `TOKEN${bookingId++}`,
     stock: {
-      offer_identifier: offer.id,
-      offer_nonHumanizedId: offer.nonHumanizedId,
-      offer_name: offer.name,
-      offer_is_educational: false,
-      stock_identifier: offer.stocks[0].id,
-      offer_isbn: offer.stocks[0].isbn,
+      offerIdentifier: offer.id,
+      offerNonHumanizedId: offer.nonHumanizedId,
+      offerName: offer.name,
+      offerIsEducational: false,
+      stockIdentifier: offer.stocks[0].id,
+      offerIsbn: offer.stocks[0].isbn,
     },
     ...customBookingRecap,
   }

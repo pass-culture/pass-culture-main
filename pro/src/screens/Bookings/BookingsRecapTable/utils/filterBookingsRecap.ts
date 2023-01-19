@@ -13,7 +13,7 @@ const doesOfferNameMatchFilter = <
   booking: T
 ): boolean => {
   if (offerName !== EMPTY_FILTER_VALUE) {
-    const offerNameFromBooking = _sanitize(booking.stock.offer_name)
+    const offerNameFromBooking = _sanitize(booking.stock.offerName)
     return offerNameFromBooking.includes(_sanitize(offerName))
   }
   return true
@@ -112,7 +112,7 @@ const doesISBNMatchFilter = <
 ): boolean => {
   if (isbn !== EMPTY_FILTER_VALUE) {
     return Boolean(
-      booking.stock.offer_isbn && booking.stock.offer_isbn.includes(isbn.trim())
+      booking.stock.offerIsbn && booking.stock.offerIsbn.includes(isbn.trim())
     )
   }
   return true
@@ -133,7 +133,7 @@ const doesBookingStatusMatchFilter = <
 const isBookingCollectiveBooking = (
   booking: BookingRecapResponseModel | CollectiveBookingResponseModel
 ): booking is CollectiveBookingResponseModel =>
-  booking.stock.offer_is_educational === true
+  booking.stock.offerIsEducational === true
 
 const filterBookingsRecap = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel

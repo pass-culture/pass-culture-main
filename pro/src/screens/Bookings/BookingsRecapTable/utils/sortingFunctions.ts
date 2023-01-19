@@ -11,8 +11,8 @@ export const sortByOfferName = <
   firstRow: Row<T>,
   secondRow: Row<T>
 ) => {
-  const offerNameOne = firstRow.original.stock.offer_name
-  const offerNameTwo = secondRow.original.stock.offer_name
+  const offerNameOne = firstRow.original.stock.offerName
+  const offerNameTwo = secondRow.original.stock.offerName
   return offerNameOne.localeCompare(offerNameTwo, 'fr', { sensitivity: 'base' })
 }
 

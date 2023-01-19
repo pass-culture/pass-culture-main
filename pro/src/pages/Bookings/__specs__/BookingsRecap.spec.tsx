@@ -175,7 +175,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // Then
-    await screen.findAllByText(bookingRecap.stock.offer_name)
+    await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
       getNthCallNthArg(api.getBookingsPro, 1, NTH_ARGUMENT_GET_BOOKINGS.venueId)
     ).toBe(venue.id)
@@ -404,10 +404,10 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     const secondBookingRecap = await screen.findAllByText(
-      bookings2.stock.offer_name
+      bookings2.stock.offerName
     )
     expect(secondBookingRecap).toHaveLength(2)
-    const firstBookingRecap = screen.getAllByText(bookings1.stock.offer_name)
+    const firstBookingRecap = screen.getAllByText(bookings1.stock.offerName)
     expect(firstBookingRecap).toHaveLength(2)
 
     expect(api.getBookingsPro).toHaveBeenCalledTimes(2)
@@ -442,7 +442,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // Then
-    await screen.findAllByText(bookingRecap.stock.offer_name)
+    await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
       getNthCallNthArg(
         api.getBookingsPro,
@@ -473,7 +473,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await userEvent.click(screen.getByText('8'))
     await submitFilters()
     // Then
-    await screen.findAllByText(bookingRecap.stock.offer_name)
+    await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
       getNthCallNthArg(
         api.getBookingsPro,
@@ -506,7 +506,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // Then
-    await screen.findAllByText(bookingRecap.stock.offer_name)
+    await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
       getNthCallNthArg(
         api.getBookingsPro,
@@ -546,7 +546,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // Then
-    await screen.findAllByText(bookingRecap.stock.offer_name)
+    await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
       getNthCallNthArg(
         api.getBookingsPro,
@@ -595,7 +595,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // Then
-    await screen.findAllByText(bookingRecap.stock.offer_name)
+    await screen.findAllByText(bookingRecap.stock.offerName)
     const thirtyDaysBeforeEndingDate = formatBrowserTimezonedDateAsUTC(
       new Date(2020, 4, 13),
       FORMAT_ISO_DATE_ONLY
@@ -631,7 +631,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // Then
-    await screen.findAllByText(bookingRecap.stock.offer_name)
+    await screen.findAllByText(bookingRecap.stock.offerName)
     const thirtyDaysAfterBeginningDate = formatBrowserTimezonedDateAsUTC(
       new Date(2020, 5, 9),
       FORMAT_ISO_DATE_ONLY
@@ -666,7 +666,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // Then
-    await screen.findAllByText(bookingRecap.stock.offer_name)
+    await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
       getNthCallNthArg(
         api.getBookingsPro,
@@ -706,7 +706,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.selectOptions(screen.getByLabelText('Lieu'), otherVenue.id)
     await submitFilters()
-    await screen.findAllByText(otherVenueBooking.stock.offer_name)
+    await screen.findAllByText(otherVenueBooking.stock.offerName)
 
     // When
     await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
@@ -714,11 +714,11 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     const firstBookingRecap = await screen.findAllByText(
-      booking.stock.offer_name
+      booking.stock.offerName
     )
     expect(firstBookingRecap).toHaveLength(2)
     expect(
-      screen.queryByText(otherVenueBooking.stock.offer_name)
+      screen.queryByText(otherVenueBooking.stock.offerName)
     ).not.toBeInTheDocument()
   })
 

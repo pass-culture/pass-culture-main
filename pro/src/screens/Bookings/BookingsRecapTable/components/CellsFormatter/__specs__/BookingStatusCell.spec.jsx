@@ -28,8 +28,8 @@ describe('bookings | bookingsStatusCell', () => {
       bookingRecapInfo: {
         original: {
           stock: {
-            event_beginning_datetime: '2020-06-05T16:31:59.102163+02:00',
-            offer_name: 'Matrix',
+            eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
+            offerName: 'Matrix',
             type: 'event',
           },
           bookingIsDuo: true,
@@ -65,8 +65,8 @@ describe('bookings | bookingsStatusCell', () => {
       bookingRecapInfo: {
         original: {
           stock: {
-            event_beginning_datetime: '2020-06-05T16:31:59.102163+02:00',
-            offer_name: 'Matrix',
+            eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
+            offerName: 'Matrix',
             type: 'event',
           },
           bookingIsDuo: true,
@@ -104,8 +104,8 @@ describe('bookings | bookingsStatusCell', () => {
         bookingRecapInfo: {
           original: {
             stock: {
-              event_beginning_datetime: '2020-06-05T16:31:59.102163+02:00',
-              offer_name: 'Matrix',
+              eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
+              offerName: 'Matrix',
               type: 'event',
             },
             bookingIsDuo: true,
@@ -146,8 +146,8 @@ describe('bookings | bookingsStatusCell', () => {
         bookingRecapInfo: {
           original: {
             stock: {
-              event_beginning_datetime: '2020-06-05T16:31:59.102163+02:00',
-              offer_name: 'Matrix',
+              eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
+              offerName: 'Matrix',
               type: 'event',
             },
             bookingIsDuo: true,
@@ -186,8 +186,8 @@ describe('bookings | bookingsStatusCell', () => {
         bookingRecapInfo: {
           original: {
             stock: {
-              event_beginning_datetime: '2020-06-05T16:31:59.102163+02:00',
-              offer_name: 'Matrix',
+              eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
+              offerName: 'Matrix',
               type: 'event',
             },
             bookingIsDuo: true,
@@ -226,8 +226,8 @@ describe('bookings | bookingsStatusCell', () => {
         bookingRecapInfo: {
           original: {
             stock: {
-              event_beginning_datetime: '2020-06-05T16:31:59.102163+02:00',
-              offer_name: 'Matrix',
+              eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
+              offerName: 'Matrix',
               type: 'event',
             },
             bookingIsDuo: true,

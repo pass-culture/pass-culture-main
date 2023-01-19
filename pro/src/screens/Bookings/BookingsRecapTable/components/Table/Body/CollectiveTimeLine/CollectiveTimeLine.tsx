@@ -30,7 +30,7 @@ const CollectiveTimeLine = ({
     bookingRecap.bookingCancellationLimitDate
   )
   const eventDate = getDateToFrenchText(
-    bookingRecap.stock.event_beginning_datetime
+    bookingRecap.stock.eventBeginningDatetime
   )
 
   const pendingStep = {
@@ -88,7 +88,7 @@ const CollectiveTimeLine = ({
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
-              to: `/offre/${bookingRecap.stock.offer_identifier}/collectif/stocks/edition`,
+              to: `/offre/${bookingRecap.stock.offerIdentifier}/collectif/stocks/edition`,
               isExternal: false,
             }}
             Icon={IcoPen}
