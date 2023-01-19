@@ -36,7 +36,7 @@ class BookingRecapResponseBeneficiaryModel(BaseModel):
 class BookingRecapResponseStockModel(BaseModel):
     event_beginning_datetime: datetime | None
     offer_identifier: str
-    offer_nonHumanizedId: int
+    offer_non_humanized_id: int
     stock_identifier: str
     offer_is_educational: bool
     offer_isbn: str | None
