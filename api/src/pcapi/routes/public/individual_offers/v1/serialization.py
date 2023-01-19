@@ -319,10 +319,12 @@ QUANTITY_FIELD = pydantic.Field(
     example=10,
 )
 
+UNLIMITED_LITERAL = typing.Literal["unlimited"]
+
 
 class BaseStockCreation(serialization.ConfiguredBaseModel):
     price: pydantic.StrictInt = PRICE_FIELD
-    quantity: pydantic.StrictInt | typing.Literal["unlimited"] = QUANTITY_FIELD
+    quantity: pydantic.StrictInt | UNLIMITED_LITERAL = QUANTITY_FIELD
 
     @pydantic.validator("price")
     def price_must_be_positive(cls, value: int) -> int:
@@ -337,6 +339,12 @@ class BaseStockCreation(serialization.ConfiguredBaseModel):
         return quantity
 
 
+def deserialize_quantity(quantity: int | UNLIMITED_LITERAL | None) -> int | None:
+    if quantity == "unlimited":
+        return None
+    return quantity
+
+
 class StockCreation(BaseStockCreation):
     booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
 
@@ -346,7 +354,7 @@ class StockCreation(BaseStockCreation):
 class StockEdition(serialization.ConfiguredBaseModel):
     booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
     price: pydantic.StrictInt | None = PRICE_FIELD
-    quantity: pydantic.StrictInt | typing.Literal["unlimited"] | None = QUANTITY_FIELD
+    quantity: pydantic.StrictInt | UNLIMITED_LITERAL | None = QUANTITY_FIELD
 
     @pydantic.validator("price")
     def price_must_be_positive(cls, value: int | None) -> int | None:
@@ -454,7 +462,7 @@ class BaseStockResponse(serialization.ConfiguredBaseModel):
     booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
     dnBookedQuantity: int = pydantic.Field(..., description="Number of bookings.", example=0, alias="bookedQuantity")
     price: pydantic.StrictInt = PRICE_FIELD
-    quantity: pydantic.StrictInt | typing.Literal["unlimited"] = QUANTITY_FIELD
+    quantity: pydantic.StrictInt | UNLIMITED_LITERAL = QUANTITY_FIELD
 
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
