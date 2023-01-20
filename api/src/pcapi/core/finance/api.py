@@ -1117,10 +1117,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         .with_entities(
             offerers_models.Venue.id.label("reimbursement_point_id"),
             offerers_models.Venue.siret.label("reimbursement_point_siret"),
-            sqla_func.coalesce(
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.name,
-            ).label("reimbursement_point_name"),
+            offerers_models.Venue.common_name.label("reimbursement_point_name"),
             sqla_func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity).label("booking_amount"),
             models.Deposit.type.label("deposit_type"),
             sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
@@ -1155,10 +1152,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         .with_entities(
             offerers_models.Venue.id.label("reimbursement_point_id"),
             offerers_models.Venue.siret.label("reimbursement_point_siret"),
-            sqla_func.coalesce(
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.name,
-            ).label("reimbursement_point_name"),
+            offerers_models.Venue.common_name.label("reimbursement_point_name"),
             sqla_func.sum(educational_models.CollectiveStock.price).label("booking_amount"),
             educational_models.EducationalDeposit.ministry.label("ministry"),
             sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
@@ -1558,10 +1552,7 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
 def get_reimbursements_by_venue(
     invoice: models.Invoice,
 ) -> typing.ValuesView:
-    common_columns: tuple = (
-        offerers_models.Venue.id.label("venue_id"),
-        sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name).label("venue_name"),
-    )
+    common_columns: tuple = (offerers_models.Venue.id.label("venue_id"), offerers_models.Venue.common_name)
 
     pricing_query = (
         models.Invoice.query.join(models.Invoice.cashflows)
@@ -1579,10 +1570,7 @@ def get_reimbursements_by_venue(
         )
         .join(models.Pricing.booking)
         .join(bookings_models.Booking.venue)
-        .order_by(
-            offerers_models.Venue.id,
-            sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name),
-        )
+        .order_by(offerers_models.Venue.id, offerers_models.Venue.common_name)
     )
     collective_query = (
         pricing_query.with_entities(
@@ -1593,18 +1581,12 @@ def get_reimbursements_by_venue(
         .join(models.Pricing.collectiveBooking)
         .join(educational_models.CollectiveBooking.venue)
         .join(educational_models.CollectiveBooking.collectiveStock)
-        .group_by(
-            offerers_models.Venue.id,
-            sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name),
-        )
-        .order_by(
-            offerers_models.Venue.id,
-            sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name),
-        )
+        .group_by(offerers_models.Venue.id, offerers_models.Venue.common_name)
+        .order_by(offerers_models.Venue.id, offerers_models.Venue.common_name)
     )
 
     reimbursements_by_venue = {}
-    for (venue_id, venue_name), bookings in itertools.groupby(query, lambda x: (x.venue_id, x.venue_name)):
+    for (venue_id, venue_common_name), bookings in itertools.groupby(query, lambda x: (x.venue_id, x.common_name)):
         validated_booking_amount = decimal.Decimal(0)
         reimbursed_amount = 0
         individual_amount = 0
@@ -1614,7 +1596,7 @@ def get_reimbursements_by_venue(
             if booking.individualBookingId:
                 individual_amount += booking.pricing_amount
         reimbursements_by_venue[venue_id] = {
-            "venue_name": venue_name,
+            "venue_name": venue_common_name,
             "reimbursed_amount": reimbursed_amount,
             "validated_booking_amount": -utils.to_eurocents(validated_booking_amount),
             "individual_amount": individual_amount,
@@ -1622,7 +1604,7 @@ def get_reimbursements_by_venue(
 
     for venue_pricing_info in collective_query:
         venue_id = venue_pricing_info.venue_id
-        venue_name = venue_pricing_info.venue_name
+        venue_common_name = venue_pricing_info.common_name
         reimbursed_amount = venue_pricing_info.reimbursed_amount
         booking_amount = -utils.to_eurocents(venue_pricing_info.booking_amount)
         if venue_pricing_info.venue_id in reimbursements_by_venue:
@@ -1630,7 +1612,7 @@ def get_reimbursements_by_venue(
             reimbursements_by_venue[venue_pricing_info.venue_id]["validated_booking_amount"] += booking_amount
         else:
             reimbursements_by_venue[venue_pricing_info.venue_id] = {
-                "venue_name": venue_name,
+                "venue_name": venue_common_name,
                 "reimbursed_amount": reimbursed_amount,
                 "validated_booking_amount": booking_amount,
                 "individual_amount": 0,
