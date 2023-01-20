@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,

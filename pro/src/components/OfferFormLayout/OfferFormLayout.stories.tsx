@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { OfferIndividualStepper } from 'components/OfferIndividualStepper'
+import { OfferIndividualBreadcrumb } from 'components/OfferIndividualBreadcrumb'
 import { withRouterDecorator } from 'stories/decorators/withRouter'
 
 import { OfferFormLayout } from '.'
@@ -27,7 +27,7 @@ const Template = () => (
       </OfferFormLayout.TitleBlock>
 
       <OfferFormLayout.Stepper>
-        <OfferIndividualStepper />
+        <OfferIndividualBreadcrumb />
       </OfferFormLayout.Stepper>
 
       <OfferFormLayout.Content>

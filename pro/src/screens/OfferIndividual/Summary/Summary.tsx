@@ -6,7 +6,7 @@ import {
   IOfferAppPreviewProps,
   OfferAppPreview,
 } from 'components/OfferAppPreview'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { SummaryLayout } from 'components/SummaryLayout'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {

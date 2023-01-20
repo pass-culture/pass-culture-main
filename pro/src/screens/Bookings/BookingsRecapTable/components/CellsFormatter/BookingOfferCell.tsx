@@ -6,7 +6,7 @@ import {
   BookingRecapResponseStockModel,
   CollectiveBookingCollectiveStockResponseModel,
 } from 'apiClient/v1'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,

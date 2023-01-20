@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
