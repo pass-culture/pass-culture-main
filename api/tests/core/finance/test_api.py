@@ -1803,6 +1803,44 @@ class PrepareInvoiceContextTest:
         assert start_period == datetime.datetime(2020, 3, 1)
         assert end_period == datetime.datetime(2020, 3, 15)
 
+    def test_common_name_is_not_empty_public_name(self):
+        offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
+        venue_kwargs = {
+            "pricing_point": "self",
+            "reimbursement_point": "self",
+        }
+        venue = offerers_factories.VenueFactory(
+            publicName="",
+            name="common name should not be empty",
+            siret="85331845900023",
+            bookingEmail="pro@example.com",
+            managingOfferer=offerer,
+            **venue_kwargs,
+        )
+        factories.BankInformationFactory(venue=venue, iban="FR2710010000000000000000064")
+
+        thing_offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.StockFactory(offer=thing_offer, price=30)
+
+        user = create_rich_user()
+        booking = bookings_factories.UsedIndividualBookingFactory(
+            stock=stock,
+            individualBooking__user=user,
+        )
+        api.price_booking(booking)
+        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+        invoice = api._generate_invoice(
+            reimbursement_point_id=venue.id,
+            cashflow_ids=cashflow_ids,
+        )
+
+        context = api._prepare_invoice_context(invoice)
+
+        reimbursements = list(context["reimbursements_by_venue"])
+        assert len(reimbursements) == 1
+        assert reimbursements[0]["venue_name"] == "common name should not be empty"
+
 
 class GenerateInvoiceHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"

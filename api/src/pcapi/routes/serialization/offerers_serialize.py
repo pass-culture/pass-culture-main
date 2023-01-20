@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Iterable
 
 import sqlalchemy.orm as sqla_orm
-import sqlalchemy.sql.functions as sqla_func
 
 from pcapi import settings
 import pcapi.core.offerers.models as offerers_models
@@ -102,7 +101,7 @@ class GetOffererResponseModel(BaseModel):
             offerers_models.Venue.query.filter_by(managingOffererId=offerer.id)
             .options(sqla_orm.joinedload(offerers_models.Venue.reimbursement_point_links))
             .options(sqla_orm.joinedload(offerers_models.Venue.bankInformation))
-            .order_by(sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name))
+            .order_by(offerers_models.Venue.common_name)
             .all()
         )
 

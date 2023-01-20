@@ -515,7 +515,7 @@ def find_available_reimbursement_points_for_offerer(offerer_id: int) -> list[mod
             models.Venue.managingOffererId == offerer_id,
         )
         .options(sqla_orm.joinedload(models.Venue.bankInformation))
-        .order_by(sqla.func.coalesce(models.Venue.publicName, models.Venue.name))
+        .order_by(models.Venue.common_name)
         .all()
     )
 
