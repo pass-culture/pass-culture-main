@@ -29,6 +29,7 @@ class Permissions(enum.Enum):
     MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"
     VALIDATE_OFFERER = "gérer la validation des structures et des rattachements"
     MANAGE_BOOKINGS = "gérer les réservations"
+    MANAGE_OFFERS = "gérer les offres"
 
     @classmethod
     def exists(cls, name: str) -> bool:

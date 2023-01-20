@@ -1,0 +1,59 @@
+{% extends "layouts/connected.html" %}
+
+{% block page %}
+    <div class="pt-3 px-5">
+        <h2 class="fw-light">Rechercher des offres</h2>
+        {% include "components/filters_form.html" %}
+        <div>
+            {% if rows %}
+                <div class="d-flex justify-content-between">
+                    <p class="lead num-results">
+                        {{ rows | length }}{{ "+" if rows | length > 100 else "" }} résultat{{ "s" if rows | length > 1 else "" }}
+                    </p>
+                </div>
+                <table class="table mb-4">
+                    <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nom de l'offre</th>
+                        <th scope="col">Catégorie</th>
+                        <th scope="col">Sous-catégorie</th>
+                        <th scope="col">Stock initial</th>
+                        <th scope="col">Stock restant</th>
+                        <th scope="col">Tag</th>
+                        <th scope="col">Pondération</th>
+                        <th scope="col">État</th>
+                        <th scope="col">Dernière date de validation</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for offer in rows %}
+                        <tr>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                            class="btn p-0"><i
+                                            class="bi bi-three-dots-vertical"></i></button>
+                                    <ul class="dropdown-menu">
+                                    </ul>
+                                </div>
+                            </td>
+                            <td>{{ offer.id }}</td>
+                            <td>{{ offer.name | escape }}</td>
+                            <td>{{ offer.category.pro_label }}</td>
+                            <td>{{ offer.subcategory_v2.pro_label }}</td>
+                            <td>{{ get_initial_stock(offer) }}</td>
+                            <td>{{ get_remaining_stock(offer) }}</td>
+                            <td>{{ offer.criteria | format_criteria}}</td>
+                            <td>{{ offer.rankingWeight | empty_string_if_null }}</td>
+                            <td>{{ offer.validation | format_offer_validation_status }}</td>
+                            <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
