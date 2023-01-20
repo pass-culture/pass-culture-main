@@ -2,7 +2,7 @@ import React from 'react'
 
 import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
 import AccessibilitySummarySection from 'components/AccessibilitySummarySection'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { SummaryLayout } from 'components/SummaryLayout'
 import {
   Events,

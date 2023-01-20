@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 
 import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import {
   getValidationSchema,

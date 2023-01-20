@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { configureTestStore } from 'store/testUtils'

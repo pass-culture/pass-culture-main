@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import PageTitle from 'components/PageTitle/PageTitle'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import {

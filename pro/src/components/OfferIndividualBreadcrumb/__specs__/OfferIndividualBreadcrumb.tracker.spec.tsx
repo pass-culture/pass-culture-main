@@ -18,11 +18,11 @@ import * as useAnalytics from 'hooks/useAnalytics'
 import { configureTestStore } from 'store/testUtils'
 
 import { OFFER_WIZARD_STEP_IDS } from '../constants'
-import OfferIndividualStepper from '../OfferIndividualStepper'
+import OfferIndividualBreadcrumb from '../OfferIndividualBreadcrumb'
 
 const mockLogEvent = jest.fn()
 
-const renderOfferIndividualStepper = (
+const renderOfferIndividualBreadcrumb = (
   contextOverride: Partial<IOfferIndividualContext> = {},
   url = getOfferIndividualPath({
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -50,7 +50,7 @@ const renderOfferIndividualStepper = (
     <Provider store={store}>
       <OfferIndividualContext.Provider value={contextValues}>
         <MemoryRouter initialEntries={[url]}>
-          <OfferIndividualStepper />
+          <OfferIndividualBreadcrumb />
           <Switch>
             <Route
               path={Object.values(OFFER_WIZARD_MODE).map(mode =>
@@ -108,7 +108,7 @@ const renderOfferIndividualStepper = (
   }
 }
 
-describe('test tracker OfferIndividualStepper', () => {
+describe('test tracker OfferIndividualBreadcrumb', () => {
   let offer: Partial<IOfferIndividual>
   let contextOverride: Partial<IOfferIndividualContext>
   beforeEach(() => {
@@ -127,7 +127,7 @@ describe('test tracker OfferIndividualStepper', () => {
   })
   describe('in creation', () => {
     it('should track when clicking on steps on Information', async () => {
-      const { tabStocks } = renderOfferIndividualStepper(contextOverride)
+      const { tabStocks } = renderOfferIndividualBreadcrumb(contextOverride)
 
       tabStocks && (await userEvent.click(tabStocks))
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -146,7 +146,7 @@ describe('test tracker OfferIndividualStepper', () => {
     })
 
     it('should track when clicking on steps on Stocks', async () => {
-      const { tabSummary } = renderOfferIndividualStepper(
+      const { tabSummary } = renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({
@@ -174,7 +174,7 @@ describe('test tracker OfferIndividualStepper', () => {
     })
 
     it('should track when clicking on steps on Summary', async () => {
-      const { tabInformations } = renderOfferIndividualStepper(
+      const { tabInformations } = renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({
@@ -204,7 +204,7 @@ describe('test tracker OfferIndividualStepper', () => {
 
   describe('in edition', () => {
     it('should track when clicking on steps on Information', async () => {
-      const { tabStocks } = renderOfferIndividualStepper(
+      const { tabStocks } = renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({
@@ -232,7 +232,7 @@ describe('test tracker OfferIndividualStepper', () => {
     })
 
     it('should track when clicking on steps on Stocks', async () => {
-      const { tabInformations } = renderOfferIndividualStepper(
+      const { tabInformations } = renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({
@@ -262,7 +262,7 @@ describe('test tracker OfferIndividualStepper', () => {
 
   describe('in draft', () => {
     it('should track when clicking on steps on Information', async () => {
-      const { tabSummary } = renderOfferIndividualStepper(
+      const { tabSummary } = renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({
@@ -290,7 +290,7 @@ describe('test tracker OfferIndividualStepper', () => {
     })
 
     it('should track when clicking on steps on Stocks', async () => {
-      const { tabSummary } = renderOfferIndividualStepper(
+      const { tabSummary } = renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({
@@ -318,7 +318,7 @@ describe('test tracker OfferIndividualStepper', () => {
     })
 
     it('should track when clicking on steps on Summary', async () => {
-      const { tabStocks } = renderOfferIndividualStepper(
+      const { tabStocks } = renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({

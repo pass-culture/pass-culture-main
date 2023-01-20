@@ -2,7 +2,7 @@ import { FormikProvider } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate, useOfferWizardMode } from 'hooks'

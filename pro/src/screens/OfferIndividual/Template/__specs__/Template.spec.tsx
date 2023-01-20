@@ -6,7 +6,7 @@ import { Provider } from 'react-redux'
 import { generatePath, MemoryRouter } from 'react-router'
 
 import { OfferStatus } from 'apiClient/v1'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,

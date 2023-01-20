@@ -16,9 +16,9 @@ import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { configureTestStore } from 'store/testUtils'
 
 import { OFFER_WIZARD_STEP_IDS } from '../constants'
-import OfferIndividualStepper from '../OfferIndividualStepper'
+import OfferIndividualBreadcrumb from '../OfferIndividualBreadcrumb'
 
-const renderOfferIndividualStepper = (
+const renderOfferIndividualBreadcrumb = (
   contextOverride: Partial<IOfferIndividualContext> = {},
   url = getOfferIndividualPath({
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -45,7 +45,7 @@ const renderOfferIndividualStepper = (
     <Provider store={store}>
       <OfferIndividualContext.Provider value={contextValues}>
         <MemoryRouter initialEntries={[url]}>
-          <OfferIndividualStepper />
+          <OfferIndividualBreadcrumb />
           <Switch>
             <Route
               path={[
@@ -135,17 +135,17 @@ const renderOfferIndividualStepper = (
   }
 }
 
-describe('test OfferIndividualStepper', () => {
+describe('test OfferIndividualBreadcrumb', () => {
   describe('in creation', () => {
     it('should render stepper breadcrumb in creation', () => {
-      renderOfferIndividualStepper()
+      renderOfferIndividualBreadcrumb()
 
       expect(screen.getByTestId('stepper')).toBeInTheDocument()
     })
 
     it('should render steps when no offer is given', async () => {
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualStepper()
+        renderOfferIndividualBreadcrumb()
 
       expect(tabInformations).toBeInTheDocument()
       expect(tabStocks).toBeInTheDocument()
@@ -173,7 +173,7 @@ describe('test OfferIndividualStepper', () => {
         offer: offer as IOfferIndividual,
       }
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualStepper(contextOverride)
+        renderOfferIndividualBreadcrumb(contextOverride)
 
       expect(tabInformations).toBeInTheDocument()
       expect(tabStocks).toBeInTheDocument()
@@ -200,7 +200,7 @@ describe('test OfferIndividualStepper', () => {
         offer: offer as IOfferIndividual,
       }
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualStepper(contextOverride)
+        renderOfferIndividualBreadcrumb(contextOverride)
 
       expect(tabInformations).toBeInTheDocument()
       expect(tabStocks).toBeInTheDocument()
@@ -219,7 +219,7 @@ describe('test OfferIndividualStepper', () => {
 
     it('should render steps on Information', () => {
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualStepper(
+        renderOfferIndividualBreadcrumb(
           undefined,
           generatePath(
             getOfferIndividualPath({
@@ -239,7 +239,7 @@ describe('test OfferIndividualStepper', () => {
 
     it('should render steps on Stocks', () => {
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualStepper(
+        renderOfferIndividualBreadcrumb(
           undefined,
           generatePath(
             getOfferIndividualPath({
@@ -259,7 +259,7 @@ describe('test OfferIndividualStepper', () => {
 
     it('should render steps on Summary', () => {
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualStepper(
+        renderOfferIndividualBreadcrumb(
           undefined,
           generatePath(
             getOfferIndividualPath({
@@ -285,7 +285,7 @@ describe('test OfferIndividualStepper', () => {
           tabPriceCategories,
           tabSummary,
           tabConfirmation,
-        } = renderOfferIndividualStepper(
+        } = renderOfferIndividualBreadcrumb(
           {
             offer: {
               id: 'AA',
@@ -330,7 +330,7 @@ describe('test OfferIndividualStepper', () => {
       const contextOverride: Partial<IOfferIndividualContext> = {
         offer: offer as IOfferIndividual,
       }
-      renderOfferIndividualStepper(
+      renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({
@@ -356,7 +356,7 @@ describe('test OfferIndividualStepper', () => {
       }
 
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualStepper(
+        renderOfferIndividualBreadcrumb(
           contextOverride,
           generatePath(
             getOfferIndividualPath({
@@ -386,7 +386,7 @@ describe('test OfferIndividualStepper', () => {
       }
 
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualStepper(
+        renderOfferIndividualBreadcrumb(
           contextOverride,
           generatePath(
             getOfferIndividualPath({

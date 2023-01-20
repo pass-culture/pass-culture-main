@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import FormLayout from 'components/FormLayout'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
@@ -12,7 +13,6 @@ import {
   setInitialFormValues,
   validationSchema,
 } from 'components/OfferIndividualForm'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {

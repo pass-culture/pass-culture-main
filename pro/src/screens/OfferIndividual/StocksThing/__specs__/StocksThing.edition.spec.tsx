@@ -16,7 +16,7 @@ import {
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { OfferIndividualContextProvider } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import {

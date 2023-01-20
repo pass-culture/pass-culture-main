@@ -1,7 +1,7 @@
 /* istanbul ignore file : tested through OfferIndividual/Informations & Stocks */
 import React, { useState } from 'react'
 
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import RouteLeavingGuard from 'components/RouteLeavingGuard'
 import { BUTTON_ACTION } from 'components/RouteLeavingGuard/RouteLeavingGuard'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
