@@ -23,8 +23,8 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.routes.adage.v1.serialization import prebooking
+from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
 from pcapi.routes.serialization import collective_offers_serialize
-from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferTemplateBodyModel
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel

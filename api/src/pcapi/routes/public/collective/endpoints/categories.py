@@ -4,8 +4,8 @@ from typing import cast
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
 from pcapi.routes.pro import blueprint
+from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -19,11 +19,11 @@ from pcapi.validation.routes.users_authentifications import api_key_required
         **(
             {
                 "HTTP_200": (
-                    public_api_collective_offers_serialize.CollectiveOffersListCategoriesResponseModel,
+                    offers_serialization.CollectiveOffersListCategoriesResponseModel,
                     "La liste des catégories éligibles existantes.",
                 ),
                 "HTTP_401": (
-                    cast(BaseModel, public_api_collective_offers_serialize.AuthErrorResponseModel),
+                    cast(BaseModel, offers_serialization.AuthErrorResponseModel),
                     "Authentification nécessaire",
                 ),
             }
@@ -31,14 +31,12 @@ from pcapi.validation.routes.users_authentifications import api_key_required
     ),
 )
 @api_key_required
-def list_categories() -> public_api_collective_offers_serialize.CollectiveOffersListCategoriesResponseModel:
+def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste des catégories d'offres proposées."""
-    return public_api_collective_offers_serialize.CollectiveOffersListCategoriesResponseModel(
+    return offers_serialization.CollectiveOffersListCategoriesResponseModel(
         __root__=[
-            public_api_collective_offers_serialize.CollectiveOffersCategoryResponseModel(
-                id=category.id, name=category.pro_label
-            )
+            offers_serialization.CollectiveOffersCategoryResponseModel(id=category.id, name=category.pro_label)
             for category in categories.ALL_CATEGORIES
             if category.is_selectable
         ]
@@ -53,11 +51,11 @@ def list_categories() -> public_api_collective_offers_serialize.CollectiveOffers
         **(
             {
                 "HTTP_200": (
-                    public_api_collective_offers_serialize.CollectiveOffersListSubCategoriesResponseModel,
+                    offers_serialization.CollectiveOffersListSubCategoriesResponseModel,
                     "La liste des sous-catégories éligibles existantes.",
                 ),
                 "HTTP_401": (
-                    cast(BaseModel, public_api_collective_offers_serialize.AuthErrorResponseModel),
+                    cast(BaseModel, offers_serialization.AuthErrorResponseModel),
                     "Authentification nécessaire",
                 ),
             }
@@ -65,7 +63,7 @@ def list_categories() -> public_api_collective_offers_serialize.CollectiveOffers
     ),
 )
 @api_key_required
-def list_subcategories() -> public_api_collective_offers_serialize.CollectiveOffersListSubCategoriesResponseModel:
+def list_subcategories() -> offers_serialization.CollectiveOffersListSubCategoriesResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste des sous-catégories d'offres proposées a un public collectif."""
     result_dict = defaultdict(list)
@@ -73,11 +71,11 @@ def list_subcategories() -> public_api_collective_offers_serialize.CollectiveOff
         if not subcategory.is_selectable:
             continue
         result_dict[subcategory.category.pro_label].append(
-            public_api_collective_offers_serialize.CollectiveOffersSubCategoryResponseModel.from_orm(subcategory)
+            offers_serialization.CollectiveOffersSubCategoryResponseModel.from_orm(subcategory)
         )
 
     sorted_list = []
     for category in sorted(result_dict.keys()):
         sorted_list.extend(sorted(result_dict[category], key=lambda x: x.label))
 
-    return public_api_collective_offers_serialize.CollectiveOffersListSubCategoriesResponseModel(__root__=sorted_list)
+    return offers_serialization.CollectiveOffersListSubCategoriesResponseModel(__root__=sorted_list)

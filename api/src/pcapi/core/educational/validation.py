@@ -12,7 +12,7 @@ from pcapi.routes.serialization import collective_offers_serialize
 
 
 if TYPE_CHECKING:
-    from pcapi.routes.serialization.public_api_collective_offers_serialize import OfferVenueModel
+    from pcapi.routes.public.collective.serialization.offers import OfferVenueModel
 
 
 def validate_offer_venue(offer_venue: "OfferVenueModel | None") -> None:
