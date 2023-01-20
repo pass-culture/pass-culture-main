@@ -2,8 +2,8 @@ from typing import cast
 
 from pcapi.core.educational.api.institution import search_educational_institution
 from pcapi.routes.pro import blueprint
+from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -17,15 +17,15 @@ from pcapi.validation.routes.users_authentifications import api_key_required
         **(
             {
                 "HTTP_200": (
-                    public_api_collective_offers_serialize.CollectiveOffersListEducationalInstitutionResponseModel,
+                    offers_serialization.CollectiveOffersListEducationalInstitutionResponseModel,
                     "La liste des établissement scolaires éligibles.",
                 ),
                 "HTTP_400": (
-                    cast(BaseModel, public_api_collective_offers_serialize.ErrorResponseModel),
+                    cast(BaseModel, offers_serialization.ErrorResponseModel),
                     "Requête malformée",
                 ),
                 "HTTP_401": (
-                    cast(BaseModel, public_api_collective_offers_serialize.AuthErrorResponseModel),
+                    cast(BaseModel, offers_serialization.AuthErrorResponseModel),
                     "Authentification nécessaire",
                 ),
             }
@@ -34,8 +34,8 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 )
 @api_key_required
 def list_educational_institutions(
-    query: public_api_collective_offers_serialize.GetListEducationalInstitutionsQueryModel,
-) -> public_api_collective_offers_serialize.CollectiveOffersListEducationalInstitutionResponseModel:
+    query: offers_serialization.GetListEducationalInstitutionsQueryModel,
+) -> offers_serialization.CollectiveOffersListEducationalInstitutionResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste établissements scolaires."""
 
@@ -47,11 +47,9 @@ def list_educational_institutions(
         institution_type=query.institution_type,
         limit=query.limit,
     )
-    return public_api_collective_offers_serialize.CollectiveOffersListEducationalInstitutionResponseModel(
+    return offers_serialization.CollectiveOffersListEducationalInstitutionResponseModel(
         __root__=[
-            public_api_collective_offers_serialize.CollectiveOffersEducationalInstitutionResponseModel.from_orm(
-                institution
-            )
+            offers_serialization.CollectiveOffersEducationalInstitutionResponseModel.from_orm(institution)
             for institution in institutions
         ]
     )

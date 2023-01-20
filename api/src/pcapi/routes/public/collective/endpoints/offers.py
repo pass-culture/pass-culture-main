@@ -9,8 +9,8 @@ from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.pro import blueprint
 from pcapi.routes.public import utils
+from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.serialization import collective_offers_serialize
-from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.image_conversion import DO_NOT_CROP
@@ -19,12 +19,12 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 
 
 BASE_CODE_DESCRIPTIONS = {
-    "HTTP_401": (public_api_collective_offers_serialize.AuthErrorResponseModel, "Authentification nécessaire"),
+    "HTTP_401": (offers_serialization.AuthErrorResponseModel, "Authentification nécessaire"),
     "HTTP_403": (
-        public_api_collective_offers_serialize.ErrorResponseModel,
+        offers_serialization.ErrorResponseModel,
         "Vous n'avez pas les droits nécessaires pour voir cette offre collective",
     ),
-    "HTTP_404": (public_api_collective_offers_serialize.ErrorResponseModel, "L'offre collective n'existe pas"),
+    "HTTP_404": (offers_serialization.ErrorResponseModel, "L'offre collective n'existe pas"),
 }
 
 
@@ -37,7 +37,7 @@ BASE_CODE_DESCRIPTIONS = {
             BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_200": (
-                    public_api_collective_offers_serialize.CollectiveOffersListResponseModel,
+                    offers_serialization.CollectiveOffersListResponseModel,
                     "L'offre collective existe",
                 ),
             }
@@ -46,8 +46,8 @@ BASE_CODE_DESCRIPTIONS = {
 )
 @api_key_required
 def get_collective_offers_public(
-    query: public_api_collective_offers_serialize.ListCollectiveOffersQueryModel,
-) -> public_api_collective_offers_serialize.CollectiveOffersListResponseModel:
+    query: offers_serialization.ListCollectiveOffersQueryModel,
+) -> offers_serialization.CollectiveOffersListResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récuperation de l'offre collective avec l'identifiant offer_id.
     Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées."""
@@ -60,10 +60,8 @@ def get_collective_offers_public(
         period_ending_date=query.period_ending_date,
     )
 
-    return public_api_collective_offers_serialize.CollectiveOffersListResponseModel(
-        __root__=[
-            public_api_collective_offers_serialize.CollectiveOffersResponseModel.from_orm(offer) for offer in offers
-        ]
+    return offers_serialization.CollectiveOffersListResponseModel(
+        __root__=[offers_serialization.CollectiveOffersResponseModel.from_orm(offer) for offer in offers]
     )
 
 
@@ -76,7 +74,7 @@ def get_collective_offers_public(
             BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_200": (
-                    public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel,
+                    offers_serialization.GetPublicCollectiveOfferResponseModel,
                     "L'offre collective existe",
                 ),
             }
@@ -86,7 +84,7 @@ def get_collective_offers_public(
 @api_key_required
 def get_collective_offer_public(
     offer_id: int,
-) -> public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel:
+) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récuperation de l'offre collective avec l'identifiant offer_id."""
     try:
@@ -114,7 +112,7 @@ def get_collective_offer_public(
             },
             status_code=403,
         )
-    return public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel.from_orm(offer)
+    return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
 
 @blueprint.pro_public_api_v2.route("/collective/offers/", methods=["POST"])
@@ -125,20 +123,20 @@ def get_collective_offer_public(
         **(
             {
                 "HTTP_201": (
-                    public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel,
+                    offers_serialization.GetPublicCollectiveOfferResponseModel,
                     "L'offre collective à été créée avec succes",
                 ),
-                "HTTP_400": (public_api_collective_offers_serialize.ErrorResponseModel, "Requête malformée"),
+                "HTTP_400": (offers_serialization.ErrorResponseModel, "Requête malformée"),
                 "HTTP_401": (
-                    public_api_collective_offers_serialize.AuthErrorResponseModel,
+                    offers_serialization.AuthErrorResponseModel,
                     "Authentification nécessaire",
                 ),
                 "HTTP_403": (
-                    public_api_collective_offers_serialize.ErrorResponseModel,
+                    offers_serialization.ErrorResponseModel,
                     "Non éligible pour les offres collectives",
                 ),
                 "HTTP_404": (
-                    public_api_collective_offers_serialize.ErrorResponseModel,
+                    offers_serialization.ErrorResponseModel,
                     "L'une des resources pour la création de l'offre n'a pas été trouvée",
                 ),
             }
@@ -147,8 +145,8 @@ def get_collective_offer_public(
 )
 @api_key_required
 def post_collective_offer_public(
-    body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel,
-) -> public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel:
+    body: offers_serialization.PostCollectiveOfferBodyModel,
+) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Création d'une offre collective."""
     image_as_bytes = None
@@ -229,7 +227,7 @@ def post_collective_offer_public(
             obj=offer, image=image_as_bytes, crop_params=DO_NOT_CROP, credit=body.image_credit
         )
 
-    return public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel.from_orm(offer)
+    return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
 
 @blueprint.pro_public_api_v2.route("/collective/offers/<int:offer_id>", methods=["PATCH"])
@@ -240,24 +238,24 @@ def post_collective_offer_public(
         **(
             {
                 "HTTP_200": (
-                    public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel,
+                    offers_serialization.GetPublicCollectiveOfferResponseModel,
                     "L'offre collective à été édité avec succes",
                 ),
-                "HTTP_400": (public_api_collective_offers_serialize.ErrorResponseModel, "Requête malformée"),
+                "HTTP_400": (offers_serialization.ErrorResponseModel, "Requête malformée"),
                 "HTTP_401": (
-                    public_api_collective_offers_serialize.AuthErrorResponseModel,
+                    offers_serialization.AuthErrorResponseModel,
                     "Authentification nécessaire",
                 ),
                 "HTTP_403": (
-                    public_api_collective_offers_serialize.ErrorResponseModel,
+                    offers_serialization.ErrorResponseModel,
                     "Vous n'avez pas les droits nécessaires pour éditer cette offre collective",
                 ),
                 "HTTP_404": (
-                    public_api_collective_offers_serialize.ErrorResponseModel,
+                    offers_serialization.ErrorResponseModel,
                     "L'une des resources pour la création de l'offre n'a pas été trouvée",
                 ),
                 "HTTP_422": (
-                    public_api_collective_offers_serialize.ErrorResponseModel,
+                    offers_serialization.ErrorResponseModel,
                     "Cetains champs ne peuvent pas être édités selon l'état de l'offre",
                 ),
             }
@@ -267,8 +265,8 @@ def post_collective_offer_public(
 @api_key_required
 def patch_collective_offer_public(
     offer_id: int,
-    body: public_api_collective_offers_serialize.PatchCollectiveOfferBodyModel,
-) -> public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel:
+    body: offers_serialization.PatchCollectiveOfferBodyModel,
+) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Édition d'une offre collective."""
     new_values = body.dict(exclude_unset=True)
@@ -485,4 +483,4 @@ def patch_collective_offer_public(
     elif image_file is None:
         educational_api_offer.delete_image(obj=offer)
 
-    return public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel.from_orm(offer)
+    return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)

@@ -2,8 +2,8 @@ from typing import cast
 
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.routes.pro import blueprint
+from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -18,11 +18,11 @@ from pcapi.validation.routes.users_authentifications import current_api_key
         **(
             {
                 "HTTP_200": (
-                    public_api_collective_offers_serialize.CollectiveOffersListVenuesResponseModel,
+                    offers_serialization.CollectiveOffersListVenuesResponseModel,
                     "La liste des lieux ou vous pouvez créer une offre.",
                 ),
                 "HTTP_401": (
-                    cast(BaseModel, public_api_collective_offers_serialize.AuthErrorResponseModel),
+                    cast(BaseModel, offers_serialization.AuthErrorResponseModel),
                     "Authentification nécessaire",
                 ),
             }
@@ -30,7 +30,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
     ),
 )
 @api_key_required
-def list_venues() -> public_api_collective_offers_serialize.CollectiveOffersListVenuesResponseModel:
+def list_venues() -> offers_serialization.CollectiveOffersListVenuesResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste des lieux associés à la structure authentifiée par le jeton d'API.
 
@@ -39,9 +39,6 @@ def list_venues() -> public_api_collective_offers_serialize.CollectiveOffersList
     offerer_id = current_api_key.offererId  # type: ignore [attr-defined]
     venues = offerers_repository.get_all_venues_by_offerer_id(offerer_id)
 
-    return public_api_collective_offers_serialize.CollectiveOffersListVenuesResponseModel(
-        __root__=[
-            public_api_collective_offers_serialize.CollectiveOffersVenueResponseModel.from_orm(venue)
-            for venue in venues
-        ]
+    return offers_serialization.CollectiveOffersListVenuesResponseModel(
+        __root__=[offers_serialization.CollectiveOffersVenueResponseModel.from_orm(venue) for venue in venues]
     )

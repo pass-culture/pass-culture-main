@@ -2,8 +2,8 @@ from typing import cast
 
 from pcapi.core.educational import models as educational_models
 from pcapi.routes.pro import blueprint
+from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -17,11 +17,11 @@ from pcapi.validation.routes.users_authentifications import api_key_required
         **(
             {
                 "HTTP_200": (
-                    public_api_collective_offers_serialize.CollectiveOffersListStudentLevelsResponseModel,
+                    offers_serialization.CollectiveOffersListStudentLevelsResponseModel,
                     "La liste des domaines d'éducation.",
                 ),
                 "HTTP_401": (
-                    cast(BaseModel, public_api_collective_offers_serialize.AuthErrorResponseModel),
+                    cast(BaseModel, offers_serialization.AuthErrorResponseModel),
                     "Authentification nécessaire",
                 ),
             }
@@ -29,12 +29,12 @@ from pcapi.validation.routes.users_authentifications import api_key_required
     ),
 )
 @api_key_required
-def list_students_levels() -> public_api_collective_offers_serialize.CollectiveOffersListStudentLevelsResponseModel:
+def list_students_levels() -> offers_serialization.CollectiveOffersListStudentLevelsResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées."""
-    return public_api_collective_offers_serialize.CollectiveOffersListStudentLevelsResponseModel(
+    return offers_serialization.CollectiveOffersListStudentLevelsResponseModel(
         __root__=[
-            public_api_collective_offers_serialize.CollectiveOffersStudentLevelResponseModel(
+            offers_serialization.CollectiveOffersStudentLevelResponseModel(
                 id=student_level.name, name=student_level.value
             )
             for student_level in educational_models.StudentLevels
