@@ -58,6 +58,9 @@ export type { EducationalDomainsResponseModel } from './models/EducationalDomain
 export type { EducationalInstitutionResponseModel } from './models/EducationalInstitutionResponseModel';
 export type { EducationalInstitutionsQueryModel } from './models/EducationalInstitutionsQueryModel';
 export type { EducationalInstitutionsResponseModel } from './models/EducationalInstitutionsResponseModel';
+export type { EducationalRedactor } from './models/EducationalRedactor';
+export type { EducationalRedactorQueryModel } from './models/EducationalRedactorQueryModel';
+export type { EducationalRedactors } from './models/EducationalRedactors';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export { GenderEnum } from './models/GenderEnum';
 export type { GenerateOffererApiKeyResponse } from './models/GenerateOffererApiKeyResponse';
