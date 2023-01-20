@@ -110,6 +110,7 @@ const ButtonLink = ({
       to={to}
       {...disabled}
       {...tooltipProps}
+      aria-label={linkProps['aria-label']}
     >
       {body}
     </Link>

@@ -66,6 +66,7 @@ const StockSection = ({
         title="Stocks et prix"
         editLink={editLink}
         onLinkClick={logEditEvent}
+        ariaLabel="Modifier stock et prix"
       >
         {stockWarningText && (
           <SummaryLayout.Row
