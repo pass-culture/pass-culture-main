@@ -34,6 +34,7 @@ from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import Case
+import sqlalchemy.sql.functions as sqla_func
 from sqlalchemy.sql.sqltypes import LargeBinary
 from werkzeug.utils import cached_property
 
@@ -444,6 +445,14 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
             )
             .scalar()
         )
+
+    @hybrid_property
+    def common_name(self) -> str:
+        return self.publicName or self.name
+
+    @common_name.expression  # type: ignore [no-redef]
+    def common_name(self) -> str:
+        return sqla_func.coalesce(func.nullif(self.publicName, ""), self.name)
 
 
 class VenueLabel(PcObject, Base, Model):
