@@ -4,9 +4,9 @@ from spectree import SecurityScheme
 
 from pcapi.models import api_errors
 from pcapi.models import feature
-from pcapi.routes.pro import blueprint as base_pro_blueprint
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
+from pcapi.validation.routes import users_authentifications
 
 
 def check_api_is_enabled() -> None:
@@ -30,7 +30,7 @@ v1_schema = ExtendedSpecTree(
     before=before_handler,
     security_schemes=[
         SecurityScheme(
-            name=base_pro_blueprint.API_KEY_AUTH,
+            name=users_authentifications.API_KEY_AUTH_NAME,
             data={"type": "http", "scheme": "bearer", "description": "Api key issued on passculture.pro"},
         )
     ],
