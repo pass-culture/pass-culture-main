@@ -33,7 +33,6 @@ def install_all_routes(app: Flask) -> None:
     from . import public
     from . import saml
     from . import shared
-    from .pro import public_api as pro_public_api
 
     install_admin(app, db.session)
     install_admin_autocomplete_views()
@@ -43,7 +42,6 @@ def install_all_routes(app: Flask) -> None:
     native.install_routes(app)
     pro.install_routes(app)
     public.install_routes(app)
-    pro_public_api.install_routes(app)
     saml.install_routes(app)
     shared.install_routes(app)
     adage_iframe.install_routes(app)
