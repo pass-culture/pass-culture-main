@@ -8,10 +8,12 @@ import pytz
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2
+from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils import urls
 
 
@@ -136,6 +138,20 @@ def format_booking_status(status: bookings_models.BookingStatus | educational_mo
             return status.value
 
 
+def format_offer_validation_status(status: OfferValidationStatus) -> str:
+    match status:
+        case OfferValidationStatus.DRAFT:
+            return "Nouvelle"
+        case OfferValidationStatus.PENDING:
+            return "En attente"
+        case OfferValidationStatus.APPROVED:
+            return "Validée"
+        case OfferValidationStatus.REJECTED:
+            return "Rejetée"
+        case _:
+            return status.value
+
+
 def format_offer_category(subcategory_id: str) -> str:
     subcategory = subcategories_v2.ALL_SUBCATEGORIES_DICT.get(subcategory_id)
     if subcategory:
@@ -149,6 +165,10 @@ def format_tag_object_list(
     if objects_with_label_attribute:
         return ", ".join([(obj.label or obj.name) for obj in objects_with_label_attribute])
     return ""
+
+
+def format_criteria(criteria: list[criteria_models.OfferCriterion]) -> str:
+    return ", ".join(criterion.name for criterion in criteria)
 
 
 def parse_referrer(url: str) -> str:
@@ -172,7 +192,9 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_bool"] = format_bool
     app.jinja_env.filters["format_string_list"] = format_string_list
     app.jinja_env.filters["format_date"] = format_date
+    app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status
     app.jinja_env.filters["format_offer_category"] = format_offer_category
+    app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
     app.jinja_env.filters["format_phone_number"] = format_phone_number
     app.jinja_env.filters["format_role"] = format_role

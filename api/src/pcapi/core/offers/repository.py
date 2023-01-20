@@ -6,6 +6,7 @@ import typing
 from typing import List
 
 from flask_sqlalchemy import BaseQuery
+import sqlalchemy as sa
 from sqlalchemy import and_
 from sqlalchemy import false
 from sqlalchemy import func
@@ -40,6 +41,7 @@ from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.infrastructure.repository.pro_offers.offers_recap_domain_converter import to_domain
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
+from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.custom_keys import compute_venue_reference
 
 
@@ -702,3 +704,23 @@ def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int) ->
         .limit(limit)
     )
     return [offer_id for offer_id, in query]
+
+
+def search_offers_by_filters(
+    search_query: str | None,
+    limit: int,
+) -> sa.orm.Query:
+    offers = Offer.query.options(
+        sa.orm.joinedload(Offer.stocks),
+        sa.orm.joinedload(Offer.criteria),
+    )
+
+    if search_query:
+        if search_query.isnumeric():
+            offers = offers.filter(Offer.id == search_query)
+        else:
+            name_query = search_query.replace(" ", "%").replace("-", "%")
+            name_query = clean_accents(name_query)
+            offers = offers.filter(sa.func.unaccent(Offer.name).ilike(f"%{name_query}%")).limit(limit)
+
+    return offers.distinct()
