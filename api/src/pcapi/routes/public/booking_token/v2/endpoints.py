@@ -6,7 +6,7 @@ from pcapi.core.bookings import repository as booking_repository
 from pcapi.core.bookings import validation as bookings_validation
 from pcapi.models import api_errors
 from pcapi.models.api_errors import ForbiddenError
-from pcapi.routes.pro import blueprint
+from pcapi.routes.public import blueprints
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.rate_limiting import basic_auth_rate_limiter
@@ -32,11 +32,11 @@ BASE_CODE_DESCRIPTIONS = {
 }
 
 
-@blueprint.pro_public_api_v2.route("/bookings/token/<token>", methods=["GET"])
+@blueprints.v2_prefixed_public_api.route("/bookings/token/<token>", methods=["GET"])
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
 @spectree_serialize(
-    api=blueprint.pro_public_schema_v2,
+    api=blueprints.v2_prefixed_public_api_schema,
     tags=["API Contremarque"],
     resp=SpectreeResponse(
         **(
@@ -73,11 +73,11 @@ def get_booking_by_token_v2(token: str) -> serialization.GetBookingResponse:
     return serialization.get_booking_response(booking)
 
 
-@blueprint.pro_public_api_v2.route("/bookings/use/token/<token>", methods=["PATCH"])
+@blueprints.v2_prefixed_public_api.route("/bookings/use/token/<token>", methods=["PATCH"])
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
 @spectree_serialize(
-    api=blueprint.pro_public_schema_v2,
+    api=blueprints.v2_prefixed_public_api_schema,
     tags=["API Contremarque"],
     on_success_status=204,
     resp=SpectreeResponse(
@@ -112,11 +112,11 @@ def patch_booking_use_by_token(token: str) -> None:
     bookings_api.mark_as_used(booking)
 
 
-@blueprint.pro_public_api_v2.route("/bookings/cancel/token/<token>", methods=["PATCH"])
+@blueprints.v2_prefixed_public_api.route("/bookings/cancel/token/<token>", methods=["PATCH"])
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
 @spectree_serialize(
-    api=blueprint.pro_public_schema_v2,
+    api=blueprints.v2_prefixed_public_api_schema,
     tags=["API Contremarque"],
     on_success_status=204,
     resp=SpectreeResponse(
@@ -163,11 +163,11 @@ def patch_cancel_booking_by_token(token: str) -> None:
         raise api_errors.ForbiddenError({"global": ["Impossible d'annuler une réservation consommée"]})
 
 
-@blueprint.pro_public_api_v2.route("/bookings/keep/token/<token>", methods=["PATCH"])
+@blueprints.v2_prefixed_public_api.route("/bookings/keep/token/<token>", methods=["PATCH"])
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
 @spectree_serialize(
-    api=blueprint.pro_public_schema_v2,
+    api=blueprints.v2_prefixed_public_api_schema,
     tags=["API Contremarque"],
     on_success_status=204,
     resp=SpectreeResponse(

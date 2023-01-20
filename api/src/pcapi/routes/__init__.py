@@ -15,9 +15,8 @@ def install_all_routes(app: Flask) -> None:
     from pcapi.routes.backoffice.blueprint import backoffice_blueprint
     from pcapi.routes.native.v1.blueprint import native_v1 as native_v1_blueprint
     from pcapi.routes.pro.blueprint import pro_private_api as pro_private_api_blueprint
-    from pcapi.routes.pro.blueprint import pro_public_api_v1 as pro_public_api_v1_blueprint
-    from pcapi.routes.pro.blueprint import pro_public_api_v2 as pro_public_api_v2_blueprint
-    from pcapi.routes.public import blueprint as public_blueprint
+    from pcapi.routes.public import blueprints as public_blueprint
+    from pcapi.routes.public.booking_token.v1.blueprint import deprecated_booking_token_api
     from pcapi.routes.saml.blueprint import saml_blueprint as saml_blueprint_blueprint
     import pcapi.tasks
     from pcapi.tasks.decorator import cloud_task_api
@@ -51,9 +50,9 @@ def install_all_routes(app: Flask) -> None:
 
     app.register_blueprint(adage_v1_blueprint, url_prefix="/adage/v1")
     app.register_blueprint(native_v1_blueprint, url_prefix="/native/v1")
-    app.register_blueprint(pro_public_api_v1_blueprint)
-    app.register_blueprint(pro_public_api_v2_blueprint, url_prefix="/v2")
+    app.register_blueprint(deprecated_booking_token_api)
     app.register_blueprint(public_blueprint.public_blueprint)
+    app.register_blueprint(public_blueprint.v2_prefixed_public_api)
     app.register_blueprint(pro_private_api_blueprint)
     app.register_blueprint(adage_iframe_blueprint, url_prefix="/adage-iframe")
     app.register_blueprint(saml_blueprint_blueprint, url_prefix="/saml")

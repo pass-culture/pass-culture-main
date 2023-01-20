@@ -7,7 +7,7 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.pro import blueprint
+from pcapi.routes.public import blueprints
 from pcapi.routes.public import utils
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.serialization import collective_offers_serialize
@@ -28,9 +28,9 @@ BASE_CODE_DESCRIPTIONS = {
 }
 
 
-@blueprint.pro_public_api_v2.route("/collective/offers/", methods=["GET"])
+@blueprints.v2_prefixed_public_api.route("/collective/offers/", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.pro_public_schema_v2,
+    api=blueprints.v2_prefixed_public_api_schema,
     tags=["API offres collectives BETA"],
     resp=SpectreeResponse(
         **(
@@ -65,9 +65,9 @@ def get_collective_offers_public(
     )
 
 
-@blueprint.pro_public_api_v2.route("/collective/offers/<int:offer_id>", methods=["GET"])
+@blueprints.v2_prefixed_public_api.route("/collective/offers/<int:offer_id>", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.pro_public_schema_v2,
+    api=blueprints.v2_prefixed_public_api_schema,
     tags=["API offres collectives BETA"],
     resp=SpectreeResponse(
         **(
@@ -115,9 +115,9 @@ def get_collective_offer_public(
     return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
 
-@blueprint.pro_public_api_v2.route("/collective/offers/", methods=["POST"])
+@blueprints.v2_prefixed_public_api.route("/collective/offers/", methods=["POST"])
 @spectree_serialize(
-    api=blueprint.pro_public_schema_v2,
+    api=blueprints.v2_prefixed_public_api_schema,
     tags=["API offres collectives BETA"],
     resp=SpectreeResponse(
         **(
@@ -230,9 +230,9 @@ def post_collective_offer_public(
     return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
 
-@blueprint.pro_public_api_v2.route("/collective/offers/<int:offer_id>", methods=["PATCH"])
+@blueprints.v2_prefixed_public_api.route("/collective/offers/<int:offer_id>", methods=["PATCH"])
 @spectree_serialize(
-    api=blueprint.pro_public_schema_v2,
+    api=blueprints.v2_prefixed_public_api_schema,
     tags=["API offres collectives BETA"],
     resp=SpectreeResponse(
         **(

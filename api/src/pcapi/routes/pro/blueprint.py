@@ -7,22 +7,6 @@ from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
-pro_public_api_v1 = Blueprint("pro_public_api_v1", __name__)
-CORS(
-    pro_public_api_v1,
-    resources={r"/*": {"origins": "*"}},
-    supports_credentials=True,
-)
-
-
-pro_public_api_v2 = Blueprint("pro_public_api_v2", __name__)
-CORS(
-    pro_public_api_v2,
-    resources={r"/*": {"origins": "*"}},
-    supports_credentials=True,
-)
-
-
 pro_private_api = Blueprint("pro_private_api", __name__)
 CORS(
     pro_private_api,
@@ -41,19 +25,6 @@ SECURITY_SCHEMES = [
     ),
     SecurityScheme(name=COOKIE_AUTH, data={"type": "apiKey", "in": "cookie", "name": "session"}),
 ]
-
-
-pro_public_schema_v2 = ExtendedSpecTree(
-    "flask",
-    title="pass Culture pro public API v2",
-    MODE="strict",
-    before=before_handler,
-    PATH="/",
-    security_schemes=SECURITY_SCHEMES,
-    humanize_operation_id=True,
-    version=2,
-)
-pro_public_schema_v2.register(pro_public_api_v2)
 
 
 pro_private_schema = ExtendedSpecTree(
