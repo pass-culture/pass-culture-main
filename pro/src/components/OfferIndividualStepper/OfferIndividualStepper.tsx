@@ -1,5 +1,5 @@
 import React from 'react'
-import { generatePath } from 'react-router'
+import { generatePath, useLocation } from 'react-router'
 
 import Breadcrumb, {
   BreadcrumbStyle,
@@ -14,7 +14,12 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import {
+  getOfferSubtypeFromParamsOrOffer,
+  isOfferSubtypeEvent,
+} from 'screens/OfferIndividual/Informations/utils/filterCategories/filterCategories'
 
 import { OFFER_WIZARD_STEP_IDS } from './constants'
 import { useActiveStep } from './hooks'
@@ -30,9 +35,17 @@ const OfferIndividualStepper = ({
   const { offer } = useOfferIndividualContext()
   const activeStep = useActiveStep()
   const { logEvent } = useAnalytics()
+  const isPriceCategoriesActive = useActiveFeature(
+    'WIP_ENABLE_MULTI_PRICE_STOCKS'
+  )
   const mode = useOfferWizardMode()
   const hasOffer = offer !== null
   const hasStock = offer !== null && offer.stocks.length > 0
+  const { search } = useLocation()
+  const offerSubtype = getOfferSubtypeFromParamsOrOffer(search, offer)
+
+  const isEvent = offer?.isEvent || isOfferSubtypeEvent(offerSubtype)
+
   const stepPatternList: IStepPattern[] = [
     {
       id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -55,7 +68,10 @@ const OfferIndividualStepper = ({
     },
     {
       id: OFFER_WIZARD_STEP_IDS.STOCKS,
-      label: 'Stock & Prix',
+      label:
+        isEvent && isPriceCategoriesActive
+          ? 'Dates & Capacités'
+          : 'Stock & Prix',
       path: {
         [OFFER_WIZARD_MODE.CREATION]: getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -73,6 +89,28 @@ const OfferIndividualStepper = ({
       isActive: hasOffer,
     },
   ]
+
+  if (isEvent && isPriceCategoriesActive) {
+    stepPatternList.splice(1, 0, {
+      id: OFFER_WIZARD_STEP_IDS.TARIFS,
+      label: 'Tarifs',
+      path: {
+        [OFFER_WIZARD_MODE.CREATION]: getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        }),
+        [OFFER_WIZARD_MODE.DRAFT]: getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        }),
+        [OFFER_WIZARD_MODE.EDITION]: getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        }),
+      }[mode],
+      isActive: hasOffer,
+    })
+  }
 
   if (mode !== OFFER_WIZARD_MODE.EDITION) {
     stepPatternList.push(
