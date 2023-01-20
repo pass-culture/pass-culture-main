@@ -34,6 +34,7 @@ import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { FORM_ERROR_MESSAGE } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useNavigate, useOfferWizardMode } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -43,6 +44,7 @@ import { useIndividualOfferImageUpload } from '../hooks'
 import { logTo } from '../utils/logTo'
 
 import { filterCategories } from './utils'
+import { computeNextStep } from './utils/computeNextStep'
 import {
   getCategoryStatusFromOfferSubtype,
   getOfferSubtypeFromParamsOrOffer,
@@ -75,7 +77,9 @@ const Informations = ({
   } = useOfferIndividualContext()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useIndividualOfferImageUpload()
-
+  const isPriceCategoriesActive = useActiveFeature(
+    'WIP_ENABLE_MULTI_PRICE_STOCKS'
+  )
   const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
   const [
     isSubmittingFromRouteLeavingGuard,
@@ -83,6 +87,35 @@ const Informations = ({
   ] = useState<boolean>(false)
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
+  const { search } = useLocation()
+  const offerSubtype = getOfferSubtypeFromParamsOrOffer(search, offer)
+  const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
+  const initialValues: IOfferIndividualFormValues =
+    offer === null
+      ? setDefaultInitialFormValues(
+          FORM_DEFAULT_VALUES,
+          offererNames,
+          offererId,
+          venueId,
+          venueList
+        )
+      : setInitialFormValues(offer, subCategories)
+  const initialVenue: TOfferIndividualVenue | undefined = venueList.find(
+    venue => venue.id === initialValues.venueId
+  )
+  // TODO to remove once the hub that always redirects to the good url with query params is in prod
+  const legacyCategoryStatus =
+    initialVenue === undefined
+      ? CATEGORY_STATUS.ONLINE_OR_OFFLINE
+      : initialVenue.isVirtual
+      ? CATEGORY_STATUS.ONLINE
+      : CATEGORY_STATUS.OFFLINE
+  const [filteredCategories, filteredSubCategories] = filterCategories(
+    categories,
+    subCategories,
+    offerSubtype !== null ? categoryStatus : legacyCategoryStatus,
+    isOfferSubtypeEvent(offerSubtype)
+  )
 
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
@@ -112,12 +145,12 @@ const Informations = ({
       ? await createIndividualOffer(formValues)
       : await updateIndividualOffer({ offer, formValues })
 
-    const nextStep =
-      mode === OFFER_WIZARD_MODE.EDITION
-        ? OFFER_WIZARD_STEP_IDS.SUMMARY
-        : isSubmittingDraft
-        ? OFFER_WIZARD_STEP_IDS.INFORMATIONS
-        : OFFER_WIZARD_STEP_IDS.STOCKS
+    const nextStep = computeNextStep(
+      mode,
+      isSubmittingDraft,
+      Boolean(isOfferSubtypeEvent(offerSubtype)),
+      isPriceCategoriesActive
+    )
 
     if (isOk) {
       const receivedOfferId = payload.id
@@ -169,16 +202,6 @@ const Informations = ({
     setIsClickingFromActionBar(false)
   }
 
-  const initialValues: IOfferIndividualFormValues =
-    offer === null
-      ? setDefaultInitialFormValues(
-          FORM_DEFAULT_VALUES,
-          offererNames,
-          offererId,
-          venueId,
-          venueList
-        )
-      : setInitialFormValues(offer, subCategories)
   const readOnlyFields = setFormReadOnlyFields(offer, currentUser.isAdmin)
 
   const formik = useFormik({
@@ -193,27 +216,6 @@ const Informations = ({
     // when form is dirty it's tracked by RouteLeavingGuard
     setShouldTrack(!formik.dirty)
   }, [formik.dirty])
-
-  const initialVenue: TOfferIndividualVenue | undefined = venueList.find(
-    venue => venue.id === initialValues.venueId
-  )
-
-  const { search } = useLocation()
-  const offerSubtype = getOfferSubtypeFromParamsOrOffer(search, offer)
-  const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
-  // TODO to remove once the hub that always redirects to the good url with query params is in prod
-  const legacyCategoryStatus =
-    initialVenue === undefined
-      ? CATEGORY_STATUS.ONLINE_OR_OFFLINE
-      : initialVenue.isVirtual
-      ? CATEGORY_STATUS.ONLINE
-      : CATEGORY_STATUS.OFFLINE
-  const [filteredCategories, filteredSubCategories] = filterCategories(
-    categories,
-    subCategories,
-    offerSubtype !== null ? categoryStatus : legacyCategoryStatus,
-    isOfferSubtypeEvent(offerSubtype)
-  )
 
   return (
     <FormikProvider value={formik}>
