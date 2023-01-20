@@ -15,12 +15,13 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import User
 from pcapi.models import api_errors
-from pcapi.routes.pro.blueprint import API_KEY_AUTH
-from pcapi.routes.pro.blueprint import COOKIE_AUTH
 from pcapi.serialization.spec_tree import add_security_scheme
 
 
 logger = logging.getLogger(__name__)
+
+API_KEY_AUTH_NAME = "ApiKeyAuth"
+COOKIE_AUTH_NAME = "SessionAuth"
 
 
 def check_user_is_logged_in_or_email_is_provided(user: User, email: str | None) -> None:
@@ -31,8 +32,8 @@ def check_user_is_logged_in_or_email_is_provided(user: User, email: str | None) 
 
 
 def login_or_api_key_required(function: typing.Callable) -> typing.Callable:
-    add_security_scheme(function, API_KEY_AUTH)
-    add_security_scheme(function, COOKIE_AUTH)
+    add_security_scheme(function, API_KEY_AUTH_NAME)
+    add_security_scheme(function, COOKIE_AUTH_NAME)
 
     @wraps(function)
     def wrapper(*args: typing.Any, **kwds: typing.Any) -> flask.Response:
@@ -49,7 +50,7 @@ def login_or_api_key_required(function: typing.Callable) -> typing.Callable:
 
 
 def api_key_required(route_function: typing.Callable) -> typing.Callable:
-    add_security_scheme(route_function, API_KEY_AUTH)
+    add_security_scheme(route_function, API_KEY_AUTH_NAME)
 
     @wraps(route_function)
     def wrapper(*args: typing.Any, **kwds: typing.Any) -> flask.Response:

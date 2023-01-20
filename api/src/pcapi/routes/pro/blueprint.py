@@ -5,6 +5,7 @@ from spectree import SecurityScheme
 from pcapi import settings
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
+from pcapi.validation.routes import users_authentifications
 
 
 pro_private_api = Blueprint("pro_private_api", __name__)
@@ -15,15 +16,14 @@ CORS(
 )
 
 
-API_KEY_AUTH = "ApiKeyAuth"
-COOKIE_AUTH = "SessionAuth"
-
-
 SECURITY_SCHEMES = [
     SecurityScheme(
-        name=API_KEY_AUTH, data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"}
+        name=users_authentifications.API_KEY_AUTH_NAME,
+        data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"},
     ),
-    SecurityScheme(name=COOKIE_AUTH, data={"type": "apiKey", "in": "cookie", "name": "session"}),
+    SecurityScheme(
+        name=users_authentifications.COOKIE_AUTH_NAME, data={"type": "apiKey", "in": "cookie", "name": "session"}
+    ),
 ]
 
 
