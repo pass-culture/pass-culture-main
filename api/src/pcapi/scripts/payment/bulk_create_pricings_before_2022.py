@@ -1,14 +1,12 @@
-"""This script exports Pricing objects (as CSV files) for the business
-units listed in a file (if the business unit is validated and has
-validated bank information) for all bookings that have been used in
-2021.
+"""This script exports Pricing objects (as CSV files) for the venues
+in a file, for all bookings that have been used in 2021.
 
 Usage:
 
-   $ python bulk_create_pricings_before_2022.py <path>
+   $ python bulk_create_pricings_before_2022_v2.py <path>
 
-... where `<path>` is a file that contains one business unit id per
-line.
+... where `<path>` is a file that contains one venue id per line.
+
 """
 from pcapi.flask_app import app; app.app_context().push()  # fmt: skip
 
@@ -27,7 +25,6 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
-import pcapi.core.payments.models as payments_models
 import pcapi.domain.reimbursement
 from pcapi.models import db
 
@@ -36,29 +33,21 @@ DATE_USED_SWITCH_DATE = datetime.datetime(2021, 8, 31)
 TZ = pytz.timezone("Europe/Paris")
 
 
-def log(msg, business_unit_id):
+def log(msg, venue_id):
     timestamp = datetime.datetime.utcnow().astimezone(TZ)
     timestamp = timestamp.strftime("%H:%M:%S")
-    print(f"{timestamp}:{business_unit_id}:{msg}")
+    print(f"{timestamp}:{venue_id}:{msg}")
 
 
 def export_pricings(
-    business_unit_id: int,
+    venue_id: int,
     min_date: datetime.datetime,
     max_date: datetime.datetime,
 ) -> finance_models.Pricing:
-    business_unit = (
-        finance_models.BusinessUnit.query.filter(
-            finance_models.BusinessUnit.id == business_unit_id,
-            finance_models.BusinessUnit.status == finance_models.BusinessUnitStatus.ACTIVE,
-        )
-    ).first()
-    if not business_unit:
-        log("Business unit not active or without bank info.", business_unit_id)
+    venue = offerers_models.Venue.query.get(venue_id)
+    if not venue:
+        log("Venue not found.", venue_id)
         return
-    venues = offerers_models.Venue.query.filter_by(businessUnitId=business_unit_id).all()
-    sirets = {venue.id: venue.siret for venue in venues}
-    venue_ids = [venue.id for venue in venues]
     rule_finder = pcapi.domain.reimbursement.CustomRuleFinder()
 
     csv_rows = []
@@ -78,12 +67,11 @@ def export_pricings(
             array_remove(array_agg(payment_status.date), NULL) as payment_dates,
             array_remove(array_agg(payment_status.status), NULL) as payment_statuses
         FROM booking
-        JOIN stock ON stock.id = booking."stockId"
         LEFT OUTER JOIN payment on payment."bookingId" = booking.id
         LEFT OUTER JOIN payment_status on payment_status."paymentId" = payment.id
         LEFT OUTER JOIN pricing on pricing."bookingId" = booking.id
         WHERE
-            booking."venueId" IN :venue_ids
+            booking."venueId" = :venue_id
             AND booking."dateUsed" >= :min_date
             AND booking."dateUsed" < :max_date
             AND pricing.id IS NULL
@@ -91,7 +79,7 @@ def export_pricings(
         ORDER BY booking."dateCreated"
     """
     params = {
-        "venue_ids": tuple(venue_ids),
+        "venue_id": venue_id,
         "min_date": min_date,
         "max_date": max_date,
     }
@@ -114,22 +102,29 @@ def export_pricings(
         revenues[revenue_key] += finance_utils.to_eurocents(row.booking_total_amount)
 
         if row.payment_id:
-            amount = row.payment_amount
+            amount_in_euros = row.payment_amount
             standard_rule = row.payment_standard_rule
             custom_rule_id = row.payment_custom_rule_id
             if "SENT" in row.payment_statuses:
-                # Set as processed, we'll create a manual cashflow later.
+                # Set as processed, to AVOID including this pricing
+                # the next time we generate cashflows.
                 status = finance_models.PricingStatus.PROCESSED
-            else:
-                # Set as validated, a cashflow will be automatically created later.
+            elif row.booking_status == "USED":
+                # Set as validated, so that this pricing WILL be
+                # included the next time we generate cashflow.
                 status = finance_models.PricingStatus.VALIDATED
+            else:
+                # We tried a payment for a booking that was "used",
+                # the payment did not succeed, and the booking was
+                # then cancelled.
+                continue
         elif row.booking_status != "USED":
             # Check status after testing whether there is a payment.
             # Because if there is a payment, there must be a pricing,
             # even if the booking has been cancelled afterwards.
             continue
         elif row.booking_total_amount == 0:
-            amount = 0
+            amount_in_euros = 0
             standard_rule = "Offre gratuite"
             custom_rule_id = None
             status = finance_models.PricingStatus.PROCESSED
@@ -143,47 +138,52 @@ def export_pricings(
                     offers_models.Stock.offer, innerjoin=True
                 )
             ).get(row.booking_id)
-            if pcapi.domain.reimbursement.DigitalThingsReimbursement.is_relevant(None, booking):
-                amount = 0
+            if pcapi.domain.reimbursement.DigitalThingsReimbursement.is_relevant(None, booking, revenues[revenue_key]):
+                amount_in_euros = 0
                 standard_rule = "Pas de remboursement pour les offres digitales"
                 custom_rule_id = None
                 status = finance_models.PricingStatus.PROCESSED
             elif booking.stock.beginningDatetime and booking.stock.beginningDatetime > booking.dateUsed:
-                # Some bookings have been marked as used before the
-                # event date. This is rare but happens. We should
+                # Some bookings are marked as used before the event
+                # date. This is not the norm but happens. We should
                 # create a validated pricing now. A cashflow will be
                 # generated after the event date.
                 status = finance_models.PricingStatus.VALIDATED
                 rule = pcapi.domain.reimbursement.get_reimbursement_rule(
                     booking, rule_finder, finance_utils.to_euros(revenues[revenue_key])
                 )
-                if isinstance(rule, payments_models.CustomReimbursementRule):
+                if isinstance(rule, finance_models.CustomReimbursementRule):
                     standard_rule = ""
                     custom_rule_id = rule.id
                 else:
                     standard_rule = rule.description
                     custom_rule_id = None
-                amount = rule.apply(booking)
+                amount_in_euros = rule.apply(booking)
             else:
                 # FIXME: Gotcha! It's possible that an old rule has
                 # been applied, e.g. MaxReimbursementByOfferer. It's
                 # hard to detect automatically.
-                log(f"Found no Payment for possibly reimbursable booking {row.booking_id}", business_unit_id)
+                log(f"Found no Payment for possibly reimbursable booking {row.booking_id}", venue_id)
                 continue
 
+        signed_amount_in_cents = -finance_utils.to_eurocents(amount_in_euros)
+        # Build a CSV that can be injected with the following command:
+        #
+        #  \copy pricing (
+        #      status, "bookingId", "venueId", "pricingPointId", "creationDate", "valueDate", amount,
+        #    "standardRule", "customRuleId", revenue
+        #  )
+        #  FROM 'xxx.csv' WITH DELIMITER ';' NULL '[NULL]'
         csv_rows.append(
             (
-                # Values below are for information only.
-                str(business_unit_id),
-                str(row.venue_id),
                 # Values below will be inserted INTO `pricing`.
-                status.value,
-                str(row.booking_id),
-                str(business_unit_id),
-                str(sirets.get(row.venue_id, business_unit.siret)),
+                status.value,  # status
+                str(row.booking_id),  # bookingId
+                str(venue_id),  # venueId
+                str(venue_id),  # venueId
                 creation_date.isoformat(),
                 value_date.isoformat(),
-                str(-finance_utils.to_eurocents(amount)),
+                str(signed_amount_in_cents),
                 standard_rule or "",
                 str(custom_rule_id) if custom_rule_id else "[NULL]",
                 str(revenues[revenue_key]),
@@ -191,7 +191,7 @@ def export_pricings(
         )
 
     if csv_rows:
-        path = f"/tmp/pricings_2021/{business_unit_id}.csv"
+        path = f"/tmp/pricings_2021/{venue_id}.csv"
         with open(path, "w") as fp:
             fp.write("\n".join(";".join(csv_row) for csv_row in csv_rows))
 
@@ -225,19 +225,19 @@ def _get_eta(end, current, elapsed_per_batch):
 if __name__ == "__main__":
     path_with_ids = pathlib.Path(sys.argv[1])
     lines = path_with_ids.read_text().split()
-    elapsed_per_business_unit = []
+    elapsed_per_venue = []
     for current, line in enumerate(lines, 1):
-        business_unit_id = int(line)
+        venue_id = int(line)
         start_time = time.perf_counter()
 
         # Year 2021 (UTC)
-        min_date = datetime.datetime(2020, 12, 31, 23, 0)
-        max_date = datetime.datetime(2021, 12, 31, 23, 0)
-        export_pricings(business_unit_id, min_date, max_date)
+        min_date = datetime.datetime(2020, 12, 31, 23, 0)  # included
+        max_date = datetime.datetime(2021, 12, 31, 23, 0)  # excluded
+        export_pricings(venue_id, min_date, max_date)
 
-        elapsed_per_business_unit.append(int(time.perf_counter() - start_time))
-        eta = _get_eta(len(lines), current, elapsed_per_business_unit)
+        elapsed_per_venue.append(int(time.perf_counter() - start_time))
+        eta = _get_eta(len(lines), current, elapsed_per_venue)
         timestamp = datetime.datetime.utcnow().astimezone(pytz.timezone("Europe/Paris"))
         timestamp = timestamp.isoformat().split(".")[0]
         if current % 100 == 0:
-            print(f"{timestamp}:{business_unit_id}:ETA={eta}")
+            print(f"{timestamp}:{venue_id}:ETA={eta}")
