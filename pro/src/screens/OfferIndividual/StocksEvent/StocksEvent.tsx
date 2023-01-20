@@ -22,6 +22,7 @@ import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate, useOfferWizardMode } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
@@ -105,7 +106,9 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const { setOffer, shouldTrack, setShouldTrack } = useOfferIndividualContext()
   const providerName = offer?.lastProviderName
   const { visible, showModal, hideModal } = useModal()
-
+  const isPriceCategoriesActive = useActiveFeature(
+    'WIP_ENABLE_MULTI_PRICE_STOCKS'
+  )
   const onSubmit = async (formValues: { stocks: IStockEventFormValues[] }) => {
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       const changesOnStockWithBookings = hasChangesOnStockWithBookings(
@@ -324,7 +327,9 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     navigate(
       getOfferIndividualUrl({
         offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        step: isPriceCategoriesActive
+          ? OFFER_WIZARD_STEP_IDS.TARIFS
+          : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         mode,
       })
     )
