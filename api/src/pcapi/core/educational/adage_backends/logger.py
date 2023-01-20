@@ -156,21 +156,21 @@ class AdageLoggerClient(AdageClient):
             response_content = [
                 {
                     "civilite": "Mme.",
-                    "nom": "Skłodowska",
-                    "prenom": "Maria",
+                    "nom": "SKLODOWSKA",
+                    "prenom": "MARIA",
                     "mail": "maria.sklodowska@example.com",
                 },
                 {
                     "civilite": "M.",
-                    "nom": "Pointcaré",
-                    "prenom": "Raymond",
+                    "nom": "POINTCARE",
+                    "prenom": "HENRI",
                     "mail": "raymond.pointcare@example.com",
                 },
                 {
                     "civilite": "M.",
-                    "nom": "Rày",
-                    "prenom": "Confusion",
-                    "mail": "confusion.ray@example.com",
+                    "nom": "HENMAR",
+                    "prenom": "CONFUSION",
+                    "mail": "confusion.raymar@example.com",
                 },
             ]
         else:
