@@ -15,6 +15,7 @@ from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.models import db
 from pcapi.routes.serialization import venues_serialize
 from pcapi.utils.cache import get_from_cache
+from pcapi.utils.clean_accents import clean_accents
 
 
 def find_collective_bookings_for_adage(
@@ -146,3 +147,22 @@ def get_adage_educational_redactors_for_uai(uai: str, *, force_update: bool = Fa
     educational_redactors_json = typing.cast(str, educational_redactors_json)
     educational_redactors = json.loads(educational_redactors_json)
     return educational_redactors
+
+
+def autocomplete_educational_redactor_for_uai(
+    uai: str, candidate: str, use_email: bool = False
+) -> list[dict[str, str]]:
+    redactors = get_adage_educational_redactors_for_uai(uai=uai)
+    unaccented_candidate = clean_accents(candidate).upper()
+    result = []
+    for redactor in redactors:
+        if unaccented_candidate in f'{redactor["nom"]} {redactor["prenom"]}'.upper():
+            result.append(redactor)
+            continue
+        if unaccented_candidate in f'{redactor["prenom"]} {redactor["nom"]}'.upper():
+            result.append(redactor)
+            continue
+        if use_email and unaccented_candidate in redactor["email"].upper():
+            result.append(redactor)
+            continue
+    return result
