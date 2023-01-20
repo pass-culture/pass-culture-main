@@ -14,6 +14,7 @@ import { parse } from 'utils/query-string'
 
 import { Confirmation } from './Confirmation'
 import { Offer } from './Offer'
+import { PriceCategories } from './PriceCategories'
 import { Stocks } from './Stocks'
 import { Summary } from './Summary'
 
@@ -44,6 +45,17 @@ const OfferIndividualWizard = () => {
         >
           <PageTitle title="Détails de l'offre" />
           <Offer />
+        </Route>
+        <Route
+          exact
+          path={[
+            `${path}/creation/tarifs`,
+            `${path}/brouillon/tarif`,
+            `${path}/tarifs`,
+          ]}
+        >
+          <PageTitle title="Vos tarifs" />
+          <PriceCategories />
         </Route>
         <Route
           exact
