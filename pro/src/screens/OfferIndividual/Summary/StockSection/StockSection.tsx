@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { SummaryLayout } from 'components/SummaryLayout'
 import {
   Events,

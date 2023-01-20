@@ -11,7 +11,7 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { configureTestStore } from 'store/testUtils'

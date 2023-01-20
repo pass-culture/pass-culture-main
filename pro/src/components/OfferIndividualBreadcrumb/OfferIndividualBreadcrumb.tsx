@@ -25,13 +25,13 @@ import { OFFER_WIZARD_STEP_IDS } from './constants'
 import { useActiveStep } from './hooks'
 import styles from './OfferIndividualStepper.module.scss'
 
-interface IOfferIndividualStepper {
+interface IOfferIndividualBreadcrumb {
   shouldTrack?: boolean
 }
 
-const OfferIndividualStepper = ({
+const OfferIndividualBreadcrumb = ({
   shouldTrack = true,
-}: IOfferIndividualStepper) => {
+}: IOfferIndividualBreadcrumb) => {
   const { offer } = useOfferIndividualContext()
   const activeStep = useActiveStep()
   const { logEvent } = useAnalytics()
@@ -175,4 +175,4 @@ const OfferIndividualStepper = ({
   )
 }
 
-export default OfferIndividualStepper
+export default OfferIndividualBreadcrumb

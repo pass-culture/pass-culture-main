@@ -9,7 +9,7 @@ import { MemoryRouter, Route } from 'react-router'
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,

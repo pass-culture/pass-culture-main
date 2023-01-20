@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,

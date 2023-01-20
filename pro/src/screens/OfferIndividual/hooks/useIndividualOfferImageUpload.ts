@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 
 import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,

@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { OfferFormLayout } from 'components/OfferFormLayout'
-import { OfferIndividualStepper } from 'components/OfferIndividualStepper'
+import { OfferIndividualBreadcrumb } from 'components/OfferIndividualBreadcrumb'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
@@ -72,7 +72,7 @@ const Template = ({
       {offer && <OfferStatusBanner status={offer.status} />}
       {withStepper && (
         <OfferFormLayout.Stepper>
-          <OfferIndividualStepper shouldTrack={shouldTrack} />
+          <OfferIndividualBreadcrumb shouldTrack={shouldTrack} />
         </OfferFormLayout.Stepper>
       )}
 
