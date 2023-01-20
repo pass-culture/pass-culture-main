@@ -23,28 +23,32 @@ const Section = ({
   descriptionAsBanner = false,
   links,
 }: IFormLayoutSectionProps): JSX.Element => (
-  <div className={cn(style['form-layout-section'], className)}>
-    <div className={style['form-layout-section-header']}>
-      <Title as="h2" level={3}>
-        {title}
-      </Title>
-      {description && !descriptionAsBanner && (
-        <p className={style['form-layout-section-description']}>
-          {description}
-        </p>
-      )}
-      {description && descriptionAsBanner && (
-        <Banner
-          type="notification-info"
-          className={style['form-layout-section-description']}
-          links={links}
-        >
-          {description}
-        </Banner>
-      )}
+  <fieldset>
+    <div className={cn(style['form-layout-section'], className)}>
+      <div className={style['form-layout-section-header']}>
+        <legend>
+          <Title as="h2" level={3}>
+            {title}
+          </Title>
+        </legend>
+        {description && !descriptionAsBanner && (
+          <p className={style['form-layout-section-description']}>
+            {description}
+          </p>
+        )}
+        {description && descriptionAsBanner && (
+          <Banner
+            type="notification-info"
+            className={style['form-layout-section-description']}
+            links={links}
+          >
+            {description}
+          </Banner>
+        )}
+      </div>
+      {children}
     </div>
-    {children}
-  </div>
+  </fieldset>
 )
 
 export default Section

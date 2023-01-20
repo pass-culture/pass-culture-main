@@ -49,7 +49,7 @@ $border-size: rem.torem(3px);
 
   &:focus-within {
     outline: rem.torem(1px) solid colors.$black;
-    outline-offset: rem.torem(2.5px);
+    outline-offset: rem.torem(2px);
   }
 
   &.is-selected {
@@ -98,9 +98,9 @@ $border-size: rem.torem(3px);
   }
 
   &.is-selected {
-    // padding minus border
-    padding: calc(rem.torem(40px) - $border-size)
-      calc(rem.torem(16px) - $border-size) calc(rem.torem(32px) - $border-size);
+    $padding: rem.torem(40px);
+    padding: calc($padding - $border-size) calc(rem.torem(16px) - $border-size)
+      calc(rem.torem(32px) - $border-size);
   }
 }
 
@@ -110,8 +110,8 @@ $border-size: rem.torem(3px);
   flex-direction: row;
 
   &.is-selected {
-    // padding minus border
-    padding: calc(rem.torem(16px) - $border-size);
+    $padding: rem.torem(16px);
+    padding: calc($padding - $border-size);
   }
 
   .button-icon {
