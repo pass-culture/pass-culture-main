@@ -54,8 +54,8 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
   const isSynchronized = Boolean(offer.lastProvider)
 
   const [page, setPage] = useState(1)
-  const previousPage = useCallback(() => setPage(page - 1), [page])
-  const nextPage = useCallback(() => setPage(page + 1), [page])
+  const previousPage = useCallback(() => setPage(page => page - 1), [])
+  const nextPage = useCallback(() => setPage(page => page + 1), [])
   const stocksPage = values.stocks.slice(
     (page - 1) * STOCKS_PER_PAGE,
     page * STOCKS_PER_PAGE
@@ -78,58 +78,61 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
           </Button>
 
           <div className={styles['form-list']}>
-            {stocksPage.map((stockValues: IStockEventFormValues, index) => {
-              const disableAllStockFields =
-                isSynchronized &&
-                mode === OFFER_WIZARD_MODE.EDITION &&
-                !stockValues.stockId
+            {stocksPage.map(
+              (stockValues: IStockEventFormValues, indexInPage) => {
+                const index = (page - 1) * STOCKS_PER_PAGE + indexInPage
+                const disableAllStockFields =
+                  isSynchronized &&
+                  mode === OFFER_WIZARD_MODE.EDITION &&
+                  !stockValues.stockId
 
-              return (
-                <StockEventFormRow
-                  key={`${stockValues.stockId}-${index}`}
-                  stockIndex={index}
-                  actions={[
-                    {
-                      callback: async () => {
-                        if (stockValues.stockId) {
-                          /* istanbul ignore next: DEBT, TO FIX */
-                          if (parseInt(stockValues.bookingsQuantity) > 0) {
-                            setDeletingStockData({
-                              deletingStock: stockValues,
-                              deletingIndex: index,
-                            })
-                            deleteConfirmShow()
-                          } else {
-                            /* istanbul ignore next: DEBT, TO FIX */
-                            onDeleteStock(stockValues, index)
-                          }
-                        } else {
-                          arrayHelpers.remove(index)
-                          /* istanbul ignore next: DEBT, TO FIX */
-                          if (values.stocks.length === 1) {
-                            arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)
-                          }
-                        }
-                      },
-                      label: 'Supprimer le stock',
-                      disabled:
-                        !stockValues.isDeletable ||
-                        isDisabled ||
-                        disableAllStockFields,
-                      Icon: TrashFilledIcon,
-                    },
-                  ]}
-                  actionDisabled={false}
-                  showStockInfo={mode === OFFER_WIZARD_MODE.EDITION}
-                >
-                  <StockEventForm
-                    today={today}
+                return (
+                  <StockEventFormRow
+                    key={`${stockValues.stockId}-${index}`}
                     stockIndex={index}
-                    disableAllStockFields={disableAllStockFields}
-                  />
-                </StockEventFormRow>
-              )
-            })}
+                    actions={[
+                      {
+                        callback: async () => {
+                          if (stockValues.stockId) {
+                            /* istanbul ignore next: DEBT, TO FIX */
+                            if (parseInt(stockValues.bookingsQuantity) > 0) {
+                              setDeletingStockData({
+                                deletingStock: stockValues,
+                                deletingIndex: index,
+                              })
+                              deleteConfirmShow()
+                            } else {
+                              /* istanbul ignore next: DEBT, TO FIX */
+                              onDeleteStock(stockValues, index)
+                            }
+                          } else {
+                            arrayHelpers.remove(index)
+                            /* istanbul ignore next: DEBT, TO FIX */
+                            if (values.stocks.length === 1) {
+                              arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)
+                            }
+                          }
+                        },
+                        label: 'Supprimer le stock',
+                        disabled:
+                          !stockValues.isDeletable ||
+                          isDisabled ||
+                          disableAllStockFields,
+                        Icon: TrashFilledIcon,
+                      },
+                    ]}
+                    actionDisabled={false}
+                    showStockInfo={mode === OFFER_WIZARD_MODE.EDITION}
+                  >
+                    <StockEventForm
+                      today={today}
+                      stockIndex={index}
+                      disableAllStockFields={disableAllStockFields}
+                    />
+                  </StockEventFormRow>
+                )
+              }
+            )}
           </div>
 
           <Pagination
