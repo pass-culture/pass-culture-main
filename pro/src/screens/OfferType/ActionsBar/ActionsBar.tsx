@@ -3,16 +3,14 @@ import React from 'react'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.svg'
-import { Button, ButtonLink } from 'ui-kit'
+import { ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 interface IActionsBar {
-  getNextPageHref: () => void
   disableNextButton?: boolean
 }
 
 const ActionsBar = ({
-  getNextPageHref,
   disableNextButton = false,
 }: IActionsBar): JSX.Element => {
   return (
@@ -26,14 +24,13 @@ const ActionsBar = ({
         </ButtonLink>
       </ActionsBarSticky.Left>
       <ActionsBarSticky.Right>
-        <Button
-          onClick={getNextPageHref}
+        <SubmitButton
           Icon={IcoMiniArrowRight}
           iconPosition={IconPositionEnum.RIGHT}
           disabled={disableNextButton}
         >
           Étape suivante
-        </Button>
+        </SubmitButton>
       </ActionsBarSticky.Right>
     </ActionsBarSticky>
   )
