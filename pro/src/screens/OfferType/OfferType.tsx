@@ -180,214 +180,216 @@ const OfferType = (): JSX.Element => {
     <div className={styles['offer-type-container']}>
       <PageTitle title="Nature de l'offre" />
       <h1 className={styles['offer-type-title']}>Créer une offre</h1>
-      <FormLayout>
-        <FormLayout.Section title="À qui destinez-vous cette offre ? ">
-          <FormLayout.Row inline>
-            <RadioButtonWithImage
-              name="offer-type"
-              Icon={PhoneIcon}
-              isChecked={offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO}
-              label="Au grand public"
-              onChange={handleOfferTypeChange}
-              value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
-              className={styles['offer-type-button']}
-            />
-            <RadioButtonWithImage
-              name="offer-type"
-              Icon={CaseIcon}
-              isChecked={offerType === OFFER_TYPES.EDUCATIONAL}
-              label="À un groupe scolaire"
-              onChange={handleOfferTypeChange}
-              value={OFFER_TYPES.EDUCATIONAL}
-              className={styles['offer-type-button']}
-            />
-          </FormLayout.Row>
-        </FormLayout.Section>
+      <form onSubmit={getNextPageHref}>
+        <FormLayout>
+          <FormLayout.Section title="À qui destinez-vous cette offre ?">
+            <FormLayout.Row inline>
+              <RadioButtonWithImage
+                name="offer-type"
+                Icon={PhoneIcon}
+                isChecked={offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO}
+                label="Au grand public"
+                onChange={handleOfferTypeChange}
+                value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
+                className={styles['offer-type-button']}
+              />
+              <RadioButtonWithImage
+                name="offer-type"
+                Icon={CaseIcon}
+                isChecked={offerType === OFFER_TYPES.EDUCATIONAL}
+                label="À un groupe scolaire"
+                onChange={handleOfferTypeChange}
+                value={OFFER_TYPES.EDUCATIONAL}
+                className={styles['offer-type-button']}
+              />
+            </FormLayout.Row>
+          </FormLayout.Section>
 
-        {offerType === OFFER_TYPES.EDUCATIONAL &&
-          (isEligible || !isDuplicateOfferSelectionActive) &&
-          !isLoadingEligibility && (
+          {offerType === OFFER_TYPES.EDUCATIONAL &&
+            (isEligible || !isDuplicateOfferSelectionActive) &&
+            !isLoadingEligibility && (
+              <FormLayout.Section
+                title="Quel est le type de l’offre ?"
+                className={styles['subtype-section']}
+              >
+                <FormLayout.Row inline>
+                  <RadioButtonWithImage
+                    name="offer-subtype"
+                    Icon={CalendarCheckIcon}
+                    isChecked={
+                      collectiveOfferSubtype ===
+                      COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE
+                    }
+                    label="Une offre réservable"
+                    description="Cette offre a une date et un prix. Vous pouvez choisir de la rendre visible par tous les établissements scolaires ou par un seul."
+                    onChange={handleCollectiveOfferSubtypeChange}
+                    value={COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE}
+                  />
+                </FormLayout.Row>
+
+                <FormLayout.Row inline>
+                  <RadioButtonWithImage
+                    name="offer-subtype"
+                    Icon={TemplateOfferIcon}
+                    isChecked={
+                      collectiveOfferSubtype ===
+                      COLLECTIVE_OFFER_SUBTYPE.TEMPLATE
+                    }
+                    label="Une offre vitrine"
+                    description="Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée."
+                    onChange={handleCollectiveOfferSubtypeChange}
+                    value={COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
+                  />
+                </FormLayout.Row>
+              </FormLayout.Section>
+            )}
+          {offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
             <FormLayout.Section
               title="Quel est le type de l’offre ?"
               className={styles['subtype-section']}
             >
               <FormLayout.Row inline>
                 <RadioButtonWithImage
+                  className={styles['individual-radio-button']}
                   name="offer-subtype"
-                  Icon={CalendarCheckIcon}
+                  Icon={ThingIcon}
                   isChecked={
-                    collectiveOfferSubtype ===
-                    COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE
+                    individualOfferSubtype ===
+                    INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
                   }
-                  label="Une offre réservable"
-                  description="Cette offre a une date et un prix. Vous pouvez choisir de la rendre visible par tous les établissements scolaires ou par un seul."
-                  onChange={handleCollectiveOfferSubtypeChange}
-                  value={COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE}
+                  label="Un bien physique"
+                  description="Livre, vinyle, instrument de musique, pass musée..."
+                  onChange={handleIndividualOfferSubtypeChange}
+                  value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}
+                  dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}`}
                 />
               </FormLayout.Row>
 
               <FormLayout.Row inline>
                 <RadioButtonWithImage
+                  className={styles['individual-radio-button']}
                   name="offer-subtype"
-                  Icon={TemplateOfferIcon}
+                  Icon={VirtualThingIcon}
                   isChecked={
-                    collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.TEMPLATE
+                    individualOfferSubtype ===
+                    INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD
                   }
-                  label="Une offre vitrine"
-                  description="Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée."
-                  onChange={handleCollectiveOfferSubtypeChange}
-                  value={COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
+                  label="Un bien numérique"
+                  description="Ebook, jeu vidéo, abonnement streaming, pass ciné..."
+                  onChange={handleIndividualOfferSubtypeChange}
+                  value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}
+                  dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}`}
                 />
               </FormLayout.Row>
-            </FormLayout.Section>
-          )}
-        {offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
-          <FormLayout.Section
-            title="Quel est le type de l’offre ?"
-            className={styles['subtype-section']}
-          >
-            <FormLayout.Row inline>
-              <RadioButtonWithImage
-                className={styles['individual-radio-button']}
-                name="offer-subtype"
-                Icon={ThingIcon}
-                isChecked={
-                  individualOfferSubtype ===
-                  INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
-                }
-                label="Un bien physique"
-                description="Livre, vinyle, instrument de musique, pass musée..."
-                onChange={handleIndividualOfferSubtypeChange}
-                value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}
-                dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}`}
-              />
-            </FormLayout.Row>
 
-            <FormLayout.Row inline>
-              <RadioButtonWithImage
-                className={styles['individual-radio-button']}
-                name="offer-subtype"
-                Icon={VirtualThingIcon}
-                isChecked={
-                  individualOfferSubtype ===
-                  INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD
-                }
-                label="Un bien numérique"
-                description="Ebook, jeu vidéo, abonnement streaming, pass ciné..."
-                onChange={handleIndividualOfferSubtypeChange}
-                value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}
-                dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}`}
-              />
-            </FormLayout.Row>
-
-            <FormLayout.Row inline>
-              <RadioButtonWithImage
-                className={styles['individual-radio-button']}
-                name="offer-subtype"
-                Icon={DateIcon}
-                isChecked={
-                  individualOfferSubtype ===
-                  INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT
-                }
-                label="Un évènement physique"
-                description="Concert, spectacle vivant, conférence, cours..."
-                onChange={handleIndividualOfferSubtypeChange}
-                value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}
-                dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}`}
-              />
-            </FormLayout.Row>
-
-            <FormLayout.Row inline>
-              <RadioButtonWithImage
-                className={styles['individual-radio-button']}
-                name="offer-subtype"
-                Icon={VirtualEventIcon}
-                isChecked={
-                  individualOfferSubtype ===
-                  INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
-                }
-                label="Un évènement numérique"
-                description="Livestream, cours en ligne, conférence en ligne..."
-                onChange={handleIndividualOfferSubtypeChange}
-                value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}
-                dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}`}
-              />
-            </FormLayout.Row>
-          </FormLayout.Section>
-        )}
-
-        {isDuplicateOfferSelectionActive &&
-          isEligible &&
-          collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE &&
-          hasCollectiveTemplateOffer && (
-            <FormLayout.Section
-              title="Créer une nouvelle offre ou dupliquer une offre ?"
-              className={styles['subtype-section']}
-            >
               <FormLayout.Row inline>
                 <RadioButtonWithImage
-                  name="offer-duplicate"
-                  Icon={NewOfferIcon}
+                  className={styles['individual-radio-button']}
+                  name="offer-subtype"
+                  Icon={DateIcon}
                   isChecked={
-                    collectiveOfferSubtypeDuplicate ===
-                    COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER
+                    individualOfferSubtype ===
+                    INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT
                   }
-                  label="Créer une nouvelle offre"
-                  description="Créer une nouvelle offre réservable en partant d’un formulaire vierge."
-                  onChange={handleCollectiveOfferSubtypeDuplicateChange}
-                  value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER}
+                  label="Un évènement physique"
+                  description="Concert, spectacle vivant, conférence, cours..."
+                  onChange={handleIndividualOfferSubtypeChange}
+                  value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}
+                  dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}`}
                 />
               </FormLayout.Row>
+
               <FormLayout.Row inline>
                 <RadioButtonWithImage
-                  name="offer-duplicate"
-                  transparent
-                  Icon={DuplicateOfferIcon}
+                  className={styles['individual-radio-button']}
+                  name="offer-subtype"
+                  Icon={VirtualEventIcon}
                   isChecked={
-                    collectiveOfferSubtypeDuplicate ===
-                    COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
+                    individualOfferSubtype ===
+                    INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
                   }
-                  label="Dupliquer les informations d’une d’offre vitrine"
-                  description="Créez une offre réservable en dupliquant les informations d’une offre vitrine existante."
-                  onChange={handleCollectiveOfferSubtypeDuplicateChange}
-                  value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE}
+                  label="Un évènement numérique"
+                  description="Livestream, cours en ligne, conférence en ligne..."
+                  onChange={handleIndividualOfferSubtypeChange}
+                  value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}
+                  dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}`}
                 />
               </FormLayout.Row>
             </FormLayout.Section>
           )}
 
-        {isLoadingEligibility && <Spinner />}
-        {offerType === OFFER_TYPES.EDUCATIONAL &&
-          !isEligible &&
-          !isLoadingEligibility &&
-          isDuplicateOfferSelectionActive && (
-            <Banner
-              links={[
-                {
-                  href: 'https://passculture.typeform.com/to/VtKospEg',
-                  linkTitle: 'Faire une demande de référencement',
-                },
-                {
-                  href: 'https://aide.passculture.app/hc/fr/articles/5700215550364',
-                  linkTitle:
-                    'Ma demande de référencement a été acceptée mais je ne peux toujours pas créer d’offres collectives',
-                },
-              ]}
-            >
-              Pour proposer des offres à destination d’un groupe scolaire, vous
-              devez être référencé auprès du ministère de l’Éducation Nationale
-              et du ministère de la Culture.
-            </Banner>
-          )}
-        <ActionsBar
-          getNextPageHref={getNextPageHref}
-          disableNextButton={
-            offerType === OFFER_TYPES.EDUCATIONAL &&
+          {isDuplicateOfferSelectionActive &&
+            isEligible &&
+            collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE &&
+            hasCollectiveTemplateOffer && (
+              <FormLayout.Section
+                title="Créer une nouvelle offre ou dupliquer une offre ?"
+                className={styles['subtype-section']}
+              >
+                <FormLayout.Row inline>
+                  <RadioButtonWithImage
+                    name="offer-duplicate"
+                    Icon={NewOfferIcon}
+                    isChecked={
+                      collectiveOfferSubtypeDuplicate ===
+                      COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER
+                    }
+                    label="Créer une nouvelle offre"
+                    description="Créer une nouvelle offre réservable en partant d’un formulaire vierge."
+                    onChange={handleCollectiveOfferSubtypeDuplicateChange}
+                    value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER}
+                  />
+                </FormLayout.Row>
+                <FormLayout.Row inline>
+                  <RadioButtonWithImage
+                    name="offer-duplicate"
+                    transparent
+                    Icon={DuplicateOfferIcon}
+                    isChecked={
+                      collectiveOfferSubtypeDuplicate ===
+                      COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
+                    }
+                    label="Dupliquer les informations d’une d’offre vitrine"
+                    description="Créez une offre réservable en dupliquant les informations d’une offre vitrine existante."
+                    onChange={handleCollectiveOfferSubtypeDuplicateChange}
+                    value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE}
+                  />
+                </FormLayout.Row>
+              </FormLayout.Section>
+            )}
+
+          {isLoadingEligibility && <Spinner />}
+          {offerType === OFFER_TYPES.EDUCATIONAL &&
             !isEligible &&
-            isDuplicateOfferSelectionActive
-          }
-        />
-      </FormLayout>
+            !isLoadingEligibility &&
+            isDuplicateOfferSelectionActive && (
+              <Banner
+                links={[
+                  {
+                    href: 'https://passculture.typeform.com/to/VtKospEg',
+                    linkTitle: 'Faire une demande de référencement',
+                  },
+                  {
+                    href: 'https://aide.passculture.app/hc/fr/articles/5700215550364',
+                    linkTitle:
+                      'Ma demande de référencement a été acceptée mais je ne peux toujours pas créer d’offres collectives',
+                  },
+                ]}
+              >
+                Pour proposer des offres à destination d’un groupe scolaire,
+                vous devez être référencé auprès du ministère de l’Éducation
+                Nationale et du ministère de la Culture.
+              </Banner>
+            )}
+          <ActionsBar
+            disableNextButton={
+              offerType === OFFER_TYPES.EDUCATIONAL &&
+              !isEligible &&
+              isDuplicateOfferSelectionActive
+            }
+          />
+        </FormLayout>
+      </form>
     </div>
   )
 }
