@@ -494,6 +494,7 @@ class CreateBeneficiaryTest:
         trigger_event_log = batch_testing.requests[2]
         assert trigger_event_log["user_id"] == user.id
         assert trigger_event_log["event_name"] == "user_deposit_activated"
+        assert trigger_event_log["event_payload"] == {"deposit_type": "GRANT_18", "deposit_amount": 300}
 
 
 class FulfillBeneficiaryDataTest:
