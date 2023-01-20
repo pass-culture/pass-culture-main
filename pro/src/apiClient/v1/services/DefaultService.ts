@@ -25,6 +25,7 @@ import type { EditVenueBodyModel } from '../models/EditVenueBodyModel';
 import type { EditVenueCollectiveDataBodyModel } from '../models/EditVenueCollectiveDataBodyModel';
 import type { EducationalDomainsResponseModel } from '../models/EducationalDomainsResponseModel';
 import type { EducationalInstitutionsResponseModel } from '../models/EducationalInstitutionsResponseModel';
+import type { EducationalRedactors } from '../models/EducationalRedactors';
 import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApiKeyResponse';
 import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
 import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetCollectiveOfferTemplateResponseModel';
@@ -536,6 +537,31 @@ export class DefaultService {
       url: '/collective/offers/all-active-status',
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_autocomplete_educational_redactors_for_uai <GET>
+   * @param uai
+   * @param candidate
+   * @returns EducationalRedactors OK
+   * @throws ApiError
+   */
+  public getAutocompleteEducationalRedactorsForUai(
+    uai: string,
+    candidate: string,
+  ): CancelablePromise<EducationalRedactors> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/collective/offers/redactors',
+      query: {
+        'uai': uai,
+        'candidate': candidate,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
