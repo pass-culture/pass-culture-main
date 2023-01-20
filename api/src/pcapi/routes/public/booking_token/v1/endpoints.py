@@ -5,7 +5,6 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as booking_repository
 from pcapi.core.bookings import validation as bookings_validation
-from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
@@ -15,6 +14,7 @@ from pcapi.validation.routes.bookings import check_email_and_offer_id_for_anonym
 from pcapi.validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings
 
+from . import blueprint
 from . import serialization
 
 
@@ -41,7 +41,7 @@ def _create_response_to_get_booking_by_token(booking: bookings_models.Booking) -
 
 # TODO (gvanneste, 2021-10-19) : retravailler cette fonction, notamment check_user_is_logged_in_or_email_is_provided
 # À brûler : juste checker si le user a droit de récupérer les bookings
-@blueprint.pro_public_api_v1.route("/bookings/token/<token>", methods=["GET"])
+@blueprint.deprecated_booking_token_api.route("/bookings/token/<token>", methods=["GET"])
 @spectree_serialize(
     response_model=serialization.LegacyBookingResponse,
     on_success_status=200,
@@ -64,7 +64,7 @@ def get_booking_by_token(token: str) -> serialization.LegacyBookingResponse | No
     return None
 
 
-@blueprint.pro_public_api_v1.route("/bookings/token/<token>", methods=["PATCH"])
+@blueprint.deprecated_booking_token_api.route("/bookings/token/<token>", methods=["PATCH"])
 @spectree_serialize(on_success_status=204)
 def patch_booking_by_token(token: str, query: serialization.PatchBookingByTokenQueryModel) -> None:
     email = query.email

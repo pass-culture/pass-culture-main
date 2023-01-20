@@ -1,7 +1,7 @@
 from typing import cast
 
 from pcapi.core.educational.api.institution import search_educational_institution
-from pcapi.routes.pro import blueprint
+from pcapi.routes.public import blueprints
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -9,9 +9,9 @@ from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
 
 
-@blueprint.pro_public_api_v2.route("/collective/educational-institutions/", methods=["GET"])
+@blueprints.v2_prefixed_public_api.route("/collective/educational-institutions/", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.pro_public_schema_v2,
+    api=blueprints.v2_prefixed_public_api_schema,
     tags=["API offres collectives BETA"],
     resp=SpectreeResponse(
         **(

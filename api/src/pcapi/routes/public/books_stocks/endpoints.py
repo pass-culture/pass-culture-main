@@ -2,7 +2,7 @@ import logging
 
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
-from pcapi.routes.pro import blueprint
+from pcapi.routes.public import blueprints
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
@@ -14,9 +14,12 @@ from . import serialization
 logger = logging.getLogger(__name__)
 
 
-@blueprint.pro_public_api_v2.route("/venue/<int:venue_id>/stocks", methods=["POST"])
+@blueprints.v2_prefixed_public_api.route("/venue/<int:venue_id>/stocks", methods=["POST"])
 @spectree_serialize(
-    on_success_status=204, on_error_statuses=[401, 404], api=blueprint.pro_public_schema_v2, tags=["API Stocks"]
+    on_success_status=204,
+    on_error_statuses=[401, 404],
+    api=blueprints.v2_prefixed_public_api_schema,
+    tags=["API Stocks"],
 )
 @api_key_required
 def update_stocks(venue_id: int, body: serialization.UpdateVenueStocksBodyModel) -> None:
