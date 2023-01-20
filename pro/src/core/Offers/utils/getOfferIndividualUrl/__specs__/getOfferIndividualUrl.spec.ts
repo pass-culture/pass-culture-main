@@ -52,6 +52,15 @@ describe('getOfferIndividualUrl', () => {
       },
       expectedUrl: '/offre/individuelle/42/creation/confirmation',
     },
+    {
+      props: {
+        offerId: '42',
+        mode: OFFER_WIZARD_MODE.CREATION,
+        step: OFFER_WIZARD_STEP_IDS.TARIFS,
+        isV2: false,
+      },
+      expectedUrl: '/offre/individuelle/42/creation/tarifs',
+    },
     // when brouillon mode
     {
       props: {
@@ -89,6 +98,16 @@ describe('getOfferIndividualUrl', () => {
       },
       expectedUrl: '/offre/individuelle/42/brouillon/confirmation',
     },
+
+    {
+      props: {
+        offerId: '42',
+        mode: OFFER_WIZARD_MODE.DRAFT,
+        step: OFFER_WIZARD_STEP_IDS.TARIFS,
+        isV2: false,
+      },
+      expectedUrl: '/offre/individuelle/42/brouillon/tarifs',
+    },
     // when edition mode
     {
       props: {
@@ -125,6 +144,15 @@ describe('getOfferIndividualUrl', () => {
         isV2: false,
       },
       expectedUrl: '',
+    },
+    {
+      props: {
+        offerId: '42',
+        mode: OFFER_WIZARD_MODE.EDITION,
+        step: OFFER_WIZARD_STEP_IDS.TARIFS,
+        isV2: false,
+      },
+      expectedUrl: '/offre/individuelle/42/tarifs',
     },
   ]
   it.each(propsAndExpectedV3)(
@@ -184,6 +212,15 @@ describe('getOfferIndividualUrl', () => {
       },
       expectedUrl: '/offre/42/individuel/creation/confirmation',
     },
+    {
+      props: {
+        offerId: '42',
+        mode: OFFER_WIZARD_MODE.CREATION,
+        step: OFFER_WIZARD_STEP_IDS.TARIFS,
+        isV2: true,
+      },
+      expectedUrl: '/offre/42/individuel/creation/tarifs',
+    },
     // when brouillon mode
     {
       props: {
@@ -221,6 +258,15 @@ describe('getOfferIndividualUrl', () => {
       },
       expectedUrl: '/offre/42/individuel/brouillon/confirmation',
     },
+    {
+      props: {
+        offerId: '42',
+        mode: OFFER_WIZARD_MODE.DRAFT,
+        step: OFFER_WIZARD_STEP_IDS.TARIFS,
+        isV2: true,
+      },
+      expectedUrl: '/offre/42/individuel/brouillon/tarifs',
+    },
     // when edition mode
     {
       props: {
@@ -257,6 +303,16 @@ describe('getOfferIndividualUrl', () => {
         isV2: true,
       },
       expectedUrl: '',
+    },
+
+    {
+      props: {
+        offerId: '42',
+        mode: OFFER_WIZARD_MODE.EDITION,
+        step: OFFER_WIZARD_STEP_IDS.TARIFS,
+        isV2: true,
+      },
+      expectedUrl: '/offre/42/individuel/tarifs',
     },
   ]
   it.each(propsAndExpectedV2)(

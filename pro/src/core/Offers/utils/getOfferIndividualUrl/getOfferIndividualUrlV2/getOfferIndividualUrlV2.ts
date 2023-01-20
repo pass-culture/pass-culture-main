@@ -29,7 +29,11 @@ export const getOfferIndividualPathV2 = ({
       [OFFER_WIZARD_MODE.DRAFT]: `/offre/:offerId/individuel/brouillon/stocks`,
       [OFFER_WIZARD_MODE.EDITION]: `/offre/:offerId/individuel/stocks`,
     },
-
+    [OFFER_WIZARD_STEP_IDS.TARIFS]: {
+      [OFFER_WIZARD_MODE.CREATION]: `/offre/:offerId/individuel/creation/tarifs`,
+      [OFFER_WIZARD_MODE.DRAFT]: `/offre/:offerId/individuel/brouillon/tarifs`,
+      [OFFER_WIZARD_MODE.EDITION]: `/offre/:offerId/individuel/tarifs`,
+    },
     [OFFER_WIZARD_STEP_IDS.SUMMARY]: {
       [OFFER_WIZARD_MODE.CREATION]: `/offre/:offerId/individuel/creation/recapitulatif`,
       [OFFER_WIZARD_MODE.DRAFT]: `/offre/:offerId/individuel/brouillon/recapitulatif`,

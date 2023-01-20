@@ -3,6 +3,7 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { generatePath, MemoryRouter, Route, Switch } from 'react-router'
 
 import {
@@ -12,6 +13,7 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
+import { configureTestStore } from 'store/testUtils'
 
 import { OFFER_WIZARD_STEP_IDS } from '../constants'
 import OfferIndividualStepper from '../OfferIndividualStepper'
@@ -21,7 +23,8 @@ const renderOfferIndividualStepper = (
   url = getOfferIndividualPath({
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
     mode: OFFER_WIZARD_MODE.CREATION,
-  })
+  }),
+  storeOverrides = {}
 ) => {
   const contextValues: IOfferIndividualContext = {
     offerId: null,
@@ -37,68 +40,87 @@ const renderOfferIndividualStepper = (
     venuesMissingReimbursementPoint: {},
     ...contextOverride,
   }
+  const store = configureTestStore(storeOverrides)
   const rtlReturns = render(
-    <OfferIndividualContext.Provider value={contextValues}>
-      <MemoryRouter initialEntries={[url]}>
-        <OfferIndividualStepper />
-        <Switch>
-          <Route
-            path={[
-              getOfferIndividualPath({
-                step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+    <Provider store={store}>
+      <OfferIndividualContext.Provider value={contextValues}>
+        <MemoryRouter initialEntries={[url]}>
+          <OfferIndividualStepper />
+          <Switch>
+            <Route
+              path={[
+                getOfferIndividualPath({
+                  step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+                  mode: OFFER_WIZARD_MODE.CREATION,
+                }),
+                getOfferIndividualPath({
+                  step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+                  mode: OFFER_WIZARD_MODE.EDITION,
+                }),
+              ]}
+            >
+              <div>Informations screen</div>
+            </Route>
+            <Route
+              path={[
+                getOfferIndividualPath({
+                  step: OFFER_WIZARD_STEP_IDS.STOCKS,
+                  mode: OFFER_WIZARD_MODE.CREATION,
+                }),
+                getOfferIndividualPath({
+                  step: OFFER_WIZARD_STEP_IDS.STOCKS,
+                  mode: OFFER_WIZARD_MODE.EDITION,
+                }),
+              ]}
+            >
+              <div>Stocks screen</div>
+            </Route>
+            <Route
+              path={[
+                getOfferIndividualPath({
+                  step: OFFER_WIZARD_STEP_IDS.TARIFS,
+                  mode: OFFER_WIZARD_MODE.CREATION,
+                }),
+                getOfferIndividualPath({
+                  step: OFFER_WIZARD_STEP_IDS.TARIFS,
+                  mode: OFFER_WIZARD_MODE.EDITION,
+                }),
+              ]}
+            >
+              <div>Tarifs screen</div>
+            </Route>
+            <Route
+              path={[
+                getOfferIndividualPath({
+                  step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+                  mode: OFFER_WIZARD_MODE.CREATION,
+                }),
+                getOfferIndividualPath({
+                  step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+                  mode: OFFER_WIZARD_MODE.EDITION,
+                }),
+              ]}
+            >
+              <div>Summary screen</div>
+            </Route>
+            <Route
+              path={getOfferIndividualPath({
+                step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
                 mode: OFFER_WIZARD_MODE.CREATION,
-              }),
-              getOfferIndividualPath({
-                step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-                mode: OFFER_WIZARD_MODE.EDITION,
-              }),
-            ]}
-          >
-            <div>Informations screen</div>
-          </Route>
-          <Route
-            path={[
-              getOfferIndividualPath({
-                step: OFFER_WIZARD_STEP_IDS.STOCKS,
-                mode: OFFER_WIZARD_MODE.CREATION,
-              }),
-              getOfferIndividualPath({
-                step: OFFER_WIZARD_STEP_IDS.STOCKS,
-                mode: OFFER_WIZARD_MODE.EDITION,
-              }),
-            ]}
-          >
-            <div>Stocks screen</div>
-          </Route>
-          <Route
-            path={[
-              getOfferIndividualPath({
-                step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-                mode: OFFER_WIZARD_MODE.CREATION,
-              }),
-              getOfferIndividualPath({
-                step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-                mode: OFFER_WIZARD_MODE.EDITION,
-              }),
-            ]}
-          >
-            <div>Summary screen</div>
-          </Route>
-          <Route
-            path={getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            })}
-          >
-            <div>Confirmation screen</div>
-          </Route>
-        </Switch>
-      </MemoryRouter>
-    </OfferIndividualContext.Provider>
+              })}
+            >
+              <div>Confirmation screen</div>
+            </Route>
+          </Switch>
+        </MemoryRouter>
+      </OfferIndividualContext.Provider>
+    </Provider>
   )
 
   const tabInformations = screen.queryByText('Détails de l’offre')
   const tabStocks = screen.queryByText('Stock & Prix')
+  const tabPriceCategories = screen.queryByText('Tarifs')
+  const otherNameTabStocks = screen.queryByText('Dates & Capacités')
   const tabSummary = screen.queryByText('Récapitulatif')
   const tabConfirmation = screen.queryByText('Confirmation')
 
@@ -108,6 +130,8 @@ const renderOfferIndividualStepper = (
     tabStocks,
     tabSummary,
     tabConfirmation,
+    tabPriceCategories,
+    otherNameTabStocks,
   }
 }
 
@@ -251,6 +275,48 @@ describe('test OfferIndividualStepper', () => {
       expect(tabSummary).toBeInTheDocument()
       expect(tabConfirmation).toBeInTheDocument()
       expect(screen.getByText('Summary screen')).toBeInTheDocument()
+    })
+
+    describe('when WIP_ENABLE_MULTI_PRICE_STOCKS is active and event', () => {
+      it('should render steps on tarif', () => {
+        const {
+          tabInformations,
+          otherNameTabStocks,
+          tabPriceCategories,
+          tabSummary,
+          tabConfirmation,
+        } = renderOfferIndividualStepper(
+          {
+            offer: {
+              id: 'AA',
+              isEvent: true,
+              stocks: [{ id: 'AA' } as IOfferIndividualStock],
+            } as IOfferIndividual,
+          },
+          generatePath(
+            getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.TARIFS,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            }),
+            { offerId: 'AA' }
+          ),
+          {
+            features: {
+              list: [
+                { isActive: true, nameKey: 'WIP_ENABLE_MULTI_PRICE_STOCKS' },
+              ],
+            },
+          }
+        )
+
+        expect(tabInformations).toBeInTheDocument()
+        expect(otherNameTabStocks).toBeInTheDocument()
+        expect(tabPriceCategories).toBeInTheDocument()
+
+        expect(tabSummary).toBeInTheDocument()
+        expect(tabConfirmation).toBeInTheDocument()
+        expect(screen.getByText('Tarifs screen')).toBeInTheDocument()
+      })
     })
   })
 

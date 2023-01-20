@@ -3,6 +3,7 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { generatePath, MemoryRouter, Route, Switch } from 'react-router'
 
 import {
@@ -14,6 +15,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { configureTestStore } from 'store/testUtils'
 
 import { OFFER_WIZARD_STEP_IDS } from '../constants'
 import OfferIndividualStepper from '../OfferIndividualStepper'
@@ -42,52 +44,56 @@ const renderOfferIndividualStepper = (
     ...contextOverride,
   }
 
+  const store = configureTestStore({})
+
   const rtlReturns = render(
-    <OfferIndividualContext.Provider value={contextValues}>
-      <MemoryRouter initialEntries={[url]}>
-        <OfferIndividualStepper />
-        <Switch>
-          <Route
-            path={Object.values(OFFER_WIZARD_MODE).map(mode =>
-              getOfferIndividualPath({
-                step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-                mode,
-              })
-            )}
-          >
-            <div>Informations screen</div>
-          </Route>
-          <Route
-            path={Object.values(OFFER_WIZARD_MODE).map(mode =>
-              getOfferIndividualPath({
-                step: OFFER_WIZARD_STEP_IDS.STOCKS,
-                mode,
-              })
-            )}
-          >
-            <div>Stocks screen</div>
-          </Route>
-          <Route
-            path={Object.values(OFFER_WIZARD_MODE).map(mode =>
-              getOfferIndividualPath({
-                step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-                mode,
-              })
-            )}
-          >
-            <div>Summary screen</div>
-          </Route>
-          <Route
-            path={getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            })}
-          >
-            <div>Confirmation screen</div>
-          </Route>
-        </Switch>
-      </MemoryRouter>
-    </OfferIndividualContext.Provider>
+    <Provider store={store}>
+      <OfferIndividualContext.Provider value={contextValues}>
+        <MemoryRouter initialEntries={[url]}>
+          <OfferIndividualStepper />
+          <Switch>
+            <Route
+              path={Object.values(OFFER_WIZARD_MODE).map(mode =>
+                getOfferIndividualPath({
+                  step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+                  mode,
+                })
+              )}
+            >
+              <div>Informations screen</div>
+            </Route>
+            <Route
+              path={Object.values(OFFER_WIZARD_MODE).map(mode =>
+                getOfferIndividualPath({
+                  step: OFFER_WIZARD_STEP_IDS.STOCKS,
+                  mode,
+                })
+              )}
+            >
+              <div>Stocks screen</div>
+            </Route>
+            <Route
+              path={Object.values(OFFER_WIZARD_MODE).map(mode =>
+                getOfferIndividualPath({
+                  step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+                  mode,
+                })
+              )}
+            >
+              <div>Summary screen</div>
+            </Route>
+            <Route
+              path={getOfferIndividualPath({
+                step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+                mode: OFFER_WIZARD_MODE.CREATION,
+              })}
+            >
+              <div>Confirmation screen</div>
+            </Route>
+          </Switch>
+        </MemoryRouter>
+      </OfferIndividualContext.Provider>
+    </Provider>
   )
 
   const tabInformations = screen.queryByText('Détails de l’offre')
