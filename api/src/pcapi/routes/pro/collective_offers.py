@@ -6,6 +6,7 @@ from flask_login import login_required
 
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -15,6 +16,7 @@ from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_offers_serialize
+from pcapi.routes.serialization import educational_redactors
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize_or_raise
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -634,3 +636,29 @@ def delete_offer_template_image(
         check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     educational_api_offer.delete_image(obj=offer)
+
+
+@private_api.route("/collective/offers/redactors", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=educational_redactors.EducationalRedactors,
+    api=blueprint.pro_private_schema,
+)
+def get_autocomplete_educational_redactors_for_uai(
+    query: educational_redactors.EducationalRedactorQueryModel,
+) -> educational_redactors.EducationalRedactors:
+    try:
+        redactors = educational_api_adage.autocomplete_educational_redactor_for_uai(
+            uai=query.uai, candidate=query.candidate
+        )
+    except educational_exceptions.EducationalRedactorNotFound:
+        raise ApiErrors({"UAI": ["UAI non trouvé."]}, status_code=404)
+
+    return educational_redactors.EducationalRedactors(
+        __root__=[
+            educational_redactors.EducationalRedactor(
+                name=redactor["nom"], surname=redactor["prenom"], gender=redactor["civilite"]
+            )
+            for redactor in redactors
+        ]
+    )

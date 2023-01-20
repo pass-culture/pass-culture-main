@@ -157,12 +157,12 @@ class AdageSpyClient(AdageClient):
                 {
                     "civilite": "M.",
                     "nom": "POINTCARE",
-                    "prenom": "RAYMOND",
+                    "prenom": "HENRI",
                     "mail": "raymond.pointcare@example.com",
                 },
                 {
                     "civilite": "M.",
-                    "nom": "RAYMAR",
+                    "nom": "HENMAR",
                     "prenom": "CONFUSION",
                     "mail": "confusion.raymar@example.com",
                 },
