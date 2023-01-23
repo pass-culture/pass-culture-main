@@ -55,6 +55,14 @@ def _make_string_response(content: BaseModel | None, status_code: int, headers: 
     return response
 
 
+def _log_decoding_json_error(error: BadRequest, extra: dict) -> None:
+    logger.info(
+        "Error when decoding request body: %s",
+        error,
+        extra=extra,
+    )
+
+
 def spectree_serialize(
     headers: Type[BaseModel] = None,
     cookies: Type[BaseModel] = None,
@@ -132,11 +140,20 @@ def spectree_serialize(
             try:
                 body_params = request.get_json()
             except BadRequest as error:
-                logger.info(
-                    "Error when decoding request body: %s",
-                    error,
-                    extra={"contentTypeHeader": request.headers.get("Content-Type"), "path": request.path},
-                )
+                extra = {
+                    "contentTypeHeader": request.headers.get("Content-Type"),
+                    "path": request.path,
+                    "lengthHeader": request.headers.get("Content-Length", "missing header")[:20],
+                }
+                try:
+                    content_length = request.headers.get("Content-Length", type=int)
+                except ValueError:
+                    pass
+                else:
+                    if content_length is not None and content_length < 1000:
+                        extra["data"] = request.get_data()  # type: ignore [assignment]
+
+                _log_decoding_json_error(error, extra)
                 body_params = None
             query_params = request.args
             form = request.form
