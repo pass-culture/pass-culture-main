@@ -6,7 +6,7 @@
  * An enumeration.
  */
 export enum WithdrawalTypeEnum {
-  NO_TICKET = 'no_ticket',
   BY_EMAIL = 'by_email',
+  NO_TICKET = 'no_ticket',
   ON_SITE = 'on_site',
 }
