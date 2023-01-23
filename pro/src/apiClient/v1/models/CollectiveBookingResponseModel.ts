@@ -20,7 +20,6 @@ export type CollectiveBookingResponseModel = {
   bookingStatus: string;
   bookingStatusHistory: Array<BookingStatusHistoryResponseModel>;
   bookingToken?: string | null;
-  cancellationReason?: string | null;
   institution: EducationalInstitutionResponseModel;
   stock: CollectiveBookingCollectiveStockResponseModel;
 };
