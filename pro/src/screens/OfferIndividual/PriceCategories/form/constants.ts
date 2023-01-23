@@ -1,0 +1,3 @@
+export const PRICE_CATEGORY_LABEL_MAX_LENGTH = 20
+
+export const PRICE_CATEGORY_PRICE_MAX = 300
