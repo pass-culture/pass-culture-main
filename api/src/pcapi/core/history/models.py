@@ -2,11 +2,11 @@ import enum
 import typing
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.users import models as users_models
 from pcapi.models import Base
 from pcapi.models import Model
-from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.pc_object import PcObject
 
 
@@ -39,7 +39,7 @@ class ActionType(enum.Enum):
     USER_UNSUSPENDED = "Compte réactivé"
 
 
-class ActionHistory(PcObject, Base, Model, ExtraDataMixin):
+class ActionHistory(PcObject, Base, Model):
     """
     This table aims at logging all actions that should appear in a resource history for support, fraud team, etc.
 
@@ -77,6 +77,8 @@ class ActionHistory(PcObject, Base, Model, ExtraDataMixin):
     # author is removed; but the author is mandatory for any new action
     authorUserId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
     authorUser: users_models.User | None = sa.orm.relationship("User", foreign_keys=[authorUserId])
+
+    extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", sa.dialects.postgresql.JSONB)
 
     userId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=True
