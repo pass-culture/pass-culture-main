@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import React, { useState } from 'react'
 
+import { OfferStatus } from 'apiClient/v1'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
@@ -76,7 +77,7 @@ const OfferEducationalActions = ({
         />
       )}
       <div className={cn(style['actions'], className)}>
-        {!isBooked && setIsOfferActive && (
+        {!isBooked && setIsOfferActive && offer?.status != OfferStatus.EXPIRED && (
           <Button
             Icon={isOfferActive ? IconInactive : IconActive}
             className={style['actions-button']}
@@ -114,7 +115,11 @@ const OfferEducationalActions = ({
         )}
         {offer?.status && isImproveCollectiveStatusActive && (
           <>
-            <div className={style.separator} />{' '}
+            {offer.status != OfferStatus.EXPIRED && (
+              <>
+                <div className={style.separator} />{' '}
+              </>
+            )}
             {getCollectiveStatusLabel(offer?.status, lastBookingStatus || '')}
           </>
         )}
