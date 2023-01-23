@@ -718,7 +718,10 @@ class PostProductTest:
 
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
-        assert created_offer.extraData == {"showSubType": "1512", "showType": "1510"}
+        assert created_offer.extraData == {
+            "showSubType": "1512",
+            "showType": "1510",
+        }
 
     @pytest.mark.usefixtures("db_session")
     def test_books_are_not_allowed(self, client):

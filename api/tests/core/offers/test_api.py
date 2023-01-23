@@ -1845,3 +1845,17 @@ class DeleteDraftOffersTest:
         assert models.Stock.query.count() == 0
         assert models.Offer.query.count() == 0
         assert models.ActivationCode.query.count() == 0
+
+
+class FormatExtraDataTest:
+    def test_format_extra_data(self):
+        extra_data = {
+            "musicType": "1",  # applicable and filled
+            "musicSubType": "100",  # applicable and filled
+            "other": "value",  # not applicable field
+            "performer": "",  # applicable but empty
+        }
+        assert api._format_extra_data(subcategories.FESTIVAL_MUSIQUE.id, extra_data) == {
+            "musicType": "1",
+            "musicSubType": "100",
+        }
