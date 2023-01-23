@@ -160,9 +160,7 @@ describe('screens:StocksThing', () => {
     expect(
       screen.getByText('Offre synchronisée avec Ciné Office')
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { name: /Stock & Prix/ })
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('stock-thing-form')).toBeInTheDocument()
     expect(
       screen.getByText(
         'Les bénéficiaires ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
@@ -486,7 +484,7 @@ describe('screens:StocksThing', () => {
   it('should display draft success message on save draft button when stock form is empty', async () => {
     renderStockThingScreen({ props, storeOverride, contextValue })
 
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await expect(screen.getByTestId('stock-thing-form')).toBeInTheDocument()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
@@ -494,8 +492,6 @@ describe('screens:StocksThing', () => {
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
-    expect(
-      screen.queryByRole('heading', { name: /Stock & Prix/ })
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('stock-thing-form')).toBeInTheDocument()
   })
 })

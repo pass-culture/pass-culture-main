@@ -309,7 +309,7 @@ describe('screens:StocksEvent:Edition', () => {
     ]
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     renderStockEventScreen({ storeOverride })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-event-form')
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
     )
@@ -333,7 +333,7 @@ describe('screens:StocksEvent:Edition', () => {
   it("should allow user to delete a stock he just created (and didn't save)", async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
     renderStockEventScreen({ storeOverride })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-event-form')
 
     // create new stock
     await userEvent.click(await screen.findByText('Ajouter une date'))
@@ -381,7 +381,7 @@ describe('screens:StocksEvent:Edition', () => {
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
 
     renderStockEventScreen({ storeOverride })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-event-form')
 
     // create new stock
     await userEvent.click(await screen.findByText('Ajouter une date'))
@@ -423,7 +423,7 @@ describe('screens:StocksEvent:Edition', () => {
     ]
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     renderStockEventScreen({ storeOverride })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-event-form')
 
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[1]
@@ -446,7 +446,7 @@ describe('screens:StocksEvent:Edition', () => {
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     renderStockEventScreen({ storeOverride })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-event-form')
 
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[1]
@@ -475,7 +475,7 @@ describe('screens:StocksEvent:Edition', () => {
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     renderStockEventScreen({ storeOverride })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-event-form')
 
     expect(screen.queryByText('Ajouter une date')).toBeDisabled()
   })
@@ -493,7 +493,7 @@ describe('screens:StocksEvent:Edition', () => {
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     renderStockEventScreen({ storeOverride })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-event-form')
     await userEvent.type(screen.getByLabelText('Quantité'), '30')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
@@ -516,7 +516,7 @@ describe('screens:StocksEvent:Edition', () => {
       )
     )
     renderStockEventScreen({ storeOverride })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-event-form')
 
     await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
     await userEvent.click(screen.getByText('Supprimer le stock'))
@@ -544,7 +544,7 @@ describe('screens:StocksEvent:Edition', () => {
     ]
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     renderStockEventScreen({ storeOverride })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-event-form')
 
     await userEvent.type(await screen.getByLabelText('Prix'), '20')
     await userEvent.click(
@@ -559,7 +559,7 @@ describe('screens:StocksEvent:Edition', () => {
       .spyOn(api, 'upsertStocks')
       .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
     renderStockEventScreen({ storeOverride })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-event-form')
     // FireEvent.change instead of userEvent.type because userEvent change value but the test doesn"t work (it probably doesn't set touched at true for price field, only with inputs type number)
     fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '20' } })
     await expect(screen.getByLabelText('Prix')).toHaveValue(20)
@@ -575,7 +575,7 @@ describe('screens:StocksEvent:Edition', () => {
 
   it('should show a success notification if nothing has been touched', async () => {
     renderStockEventScreen({ storeOverride })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-event-form')
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
@@ -583,9 +583,7 @@ describe('screens:StocksEvent:Edition', () => {
     expect(
       screen.getByText('Vos modifications ont bien été enregistrées')
     ).toBeInTheDocument()
-    expect(
-      screen.queryByRole('heading', { name: /Stock & Prix/ })
-    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId('stock-event-form')).not.toBeInTheDocument()
     expect(screen.getByText(/Next page/)).toBeInTheDocument()
   })
   it('should not display any message when user delete empty stock', async () => {
@@ -595,7 +593,7 @@ describe('screens:StocksEvent:Edition', () => {
     })
     apiOffer.stocks = []
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-event-form')
     await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')
@@ -613,7 +611,9 @@ describe('screens:StocksEvent:Edition', () => {
     })
     apiOffer.stocks = []
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-event-form')
+
+    await screen.findByTestId('stock-event-form')
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
@@ -621,8 +621,6 @@ describe('screens:StocksEvent:Edition', () => {
     expect(
       screen.getByText('Vos modifications ont bien été enregistrées')
     ).toBeInTheDocument()
-    expect(
-      screen.queryByRole('heading', { name: /Stock & Prix/ })
-    ).toBeInTheDocument()
+    expect(screen.queryByTestId('stock-event-form')).toBeInTheDocument()
   })
 })

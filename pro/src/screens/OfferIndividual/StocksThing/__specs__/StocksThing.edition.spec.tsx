@@ -308,7 +308,7 @@ describe('screens:StocksThing', () => {
     renderStockThingScreen({
       storeOverride,
     })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-thing-form')
     await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
@@ -342,7 +342,7 @@ describe('screens:StocksThing', () => {
     renderStockThingScreen({
       storeOverride,
     })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-thing-form')
 
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[1]
@@ -374,7 +374,7 @@ describe('screens:StocksThing', () => {
     renderStockThingScreen({
       storeOverride,
     })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-thing-form')
 
     await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
     await userEvent.click(screen.getByText('Supprimer le stock'))
@@ -392,7 +392,7 @@ describe('screens:StocksThing', () => {
 
   it('should show a success notification if nothing has been touched', async () => {
     renderStockThingScreen({ storeOverride })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-thing-form')
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
@@ -400,9 +400,8 @@ describe('screens:StocksThing', () => {
     expect(
       screen.getByText('Vos modifications ont bien été enregistrées')
     ).toBeInTheDocument()
-    expect(
-      screen.queryByRole('heading', { name: /Stock & Prix/ })
-    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId('stock-thing-form')).not.toBeInTheDocument()
+
     expect(screen.getByText(/Next page/)).toBeInTheDocument()
   })
   it('should not display any message when user delete empty stock', async () => {
@@ -412,7 +411,7 @@ describe('screens:StocksThing', () => {
     })
     apiOffer.stocks = []
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-thing-form')
     await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')
@@ -430,7 +429,7 @@ describe('screens:StocksThing', () => {
     })
     apiOffer.stocks = []
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    await screen.findByTestId('stock-thing-form')
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
@@ -438,8 +437,6 @@ describe('screens:StocksThing', () => {
     expect(
       screen.getByText('Vos modifications ont bien été enregistrées')
     ).toBeInTheDocument()
-    expect(
-      screen.queryByRole('heading', { name: /Stock & Prix/ })
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('stock-thing-form')).toBeInTheDocument()
   })
 })

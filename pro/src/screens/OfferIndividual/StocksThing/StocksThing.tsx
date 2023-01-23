@@ -338,14 +338,13 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       )}
       <FormLayout>
         <FormLayout.Section
-          title="Stock & Prix"
           description={isDisabled ? undefined : description}
           links={isDisabled ? undefined : links}
           descriptionAsBanner={
             !isDisabled && mode === OFFER_WIZARD_MODE.EDITION
           }
         >
-          <form onSubmit={formik.handleSubmit}>
+          <form onSubmit={formik.handleSubmit} data-testid="stock-thing-form">
             <StockThingFormRow
               actions={actions}
               actionDisabled={false}
