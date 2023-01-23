@@ -10,6 +10,7 @@ from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
+from sqlalchemy.ext import mutable as sa_mutable
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BooleanClauseList
@@ -59,7 +60,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     conditions = sa.Column(sa.String(120), nullable=True)
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
-    extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", postgresql.JSONB)
+    extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     isGcuCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
     isNational: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
     isSynchronizationCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
@@ -328,7 +329,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     externalTicketOfficeUrl = sa.Column(sa.String, nullable=True)
-    extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", postgresql.JSONB)
+    extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     fieldsUpdated: list[str] = sa.Column(
         postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
     )

@@ -2,6 +2,8 @@ import enum
 import typing
 
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.ext import mutable as sa_mutable
 import sqlalchemy.orm as sa_orm
 
 from pcapi.core.users import models as users_models
@@ -78,7 +80,7 @@ class ActionHistory(PcObject, Base, Model):
     authorUserId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
     authorUser: users_models.User | None = sa.orm.relationship("User", foreign_keys=[authorUserId])
 
-    extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", sa.dialects.postgresql.JSONB)
+    extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
 
     userId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=True
