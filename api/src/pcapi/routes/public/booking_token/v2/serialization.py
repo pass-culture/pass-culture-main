@@ -8,6 +8,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
+from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
@@ -63,7 +64,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
     extra_data = booking.stock.offer.extraData or {}
 
     birth_date = (
-        format_into_utc_date(booking.individualBooking.user.birth_date)  # type: ignore [union-attr]
+        format_into_timezoned_date(booking.individualBooking.user.birth_date)  # type: ignore [union-attr]
         if booking.individualBooking.user.birth_date  # type: ignore [union-attr]
         else None
     )
