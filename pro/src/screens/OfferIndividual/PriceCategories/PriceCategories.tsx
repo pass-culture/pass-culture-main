@@ -1,5 +1,4 @@
-/* istanbul ignore: DEBT, TO FIX */
-import { FormikProvider, useFormik } from 'formik'
+import { FormikProvider } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
@@ -10,6 +9,9 @@ import { useNavigate, useOfferWizardMode } from 'hooks'
 
 import { ActionBar } from '../ActionBar'
 
+import { usePriceCategoriesForm } from './form/useForm'
+import { PriceCategoriesForm } from './PriceCategoriesForm'
+
 export interface IPriceCategories {
   offer: IOfferIndividual
 }
@@ -17,16 +19,7 @@ export interface IPriceCategories {
 const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
-
-  const onSubmit = async (formValues: Record<string, any>) => {
-    /* eslint-disable-next-line */
-    console.log('submit !', formValues)
-  }
-
-  const formik = useFormik({
-    initialValues: {},
-    onSubmit,
-  })
+  const formik = usePriceCategoriesForm()
 
   const handlePreviousStep = () => {
     navigate(
@@ -41,16 +34,16 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
   return (
     <FormikProvider value={formik}>
       <FormLayout>
-        <FormLayout.Section title="Tarifs">
-          <form onSubmit={formik.handleSubmit}>
-            <ActionBar
-              onClickPrevious={handlePreviousStep}
-              step={OFFER_WIZARD_STEP_IDS.STOCKS}
-              isDisabled={formik.isSubmitting}
-              offerId={offer.id}
-            />
-          </form>
-        </FormLayout.Section>
+        <form onSubmit={formik.handleSubmit}>
+          <PriceCategoriesForm values={formik.values} />
+
+          <ActionBar
+            onClickPrevious={handlePreviousStep}
+            step={OFFER_WIZARD_STEP_IDS.STOCKS}
+            isDisabled={formik.isSubmitting}
+            offerId={offer.id}
+          />
+        </form>
       </FormLayout>
     </FormikProvider>
   )

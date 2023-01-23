@@ -10,7 +10,7 @@ const validationSchema = {
       .string()
       .oneOf(
         Object.values(WithdrawalTypeEnum),
-        'Vous devez cocher l’une des options ci-dessuss'
+        'Vous devez cocher l’une des options ci-dessus'
       )
       .required('Vous devez cocher l’une des options ci-dessus'),
     otherwise: yup.string(),
