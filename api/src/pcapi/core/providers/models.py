@@ -309,3 +309,13 @@ class BoostCinemaDetails(PcObject, Base, Model):
     password: str = Column(Text, nullable=False)
     token: str | None = Column(Text, nullable=True)
     tokenExpirationDate: datetime.datetime | None = Column(DateTime, nullable=True)
+
+
+class CGRCinemaDetails(PcObject, Base, Model):
+    """Stores info on the specific login details of a cinema synced with CGR"""
+
+    cinemaProviderPivotId = Column(
+        BigInteger, ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
+    )
+    cinemaProviderPivot = relationship(CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId])  # type: ignore [misc]
+    cinemaUrl: str = Column(Text, nullable=False)
