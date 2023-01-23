@@ -1046,7 +1046,7 @@ def test_public_api(client):
                         "description": {"title": "Description", "type": "string"},
                         "title": {"title": "Title", "type": "string"},
                     },
-                    "required": ["title", "description"],
+                    "required": ["description", "title"],
                     "title": "ReasonMeta",
                     "type": "object",
                 },
@@ -1833,7 +1833,7 @@ def test_public_api(client):
                 },
                 "WithdrawalTypeEnum": {
                     "description": "An enumeration.",
-                    "enum": ["no_ticket", "by_email", "on_site"],
+                    "enum": ["by_email", "no_ticket", "on_site"],
                     "title": "WithdrawalTypeEnum",
                 },
                 "_HomepageLabelNameEnum": {
