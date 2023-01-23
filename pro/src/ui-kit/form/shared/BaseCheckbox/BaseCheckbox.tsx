@@ -14,6 +14,7 @@ export interface IBaseCheckboxProps
       title?: string | undefined
     }
   >
+  withBorder?: boolean
 }
 
 const BaseCheckbox = ({
@@ -22,9 +23,18 @@ const BaseCheckbox = ({
   hasError,
   className,
   Icon,
+  withBorder,
   ...props
 }: IBaseCheckboxProps): JSX.Element => (
-  <label className={cn(styles['base-checkbox'], className)}>
+  <label
+    className={cn(
+      styles['base-checkbox'],
+      {
+        [styles['with-border']]: withBorder,
+      },
+      className
+    )}
+  >
     <div className={styles['base-checkbox-label-row']}>
       <input
         aria-invalid={hasError}
