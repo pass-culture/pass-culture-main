@@ -28,6 +28,8 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.models import CinemaProviderPivot
 from pcapi.core.providers.models import Provider
 from pcapi.core.users.models import User
+from pcapi.domain import music_types
+from pcapi.domain import show_types
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.feature import FeatureToggle
@@ -426,8 +428,31 @@ def check_offer_extra_data(subcategory_id: str, extra_data: dict[str, Any] | Non
     except exceptions.EanFormatException as e:
         api_errors.add_client_error(e)
 
+    try:
+        _check_value_is_allowed(extra_data, ExtraDataFieldEnum.MUSIC_TYPE, music_types.MUSIC_TYPES_LABEL_BY_CODE)
+        _check_value_is_allowed(extra_data, ExtraDataFieldEnum.MUSIC_SUB_TYPE, music_types.MUSIC_SUB_TYPES_BY_CODE)
+        _check_value_is_allowed(extra_data, ExtraDataFieldEnum.SHOW_TYPE, show_types.SHOW_TYPES_LABEL_BY_CODE)
+        _check_value_is_allowed(extra_data, ExtraDataFieldEnum.SHOW_SUB_TYPE, show_types.SHOW_SUB_TYPES_BY_CODE)
+    except exceptions.ExtraDataValueNotAllowed as e:
+        api_errors.add_client_error(e)
+
     if api_errors.errors:
         raise api_errors
+
+
+def _check_value_is_allowed(
+    extra_data: dict[str, Any], extra_data_field: ExtraDataFieldEnum, allowed_values: dict
+) -> None:
+    field_value = extra_data.get(extra_data_field.value)
+    if field_value is None:
+        return
+
+    try:
+        music_type_code = int(field_value)
+    except ValueError:
+        raise exceptions.ExtraDataValueNotAllowed(extra_data_field.value, "should be an int or an int string")
+    if music_type_code not in allowed_values:
+        raise exceptions.ExtraDataValueNotAllowed(extra_data_field.value, "should be in allowed values")
 
 
 def _check_ean_field(extra_data: dict[str, Any]) -> None:
