@@ -37,3 +37,14 @@ WithDescription.args = {
   onChange: () => {},
   Icon,
 }
+
+export const WithBorder = Template.bind({})
+
+WithBorder.args = {
+  label: 'Checkbox Label with border',
+  hasError: false,
+  disabled: false,
+  onChange: () => {},
+  Icon,
+  withBorder: true,
+}

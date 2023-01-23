@@ -19,6 +19,7 @@ export interface ICheckboxProps {
     }
   >
   disabled?: boolean
+  withBorder?: boolean
 }
 
 const Checkbox = ({
@@ -30,6 +31,7 @@ const Checkbox = ({
   Icon,
   hideFooter,
   disabled,
+  withBorder,
 }: ICheckboxProps): JSX.Element => {
   const [field, meta] = useField({ name, type: 'checkbox' })
   return (
@@ -42,6 +44,7 @@ const Checkbox = ({
         description={description}
         value={value}
         disabled={disabled}
+        withBorder={withBorder}
       />
       {!hideFooter && (
         <div className={styles['checkbox-error']}>
