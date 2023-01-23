@@ -11,7 +11,6 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
-from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import Case
@@ -26,7 +25,6 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
-from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import StatusMixin
@@ -55,12 +53,13 @@ class BookFormat(enum.Enum):
 UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER = "xxx"
 
 
-class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
+class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     ageMin = sa.Column(sa.Integer, nullable=True)
     ageMax = sa.Column(sa.Integer, nullable=True)
     conditions = sa.Column(sa.String(120), nullable=True)
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
+    extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", postgresql.JSONB)
     isGcuCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
     isNational: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
     isSynchronizationCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
@@ -73,7 +72,7 @@ class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMi
     thumb_path_component = "products"
     url = sa.Column(sa.String(255), nullable=True)
 
-    sa.Index("product_isbn_idx", ExtraDataMixin.extraData["isbn"].astext)
+    sa.Index("product_isbn_idx", extraData["isbn"].astext)
 
     @property
     def subcategory(self) -> subcategories.Subcategory:
@@ -97,7 +96,7 @@ class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMi
 class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
     __tablename__ = "mediation"
 
-    author: Mapped["User"] | None = sa.orm.relationship("User", backref="mediations")
+    author: sa_orm.Mapped["User"] | None = sa.orm.relationship("User", backref="mediations")
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
     credit = sa.Column(sa.String(255), nullable=True)
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
@@ -309,12 +308,12 @@ class WithdrawalTypeEnum(enum.Enum):
     ON_SITE = "on_site"
 
 
-class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, AccessibilityMixin, StatusMixin):
+class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, AccessibilityMixin, StatusMixin):
     __tablename__ = "offer"
 
     ageMin = sa.Column(sa.Integer, nullable=True)
     ageMax = sa.Column(sa.Integer, nullable=True)
-    author: Mapped["User"] | None = relationship("User", backref="offers", uselist=False)
+    author: sa_orm.Mapped["User"] | None = relationship("User", backref="offers", uselist=False)
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
     bookingEmail = sa.Column(sa.String(120), nullable=True)
     conditions = sa.Column(sa.String(120), nullable=True)
@@ -329,6 +328,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     externalTicketOfficeUrl = sa.Column(sa.String, nullable=True)
+    extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", postgresql.JSONB)
     fieldsUpdated: list[str] = sa.Column(
         postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
     )
@@ -358,7 +358,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
     withdrawalType = sa.Column(sa.Enum(WithdrawalTypeEnum), nullable=True)
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
-    sa.Index("offer_isbn_idx", ExtraDataMixin.extraData["isbn"].astext)
+    sa.Index("offer_isbn_idx", extraData["isbn"].astext)
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
     sa.Index("venueId_idAtProvider_index", venueId, idAtProvider, unique=True)
@@ -596,7 +596,7 @@ class OfferValidationConfig(PcObject, Base, Model):
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     user = sa.orm.relationship("User", backref="offer_validation_configs")  # type: ignore [misc]
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"))
-    specs: dict = sa.Column("specs", sa.dialects.postgresql.JSONB, nullable=False)
+    specs: dict = sa.Column("specs", postgresql.JSONB, nullable=False)
 
 
 @dataclass
