@@ -9,6 +9,7 @@ from pcapi.core.categories import subcategories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
@@ -50,7 +51,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "bookingId": humanize(booking.id),
-            "dateOfBirth": format_into_utc_date(booking.individualBooking.user.birth_date),
+            "dateOfBirth": format_into_timezoned_date(booking.individualBooking.user.birth_date),
             "datetime": format_into_utc_date(booking.stock.beginningDatetime),
             "ean13": None,
             "email": "beneficiary@example.com",
