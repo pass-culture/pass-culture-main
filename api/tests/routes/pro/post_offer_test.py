@@ -65,7 +65,7 @@ class Returns200Test:
         offer = Offer.query.get(offer_id)
         assert offer.bookingEmail == "offer@example.com"
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
-        assert offer.extraData == {"toto": "text", "showType": 200, "showSubType": 201}
+        assert offer.extraData == {"showType": 200, "showSubType": 201}
         assert offer.externalTicketOfficeUrl == "http://example.net"
         assert offer.venue == venue
         assert offer.product.durationMinutes == 60
