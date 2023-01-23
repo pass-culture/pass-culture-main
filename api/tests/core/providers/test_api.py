@@ -286,7 +286,7 @@ class SynchronizeStocksTest:
             id=456,
             name="product_name",
             description="product_desc",
-            extraData="extra",
+            extraData={"extra": "data"},
             subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         products_by_provider_reference = {"isbn_product_ref": product}
@@ -306,7 +306,7 @@ class SynchronizeStocksTest:
         new_offer = new_offers[0]
         assert new_offer.bookingEmail == "booking_email"
         assert new_offer.description == "product_desc"
-        assert new_offer.extraData == "extra"
+        assert new_offer.extraData == {"extra": "data"}
         assert new_offer.idAtProvider == "isbn_product_ref"
         assert new_offer.lastProviderId == provider.id
         assert new_offer.name == "product_name"
