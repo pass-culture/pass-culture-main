@@ -19,8 +19,8 @@ from pcapi.routes.serialization.collective_offers_serialize import CollectiveOff
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import to_camel
-from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.date import isoformat
 from pcapi.utils.human_ids import humanize
 
 
@@ -205,7 +205,7 @@ def _serialize_collective_booking_status_info(
 ) -> BookingStatusHistoryResponseModel:
 
     serialized_collective_booking_status_date = (
-        format_into_timezoned_date(collective_booking_status_date) if collective_booking_status_date else None
+        isoformat(collective_booking_status_date) if collective_booking_status_date else None
     )
 
     return BookingStatusHistoryResponseModel(

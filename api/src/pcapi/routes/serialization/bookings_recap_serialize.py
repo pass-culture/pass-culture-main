@@ -17,7 +17,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import to_camel
-from pcapi.utils.date import format_into_timezoned_date
+from pcapi.utils.date import isoformat
 from pcapi.utils.human_ids import humanize
 
 
@@ -80,7 +80,7 @@ def _serialize_booking_status_info(
     booking_status: BookingRecapStatus, booking_status_date: datetime
 ) -> BookingRecapResponseBookingStatusHistoryModel:
 
-    serialized_booking_status_date = format_into_timezoned_date(booking_status_date) if booking_status_date else None
+    serialized_booking_status_date = isoformat(booking_status_date) if booking_status_date else None
 
     return BookingRecapResponseBookingStatusHistoryModel(
         status=booking_status.value,
@@ -133,7 +133,7 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapRespons
             "offerIdentifier": humanize(booking_recap.offer_identifier),
             "offerNonHumanizedId": booking_recap.offer_identifier,
             "stockIdentifier": humanize(booking_recap.stock_identifier),
-            "eventBeginningDatetime": format_into_timezoned_date(booking_recap.event_beginning_datetime)
+            "eventBeginningDatetime": isoformat(booking_recap.event_beginning_datetime)
             if booking_recap.event_beginning_datetime
             else None,
             "offerIsbn": booking_recap.offer_isbn,
@@ -146,7 +146,7 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapRespons
             "phonenumber": booking_recap.beneficiary_phonenumber,
         },
         bookingToken=booking_recap.booking_token,
-        bookingDate=format_into_timezoned_date(booking_recap.booking_date),
+        bookingDate=isoformat(booking_recap.booking_date),
         bookingStatus=booking_recap.booking_status.value,
         bookingIsDuo=booking_recap.booking_is_duo,
         bookingAmount=booking_recap.booking_amount,
