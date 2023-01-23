@@ -12,7 +12,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.date import format_into_timezoned_date
+from pcapi.utils.date import isoformat
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
 
@@ -137,7 +137,7 @@ class Returns200Test:
                     "lastname": "Granger",
                     "phonenumber": "+33100000000",
                 },
-                "bookingDate": format_into_timezoned_date(
+                "bookingDate": isoformat(
                     booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),
                 ),
                 "bookingAmount": 10.0,
@@ -147,13 +147,13 @@ class Returns200Test:
                 "bookingStatusHistory": [
                     {
                         "status": "booked",
-                        "date": format_into_timezoned_date(
+                        "date": isoformat(
                             booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),
                         ),
                     },
                     {
                         "status": "validated",
-                        "date": format_into_timezoned_date(
+                        "date": isoformat(
                             booking.dateUsed.astimezone(tz.gettz("Europe/Paris")),
                         ),
                     },
