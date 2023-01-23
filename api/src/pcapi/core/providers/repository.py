@@ -119,6 +119,17 @@ def get_boost_cinema_details(cinema_id: str) -> models.BoostCinemaDetails:
     return cinema_details
 
 
+def get_cgr_cinema_details(cinema_id: str) -> models.CGRCinemaDetails:
+    cinema_details = (
+        models.CGRCinemaDetails.query.join(models.CinemaProviderPivot)
+        .join(models.CinemaProviderPivot.provider)
+        .filter(models.CinemaProviderPivot.idAtProvider == cinema_id)
+        .filter(models.Provider.localClass == "CGRStocks")
+        .one()
+    )
+    return cinema_details
+
+
 # Each venue is known to allocine by its siret (AllocineTheater) or by its id (AllocinePivot).
 # This class is used to handle this logic when a venue wants to sync with Allocine.
 @dataclass

@@ -89,6 +89,13 @@ class CDSCinemaProviderPivotFactory(CinemaProviderPivotFactory):
     provider = factory.LazyFunction(lambda: providers_repository.get_provider_by_local_class("CDSStocks"))
 
 
+class CGRCinemaProviderPivotFactory(CinemaProviderPivotFactory):
+    class Meta:
+        sqlalchemy_get_or_create = ["provider"]
+
+    provider = factory.LazyFunction(lambda: providers_repository.get_provider_by_local_class("CGRStocks"))
+
+
 class CDSCinemaDetailsFactory(BaseFactory):
     class Meta:
         model = models.CDSCinemaDetails
@@ -108,6 +115,14 @@ class BoostCinemaDetailsFactory(BaseFactory):
     password = "a great password"
     token = factory.LazyFunction(secrets.token_urlsafe)
     tokenExpirationDate = factory.LazyAttribute(lambda _: datetime.datetime.utcnow() + datetime.timedelta(hours=24))
+
+
+class CGRCinemaDetailsFactory(BaseFactory):
+    class Meta:
+        model = models.CGRCinemaDetails
+
+    cinemaProviderPivot = factory.SubFactory(CGRCinemaProviderPivotFactory)
+    cinemaUrl = factory.Sequence("https://cgr-cinema-{}.example.com/".format)
 
 
 class AllocineProviderFactory(BaseFactory):
