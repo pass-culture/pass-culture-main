@@ -255,27 +255,30 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         setIsClickingFromActionBar(false)
       }
 
+      const nextStepUrl = getOfferIndividualUrl({
+        offerId: offer.id,
+        step: saveDraft
+          ? OFFER_WIZARD_STEP_IDS.STOCKS
+          : OFFER_WIZARD_STEP_IDS.SUMMARY,
+        mode,
+      })
+
       // When saving draft with an empty form or in edition mode
       // we display a success notification even if nothing is done
       if (isFormEmpty() && (saveDraft || mode === OFFER_WIZARD_MODE.EDITION)) {
         setIsClickingFromActionBar(false)
-        saveDraft
-          ? notify.success('Brouillon sauvegardé dans la liste des offres')
-          : notify.success(getSuccessMessage(mode))
-        return
+        if (saveDraft) {
+          notify.success('Brouillon sauvegardé dans la liste des offres')
+          return
+        } else {
+          notify.success(getSuccessMessage(mode))
+          navigate(nextStepUrl)
+        }
       }
       // tested but coverage don't see it.
       /* istanbul ignore next */
       setIsSubmittingDraft(saveDraft)
-      setAfterSubmitUrl(
-        getOfferIndividualUrl({
-          offerId: offer.id,
-          step: saveDraft
-            ? OFFER_WIZARD_STEP_IDS.STOCKS
-            : OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode,
-        })
-      )
+      setAfterSubmitUrl(nextStepUrl)
 
       const hasSavedStock = formik.values.stocks.some(
         stock => stock.stockId !== undefined
@@ -288,15 +291,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         notify.success(getSuccessMessage(mode))
         /* istanbul ignore next: DEBT to fix */
         if (!saveDraft) {
-          navigate(
-            getOfferIndividualUrl({
-              offerId: offer.id,
-              step: saveDraft
-                ? OFFER_WIZARD_STEP_IDS.STOCKS
-                : OFFER_WIZARD_STEP_IDS.SUMMARY,
-              mode,
-            })
-          )
+          navigate(nextStepUrl)
         }
         setIsClickingFromActionBar(false)
       } else {
