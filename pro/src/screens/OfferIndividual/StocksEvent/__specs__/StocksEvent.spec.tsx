@@ -152,9 +152,7 @@ describe('screens:StocksEvent', () => {
     expect(
       screen.getByText('Offre synchronisée avec Ciné Office')
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { name: /Stock & Prix/ })
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('stock-event-form')).toBeInTheDocument()
     expect(
       screen.getByText(
         'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’évènement. Vous pouvez annuler un évènement en supprimant la ligne de stock associée. Cette action est irréversible.'
@@ -188,9 +186,7 @@ describe('screens:StocksEvent', () => {
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { name: 'Stock & Prix' })
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('stock-event-form')).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })
 
@@ -309,7 +305,7 @@ describe('screens:StocksEvent', () => {
   it('should display draft success message on save draft button when stock form is empty', async () => {
     renderStockEventScreen({ props, storeOverride, contextValue })
 
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    expect(screen.getByTestId('stock-event-form')).toBeInTheDocument()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
@@ -317,9 +313,7 @@ describe('screens:StocksEvent', () => {
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
-    expect(
-      screen.queryByRole('heading', { name: /Stock & Prix/ })
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('stock-event-form')).toBeInTheDocument()
   })
 
   it('should not display any message when user delete empty stock', async () => {
@@ -341,7 +335,7 @@ describe('screens:StocksEvent', () => {
       stocks: [stock],
     }
     renderStockEventScreen({ props, storeOverride, contextValue })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    expect(screen.getByTestId('stock-event-form')).toBeInTheDocument()
     await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')
@@ -361,7 +355,7 @@ describe('screens:StocksEvent', () => {
       stocks: [],
     }
     renderStockEventScreen({ props, storeOverride, contextValue })
-    await screen.findByRole('heading', { name: /Stock & Prix/ })
+    expect(screen.getByTestId('stock-event-form')).toBeInTheDocument()
     await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')
