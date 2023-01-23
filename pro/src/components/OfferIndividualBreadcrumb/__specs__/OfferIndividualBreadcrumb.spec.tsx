@@ -14,6 +14,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { configureTestStore } from 'store/testUtils'
+import { individualOfferFactory } from 'utils/individualApiFactories'
 
 import { OFFER_WIZARD_STEP_IDS } from '../constants'
 import OfferIndividualBreadcrumb from '../OfferIndividualBreadcrumb'
@@ -288,10 +289,9 @@ describe('test OfferIndividualBreadcrumb', () => {
         } = renderOfferIndividualBreadcrumb(
           {
             offer: {
-              id: 'AA',
+              ...individualOfferFactory(),
               isEvent: true,
-              stocks: [{ id: 'AA' } as IOfferIndividualStock],
-            } as IOfferIndividual,
+            },
           },
           generatePath(
             getOfferIndividualPath({
@@ -316,6 +316,46 @@ describe('test OfferIndividualBreadcrumb', () => {
         expect(tabSummary).toBeInTheDocument()
         expect(tabConfirmation).toBeInTheDocument()
         expect(screen.getByText('Tarifs screen')).toBeInTheDocument()
+      })
+
+      it('should not render tarif step when offer is not an event', () => {
+        const {
+          tabInformations,
+          tabStocks,
+          otherNameTabStocks,
+          tabPriceCategories,
+          tabSummary,
+          tabConfirmation,
+        } = renderOfferIndividualBreadcrumb(
+          {
+            offer: {
+              ...individualOfferFactory(),
+              isEvent: false,
+            },
+          },
+          generatePath(
+            getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.STOCKS,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            }),
+            { offerId: 'AA' }
+          ),
+          {
+            features: {
+              list: [
+                { isActive: true, nameKey: 'WIP_ENABLE_MULTI_PRICE_STOCKS' },
+              ],
+            },
+          }
+        )
+
+        expect(tabInformations).toBeInTheDocument()
+        expect(tabStocks).toBeInTheDocument()
+        expect(otherNameTabStocks).not.toBeInTheDocument()
+        expect(tabPriceCategories).not.toBeInTheDocument()
+        expect(tabSummary).toBeInTheDocument()
+        expect(tabConfirmation).toBeInTheDocument()
+        expect(screen.getByText('Stocks screen')).toBeInTheDocument()
       })
     })
   })
