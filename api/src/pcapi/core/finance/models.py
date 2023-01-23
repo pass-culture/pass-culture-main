@@ -15,6 +15,7 @@ from uuid import UUID
 import psycopg2.extras
 import sqlalchemy as sqla
 import sqlalchemy.dialects.postgresql as sqla_psql
+import sqlalchemy.ext.mutable as sqla_mutable
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
@@ -577,7 +578,9 @@ class CashflowLog(Base, Model):
     timestamp: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     statusBefore: CashflowStatus = sqla.Column(db_utils.MagicEnum(CashflowStatus), nullable=False)
     statusAfter: CashflowStatus = sqla.Column(db_utils.MagicEnum(CashflowStatus), nullable=False)
-    details = sqla.Column(db_utils.SafeJsonB, nullable=True, default={}, server_default="{}")
+    details: dict | None = sqla.Column(
+        sqla_mutable.MutableDict.as_mutable(sqla_psql.JSONB), nullable=True, default={}, server_default="{}"
+    )
 
 
 class CashflowPricing(Base, Model):

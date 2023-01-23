@@ -6,9 +6,7 @@ import typing
 import psycopg2.extras
 import pytz
 import sqlalchemy as sqla
-import sqlalchemy.dialects.postgresql.json as sqla_json
 import sqlalchemy.engine as sqla_engine
-import sqlalchemy.ext.mutable as sqla_mutable
 import sqlalchemy.types as sqla_types
 
 from pcapi.models import Model
@@ -103,9 +101,6 @@ class MagicEnum(sqla_types.TypeDecorator):
         if value is None:
             return None
         return self.enum_class(value)
-
-
-SafeJsonB = sqla_mutable.MutableDict.as_mutable(sqla_json.JSONB)
 
 
 def make_timerange(
