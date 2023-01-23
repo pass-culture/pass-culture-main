@@ -37,6 +37,7 @@ describe('src | components | CollectiveOfferBreadcrumb', () => {
   })
 
   it('should display breadcrumb for collective offer in creation', async () => {
+    props.offerId = ''
     renderCollectiveOfferBreadcrumb(props)
 
     expect(screen.getByTestId('stepper')).toBeInTheDocument()
@@ -75,8 +76,9 @@ describe('src | components | CollectiveOfferBreadcrumb', () => {
     props.activeStep = CollectiveOfferBreadcrumbStep.STOCKS
     renderCollectiveOfferBreadcrumb(props)
     const links = await screen.queryAllByRole('link')
-    expect(links).toHaveLength(1)
+    expect(links).toHaveLength(2)
     expect(links[0].getAttribute('href')).toBe('/offre/collectif/A1/creation')
+    expect(links[1].getAttribute('href')).toBe('/offre/A1/collectif/stocks')
   })
 
   it('should show links if visibility is the active step', async () => {
@@ -128,6 +130,20 @@ describe('src | components | CollectiveOfferBreadcrumb', () => {
     )
     expect(linkItems[2].getAttribute('href')).toBe(
       '/offre/A1/collectif/visibilite/edition'
+    )
+  })
+
+  it('should generate link for visibility and summary if offer has a stock', async () => {
+    props.haveStock = true
+    renderCollectiveOfferBreadcrumb(props)
+
+    const links = await screen.findAllByRole('link')
+
+    expect(links).toHaveLength(3)
+    expect(links[0].getAttribute('href')).toBe('/offre/A1/collectif/stocks')
+    expect(links[1].getAttribute('href')).toBe('/offre/A1/collectif/visibilite')
+    expect(links[2].getAttribute('href')).toBe(
+      '/offre/A1/collectif/creation/recapitulatif'
     )
   })
 })

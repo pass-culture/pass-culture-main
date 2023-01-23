@@ -93,6 +93,7 @@ const CollectiveOfferCreationRoutes = ({
             offerId,
           }}
           isTemplate={shouldRenderTemplateOffer}
+          haveStock={isCollectiveOffer(offer) && Boolean(offer.collectiveStock)}
         >
           <Switch>
             <Route path="/offre/creation/collectif/vitrine">

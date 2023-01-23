@@ -20,6 +20,7 @@ export interface IOfferBreadcrumb {
   isOfferEducational?: boolean
   className?: string
   isTemplate: boolean
+  haveStock?: boolean
 }
 
 const CollectiveOfferBreadcrumb = ({
@@ -29,6 +30,7 @@ const CollectiveOfferBreadcrumb = ({
   isCompletingDraft = false,
   offerId = '',
   className,
+  haveStock = false,
 }: IOfferBreadcrumb): JSX.Element => {
   const stockEditionUrl = useOfferStockEditionURL(true, offerId, true)
   const isEditingExistingOffer = !(isCreatingOffer || isCompletingDraft)
@@ -62,15 +64,22 @@ const CollectiveOfferBreadcrumb = ({
       stepList[CollectiveOfferBreadcrumbStep.STOCKS] = {
         id: CollectiveOfferBreadcrumbStep.STOCKS,
         label: 'Date et prix',
+        url: offerId ? `/offre/${offerId}/collectif/stocks` : '',
       }
       stepList[CollectiveOfferBreadcrumbStep.VISIBILITY] = {
         id: CollectiveOfferBreadcrumbStep.VISIBILITY,
         label: 'Visibilité',
+        url:
+          offerId && haveStock ? `/offre/${offerId}/collectif/visibilite` : '',
       }
     }
     stepList[CollectiveOfferBreadcrumbStep.SUMMARY] = {
       id: CollectiveOfferBreadcrumbStep.SUMMARY,
       label: 'Récapitulatif',
+      url:
+        offerId && haveStock
+          ? `/offre/${offerId}/collectif/creation/recapitulatif`
+          : '',
     }
     stepList[CollectiveOfferBreadcrumbStep.CONFIRMATION] = {
       id: CollectiveOfferBreadcrumbStep.CONFIRMATION,
