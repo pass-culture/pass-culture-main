@@ -5,37 +5,34 @@ on:
     branches:
       - master
 jobs:
+  check-pro-folder-changes:
+    name: Check pro folder changes
+    uses: ./.github/workflows/check-folder-changes.yml
+    with:
+      folder: pro
+
   create-debt-report:
+    needs: check-pro-folder-changes
+    if: needs.check-pro-folder-changes.outputs.folder_changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.4
         with:
           persist-credentials: false
-      - name: check changes
-        uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            src:
-              - 'pro/**'
       - uses: actions/setup-node@v2
-        if: steps.changes.outputs.src == 'true'
         with:
           node-version: "18"
       - name: Install and Build 🔧
-        if: steps.changes.outputs.src == 'true'
         run: |
           cd pro
           yarn install
       - name: Run debt tool 🔧
-        if: steps.changes.outputs.src == 'true'
         run: |
           cd pro
           git fetch origin master:master
           yarn debt:compare
       - name: Find Comment
-        if: steps.changes.outputs.src == 'true'
         uses: peter-evans/find-comment@v1
         id: fc
         with:
@@ -43,7 +40,6 @@ jobs:
           comment-author: "github-actions[bot]"
           body-includes: Debt collector report
       - id: get-comment-body
-        if: steps.changes.outputs.src == 'true'
         run: |
           body="$(cat ./pro/node_modules/.cache/debt-collector/report.html)"
           body="${body//'%'/'%25'}"
@@ -51,13 +47,13 @@ jobs:
           body="${body//$'\r'/'%0D'}"
           echo "::set-output name=body::$body"
       - name: Create comment
-        if: ${{ steps.changes.outputs.src == 'true' && steps.fc.outputs.comment-id == '' }}
+        if: ${{ steps.fc.outputs.comment-id == '' }}
         uses: peter-evans/create-or-update-comment@v1
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.get-comment-body.outputs.body }}
       - name: Update comment
-        if: ${{ steps.changes.outputs.src == 'true' && steps.fc.outputs.comment-id != '' }}
+        if: ${{ steps.fc.outputs.comment-id != '' }}
         uses: peter-evans/create-or-update-comment@v1
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
