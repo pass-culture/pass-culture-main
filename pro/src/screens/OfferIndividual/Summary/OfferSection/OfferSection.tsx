@@ -88,7 +88,7 @@ const OfferSummary = ({
       title="Détails de l’offre"
       editLink={editLink}
       onLinkClick={logEditEvent}
-      ariaLabel="Modifier détails de l’offre"
+      aria-label="Modifier détails de l’offre"
     >
       <SummaryLayout.SubSection title="Type d’offre">
         <SummaryLayout.Row title="Catégorie" description={offer.categoryName} />

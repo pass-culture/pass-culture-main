@@ -12,7 +12,7 @@ interface ISummaryLayoutSectionProps {
   className?: string
   editLink?: string // FIXME(MathildeDuboille - 18/10/22): make this props mandatory when we can modify collective offer during its creation
   onLinkClick?: () => void
-  ariaLabel?: string
+  'aria-label'?: string
 }
 
 const Section = ({
@@ -21,7 +21,7 @@ const Section = ({
   className,
   editLink,
   onLinkClick,
-  ariaLabel,
+  ...props
 }: ISummaryLayoutSectionProps): JSX.Element => (
   <div className={cn(style['summary-layout-section'], className)}>
     <div className={style['summary-layout-section-header']}>
@@ -34,7 +34,7 @@ const Section = ({
             link={{
               to: editLink,
               isExternal: false,
-              'aria-label': ariaLabel,
+              'aria-label': props['aria-label'],
             }}
             className={style['summary-layout-section-header-edit-link']}
             Icon={IcoPen}
