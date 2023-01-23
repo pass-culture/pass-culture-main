@@ -43,38 +43,37 @@ if TYPE_CHECKING:
 
 
 class BookFormat(enum.Enum):
-    REVUE = "REVUE"
     BANDE_DESSINEE = "BANDE DESSINEE "
     BEAUX_LIVRES = "BEAUX LIVRES"
-    POCHE = "POCHE"
-    LIVRE_CASSETTE = "LIVRE + CASSETTE"
     LIVRE_AUDIO = "LIVRE + CD AUDIO"
+    LIVRE_CASSETTE = "LIVRE + CASSETTE"
     MOYEN_FORMAT = "MOYEN FORMAT"
+    POCHE = "POCHE"
+    REVUE = "REVUE"
 
 
 UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER = "xxx"
 
 
 class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
-    name: str = sa.Column(sa.String(140), nullable=False)
-    description = sa.Column(sa.Text, nullable=True)
-    conditions = sa.Column(sa.String(120), nullable=True)
     ageMin = sa.Column(sa.Integer, nullable=True)
     ageMax = sa.Column(sa.Integer, nullable=True)
-    # FIXME (cgaunet, 2022-08-02): this field seems to be unused
-    mediaUrls: list[str] = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
-    url = sa.Column(sa.String(255), nullable=True)
+    conditions = sa.Column(sa.String(120), nullable=True)
+    description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     isGcuCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
-    isSynchronizationCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
     isNational: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
+    isSynchronizationCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
+    # FIXME (cgaunet, 2022-08-02): this field seems to be unused
+    mediaUrls: list[str] = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
+    name: str = sa.Column(sa.String(140), nullable=False)
+    owningOfferer = sa_orm.relationship("Offerer", backref="events")  # type: ignore [misc]
     owningOffererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), nullable=True)
-    owningOfferer = sa_orm.relationship("Offerer", foreign_keys=[owningOffererId], backref="events")  # type: ignore [misc]
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
+    thumb_path_component = "products"
+    url = sa.Column(sa.String(255), nullable=True)
 
     sa.Index("product_isbn_idx", ExtraDataMixin.extraData["isbn"].astext)
-
-    thumb_path_component = "products"
 
     @property
     def subcategory(self) -> subcategories.Subcategory:
@@ -98,53 +97,35 @@ class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMi
 class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
     __tablename__ = "mediation"
 
-    credit = sa.Column(sa.String(255), nullable=True)
-
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-
+    author: Mapped["User"] | None = sa.orm.relationship("User", backref="mediations")
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
-
-    author: Mapped["User"] | None = sa.orm.relationship("User", foreign_keys=[authorId], backref="mediations")
-
+    credit = sa.Column(sa.String(255), nullable=True)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    offer = sa.orm.relationship("Offer", backref="mediations")  # type: ignore [misc]
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
-
-    offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="mediations")  # type: ignore [misc]
-
     thumb_path_component = "mediations"
 
 
 class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     __tablename__ = "stock"
 
+    activationCodes = sa.orm.relationship("ActivationCode", back_populates="stock")  # type: ignore [misc]
+    beginningDatetime = sa.Column(sa.DateTime, index=True, nullable=True)
+    bookingLimitDatetime = sa.Column(sa.DateTime, nullable=True)
     dateCreated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )
-
     dateModified: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-
-    beginningDatetime = sa.Column(sa.DateTime, index=True, nullable=True)
-
+    dnBookedQuantity: int = sa.Column(sa.BigInteger, nullable=False, server_default=sa.text("0"))
+    educationalPriceDetail = sa.Column(sa.Text, nullable=True)
+    numberOfTickets = sa.Column(sa.Integer, nullable=True)
+    offer = sa.orm.relationship("Offer", backref="stocks")  # type: ignore [misc]
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
-
-    offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="stocks")  # type: ignore [misc]
-
     price: decimal.Decimal = sa.Column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
     )
-
     quantity = sa.Column(sa.Integer, nullable=True)
-
-    bookingLimitDatetime = sa.Column(sa.DateTime, nullable=True)
-
-    dnBookedQuantity: int = sa.Column(sa.BigInteger, nullable=False, server_default=sa.text("0"))
-
     rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
-
-    activationCodes = sa.orm.relationship("ActivationCode", back_populates="stock")  # type: ignore [misc]
-
-    numberOfTickets = sa.Column(sa.Integer, nullable=True)
-
-    educationalPriceDetail = sa.Column(sa.Text, nullable=True)
 
     @property
     def isBookable(self) -> bool:
@@ -323,64 +304,34 @@ class OfferImage:
 
 
 class WithdrawalTypeEnum(enum.Enum):
-    NO_TICKET = "no_ticket"
     BY_EMAIL = "by_email"
+    NO_TICKET = "no_ticket"
     ON_SITE = "on_site"
 
 
 class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, AccessibilityMixin, StatusMixin):
     __tablename__ = "offer"
 
-    productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
-
-    product: Product = sa.orm.relationship(Product, foreign_keys=[productId], backref="offers")
-
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
-
-    venue = sa.orm.relationship("Venue", foreign_keys=[venueId], backref="offers")  # type: ignore [misc]
-
-    bookingEmail = sa.Column(sa.String(120), nullable=True)
-
-    name: str = sa.Column(sa.String(140), nullable=False)
-    sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
-
-    description = sa.Column(sa.Text, nullable=True)
-
-    withdrawalDetails = sa.Column(sa.Text, nullable=True)
-
-    withdrawalType = sa.Column(sa.Enum(WithdrawalTypeEnum), nullable=True)
-    withdrawalDelay = sa.Column(sa.BigInteger, nullable=True)
-
-    conditions = sa.Column(sa.String(120), nullable=True)
-
     ageMin = sa.Column(sa.Integer, nullable=True)
     ageMax = sa.Column(sa.Integer, nullable=True)
-
-    url = sa.Column(sa.String(255), nullable=True)
-
-    # FIXME (cgaunet, 2022-08-02): this field seems to be unused
-    mediaUrls: list[str] = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
-
-    durationMinutes = sa.Column(sa.Integer, nullable=True)
-
-    isNational: bool = sa.Column(sa.Boolean, default=False, nullable=False)
-
-    isDuo: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
-
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-
+    author: Mapped["User"] | None = relationship("User", backref="offers", uselist=False)
+    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    bookingEmail = sa.Column(sa.String(120), nullable=True)
+    conditions = sa.Column(sa.String(120), nullable=True)
     criteria = sa.orm.relationship(  # type: ignore [misc]
         "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
     )
-
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
+    dateUpdated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
+    description = sa.Column(sa.Text, nullable=True)
+    durationMinutes = sa.Column(sa.Integer, nullable=True)
     externalTicketOfficeUrl = sa.Column(sa.String, nullable=True)
-
-    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
-
-    author: Mapped["User"] | None = relationship("User", foreign_keys=[authorId], backref="offers", uselist=False)
-
-    rankingWeight = sa.Column(sa.Integer, nullable=True)
-
+    fieldsUpdated: list[str] = sa.Column(
+        postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
+    )
     # This field replaces the idAtProviders coming from ProvidableMixin
     idAtProvider = sa.Column(
         sa.Text,
@@ -390,28 +341,31 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
         ),
         nullable=True,
     )
-
-    @property
-    def isEducational(self) -> bool:
-        return False
-
+    isDuo: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
+    isNational: bool = sa.Column(sa.Boolean, default=False, nullable=False)
+    name: str = sa.Column(sa.String(140), nullable=False)
+    # FIXME (cgaunet, 2022-08-02): this field seems to be unused
+    mediaUrls: list[str] = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
+    product: Product = sa.orm.relationship(Product, backref="offers")
+    productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
+    rankingWeight = sa.Column(sa.Integer, nullable=True)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
+    url = sa.Column(sa.String(255), nullable=True)
+    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
+    venue = sa.orm.relationship("Venue", foreign_keys=[venueId], backref="offers")  # type: ignore [misc]
+    withdrawalDelay = sa.Column(sa.BigInteger, nullable=True)
+    withdrawalDetails = sa.Column(sa.Text, nullable=True)
+    withdrawalType = sa.Column(sa.Enum(WithdrawalTypeEnum), nullable=True)
 
-    dateUpdated: datetime.datetime = sa.Column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
-    )
-
-    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
-
-    fieldsUpdated: list[str] = sa.Column(
-        postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
-    )
-
+    sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
+    sa.Index("offer_isbn_idx", ExtraDataMixin.extraData["isbn"].astext)
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
     sa.Index("venueId_idAtProvider_index", venueId, idAtProvider, unique=True)
 
-    sa.Index("offer_isbn_idx", ExtraDataMixin.extraData["isbn"].astext)
+    @property
+    def isEducational(self) -> bool:
+        return False
 
     @sa.ext.declarative.declared_attr  # type: ignore [misc]
     def lastProviderId(cls):  # pylint: disable=no-self-argument
@@ -620,17 +574,12 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
 class ActivationCode(PcObject, Base, Model):
     __tablename__ = "activation_code"
 
-    code: str = sa.Column(sa.Text, nullable=False)
-
-    expirationDate = sa.Column(sa.DateTime, nullable=True, default=None)
-
-    stockId: int = sa.Column(sa.BigInteger, sa.ForeignKey("stock.id"), index=True, nullable=False)
-
-    stock = sa.orm.relationship("Stock", back_populates="activationCodes")  # type: ignore [misc]
-
-    bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
-
     booking = sa.orm.relationship("Booking", back_populates="activationCode")  # type: ignore [misc]
+    bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
+    code: str = sa.Column(sa.Text, nullable=False)
+    expirationDate = sa.Column(sa.DateTime, nullable=True, default=None)
+    stock = sa.orm.relationship("Stock", back_populates="activationCodes")  # type: ignore [misc]
+    stockId: int = sa.Column(sa.BigInteger, sa.ForeignKey("stock.id"), index=True, nullable=False)
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -645,18 +594,15 @@ class OfferValidationConfig(PcObject, Base, Model):
     __tablename__ = "offer_validation_config"
 
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-
+    user = sa.orm.relationship("User", backref="offer_validation_configs")  # type: ignore [misc]
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"))
-
-    user = sa.orm.relationship("User", foreign_keys=[userId], backref="offer_validation_configs")  # type: ignore [misc]
-
     specs: dict = sa.Column("specs", sa.dialects.postgresql.JSONB, nullable=False)
 
 
 @dataclass
 class ReasonMeta:
-    title: str
     description: str
+    title: str
 
 
 class Reason(enum.Enum):
@@ -720,18 +666,12 @@ class OfferReport(PcObject, Base, Model):
         ),
     )
 
+    user = sa.orm.relationship("User", backref="reported_offers")  # type: ignore [misc]
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
-
-    user = sa.orm.relationship("User", foreign_keys=[userId], backref="reported_offers")  # type: ignore [misc]
-
+    offer = sa.orm.relationship("Offer", backref="reports")  # type: ignore [misc]
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
-
-    offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="reports")  # type: ignore [misc]
-
-    reportedAt: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
-
     reason: Reason = sa.Column(sa.Enum(Reason, create_constraint=False), nullable=False, index=True)
-
+    reportedAt: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     # If the reason code is OTHER, save the user's custom reason
     customReasonContent = sa.Column(sa.Text, nullable=True)
 
