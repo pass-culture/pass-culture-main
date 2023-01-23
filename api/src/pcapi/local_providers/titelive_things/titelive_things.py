@@ -170,8 +170,8 @@ class TiteLiveThings(LocalProvider):
         product.datePublished = read_things_date(self.product_infos["date_parution"])
         subcategory = subcategories.ALL_SUBCATEGORIES_DICT[self.product_subcategory_id]
         product.subcategoryId = subcategory.id
-        product.extraData = self.product_extra_data.copy()
-        product.extraData.update(get_extra_data_from_infos(self.product_infos))
+        extra_data = self.product_extra_data | get_extra_data_from_infos(self.product_infos)
+        product.extraData = extra_data
 
         if self.product_infos["url_extrait_pdf"] != "":
             if product.mediaUrls is None:

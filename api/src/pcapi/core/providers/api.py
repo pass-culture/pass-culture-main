@@ -385,7 +385,12 @@ def _get_stocks_to_upsert(
     for stock_detail in stock_details:
         stock_provider_reference = stock_detail.stocks_provider_reference
         product = products_by_provider_reference[stock_detail.products_provider_reference]
-        book_price = stock_detail.price or float(product.extraData["prix_livre"])
+        if stock_detail.price is not None:
+            book_price = stock_detail.price
+        else:
+            if product.extraData is None:
+                raise AttributeError("Cannot compute book_price because product extraData is None")
+            book_price = float(product.extraData["prix_livre"])
         if stock_provider_reference in stocks_by_provider_reference:
             stock = stocks_by_provider_reference[stock_provider_reference]
 
