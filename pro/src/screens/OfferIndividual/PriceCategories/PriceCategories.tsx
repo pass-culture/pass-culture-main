@@ -19,7 +19,7 @@ export interface IPriceCategories {
 const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
-  const formik = usePriceCategoriesForm()
+  const formik = usePriceCategoriesForm(offer)
 
   const handlePreviousStep = () => {
     navigate(
@@ -33,10 +33,9 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
 
   return (
     <FormikProvider value={formik}>
-      <FormLayout>
+      <FormLayout small>
         <form onSubmit={formik.handleSubmit}>
           <PriceCategoriesForm values={formik.values} />
-
           <ActionBar
             onClickPrevious={handlePreviousStep}
             step={OFFER_WIZARD_STEP_IDS.STOCKS}
