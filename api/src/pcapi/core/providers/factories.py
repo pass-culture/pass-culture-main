@@ -103,7 +103,7 @@ class BoostCinemaDetailsFactory(BaseFactory):
         model = models.BoostCinemaDetails
 
     cinemaProviderPivot = factory.SubFactory(BoostCinemaProviderPivotFactory)
-    cinemaUrl = factory.Sequence("https://cinema-{}.example.com/".format)
+    cinemaUrl = factory.Sequence("https://boost-cinema-{}.example.com/".format)
     username = "pass_culture"
     password = "a great password"
     token = factory.LazyFunction(secrets.token_urlsafe)
