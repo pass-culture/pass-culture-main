@@ -489,11 +489,9 @@ def create_industrial_educational_bookings() -> None:
             offerers_factories.CollectiveVenueFactory(
                 siret=None,
                 managingOfferer=cnl_like_offerer,
-                name=f"[EAC] Lieux factice du CNL {i}",
+                name=f"[EAC] Lieu factice du CNL {i}",
                 comment="Ce lieu est un lieu fictif créé pour les tests de l'EAC",
                 venueEducationalStatusId=(i + 3) if (i + 3) in VENUE_EDUCATIONAL_STATUS else None,
-                pricing_point="self",
-                reimbursement_point="self",
                 venueLabelId=None,
             )
         )
