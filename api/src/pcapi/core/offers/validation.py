@@ -13,7 +13,6 @@ from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.categories.subcategories import WITHDRAWABLE_SUBCATEGORIES
 from pcapi.core.categories.subcategories_v2 import ExtraDataFieldEnum
-from pcapi.core.categories.subcategories_v2 import Subcategory
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
@@ -423,7 +422,7 @@ def check_offer_extra_data(subcategory_id: str, extra_data: dict[str, Any] | Non
             api_errors.add_error(field, "Ce champ est obligatoire")
 
     try:
-        check_ean_field(subcategory, extra_data)
+        _check_ean_field(extra_data)
     except exceptions.EanFormatException as e:
         api_errors.add_client_error(e)
 
@@ -431,7 +430,7 @@ def check_offer_extra_data(subcategory_id: str, extra_data: dict[str, Any] | Non
         raise api_errors
 
 
-def check_ean_field(subcategory: Subcategory, extra_data: dict[str, Any]) -> None:
+def _check_ean_field(extra_data: dict[str, Any]) -> None:
     ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
     if ean is None or ean == "":
         return
