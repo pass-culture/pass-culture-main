@@ -213,6 +213,7 @@ const Offerers = ({ receivedOffererNames }: IOfferersProps) => {
               }
               onCancel={() => {
                 removeSuccessParams()
+                setTimeout(() => window.hj?.('event', 'click_on_later'), 200)
                 logEvent?.(
                   Events.CLICKED_SEE_LATER_FROM_SUCCESS_VENUE_CREATION_MODAL,
                   {
