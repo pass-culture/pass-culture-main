@@ -305,7 +305,7 @@ describe('screens:StocksEvent', () => {
   it('should display draft success message on save draft button when stock form is empty', async () => {
     renderStockEventScreen({ props, storeOverride, contextValue })
 
-    expect(screen.getByTestId('stock-event-form')).toBeInTheDocument()
+    await screen.findByTestId('stock-event-form')
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
