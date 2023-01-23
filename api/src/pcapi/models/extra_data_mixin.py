@@ -6,4 +6,4 @@ from sqlalchemy.orm import declarative_mixin
 
 @declarative_mixin
 class ExtraDataMixin:
-    extraData: Mapped[dict] = Column("jsonData", JSONB)
+    extraData: Mapped[dict | None] = Column("jsonData", JSONB)

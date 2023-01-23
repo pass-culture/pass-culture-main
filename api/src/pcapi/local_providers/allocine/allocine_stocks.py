@@ -151,6 +151,8 @@ class AllocineStocks(LocalProvider):
 
         self.update_from_movie_information(allocine_offer, self.movie_information)  # type: ignore [arg-type]
 
+        if allocine_offer.extraData is None:
+            allocine_offer.extraData = {}
         allocine_offer.extraData["theater"] = {
             "allocine_movie_id": self.movie_information["internal_id"],  # type: ignore [index]
             "allocine_room_id": self.room_internal_id,
