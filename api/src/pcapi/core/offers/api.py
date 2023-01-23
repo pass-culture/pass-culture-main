@@ -109,6 +109,20 @@ def list_offers_for_pro_user(
     )
 
 
+def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | None) -> dict[str, typing.Any] | None:
+    """Keep only the fields that are defined in the subcategory conditional fields"""
+    if extra_data is None:
+        return None
+
+    formatted_extra_data: dict[str, typing.Any] = {}
+
+    for field_name in subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].conditional_fields.keys():
+        if extra_data.get(field_name):
+            formatted_extra_data[field_name] = extra_data.get(field_name)
+
+    return formatted_extra_data
+
+
 def create_offer(
     audio_disability_compliant: bool,
     mental_disability_compliant: bool,
@@ -132,6 +146,7 @@ def create_offer(
 ) -> Offer:
     validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id)
     validation.check_offer_subcategory_is_valid(subcategory_id)
+    extra_data = _format_extra_data(subcategory_id, extra_data)
     validation.check_offer_extra_data(subcategory_id, extra_data)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
     validation.check_is_duo_compliance(is_duo, subcategory)
@@ -235,6 +250,7 @@ def update_offer(
 
     validation.check_validation_status(offer)
     if extraData is not UNCHANGED:
+        extraData = _format_extra_data(offer.subcategoryId, extraData)
         validation.check_offer_extra_data(offer.subcategoryId, extraData)
     if isDuo is not UNCHANGED:
         validation.check_is_duo_compliance(isDuo, offer.subcategory)
