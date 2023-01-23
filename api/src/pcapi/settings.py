@@ -246,6 +246,9 @@ IMPORT_USERS_GOOGLE_DOCUMENT_ID = secrets_utils.get("IMPORT_USERS_GOOGLE_DOCUMEN
 # PROVIDERS
 ALLOCINE_API_KEY = secrets_utils.get("ALLOCINE_API_KEY")
 CDS_API_URL = secrets_utils.get("CDS_API_URL")
+CGR_API_USER = secrets_utils.get("CGR_API_USER")
+CGR_API_PASSWORD = secrets_utils.get("CGR_API_PASSWORD")
+CGR_API_URL = secrets_utils.get("CGR_API_URL")
 
 
 # DEMARCHES SIMPLIFIEES
