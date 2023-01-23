@@ -131,7 +131,7 @@ class Returns200Test:
             "subcategoryId": subcategories.CONCERT.id,
             "withdrawalDetails": "Veuillez récuperer vos billets à l'accueil :)",
             "withdrawalType": "no_ticket",
-            "extraData": {"musicType": 300, "musicSubType": 301},
+            "extraData": {"musicType": -1, "musicSubType": -1},
             "mentalDisabilityCompliant": False,
             "audioDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
