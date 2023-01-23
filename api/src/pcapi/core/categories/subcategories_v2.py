@@ -28,6 +28,7 @@ class SearchGroups(Enum):
     MEDIA_PRESSE = "Médias & presse"
     MUSEES_VISITES_CULTURELLES = "Musées & visites culturelles"
     NONE = None
+    PLATEFORMES_EN_LIGNE = "Plateformes en ligne"
     RENCONTRES_CONFERENCES = "Conférences & rencontres"
     SPECTACLES = "Spectacles"
 
@@ -761,8 +762,8 @@ TELECHARGEMENT_LIVRE_AUDIO = Subcategory(
     native_category=NativeCategory.LIVRES_NUMERIQUE_ET_AUDIO,
     pro_label="Livre audio à télécharger",
     app_label="Livre audio à télécharger",
-    search_group_name=SearchGroups.LIVRES.name,
-    homepage_label_name=HomepageLabels.LIVRES.name,
+    search_group_name=SearchGroups.PLATEFORMES_EN_LIGNE.name,
+    homepage_label_name=HomepageLabels.PLATEFORME.name,
     is_event=False,
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
@@ -1225,10 +1226,10 @@ ABO_PLATEFORME_MUSIQUE = Subcategory(
 CAPTATION_MUSIQUE = Subcategory(
     id="CAPTATION_MUSIQUE",
     category=categories.MUSIQUE_ENREGISTREE,
-    native_category=NativeCategory.PRATIQUES_ET_ATELIERS_ARTISTIQUES,
+    native_category=NativeCategory.MUSIQUE_EN_LIGNE,
     pro_label="Captation musicale",
     app_label="Captation musicale",
-    search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
+    search_group_name=SearchGroups.CD_VINYLE_MUSIQUE_EN_LIGNE.name,
     homepage_label_name=HomepageLabels.MUSIQUE.name,
     is_event=False,
     conditional_fields={
