@@ -9,7 +9,6 @@ is limited to 14 days after creation.
 from datetime import datetime
 import logging
 from typing import Iterable
-from urllib.parse import quote
 
 from markupsafe import Markup
 
@@ -37,21 +36,18 @@ ZENDESK_TAG_SUSPENDED = "suspendu"
 
 def _get_backoffice_support_beneficiary_user_links(user_id: int) -> list[str]:
     return [
+        f"{settings.API_URL}/backofficev3/public_accounts/{user_id}",
         f"{settings.API_URL}/pc/back-office/support_beneficiary/details/?id={user_id}",
         f"{settings.API_URL}/pc/back-office/beneficiary_users/details/?id={user_id}",
     ]
 
 
-def _get_backoffice_pro_user_links(email: str) -> list[str]:
-    return [
-        f"{settings.API_URL}/pc/back-office/pro_users/?search={quote(email)}",
-        f"{settings.API_URL}/pc/back-office/userofferer/?flt1_0={quote(email)}",
-    ]
+def _get_backoffice_pro_user_link(user_id: int) -> str:
+    return f"{settings.API_URL}/backofficev3/pro/pro_user/{user_id}"
 
 
-def _get_backoffice_venues_link(venues_ids: Iterable[int]) -> str:
-    sorted_venues_ids = sorted([str(venue_id) for venue_id in venues_ids])
-    return f"{settings.API_URL}/pc/back-office/venue/?flt3_26={'%2C'.join(sorted_venues_ids)}"
+def _get_backoffice_venues_links(venues_ids: Iterable[int]) -> list[str]:
+    return [f"{settings.API_URL}/backofficev3/pro/venue/{venue_id}" for venue_id in venues_ids]
 
 
 def _format_list(raw_list: Iterable[str] | None) -> str | None:
@@ -143,9 +139,9 @@ def _format_pro_attributes(email: str, attributes: attributes_models.ProAttribut
         "tags": tags,
         # https://developer.zendesk.com/api-reference/ticketing/users/users/#user-fields
         "user_fields": {
-            "backoffice_url": _get_backoffice_pro_user_links(email)[0]
+            "backoffice_url": _get_backoffice_pro_user_link(attributes.user_id)
             if attributes.user_id
-            else _get_backoffice_venues_link(attributes.venues_ids),
+            else ", ".join(_get_backoffice_venues_links(attributes.venues_ids)),
             "user_id": attributes.user_id,
             "first_name": attributes.first_name,
             "last_name": attributes.last_name,
@@ -202,13 +198,13 @@ def _add_internal_note(
     if isinstance(attributes, attributes_models.ProAttributes):
         if attributes.user_id:
             html_body += Markup("Utilisateur pro identifié : <b>{}</b><br/>, {}").format(name, email)
-            for bo_link in _get_backoffice_pro_user_links(email):
-                html_body += Markup('<a href="{}" target="_blank">{}</a><br/>').format(bo_link, bo_link)
+            bo_link = _get_backoffice_pro_user_link(attributes.user_id)
+            html_body += Markup('<br/><a href="{}" target="_blank">{}</a><br/>').format(bo_link, bo_link)
         if attributes.venues_ids:
             venue_count = len(set(attributes.venues_ids))
             html_body += f"{venue_count} lieux identifiés :" if venue_count > 1 else "1 lieu identifié :"
-            bo_link = _get_backoffice_venues_link(attributes.venues_ids)
-            html_body += Markup('<br/><a href="{}" target="_blank">{}</a><br/>').format(bo_link, bo_link)
+            for bo_link in _get_backoffice_venues_links(attributes.venues_ids):
+                html_body += Markup('<br/><a href="{}" target="_blank">{}</a>').format(bo_link, bo_link)
     else:
         html_body += Markup("Utilisateur identifié : <b>{}</b>, {}").format(name, email)
         if attributes.date_of_birth:
