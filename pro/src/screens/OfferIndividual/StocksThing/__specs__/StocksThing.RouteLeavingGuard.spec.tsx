@@ -258,7 +258,7 @@ describe('screens:StocksThing', () => {
 
     await userEvent.click(screen.getByText('Rester sur cette page'))
 
-    expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+    expect(screen.getByTestId('stock-thing-form')).toBeInTheDocument()
   })
 
   it('should be able to quit without submitting from RouteLeavingGuard', async () => {

@@ -150,9 +150,7 @@ describe('screens:StocksThing::draft', () => {
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { name: /Stock & Prix/ })
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('stock-thing-form')).toBeInTheDocument()
     expect(screen.queryByText(/Next page/)).not.toBeInTheDocument()
   })
 
@@ -169,6 +167,7 @@ describe('screens:StocksThing::draft', () => {
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
+    expect(screen.queryByTestId('stock-thing-form')).not.toBeInTheDocument()
     expect(screen.queryByText(/Next page/)).toBeInTheDocument()
   })
 })

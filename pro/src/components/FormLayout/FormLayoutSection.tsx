@@ -7,7 +7,7 @@ import { Link } from 'ui-kit/Banners/Banner'
 import style from './FormLayout.module.scss'
 
 interface IFormLayoutSectionProps {
-  title: React.ReactNode
+  title?: React.ReactNode
   description?: string
   children: React.ReactNode | React.ReactNode[]
   className?: string

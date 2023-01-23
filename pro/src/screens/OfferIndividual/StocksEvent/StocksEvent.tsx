@@ -347,9 +347,8 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         />
       )}
       <FormLayout>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} data-testid="stock-event-form">
           <FormLayout.Section
-            title="Stock & Prix"
             description={
               isOfferDisabled(offer.status)
                 ? undefined
