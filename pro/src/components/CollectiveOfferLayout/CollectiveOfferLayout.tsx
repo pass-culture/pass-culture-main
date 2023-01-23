@@ -20,6 +20,7 @@ interface ICollectiveOfferLayout {
   isTemplate?: boolean
   title: string
   subTitle?: string
+  haveStock?: boolean
 }
 
 const CollectiveOfferLayout = ({
@@ -28,6 +29,7 @@ const CollectiveOfferLayout = ({
   isTemplate = false,
   title,
   subTitle,
+  haveStock = false,
 }: ICollectiveOfferLayout): JSX.Element => {
   return (
     <div className={styles['eac-layout']}>
@@ -55,6 +57,7 @@ const CollectiveOfferLayout = ({
             isOfferEducational
             offerId={breadCrumpProps.offerId}
             isTemplate={isTemplate}
+            haveStock={haveStock}
           />
         )
       }
