@@ -28,7 +28,8 @@ describe('PriceCategories', () => {
   it('should render without error', () => {
     renderPriceCategories({ offer: individualOfferFactory() })
 
-    screen.getByText('Tarifs')
+    expect(screen.getByText('Tarifs')).toBeInTheDocument()
+    expect(screen.getByText('Réservations “Duo”')).toBeInTheDocument()
   })
 
   it('should not let add more than 20 price categories', async () => {
