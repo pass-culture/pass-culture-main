@@ -24,7 +24,7 @@ import { ReactComponent as IconActive } from './assets/icon-active.svg'
 import { ReactComponent as IconInactive } from './assets/icon-inactive.svg'
 import style from './OfferEducationalActions.module.scss'
 
-interface IOfferEducationalActions {
+export interface IOfferEducationalActions {
   className?: string
   isOfferActive: boolean
   isBooked: boolean
