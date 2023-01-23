@@ -164,18 +164,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         setIsClickingFromActionBar(false)
       }
 
-      // When saving draft with an empty form or in edition mode
-      // we display a success notification even if nothing is done
-      if (isFormEmpty() && (saveDraft || mode === OFFER_WIZARD_MODE.EDITION)) {
-        setIsClickingFromActionBar(false)
-        saveDraft
-          ? notify.success('Brouillon sauvegardé dans la liste des offres')
-          : notify.success(getSuccessMessage(mode))
-        return
-      }
-      // tested but coverage don't see it.
-      /* istanbul ignore next */
-      setIsSubmittingDraft(saveDraft)
       const nextStepUrl = getOfferIndividualUrl({
         offerId: offer.id,
         step: saveDraft
@@ -183,6 +171,22 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
           : OFFER_WIZARD_STEP_IDS.SUMMARY,
         mode,
       })
+
+      // When saving draft with an empty form or in edition mode
+      // we display a success notification even if nothing is done
+      if (isFormEmpty() && (saveDraft || mode === OFFER_WIZARD_MODE.EDITION)) {
+        setIsClickingFromActionBar(false)
+        if (saveDraft) {
+          notify.success('Brouillon sauvegardé dans la liste des offres')
+          return
+        } else {
+          notify.success(getSuccessMessage(mode))
+          navigate(nextStepUrl)
+        }
+      }
+      // tested but coverage don't see it.
+      /* istanbul ignore next */
+      setIsSubmittingDraft(saveDraft)
       setAfterSubmitUrl(nextStepUrl)
 
       const hasSavedStock = formik.values.stockId !== undefined

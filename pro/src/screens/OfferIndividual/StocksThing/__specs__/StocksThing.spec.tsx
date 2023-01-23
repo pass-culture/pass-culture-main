@@ -481,7 +481,7 @@ describe('screens:StocksThing', () => {
       expect(quantityInput).toHaveValue(expectedNumber)
     }
   )
-  it('should display draft success message on save draft button when stock form is empty', async () => {
+  it('should display success message on save draft button when stock form is empty', async () => {
     renderStockThingScreen({ props, storeOverride, contextValue })
 
     await expect(screen.getByTestId('stock-thing-form')).toBeInTheDocument()

@@ -605,7 +605,7 @@ describe('screens:StocksEvent:Edition', () => {
     expect(api.deleteStock).not.toHaveBeenCalled()
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
   })
-  it('should display draft success message on save button when stock form is empty and not redirect to next page', async () => {
+  it('should display draft success message on save button when stock form is empty and redirect to next page', async () => {
     renderStockEventScreen({
       storeOverride: { ...storeOverride },
     })
@@ -621,6 +621,7 @@ describe('screens:StocksEvent:Edition', () => {
     expect(
       screen.getByText('Vos modifications ont bien été enregistrées')
     ).toBeInTheDocument()
-    expect(screen.queryByTestId('stock-event-form')).toBeInTheDocument()
+    expect(screen.queryByTestId('stock-event-form')).not.toBeInTheDocument()
+    expect(screen.getByText(/Next page/)).toBeInTheDocument()
   })
 })
