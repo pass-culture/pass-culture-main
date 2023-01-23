@@ -434,3 +434,29 @@ class CheckOfferExtraDataTest:
 
     def test_valid_ean_extra_data(self):
         assert validation.check_offer_extra_data(subcategories.JEU_EN_LIGNE.id, {"ean": "12345678"}) is None
+
+    def test_valid_show_types(self):
+        assert (
+            validation.check_offer_extra_data(subcategories.JEU_EN_LIGNE.id, {"showType": "200", "showSubType": "201"})
+            is None
+        )
+
+    def test_valid_music_types(self):
+        assert (
+            validation.check_offer_extra_data(
+                subcategories.JEU_EN_LIGNE.id, {"musicType": "530", "musicSubType": "533"}
+            )
+            is None
+        )
+
+    def test_invalid_show_type_code(self):
+        with pytest.raises(ApiErrors) as error:
+            validation.check_offer_extra_data(subcategories.JEU_EN_LIGNE.id, {"showType": "1"})
+
+        assert error.value.errors["showType"] == ["should be in allowed values"]
+
+    def test_invalid_show_type_format(self):
+        with pytest.raises(ApiErrors) as error:
+            validation.check_offer_extra_data(subcategories.JEU_EN_LIGNE.id, {"showType": "one"})
+
+        assert error.value.errors["showType"] == ["should be an int or an int string"]

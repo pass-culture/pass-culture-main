@@ -164,6 +164,10 @@ class WithdrawableEventOfferMustHaveWithdrawal(OfferCreationBaseException):
         )
 
 
+class ExtraDataValueNotAllowed(OfferCreationBaseException):
+    pass
+
+
 class EanFormatException(OfferCreationBaseException):
     def __init__(self, error_message: str) -> None:
         super().__init__("ean", error_message)
