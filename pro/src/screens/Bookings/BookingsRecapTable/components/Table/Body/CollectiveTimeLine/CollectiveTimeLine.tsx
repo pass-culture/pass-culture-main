@@ -259,9 +259,8 @@ const CollectiveTimeLine = ({
             CollectiveBookingCancellationReasons.EXPIRED &&
             `L’établissement scolaire n’a pas confirmé la préréservation avant la date limite de réservation fixée au ${cancellationLimitDate}.`}
           <div>
-            Votre offre a été automatiquement désactivée, elle n’est plus
-            visible sur ADAGE. Vous pouvez la republier en modifiant votre
-            offre.
+            Votre réservation a été annulée. Votre offre est de nouveau visible
+            sur ADAGE.
           </div>
         </div>
       </>

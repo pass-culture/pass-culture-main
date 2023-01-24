@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React, { useState } from 'react'
 
-import { OfferStatus } from 'apiClient/v1'
+import { CollectiveBookingStatus, OfferStatus } from 'apiClient/v1'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
@@ -101,18 +101,22 @@ const OfferEducationalActions = ({
               Annuler la réservation
             </Button>
           )}
-        {isImproveCollectiveStatusActive && lastBookingId && (
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
-            className={style['button-link']}
-            link={{ isExternal: false, to: getBookingLink() }}
-            Icon={IcoCircleArrow}
-            iconPosition={IconPositionEnum.LEFT}
-          >
-            Voir la{' '}
-            {lastBookingStatus == 'PENDING' ? 'préréservation' : 'réservation'}
-          </ButtonLink>
-        )}
+        {isImproveCollectiveStatusActive &&
+          lastBookingId &&
+          lastBookingStatus != CollectiveBookingStatus.CANCELLED && (
+            <ButtonLink
+              variant={ButtonVariant.TERNARY}
+              className={style['button-link']}
+              link={{ isExternal: false, to: getBookingLink() }}
+              Icon={IcoCircleArrow}
+              iconPosition={IconPositionEnum.LEFT}
+            >
+              Voir la{' '}
+              {lastBookingStatus == 'PENDING'
+                ? 'préréservation'
+                : 'réservation'}
+            </ButtonLink>
+          )}
         {offer?.status && isImproveCollectiveStatusActive && (
           <>
             {offer.status != OfferStatus.EXPIRED && (
