@@ -3,6 +3,7 @@ import datetime
 import decimal
 import enum
 import logging
+import typing
 from typing import TYPE_CHECKING
 from typing import Union
 
@@ -54,13 +55,53 @@ class BookFormat(enum.Enum):
 UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER = "xxx"
 
 
+class OfferExtraData(typing.TypedDict, total=False):
+    author: str | None
+    ean: str | None
+    isbn: str | None
+    musicSubType: str | None
+    musicType: str | None
+    performer: str | None
+    showSubType: str | None
+    showType: str | None
+    speaker: str | None
+    stageDirector: str | None
+    visa: str | None
+
+    # allocine
+    cast: str | None
+    companies: list[dict] | None
+    countries: str | None
+    diffusionVersion: str | None
+    genres: list[str] | None
+    releaseDate: str | None
+    theater: dict | None
+    type: str | None
+
+    # titelive
+    bookFormat: str | None
+    collection: str | None
+    comic_series: str | None
+    comment: str | None
+    date_parution: str | None
+    dewey: str | None
+    distributeur: str | None
+    editeur: str | None
+    num_in_collection: str | None
+    prix_livre: str | None
+    rayon: str | None
+    top: str | None
+    schoolbook: bool | None
+    titelive_regroup: str | None
+
+
 class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     ageMin = sa.Column(sa.Integer, nullable=True)
     ageMax = sa.Column(sa.Integer, nullable=True)
     conditions = sa.Column(sa.String(120), nullable=True)
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
-    extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
+    extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     isGcuCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
     isNational: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
     isSynchronizationCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
@@ -329,7 +370,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     externalTicketOfficeUrl = sa.Column(sa.String, nullable=True)
-    extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
+    extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     fieldsUpdated: list[str] = sa.Column(
         postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
     )

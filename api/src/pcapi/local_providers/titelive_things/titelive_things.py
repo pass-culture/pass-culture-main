@@ -90,7 +90,7 @@ class TiteLiveThings(LocalProvider):
 
         self.data_lines = None
         self.products_file = None
-        self.product_extra_data = {}
+        self.product_extra_data = offers_models.OfferExtraData()
 
     def __next__(self) -> list[ProvidableInfo] | None:
         if self.data_lines is None:
@@ -168,6 +168,8 @@ class TiteLiveThings(LocalProvider):
     def fill_object_attributes(self, product: offers_models.Product) -> None:
         product.name = trim_with_elipsis(self.product_infos["titre"], 140)
         product.datePublished = read_things_date(self.product_infos["date_parution"])
+        if not self.product_subcategory_id:
+            raise ValueError("product subcategory id is missing")
         subcategory = subcategories.ALL_SUBCATEGORIES_DICT[self.product_subcategory_id]
         product.subcategoryId = subcategory.id
         extra_data = self.product_extra_data | get_extra_data_from_infos(self.product_infos)
@@ -212,7 +214,7 @@ def get_lines_from_thing_file(thing_file: str):  # type: ignore [no-untyped-def]
     return iter(data_wrapper.readlines())
 
 
-def get_subcategory_and_extra_data_from_titelive_type(titelive_type):  # type: ignore [no-untyped-def]
+def get_subcategory_and_extra_data_from_titelive_type(titelive_type: str) -> tuple[str | None, str | None]:
     if titelive_type in ("A", "I", "LA"):  # obsolete codes
         return None, None
     if titelive_type == "BD":  # bande dessinée
@@ -312,8 +314,8 @@ def get_infos_from_data_line(elts: list) -> dict:
     return infos
 
 
-def get_extra_data_from_infos(infos: dict) -> dict:
-    extra_data = {}
+def get_extra_data_from_infos(infos: dict) -> offers_models.OfferExtraData:
+    extra_data = offers_models.OfferExtraData()
     extra_data["author"] = infos["auteurs"]
     extra_data["isbn"] = infos["ean13"]
     if infos["indice_dewey"] != "":
