@@ -67,7 +67,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING = (
         "Active le mode debug Firebase pour l'Id Check intégrée à l'application native"
     )
-    ENABLE_NEW_BOOKING_FILTERS = "Active les nouveaux filtres sur les statuts pour la page de réservations"
     ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
