@@ -93,6 +93,7 @@ export const venueFactory = (
     offererName: 'Ma structure',
     departementCode: '973',
     hasMissingReimbursementPoint: false,
+    hasCreatedOffer: false,
     ...customVenue,
   }
 }

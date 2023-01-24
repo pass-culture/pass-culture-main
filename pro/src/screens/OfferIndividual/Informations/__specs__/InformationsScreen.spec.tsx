@@ -120,8 +120,7 @@ describe('screens:OfferIndividual::Informations', () => {
       setOffer: () => {},
       setShouldTrack: () => {},
       shouldTrack: true,
-      isFirstOffer: false,
-      venuesMissingReimbursementPoint: {},
+      showVenuePopin: {},
     }
 
     jest

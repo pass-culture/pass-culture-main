@@ -40,8 +40,7 @@ const defaultContext: IOfferIndividualContext = {
   setOffer: () => {},
   setShouldTrack: () => {},
   shouldTrack: true,
-  isFirstOffer: false,
-  venuesMissingReimbursementPoint: {},
+  showVenuePopin: {},
 }
 
 const renderSummary = ({
@@ -572,7 +571,10 @@ describe('Summary trackers', () => {
       jest.spyOn(api, 'patchPublishOffer').mockResolvedValue()
 
       const context = defaultContext
-      context.isFirstOffer = true
+      context.venueId = 'AB'
+      context.showVenuePopin = {
+        AB: true,
+      }
       const overrideStore: Partial<RootState> = {
         features: {
           initialized: true,
@@ -629,6 +631,7 @@ describe('Summary trackers', () => {
         VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
         {
           from: 'recapitulatif',
+          venue_id: 'AB',
         }
       )
     })

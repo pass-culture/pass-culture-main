@@ -1,13 +1,10 @@
-import { OfferStatus } from 'apiClient/v1'
 import { getOffererNamesAdapter } from 'core/Offerers/adapters'
 import { TOffererName } from 'core/Offerers/types'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers'
 import { getCategoriesAdapter } from 'core/Offers/adapters'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { getOfferIndividualVenuesAdapter } from 'core/Venue/adapters/getOfferIndividualVenuesAdapter'
 import { TOfferIndividualVenue } from 'core/Venue/types'
-import { getFilteredOffersAdapter } from 'pages/Offers/adapters'
 
 interface IGetWizardDataArgs {
   offerOffererId?: string
@@ -24,7 +21,6 @@ export interface IOfferWizardData {
     categories: IOfferCategory[]
     subCategories: IOfferSubCategory[]
   }
-  isFirstOffer: boolean
 }
 
 export type TGetOfferIndividualAdapter = Adapter<
@@ -52,7 +48,6 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
       categories: [],
       subCategories: [],
     },
-    isFirstOffer: false,
   }
 
   if (isAdmin && !offerer && !queryOffererId) {
@@ -98,23 +93,6 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
       /* istanbul ignore next: DEBT, TO FIX */
       return Promise.resolve(FAILING_RESPONSE)
     }
-  }
-
-  // We call `/offers` to check if the offer that will be created will be
-  // the first one. If it is, there will be a special popin displayed when
-  // publishing the offer.
-  const apiFilters = {
-    ...DEFAULT_SEARCH_FILTERS,
-    ...{ nameOrIsbn: '', offererId: offererId || 'all' },
-  }
-  const offersResponse = await getFilteredOffersAdapter(apiFilters)
-  if (offersResponse.isOk) {
-    successPayload.isFirstOffer =
-      offersResponse.payload.offers.filter(o => o.status != OfferStatus.DRAFT)
-        .length === 0
-  } else {
-    /* istanbul ignore next: DEBT, TO FIX */
-    return Promise.resolve(FAILING_RESPONSE)
   }
 
   return Promise.resolve({

@@ -48,8 +48,7 @@ const contextValues: IOfferIndividualContext = {
   setOffer: () => {},
   setShouldTrack: () => {},
   shouldTrack: true,
-  isFirstOffer: false,
-  venuesMissingReimbursementPoint: {},
+  showVenuePopin: {},
 }
 
 const renderSummary = ({
@@ -489,7 +488,10 @@ describe('Summary', () => {
       jest.spyOn(useNewOfferCreationJourney, 'default').mockReturnValue(true)
 
       const context = contextValues
-      context.isFirstOffer = true
+      context.venueId = 'AB'
+      context.showVenuePopin = {
+        AB: true,
+      }
       const storeOverride = {
         features: {
           initialized: true,
