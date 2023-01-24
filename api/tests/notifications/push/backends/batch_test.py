@@ -62,3 +62,21 @@ class BatchPushNotificationClientTest:
                 "recipients": {"custom_ids": ["1234", "4321"]},
                 "message": {"body": "Notif", "title": "Putsch"},
             }
+
+    def test_send_user_events(self):
+        with requests_mock.Mocker() as mock:
+            android_post = mock.post("https://api.batch.com/1.0/fake_android_api_key/events/users/")
+            ios_post = mock.post("https://api.batch.com/1.0/fake_ios_api_key/events/users/")
+
+            BatchBackend().track_event_for_multiple_users(
+                user_ids=[1, 22, 88], event_name="taylor_trigger", event_payload={"location": "Brockton Bay"}
+            )
+
+            expected_request_body = [
+                {"id": 1, "events": [{"name": "ue.taylor_trigger", "attributes": {"location": "Brockton Bay"}}]},
+                {"id": 22, "events": [{"name": "ue.taylor_trigger", "attributes": {"location": "Brockton Bay"}}]},
+                {"id": 88, "events": [{"name": "ue.taylor_trigger", "attributes": {"location": "Brockton Bay"}}]},
+            ]
+
+            assert ios_post.last_request.json() == expected_request_body
+            assert android_post.last_request.json() == expected_request_body

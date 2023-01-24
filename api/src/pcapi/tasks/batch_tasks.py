@@ -28,6 +28,12 @@ class TrackBatchEventRequest(BaseModel):
     event_payload: dict
 
 
+class BulkTrackBatchEventRequest(BaseModel):
+    user_ids: list[int]
+    event_name: push_notifications.BatchEvent
+    event_payload: dict
+
+
 @task(settings.GCP_BATCH_CUSTOM_DATA_ANDROID_QUEUE_NAME, "/batch/android/update_user_attributes")  # type: ignore [arg-type]
 def update_user_attributes_android_task(payload: UpdateBatchAttributesRequest) -> None:
     push_notifications.update_user_attributes(
@@ -56,4 +62,11 @@ def send_transactional_notification_task(payload: TransactionalNotificationData)
 def track_event_task(payload: TrackBatchEventRequest) -> None:
     push_notifications.track_event(
         payload.user_id, payload.event_name, payload.event_payload, can_be_asynchronously_retried=True
+    )
+
+
+@task(settings.GCP_BATCH_CUSTOM_EVENT_QUEUE_NAME, "/batch/track_event/bulk")
+def track_event_for_multiple_users_task(payload: BulkTrackBatchEventRequest) -> None:
+    push_notifications.track_event_for_multiple_users(
+        payload.user_ids, payload.event_name, payload.event_payload, can_be_asynchronously_retried=True
     )
