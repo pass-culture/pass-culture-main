@@ -44,7 +44,6 @@ describe('filter bookings by bookings period', () => {
       })),
       getBookingsCSVFileAdapter: jest.fn(),
       getBookingsXLSFileAdapter: jest.fn(),
-      isBookingFiltersActive: true,
       hasResult: true,
       resetPreFilters: jest.fn(),
       isFiltersDisabled: false,
@@ -139,7 +138,6 @@ describe('filter bookings by bookings period', () => {
   })
 
   it('should select booked status as booking status filter by default', () => {
-    props.isBookingFiltersActive = true
     // Given
     renderPreFilters(props, store)
 
@@ -150,7 +148,6 @@ describe('filter bookings by bookings period', () => {
   })
 
   it('should allow to select booking status filter', async () => {
-    props.isBookingFiltersActive = true
     // Given
     renderPreFilters(props, store)
     const bookingStatusFilterInput = screen.getByDisplayValue(

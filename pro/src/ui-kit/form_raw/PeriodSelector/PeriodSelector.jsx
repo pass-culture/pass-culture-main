@@ -29,10 +29,7 @@ const PeriodSelector = ({
       <div className="period-filter-label">
         {label && label}
         <div className={`period-filter-inputs ${isDisabled ? 'disabled' : ''}`}>
-          <div
-            className="period-filter-begin-picker"
-            data-testid="period-filter-begin-picker"
-          >
+          <div className="period-filter-begin-picker">
             <DatePicker
               className="period-filter-input"
               customInput={
@@ -41,6 +38,7 @@ const PeriodSelector = ({
                   customClass={`field-date-only field-date-begin ${
                     isDisabled ? 'disabled' : ''
                   }`}
+                  data-testid="period-filter-begin-picker"
                 />
               }
               dateFormat={FORMAT_DD_MM_YYYY}
@@ -64,10 +62,7 @@ const PeriodSelector = ({
             />
           </div>
           <span className="vertical-bar" />
-          <div
-            className="period-filter-end-picker"
-            data-testid="period-filter-end-picker"
-          >
+          <div className="period-filter-end-picker">
             <DatePicker
               className="period-filter-input"
               customInput={
@@ -76,6 +71,7 @@ const PeriodSelector = ({
                   customClass={`field-date-only field-date-end ${
                     isDisabled ? 'disabled' : ''
                   }`}
+                  data-testid="period-filter-end-picker"
                 />
               }
               dateFormat={FORMAT_DD_MM_YYYY}
