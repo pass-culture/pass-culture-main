@@ -677,7 +677,7 @@ def get_filtered_collective_booking_report(
             ),
         )
         .with_entities(
-            offerers_models.Venue.common_name.label("venueName"),
+            offerers_models.Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
             offerers_models.Venue.departementCode.label("venueDepartmentCode"),
             offerers_models.Offerer.postalCode.label("offererPostalCode"),
             educational_models.CollectiveOffer.name.label("offerName"),

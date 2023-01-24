@@ -1127,7 +1127,7 @@ def get_venue_basic_info(venue_id: int) -> sa.engine.Row:
     venue_query = (
         sa.select(
             offerers_models.Venue.id,
-            offerers_models.Venue.common_name.label("name"),
+            offerers_models.Venue.common_name.label("name"),  # type: ignore[attr-defined]
             offerers_models.Venue.siret,
             sa.func.coalesce(
                 offerers_models.VenueContact.email,
