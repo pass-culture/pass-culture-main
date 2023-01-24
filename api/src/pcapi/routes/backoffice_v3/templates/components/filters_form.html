@@ -9,7 +9,7 @@
                     {% set _ = select_multiple.append(form_field) %}
                 {% endif %}
             {% endfor %}
-            <div class="input-group mb-3">
+            <div class="input-group mb-3 px-1">
                 {% for form_field in form %}
                     {% if form_field.type != "HiddenField" and form_field.type != "PCSelectMultipleField" and form_field.type != "PCQuerySelectMultipleField" %}
                         {{ form_field }}
@@ -18,7 +18,7 @@
             </div>
             <div class="input-group mb-1 ">
                 {% for form_field in select_multiple %}
-                    <div class="col-{{ (12/(select_multiple|length))|round|int }} p-1"> {{ form_field }}</div>
+                    <div class="col-{{ [(12/(select_multiple|length))|round|int, 6] | min }} p-1"> {{ form_field }}</div>
                 {% endfor %}
             </div>
         </div>
