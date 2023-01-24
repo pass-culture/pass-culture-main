@@ -11,8 +11,8 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions
+from pcapi.core.offers import models
 import pcapi.core.offers.api as offers_api
-from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
@@ -216,7 +216,7 @@ def patch_all_offers_active_status(
 def patch_offer(
     offer_id: str, body: offers_serialize.PatchOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
-    offer = rest.load_or_404(Offer, human_id=offer_id)
+    offer = rest.load_or_404(models.Offer, human_id=offer_id)
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     update_body = body.dict(exclude_unset=True)
     try:
@@ -292,7 +292,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
 )
 def delete_thumbnail(offer_id: str) -> None:
     try:
-        offer: Offer = rest.load_or_raise_error(Offer, human_id=offer_id)
+        offer: models.Offer = rest.load_or_raise_error(models.Offer, human_id=offer_id)
     except human_ids.NonDehumanizableId:
         raise ApiErrors(
             errors={
