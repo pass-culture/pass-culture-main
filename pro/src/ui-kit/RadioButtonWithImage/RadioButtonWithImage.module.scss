@@ -99,6 +99,7 @@ $border-size: rem.torem(3px);
 
   &.is-selected {
     $padding: rem.torem(40px);
+
     padding: calc($padding - $border-size) calc(rem.torem(16px) - $border-size)
       calc(rem.torem(32px) - $border-size);
   }
@@ -111,6 +112,7 @@ $border-size: rem.torem(3px);
 
   &.is-selected {
     $padding: rem.torem(16px);
+
     padding: calc($padding - $border-size);
   }
 
