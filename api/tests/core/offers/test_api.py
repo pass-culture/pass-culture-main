@@ -869,7 +869,10 @@ class UpdateOfferTest:
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_offer(offer, extraData={"author": "Asimov"})
 
-        assert error.value.errors == {"showType": ["Ce champ est obligatoire"]}
+        assert error.value.errors == {
+            "showType": ["Ce champ est obligatoire"],
+            "showSubType": ["Ce champ est obligatoire"],
+        }
 
     def test_error_when_missing_mandatory_extra_data(self):
         offer = factories.OfferFactory(
@@ -877,7 +880,10 @@ class UpdateOfferTest:
         )
         with pytest.raises(api_errors.ApiErrors) as error:
             offer = api.update_offer(offer, extraData=None)
-        assert error.value.errors == {"showType": ["Ce champ est obligatoire"]}
+        assert error.value.errors == {
+            "showType": ["Ce champ est obligatoire"],
+            "showSubType": ["Ce champ est obligatoire"],
+        }
 
     def test_update_product_if_owning_offerer_is_the_venue_managing_offerer(self):
         offerer = offerers_factories.OffererFactory()

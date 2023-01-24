@@ -874,6 +874,32 @@ class PostEventTest:
             "ticketCollection": {"daysBeforeEvent": 1, "way": "by_email"},
         }
 
+    @pytest.mark.usefixtures("db_session")
+    def test_other_music_type_serlialization(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "CONCERT", "musicType": "OTHER"},
+                "accessibility": ACCESSIBILITY_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+            },
+        )
+
+        assert response.status_code == 200
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.extraData == {"musicType": "-1", "musicSubType": "-1"}
+
+        assert response.json["categoryRelatedFields"] == {
+            "author": None,
+            "category": "CONCERT",
+            "musicType": "OTHER",
+            "performer": None,
+        }
+
     def test_event_without_ticket(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)

@@ -189,10 +189,14 @@ def compute_category_fields_model(
 ) -> typing.Type[CategoryRelatedFields]:
     """
     Create dynamic pydantic models to indicate which fields are available for the chosen subcategory,
-    without duplicating categories declaration
+    without duplicating categories declaration.
+    If musicType (resp showType) field is applicable, we expose only the musicSubType (resp showSubType) information
+    because it also contains musicType (resp showType) information. And we use the simpler musicType (resp showType) alias.
     """
     specific_fields: dict[typing.Any, typing.Any] = {}
     for field_name, conditional_field in subcategory.conditional_fields.items():
+        if field_name not in ExtraDataModel.__fields__:
+            continue
         is_required = conditional_field.is_required_in_external_form and method == Method.create
         model_field = ExtraDataModel.__fields__[field_name]
         specific_fields[field_name] = (model_field.type_, ... if is_required else model_field.default)
@@ -207,20 +211,22 @@ def compute_category_fields_model(
     return model
 
 
-def compute_category_related_fields(offer: offers_models.Offer) -> CategoryRelatedFields:
+def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
     category_fields_model = (product_category_reading_models | event_category_reading_models)[offer.subcategoryId]
-    fields = copy.deepcopy(offer.extraData) or {}
-    if offer.extraData and "musicSubType" in offer.extraData and offer.extraData["musicSubType"] != "":
-        fields["musicType"] = MusicTypeEnum(
-            music_types.MUSIC_SUB_TYPES_BY_CODE[int(offer.extraData["musicSubType"])].slug
-        )
-    if offer.extraData and "showSubType" in offer.extraData and offer.extraData["showSubType"] != "":
-        fields["showType"] = ShowTypeEnum(show_types.SHOW_SUB_TYPES_BY_CODE[int(offer.extraData["showSubType"])].slug)
+    serialized_data = copy.deepcopy(offer.extraData or {})
 
-    return category_fields_model(**fields, category=offer.subcategory.id)
+    # Convert musicSubType (resp showSubType) code to musicType slug (resp showType slug)
+    music_sub_type = serialized_data.pop(subcategories.ExtraDataFieldEnum.MUSIC_SUB_TYPE.value, None)
+    show_sub_type = serialized_data.pop(subcategories.ExtraDataFieldEnum.SHOW_SUB_TYPE.value, None)
+    if music_sub_type:
+        serialized_data["musicType"] = MusicTypeEnum(music_types.MUSIC_SUB_TYPES_BY_CODE[int(music_sub_type)].slug)
+    if show_sub_type:
+        serialized_data["showType"] = ShowTypeEnum(show_types.SHOW_SUB_TYPES_BY_CODE[int(show_sub_type)].slug)
+
+    return category_fields_model(**serialized_data, category=offer.subcategory.id)
 
 
-def compute_extra_data(
+def deserialize_extra_data(
     category_related_fields: CategoryRelatedFields, initial_extra_data: dict[str, str] | None = None
 ) -> dict[str, str]:
     extra_data = initial_extra_data or {}
@@ -228,9 +234,11 @@ def compute_extra_data(
         if field_name == "subcategory_id":
             continue
         if field_name == subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value:
+            # Convert musicType slug to musicType and musicSubType codes
             extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[field_value].code)
             extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[field_value].code)
         elif field_name == subcategories.ExtraDataFieldEnum.SHOW_TYPE.value:
+            # Convert showType slug to showType and showSubType codes
             extra_data["showSubType"] = str(show_types.SHOW_SUB_TYPES_BY_SLUG[field_value].code)
             extra_data["showType"] = str(show_types.SHOW_TYPES_BY_SLUG[field_value].code)
         else:
@@ -548,7 +556,7 @@ class ProductOfferResponse(OfferResponse):
         base_offer_response = OfferResponse.build_offer(offer)
         active_stock = next((stock for stock in offer.activeStocks), None)
         return cls(
-            category_related_fields=compute_category_related_fields(offer),
+            category_related_fields=serialize_extra_data(offer),
             stock=BaseStockResponse.build_stock(active_stock) if active_stock else None,
             **base_offer_response.dict(),
         )
@@ -580,7 +588,7 @@ class EventOfferResponse(OfferResponse):
         base_offer_response = OfferResponse.build_offer(offer)
 
         return cls(
-            category_related_fields=compute_category_related_fields(offer),
+            category_related_fields=serialize_extra_data(offer),
             duration_minutes=offer.durationMinutes,
             ticket_collection=_serialize_ticket_collection(offer),
             **base_offer_response.dict(),
