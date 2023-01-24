@@ -3,6 +3,7 @@
   "rules": {
     "at-rule-no-unknown": null,
     "no-descending-specificity": null,
-    "scss/at-extend-no-missing-placeholder": null
+    "scss/at-extend-no-missing-placeholder": null,
+    "scss/operator-no-newline-after": null
   }
 }
