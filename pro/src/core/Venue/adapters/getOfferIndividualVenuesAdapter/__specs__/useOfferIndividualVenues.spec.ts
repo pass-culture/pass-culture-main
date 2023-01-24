@@ -53,6 +53,7 @@ describe('useGetOfferIndividualVenues', () => {
         visualDisabilityCompliant: false,
         withdrawalDetails: null,
         hasMissingReimbursementPoint: false,
+        hasCreatedOffer: false,
       }
       offerIndividualVenues = [
         {
