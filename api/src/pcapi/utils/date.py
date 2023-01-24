@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 from babel.dates import format_date
 from babel.dates import format_datetime as babel_format_datetime
 from dateutil.parser import parserinfo
-from pytz import BaseTzInfo as pytz_BaseTzInfo
+import pytz
 
 import pcapi.utils.postal_code as postal_code_utils
 
@@ -121,7 +121,7 @@ def get_time_in_seconds_from_datetime(date_time: datetime) -> int:
     return hour_in_seconds + minute_in_seconds + seconds
 
 
-def get_day_start(dt: date, timezone: pytz_BaseTzInfo) -> datetime:
+def get_day_start(dt: date, timezone: pytz.BaseTzInfo) -> datetime:
     """Return a ``datetime`` object that is the first second of the given
     ``date`` in the given timezone.
     """
@@ -151,3 +151,12 @@ def local_datetime_to_default_timezone(dt: datetime, local_tz: str) -> datetime:
     if dt.tzinfo:
         return dt.astimezone(to_zone)
     return dt.replace(tzinfo=from_zone).astimezone(to_zone)
+
+
+def date_to_localized_datetime(date_: date | None, time_: time) -> datetime | None:
+    # When min/max date filters are used in requests, backoffice user expect Metroplitan French time (CET),
+    # since date and time in the backoffice are formatted to show CET times.
+    if not date_:
+        return None
+    naive_utc_datetime = datetime.combine(date_, time_)
+    return pytz.timezone(METROPOLE_TIMEZONE).localize(naive_utc_datetime).astimezone(pytz.utc)
