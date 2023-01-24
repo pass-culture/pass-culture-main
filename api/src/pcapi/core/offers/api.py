@@ -31,6 +31,7 @@ import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation
 from pcapi.core.offers.exceptions import OfferAlreadyReportedError
 from pcapi.core.offers.exceptions import ReportMalformed
@@ -109,16 +110,18 @@ def list_offers_for_pro_user(
     )
 
 
-def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | None) -> dict[str, typing.Any] | None:
+def _format_extra_data(
+    subcategory_id: str, extra_data: dict[str, typing.Any] | None
+) -> offers_models.OfferExtraData | None:
     """Keep only the fields that are defined in the subcategory conditional fields"""
     if extra_data is None:
         return None
 
-    formatted_extra_data: dict[str, typing.Any] = {}
+    formatted_extra_data: offers_models.OfferExtraData = {}
 
     for field_name in subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].conditional_fields.keys():
         if extra_data.get(field_name):
-            formatted_extra_data[field_name] = extra_data.get(field_name)
+            formatted_extra_data[field_name] = extra_data.get(field_name)  # type: ignore[literal-required]
 
     return formatted_extra_data
 
@@ -146,13 +149,13 @@ def create_offer(
 ) -> Offer:
     validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id)
     validation.check_offer_subcategory_is_valid(subcategory_id)
-    extra_data = _format_extra_data(subcategory_id, extra_data)
-    validation.check_offer_extra_data(subcategory_id, extra_data)
+    formatted_extra_data = _format_extra_data(subcategory_id, extra_data)
+    validation.check_offer_extra_data(subcategory_id, formatted_extra_data)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
     validation.check_is_duo_compliance(is_duo, subcategory)
 
     if should_retrieve_book_from_isbn(subcategory.id):
-        product = _load_product_by_isbn(extra_data.get("isbn") if extra_data else None)
+        product = _load_product_by_isbn(formatted_extra_data.get("isbn") if formatted_extra_data else None)
         is_national = bool(is_national) if is_national is not None else product.isNational
     else:
         is_national = True if url else bool(is_national)
@@ -175,7 +178,7 @@ def create_offer(
         description=product.description or description,
         durationMinutes=duration_minutes,
         externalTicketOfficeUrl=external_ticket_office_url,
-        extraData=(product.extraData or {}) | (extra_data or {}),
+        extraData=(product.extraData or {}) | (formatted_extra_data or {}),
         isActive=False,
         isDuo=bool(is_duo),
         isNational=is_national,
@@ -250,8 +253,8 @@ def update_offer(
 
     validation.check_validation_status(offer)
     if extraData is not UNCHANGED:
-        extraData = _format_extra_data(offer.subcategoryId, extraData)
-        validation.check_offer_extra_data(offer.subcategoryId, extraData)
+        extraData: offers_models.OfferExtraData = _format_extra_data(offer.subcategoryId, extraData)  # type: ignore [no-redef]
+        validation.check_offer_extra_data(offer.subcategoryId, extraData)  # type: ignore [arg-type]
     if isDuo is not UNCHANGED:
         validation.check_is_duo_compliance(isDuo, offer.subcategory)
 

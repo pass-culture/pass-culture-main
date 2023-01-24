@@ -368,12 +368,12 @@ class AlgoliaBackend(base.SearchBackend):
         stocks_date_created = [stock.dateCreated.timestamp() for stock in offer.bookableStocks]
         tags = [criterion.name for criterion in offer.criteria]
         extra_data = offer.extraData or {}
-        artist = " ".join(extra_data.get(key, "") for key in ("author", "performer", "speaker", "stageDirector"))
+        artist = " ".join(extra_data.get(key, "") for key in ("author", "performer", "speaker", "stageDirector"))  # type: ignore[misc]
 
         # Field used by Algolia (not the frontend) to deduplicate results
         # https://www.algolia.com/doc/api-reference/api-parameters/distinct/
         distinct = extra_data.get("isbn") or extra_data.get("visa") or extra_data.get("ean") or str(offer.id)
-        distinct += extra_data.get("diffusionVersion", "")
+        distinct += extra_data.get("diffusionVersion") or ""
 
         music_type_label = None
         music_type = (extra_data.get("musicType") or "").strip()

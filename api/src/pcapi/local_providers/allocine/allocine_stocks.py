@@ -112,9 +112,9 @@ class AllocineStocks(LocalProvider):
             self.fill_stock_attributes(pc_object)
 
     def update_from_movie_information(self, obj: Offer | Product, movie_information: dict):  # type: ignore [no-untyped-def]
-        if "description" in self.movie_information:  # type: ignore [operator]
+        if self.movie_information and "description" in self.movie_information:
             obj.description = movie_information["description"]
-        if "duration" in self.movie_information:  # type: ignore [operator]
+        if self.movie_information and "duration" in self.movie_information:
             obj.durationMinutes = movie_information["duration"]
         if not obj.extraData:
             obj.extraData = {}
@@ -129,9 +129,9 @@ class AllocineStocks(LocalProvider):
             "cast",
         ):
             if field in movie_information:
-                obj.extraData[field] = movie_information[field]
+                obj.extraData[field] = movie_information[field]  # type: ignore [literal-required]
 
-    def fill_product_attributes(self, allocine_product: Product):  # type: ignore [no-untyped-def]
+    def fill_product_attributes(self, allocine_product: Product) -> None:
         allocine_product.name = self.movie_information["title"]  # type: ignore [index]
         allocine_product.subcategoryId = subcategories.SEANCE_CINE.id
         allocine_product.thumbCount = 0
@@ -158,10 +158,10 @@ class AllocineStocks(LocalProvider):
             "allocine_room_id": self.room_internal_id,
         }
 
-        if "visa" in self.movie_information:  # type: ignore [operator]
-            allocine_offer.extraData["visa"] = self.movie_information["visa"]  # type: ignore [index]
-        if "stageDirector" in self.movie_information:  # type: ignore [operator]
-            allocine_offer.extraData["stageDirector"] = self.movie_information["stageDirector"]  # type: ignore [index]
+        if self.movie_information and "visa" in self.movie_information:
+            allocine_offer.extraData["visa"] = self.movie_information["visa"]
+        if self.movie_information and "stageDirector" in self.movie_information:
+            allocine_offer.extraData["stageDirector"] = self.movie_information["stageDirector"]
 
         movie_version = (
             ORIGINAL_VERSION_SUFFIX
