@@ -63,11 +63,7 @@ class T_UNCHANGED(enum.Enum):
 UNCHANGED = T_UNCHANGED.TOKEN
 VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "postalCode", "city", "latitude", "longitude", "criteria"]
 API_KEY_SEPARATOR = "_"
-APE_TAG_MAPPING = {
-    "84.11Z": "Collectivité",
-    "84.12Z": "Établissement public",
-    "91.03Z": "Établissement public",
-}
+APE_TAG_MAPPING = {"84.11Z": "Collectivité"}
 
 
 def create_digital_venue(offerer: models.Offerer) -> models.Venue:
