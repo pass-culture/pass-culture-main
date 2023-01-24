@@ -58,3 +58,13 @@ class LoggerBackend:
             user_id,
             extra={"event_payload": event_payload, "can_be_asynchronously_retried": can_be_asynchronously_retried},
         )
+
+    def track_event_for_multiple_users(
+        self, user_ids: list[int], event_name: str, event_payload: dict, can_be_asynchronously_retried: bool = False
+    ) -> None:
+        logger.info(
+            "A request to track event=ue.%s would be sent for users with ids=%d",
+            event_name,
+            user_ids,
+            extra={"event_payload": event_payload, "can_be_asynchronously_retried": can_be_asynchronously_retried},
+        )

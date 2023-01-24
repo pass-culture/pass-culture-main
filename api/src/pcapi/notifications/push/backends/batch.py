@@ -161,3 +161,30 @@ class BatchBackend:
 
         make_post_request(BatchAPI.ANDROID)
         make_post_request(BatchAPI.IOS)
+
+    def track_event_for_multiple_users(
+        self, user_ids: list[int], event_name: str, event_payload: dict, can_be_asynchronously_retried: bool = False
+    ) -> None:
+        def make_post_request(api: BatchAPI) -> None:
+            payload = [
+                {
+                    "id": user_id,
+                    "events": [
+                        {
+                            "name": f"ue.{event_name}",
+                            "attributes": event_payload,
+                        }
+                    ],
+                }
+                for user_id in user_ids
+            ]
+            self.handle_request(
+                "POST",
+                f"{API_URL}/1.0/{api.value}/events/users/",
+                api_name="track_event_for_multiple_users",
+                payload=payload,
+                can_be_asynchronously_retried=can_be_asynchronously_retried,
+            )
+
+        make_post_request(BatchAPI.ANDROID)
+        make_post_request(BatchAPI.IOS)
