@@ -495,7 +495,7 @@ def _get_filtered_booking_report(
             extra_joins=(Stock.offer, Booking.user),
         )
         .with_entities(
-            Venue.common_name.label("venueName"),
+            Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
             Venue.departementCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
             Offer.name.label("offerName"),

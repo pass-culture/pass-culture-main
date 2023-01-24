@@ -1117,7 +1117,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         .with_entities(
             offerers_models.Venue.id.label("reimbursement_point_id"),
             offerers_models.Venue.siret.label("reimbursement_point_siret"),
-            offerers_models.Venue.common_name.label("reimbursement_point_name"),
+            offerers_models.Venue.common_name.label("reimbursement_point_name"),  # type: ignore[attr-defined]
             sqla_func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity).label("booking_amount"),
             models.Deposit.type.label("deposit_type"),
             sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
@@ -1152,7 +1152,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         .with_entities(
             offerers_models.Venue.id.label("reimbursement_point_id"),
             offerers_models.Venue.siret.label("reimbursement_point_siret"),
-            offerers_models.Venue.common_name.label("reimbursement_point_name"),
+            offerers_models.Venue.common_name.label("reimbursement_point_name"),  # type: ignore[attr-defined]
             sqla_func.sum(educational_models.CollectiveStock.price).label("booking_amount"),
             educational_models.EducationalDeposit.ministry.label("ministry"),
             sqla_func.sum(models.Pricing.amount).label("pricing_amount"),

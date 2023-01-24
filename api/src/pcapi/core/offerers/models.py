@@ -451,8 +451,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         return self.publicName or self.name
 
     @common_name.expression  # type: ignore [no-redef]
-    def common_name(self) -> str:
-        return sqla_func.coalesce(func.nullif(self.publicName, ""), self.name)
+    def common_name(cls) -> str:  # pylint: disable=no-self-argument
+        return sqla_func.coalesce(func.nullif(cls.publicName, ""), cls.name)
 
 
 class VenueLabel(PcObject, Base, Model):
