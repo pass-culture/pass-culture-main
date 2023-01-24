@@ -1,6 +1,7 @@
 import logging
 import typing
 
+from pcapi import settings
 import pcapi.connectors.big_query.queries.users_that_landed_on_come_back_later as big_query_queries
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails.transactional.users.ubble import reminder_emails
@@ -29,7 +30,9 @@ def send_reminders_to_users_that_landed_on_come_back_later() -> None:
 def _send_notification_to_users_that_landed_on_come_back_later() -> None:
     users: typing.Iterator[
         big_query_queries.UserThatLandedOnComeBackLaterModel
-    ] = big_query_queries.UsersThatLandedOnComeBackLater(days_ago=3).execute()
+    ] = big_query_queries.UsersThatLandedOnComeBackLater(
+        days_ago=settings.USER_LANDED_ON_COME_BACK_LATER_REMINDER_DELAY_DAYS_DAYS
+    ).execute()
 
     # filter out users that have an identity fraud check after the event date
     users_to_notify = [
