@@ -17,7 +17,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { Events } from '../../../core/FirebaseEvents/constants'
 
-import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
 import FilterByEventDate from './FilterByEventDate'
 import FilterByVenue from './FilterByVenue'
@@ -26,7 +25,6 @@ export interface IPreFiltersProps {
   appliedPreFilters: TPreFilters
   applyPreFilters: (filters: TPreFilters) => void
   hasResult: boolean
-  isBookingFiltersActive: boolean
   isFiltersDisabled: boolean
   isTableLoading: boolean
   wereBookingsRequested: boolean
@@ -43,7 +41,6 @@ const PreFilters = ({
   appliedPreFilters,
   applyPreFilters,
   hasResult,
-  isBookingFiltersActive,
   isFiltersDisabled,
   isTableLoading,
   wereBookingsRequested,
@@ -179,29 +176,17 @@ const PreFilters = ({
               updateFilters={updateSelectedFilters}
             />
           </div>
-          {!isBookingFiltersActive && (
-            <FilterByBookingPeriod
+          <div className="pre-filters-row">
+            <FilterByBookingStatusPeriod
               isDisabled={isFiltersDisabled}
               selectedBookingBeginningDate={
                 selectedPreFilters.bookingBeginningDate
               }
               selectedBookingEndingDate={selectedPreFilters.bookingEndingDate}
+              selectedBookingFilter={selectedPreFilters.bookingStatusFilter}
               updateFilters={updateSelectedFilters}
             />
-          )}
-          {isBookingFiltersActive && (
-            <div className="pre-filters-row">
-              <FilterByBookingStatusPeriod
-                isDisabled={isFiltersDisabled}
-                selectedBookingBeginningDate={
-                  selectedPreFilters.bookingBeginningDate
-                }
-                selectedBookingEndingDate={selectedPreFilters.bookingEndingDate}
-                selectedBookingFilter={selectedPreFilters.bookingStatusFilter}
-                updateFilters={updateSelectedFilters}
-              />
-            </div>
-          )}
+          </div>
         </div>
         <div className="reset-filters">
           <Button

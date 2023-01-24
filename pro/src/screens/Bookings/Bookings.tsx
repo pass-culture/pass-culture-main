@@ -21,7 +21,6 @@ import {
 } from 'core/Bookings'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -69,7 +68,6 @@ const Bookings = <
   const { currentUser: user } = useCurrentUser()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
-  const isBookingFiltersActive = useActiveFeature('ENABLE_NEW_BOOKING_FILTERS')
 
   const [appliedPreFilters, setAppliedPreFilters] = useState<TPreFilters>({
     ...DEFAULT_PRE_FILTERS,
@@ -270,7 +268,6 @@ const Bookings = <
         getBookingsCSVFileAdapter={getBookingsCSVFileAdapter}
         getBookingsXLSFileAdapter={getBookingsXLSFileAdapter}
         hasResult={bookings.length > 0}
-        isBookingFiltersActive={isBookingFiltersActive}
         isFiltersDisabled={!hasBooking}
         isLocalLoading={isLocalLoading}
         isTableLoading={isTableLoading}

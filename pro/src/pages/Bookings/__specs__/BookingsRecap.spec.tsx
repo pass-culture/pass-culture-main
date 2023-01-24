@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -534,9 +534,10 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
-    const bookingPeriodWrapper = screen.getByText('Période de réservation')
-    const [beginningPeriodInput, endingPeriodInput] =
-      within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')
+    const beginningPeriodInput = screen.getByTestId(
+      'period-filter-begin-picker'
+    )
+    const endingPeriodInput = screen.getByTestId('period-filter-end-picker')
 
     // When
     await userEvent.click(beginningPeriodInput)
@@ -584,9 +585,11 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
-    const bookingPeriodWrapper = screen.getByText('Période de réservation')
-    const [beginningPeriodInput, endingPeriodInput] =
-      within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')
+    const beginningPeriodInput = screen.getByTestId(
+      'period-filter-begin-picker'
+    )
+    const endingPeriodInput = screen.getByTestId('period-filter-end-picker')
+
     await userEvent.click(endingPeriodInput)
     await userEvent.click(screen.getByText('12'))
 
@@ -619,10 +622,10 @@ describe('components | BookingsRecap | Pro user', () => {
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
-
-    const bookingPeriodWrapper = screen.getByText('Période de réservation')
-    const [beginningPeriodInput, endingPeriodInput] =
-      within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')
+    const beginningPeriodInput = screen.getByTestId(
+      'period-filter-begin-picker'
+    )
+    const endingPeriodInput = screen.getByTestId('period-filter-end-picker')
     await userEvent.click(beginningPeriodInput)
     await userEvent.click(screen.getByText('10'))
 
@@ -643,37 +646,6 @@ describe('components | BookingsRecap | Pro user', () => {
         NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate
       )
     ).toStrictEqual(thirtyDaysAfterBeginningDate)
-  })
-
-  it('should not be possible to select ending period date greater than today', async () => {
-    // Given
-    const bookingRecap = bookingRecapFactory()
-    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
-      page: 1,
-      pages: 1,
-      total: 1,
-      bookingsRecap: [bookingRecap],
-    })
-    const { submitFilters } = await renderBookingsRecap(store)
-
-    const bookingPeriodWrapper = screen.getByText('Période de réservation')
-    const endingPeriodInput =
-      within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')[1]
-
-    // When
-    await userEvent.click(endingPeriodInput)
-    await userEvent.click(screen.getByText('16'))
-    await submitFilters()
-
-    // Then
-    await screen.findAllByText(bookingRecap.stock.offerName)
-    expect(
-      getNthCallNthArg(
-        api.getBookingsPro,
-        1,
-        NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate
-      )
-    ).toStrictEqual(FORMATTED_DEFAULT_ENDING_DATE)
   })
 
   it('should reset bookings recap list when applying filters', async () => {
