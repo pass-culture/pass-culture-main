@@ -3,7 +3,6 @@ from datetime import timedelta
 import decimal
 from io import BytesIO
 import logging
-from typing import Any
 
 from PIL import Image
 from PIL import UnidentifiedImageError
@@ -18,6 +17,7 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offers import exceptions
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
@@ -407,7 +407,7 @@ def check_booking_limit_datetime(
         raise exceptions.BookingLimitDatetimeTooLate()
 
 
-def check_offer_extra_data(subcategory_id: str, extra_data: dict[str, Any] | None) -> None:
+def check_offer_extra_data(subcategory_id: str, extra_data: offers_models.OfferExtraData | None) -> None:
     api_errors = ApiErrors()
 
     if extra_data is None:
@@ -441,12 +441,13 @@ def check_offer_extra_data(subcategory_id: str, extra_data: dict[str, Any] | Non
 
 
 def _check_value_is_allowed(
-    extra_data: dict[str, Any], extra_data_field: ExtraDataFieldEnum, allowed_values: dict
+    extra_data: offers_models.OfferExtraData, extra_data_field: ExtraDataFieldEnum, allowed_values: dict
 ) -> None:
     field_value = extra_data.get(extra_data_field.value)
     if field_value is None:
         return
-
+    if not isinstance(field_value, (str, int)):
+        raise exceptions.ExtraDataValueNotAllowed(extra_data_field.value, "should be an int or a string")
     try:
         music_type_code = int(field_value)
     except ValueError:
@@ -455,7 +456,7 @@ def _check_value_is_allowed(
         raise exceptions.ExtraDataValueNotAllowed(extra_data_field.value, "should be in allowed values")
 
 
-def _check_ean_field(extra_data: dict[str, Any]) -> None:
+def _check_ean_field(extra_data: offers_models.OfferExtraData) -> None:
     ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
     if ean is None or ean == "":
         return

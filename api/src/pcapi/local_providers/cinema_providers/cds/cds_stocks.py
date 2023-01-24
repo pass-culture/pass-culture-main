@@ -160,8 +160,6 @@ class CDSStocks(LocalProvider):
             obj.description = movie_information.description
         if self.movie_information.duration:
             obj.durationMinutes = movie_information.duration
-        if not obj.extraData:
-            obj.extraData = {}
         obj.extraData = {"visa": self.movie_information.visa}
 
     def get_object_thumb(self) -> bytes:

@@ -208,6 +208,7 @@ def compute_category_fields_model(
 
     model = pydantic.create_model(f"{subcategory.id}_{method.value}", **specific_fields)
     model.__doc__ = subcategory.pro_label
+    model.__config__.allow_population_by_field_name = True
     return model
 
 
@@ -223,13 +224,13 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
     if show_sub_type:
         serialized_data["showType"] = ShowTypeEnum(show_types.SHOW_SUB_TYPES_BY_CODE[int(show_sub_type)].slug)
 
-    return category_fields_model(**serialized_data, category=offer.subcategory.id)
+    return category_fields_model(**serialized_data, subcategory_id=offer.subcategory.id)
 
 
 def deserialize_extra_data(
-    category_related_fields: CategoryRelatedFields, initial_extra_data: dict[str, str] | None = None
+    category_related_fields: CategoryRelatedFields, initial_extra_data: offers_models.OfferExtraData | None = None
 ) -> dict[str, str]:
-    extra_data = initial_extra_data or {}
+    extra_data: dict = initial_extra_data or {}  # type: ignore[assignment]
     for field_name, field_value in category_related_fields.dict(exclude_unset=True).items():
         if field_name == "subcategory_id":
             continue
