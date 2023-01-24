@@ -2,7 +2,6 @@ import * as yup from 'yup'
 
 import {
   PRICE_CATEGORY_LABEL_MAX_LENGTH,
-  PRICE_CATEGORY_MAX_LENGTH,
   PRICE_CATEGORY_PRICE_MAX,
 } from './constants'
 
