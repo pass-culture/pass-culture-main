@@ -1074,6 +1074,7 @@ class PublicAccountHistoryTest:
             user=user,
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
+            status=None,
         )
 
         # when
@@ -1094,7 +1095,7 @@ class PublicAccountHistoryTest:
         assert {
             "action": "fraud check",
             "datetime": honor.dateCreated,
-            "message": f"{honor.type.value}, {honor.eligibilityType.value}, {honor.status.value}, [raison inconnue], {honor.reason}",
+            "message": f"{honor.type.value}, {honor.eligibilityType.value}, Statut inconnu, [raison inconnue], {honor.reason}",
         } in history
 
     def test_history_contains_reviews(self):
