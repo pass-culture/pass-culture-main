@@ -1,5 +1,8 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .notification-mail {
   position: relative;
@@ -10,11 +13,13 @@
 }
 
 .trash {
-  position: absolute;
-
-  // Center icon on input : label height (20px) + label margin(8px) + (input height(40px) - icon size(20px))/2
-  top: rem.torem(38px);
-  right: rem.torem(4px);
+  // "Center" with input
+  // We are using margin-top and not flex center because when there is an error the
+  // input field grows at the bottom and we don't want the icon to move
+  margin-top: calc(
+    #{fonts.$body-line-height} + #{forms.$label-space-before-input} +
+      (#{size.$input-min-height} - #{size.$button-icon-size}) / 2
+  );
 
   &:hover {
     svg {
