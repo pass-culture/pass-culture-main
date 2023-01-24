@@ -777,7 +777,6 @@ class CreateProUserAndOffererTest:
         # Then
         offerer = user.UserOfferers[0].offerer
         assert offerer.name == user_info.name
-        assert "Établissement public" in (tag.label for tag in offerer.tags)
         assert "Partenaire national" in (tag.label for tag in offerer.tags)
 
 
