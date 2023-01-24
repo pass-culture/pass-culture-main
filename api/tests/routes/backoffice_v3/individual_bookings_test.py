@@ -1,7 +1,11 @@
+import datetime
+
 from flask import url_for
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings import models as bookings_models
+from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -19,20 +23,45 @@ pytestmark = [
 
 @pytest.fixture(scope="function", name="bookings")
 def bookings_fixture() -> tuple:
-    user = users_factories.BeneficiaryGrant18Factory(firstName="Napoléon", lastName="Bonaparte")
-    confirmed = bookings_factories.BookingFactory(
-        user=user,
+    user1 = users_factories.BeneficiaryGrant18Factory(firstName="Napoléon", lastName="Bonaparte")
+    user2 = users_factories.UnderageBeneficiaryFactory(firstName="Joséphine", lastName="de Beauharnais")
+    user3 = users_factories.UnderageBeneficiaryFactory(firstName="Marie-Louise", lastName="d'Autriche")
+    used = bookings_factories.UsedBookingFactory(
+        user=user1,
         quantity=2,
         token="WTRL00",
         stock__price="15.2",
         stock__quantity="212",
         stock__offer__product__name="Guide du Routard Sainte-Hélène",
         stock__offer__product__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
     )
-    cancelled = bookings_factories.CancelledBookingFactory(user=user, quantity=1, amount=12.5)
-    used = bookings_factories.UsedBookingFactory(user=user, quantity=1, amount=20)
+    cancelled = bookings_factories.CancelledBookingFactory(
+        user=user2,
+        quantity=1,
+        amount=12.5,
+        token="CNCL02",
+        stock__offer__product__subcategoryId=subcategories_v2.ABO_SPECTACLE.id,
+        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+    )
+    confirmed = bookings_factories.BookingFactory(
+        user=user1,
+        quantity=1,
+        token="ELBEIT",
+        stock__price="13.95",
+        stock__quantity="2",
+        stock__offer__product__name="Guide Ile d'Elbe 1814 Petit Futé",
+        stock__offer__product__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+    )
+    bookings_factories.ReimbursedBookingFactory(
+        user=user3,
+        token="REIMB3",
+        stock__offer__product__subcategoryId=subcategories_v2.SPECTACLE_REPRESENTATION.id,
+        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+    )
 
-    return confirmed, cancelled, used
+    return used, cancelled, confirmed
 
 
 class ListIndividualBookingsTest:
@@ -61,27 +90,18 @@ class ListIndividualBookingsTest:
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["Code"] == "WTRL00"
+        assert rows[0]["Contremarque"] == "WTRL00"
         assert rows[0]["Bénéficiaire"].startswith("Napoléon Bonaparte (")
         assert rows[0]["Nom de l'offre"] == "Guide du Routard Sainte-Hélène"
         assert rows[0]["ID offre"].isdigit()
-        assert rows[0]["Catégorie"] == "Livre"
-        assert rows[0]["Sous-catégorie"] == "Livre papier"
+        assert rows[0]["Catégorie"] == categories.LIVRE.pro_label
+        assert rows[0]["Sous-catégorie"] == subcategories_v2.LIVRE_PAPIER.pro_label
         assert rows[0]["Stock"] == "212"
-        assert rows[0]["Statut"] == "Confirmée"
+        assert rows[0]["Statut"] == "Validée"
+        assert rows[0]["Date d'utilisation"] == datetime.date.today().strftime("%d/%m/%Y")
         assert not rows[0]["Date d'annulation"]
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, 1)
-
-    def test_list_bookings_by_invalid_token(self, authenticated_client, bookings):
-        # when
-        with assert_no_duplicated_queries():
-            response = authenticated_client.get(url_for(self.endpoint, q="ELBE"))
-
-        # then
-        assert response.status_code == 400
-        assert html_parser.extract_warnings(response.data) == ["Le format de la contremarque est incorrect"]
-        assert html_parser.count_table_rows(response.data) == 0
 
     def test_list_bookings_by_token_not_found(self, authenticated_client, bookings):
         # when
@@ -91,3 +111,100 @@ class ListIndividualBookingsTest:
         # then
         assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 0
+
+    def test_list_bookings_by_offer_id(self, authenticated_client, bookings):
+        # when
+        searched_id = str(bookings[2].stock.offer.id)
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        # Warning: test may return more than 1 row when a user id is the same as expected offer id
+        assert len(rows) >= 1
+        result = [row for row in rows if row["ID offre"] == searched_id][0]
+        assert result["Contremarque"] == "ELBEIT"
+        assert result["Bénéficiaire"].startswith("Napoléon Bonaparte (")
+        assert result["Nom de l'offre"] == "Guide Ile d'Elbe 1814 Petit Futé"
+        assert result["Catégorie"] == categories.LIVRE.pro_label
+        assert result["Sous-catégorie"] == subcategories_v2.LIVRE_PAPIER.pro_label
+        assert result["Stock"] == "2"
+        assert result["Statut"] == "Confirmée"
+        assert not result["Date d'utilisation"]
+        assert not result["Date d'annulation"]
+
+        assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
+
+    def test_list_bookings_by_user_id(self, authenticated_client, bookings):
+        # when
+        search_query = str(bookings[1].user.id)
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url_for(self.endpoint, q=search_query))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        # Warning: test may return more than 1 row when an offer id is the same as expected user id
+        assert len(rows) >= 1
+        assert bookings[1].token in set(row["Contremarque"] for row in rows)
+
+    @pytest.mark.parametrize("search_query", ["napoleon", "bonaparte", "Napoléon Bonaparte"])
+    def test_list_bookings_by_user_name(self, authenticated_client, bookings, search_query):
+        # when
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url_for(self.endpoint, q=search_query))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(row["Contremarque"] for row in rows) == {"WTRL00", "ELBEIT"}
+
+    def test_list_bookings_by_category(self, authenticated_client, bookings):
+        # when
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url_for(self.endpoint, category=categories.SPECTACLE.id))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(row["Contremarque"] for row in rows) == {"CNCL02", "REIMB3"}
+
+    @pytest.mark.parametrize(
+        "status, expected_tokens",
+        [
+            ([bookings_models.BookingStatus.CONFIRMED.name], {"ELBEIT"}),
+            ([bookings_models.BookingStatus.USED.name], {"WTRL00"}),
+            ([bookings_models.BookingStatus.CANCELLED.name], {"CNCL02"}),
+            ([bookings_models.BookingStatus.REIMBURSED.name], {"REIMB3"}),
+            (
+                [bookings_models.BookingStatus.CONFIRMED.name, bookings_models.BookingStatus.USED.name],
+                {"ELBEIT", "WTRL00"},
+            ),
+        ],
+    )
+    def test_list_bookings_by_status(self, authenticated_client, bookings, status, expected_tokens):
+        # when
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url_for(self.endpoint, status=status))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(row["Contremarque"] for row in rows) == expected_tokens
+
+    def test_list_bookings_by_date(self, authenticated_client, bookings):
+        # when
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    from_date=(datetime.date.today() - datetime.timedelta(days=3)).isoformat(),
+                    to_date=(datetime.date.today() - datetime.timedelta(days=2)).isoformat(),
+                )
+            )
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(row["Contremarque"] for row in rows) == {"CNCL02", "ELBEIT"}

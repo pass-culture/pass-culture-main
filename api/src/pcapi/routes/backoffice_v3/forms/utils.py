@@ -13,8 +13,10 @@ class PCForm(FlaskForm):
         return email_utils.sanitize_email(raw_email)
 
 
-def choices_from_enum(enum_cls: typing.Type[enum.Enum]) -> list[tuple]:
-    return [(opt.name, opt.value) for opt in enum_cls]
+def choices_from_enum(
+    enum_cls: typing.Type[enum.Enum], formatter: typing.Callable[[typing.Any], str] | None = None
+) -> list[tuple]:
+    return [(opt.name, formatter(opt) if formatter else opt.value) for opt in enum_cls]
 
 
 def values_from_enum(enum_cls: typing.Type[enum.Enum]) -> list[tuple]:
