@@ -11,14 +11,7 @@ const buildSubCategoryFields = (
   const subCategory = subCategories.find(
     (subcategory: IOfferSubCategory) => subCategoryId === subcategory.id
   )
-  let subCategoryFields: string[] = [...(subCategory?.conditionalFields || [])]
-  if (subCategoryFields.includes('showType')) {
-    subCategoryFields.push('showSubType')
-  }
-  if (subCategoryFields.includes('musicType')) {
-    subCategoryFields.push('musicSubType')
-  }
-  subCategoryFields = [...new Set(subCategoryFields)]
+  const subCategoryFields = [...new Set(subCategory?.conditionalFields || [])]
   const isEvent = subCategory?.isEvent || false
 
   isEvent && subCategoryFields.push('durationMinutes')
