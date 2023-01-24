@@ -28,14 +28,6 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.exceptions import OfferNotFound
-from pcapi.core.offers.exceptions import StockDoesNotExist
-from pcapi.core.offers.models import ActivationCode
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import OfferValidationConfig
-from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.offers.models import Product
-from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.infrastructure.repository.pro_offers.offers_recap_domain_converter import to_domain
@@ -43,6 +35,9 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.custom_keys import compute_venue_reference
+
+from . import exceptions
+from . import models
 
 
 IMPORTED_CREATION_MODE = "imported"
@@ -76,11 +71,11 @@ def get_capped_offers_for_filters(
     )
 
     offers = (
-        query.options(joinedload(Offer.venue).joinedload(Venue.managingOfferer))
-        .options(joinedload(Offer.stocks))
-        .options(joinedload(Offer.mediations))
-        .options(joinedload(Offer.product))
-        .options(joinedload(Offer.lastProvider))
+        query.options(joinedload(models.Offer.venue).joinedload(Venue.managingOfferer))
+        .options(joinedload(models.Offer.stocks))
+        .options(joinedload(models.Offer.mediations))
+        .options(joinedload(models.Offer.product))
+        .options(joinedload(models.Offer.lastProvider))
         .limit(offers_limit)
         .all()
     )
@@ -97,10 +92,10 @@ def get_capped_offers_for_filters(
 
 
 def get_offers_by_ids(user: User, offer_ids: list[int]) -> BaseQuery:
-    query = Offer.query
+    query = models.Offer.query
     if not user.has_admin_role:
         query = query.join(Venue, Offerer, UserOfferer).filter(UserOfferer.userId == user.id, UserOfferer.isValidated)
-    query = query.filter(Offer.id.in_(offer_ids))
+    query = query.filter(models.Offer.id.in_(offer_ids))
     return query
 
 
@@ -132,7 +127,7 @@ def get_offers_by_filters(
     period_beginning_date: datetime | None = None,
     period_ending_date: datetime | None = None,
 ) -> BaseQuery:
-    query = Offer.query
+    query = models.Offer.query
 
     if not user_is_admin:
         query = (
@@ -146,39 +141,39 @@ def get_offers_by_filters(
             query = query.join(Venue)
         query = query.filter(Venue.managingOffererId == offerer_id)
     if venue_id is not None:
-        query = query.filter(Offer.venueId == venue_id)
+        query = query.filter(models.Offer.venueId == venue_id)
     if creation_mode is not None:
         query = _filter_by_creation_mode(query, creation_mode)
     if category_id is not None:
         requested_subcategories = [
             subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id == category_id
         ]
-        query = query.filter(Offer.subcategoryId.in_(requested_subcategories))
+        query = query.filter(models.Offer.subcategoryId.in_(requested_subcategories))
     if name_keywords_or_isbn is not None:
         search = name_keywords_or_isbn
         if len(name_keywords_or_isbn) > 3:
             search = "%{}%".format(name_keywords_or_isbn)
         # We should really be using `union` instead of `union_all` here since we don't want duplicates but
         # 1. it's unlikely that a book will contain its ISBN in its name
-        # 2. we need to migrate Offer.extraData to JSONB in order to use `union`
-        query = query.filter(Offer.name.ilike(search)).union_all(
-            query.filter(Offer.extraData["isbn"].astext == name_keywords_or_isbn)
+        # 2. we need to migrate models.Offer.extraData to JSONB in order to use `union`
+        query = query.filter(models.Offer.name.ilike(search)).union_all(
+            query.filter(models.Offer.extraData["isbn"].astext == name_keywords_or_isbn)
         )
     if status is not None:
         query = _filter_by_status(query, status)
     if period_beginning_date is not None or period_ending_date is not None:
         subquery = (
-            Stock.query.with_entities(Stock.offerId)
-            .distinct(Stock.offerId)
-            .join(Offer)
+            models.Stock.query.with_entities(models.Stock.offerId)
+            .distinct(models.Stock.offerId)
+            .join(models.Offer)
             .join(Venue)
-            .filter(Stock.isSoftDeleted.is_(False))
+            .filter(models.Stock.isSoftDeleted.is_(False))
         )
         if period_beginning_date is not None:
             subquery = subquery.filter(
                 func.timezone(
                     Venue.timezone,
-                    func.timezone("UTC", Stock.beginningDatetime),
+                    func.timezone("UTC", models.Stock.beginningDatetime),
                 )
                 >= period_beginning_date
             )
@@ -186,12 +181,12 @@ def get_offers_by_filters(
             subquery = subquery.filter(
                 func.timezone(
                     Venue.timezone,
-                    func.timezone("UTC", Stock.beginningDatetime),
+                    func.timezone("UTC", models.Stock.beginningDatetime),
                 )
                 <= period_ending_date
             )
         if venue_id is not None:
-            subquery = subquery.filter(Offer.venueId == venue_id)
+            subquery = subquery.filter(models.Offer.venueId == venue_id)
         elif offerer_id is not None:
             subquery = subquery.filter(Venue.managingOffererId == offerer_id)
         elif not user_is_admin:
@@ -199,7 +194,7 @@ def get_offers_by_filters(
                 subquery.join(Offerer).join(UserOfferer).filter(UserOfferer.userId == user_id, UserOfferer.isValidated)
             )
         q2 = subquery.subquery()
-        query = query.join(q2, q2.c.offerId == Offer.id)
+        query = query.join(q2, q2.c.offerId == models.Offer.id)
     return query
 
 
@@ -214,7 +209,7 @@ def get_collective_offers_by_filters(
     period_beginning_date: str | None = None,
     period_ending_date: str | None = None,
 ) -> BaseQuery:
-    query = CollectiveOffer.query.filter(CollectiveOffer.validation != OfferValidationStatus.DRAFT)
+    query = CollectiveOffer.query.filter(CollectiveOffer.validation != models.OfferValidationStatus.DRAFT)
 
     if not user_is_admin:
         query = (
@@ -240,7 +235,7 @@ def get_collective_offers_by_filters(
             search = "%{}%".format(name_keywords)
         # We should really be using `union` instead of `union_all` here since we don't want duplicates but
         # 1. it's unlikely that a book will contain its ISBN in its name
-        # 2. we need to migrate Offer.extraData to JSONB in order to use `union`
+        # 2. we need to migrate models.Offer.extraData to JSONB in order to use `union`
         query = query.filter(CollectiveOffer.name.ilike(search))
     if status is not None:
         match status:
@@ -348,7 +343,9 @@ def get_collective_offers_template_by_filters(
     period_beginning_date: str | None = None,
     period_ending_date: str | None = None,
 ) -> BaseQuery:
-    query = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.validation != OfferValidationStatus.DRAFT)
+    query = CollectiveOfferTemplate.query.filter(
+        CollectiveOfferTemplate.validation != models.OfferValidationStatus.DRAFT
+    )
 
     if period_beginning_date is not None or period_ending_date is not None:
         query = query.filter(false())
@@ -377,7 +374,7 @@ def get_collective_offers_template_by_filters(
             search = "%{}%".format(name_keywords)
         # We should really be using `union` instead of `union_all` here since we don't want duplicates but
         # 1. it's unlikely that a book will contain its ISBN in its name
-        # 2. we need to migrate Offer.extraData to JSONB in order to use `union`
+        # 2. we need to migrate models.Offer.extraData to JSONB in order to use `union`
         query = query.filter(CollectiveOfferTemplate.name.ilike(search))
     if status is not None:
         if status in (CollectiveOfferDisplayedStatus.BOOKED.value, CollectiveOfferDisplayedStatus.PREBOOKED.value):
@@ -391,47 +388,47 @@ def get_collective_offers_template_by_filters(
 
 def _filter_by_creation_mode(query: BaseQuery, creation_mode: str) -> BaseQuery:
     if creation_mode == MANUAL_CREATION_MODE:
-        query = query.filter(Offer.lastProviderId.is_(None))
+        query = query.filter(models.Offer.lastProviderId.is_(None))
     if creation_mode == IMPORTED_CREATION_MODE:
-        query = query.filter(~Offer.lastProviderId.is_(None))
+        query = query.filter(~models.Offer.lastProviderId.is_(None))
 
     return query
 
 
 def _filter_by_status(query: BaseQuery, status: str) -> BaseQuery:
-    return query.filter(Offer.status == OfferStatus[status].name)
+    return query.filter(models.Offer.status == OfferStatus[status].name)
 
 
-def get_stocks_for_offers(offer_ids: list[int]) -> list[Stock]:
-    return Stock.query.filter(Stock.offerId.in_(offer_ids)).all()
+def get_stocks_for_offers(offer_ids: list[int]) -> list[models.Stock]:
+    return models.Stock.query.filter(models.Stock.offerId.in_(offer_ids)).all()
 
 
-def get_stocks_for_offer(offer_id: int) -> list[Stock]:
+def get_stocks_for_offer(offer_id: int) -> list[models.Stock]:
     return (
-        Stock.query.options(joinedload(Stock.offer).load_only(Offer.url))
-        .options(joinedload(Stock.bookings).load_only(Booking.status))
-        .filter(Stock.offerId == offer_id)
-        .filter(Stock.isSoftDeleted.is_(False))
+        models.Stock.query.options(joinedload(models.Stock.offer).load_only(models.Offer.url))
+        .options(joinedload(models.Stock.bookings).load_only(Booking.status))
+        .filter(models.Stock.offerId == offer_id)
+        .filter(models.Stock.isSoftDeleted.is_(False))
         .all()
     )
 
 
-def get_products_map_by_provider_reference(id_at_providers: list[str]) -> dict[str, Product]:
+def get_products_map_by_provider_reference(id_at_providers: list[str]) -> dict[str, models.Product]:
     products = (
-        Product.query.filter(Product.can_be_synchronized)
-        .filter(Product.subcategoryId == subcategories.LIVRE_PAPIER.id)
-        .filter(Product.idAtProviders.in_(id_at_providers))
+        models.Product.query.filter(models.Product.can_be_synchronized)
+        .filter(models.Product.subcategoryId == subcategories.LIVRE_PAPIER.id)
+        .filter(models.Product.idAtProviders.in_(id_at_providers))
         .all()
     )
     return {product.idAtProviders: product for product in products}
 
 
-def venue_already_has_validated_offer(offer: Offer) -> bool:
+def venue_already_has_validated_offer(offer: models.Offer) -> bool:
     return (
-        db.session.query(Offer.id)
+        db.session.query(models.Offer.id)
         .filter(
-            Offer.venueId == offer.venueId,
-            Offer.validation == OfferValidationStatus.APPROVED,
+            models.Offer.venueId == offer.venueId,
+            models.Offer.validation == models.OfferValidationStatus.APPROVED,
         )
         .first()
         is not None
@@ -441,8 +438,8 @@ def venue_already_has_validated_offer(offer: Offer) -> bool:
 def get_offers_map_by_id_at_provider(id_at_provider_list: list[str], venue: Venue) -> dict[str, int]:
     offers_map = {}
     for offer_id, offer_id_at_provider in (
-        db.session.query(Offer.id, Offer.idAtProvider)
-        .filter(Offer.idAtProvider.in_(id_at_provider_list), Offer.venue == venue)
+        db.session.query(models.Offer.id, models.Offer.idAtProvider)
+        .filter(models.Offer.idAtProvider.in_(id_at_provider_list), models.Offer.venue == venue)
         .all()
     ):
         offers_map[offer_id_at_provider] = offer_id
@@ -454,8 +451,8 @@ def get_offers_map_by_venue_reference(id_at_provider_list: list[str], venue_id: 
 
     offers_map = {}
     for offer_id, offer_id_at_provider in (
-        db.session.query(Offer.id, Offer.idAtProvider)
-        .filter(Offer.venueId == venue_id, Offer.idAtProvider.in_(id_at_provider_list))
+        db.session.query(models.Offer.id, models.Offer.idAtProvider)
+        .filter(models.Offer.venueId == venue_id, models.Offer.idAtProvider.in_(id_at_provider_list))
         .all()
     ):
         offers_map[compute_venue_reference(offer_id_at_provider, venue_id)] = offer_id
@@ -464,12 +461,12 @@ def get_offers_map_by_venue_reference(id_at_provider_list: list[str], venue_id: 
 
 
 def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:
-    stocks = Stock.query.filter(Stock.idAtProviders.in_(id_at_providers)).with_entities(
-        Stock.id,
-        Stock.idAtProviders,
-        Stock.dnBookedQuantity,
-        Stock.quantity,
-        Stock.price,
+    stocks = models.Stock.query.filter(models.Stock.idAtProviders.in_(id_at_providers)).with_entities(
+        models.Stock.id,
+        models.Stock.idAtProviders,
+        models.Stock.dnBookedQuantity,
+        models.Stock.quantity,
+        models.Stock.price,
     )
     return {
         stock.idAtProviders: {
@@ -483,10 +480,10 @@ def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:
 
 
 def get_active_offers_count_for_venue(venue_id: int) -> int:
-    active_offers_query = Offer.query.filter(Offer.venueId == venue_id)
+    active_offers_query = models.Offer.query.filter(models.Offer.venueId == venue_id)
     active_offers_query = _filter_by_status(active_offers_query, OfferStatus.ACTIVE.name)
 
-    n_active_offers = active_offers_query.distinct(Offer.id).count()
+    n_active_offers = active_offers_query.distinct(models.Offer.id).count()
 
     n_active_collective_offer = (
         CollectiveOffer.query.filter(CollectiveOffer.venueId == venue_id)
@@ -506,10 +503,10 @@ def get_active_offers_count_for_venue(venue_id: int) -> int:
 
 
 def get_sold_out_offers_count_for_venue(venue_id: int) -> int:
-    sold_out_offers_query = Offer.query.filter(Offer.venueId == venue_id)
+    sold_out_offers_query = models.Offer.query.filter(models.Offer.venueId == venue_id)
     sold_out_offers_query = _filter_by_status(sold_out_offers_query, OfferStatus.SOLD_OUT.name)
 
-    n_sold_out_offers = sold_out_offers_query.distinct(Offer.id).count()
+    n_sold_out_offers = sold_out_offers_query.distinct(models.Offer.id).count()
 
     n_sold_out_collective_offers = (
         CollectiveOffer.query.filter(CollectiveOffer.venueId == venue_id)
@@ -521,7 +518,7 @@ def get_sold_out_offers_count_for_venue(venue_id: int) -> int:
     return n_sold_out_offers + n_sold_out_collective_offers
 
 
-def get_and_lock_stock(stock_id: int) -> Stock:
+def get_and_lock_stock(stock_id: int) -> models.Stock:
     """Returns `stock_id` stock with a FOR UPDATE lock
     Raises StockDoesNotExist if no stock is found.
     WARNING: MAKE SURE YOU FREE THE LOCK (with COMMIT or ROLLBACK) and don't hold it longer than
@@ -532,20 +529,20 @@ def get_and_lock_stock(stock_id: int) -> Stock:
     # This is required to prevent bugs due to concurent acces
     # Also call `populate_existing()` to make sure we don't use something
     # older from the SQLAlchemy's session.
-    stock = Stock.query.filter_by(id=stock_id).populate_existing().with_for_update().one_or_none()
+    stock = models.Stock.query.filter_by(id=stock_id).populate_existing().with_for_update().one_or_none()
     if not stock:
-        raise StockDoesNotExist()
+        raise exceptions.StockDoesNotExist()
     return stock
 
 
 def check_stock_consistency() -> list[int]:
     return [
         item[0]
-        for item in db.session.query(Stock.id)
-        .outerjoin(Stock.bookings)
-        .group_by(Stock.id)
+        for item in db.session.query(models.Stock.id)
+        .outerjoin(models.Stock.bookings)
+        .group_by(models.Stock.id)
         .having(
-            Stock.dnBookedQuantity
+            models.Stock.dnBookedQuantity
             != func.coalesce(func.sum(Booking.quantity).filter(Booking.status != BookingStatus.CANCELLED), 0)
         )
         .all()
@@ -562,15 +559,15 @@ def find_event_stocks_happening_in_x_days(number_of_days: int) -> BaseQuery:
 
 def find_event_stocks_day(start: datetime, end: datetime) -> BaseQuery:
     return (
-        Stock.query.filter(Stock.beginningDatetime.between(start, end))
+        models.Stock.query.filter(models.Stock.beginningDatetime.between(start, end))
         .join(Booking)
         .filter(Booking.status != BookingStatus.CANCELLED)
         .distinct()
     )
 
 
-def get_current_offer_validation_config() -> OfferValidationConfig | None:
-    return OfferValidationConfig.query.order_by(OfferValidationConfig.id.desc()).first()
+def get_current_offer_validation_config() -> models.OfferValidationConfig | None:
+    return models.OfferValidationConfig.query.order_by(models.OfferValidationConfig.id.desc()).first()
 
 
 def get_expired_offers(interval: List[datetime]) -> BaseQuery:
@@ -580,15 +577,15 @@ def get_expired_offers(interval: List[datetime]) -> BaseQuery:
     Inactive or deleted offers are ignored.
     """
     return (
-        Offer.query.join(Stock)
+        models.Offer.query.join(models.Stock)
         .filter(
-            Offer.isActive.is_(True),
-            Stock.isSoftDeleted.is_(False),
-            Stock.bookingLimitDatetime.isnot(None),
+            models.Offer.isActive.is_(True),
+            models.Stock.isSoftDeleted.is_(False),
+            models.Stock.bookingLimitDatetime.isnot(None),
         )
-        .having(func.max(Stock.bookingLimitDatetime).between(*interval))  # type: ignore [arg-type]
-        .group_by(Offer.id)
-        .order_by(Offer.id)
+        .having(func.max(models.Stock.bookingLimitDatetime).between(*interval))  # type: ignore [arg-type]
+        .group_by(models.Offer.id)
+        .order_by(models.Offer.id)
     )
 
 
@@ -622,7 +619,7 @@ def _find_today_event_stock_ids_filter_by_departments(
         * matches the `departments_filter`.
     """
     base_query = find_event_stocks_day(today_min, today_max)
-    query = base_query.join(Venue).filter(departments_filter).with_entities(Stock.id)
+    query = base_query.join(Venue).filter(departments_filter).with_entities(models.Stock.id)
 
     return {stock.id for stock in query}
 
@@ -631,7 +628,7 @@ def delete_past_draft_collective_offers() -> None:
     yesterday = datetime.utcnow() - timedelta(days=1)
     collective_offer_ids_tuple = CollectiveOffer.query.filter(
         CollectiveOffer.dateCreated < yesterday,
-        CollectiveOffer.validation == OfferValidationStatus.DRAFT,
+        CollectiveOffer.validation == models.OfferValidationStatus.DRAFT,
     ).with_entities(CollectiveOffer.id)
     collective_offer_ids = [collective_offer_id for (collective_offer_id,) in collective_offer_ids_tuple]
 
@@ -643,24 +640,24 @@ def delete_past_draft_collective_offers() -> None:
     db.session.commit()
 
 
-def get_available_activation_code(stock: Stock) -> ActivationCode | None:
-    return ActivationCode.query.filter(
-        ActivationCode.stockId == stock.id,
-        ActivationCode.bookingId.is_(None),
-        or_(ActivationCode.expirationDate.is_(None), ActivationCode.expirationDate > func.now()),
+def get_available_activation_code(stock: models.Stock) -> models.ActivationCode | None:
+    return models.ActivationCode.query.filter(
+        models.ActivationCode.stockId == stock.id,
+        models.ActivationCode.bookingId.is_(None),
+        or_(models.ActivationCode.expirationDate.is_(None), models.ActivationCode.expirationDate > func.now()),
     ).first()
 
 
-def get_offer_by_id(offer_id: int) -> Offer:
+def get_offer_by_id(offer_id: int) -> models.Offer:
     try:
         return (
-            Offer.query.filter(Offer.id == offer_id)
-            .outerjoin(Stock, and_(Stock.offerId == offer_id, not_(Stock.isSoftDeleted)))  # type: ignore [type-var]
-            .options(contains_eager(Offer.stocks))
-            .options(joinedload(Offer.mediations))
-            .options(joinedload(Offer.product, innerjoin=True))
+            models.Offer.query.filter(models.Offer.id == offer_id)
+            .outerjoin(models.Stock, and_(models.Stock.offerId == offer_id, not_(models.Stock.isSoftDeleted)))  # type: ignore [type-var]
+            .options(contains_eager(models.Offer.stocks))
+            .options(joinedload(models.Offer.mediations))
+            .options(joinedload(models.Offer.product, innerjoin=True))
             .options(
-                joinedload(Offer.venue, innerjoin=True,).joinedload(
+                joinedload(models.Offer.venue, innerjoin=True,).joinedload(
                     Venue.managingOfferer,
                     innerjoin=True,
                 )
@@ -668,27 +665,27 @@ def get_offer_by_id(offer_id: int) -> Offer:
             .one()
         )
     except NoResultFound:
-        raise OfferNotFound()
+        raise exceptions.OfferNotFound()
 
 
 def get_synchronized_offers_with_provider_for_venue(venue_id: int, provider_id: int) -> BaseQuery:
-    return Offer.query.filter(Offer.venueId == venue_id).filter(
-        Offer.lastProviderId == provider_id  # pylint: disable=comparison-with-callable
+    return models.Offer.query.filter(models.Offer.venueId == venue_id).filter(
+        models.Offer.lastProviderId == provider_id  # pylint: disable=comparison-with-callable
     )
 
 
 def update_stock_quantity_to_dn_booked_quantity(stock_id: int | None) -> None:
     if not stock_id:
         return
-    Stock.query.filter(Stock.id == stock_id).update({"quantity": Stock.dnBookedQuantity})
+    models.Stock.query.filter(models.Stock.id == stock_id).update({"quantity": models.Stock.dnBookedQuantity})
     db.session.commit()
 
 
 def get_paginated_active_offer_ids(limit: int, page: int) -> list[int]:
     query = (
-        Offer.query.with_entities(Offer.id)
-        .filter(Offer.isActive.is_(True))
-        .order_by(Offer.id)
+        models.Offer.query.with_entities(models.Offer.id)
+        .filter(models.Offer.isActive.is_(True))
+        .order_by(models.Offer.id)
         .offset(page * limit)
         .limit(limit)
     )
@@ -697,9 +694,9 @@ def get_paginated_active_offer_ids(limit: int, page: int) -> list[int]:
 
 def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int) -> list[int]:
     query = (
-        Offer.query.with_entities(Offer.id)
-        .filter(Offer.venueId == venue_id)
-        .order_by(Offer.id)
+        models.Offer.query.with_entities(models.Offer.id)
+        .filter(models.Offer.venueId == venue_id)
+        .order_by(models.Offer.id)
         .offset(page * limit)
         .limit(limit)
     )
@@ -710,17 +707,17 @@ def search_offers_by_filters(
     search_query: str | None,
     limit: int,
 ) -> sa.orm.Query:
-    offers = Offer.query.options(
-        sa.orm.joinedload(Offer.stocks),
-        sa.orm.joinedload(Offer.criteria),
+    offers = models.Offer.query.options(
+        sa.orm.joinedload(models.Offer.stocks),
+        sa.orm.joinedload(models.Offer.criteria),
     )
 
     if search_query:
         if search_query.isnumeric():
-            offers = offers.filter(Offer.id == search_query)
+            offers = offers.filter(models.Offer.id == search_query)
         else:
             name_query = search_query.replace(" ", "%").replace("-", "%")
             name_query = clean_accents(name_query)
-            offers = offers.filter(sa.func.unaccent(Offer.name).ilike(f"%{name_query}%")).limit(limit)
+            offers = offers.filter(sa.func.unaccent(models.Offer.name).ilike(f"%{name_query}%")).limit(limit)
 
     return offers.distinct()
