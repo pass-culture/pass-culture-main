@@ -8,7 +8,7 @@ export const getValidationSchema = (
     price: yup
       .number()
       .typeError('Veuillez renseigner un prix')
-      .moreThan(-1, 'Le prix ne peut pas être inferieur à 0€')
+      .moreThan(-0.01, 'Le prix ne peut pas être inferieur à 0€')
       .max(300, 'Veuillez renseigner un prix inférieur à 300€')
       .required('Veuillez renseigner un prix'),
     bookingLimitDatetime: yup.date().nullable(),

@@ -13,7 +13,7 @@ export const priceCategoryValidationSchema = yup.object().shape({
   price: yup
     .number()
     .required('Veuillez renseigner un tarif')
-    .positive()
+    .moreThan(-0.01, 'Le prix ne peut pas être inferieur à 0€')
     .max(
       PRICE_CATEGORY_PRICE_MAX,
       `Veuillez renseigner un tarif inférieur à ${PRICE_CATEGORY_PRICE_MAX}€`
