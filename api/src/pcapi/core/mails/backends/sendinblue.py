@@ -82,20 +82,20 @@ class ToDevSendinblueBackend(SendinblueBackend):
         for recipient in recipient_list:
             # Imported test users are whitelisted (Internal users, Bug Bounty, audit, etc.)
             user = find_user_by_email(recipient)
-            e2e_recipient = (
+            is_e2e_recipient = (
                 len(end_to_end_tests_email_address_arr) == 2
                 and recipient.startswith(end_to_end_tests_email_address_arr[0])
                 and recipient.endswith(f"@{end_to_end_tests_email_address_arr[1]}")
             )
-            staging_whitelisted_email_recipients = settings.IS_STAGING and (
-                recipient.endswith("@yeswehack.ninja") or e2e_recipient
-            )
-            testing_whitelisted_email_recipients = settings.IS_TESTING and e2e_recipient
+            staging_whitelisted_email_recipients = settings.IS_STAGING and recipient.endswith("@yeswehack.ninja")
+            # Only for e2e, when IS_RUNNING_TESTS is true and EMAIL_BACKEND is pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend
+            # This override can be seen in pass-culture-app-native/.github/workflows/e2e-*.yml
+            e2e_whitelisted_email_recipients = settings.IS_RUNNING_TESTS and is_e2e_recipient
             if (
                 (user and user.has_test_role)
                 or recipient in settings.WHITELISTED_EMAIL_RECIPIENTS
                 or staging_whitelisted_email_recipients
-                or testing_whitelisted_email_recipients
+                or e2e_whitelisted_email_recipients
             ):
                 whitelisted_recipients.add(recipient)
         return list(whitelisted_recipients)
