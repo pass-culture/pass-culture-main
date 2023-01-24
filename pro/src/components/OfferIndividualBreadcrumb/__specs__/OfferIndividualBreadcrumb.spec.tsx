@@ -37,8 +37,7 @@ const renderOfferIndividualBreadcrumb = (
     setOffer: () => {},
     setShouldTrack: () => {},
     shouldTrack: true,
-    isFirstOffer: false,
-    venuesMissingReimbursementPoint: {},
+    showVenuePopin: {},
     ...contextOverride,
   }
   const store = configureTestStore(storeOverrides)
