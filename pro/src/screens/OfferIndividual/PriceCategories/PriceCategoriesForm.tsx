@@ -1,11 +1,12 @@
 import cn from 'classnames'
-import { FieldArray } from 'formik'
-import React from 'react'
+import { FieldArray, useFormikContext } from 'formik'
+import React, { useState } from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { IcoEuro, IconPlusCircle } from 'icons'
 import { Button, TextInput, Checkbox, InfoBox } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { BaseCheckbox } from 'ui-kit/form/shared'
 
 import {
   INITIAL_PRICE_CATEGORY,
@@ -20,9 +21,56 @@ type PriceCategoriesFormProps = {
   values: PriceCategoriesFormValues
 }
 
+const setFreeCheckboxValue = (
+  array: boolean[],
+  index: number,
+  value: boolean
+): boolean[] => {
+  return array.map((isSelected, i) => {
+    if (i === index) {
+      return value
+    } else {
+      return isSelected
+    }
+  })
+}
+
 export const PriceCategoriesForm = ({
   values,
 }: PriceCategoriesFormProps): JSX.Element => {
+  const { setFieldValue, handleChange } = useFormikContext()
+
+  const [isSelectedArray, setIsSelectedArray] = useState(
+    // initialize an array of lenght with false or true when it's 0
+    Array.from(
+      Array(PRICE_CATEGORY_MAX_LENGTH),
+      (_, index) => values.priceCategories.at(index)?.price === 0
+    )
+  )
+
+  const onChangeFree =
+    (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      /* istanbul ignore next: tested but coverage don't see it */
+      if (e.target.checked) {
+        setFieldValue(`priceCategories[${index}].price`, 0)
+      }
+      setIsSelectedArray(
+        setFreeCheckboxValue(isSelectedArray, index, e.target.checked)
+      )
+    }
+
+  const onChangePrice =
+    (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      /* istanbul ignore next: tested but coverage don't see it */
+      if (e.target.value !== '0') {
+        setIsSelectedArray(setFreeCheckboxValue(isSelectedArray, index, false))
+        /* istanbul ignore next: tested but coverage don't see it */
+      } else {
+        setIsSelectedArray(setFreeCheckboxValue(isSelectedArray, index, true))
+      }
+      handleChange(e)
+    }
+
   return (
     <>
       <FormLayout.MandatoryInfo />
@@ -58,7 +106,21 @@ export const PriceCategoriesForm = ({
                     styles['price-input'],
                     styles['field-layout-align-self']
                   )}
+                  onChange={onChangePrice(index)}
                   isLabelHidden={index !== 0}
+                />
+                <BaseCheckbox
+                  label="Gratuit"
+                  checked={isSelectedArray[index]}
+                  name={`priceCategories[${index}].free`}
+                  onChange={onChangeFree(index)}
+                  className={cn(
+                    {
+                      [styles['first-free-input']]: index === 0,
+                      [styles['other-free-input']]: index !== 0,
+                    },
+                    styles['field-layout-align-self']
+                  )}
                 />
               </FormLayout.Row>
             ))}
