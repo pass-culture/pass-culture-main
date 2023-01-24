@@ -188,7 +188,7 @@ def post_product_offer(
                 booking_email=body.booking_email,
                 description=body.description,
                 external_ticket_office_url=body.external_ticket_office_url,
-                extra_data=serialization.compute_extra_data(body.category_related_fields),
+                extra_data=serialization.deserialize_extra_data(body.category_related_fields),
                 is_duo=body.is_duo,
                 mental_disability_compliant=body.accessibility.mental_disability_compliant,
                 motor_disability_compliant=body.accessibility.motor_disability_compliant,
@@ -255,7 +255,7 @@ def post_event_offer(
                 description=body.description,
                 duration_minutes=body.duration_minutes,
                 external_ticket_office_url=body.external_ticket_office_url,
-                extra_data=serialization.compute_extra_data(body.category_related_fields),
+                extra_data=serialization.deserialize_extra_data(body.category_related_fields),
                 is_duo=body.is_duo,
                 mental_disability_compliant=body.accessibility.mental_disability_compliant,
                 motor_disability_compliant=body.accessibility.motor_disability_compliant,
@@ -527,7 +527,9 @@ def edit_product(
             offers_api.update_offer(
                 offer,
                 bookingEmail=update_body.get("booking_email", offers_api.UNCHANGED),
-                extraData=serialization.compute_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
+                extraData=serialization.deserialize_extra_data(
+                    body.category_related_fields, copy.deepcopy(offer.extraData)
+                )
                 if body.category_related_fields
                 else offers_api.UNCHANGED,
                 isActive=update_body.get("is_active", offers_api.UNCHANGED),
@@ -628,7 +630,9 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 offer,
                 bookingEmail=update_body.get("booking_email", offers_api.UNCHANGED),
                 durationMinutes=update_body.get("duration_minutes", offers_api.UNCHANGED),
-                extraData=serialization.compute_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
+                extraData=serialization.deserialize_extra_data(
+                    body.category_related_fields, copy.deepcopy(offer.extraData)
+                )
                 if body.category_related_fields
                 else offers_api.UNCHANGED,
                 isActive=update_body.get("is_active", offers_api.UNCHANGED),

@@ -50,7 +50,7 @@ class Returns200Test:
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "withdrawalType": "no_ticket",
-            "extraData": {"toto": "text", "showType": 200},
+            "extraData": {"toto": "text", "showType": 200, "showSubType": 201},
             "externalTicketOfficeUrl": "http://example.net",
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,
@@ -65,7 +65,7 @@ class Returns200Test:
         offer = Offer.query.get(offer_id)
         assert offer.bookingEmail == "offer@example.com"
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
-        assert offer.extraData == {"toto": "text", "showType": 200}
+        assert offer.extraData == {"toto": "text", "showType": 200, "showSubType": 201}
         assert offer.externalTicketOfficeUrl == "http://example.net"
         assert offer.venue == venue
         assert offer.product.durationMinutes == 60
@@ -131,7 +131,7 @@ class Returns200Test:
             "subcategoryId": subcategories.CONCERT.id,
             "withdrawalDetails": "Veuillez récuperer vos billets à l'accueil :)",
             "withdrawalType": "no_ticket",
-            "extraData": {"musicType": 300},
+            "extraData": {"musicType": 300, "musicSubType": 301},
             "mentalDisabilityCompliant": False,
             "audioDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
