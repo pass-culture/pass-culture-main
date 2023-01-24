@@ -2,11 +2,14 @@ import { FieldArray } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { IcoEuro } from 'icons'
-import { TextInput } from 'ui-kit'
+import { IcoEuro, IconPlusCircle } from 'icons'
+import { Button, TextInput } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import {
+  INITIAL_PRICE_CATEGORY,
   PRICE_CATEGORY_LABEL_MAX_LENGTH,
+  PRICE_CATEGORY_MAX_LENGTH,
   PRICE_CATEGORY_PRICE_MAX,
 } from './form/constants'
 import { PriceCategoriesFormValues } from './form/types'
@@ -22,7 +25,7 @@ export const PriceCategoriesForm = ({
   return (
     <FieldArray
       name="priceCategories"
-      render={() => (
+      render={arrayHelpers => (
         <FormLayout.Section title="Tarifs">
           {values.priceCategories.map((priceCategory, index) => (
             <FormLayout.Row key={index} inline>
@@ -46,6 +49,16 @@ export const PriceCategoriesForm = ({
               />
             </FormLayout.Row>
           ))}
+          <Button
+            variant={ButtonVariant.TERNARY}
+            Icon={IconPlusCircle}
+            onClick={() => arrayHelpers.push(INITIAL_PRICE_CATEGORY)}
+            disabled={
+              values.priceCategories.length >= PRICE_CATEGORY_MAX_LENGTH
+            }
+          >
+            Ajouter un tarif
+          </Button>
         </FormLayout.Section>
       )}
     />
