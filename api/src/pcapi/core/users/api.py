@@ -1061,7 +1061,7 @@ def public_account_history(user: models.User) -> list[dict]:
             "datetime": check.dateCreated,
             "message": (
                 f"{check.type.value}, {getattr(check.eligibilityType, 'value', '[éligibilité inconnue]')}, "
-                f"{check.status.value}, {getattr(check.reasonCodes, 'value', '[raison inconnue]')}, {check.reason}"
+                f"{check.status.value if check.status else 'Statut inconnu'}, {getattr(check.reasonCodes, 'value', '[raison inconnue]')}, {check.reason}"
             ),
         }
         for check in fraud_checks
