@@ -7,7 +7,6 @@ import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.models import IndividualBooking
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.exceptions import StockDoesNotExist
@@ -83,13 +82,10 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
 @authenticated_and_active_user_required
 def get_bookings(user: User) -> BookingsResponse:
     individual_bookings = (
-        IndividualBooking.query.filter_by(userId=user.id)
+        Booking.query.filter_by(userId=user.id)
+        .options(joinedload(Booking.stock).load_only(Stock.id, Stock.beginningDatetime))
         .options(
-            joinedload(IndividualBooking.booking).joinedload(Booking.stock).load_only(Stock.id, Stock.beginningDatetime)
-        )
-        .options(
-            joinedload(IndividualBooking.booking)
-            .joinedload(Booking.stock)
+            joinedload(Booking.stock)
             .joinedload(Stock.offer)
             .load_only(
                 Offer.name,
@@ -107,8 +103,7 @@ def get_bookings(user: User) -> BookingsResponse:
             )
         )
         .options(
-            joinedload(IndividualBooking.booking)
-            .joinedload(Booking.stock)
+            joinedload(Booking.stock)
             .joinedload(Stock.offer)
             .joinedload(Offer.venue)
             .load_only(
@@ -121,15 +116,10 @@ def get_bookings(user: User) -> BookingsResponse:
                 Venue.publicName,
             )
         )
-        .options(
-            joinedload(IndividualBooking.booking)
-            .joinedload(Booking.stock)
-            .joinedload(Stock.offer)
-            .joinedload(Offer.mediations)
-        )
-        .options(joinedload(IndividualBooking.booking).joinedload(Booking.activationCode))
-        .options(joinedload(IndividualBooking.booking).joinedload(Booking.externalBookings))
-        .options(joinedload(IndividualBooking.deposit).load_only(finance_models.Deposit.type))
+        .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.mediations))
+        .options(joinedload(Booking.activationCode))
+        .options(joinedload(Booking.externalBookings))
+        .options(joinedload(Booking.deposit).load_only(finance_models.Deposit.type))
     ).all()
 
     has_bookings_after_18 = any(
@@ -140,8 +130,7 @@ def get_bookings(user: User) -> BookingsResponse:
     ended_bookings = []
     ongoing_bookings = []
 
-    for individual_booking in individual_bookings:
-        booking = individual_booking.booking
+    for booking in individual_bookings:
         if is_ended_booking(booking):
             ended_bookings.append(booking)
         else:
@@ -210,11 +199,7 @@ def is_ended_booking(booking: Booking) -> bool:
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400, 404])
 @authenticated_and_active_user_required
 def cancel_booking(user: User, booking_id: int) -> None:
-    booking = (
-        Booking.query.join(IndividualBooking)
-        .filter(Booking.id == booking_id, IndividualBooking.userId == user.id)
-        .first_or_404()
-    )
+    booking = Booking.query.filter(Booking.id == booking_id, Booking.userId == user.id).first_or_404()
     try:
         bookings_api.cancel_booking_by_beneficiary(user, booking)
     except bookings_exceptions.BookingIsCancelled:
@@ -234,11 +219,6 @@ def cancel_booking(user: User, booking_id: int) -> None:
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400])
 @authenticated_and_active_user_required
 def flag_booking_as_used(user: User, booking_id: int, body: BookingDisplayStatusRequest) -> None:
-    individual_booking = (
-        IndividualBooking.query.join(IndividualBooking.booking)
-        .filter(IndividualBooking.userId == user.id, Booking.id == booking_id)
-        .first_or_404()
-    )
-    booking = individual_booking.booking
+    booking = Booking.query.filter(Booking.userId == user.id, Booking.id == booking_id).first_or_404()
     booking.displayAsEnded = body.ended
     repository.save(booking)

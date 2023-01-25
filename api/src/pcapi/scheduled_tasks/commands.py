@@ -218,16 +218,16 @@ def send_email_reminder_7_days_before_event() -> None:
 
 def send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
     """Triggers email reminder to beneficiaries for none digitals events happening tomorrow"""
-    individual_bookings = bookings_repository.find_individual_bookings_event_happening_tomorrow_query()
-    for individual_booking in individual_bookings:
+    bookings = bookings_repository.find_individual_bookings_event_happening_tomorrow_query()
+    for booking in bookings:
         try:
-            transactional_mails.send_individual_booking_event_reminder_email_to_beneficiary(individual_booking)
+            transactional_mails.send_individual_booking_event_reminder_email_to_beneficiary(booking)
         except Exception:  # pylint: disable=broad-except
             logger.exception(
                 "Could not send email reminder tomorrow event to beneficiary",
                 extra={
-                    "individualBookingId": individual_booking.id,
-                    "userId": individual_booking.userId,
+                    "BookingId": booking.id,
+                    "userId": booking.userId,
                 },
             )
 

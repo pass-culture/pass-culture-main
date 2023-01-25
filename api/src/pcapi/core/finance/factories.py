@@ -43,7 +43,7 @@ class PricingFactory(BaseFactory):
         model = models.Pricing
 
     status = models.PricingStatus.VALIDATED
-    booking = factory.SubFactory(bookings_factories.UsedIndividualBookingFactory)
+    booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
     venue = factory.SelfAttribute("booking.venue")
     siret = factory.LazyAttribute(lambda pricing: pricing.booking.venue.siret)
     pricingPointId = factory.SelfAttribute("booking.venue.current_pricing_point_id")
@@ -153,7 +153,7 @@ class PaymentFactory(BaseFactory):
         model = models.Payment
 
     author = "batch"
-    booking = factory.SubFactory(bookings_factories.UsedIndividualBookingFactory)
+    booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
     amount = factory.LazyAttribute(
         lambda payment: payment.booking.total_amount * decimal.Decimal(payment.reimbursementRate)
     )

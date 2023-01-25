@@ -5,7 +5,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.bookings.factories import IndividualBookingFactory
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import UserFactory
@@ -74,7 +74,7 @@ def test_run_sendinblue_only(mock_import_contacts):
 @pytest.mark.usefixtures("db_session")
 def test_format_batch_user():
     user = BeneficiaryGrant18Factory(departementCode="75", city="Paris")
-    booking = IndividualBookingFactory(individualBooking__user=user)
+    booking = BookingFactory(user=user)
 
     res = format_batch_users([user])
 
@@ -112,7 +112,7 @@ def test_format_batch_user():
 @freeze_time("2022-12-06 10:00:00")  # Keep time frozen in 2022 as long as we send *_2022 attributes
 def test_format_sendinblue_user():
     user = BeneficiaryGrant18Factory(departementCode="75")
-    booking = IndividualBookingFactory(individualBooking__user=user, dateCreated=datetime.datetime(2022, 12, 6, 10))
+    booking = BookingFactory(user=user, dateCreated=datetime.datetime(2022, 12, 6, 10))
 
     res = format_sendinblue_users([user])
 

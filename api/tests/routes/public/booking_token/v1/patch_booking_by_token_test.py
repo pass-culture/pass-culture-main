@@ -12,7 +12,7 @@ from pcapi.utils.human_ids import humanize
 class Returns204Test:
     class WhenUserIsAnonymousTest:
         def expect_booking_to_be_used(self, client):
-            booking = bookings_factories.IndividualBookingFactory(token="ABCDEF")
+            booking = bookings_factories.BookingFactory(token="ABCDEF")
 
             url = (
                 f"/bookings/token/{booking.token}?" f"email={booking.email}&offer_id={humanize(booking.stock.offerId)}"
@@ -26,7 +26,7 @@ class Returns204Test:
 
     class WhenUserIsLoggedInTest:
         def expect_booking_to_be_used(self, client):
-            booking = bookings_factories.IndividualBookingFactory(token="ABCDEF")
+            booking = bookings_factories.BookingFactory(token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
@@ -38,7 +38,7 @@ class Returns204Test:
             assert booking.status is BookingStatus.USED
 
         def expect_booking_with_token_in_lower_case_to_be_used(self, client):
-            booking = bookings_factories.IndividualBookingFactory(token="ABCDEF")
+            booking = bookings_factories.BookingFactory(token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
@@ -55,7 +55,7 @@ class Returns400Test:
     class WhenUserIsAnonymousTest:
         def when_email_is_missing(self, client):
             # Given
-            booking = bookings_factories.IndividualBookingFactory()
+            booking = bookings_factories.BookingFactory()
             url = "/bookings/token/{}?&offer_id={}".format(booking.token, humanize(booking.stock.offer.id))
 
             # When
@@ -69,7 +69,7 @@ class Returns400Test:
 
         def when_offer_id_is_missing(self, client):
             # Given
-            booking = bookings_factories.IndividualBookingFactory()
+            booking = bookings_factories.BookingFactory()
             url = "/bookings/token/{}?email={}".format(booking.token, booking.email)
 
             # When
@@ -81,7 +81,7 @@ class Returns400Test:
 
         def when_both_email_and_offer_id_are_missing(self, client):
             # Given
-            booking = bookings_factories.IndividualBookingFactory()
+            booking = bookings_factories.BookingFactory()
             url = "/bookings/token/{}".format(booking.token)
 
             # When
@@ -100,7 +100,7 @@ class Returns403Test:  # Forbidden
     def when_user_is_not_attached_to_linked_offerer(self, client):
         # Given
         pro = users_factories.ProFactory(email="pro@example.com")
-        booking = bookings_factories.IndividualBookingFactory()
+        booking = bookings_factories.BookingFactory()
 
         url = "/bookings/token/{}?email={}".format(booking.token, booking.email)
 
@@ -121,7 +121,7 @@ class Returns404Test:
     class WhenUserIsAnonymousTest:
         def when_booking_does_not_exist(self, client):
             # Given
-            booking = bookings_factories.IndividualBookingFactory()
+            booking = bookings_factories.BookingFactory()
 
             url = "/bookings/token/{}?email={}&offer_id={}".format(
                 booking.token, "wrong.email@test.com", humanize(booking.stock.offer.id)
@@ -138,7 +138,7 @@ class Returns404Test:
         def when_user_is_not_editor_and_email_does_not_match(self, client):
             # Given
             user_admin = users_factories.AdminFactory(email="admin@example.com")
-            booking = bookings_factories.IndividualBookingFactory()
+            booking = bookings_factories.BookingFactory()
             url = "/bookings/token/{}?email={}".format(booking.token, "wrong@example.com")
 
             # When
@@ -152,7 +152,7 @@ class Returns404Test:
             # Given
             user = users_factories.BeneficiaryGrant18Factory(email="user+plus@example.com")
             user_admin = users_factories.AdminFactory(email="admin@example.com")
-            booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
+            booking = bookings_factories.BookingFactory(user=user)
 
             url = "/bookings/token/{}?email={}".format(booking.token, booking.email)
 
@@ -164,7 +164,7 @@ class Returns404Test:
         def when_user_is_not_editor_and_offer_id_is_invalid(self, client):
             # Given
             user_admin = users_factories.AdminFactory(email="admin@example.com")
-            booking = bookings_factories.IndividualBookingFactory()
+            booking = bookings_factories.BookingFactory()
 
             url = "/bookings/token/{}?email={}&offer_id={}".format(booking.token, booking.email, humanize(123))
 

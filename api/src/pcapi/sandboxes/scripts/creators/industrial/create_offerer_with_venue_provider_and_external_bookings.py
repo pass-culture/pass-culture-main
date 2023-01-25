@@ -3,8 +3,8 @@ import logging
 
 import factory
 
-from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.categories import subcategories
+from pcapi.core.external_bookings.factories import BookingFactory
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
@@ -71,9 +71,7 @@ def _create_offers(provider_name: str, provider: Provider, provider_type: str = 
                 lastProvider=provider,
             )
             stock_duo = CinemaStockProviderFactory(offer=offer_duo)
-            booking_duo = IndividualBookingFactory(
-                quantity=2, stock=stock_duo, user=user_bene, individualBooking__user=user_bene
-            )
+            booking_duo = BookingFactory(quantity=2, stock=stock_duo, user=user_bene)
             if provider.isCinemaProvider:
                 ExternalBookingFactory(booking=booking_duo, seat="A_1")
                 ExternalBookingFactory(booking=booking_duo, seat="A_2")
@@ -100,12 +98,8 @@ def _create_offers(provider_name: str, provider: Provider, provider_type: str = 
             )
             stock_solo = ThingStockFactory(offer=offer_solo)
 
-            booking_solo = IndividualBookingFactory(
-                quantity=1, stock=stock_solo, user=user_bene, individualBooking__user=user_bene
-            )
-        booking_solo = IndividualBookingFactory(
-            quantity=1, stock=stock_solo, user=user_bene, individualBooking__user=user_bene
-        )
+            booking_solo = BookingFactory(quantity=1, stock=stock_solo, user=user_bene)
+        booking_solo = BookingFactory(quantity=1, stock=stock_solo, user=user_bene)
         if provider.isCinemaProvider:
             ExternalBookingFactory(booking=booking_solo)
     return venue

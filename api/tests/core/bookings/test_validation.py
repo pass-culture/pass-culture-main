@@ -9,8 +9,8 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
 from pcapi.core.bookings import models
 from pcapi.core.bookings import validation
+from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.categories import subcategories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offers.factories as offers_factories
@@ -47,15 +47,15 @@ class CheckOfferAlreadyBookedTest:
         validation.check_offer_already_booked(user, offer)  # should not raise
 
     def test_dont_raise_if_user_cancelled(self):
-        booking = factories.CancelledIndividualBookingFactory()
-        validation.check_offer_already_booked(booking.individualBooking.user, booking.stock.offer)  # should not raise
+        booking = factories.CancelledBookingFactory()
+        validation.check_offer_already_booked(booking.user, booking.stock.offer)  # should not raise
 
     @pytest.mark.usefixtures("db_session")
     def test_raise_if_already_booked(self):
-        booking = factories.IndividualBookingFactory()
+        booking = factories.BookingFactory()
 
         with pytest.raises(exceptions.OfferIsAlreadyBooked) as error:
-            validation.check_offer_already_booked(booking.individualBooking.user, booking.stock.offer)
+            validation.check_offer_already_booked(booking.user, booking.stock.offer)
         assert error.value.errors == {"offerId": ["Cette offre a déja été reservée par l'utilisateur"]}
 
 
@@ -136,7 +136,7 @@ class CheckExpenseLimitsDepositVersion1Test:
     def test_physical_limit(self):
         beneficiary = self._get_beneficiary()
         offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
-        factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock__price=190, stock__offer=offer)
+        factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
 
         validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
 
@@ -149,7 +149,7 @@ class CheckExpenseLimitsDepositVersion1Test:
     def test_physical_limit_on_uncapped_type(self):
         beneficiary = self._get_beneficiary()
         offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.SEANCE_CINE.id)
-        factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock__price=190, stock__offer=offer)
+        factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
 
         # should not raise because SEANCE_CINE is not capped
         validation.check_expenses_limits(beneficiary, 11, offer)
@@ -158,8 +158,8 @@ class CheckExpenseLimitsDepositVersion1Test:
         beneficiary = self._get_beneficiary()
         product = offers_factories.DigitalProductFactory(subcategoryId=subcategories.VOD.id)
         offer = offers_factories.OfferFactory(product=product)
-        factories.IndividualBookingFactory(
-            individualBooking__user=beneficiary,
+        factories.BookingFactory(
+            user=beneficiary,
             stock__price=190,
             stock__offer=offer,
         )
@@ -176,14 +176,14 @@ class CheckExpenseLimitsDepositVersion1Test:
         beneficiary = self._get_beneficiary()
         product = offers_factories.DigitalProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
         offer = offers_factories.OfferFactory(product=product)
-        factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock__price=190, stock__offer=offer)
+        factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
 
         # should not raise because OEUVRE_ART is not capped
         validation.check_expenses_limits(beneficiary, 11, offer)
 
     def test_global_limit(self):
         beneficiary = self._get_beneficiary()
-        factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock__price=490)
+        factories.BookingFactory(user=beneficiary, stock__price=490)
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.EVENEMENT_MUSIQUE.id)
 
         validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
@@ -210,7 +210,7 @@ class CheckExpenseLimitsDepositVersion2Test:
     def test_physical_limit(self):
         beneficiary = self._get_beneficiary()
         offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
-        factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock__price=290, stock__offer=offer)
+        factories.BookingFactory(user=beneficiary, stock__price=290, stock__offer=offer)
 
         validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
 
@@ -218,8 +218,8 @@ class CheckExpenseLimitsDepositVersion2Test:
         beneficiary = self._get_beneficiary()
         product = offers_factories.DigitalProductFactory(subcategoryId=subcategories.VOD.id)
         offer = offers_factories.OfferFactory(product=product)
-        factories.IndividualBookingFactory(
-            individualBooking__user=beneficiary,
+        factories.BookingFactory(
+            user=beneficiary,
             stock__price=90,
             stock__offer=offer,
         )
@@ -236,14 +236,14 @@ class CheckExpenseLimitsDepositVersion2Test:
         beneficiary = self._get_beneficiary()
         product = offers_factories.DigitalProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
         offer = offers_factories.OfferFactory(product=product)
-        factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock__price=190, stock__offer=offer)
+        factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
 
         # should not raise because OEUVRE_ART is not capped
         validation.check_expenses_limits(beneficiary, 11, offer)
 
     def test_global_limit(self):
         beneficiary = self._get_beneficiary()
-        factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock__price=290)
+        factories.BookingFactory(user=beneficiary, stock__price=290)
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CARTE_CINE_ILLIMITE.id)
 
         validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
@@ -265,7 +265,7 @@ class InsufficientFundsSQLCheckTest:
     def test_insufficient_funds_when_user_has_negative_deposit(self):
         # The user once booked.
         user = users_factories.BeneficiaryGrant18Factory()
-        factories.IndividualBookingFactory(individualBooking__user=user)
+        factories.BookingFactory(user=user)
         assert user.wallet_balance == 290
 
         # But now their deposit expired.
@@ -273,14 +273,14 @@ class InsufficientFundsSQLCheckTest:
 
         # They are not allowed to book non-free offers anymore.
         with pytest.raises(sqlalchemy.exc.InternalError) as exc:
-            factories.IndividualBookingFactory(individualBooking__user=user)
+            factories.BookingFactory(user=user)
             assert "insufficientFunds" in exc.args[0]
 
     def test_user_can_cancel_even_if_expired_deposit(self):
         # The user once booked.
-        booking = factories.IndividualBookingFactory()
-        user = booking.individualBooking.user
-        booking_to_cancel = factories.IndividualBookingFactory(individualBooking__user=user)
+        booking = factories.BookingFactory()
+        user = booking.user
+        booking_to_cancel = factories.BookingFactory(user=user)
 
         # But now their deposit expired.
         self._expire_deposit(user)
@@ -292,8 +292,8 @@ class InsufficientFundsSQLCheckTest:
     def test_user_can_book_a_free_offer_even_if_expired_deposit(self):
         # The user once booked.
 
-        booking = factories.IndividualBookingFactory()
-        user = booking.individualBooking.user
+        booking = factories.BookingFactory()
+        user = booking.user
 
         # But now their deposit expired.
         self._expire_deposit(user)
@@ -301,12 +301,12 @@ class InsufficientFundsSQLCheckTest:
         # They should be able to book free offers
         stock = offers_factories.StockFactory(price=0)
         api.book_offer(user, stock.id, quantity=1)
-        assert models.Booking.query.join(IndividualBooking), filter(IndividualBooking.userId == user.id).count() == 2
+        assert models.Booking.query.filter(Booking.userId == user.id).count() == 2
 
     def test_cannot_change_quantity_with_expired_deposit(self):
         # The user once booked.
-        booking = factories.IndividualBookingFactory(quantity=10)
-        user = booking.individualBooking.user
+        booking = factories.BookingFactory(quantity=10)
+        user = booking.user
 
         # But now their deposit expired.
         self._expire_deposit(user)
@@ -322,8 +322,8 @@ class InsufficientFundsSQLCheckTest:
 
     def test_cannot_change_amount_with_expired_deposit(self):
         # The user once booked.
-        booking = factories.IndividualBookingFactory(amount=10)
-        user = booking.individualBooking.user
+        booking = factories.BookingFactory(amount=10)
+        user = booking.user
 
         # But now their deposit expired.
         self._expire_deposit(user)
@@ -338,8 +338,8 @@ class InsufficientFundsSQLCheckTest:
 
     def test_cannot_uncancel_with_expired_deposit(self):
         # The user once booked and cancelled their booking.
-        booking = factories.CancelledIndividualBookingFactory()
-        user = booking.individualBooking.user
+        booking = factories.CancelledBookingFactory()
+        user = booking.user
 
         # But now their deposit expired.
         self._expire_deposit(user)
@@ -356,41 +356,41 @@ class InsufficientFundsSQLCheckTest:
 @pytest.mark.usefixtures("db_session")
 class CheckIsUsableTest:
     def should_raise_if_used(self):
-        booking = factories.UsedIndividualBookingFactory()
+        booking = factories.UsedBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyUsed):
             validation.check_is_usable(booking)
 
     def should_raise_if_cancelled(self):
-        booking = factories.CancelledIndividualBookingFactory()
+        booking = factories.CancelledBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyCancelled):
             validation.check_is_usable(booking)
 
     def should_raises_forbidden_error_if_payement_exists(self, app):
-        booking = factories.UsedIndividualBookingFactory()
+        booking = factories.UsedBookingFactory()
         finance_factories.PaymentFactory(booking=booking)
         with pytest.raises(exceptions.BookingIsAlreadyRefunded):
             validation.check_is_usable(booking)
 
     def should_pass_if_no_beginning_datetime(self):
-        booking = factories.IndividualBookingFactory(stock__beginningDatetime=None)
+        booking = factories.BookingFactory(stock__beginningDatetime=None)
         validation.check_is_usable(booking)
 
     def should_pass_when_event_begins_in_less_than_48_hours(self):
         soon = datetime.utcnow() + timedelta(hours=48)
-        booking = factories.IndividualBookingFactory(stock__beginningDatetime=soon)
+        booking = factories.BookingFactory(stock__beginningDatetime=soon)
         validation.check_is_usable(booking)
 
     def should_pass_when_event_begins_in_more_than_72_hours_and_booking_created_more_than_48_hours_ago(self):
         next_week = datetime.utcnow() + timedelta(weeks=1)
         three_days_ago = datetime.utcnow() - timedelta(days=3)
-        booking = factories.IndividualBookingFactory(stock__beginningDatetime=next_week, dateCreated=three_days_ago)
+        booking = factories.BookingFactory(stock__beginningDatetime=next_week, dateCreated=three_days_ago)
         validation.check_is_usable(booking)
 
     def should_not_validate_when_event_booking_not_confirmed(self):
         # Given
         next_week = datetime.utcnow() + timedelta(weeks=1)
         one_day_before = datetime.utcnow() - timedelta(days=1)
-        booking = factories.IndividualBookingFactory(dateCreated=one_day_before, stock__beginningDatetime=next_week)
+        booking = factories.BookingFactory(dateCreated=one_day_before, stock__beginningDatetime=next_week)
 
         # When
         with pytest.raises(exceptions.BookingIsNotConfirmed):
@@ -400,56 +400,56 @@ class CheckIsUsableTest:
 @pytest.mark.usefixtures("db_session")
 class CheckBeneficiaryCanCancelBookingTest:
     def test_can_cancel(self):
-        booking = factories.IndividualBookingFactory()
-        validation.check_beneficiary_can_cancel_booking(booking.individualBooking.user, booking)  # should not raise
+        booking = factories.BookingFactory()
+        validation.check_beneficiary_can_cancel_booking(booking.user, booking)  # should not raise
 
     def test_can_cancel_if_event_is_in_a_long_time(self):
-        booking = factories.IndividualBookingFactory(
+        booking = factories.BookingFactory(
             stock__beginningDatetime=datetime.utcnow() + timedelta(days=10),
         )
-        validation.check_beneficiary_can_cancel_booking(booking.individualBooking.user, booking)  # should not raise
+        validation.check_beneficiary_can_cancel_booking(booking.user, booking)  # should not raise
 
     def test_raise_if_not_the_benficiary(self):
-        booking = factories.IndividualBookingFactory()
+        booking = factories.BookingFactory()
         other_user = users_factories.UserFactory()
         with pytest.raises(exceptions.BookingDoesntExist):
             validation.check_beneficiary_can_cancel_booking(other_user, booking)
 
     def test_raise_if_already_used(self):
-        booking = factories.UsedIndividualBookingFactory()
+        booking = factories.UsedBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyUsed):
-            validation.check_beneficiary_can_cancel_booking(booking.individualBooking.user, booking)
+            validation.check_beneficiary_can_cancel_booking(booking.user, booking)
 
     def test_raise_if_event_too_close(self):
-        booking = factories.IndividualBookingFactory(
+        booking = factories.BookingFactory(
             stock__beginningDatetime=datetime.utcnow() + timedelta(days=1),
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
-            validation.check_beneficiary_can_cancel_booking(booking.individualBooking.user, booking)
+            validation.check_beneficiary_can_cancel_booking(booking.user, booking)
         assert exc.value.errors["booking"] == [
             "Impossible d'annuler une réservation plus de 48h après l'avoir "
             "réservée et moins de 48h avant le début de l'évènement"
         ]
 
     def test_raise_if_booked_long_ago(self):
-        booking = factories.IndividualBookingFactory(
+        booking = factories.BookingFactory(
             stock__beginningDatetime=datetime.utcnow() + timedelta(days=10),
             dateCreated=datetime.utcnow() - timedelta(days=2),
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
-            validation.check_beneficiary_can_cancel_booking(booking.individualBooking.user, booking)
+            validation.check_beneficiary_can_cancel_booking(booking.user, booking)
         assert exc.value.errors["booking"] == [
             "Impossible d'annuler une réservation plus de 48h après l'avoir "
             "réservée et moins de 48h avant le début de l'évènement"
         ]
 
     def test_raise_if_event_too_close_and_booked_long_ago(self):
-        booking = factories.IndividualBookingFactory(
+        booking = factories.BookingFactory(
             stock__beginningDatetime=datetime.utcnow() + timedelta(days=1),
             dateCreated=datetime.utcnow() - timedelta(days=2),
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
-            validation.check_beneficiary_can_cancel_booking(booking.individualBooking.user, booking)
+            validation.check_beneficiary_can_cancel_booking(booking.user, booking)
         assert exc.value.errors["booking"] == [
             "Impossible d'annuler une réservation plus de 48h après l'avoir "
             "réservée et moins de 48h avant le début de l'évènement"
@@ -459,16 +459,16 @@ class CheckBeneficiaryCanCancelBookingTest:
 @pytest.mark.usefixtures("db_session")
 class CheckOffererCanCancelBookingTest:
     def test_can_cancel(self):
-        booking = factories.IndividualBookingFactory()
+        booking = factories.BookingFactory()
         validation.check_booking_can_be_cancelled(booking)  # should not raise
 
     def test_raise_if_already_cancelled(self):
-        booking = factories.CancelledIndividualBookingFactory()
+        booking = factories.CancelledBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyCancelled):
             validation.check_booking_can_be_cancelled(booking)
 
     def test_raise_if_already_used(self):
-        booking = factories.UsedIndividualBookingFactory()
+        booking = factories.UsedBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyRefunded):
             validation.check_booking_can_be_cancelled(booking)
 
@@ -476,13 +476,13 @@ class CheckOffererCanCancelBookingTest:
 @pytest.mark.usefixtures("db_session")
 class CheckCanBeMarkAsUnusedTest:
     def test_should_raise_resource_gone_error_if_not_used(self, app):
-        booking = factories.IndividualBookingFactory()
+        booking = factories.BookingFactory()
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_can_be_mark_as_unused(booking)
         assert exc.value.errors["booking"] == ["Cette réservation n'a pas encore été validée"]
 
     def test_should_raise_resource_gone_error_if_cancelled(self, app):
-        booking = factories.CancelledIndividualBookingFactory()
+        booking = factories.CancelledBookingFactory()
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_can_be_mark_as_unused(booking)
         assert exc.value.errors["booking"] == ["Cette réservation a été annulée"]

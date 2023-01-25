@@ -5,8 +5,8 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
-from pcapi.core.bookings.factories import IndividualBookingFactory
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.external.attributes.api import TRACKED_PRODUCT_IDS
@@ -45,7 +45,7 @@ def test_update_external_user():
         email="jeanne@example.com",
         notificationSubscriptions={"marketing_push": True, "marketing_email": False},
     )
-    IndividualBookingFactory(individualBooking__user=user)
+    BookingFactory(user=user)
 
     with assert_no_duplicated_queries():
         update_external_user(user)
@@ -61,7 +61,7 @@ def test_email_should_not_be_blacklisted_in_sendinblue_by_default():
         email="jeanne@example.com",
         notificationSubscriptions={},
     )
-    IndividualBookingFactory(individualBooking__user=user)
+    BookingFactory(user=user)
 
     update_external_user(user)
 
@@ -94,18 +94,16 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         subcategoryId=subcategories.SEANCE_CINE.id,
         extraData={"genres": ["THRILLER"]},
     )
-    b1 = IndividualBookingFactory(
-        individualBooking__user=user, amount=10, dateCreated=datetime(2022, 12, 6, 10), stock__offer=offer
-    )
-    b2 = IndividualBookingFactory(
-        individualBooking__user=user,
+    b1 = BookingFactory(user=user, amount=10, dateCreated=datetime(2022, 12, 6, 10), stock__offer=offer)
+    b2 = BookingFactory(
+        user=user,
         amount=10,
         dateCreated=datetime(2022, 12, 6, 11),
         dateUsed=datetime(2022, 12, 7),
         stock__offer=offer,
     )
-    IndividualBookingFactory(
-        individualBooking__user=user, amount=100, dateCreated=datetime(2022, 12, 6, 12), status=BookingStatus.CANCELLED
+    BookingFactory(
+        user=user, amount=100, dateCreated=datetime(2022, 12, 6, 12), status=BookingStatus.CANCELLED
     )  # should be ignored
 
     last_date_created = max(booking.dateCreated for booking in [b1, b2])
@@ -232,15 +230,9 @@ def test_get_user_attributes_beneficiary_because_of_credit():
     offer1 = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
     offer2 = OfferFactory(venue=offer1.venue)
     offer3 = OfferFactory()
-    IndividualBookingFactory(
-        individualBooking__user=user, amount=100, dateCreated=datetime(2022, 12, 6, 11), stock__offer=offer1
-    )
-    IndividualBookingFactory(
-        individualBooking__user=user, amount=120, dateCreated=datetime(2022, 12, 6, 12), stock__offer=offer2
-    )
-    last_booking = IndividualBookingFactory(
-        individualBooking__user=user, amount=80, dateCreated=datetime(2022, 12, 6, 13), stock__offer=offer3
-    )
+    BookingFactory(user=user, amount=100, dateCreated=datetime(2022, 12, 6, 11), stock__offer=offer1)
+    BookingFactory(user=user, amount=120, dateCreated=datetime(2022, 12, 6, 12), stock__offer=offer2)
+    last_booking = BookingFactory(user=user, amount=80, dateCreated=datetime(2022, 12, 6, 13), stock__offer=offer3)
 
     with assert_no_duplicated_queries():
         attributes = get_user_attributes(user)
@@ -302,9 +294,7 @@ def test_get_user_attributes_underage_beneficiary_before_18(credit_spent: bool):
 
     if credit_spent:
         offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
-        IndividualBookingFactory(
-            individualBooking__user=user, amount=finance_conf.GRANTED_DEPOSIT_AMOUNT_17, stock__offer=offer
-        )
+        BookingFactory(user=user, amount=finance_conf.GRANTED_DEPOSIT_AMOUNT_17, stock__offer=offer)
 
     # Before 18 years old
     user = User.query.get(user.id)
@@ -420,9 +410,9 @@ def test_get_bookings_categories_and_subcategories():
         most_booked_subcategory=None,
     )
 
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer)
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer)
-    CancelledIndividualBookingFactory(individualBooking__user=user)
+    BookingFactory(user=user, stock__offer=offer)
+    BookingFactory(user=user, stock__offer=offer)
+    CancelledBookingFactory(user=user)
 
     assert get_bookings_categories_and_subcategories(get_user_bookings(user)) == BookingsAttributes(
         booking_categories=["FILM"],
@@ -434,11 +424,11 @@ def test_get_bookings_categories_and_subcategories():
 def test_get_bookings_categories_and_subcategories_most_booked():
     user = BeneficiaryGrant18Factory()
     offer1 = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1)
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1)
-    CancelledIndividualBookingFactory(individualBooking__user=user)
+    BookingFactory(user=user, stock__offer=offer1)
+    BookingFactory(user=user, stock__offer=offer1)
+    CancelledBookingFactory(user=user)
     offer2 = OfferFactory(subcategoryId=subcategories.CINE_PLEIN_AIR.id)
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2)
+    BookingFactory(user=user, stock__offer=offer2)
 
     booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
 
@@ -453,12 +443,12 @@ def test_get_bookings_categories_and_subcategories_most_booked():
 def test_get_bookings_categories_and_subcategories_most_booked_on_price():
     user = BeneficiaryGrant18Factory()
     offer1 = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1, stock__price=15.00)
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1, stock__price=15.00)
-    CancelledIndividualBookingFactory(individualBooking__user=user)
+    BookingFactory(user=user, stock__offer=offer1, stock__price=15.00)
+    BookingFactory(user=user, stock__offer=offer1, stock__price=15.00)
+    CancelledBookingFactory(user=user)
     offer2 = OfferFactory(subcategoryId=subcategories.CINE_PLEIN_AIR.id)
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
+    BookingFactory(user=user, stock__offer=offer2, stock__price=8.00)
+    BookingFactory(user=user, stock__offer=offer2, stock__price=8.00)
 
     booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
 
@@ -473,15 +463,15 @@ def test_get_bookings_categories_and_subcategories_most_booked_on_price():
 def test_get_bookings_categories_and_subcategories_most_booked_on_count():
     user = BeneficiaryGrant18Factory()
     offer1 = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1, stock__price=15.00)
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1, stock__price=15.00)
-    CancelledIndividualBookingFactory(individualBooking__user=user)
-    offer2 = OfferFactory(subcategoryId=subcategories.CINE_PLEIN_AIR.id, extraData={"genres": ["COMEDY"]})
+    BookingFactory(user=user, stock__offer=offer1, stock__price=15.00)
+    BookingFactory(user=user, stock__offer=offer1, stock__price=15.00)
+    CancelledBookingFactory(user=user)
+    offer2 = OfferFactory(subcategoryId=subcategories.CINE_PLEIN_AIR.id)
     offer3 = OfferFactory(subcategoryId=subcategories.CINE_PLEIN_AIR.id, extraData={"genres": ["DRAMA", "HISTORICAL"]})
     offer4 = OfferFactory(subcategoryId=subcategories.CINE_PLEIN_AIR.id, extraData={"genres": ["DRAMA", "THRILLER"]})
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer3, stock__price=8.00)
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer4, stock__price=8.00)
+    BookingFactory(user=user, stock__offer=offer2, stock__price=8.00)
+    BookingFactory(user=user, stock__offer=offer3, stock__price=8.00)
+    BookingFactory(user=user, stock__offer=offer4, stock__price=8.00)
 
     booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
 
@@ -496,19 +486,19 @@ def test_get_bookings_categories_and_subcategories_most_booked_on_count():
 def test_get_bookings_categories_and_subcategories_music_first():
     user = BeneficiaryGrant18Factory()
     offer1 = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1, stock__price=15.00)
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1, stock__price=15.00)
-    CancelledIndividualBookingFactory(individualBooking__user=user)
+    BookingFactory(user=user, stock__offer=offer1, stock__price=15.00)
+    BookingFactory(user=user, stock__offer=offer1, stock__price=15.00)
+    CancelledBookingFactory(user=user)
     offer2 = OfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"musicType": "600"})
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=10.00)
+    BookingFactory(user=user, stock__offer=offer2, stock__price=10.00)
     offer3 = OfferFactory(subcategoryId=subcategories.TELECHARGEMENT_MUSIQUE.id, extraData={"musicType": "800"})
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer3, stock__price=5.00)
+    BookingFactory(user=user, stock__offer=offer3, stock__price=5.00)
     offer4 = OfferFactory(subcategoryId=subcategories.CAPTATION_MUSIQUE.id, extraData={"musicType": "900"})
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer4, stock__price=12.00)
+    BookingFactory(user=user, stock__offer=offer4, stock__price=12.00)
     offer5 = OfferFactory(subcategoryId=subcategories.CONCERT.id, extraData={"musicType": "800"})
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer5, stock__price=35.00)
+    BookingFactory(user=user, stock__offer=offer5, stock__price=35.00)
     offer6 = OfferFactory(subcategoryId=subcategories.EVENEMENT_MUSIQUE.id, extraData={"musicType": "800"})
-    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer6, stock__price=25.00)
+    BookingFactory(user=user, stock__offer=offer6, stock__price=25.00)
 
     booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
 

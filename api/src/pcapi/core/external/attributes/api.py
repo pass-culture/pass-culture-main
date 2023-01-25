@@ -322,12 +322,9 @@ def get_booking_attributes_2022(
 
 def get_user_bookings(user: users_models.User) -> List[bookings_models.Booking]:
     return (
-        bookings_models.Booking.query.join(
-            bookings_models.IndividualBooking,
-            bookings_models.Booking.individualBookingId == bookings_models.IndividualBooking.id,
+        bookings_models.Booking.query.options(
+            joinedload(bookings_models.Booking.venue).load_only(offerers_models.Venue.isVirtual)
         )
-        .options(joinedload(bookings_models.Booking.individualBooking))
-        .options(joinedload(bookings_models.Booking.venue).load_only(offerers_models.Venue.isVirtual))
         .options(
             joinedload(bookings_models.Booking.stock)
             .joinedload(offers_models.Stock.offer)
@@ -340,7 +337,7 @@ def get_user_bookings(user: users_models.User) -> List[bookings_models.Booking]:
             )
         )
         .filter(
-            bookings_models.IndividualBooking.userId == user.id,
+            bookings_models.Booking.userId == user.id,
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
         )
         .order_by(db.desc(bookings_models.Booking.dateCreated))

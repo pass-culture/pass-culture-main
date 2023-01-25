@@ -156,7 +156,7 @@ def test_change_venue_provider():
 
 class SynchronizeStocksTest:
     @pytest.mark.usefixtures("db_session")
-    @freeze_time("2020-10-15 09:00:00")
+    @freeze_time("2022-10-15 09:00:00")
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_execution(self, mock_async_index_offer_ids):
         # Given

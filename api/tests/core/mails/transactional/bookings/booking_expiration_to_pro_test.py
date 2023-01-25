@@ -14,10 +14,10 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class SendExpiredBookingsRecapEmailToOffererTest:
     def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app):
         offerer = offerers_factories.OffererFactory()
-        expired_today_dvd_booking = bookings_factories.IndividualBookingFactory(
+        expired_today_dvd_booking = bookings_factories.BookingFactory(
             stock__offer__bookingEmail="offerer.booking@example.com"
         )
-        expired_today_cd_booking = bookings_factories.IndividualBookingFactory(
+        expired_today_cd_booking = bookings_factories.BookingFactory(
             stock__offer__bookingEmail="offerer.booking@example.com"
         )
 
@@ -30,12 +30,12 @@ class SendExpiredBookingsRecapEmailToOffererTest:
 
     def test_should_send_two_emails_to_offerer_when_expired_books_bookings_and_other_bookings_cancelled(self):
         offerer = offerers_factories.OffererFactory()
-        expired_today_dvd_booking = bookings_factories.IndividualBookingFactory(
+        expired_today_dvd_booking = bookings_factories.BookingFactory(
             stock__offer__name="Intouchables",
             stock__offer__bookingEmail="offerer.booking@example.com",
             stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
-        expired_today_book_booking = bookings_factories.IndividualBookingFactory(
+        expired_today_book_booking = bookings_factories.BookingFactory(
             stock__offer__name="Les misérables",
             stock__offer__bookingEmail="offerer.booking@example.com",
             stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,

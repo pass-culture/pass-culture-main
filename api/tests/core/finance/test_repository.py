@@ -160,7 +160,7 @@ class GetInvoicesQueryTest:
 
 
 def test_has_reimbursement():
-    booking = bookings_factories.UsedIndividualBookingFactory()
+    booking = bookings_factories.UsedBookingFactory()
     assert not repository.has_reimbursement(booking)
 
     pricing = factories.PricingFactory(booking=booking, status=models.PricingStatus.VALIDATED)
@@ -262,11 +262,11 @@ class FindAllOffererPaymentsTest:
         # Given
         stock = offers_factories.ThingStockFactory()
         offerer = stock.offer.venue.managingOfferer
-        booking1 = bookings_factories.UsedIndividualBookingFactory(
+        booking1 = bookings_factories.UsedBookingFactory(
             stock=stock,
             token="TOKEN1",
         )
-        booking2 = bookings_factories.UsedIndividualBookingFactory(
+        booking2 = bookings_factories.UsedBookingFactory(
             stock=stock,
             token="TOKEN2",
         )
@@ -382,7 +382,7 @@ class FindAllOffererPaymentsTest:
         # automatically be created by the Venue factory when linking a
         # reimbursement point.
         factories.BankInformationFactory(venue=stock.offer.venue, iban="CF13QSDFGH456789")
-        booking = bookings_factories.UsedIndividualBookingFactory(
+        booking = bookings_factories.UsedBookingFactory(
             stock=stock,
             token="ABCDEF",
         )

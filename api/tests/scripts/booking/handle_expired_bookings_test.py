@@ -23,19 +23,15 @@ from pcapi.scripts.booking import handle_expired_bookings
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class CancelExpiredIndividualBookingsTest:
+class CancelExpiredBookingsTest:
     def test_should_cancel_old_thing_that_can_expire_booking(self, app) -> None:
         now = datetime.utcnow()
         eleven_days_ago = now - timedelta(days=11)
         two_months_ago = now - timedelta(days=60)
         book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        old_book_booking = booking_factories.IndividualBookingFactory(
-            stock__offer__product=book, dateCreated=eleven_days_ago
-        )
+        old_book_booking = booking_factories.BookingFactory(stock__offer__product=book, dateCreated=eleven_days_ago)
         dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        old_dvd_booking = booking_factories.IndividualBookingFactory(
-            stock__offer__product=dvd, dateCreated=two_months_ago
-        )
+        old_dvd_booking = booking_factories.BookingFactory(stock__offer__product=dvd, dateCreated=two_months_ago)
 
         handle_expired_bookings.cancel_expired_individual_bookings()
 
@@ -90,7 +86,7 @@ class CancelExpiredIndividualBookingsTest:
 
     def should_not_update_cancelled_old_thing_that_can_expire_booking(self, app) -> None:
         book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        old_book_booking = booking_factories.CancelledIndividualBookingFactory(stock__offer__product=book)
+        old_book_booking = booking_factories.CancelledBookingFactory(stock__offer__product=book)
         initial_cancellation_date = old_book_booking.cancellationDate
 
         handle_expired_bookings.cancel_expired_individual_bookings()
@@ -105,17 +101,11 @@ class CancelExpiredIndividualBookingsTest:
         guitar = ProductFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
         )
-        old_guitar_booking = booking_factories.IndividualBookingFactory(
-            stock__offer__product=guitar, dateCreated=two_months_ago
-        )
+        old_guitar_booking = booking_factories.BookingFactory(stock__offer__product=guitar, dateCreated=two_months_ago)
         disc = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
-        old_disc_booking = booking_factories.IndividualBookingFactory(
-            stock__offer__product=disc, dateCreated=two_months_ago
-        )
+        old_disc_booking = booking_factories.BookingFactory(stock__offer__product=disc, dateCreated=two_months_ago)
         vod = ProductFactory(subcategoryId=subcategories.VOD.id)
-        old_vod_booking = booking_factories.IndividualBookingFactory(
-            stock__offer__product=vod, dateCreated=two_months_ago
-        )
+        old_vod_booking = booking_factories.BookingFactory(stock__offer__product=vod, dateCreated=two_months_ago)
 
         handle_expired_bookings.cancel_expired_individual_bookings()
 
@@ -137,12 +127,12 @@ class CancelExpiredIndividualBookingsTest:
         two_months_ago = now - timedelta(days=60)
 
         dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        expired_individual_booking = booking_factories.IndividualBookingFactory(
+        expired_individual_booking = booking_factories.BookingFactory(
             stock__offer__product=dvd, dateCreated=two_months_ago
         )
 
         book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        book_individual_recent_booking = booking_factories.IndividualBookingFactory(stock__offer__product=book)
+        book_individual_recent_booking = booking_factories.BookingFactory(stock__offer__product=book)
 
         # When
         handle_expired_bookings.handle_expired_bookings()
@@ -155,9 +145,7 @@ class CancelExpiredIndividualBookingsTest:
         now = datetime.utcnow()
         two_months_ago = now - timedelta(days=60)
         book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        booking_factories.IndividualBookingFactory.create_batch(
-            size=10, stock__offer__product=book, dateCreated=two_months_ago
-        )
+        booking_factories.BookingFactory.create_batch(size=10, stock__offer__product=book, dateCreated=two_months_ago)
         n_queries = 1  # select initial booking ids
         n_queries += 1  # release savepoint/COMMIT
         n_queries += 4 * (
@@ -263,19 +251,19 @@ class NotifyUsersOfExpiredBookingsTest:
         long_ago = now - timedelta(days=31)
         very_long_ago = now - timedelta(days=32)
         dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        expired_today_dvd_booking = booking_factories.CancelledIndividualBookingFactory(
+        expired_today_dvd_booking = booking_factories.CancelledBookingFactory(
             stock__offer__product=dvd,
             dateCreated=long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
-        expired_today_cd_booking = booking_factories.CancelledIndividualBookingFactory(
+        expired_today_cd_booking = booking_factories.CancelledBookingFactory(
             stock__offer__product=cd,
             dateCreated=long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         painting = ProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
-        booking_factories.CancelledIndividualBookingFactory(
+        booking_factories.CancelledBookingFactory(
             stock__offer__product=painting,
             dateCreated=very_long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
@@ -290,11 +278,11 @@ class NotifyUsersOfExpiredBookingsTest:
             (outbox[1].sent_data["To"], outbox[1].sent_data["params"]["BOOKINGS"][0]["offer_name"]),
         }
 
-        dvd_user_email = expired_today_dvd_booking.individualBooking.user.email
-        dvd_offer_name = expired_today_dvd_booking.individualBooking.booking.stock.offer.name
+        dvd_user_email = expired_today_dvd_booking.user.email
+        dvd_offer_name = expired_today_dvd_booking.stock.offer.name
 
-        cd_user_email = expired_today_cd_booking.individualBooking.user.email
-        cd_offer_name = expired_today_cd_booking.individualBooking.booking.stock.offer.name
+        cd_user_email = expired_today_cd_booking.user.email
+        cd_offer_name = expired_today_cd_booking.stock.offer.name
 
         assert email_recaps == {(dvd_user_email, dvd_offer_name), (cd_user_email, cd_offer_name)}
 
@@ -307,19 +295,19 @@ class NotifyOfferersOfExpiredBookingsTest:
         long_ago = now - timedelta(days=31)
         very_long_ago = now - timedelta(days=32)
         dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        expired_today_dvd_booking = booking_factories.CancelledIndividualBookingFactory(
+        expired_today_dvd_booking = booking_factories.CancelledBookingFactory(
             stock__offer__product=dvd,
             dateCreated=long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
-        expired_today_cd_booking = booking_factories.CancelledIndividualBookingFactory(
+        expired_today_cd_booking = booking_factories.CancelledBookingFactory(
             stock__offer__product=cd,
             dateCreated=long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         painting = ProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
-        _expired_yesterday_booking = booking_factories.CancelledIndividualBookingFactory(
+        _expired_yesterday_booking = booking_factories.CancelledBookingFactory(
             stock__offer__product=painting,
             dateCreated=very_long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
@@ -331,11 +319,11 @@ class NotifyOfferersOfExpiredBookingsTest:
         assert mocked_send_email_recap.call_count == 2
         assert mocked_send_email_recap.call_args_list[0][0] == (
             expired_today_dvd_booking.offerer,
-            [expired_today_dvd_booking.individualBooking.booking],
+            [expired_today_dvd_booking],
         )
         assert mocked_send_email_recap.call_args_list[1][0] == (
             expired_today_cd_booking.offerer,
-            [expired_today_cd_booking.individualBooking.booking],
+            [expired_today_cd_booking],
         )
 
     @freeze_time("2022-11-17 15:00:00")

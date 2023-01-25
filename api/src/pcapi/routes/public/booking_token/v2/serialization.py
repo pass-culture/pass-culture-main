@@ -63,11 +63,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
 
     extra_data = booking.stock.offer.extraData or {}
 
-    birth_date = (
-        isoformat(booking.individualBooking.user.birth_date)  # type: ignore [union-attr]
-        if booking.individualBooking.user.birth_date  # type: ignore [union-attr]
-        else None
-    )
+    birth_date = isoformat(booking.user.birth_date) if booking.user.birth_date else None
     return GetBookingResponse(
         bookingId=humanize(booking.id),
         dateOfBirth=birth_date,
@@ -82,7 +78,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         publicOfferId=humanize(booking.stock.offer.id),
         offerName=booking.stock.offer.product.name,
         offerType=BookingOfferType.EVENEMENT if booking.stock.offer.isEvent else BookingOfferType.EVENEMENT,
-        phoneNumber=booking.individualBooking.user.phoneNumber,  # type: ignore [union-attr]
+        phoneNumber=booking.user.phoneNumber,
         price=booking.amount,
         quantity=booking.quantity,
         theater=extra_data.get("theater", ""),

@@ -117,10 +117,7 @@ def notify_users_of_expired_individual_bookings(expired_on: datetime.date = None
         user = User.query.get(user_id)
         transactional_mails.send_expired_bookings_to_beneficiary_email(
             user,
-            [
-                individual_booking.booking
-                for individual_booking in bookings_repository.get_expired_individual_bookings_for_user(user)
-            ],
+            bookings_repository.get_expired_individual_bookings_for_user(user),
         )
         notified_users_str.append(user.id)
 
@@ -138,19 +135,19 @@ def notify_offerers_of_expired_individual_bookings(expired_on: datetime.date = N
     logger.info("[notify_offerers_of_expired_bookings] Start")
 
     expired_individual_bookings_grouped_by_offerer = {
-        offerer: list(individual_bookings)
-        for offerer, individual_bookings in groupby(
+        offerer: list(bookings)
+        for offerer, bookings in groupby(
             bookings_repository.find_expired_individual_bookings_ordered_by_offerer(expired_on),
-            attrgetter("booking.offerer"),
+            attrgetter("offerer"),
         )
     }
 
     notified_offerers = []
 
-    for offerer, individual_bookings in expired_individual_bookings_grouped_by_offerer.items():
+    for offerer, bookings in expired_individual_bookings_grouped_by_offerer.items():
         transactional_mails.send_bookings_expiration_to_pro_email(
             offerer,
-            [individual_booking.booking for individual_booking in individual_bookings],
+            bookings,
         )
         notified_offerers.append(offerer)
 

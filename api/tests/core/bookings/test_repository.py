@@ -49,9 +49,9 @@ def test_find_all_ongoing_bookings(app):
     # Given
     user = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.StockFactory(price=0, quantity=10)
-    bookings_factories.CancelledIndividualBookingFactory(individualBooking__user=user, stock=stock)
-    bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, stock=stock)
-    ongoing_booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user, stock=stock)
+    bookings_factories.CancelledBookingFactory(user=user, stock=stock)
+    bookings_factories.UsedBookingFactory(user=user, stock=stock)
+    ongoing_booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
     # When
     all_ongoing_bookings = booking_repository.find_ongoing_bookings_by_stock(stock.id)
@@ -64,9 +64,9 @@ def test_find_not_cancelled_bookings_by_stock(app):
     # Given
     user = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.ThingStockFactory(price=0)
-    bookings_factories.CancelledIndividualBookingFactory(individualBooking__user=user, stock=stock)
-    used_booking = bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, stock=stock)
-    not_cancelled_booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user, stock=stock)
+    bookings_factories.CancelledBookingFactory(user=user, stock=stock)
+    used_booking = bookings_factories.UsedBookingFactory(user=user, stock=stock)
+    not_cancelled_booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
     # When
     all_not_cancelled_bookings = booking_repository.find_not_cancelled_bookings_by_stock(stock)
@@ -85,7 +85,7 @@ class FindByTest:
 
             beneficiary = users_factories.BeneficiaryGrant18Factory()
             stock = offers_factories.ThingStockFactory(price=0)
-            booking = bookings_factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock=stock)
+            booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
             # when
             result = booking_repository.find_by(booking.token)
@@ -101,7 +101,7 @@ class FindByTest:
 
             beneficiary = users_factories.BeneficiaryGrant18Factory()
             stock = offers_factories.ThingStockFactory(price=0)
-            bookings_factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock=stock)
+            bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
             # when
             with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
@@ -113,19 +113,17 @@ class FindByTest:
     class ByTokenAndEmailTest:
         def test_returns_booking_if_token_and_email_are_known(self, app: fixture):
             # given
-            booking = bookings_factories.IndividualBookingFactory()
+            booking = bookings_factories.BookingFactory()
 
             # when
-            result = booking_repository.find_by(booking.token, email=booking.individualBooking.user.email)
+            result = booking_repository.find_by(booking.token, email=booking.user.email)
 
             # then
             assert result.id == booking.id
 
         def test_returns_booking_if_token_is_known_and_email_is_known_case_insensitively(self, app: fixture):
             # given
-            booking = bookings_factories.IndividualBookingFactory(
-                individualBooking__user__email="jeanne.doux@example.com"
-            )
+            booking = bookings_factories.BookingFactory(user__email="jeanne.doux@example.com")
 
             # when
             result = booking_repository.find_by(booking.token, email="JeaNNe.DouX@exAMple.cOm")
@@ -135,7 +133,7 @@ class FindByTest:
 
         def test_returns_booking_if_token_is_known_and_email_is_known_with_trailing_spaces(self, app: fixture):
             # given
-            booking = bookings_factories.IndividualBookingFactory(individualBooking__user__email="user@example.com")
+            booking = bookings_factories.BookingFactory(user__email="user@example.com")
 
             # when
             result = booking_repository.find_by(booking.token, email="   user@example.com  ")
@@ -145,7 +143,7 @@ class FindByTest:
 
         def test_raises_an_exception_if_token_is_known_but_email_is_unknown(self, app: fixture):
             # given
-            booking = bookings_factories.IndividualBookingFactory()
+            booking = bookings_factories.BookingFactory()
 
             # when
             with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
@@ -157,7 +155,7 @@ class FindByTest:
     class ByTokenAndEmailAndOfferIdTest:
         def test_returns_booking_if_token_and_email_and_offer_id_for_thing_are_known(self, app: fixture):
             # given
-            booking = bookings_factories.IndividualBookingFactory(stock=offers_factories.ThingStockFactory())
+            booking = bookings_factories.BookingFactory(stock=offers_factories.ThingStockFactory())
 
             # when
             result = booking_repository.find_by(booking.token, email=booking.email, offer_id=booking.stock.offer.id)
@@ -167,7 +165,7 @@ class FindByTest:
 
         def test_returns_booking_if_token_and_email_and_offer_id_for_event_are_known(self, app: fixture):
             # given
-            booking = bookings_factories.IndividualBookingFactory(stock=offers_factories.EventStockFactory())
+            booking = bookings_factories.BookingFactory(stock=offers_factories.EventStockFactory())
 
             # when
             result = booking_repository.find_by(booking.token, email=booking.email, offer_id=booking.stock.offer.id)
@@ -177,7 +175,7 @@ class FindByTest:
 
         def test_returns_booking_if_token_and_email_are_known_but_offer_id_is_unknown(self, app: fixture):
             # given
-            booking = bookings_factories.IndividualBookingFactory()
+            booking = bookings_factories.BookingFactory()
 
             # when
             with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
@@ -190,7 +188,7 @@ class FindByTest:
 class FindByTokenTest:
     def test_should_return_a_booking_when_valid_token_is_given(self, app: fixture):
         # Given
-        valid_booking = bookings_factories.UsedIndividualBookingFactory()
+        valid_booking = bookings_factories.UsedBookingFactory()
 
         # When
         booking = booking_repository.find_used_by_token(token=valid_booking.token)
@@ -201,7 +199,7 @@ class FindByTokenTest:
     def test_should_return_nothing_when_invalid_token_is_given(self, app: fixture):
         # Given
         invalid_token = "fake_token"
-        bookings_factories.UsedIndividualBookingFactory()
+        bookings_factories.UsedBookingFactory()
 
         # When
         booking = booking_repository.find_used_by_token(token=invalid_token)
@@ -211,7 +209,7 @@ class FindByTokenTest:
 
     def test_should_return_nothing_when_valid_token_is_given_but_its_not_used(self, app: fixture):
         # Given
-        valid_booking = bookings_factories.IndividualBookingFactory()
+        valid_booking = bookings_factories.BookingFactory()
 
         # When
         booking = booking_repository.find_used_by_token(token=valid_booking.token)
@@ -240,8 +238,8 @@ class FindByProUserTest:
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
-        bookings_factories.UsedIndividualBookingFactory(
-            individualBooking__user=beneficiary,
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
             stock=stock,
             dateCreated=booking_date,
             token="ABCDEF",
@@ -282,13 +280,13 @@ class FindByProUserTest:
 
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
 
-        bookings_factories.UsedIndividualBookingFactory(
+        bookings_factories.UsedBookingFactory(
             stock=stock, quantity=1, dateCreated=booking_date, dateUsed=(booking_date + timedelta(days=1))
         )
-        used_booking_2 = bookings_factories.UsedIndividualBookingFactory(
+        used_booking_2 = bookings_factories.UsedBookingFactory(
             stock=stock, quantity=1, dateCreated=booking_date, dateUsed=(booking_date + timedelta(days=4))
         )
-        bookings_factories.UsedIndividualBookingFactory(
+        bookings_factories.UsedBookingFactory(
             stock=stock, quantity=1, dateCreated=booking_date, dateUsed=(booking_date + timedelta(days=8))
         )
 
@@ -310,13 +308,13 @@ class FindByProUserTest:
 
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
 
-        bookings_factories.UsedIndividualBookingFactory(
+        bookings_factories.UsedBookingFactory(
             stock=stock, quantity=1, dateCreated=booking_date, reimbursementDate=(booking_date + timedelta(days=1))
         )
-        reimbursed_booking_1 = bookings_factories.UsedIndividualBookingFactory(
+        reimbursed_booking_1 = bookings_factories.UsedBookingFactory(
             stock=stock, quantity=1, dateCreated=booking_date, reimbursementDate=(booking_date + timedelta(days=2))
         )
-        bookings_factories.UsedIndividualBookingFactory(
+        bookings_factories.UsedBookingFactory(
             stock=stock, quantity=1, dateCreated=booking_date, reimbursementDate=(booking_date + timedelta(days=4))
         )
 
@@ -342,7 +340,7 @@ class FindByProUserTest:
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        bookings_factories.IndividualBookingFactory(user=beneficiary, stock=stock, quantity=2)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -364,7 +362,7 @@ class FindByProUserTest:
         offerers_factories.UserOffererFactory(offerer=offerer)
         offerers_factories.UserOffererFactory(offerer=offerer)
 
-        bookings_factories.IndividualBookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -392,8 +390,8 @@ class FindByProUserTest:
             offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
         )
         yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.IndividualBookingFactory(
-            individualBooking__user=beneficiary,
+        bookings_factories.BookingFactory(
+            user=beneficiary,
             stock=stock,
             dateCreated=yesterday,
             token="ABCDEF",
@@ -441,7 +439,7 @@ class FindByProUserTest:
             offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
         )
         more_than_two_days_ago = datetime.utcnow() - timedelta(days=3)
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             user=beneficiary, stock=stock, dateCreated=more_than_two_days_ago, token="ABCDEF"
         )
 
@@ -469,7 +467,7 @@ class FindByProUserTest:
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=5)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.CancelledIndividualBookingFactory(
+        bookings_factories.CancelledBookingFactory(
             user=beneficiary,
             stock=stock,
             dateCreated=yesterday,
@@ -502,7 +500,7 @@ class FindByProUserTest:
         offer = offers_factories.EventOfferFactory(venue=venue, product=product)
         stock = offers_factories.EventStockFactory(offer=offer, price=5)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.UsedIndividualBookingFactory(
+        bookings_factories.UsedBookingFactory(
             user=beneficiary,
             stock=stock,
             dateCreated=yesterday,
@@ -538,7 +536,7 @@ class FindByProUserTest:
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         today = datetime.utcnow()
-        bookings_factories.IndividualBookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
 
         offerer2 = offerers_factories.OffererFactory(siren="8765432")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer2)
@@ -546,7 +544,7 @@ class FindByProUserTest:
         venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="8765432098765")
         offer2 = offers_factories.ThingOfferFactory(venue=venue2)
         stock2 = offers_factories.ThingStockFactory(offer=offer2, price=0)
-        bookings_factories.IndividualBookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -568,10 +566,8 @@ class FindByProUserTest:
         stock = offers_factories.EventStockFactory(offer=offer, price=0)
         today = datetime.utcnow()
         yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.IndividualBookingFactory(user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCD")
-        booking2 = bookings_factories.IndividualBookingFactory(
-            user=beneficiary, stock=stock, dateCreated=today, token="FGHI"
-        )
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCD")
+        booking2 = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -596,7 +592,7 @@ class FindByProUserTest:
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        bookings_factories.IndividualBookingFactory(user=beneficiary, stock=stock)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -617,9 +613,7 @@ class FindByProUserTest:
         offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
         stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
         today = datetime.utcnow()
-        booking = bookings_factories.IndividualBookingFactory(
-            user=beneficiary, stock=stock, dateCreated=today, token="FGHI"
-        )
+        booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -644,7 +638,7 @@ class FindByProUserTest:
         offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
         stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
         today = datetime.utcnow()
-        booking = bookings_factories.IndividualBookingFactory(
+        booking = bookings_factories.BookingFactory(
             user=beneficiary, stock=stock, dateCreated=today, token="FGHI", quantity=2
         )
 
@@ -673,7 +667,7 @@ class FindByProUserTest:
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
-        bookings_factories.UsedIndividualBookingFactory(
+        bookings_factories.UsedBookingFactory(
             user=beneficiary,
             stock=stock,
             dateCreated=booking_date,
@@ -702,7 +696,7 @@ class FindByProUserTest:
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
-        bookings_factories.UsedIndividualBookingFactory(
+        bookings_factories.UsedBookingFactory(
             user=beneficiary,
             stock=stock,
             dateCreated=booking_date,
@@ -723,10 +717,8 @@ class FindByProUserTest:
         pro_user = users_factories.ProFactory()
         user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
 
-        bookings_factories.IndividualBookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
-        booking_two = bookings_factories.IndividualBookingFactory(
-            stock__offer__venue__managingOfferer=user_offerer.offerer
-        )
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
+        booking_two = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -746,15 +738,15 @@ class FindByProUserTest:
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         event_date = datetime(2020, 12, 24, 10, 30)
-        expected_booking = bookings_factories.IndividualBookingFactory(
+        expected_booking = bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=event_date, offer__venue__managingOfferer=user_offerer.offerer
             )
         )
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
         )
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
         )
 
@@ -782,7 +774,7 @@ class FindByProUserTest:
         stock_in_cayenne = offers_factories.EventStockFactory(
             offer=offer_in_cayenne, beginningDatetime=cayenne_event_datetime
         )
-        cayenne_booking = bookings_factories.IndividualBookingFactory(stock=stock_in_cayenne)
+        cayenne_booking = bookings_factories.BookingFactory(stock=stock_in_cayenne)
 
         offer_in_mayotte = offers_factories.OfferFactory(
             venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
@@ -791,7 +783,7 @@ class FindByProUserTest:
         stock_in_mayotte = offers_factories.EventStockFactory(
             offer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime
         )
-        mayotte_booking = bookings_factories.IndividualBookingFactory(stock=stock_in_mayotte)
+        mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -812,15 +804,15 @@ class FindByProUserTest:
         booking_beginning_period = datetime(2020, 12, 24, 10, 30).date()
         booking_ending_period = datetime(2020, 12, 26, 15, 00).date()
         booking_status_filter = BookingStatusFilter.BOOKED
-        expected_booking = bookings_factories.IndividualBookingFactory(
+        expected_booking = bookings_factories.BookingFactory(
             dateCreated=datetime(2020, 12, 26, 15, 30),
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
         )
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             dateCreated=datetime(2020, 12, 29, 15, 30),
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
         )
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             dateCreated=datetime(2020, 12, 22, 15, 30),
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
         )
@@ -852,7 +844,7 @@ class FindByProUserTest:
         stock_in_cayenne = offers_factories.EventStockFactory(
             offer=offer_in_cayenne,
         )
-        cayenne_booking = bookings_factories.IndividualBookingFactory(
+        cayenne_booking = bookings_factories.BookingFactory(
             stock=stock_in_cayenne, dateCreated=cayenne_booking_datetime
         )
 
@@ -863,7 +855,7 @@ class FindByProUserTest:
         stock_in_mayotte = offers_factories.EventStockFactory(
             offer=offer_in_mayotte,
         )
-        mayotte_booking = bookings_factories.IndividualBookingFactory(
+        mayotte_booking = bookings_factories.BookingFactory(
             stock=stock_in_mayotte, dateCreated=mayotte_booking_datetime
         )
 
@@ -882,7 +874,7 @@ class FindByProUserTest:
     def test_should_return_only_bookings_for_requested_offer_type(self, app: fixture):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             dateCreated=default_booking_date,
             stock__offer__venue__managingOfferer=user_offerer.offerer,
         )
@@ -1039,21 +1031,21 @@ class GetCsvReportTest:
 
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
 
-        bookings_factories.UsedIndividualBookingFactory(
+        bookings_factories.UsedBookingFactory(
             stock__offer__venue=venue,
             quantity=1,
             dateCreated=booking_date,
             dateUsed=(booking_date + timedelta(days=1)),
             stock__offer__name="Harry Potter Vol 1",
         )
-        bookings_factories.UsedIndividualBookingFactory(
+        bookings_factories.UsedBookingFactory(
             stock__offer__venue=venue,
             quantity=1,
             dateCreated=booking_date,
             dateUsed=(booking_date + timedelta(days=4)),
             stock__offer__name="Harry Potter Vol 2",
         )
-        bookings_factories.UsedIndividualBookingFactory(
+        bookings_factories.UsedBookingFactory(
             stock__offer__venue=venue,
             quantity=1,
             dateCreated=booking_date,
@@ -1079,21 +1071,21 @@ class GetCsvReportTest:
 
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
 
-        bookings_factories.UsedIndividualBookingFactory(
+        bookings_factories.UsedBookingFactory(
             stock__offer__venue=venue,
             quantity=1,
             dateCreated=booking_date,
             reimbursementDate=(booking_date + timedelta(days=1)),
             stock__offer__name="Harry Potter Vol 1",
         )
-        bookings_factories.UsedIndividualBookingFactory(
+        bookings_factories.UsedBookingFactory(
             stock__offer__venue=venue,
             quantity=1,
             dateCreated=booking_date,
             reimbursementDate=(booking_date + timedelta(days=2)),
             stock__offer__name="Harry Potter Vol 2",
         )
-        bookings_factories.UsedIndividualBookingFactory(
+        bookings_factories.UsedBookingFactory(
             stock__offer__venue=venue,
             quantity=1,
             dateCreated=booking_date,
@@ -1727,11 +1719,11 @@ class GetCsvReportTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
-        booking_1 = bookings_factories.IndividualBookingFactory(
+        booking_1 = bookings_factories.BookingFactory(
             stock__offer__venue=venue,
         )
 
-        booking_2 = bookings_factories.UsedIndividualBookingFactory(
+        booking_2 = bookings_factories.UsedBookingFactory(
             stock__offer__venue=venue,
         )
 
@@ -1759,7 +1751,7 @@ class GetCsvReportTest:
     def test_should_return_only_bookings_for_requested_offer_type(self, app: fixture):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             dateCreated=default_booking_date,
             stock__offer__venue__managingOfferer=user_offerer.offerer,
         )
@@ -1794,11 +1786,11 @@ class GetCsvReportTest:
             offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
             venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
-            bookings_factories.CancelledIndividualBookingFactory(
+            bookings_factories.CancelledBookingFactory(
                 stock__offer__venue=venue,
                 dateCreated=date_created,
             )
-            bookings_factories.IndividualBookingFactory(
+            bookings_factories.BookingFactory(
                 stock__offer__venue=venue,
                 dateCreated=date_created,
             )
@@ -1827,19 +1819,19 @@ class GetCsvReportTest:
             offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
             venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
-            bookings_factories.CancelledIndividualBookingFactory(
+            bookings_factories.CancelledBookingFactory(
                 stock__offer__venue=venue,
                 dateCreated=date_created,
             )
-            bookings_factories.IndividualBookingFactory(
+            bookings_factories.BookingFactory(
                 stock__offer__venue=venue,
                 dateCreated=date_created,
             )
-            bookings_factories.UsedIndividualBookingFactory(
+            bookings_factories.UsedBookingFactory(
                 stock__offer__venue=venue,
                 dateCreated=date_created,
             )
-            bookings_factories.UsedIndividualBookingFactory(
+            bookings_factories.UsedBookingFactory(
                 status=BookingStatus.REIMBURSED,
                 stock__offer__venue=venue,
                 dateCreated=date_created,
@@ -1870,19 +1862,19 @@ class GetCsvReportTest:
             offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
             venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             event_stock = offers_factories.EventStockFactory(beginningDatetime=event_date, offer__venue=venue)
-            bookings_factories.CancelledIndividualBookingFactory(
+            bookings_factories.CancelledBookingFactory(
                 stock=event_stock,
                 dateCreated=date_created,
             )
-            bookings_factories.IndividualBookingFactory(
+            bookings_factories.BookingFactory(
                 stock=event_stock,
                 dateCreated=date_created,
             )
-            bookings_factories.UsedIndividualBookingFactory(
+            bookings_factories.UsedBookingFactory(
                 stock=event_stock,
                 dateCreated=date_created,
             )
-            bookings_factories.UsedIndividualBookingFactory(
+            bookings_factories.UsedBookingFactory(
                 status=BookingStatus.REIMBURSED,
                 stock=event_stock,
                 dateCreated=date_created,
@@ -1995,20 +1987,20 @@ class FindSoonToBeExpiredBookingsTest:
         too_old_expired_creation_date = date.today() - timedelta(days=22)
         too_old_expired_creation_date = datetime.combine(too_old_expired_creation_date, time(12, 34, 17))
 
-        expected_booking = bookings_factories.IndividualBookingFactory(
+        expected_booking = bookings_factories.BookingFactory(
             dateCreated=expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         # offer type not expirable
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             dateCreated=expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
         )
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             dateCreated=non_expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             dateCreated=too_old_expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
@@ -2017,41 +2009,41 @@ class FindSoonToBeExpiredBookingsTest:
         expired_bookings = booking_repository.find_soon_to_be_expiring_individual_bookings_ordered_by_user().all()
 
         # Then
-        assert expired_bookings == [expected_booking.individualBooking]
+        assert expired_bookings == [expected_booking]
 
     def test_should_return_only_soon_to_be_expired_bookings_books_case(self):
         soon_expired_creation_date = datetime.combine(date.today() - timedelta(days=5), time(12, 34, 17))
         too_old_creation_date = datetime.combine(date.today() - timedelta(days=6), time(12, 34, 17))
         non_expired_creation_date = datetime.combine(date.today() - timedelta(days=4), time(12, 34, 17))
 
-        soon_expired_books_booking = bookings_factories.IndividualBookingFactory(
+        soon_expired_books_booking = bookings_factories.BookingFactory(
             dateCreated=soon_expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             dateCreated=soon_expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             dateCreated=too_old_creation_date,
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             dateCreated=non_expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
 
         assert booking_repository.find_soon_to_be_expiring_individual_bookings_ordered_by_user().all() == [
-            soon_expired_books_booking.individualBooking
+            soon_expired_books_booking
         ]
 
 
 class GetLegacyActiveBookingsQuantityForVenueTest:
     def test_return_bookings_quantity_for_venue(self):
         # Given
-        booking = bookings_factories.IndividualBookingFactory(quantity=2)
+        booking = bookings_factories.BookingFactory(quantity=2)
         venue = booking.venue
-        bookings_factories.IndividualBookingFactory(stock__offer__venue=venue)
+        bookings_factories.BookingFactory(stock__offer__venue=venue)
 
         # When
         active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
@@ -2071,14 +2063,12 @@ class GetLegacyActiveBookingsQuantityForVenueTest:
 
     def test_excludes_confirmed_used_or_cancelled_bookings(self):
         # Given
-        booking = bookings_factories.IndividualBookingFactory()
+        booking = bookings_factories.BookingFactory()
         venue = booking.venue
-        bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue)
-        bookings_factories.CancelledIndividualBookingFactory(stock__offer__venue=venue)
+        bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
+        bookings_factories.CancelledBookingFactory(stock__offer__venue=venue)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.IndividualBookingFactory(
-            cancellation_limit_date=yesterday, quantity=2, stock__offer__venue=venue
-        )
+        bookings_factories.BookingFactory(cancellation_limit_date=yesterday, quantity=2, stock__offer__venue=venue)
 
         # When
         active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
@@ -2088,10 +2078,10 @@ class GetLegacyActiveBookingsQuantityForVenueTest:
 
     def test_excludes_other_venues_bookings(self):
         # Given
-        booking = bookings_factories.IndividualBookingFactory()
+        booking = bookings_factories.BookingFactory()
         venue = booking.venue
         another_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        bookings_factories.IndividualBookingFactory(stock__offer__venue=another_venue)
+        bookings_factories.BookingFactory(stock__offer__venue=another_venue)
 
         # When
         active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
@@ -2103,9 +2093,9 @@ class GetLegacyActiveBookingsQuantityForVenueTest:
 class GetLegacyValidatedBookingsQuantityForVenueTest:
     def test_return_used_bookings_quantity_for_venue(self):
         # Given
-        booking = bookings_factories.UsedIndividualBookingFactory(quantity=2)
+        booking = bookings_factories.UsedBookingFactory(quantity=2)
         venue = booking.venue
-        bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue)
+        bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
 
         # When
         validated_bookings_quantity = booking_repository.get_validated_bookings_quantity_for_venue(venue.id)
@@ -2116,7 +2106,7 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
     def test_return_confirmed_bookings_quantity_for_venue(self):
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = bookings_factories.IndividualBookingFactory(cancellation_limit_date=yesterday, quantity=2)
+        booking = bookings_factories.BookingFactory(cancellation_limit_date=yesterday, quantity=2)
         venue = booking.venue
 
         # When
@@ -2137,10 +2127,10 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
 
     def test_excludes_unused_or_cancelled_bookings(self):
         # Given
-        booking = bookings_factories.UsedIndividualBookingFactory()
+        booking = bookings_factories.UsedBookingFactory()
         venue = booking.venue
-        bookings_factories.IndividualBookingFactory(stock__offer__venue=venue)
-        bookings_factories.CancelledIndividualBookingFactory(stock__offer__venue=venue)
+        bookings_factories.BookingFactory(stock__offer__venue=venue)
+        bookings_factories.CancelledBookingFactory(stock__offer__venue=venue)
 
         # When
         validated_bookings_quantity = booking_repository.get_validated_bookings_quantity_for_venue(venue.id)
@@ -2150,10 +2140,10 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
 
     def test_excludes_other_venues_bookings(self):
         # Given
-        booking = bookings_factories.UsedIndividualBookingFactory()
+        booking = bookings_factories.UsedBookingFactory()
         venue = booking.venue
         another_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=another_venue)
+        bookings_factories.UsedBookingFactory(stock__offer__venue=another_venue)
 
         # When
         validated_bookings_quantity = booking_repository.get_validated_bookings_quantity_for_venue(venue.id)
@@ -2174,18 +2164,12 @@ class GetOffersBookedByFraudulentUsersTest:
         offer_booked_by_non_fraudulent_users = offers_factories.OfferFactory()
         offer_booked_by_both = offers_factories.OfferFactory()
 
-        bookings_factories.IndividualBookingFactory(
-            individualBooking__user=fraudulent_beneficiary_user, stock__offer=offer_booked_by_fraudulent_users
+        bookings_factories.BookingFactory(
+            user=fraudulent_beneficiary_user, stock__offer=offer_booked_by_fraudulent_users
         )
-        bookings_factories.IndividualBookingFactory(
-            individualBooking__user=another_fraudulent_beneficiary_user, stock__offer=offer_booked_by_both
-        )
-        bookings_factories.IndividualBookingFactory(
-            individualBooking__user=beneficiary_user, stock__offer=offer_booked_by_both
-        )
-        bookings_factories.IndividualBookingFactory(
-            individualBooking__user=beneficiary_user, stock__offer=offer_booked_by_non_fraudulent_users
-        )
+        bookings_factories.BookingFactory(user=another_fraudulent_beneficiary_user, stock__offer=offer_booked_by_both)
+        bookings_factories.BookingFactory(user=beneficiary_user, stock__offer=offer_booked_by_both)
+        bookings_factories.BookingFactory(user=beneficiary_user, stock__offer=offer_booked_by_non_fraudulent_users)
 
         # When
         offers = booking_repository.find_offers_booked_by_beneficiaries(
@@ -2206,13 +2190,11 @@ class FindBookingsByFraudulentUsersTest:
         )
         beneficiary_user = users_factories.BeneficiaryGrant18Factory(email="jenesuispasunefraude@EXAmple.com")
 
-        booking_booked_by_fraudulent_user = bookings_factories.IndividualBookingFactory(
-            individualBooking__user=fraudulent_beneficiary_user
+        booking_booked_by_fraudulent_user = bookings_factories.BookingFactory(user=fraudulent_beneficiary_user)
+        another_booking_booked_by_fraudulent_user = bookings_factories.BookingFactory(
+            user=another_fraudulent_beneficiary_user
         )
-        another_booking_booked_by_fraudulent_user = bookings_factories.IndividualBookingFactory(
-            individualBooking__user=another_fraudulent_beneficiary_user
-        )
-        bookings_factories.IndividualBookingFactory(individualBooking__user=beneficiary_user, stock__price=1)
+        bookings_factories.BookingFactory(user=beneficiary_user, stock__price=1)
 
         # When
         bookings = booking_repository.find_cancellable_bookings_by_beneficiaries(
@@ -2230,25 +2212,23 @@ class FindExpiringBookingsTest:
             book_offer = offers_factories.OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
             movie_offer = offers_factories.OfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
 
-            movie_booking = bookings_factories.IndividualBookingFactory(
-                stock__offer=movie_offer, dateCreated=datetime.utcnow()
-            )
+            movie_booking = bookings_factories.BookingFactory(stock__offer=movie_offer, dateCreated=datetime.utcnow())
 
             frozen_time.move_to("2021-08-06 15:00:00")
-            book_booking_new_expiry_delay = bookings_factories.IndividualBookingFactory(
+            book_booking_new_expiry_delay = bookings_factories.BookingFactory(
                 stock__offer=book_offer, dateCreated=datetime.utcnow()
             )
-            bookings_factories.IndividualBookingFactory(stock__offer=movie_offer, dateCreated=datetime.utcnow())
+            bookings_factories.BookingFactory(stock__offer=movie_offer, dateCreated=datetime.utcnow())
 
             frozen_time.move_to("2021-08-17 17:00:00")
 
             bookings = booking_repository.find_expiring_individual_bookings_query().all()
-            assert bookings == [book_booking_new_expiry_delay.individualBooking]
+            assert bookings == [book_booking_new_expiry_delay]
 
             frozen_time.move_to("2021-09-01 17:00:00")
 
             bookings = booking_repository.find_expiring_individual_bookings_query().all()
-            assert set(bookings) == {book_booking_new_expiry_delay.individualBooking, movie_booking.individualBooking}
+            assert set(bookings) == {book_booking_new_expiry_delay, movie_booking}
 
 
 def test_get_deposit_booking():
@@ -2256,14 +2236,14 @@ def test_get_deposit_booking():
         user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
         # disable trigger because deposit.expirationDate > now() is False in database time
         db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
-        previous_deposit_booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
+        previous_deposit_booking = bookings_factories.BookingFactory(user=user)
         db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
 
     finance_api.create_deposit(user, "test", EligibilityType.AGE18)
 
-    current_deposit_booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
-    current_deposit_booking_2 = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
-    bookings_factories.IndividualBookingFactory(individualBooking__user=user, individualBooking__deposit=None, amount=0)
+    current_deposit_booking = bookings_factories.BookingFactory(user=user)
+    current_deposit_booking_2 = bookings_factories.BookingFactory(user=user)
+    bookings_factories.BookingFactory(user=user, deposit=None, amount=0)
 
     previous_deposit_id = user.deposits[0].id
     current_deposit_id = user.deposit.id
@@ -2285,10 +2265,10 @@ class SoonExpiringBookingsTest:
 
         bookings_factories.UsedBookingFactory(stock=stock)
         bookings_factories.CancelledBookingFactory(stock=stock)
-        booking = bookings_factories.IndividualBookingFactory(stock=stock)
+        booking = bookings_factories.BookingFactory(stock=stock)
 
         creation_date = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.IndividualBookingFactory(stock=stock, dateCreated=creation_date)
+        bookings_factories.BookingFactory(stock=stock, dateCreated=creation_date)
 
         remaining_days = (booking.expirationDate.date() - date.today()).days
 
@@ -2297,7 +2277,7 @@ class SoonExpiringBookingsTest:
 
     def test_no_unexpected_queries(self):
         stocks = offers_factories.ThingStockFactory.create_batch(5)
-        bookings = [bookings_factories.IndividualBookingFactory(stock=stock) for stock in stocks]
+        bookings = [bookings_factories.BookingFactory(stock=stock) for stock in stocks]
 
         remaining_days = (bookings[0].expirationDate.date() - date.today()).days
         with assert_no_duplicated_queries():
@@ -2307,7 +2287,7 @@ class SoonExpiringBookingsTest:
 class GetTomorrowEventOfferTest:
     def test_find_tomorrow_event_offer(self):
         tomorrow = datetime.utcnow() + timedelta(days=1)
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=tomorrow,
             )
@@ -2319,7 +2299,7 @@ class GetTomorrowEventOfferTest:
 
     def should_not_select_given_before_tomorrow_booking_event(self):
         yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=yesterday,
             )
@@ -2331,7 +2311,7 @@ class GetTomorrowEventOfferTest:
 
     def should_not_select_given_after_tomorrow_booking_event(self):
         after_tomorrow = datetime.utcnow() + timedelta(days=2)
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=after_tomorrow,
             )
@@ -2343,7 +2323,7 @@ class GetTomorrowEventOfferTest:
 
     def should_not_select_given_not_booking_event(self):
         tomorrow = datetime.utcnow() + timedelta(days=1)
-        bookings_factories.IndividualBookingFactory(stock__beginningDatetime=tomorrow)
+        bookings_factories.BookingFactory(stock__beginningDatetime=tomorrow)
 
         bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
 
@@ -2351,7 +2331,7 @@ class GetTomorrowEventOfferTest:
 
     def should_do_only_one_query(self):
         tomorrow = datetime.utcnow() + timedelta(days=1)
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=tomorrow,
             )
@@ -2364,7 +2344,7 @@ class GetTomorrowEventOfferTest:
 
     def should_not_select_digital_event(self):
         tomorrow = datetime.utcnow() + timedelta(days=1)
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=tomorrow,
                 offer__url="http://digitaloffer.pass",
@@ -2384,7 +2364,7 @@ class GetTomorrowEventOfferTest:
     )
     def should_select_not_digital_event(self, offer_url):
         tomorrow = datetime.utcnow() + timedelta(days=1)
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=tomorrow,
                 offer__url=offer_url,
@@ -2397,7 +2377,7 @@ class GetTomorrowEventOfferTest:
 
     def should_not_select_cancelled_booking(self):
         tomorrow = datetime.utcnow() + timedelta(days=1)
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=tomorrow,
             ),
@@ -2413,8 +2393,8 @@ class GetTomorrowEventOfferTest:
         stock = offers_factories.EventStockFactory(
             beginningDatetime=tomorrow,
         )
-        bookings_factories.IndividualBookingFactory(stock=stock)
-        bookings_factories.IndividualBookingFactory(stock=stock)
+        bookings_factories.BookingFactory(stock=stock)
+        bookings_factories.BookingFactory(stock=stock)
 
         bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
 

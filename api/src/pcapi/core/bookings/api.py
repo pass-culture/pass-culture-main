@@ -12,7 +12,6 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import ExternalBooking
-from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.models import CollectiveBooking
@@ -116,11 +115,6 @@ def book_offer(
             booking.activationCode = offers_repository.get_available_activation_code(stock)  # type: ignore [assignment]
             booking.mark_as_used()
 
-        individual_booking = IndividualBooking(
-            booking=booking,
-            depositId=beneficiary.deposit.id if beneficiary.has_active_deposit else None,  # type: ignore [union-attr]
-            userId=beneficiary.id,
-        )
         stock.dnBookedQuantity += booking.quantity
 
         is_external_ticket_applicable = providers_repository.is_external_ticket_applicable(stock.offer)
@@ -130,7 +124,7 @@ def book_offer(
                 raise ValueError("This offer is from the wrong cinema provider")
             _book_external_ticket(booking, stock)
 
-        repository.save(individual_booking, stock)
+        repository.save(booking, stock)
 
     logger.info(
         "Beneficiary booked an offer",
@@ -143,20 +137,20 @@ def book_offer(
         },
     )
 
-    if not transactional_mails.send_user_new_booking_to_pro_email(individual_booking, first_venue_booking):
+    if not transactional_mails.send_user_new_booking_to_pro_email(booking, first_venue_booking):
         logger.warning(
             "Could not send booking confirmation email to offerer",
             extra={"booking": booking.id},
         )
-    if not transactional_mails.send_individual_booking_confirmation_email_to_beneficiary(individual_booking):
+    if not transactional_mails.send_individual_booking_confirmation_email_to_beneficiary(booking):
         logger.warning("Could not send booking=%s confirmation email to beneficiary", booking.id)
 
     search.async_index_offer_ids([stock.offerId])
 
-    update_external_user(individual_booking.user)
+    update_external_user(booking.user)
     update_external_pro(stock.offer.venue.bookingEmail)
 
-    return individual_booking.booking
+    return booking
 
 
 def _book_external_ticket(booking: Booking, stock: Stock) -> None:
@@ -224,9 +218,8 @@ def _cancel_booking(
         technical_message_id="booking.cancelled",
     )
 
-    if booking.individualBooking is not None:
-        update_external_user(booking.individualBooking.user)
-        update_external_pro(booking.venue.bookingEmail)
+    update_external_user(booking.user)
+    update_external_pro(booking.venue.bookingEmail)
     search.async_index_offer_ids([booking.stock.offerId])
     return True
 
@@ -329,8 +322,7 @@ def mark_as_used(booking: Booking) -> None:
 
     logger.info("Booking was marked as used", extra={"booking_id": booking.id}, technical_message_id="booking.used")  # type: ignore [call-arg]
 
-    if booking.individualBookingId is not None:
-        update_external_user(booking.individualBooking.user)  # type: ignore [union-attr]
+    update_external_user(booking.user)
 
 
 def mark_as_used_with_uncancelling(booking: Booking) -> None:
@@ -357,8 +349,7 @@ def mark_as_used_with_uncancelling(booking: Booking) -> None:
     db.session.commit()
     logger.info("Booking was uncancelled and marked as used", extra={"bookingId": booking.id})
 
-    if booking.individualBookingId is not None:
-        update_external_user(booking.individualBooking.user)  # type: ignore [union-attr]
+    update_external_user(booking.user)
 
 
 def mark_as_cancelled(booking: Booking) -> None:
@@ -387,9 +378,8 @@ def mark_as_unused(booking: Booking) -> None:
 
     logger.info("Booking was marked as unused", extra={"booking_id": booking.id}, technical_message_id="booking.unused")  # type: ignore [call-arg]
 
-    if booking.individualBookingId is not None:
-        update_external_user(booking.individualBooking.user)  # type: ignore [union-attr]
-        update_external_pro(booking.venue.bookingEmail)
+    update_external_user(booking.user)
+    update_external_pro(booking.venue.bookingEmail)
 
 
 def get_qr_code_data(booking_token: str) -> str:
@@ -515,7 +505,6 @@ def auto_mark_as_used_after_event() -> None:
 def get_individual_bookings_from_stock(stock_id: int) -> typing.Generator[Booking, None, None]:
     query = (
         Booking.query.filter(Booking.stockId == stock_id, Booking.status != BookingStatus.CANCELLED)
-        .join(Booking.individualBooking)  # exclude collective bookings
         .with_entities(Booking.id, Booking.userId)
         .distinct()
     )

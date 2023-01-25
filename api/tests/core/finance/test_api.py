@@ -130,7 +130,7 @@ def collective_stock_factory(**kwargs):
 
 class PriceBookingTest:
     def test_basics(self):
-        booking = bookings_factories.UsedIndividualBookingFactory(
+        booking = bookings_factories.UsedBookingFactory(
             amount=10,
             stock=individual_stock_factory(),
         )
@@ -147,9 +147,9 @@ class PriceBookingTest:
 
     def test_pricing_lines(self):
         user = create_rich_user()
-        booking1 = bookings_factories.UsedIndividualBookingFactory(
+        booking1 = bookings_factories.UsedBookingFactory(
             amount=19_999,
-            individualBooking__user=user,
+            user=user,
             stock=individual_stock_factory(),
         )
         api.price_booking(booking1)
@@ -160,9 +160,9 @@ class PriceBookingTest:
         assert pricing1.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
         assert pricing1.lines[1].amount == 0
 
-        booking2 = bookings_factories.UsedIndividualBookingFactory(
+        booking2 = bookings_factories.UsedBookingFactory(
             amount=100,
-            individualBooking__user=user,
+            user=user,
             stock=booking1.stock,
         )
         api.price_booking(booking2)
@@ -183,11 +183,11 @@ class PriceBookingTest:
         assert pricing.amount == 0
 
     def test_accrue_revenue(self):
-        booking1 = bookings_factories.UsedIndividualBookingFactory(
+        booking1 = bookings_factories.UsedBookingFactory(
             amount=10,
             stock=individual_stock_factory(),
         )
-        booking2 = bookings_factories.UsedIndividualBookingFactory(
+        booking2 = bookings_factories.UsedBookingFactory(
             amount=40,
             stock=individual_stock_factory(offer__venue=booking1.venue),
         )
@@ -330,12 +330,12 @@ class GetPricingPointIdAndCurrentRevenueTest:
             managingOfferer=offerer,
             pricing_point=pricing_point,
         )
-        booking1 = bookings_factories.UsedIndividualBookingFactory(
+        booking1 = bookings_factories.UsedBookingFactory(
             stock__offer__venue=venue,
             amount=20,
         )
         _pricing1 = factories.PricingFactory(booking=booking1)
-        booking2 = bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue)
+        booking2 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
         _pricing_other = factories.PricingFactory()
 
         pricing_point_id, current_revenue = api._get_pricing_point_id_and_current_revenue(booking2)
@@ -1160,7 +1160,7 @@ def test_generate_payments_file():
     factories.PricingFactory(
         amount=-600,  # rate = 50 %
         booking__amount=12,
-        booking__individualBooking__user=underage_user,
+        booking__user=underage_user,
         booking__dateUsed=used_date,
         booking__stock__offer__name="Une histoire plutôt bien",
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
@@ -1397,10 +1397,10 @@ class GenerateInvoicesTest:
     @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
     @clean_temporary_files
     def test_basics(self, _mocked1, _mocked2):
-        booking1 = bookings_factories.UsedIndividualBookingFactory(stock=individual_stock_factory())
-        booking2 = bookings_factories.UsedIndividualBookingFactory(stock=individual_stock_factory())
-        booking3 = bookings_factories.UsedIndividualBookingFactory(stock=booking1.stock)
-        booking4 = bookings_factories.UsedIndividualBookingFactory(stock=individual_stock_factory())
+        booking1 = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())
+        booking2 = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())
+        booking3 = bookings_factories.UsedBookingFactory(stock=booking1.stock)
+        booking4 = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())
         for booking in (booking1, booking2, booking3, booking4):
             factories.BankInformationFactory(venue=booking.venue)
 
@@ -1478,8 +1478,8 @@ class GenerateInvoiceTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=20)
-        booking1 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
-        booking2 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
+        booking1 = bookings_factories.UsedBookingFactory(stock=stock)
+        booking2 = bookings_factories.UsedBookingFactory(stock=stock)
         api.price_booking(booking1)
         api.price_booking(booking2)
         batch_id = api.generate_cashflows(datetime.datetime.utcnow())
@@ -1518,11 +1518,11 @@ class GenerateInvoiceTest:
         stock1 = offers_factories.ThingStockFactory(offer=offer, price=19_850)
         stock2 = offers_factories.ThingStockFactory(offer=offer, price=160)
         user = create_rich_user()
-        booking1 = bookings_factories.UsedIndividualBookingFactory(
+        booking1 = bookings_factories.UsedBookingFactory(
             stock=stock1,
-            individualBooking__user=user,
+            user=user,
         )
-        booking2 = bookings_factories.UsedIndividualBookingFactory(stock=stock2)
+        booking2 = bookings_factories.UsedBookingFactory(stock=stock2)
         api.price_booking(booking1)
         api.price_booking(booking2)
         batch_id = api.generate_cashflows(datetime.datetime.utcnow())
@@ -1567,8 +1567,8 @@ class GenerateInvoiceTest:
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=23)
         factories.CustomReimbursementRuleFactory(amount=22, offer=offer)
-        booking1 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
-        booking2 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
+        booking1 = bookings_factories.UsedBookingFactory(stock=stock)
+        booking2 = bookings_factories.UsedBookingFactory(stock=stock)
         api.price_booking(booking1)
         api.price_booking(booking2)
         batch_id = api.generate_cashflows(datetime.datetime.utcnow())
@@ -1597,10 +1597,9 @@ class GenerateInvoiceTest:
         bookings = []
         user = create_rich_user()
         for stock in stocks:
-            booking = bookings_factories.UsedIndividualBookingFactory(
+            booking = bookings_factories.UsedBookingFactory(
                 stock=stock,
                 user=user,
-                individualBooking__user=user,
             )
             bookings.append(booking)
         for booking in bookings[:3]:
@@ -1693,13 +1692,13 @@ class GenerateInvoiceTest:
             product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         stock1 = offers_factories.StockFactory(offer=offer1, price=20)
-        booking1 = bookings_factories.UsedIndividualBookingFactory(stock=stock1)
+        booking1 = bookings_factories.UsedBookingFactory(stock=stock1)
         offer2 = offers_factories.ThingOfferFactory(
             venue=venue,
             product__subcategoryId=subcategories.TELECHARGEMENT_MUSIQUE.id,
         )
         stock2 = offers_factories.StockFactory(offer=offer2, price=0)
-        booking2 = bookings_factories.UsedIndividualBookingFactory(stock=stock2)
+        booking2 = bookings_factories.UsedBookingFactory(stock=stock2)
         api.price_booking(booking1)
         api.price_booking(booking2)
         batch_id = api.generate_cashflows(datetime.datetime.utcnow())
@@ -1775,9 +1774,9 @@ class PrepareInvoiceContextTest:
         bookings = []
         user = create_rich_user()
         for stock in stocks:
-            booking = bookings_factories.UsedIndividualBookingFactory(
+            booking = bookings_factories.UsedBookingFactory(
                 stock=stock,
-                individualBooking__user=user,
+                user=user,
             )
             bookings.append(booking)
         for booking in bookings[:3]:
@@ -1848,9 +1847,9 @@ class PrepareInvoiceContextTest:
         stock = offers_factories.StockFactory(offer=thing_offer, price=30)
 
         user = create_rich_user()
-        booking = bookings_factories.UsedIndividualBookingFactory(
+        booking = bookings_factories.UsedBookingFactory(
             stock=stock,
-            individualBooking__user=user,
+            user=user,
         )
         api.price_booking(booking)
         batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
@@ -1875,9 +1874,9 @@ class GenerateInvoiceHtmlTest:
         bookings = []
         user = create_rich_user()
         for stock in stocks:
-            booking = bookings_factories.UsedIndividualBookingFactory(
+            booking = bookings_factories.UsedBookingFactory(
                 stock=stock,
-                individualBooking__user=user,
+                user=user,
             )
             bookings.append(booking)
         for booking in bookings[:3]:
@@ -1888,7 +1887,7 @@ class GenerateInvoiceHtmlTest:
             api.price_booking(booking)
         duo_offer = offers_factories.OfferFactory(venue=venue, isDuo=True)
         duo_stock = offers_factories.StockFactory(offer=duo_offer, price=1)
-        duo_booking = bookings_factories.UsedIndividualBookingFactory(stock=duo_stock, quantity=2)
+        duo_booking = bookings_factories.UsedBookingFactory(stock=duo_stock, quantity=2)
         api.price_booking(duo_booking)
         batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW

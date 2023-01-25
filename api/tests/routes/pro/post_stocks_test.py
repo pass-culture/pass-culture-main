@@ -191,9 +191,7 @@ class Returns201Test:
                 },
             ],
         }
-        bookings_factories.IndividualBookingFactory(
-            stock=existing_stock, individualBooking__user__email="beneficiary@bookingEmail.fr"
-        )
+        bookings_factories.BookingFactory(stock=existing_stock, user__email="beneficiary@bookingEmail.fr")
         bookings_factories.CancelledBookingFactory(stock=existing_stock)
 
         # When
@@ -258,9 +256,7 @@ class Returns201Test:
         event_reported_in_10_days = now + relativedelta(days=10)
         offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
         existing_stock = offers_factories.StockFactory(offer=offer, beginningDatetime=event_in_4_days)
-        booking = bookings_factories.UsedIndividualBookingFactory(
-            stock=existing_stock, dateCreated=booking_made_3_days_ago
-        )
+        booking = bookings_factories.UsedBookingFactory(stock=existing_stock, dateCreated=booking_made_3_days_ago)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         # When
@@ -296,7 +292,7 @@ class Returns201Test:
         event_reported_in_less_48_hours = now + relativedelta(days=1)
         offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
         existing_stock = offers_factories.StockFactory(offer=offer, beginningDatetime=event_in_3_days)
-        booking = bookings_factories.UsedIndividualBookingFactory(
+        booking = bookings_factories.UsedBookingFactory(
             stock=existing_stock, dateCreated=now, dateUsed=date_used_in_48_hours
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
