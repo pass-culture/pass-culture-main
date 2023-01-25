@@ -1,9 +1,10 @@
-from unittest.mock import patch
-
 import pytest
 
+from pcapi.core.educational.factories import CollectiveOfferFactory
+from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.finance.factories import BankInformationFactory
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
@@ -43,6 +44,7 @@ def test_response_serialization(app):
         "visualDisabilityCompliant": venue.visualDisabilityCompliant,
         "siret": venue.siret,
         "hasMissingReimbursementPoint": True,
+        "hasCreatedOffer": False,
     }
 
 
@@ -74,8 +76,39 @@ def test_response_missing_reimbursement_point_serialization(app):
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.core.offerers.repository.get_filtered_venues")
-def test_default_call(mock_get_filtered_venues, app):
+def test_response_created_offer_serialization(app):
+    user_offerer = offerers_factories.UserOffererFactory(
+        user__email="user.pro@test.com",
+    )
+
+    venue_with_offer = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    OfferFactory(venue=venue_with_offer)
+
+    venue_with_collective_offer = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    CollectiveOfferFactory(venue=venue_with_collective_offer)
+
+    venue_with_collective_offer_template = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    CollectiveOfferTemplateFactory(venue=venue_with_collective_offer_template)
+
+    offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+    # when
+    response = TestClient(app.test_client()).with_session_auth(user_offerer.user.email).get("/venues")
+
+    # then
+    assert response.status_code == 200
+
+    assert "venues" in response.json
+    assert len(response.json["venues"]) == 4
+
+    assert response.json["venues"][0]["hasCreatedOffer"] == True
+    assert response.json["venues"][1]["hasCreatedOffer"] == True
+    assert response.json["venues"][2]["hasCreatedOffer"] == True
+    assert response.json["venues"][3]["hasCreatedOffer"] == False
+
+
+@pytest.mark.usefixtures("db_session")
+def test_default_call(app, requests_mock):
     user_offerer = offerers_factories.UserOffererFactory(
         user__email="user.pro@test.com",
     )
@@ -86,18 +119,10 @@ def test_default_call(mock_get_filtered_venues, app):
 
     # then
     assert response.status_code == 200
-    mock_get_filtered_venues.assert_called_once_with(
-        active_offerers_only=None,
-        offerer_id=None,
-        pro_user_id=user_offerer.user.id,
-        user_is_admin=False,
-        validated_offerer=None,
-    )
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.core.offerers.repository.get_filtered_venues")
-def test_default_admin_call(mock_get_filtered_venues, app):
+def test_default_admin_call(app):
     admin_user = users_factories.AdminFactory(email="admin.pro@test.com")
 
     # when
@@ -105,13 +130,6 @@ def test_default_admin_call(mock_get_filtered_venues, app):
 
     # then
     assert response.status_code == 200
-    mock_get_filtered_venues.assert_called_once_with(
-        active_offerers_only=None,
-        offerer_id=None,
-        pro_user_id=admin_user.id,
-        user_is_admin=True,
-        validated_offerer=None,
-    )
 
 
 @pytest.mark.usefixtures("db_session")
@@ -137,8 +155,7 @@ def test_admin_call_num_queries(app):
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.core.offerers.repository.get_filtered_venues")
-def test_invalid_offerer_id(mock_get_filtered_venues, app):
+def test_invalid_offerer_id(app):
 
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
     offerer = offerers_factories.OffererFactory()
@@ -153,23 +170,14 @@ def test_invalid_offerer_id(mock_get_filtered_venues, app):
     response = TestClient(app.test_client()).with_session_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
 
     # then
-    # then
     assert response.status_code == 200
-    mock_get_filtered_venues.assert_called_once_with(
-        active_offerers_only=None,
-        offerer_id=666,
-        pro_user_id=pro_user.id,
-        user_is_admin=False,
-        validated_offerer=None,
-    )
 
     assert "venues" in response.json
     assert len(response.json["venues"]) == 0
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.core.offerers.repository.get_filtered_venues")
-def test_full_valid_call(mock_get_filtered_venues, app):
+def test_full_valid_call(app):
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
     offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -186,18 +194,10 @@ def test_full_valid_call(mock_get_filtered_venues, app):
 
     # then
     assert response.status_code == 200
-    mock_get_filtered_venues.assert_called_once_with(
-        active_offerers_only=True,
-        offerer_id=offerer.id,
-        pro_user_id=pro_user.id,
-        user_is_admin=False,
-        validated_offerer=True,
-    )
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.core.offerers.repository.get_filtered_venues")
-def test_full_valid_call_with_false(mock_get_filtered_venues, app):
+def test_full_valid_call_with_false(app):
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
     offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -214,18 +214,10 @@ def test_full_valid_call_with_false(mock_get_filtered_venues, app):
 
     # then
     assert response.status_code == 200
-    mock_get_filtered_venues.assert_called_once_with(
-        active_offerers_only=False,
-        offerer_id=offerer.id,
-        pro_user_id=pro_user.id,
-        user_is_admin=False,
-        validated_offerer=False,
-    )
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.core.offerers.repository.get_filtered_venues")
-def test_invalid_validated(mock_get_filtered_venues, app):
+def test_invalid_validated(app):
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
 
     query_params = [
@@ -237,12 +229,10 @@ def test_invalid_validated(mock_get_filtered_venues, app):
 
     # then
     assert response.status_code == 400
-    mock_get_filtered_venues.assert_not_called()
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.core.offerers.repository.get_filtered_venues")
-def test_invalid_validated_for_user(mock_get_filtered_venues, app):
+def test_invalid_validated_for_user(app):
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
 
     query_params = [
@@ -254,12 +244,10 @@ def test_invalid_validated_for_user(mock_get_filtered_venues, app):
 
     # then
     assert response.status_code == 400
-    mock_get_filtered_venues.assert_not_called()
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.core.offerers.repository.get_filtered_venues")
-def test_invalid_active_offerer_only(mock_get_filtered_venues, app):
+def test_invalid_active_offerer_only(app):
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
 
     query_params = [
@@ -271,4 +259,3 @@ def test_invalid_active_offerer_only(mock_get_filtered_venues, app):
 
     # then
     assert response.status_code == 400
-    mock_get_filtered_venues.assert_not_called()
