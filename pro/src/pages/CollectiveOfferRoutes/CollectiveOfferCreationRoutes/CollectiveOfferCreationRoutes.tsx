@@ -125,7 +125,7 @@ const CollectiveOfferCreationRoutes = ({
               )}
             </Route>
             <Route path="/offre/:offerId/collectif/stocks">
-              <PageTitle title="Vos stocks" />
+              <PageTitle title="Date et prix" />
               {offer && isCollectiveOffer(offer) ? (
                 <CollectiveOfferStockCreation
                   offer={offer}
