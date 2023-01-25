@@ -613,8 +613,6 @@ describe('screens:StocksEvent:Edition', () => {
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await screen.findByTestId('stock-event-form')
 
-    await screen.findByTestId('stock-event-form')
-
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
