@@ -5,26 +5,34 @@ import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
+import { PRICE_CATEGORY_MAX_LENGTH } from '../form/constants'
 import { priceCategoryFormFactory } from '../form/factories'
 import { PriceCategoriesFormValues } from '../form/types'
 import { PriceCategoriesForm } from '../PriceCategoriesForm'
 
+const defaultValues: PriceCategoriesFormValues = {
+  priceCategories: [
+    priceCategoryFormFactory(),
+    priceCategoryFormFactory(),
+    priceCategoryFormFactory(),
+  ],
+  isDuo: false,
+}
+
+const renderPriceCategoriesForm = (
+  customValues?: Partial<PriceCategoriesFormValues>
+) => {
+  const values = { ...defaultValues, ...customValues }
+  return render(
+    <Formik initialValues={values} onSubmit={jest.fn()}>
+      <PriceCategoriesForm />
+    </Formik>
+  )
+}
+
 describe('PriceCategories', () => {
   it('should render without error', () => {
-    const values: PriceCategoriesFormValues = {
-      priceCategories: [
-        priceCategoryFormFactory(),
-        priceCategoryFormFactory(),
-        priceCategoryFormFactory(),
-      ],
-      isDuo: false,
-    }
-
-    render(
-      <Formik initialValues={values} onSubmit={jest.fn()}>
-        <PriceCategoriesForm values={values} />
-      </Formik>
-    )
+    renderPriceCategoriesForm()
 
     expect(screen.getAllByText('Intitulé du tarif')).toHaveLength(3)
   })
@@ -41,7 +49,7 @@ describe('PriceCategories', () => {
 
     render(
       <Formik initialValues={values} onSubmit={jest.fn()}>
-        <PriceCategoriesForm values={values} />
+        <PriceCategoriesForm />
       </Formik>
     )
 
@@ -73,5 +81,35 @@ describe('PriceCategories', () => {
     expect(freeCheckboxes[0]).not.toBeChecked()
     expect(freeCheckboxes[1]).not.toBeChecked()
     expect(freeCheckboxes[2]).not.toBeChecked()
+  })
+
+  it('should not let add more than 20 price categories', async () => {
+    renderPriceCategoriesForm({ priceCategories: [priceCategoryFormFactory()] })
+
+    for (let i = 0; i < PRICE_CATEGORY_MAX_LENGTH - 1; i++) {
+      await userEvent.click(screen.getByText('Ajouter un tarif'))
+    }
+
+    expect(screen.getAllByText('Intitulé du tarif')).toHaveLength(
+      PRICE_CATEGORY_MAX_LENGTH
+    )
+    expect(screen.getByText('Ajouter un tarif')).toBeDisabled()
+  })
+
+  it('should remove price categories on trash button click', async () => {
+    renderPriceCategoriesForm()
+
+    expect(
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
+    ).toBeEnabled()
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
+    )
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
+    )
+    expect(
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
+    ).toBeDisabled()
   })
 })
