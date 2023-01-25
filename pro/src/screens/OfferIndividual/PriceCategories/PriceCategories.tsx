@@ -35,7 +35,8 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
     <FormikProvider value={formik}>
       <FormLayout small>
         <form onSubmit={formik.handleSubmit}>
-          <PriceCategoriesForm values={formik.values} />
+          <PriceCategoriesForm />
+
           <ActionBar
             onClickPrevious={handlePreviousStep}
             step={OFFER_WIZARD_STEP_IDS.STOCKS}
