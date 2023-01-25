@@ -135,21 +135,51 @@ class Returns200Test:
                 "name": "new name",
                 "withdrawalDetails": "Ceci est un texte de modalités de retrait",
                 "isWithdrawalAppliedOnAllOffers": True,
+                "shouldSendMail": True,
             },
             venue,
         )
-
         response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
 
         assert response.status_code == 200
         assert venue.withdrawalDetails == "Ceci est un texte de modalités de retrait"
 
         mocked_update_all_venue_offers_withdrawal_details_job.assert_called_once_with(
-            venue, "Ceci est un texte de modalités de retrait"
+            venue, "Ceci est un texte de modalités de retrait", send_email_notif=True
         )
 
         assert len(external_testing.sendinblue_requests) == 1
         assert len(external_testing.zendesk_sell_requests) == 1
+
+    @patch("pcapi.routes.pro.venues.update_all_venue_offers_withdrawal_details_job.delay")
+    def test_edit_venue_withdrawal_details_with_no_email_notif(
+        self, mocked_update_all_venue_offers_withdrawal_details_job, app
+    ):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            name="old name",
+            managingOfferer=user_offerer.offerer,
+        )
+
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+
+        venue_data = populate_missing_data_from_venue(
+            {
+                "name": "new name",
+                "withdrawalDetails": "Ceci est un texte de modalités de retrait",
+                "isWithdrawalAppliedOnAllOffers": True,
+                "shouldSendMail": False,
+            },
+            venue,
+        )
+        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
+
+        assert response.status_code == 200
+        assert venue.withdrawalDetails == "Ceci est un texte de modalités de retrait"
+
+        mocked_update_all_venue_offers_withdrawal_details_job.assert_called_once_with(
+            venue, "Ceci est un texte de modalités de retrait", send_email_notif=False
+        )
 
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_accessibility_job.delay")
     def test_edit_venue_accessibility_with_applied_on_all_offers(

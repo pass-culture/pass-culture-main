@@ -2,8 +2,8 @@ from pcapi.core import mails
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
 from pcapi.core.mails import models
+from pcapi.core.mails.transactional.bookings import common as bookings_common
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.utils.date import format_time_in_second_to_human_readable
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -33,14 +33,6 @@ def get_booking_event_reminder_to_beneficiary_email_data(
     formatted_event_beginning_date = get_date_formatted_for_email(event_beginning_date_in_tz)
     formatted_event_beginning_time = get_time_formatted_for_email(event_beginning_date_in_tz)
 
-    booking_token = booking.activationCode.code if booking.activationCode else booking.token
-
-    offer_withdrawal_delay_in_days = (
-        format_time_in_second_to_human_readable(booking.stock.offer.withdrawalDelay)
-        if booking.stock.offer.withdrawalDelay
-        else None
-    )
-
     return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value,
         params={
@@ -51,14 +43,14 @@ def get_booking_event_reminder_to_beneficiary_email_data(
             "IS_DUO_EVENT": booking.quantity == 2,
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_TAGS": ",".join([criterion.name for criterion in booking.stock.offer.criteria]),
-            "OFFER_TOKEN": booking_token,
-            "OFFER_WITHDRAWAL_DELAY": offer_withdrawal_delay_in_days,
-            "OFFER_WITHDRAWAL_DETAILS": booking.stock.offer.withdrawalDetails or None,
-            "OFFER_WITHDRAWAL_TYPE": booking.stock.offer.withdrawalType,
+            "OFFER_TOKEN": bookings_common.get_booking_token(booking),
+            "OFFER_WITHDRAWAL_DELAY": bookings_common.get_offer_withdrawal_delay(booking),
+            "OFFER_WITHDRAWAL_DETAILS": bookings_common.get_offer_withdrawal_details(booking),
+            "OFFER_WITHDRAWAL_TYPE": bookings_common.get_offer_withdrawal_type(booking),
             "QR_CODE": bookings_api.get_qr_code_data(booking.token),
             "SUBCATEGORY": booking.stock.offer.subcategoryId,
             "USER_FIRST_NAME": booking.user.firstName,
-            "VENUE_ADDRESS": booking.stock.offer.venue.address,
+            "VENUE_ADDRESS": bookings_common.get_venue_address(booking),
             "VENUE_CITY": booking.stock.offer.venue.city,
             "VENUE_NAME": booking.stock.offer.venue.publicName
             if booking.stock.offer.venue.publicName

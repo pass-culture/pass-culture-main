@@ -17,6 +17,8 @@ from .bookings.booking_postponed_by_pro_to_beneficiary import send_booking_postp
 from .bookings.booking_soon_to_be_expired_to_beneficiary import (
     send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary,
 )
+from .bookings.booking_withdrawal_updated import send_booking_withdrawal_updated
+from .bookings.booking_withdrawal_updated import send_email_for_each_ongoing_booking
 from .bookings.new_booking_to_pro import send_user_new_booking_to_pro_email
 from .educational.eac_booking_cancellation import send_eac_booking_cancellation_email
 from .educational.eac_new_booking_to_pro import send_eac_new_booking_email_to_pro

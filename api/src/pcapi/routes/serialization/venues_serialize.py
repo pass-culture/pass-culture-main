@@ -303,6 +303,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     description: base.VenueDescription | None
     contact: base.VenueContactModel | None
     reimbursementPointId: int | None
+    shouldSendMail: bool | None
 
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
 

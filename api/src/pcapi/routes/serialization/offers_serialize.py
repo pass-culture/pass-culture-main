@@ -134,6 +134,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     ageMin: int | None
     ageMax: int | None
     conditions: str | None
+    shouldSendMail: bool | None
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:

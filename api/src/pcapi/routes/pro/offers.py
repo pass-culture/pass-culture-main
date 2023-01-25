@@ -15,7 +15,7 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
-from pcapi.models.api_errors import ApiErrors
+from pcapi.models import api_errors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
@@ -66,7 +66,7 @@ def get_offer(offer_id: str) -> offers_serialize.GetIndividualOfferResponseModel
     try:
         offer = offers_repository.get_offer_by_id(human_ids.dehumanize(offer_id))  # type: ignore [arg-type]
     except exceptions.OfferNotFound:
-        raise ApiErrors(
+        raise api_errors.ApiErrors(
             errors={
                 "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
             },
@@ -86,7 +86,7 @@ def get_offer(offer_id: str) -> offers_serialize.GetIndividualOfferResponseModel
 def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     offer_ids = human_ids.dehumanize_ids_list(body.ids)
     if not offer_ids:
-        raise ApiErrors(
+        raise api_errors.ApiErrors(
             errors={
                 "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
             },
@@ -106,10 +106,10 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
     venue_id = human_ids.dehumanize(body.venue_humanized_id)
     if not venue_id:
-        raise ApiErrors(errors={"venueId": ["L'id n'est pas au bon format"]}, status_code=404)
+        raise api_errors.ApiErrors(errors={"venueId": ["L'id n'est pas au bon format"]}, status_code=404)
     venue: offerers_models.Venue | None = offerers_models.Venue.query.get(venue_id)
     if not venue:
-        raise ApiErrors(
+        raise api_errors.ApiErrors(
             errors={
                 "global": ["Aucun lieu ne correspond à cet identifiant dans notre base de données"],
             },
@@ -140,7 +140,7 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
             )
 
     except exceptions.OfferCreationBaseException as error:
-        raise ApiErrors(error.errors, status_code=400)
+        raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
@@ -156,7 +156,7 @@ def patch_publish_offer(body: offers_serialize.PatchOfferPublishBodyModel) -> No
     try:
         offerer = offerers_repository.get_by_offer_id(body.id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+        raise api_errors.ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
 
     rest.check_user_has_access_to_offerer(current_user, offerer.id)
 
@@ -217,7 +217,20 @@ def patch_all_offers_active_status(
 def patch_offer(
     offer_id: str, body: offers_serialize.PatchOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
-    offer = rest.load_or_404(models.Offer, human_id=offer_id)
+    offer = (
+        models.Offer.query.options(
+            sqla_orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
+            sqla_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
+            sqla_orm.joinedload(models.Offer.product).joinedload(models.Product.owningOfferer),
+        )
+        .filter(
+            models.Offer.id == human_ids.dehumanize(offer_id),
+        )
+        .one_or_none()
+    )
+    if not offer:
+        raise api_errors.ResourceNotFoundError
+
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     update_body = body.dict(exclude_unset=True)
     try:
@@ -245,9 +258,10 @@ def patch_offer(
                 withdrawalDelay=update_body.get("withdrawalDelay", offers_api.UNCHANGED),
                 withdrawalDetails=update_body.get("withdrawalDetails", offers_api.UNCHANGED),
                 withdrawalType=update_body.get("withdrawalType", offers_api.UNCHANGED),
+                shouldSendMail=update_body.get("shouldSendMail") or False,
             )
     except exceptions.OfferCreationBaseException as error:
-        raise ApiErrors(error.errors, status_code=400)
+        raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
@@ -263,7 +277,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     try:
         offer = offers_repository.get_offer_by_id(form.offer_id)
     except exceptions.OfferNotFound:
-        raise ApiErrors(
+        raise api_errors.ApiErrors(
             errors={
                 "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
             },
@@ -295,7 +309,7 @@ def delete_thumbnail(offer_id: str) -> None:
     try:
         offer: models.Offer = rest.load_or_raise_error(models.Offer, human_id=offer_id)
     except human_ids.NonDehumanizableId:
-        raise ApiErrors(
+        raise api_errors.ApiErrors(
             errors={
                 "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
             },
@@ -369,7 +383,7 @@ def post_price_categories(
 
     offer = _get_offer_for_price_categories_upsert(offer_id, price_categories_to_edit)
     if not offer:
-        raise ApiErrors({"offer_id": ["L'offre avec l'id %s n'existe pas" % offer_id]}, status_code=400)
+        raise api_errors.ApiErrors({"offer_id": ["L'offre avec l'id %s n'existe pas" % offer_id]}, status_code=400)
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     existing_price_categories_by_id = {category.id: category for category in offer.priceCategories}
@@ -380,7 +394,7 @@ def post_price_categories(
 
         for price_category_to_edit in price_categories_to_edit:
             if price_category_to_edit.id not in existing_price_categories_by_id:
-                raise ApiErrors(
+                raise api_errors.ApiErrors(
                     {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % price_category_to_edit.id]},
                     status_code=400,
                 )
