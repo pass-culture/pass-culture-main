@@ -1577,7 +1577,7 @@ class GetProductsTest:
         assert response.status_code == 400
         assert response.json == {"limit": ["ensure this value is less than or equal to 50"]}
 
-    def test_get_filterd_venue_offer(self, client):
+    def test_get_filtered_venue_offer(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
         offer = offers_factories.ThingOfferFactory(venue=venue)
@@ -1604,6 +1604,16 @@ class GetProductsTest:
             },
         }
         assert [product["id"] for product in response.json["products"]] == [offer.id]
+
+    def test_404_when_venue_id_not_tied_to_api_key(self, client):
+        offerers_factories.ApiKeyFactory()
+        unrelated_venue = offerers_factories.VenueFactory()
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products?venueId={unrelated_venue.id}"
+        )
+
+        assert response.status_code == 404
 
 
 @pytest.mark.usefixtures("db_session")
@@ -1636,6 +1646,16 @@ class GetEventsTest:
             },
         }
         assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
+
+    def test_404_when_venue_id_not_tied_to_api_key(self, client):
+        offerers_factories.ApiKeyFactory()
+        unrelated_venue = offerers_factories.VenueFactory()
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/events?venueId={unrelated_venue.id}"
+        )
+
+        assert response.status_code == 404
 
 
 @pytest.mark.usefixtures("db_session")
