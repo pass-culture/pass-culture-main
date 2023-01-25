@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { Fragment, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -173,12 +174,18 @@ const Venue = ({
       className="h-section-row nested offerer-venue"
       data-testid="venue-wrapper"
     >
-      <div className={`h-card h-card-${isVirtual ? 'primary' : 'secondary'}`}>
+      <div
+        className={cn(
+          `h-card`,
+          { 'h-card-primary': isVirtual },
+          { 'h-card-secondary': !isVirtual }
+        )}
+      >
         <div className="h-card-inner">
           <div
-            className={`h-card-header-row ${
-              isStatOpen ? 'h-card-is-open' : ''
-            }`}
+            className={cn('h-card-header-row', {
+              'h-card-is-open': isStatOpen,
+            })}
           >
             <h3 className="h-card-title">
               <button
@@ -197,14 +204,14 @@ const Venue = ({
               >
                 <Icon
                   alt="icon"
-                  className="h-card-title-ico"
+                  className="h-card-title-ico align-baseline"
                   svg={isStatOpen ? 'ico-caret-down' : 'ico-caret-right'}
                 />
                 {hasNewOfferCreationJourney ? (
-                  <>{publicName || name}</>
+                  <div className="align-baseline">{publicName || name}</div>
                 ) : (
                   <Link
-                    className="title-text"
+                    className="title-text align-baseline"
                     title={publicName || name}
                     to={editVenueLink}
                   >

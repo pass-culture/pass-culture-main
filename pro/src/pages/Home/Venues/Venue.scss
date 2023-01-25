@@ -46,10 +46,9 @@
     cursor: pointer;
     background: none;
     border: none;
+    text-align: left;
 
     .h-card-title-ico {
-      display: flex;
-      align-self: baseline;
       margin-left: 0;
       margin-right: rem.torem(8px);
 
@@ -61,8 +60,6 @@
     }
 
     .title-text {
-      display: flex;
-      align-self: baseline;
       margin-right: rem.torem(16px);
       overflow: hidden;
       text-overflow: ellipsis;
@@ -71,6 +68,11 @@
       &:hover {
         text-decoration: underline;
       }
+    }
+
+    .align-baseline {
+      display: flex;
+      align-self: baseline;
     }
   }
 
