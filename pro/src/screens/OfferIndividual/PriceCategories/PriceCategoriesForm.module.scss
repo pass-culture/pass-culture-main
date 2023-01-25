@@ -1,4 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .label-input {
   width: rem.torem(320px);
@@ -22,4 +25,14 @@
 
 .field-layout-align-self {
   align-self: flex-start;
+}
+
+.trash-button {
+  // "Center" with input
+  // We are using margin-top and not flex center because when there is an error the
+  // input field grows at the bottom and we don't want the icon to move
+  margin-top: calc(
+    #{fonts.$body-line-height} + #{forms.$label-space-before-input} +
+      (#{size.$input-min-height} - #{size.$button-icon-size}) / 2
+  );
 }

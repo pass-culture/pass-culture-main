@@ -3,8 +3,8 @@ import { FieldArray, useFormikContext } from 'formik'
 import React, { useState } from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { IcoEuro, IconPlusCircle } from 'icons'
-import { Button, TextInput, Checkbox, InfoBox } from 'ui-kit'
+import { IcoEuro, IconPlusCircle, TrashFilledIcon } from 'icons'
+import { Checkbox, InfoBox, Button, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseCheckbox } from 'ui-kit/form/shared'
 
@@ -16,10 +16,6 @@ import {
 } from './form/constants'
 import { PriceCategoriesFormValues } from './form/types'
 import styles from './PriceCategoriesForm.module.scss'
-
-type PriceCategoriesFormProps = {
-  values: PriceCategoriesFormValues
-}
 
 const setFreeCheckboxValue = (
   array: boolean[],
@@ -35,10 +31,9 @@ const setFreeCheckboxValue = (
   })
 }
 
-export const PriceCategoriesForm = ({
-  values,
-}: PriceCategoriesFormProps): JSX.Element => {
-  const { setFieldValue, handleChange } = useFormikContext()
+export const PriceCategoriesForm = (): JSX.Element => {
+  const { setFieldValue, handleChange, values } =
+    useFormikContext<PriceCategoriesFormValues>()
 
   const [isSelectedArray, setIsSelectedArray] = useState(
     // initialize an array of lenght with false or true when it's 0
@@ -74,6 +69,7 @@ export const PriceCategoriesForm = ({
   return (
     <>
       <FormLayout.MandatoryInfo />
+
       <FieldArray
         name="priceCategories"
         render={arrayHelpers => (
@@ -109,6 +105,7 @@ export const PriceCategoriesForm = ({
                   onChange={onChangePrice(index)}
                   isLabelHidden={index !== 0}
                 />
+
                 <BaseCheckbox
                   label="Gratuit"
                   checked={isSelectedArray[index]}
@@ -121,6 +118,14 @@ export const PriceCategoriesForm = ({
                     },
                     styles['field-layout-align-self']
                   )}
+                />
+
+                <Button
+                  variant={ButtonVariant.TERNARY}
+                  Icon={TrashFilledIcon}
+                  disabled={values.priceCategories.length <= 1}
+                  onClick={() => arrayHelpers.remove(index)}
+                  aria-label="Supprimer le tarif"
                 />
               </FormLayout.Row>
             ))}
