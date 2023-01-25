@@ -46,4 +46,12 @@ describe('Pagination', () => {
 
     expect(screen.getByRole('button', { name: 'Page suivante' })).toBeDisabled()
   })
+
+  it('should return nothing if there is only one page', () => {
+    render(<Pagination {...defaultProps} currentPage={1} pageCount={1} />)
+
+    expect(
+      screen.queryByRole('button', { name: 'Page suivante' })
+    ).not.toBeInTheDocument()
+  })
 })
