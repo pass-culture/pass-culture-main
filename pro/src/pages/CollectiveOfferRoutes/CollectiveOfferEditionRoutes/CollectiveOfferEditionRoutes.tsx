@@ -89,7 +89,7 @@ const CollectiveOfferEditionRoutes = ({
         {!isTemplate && isCollectiveOffer(offer) && (
           <>
             <Route path="/offre/:offerId/collectif/stocks/edition">
-              <PageTitle title="Vos Stocks" />
+              <PageTitle title="Date et prix" />
               <CollectiveOfferStockEdition
                 offer={offer}
                 reloadCollectiveOffer={loadCollectiveOffer}
