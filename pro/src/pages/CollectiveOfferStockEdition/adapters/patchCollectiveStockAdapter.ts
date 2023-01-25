@@ -47,7 +47,7 @@ const patchCollectiveStockAdapter: PatchCollectiveStockAdapter = async ({
     const stock = await api.editCollectiveStock(stockId, patchStockPayload)
     return {
       isOk: true,
-      message: 'Le détail de votre stock a bien été modifié.',
+      message: 'Vos modifications ont bien été enregistrées',
       payload: stock,
     }
   } catch (error) {
