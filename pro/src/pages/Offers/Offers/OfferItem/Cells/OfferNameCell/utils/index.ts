@@ -14,9 +14,9 @@ export const getRemainingTime = (stock: Stock[]) => {
   }
 
   const date = new Date()
-
-  const time_diff = bookingLimitDatetime.getTime() - date.getTime()
+  const time_diff = new Date(bookingLimitDatetime).getTime() - date.getTime()
   const days_Diff = time_diff / (1000 * 3600 * 24)
+
   return Math.floor(days_Diff)
 }
 
