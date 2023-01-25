@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,

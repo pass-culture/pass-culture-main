@@ -4,8 +4,6 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 import type { Store } from 'redux'
 
-import '@testing-library/jest-dom'
-
 import { api } from 'apiClient/api'
 import {
   ApiError,

@@ -1,5 +1,3 @@
-import '@testing-library/jest-dom'
-
 import { screen } from '@testing-library/react'
 
 import { EducationalOfferType, Mode } from 'core/OfferEducational'

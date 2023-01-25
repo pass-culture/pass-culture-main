@@ -1,5 +1,6 @@
 import 'regenerator-runtime/runtime'
 import fetch from 'jest-fetch-mock'
+import '@testing-library/jest-dom'
 
 global.fetch = fetch
 const originalGetComputedStyle = window.getComputedStyle
