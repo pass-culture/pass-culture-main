@@ -66,16 +66,19 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
       name="stocks"
       render={arrayHelpers => (
         <>
-          <Button
-            variant={ButtonVariant.TERNARY}
-            Icon={IconPlusCircle}
-            onClick={() =>
-              arrayHelpers.unshift(STOCK_EVENT_FORM_DEFAULT_VALUES)
-            }
-            disabled={isSynchronized || isDisabled}
-          >
-            Ajouter une date
-          </Button>
+          <div className={styles['button-row']}>
+            <Button
+              variant={ButtonVariant.TERNARY}
+              Icon={IconPlusCircle}
+              onClick={() =>
+                arrayHelpers.unshift(STOCK_EVENT_FORM_DEFAULT_VALUES)
+              }
+              disabled={isSynchronized || isDisabled}
+            >
+              Ajouter une date
+            </Button>
+            <div>{values.stocks.length} dates</div>
+          </div>
 
           <div className={styles['form-list']}>
             {stocksPage.map(
