@@ -51,3 +51,7 @@ def build_pc_pro_venue_link(venue: offerers_models.Venue) -> str:
 
 def build_pc_pro_venue_bookings_link(venue: offerers_models.Venue) -> str:
     return f"{settings.PRO_URL}/reservations?offerVenueId={humanize(venue.id)}"
+
+
+def build_pc_pro_venue_offers_link(venue: offerers_models.Venue) -> str:
+    return f"{settings.PRO_URL}/offres?lieu={humanize(venue.id)}"
