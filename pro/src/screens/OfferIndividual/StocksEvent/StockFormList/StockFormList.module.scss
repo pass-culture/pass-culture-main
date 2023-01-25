@@ -3,3 +3,9 @@
 .form-list {
   margin-top: rem.torem(16px);
 }
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
