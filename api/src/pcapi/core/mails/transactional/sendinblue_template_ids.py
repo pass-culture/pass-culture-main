@@ -54,6 +54,9 @@ class TransactionalEmail(Enum):
     OFFER_WEBAPP_LINK_TO_IOS_USER = models.Template(
         id_prod=476, id_not_prod=45, tags=["redirect_ios"], use_priority_queue=True
     )
+    OFFER_WITHDRAWAL_UPDATED_BY_PRO = models.Template(
+        id_prod=868, id_not_prod=121, tags=["changement_modalites_retrait"]
+    )
     PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY = models.Template(
         id_prod=510, id_not_prod=53, tags=["jeunes_erreur_importation_dms"]
     )

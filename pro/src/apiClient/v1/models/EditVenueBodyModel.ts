@@ -23,6 +23,7 @@ export type EditVenueBodyModel = {
   postalCode?: string | null;
   publicName?: string | null;
   reimbursementPointId?: number | null;
+  shouldSendMail?: boolean | null;
   siret?: string | null;
   venueLabelId?: number | null;
   venueTypeCode?: string | null;

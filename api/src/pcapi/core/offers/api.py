@@ -222,11 +222,12 @@ def update_offer(
     withdrawalDelay: int | None | T_UNCHANGED = UNCHANGED,
     withdrawalDetails: str | None | T_UNCHANGED = UNCHANGED,
     withdrawalType: models.WithdrawalTypeEnum | None | T_UNCHANGED = UNCHANGED,
+    shouldSendMail: bool = False,
 ) -> models.Offer:
     modifications = {
         field: new_value
         for field, new_value in locals().items()
-        if field != "offer"
+        if field not in ("offer", "shouldSendMail")
         and new_value is not UNCHANGED  # has the user provided a value for this field
         and getattr(offer, field) != new_value  # is the value different from what we have on database?
     }
@@ -240,10 +241,15 @@ def update_offer(
     if isDuo is not UNCHANGED:
         validation.check_is_duo_compliance(isDuo, offer.subcategory)
 
-    if withdrawalType is not UNCHANGED or withdrawalDelay is not UNCHANGED:
-        changed_withdrawalType = withdrawalType if withdrawalType is not UNCHANGED else offer.withdrawalType
-        changed_withdrawalDelay = withdrawalDelay if withdrawalDelay is not UNCHANGED else offer.withdrawalDelay
-        validation.check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)
+    withdrawal_updated = not (
+        withdrawalType is UNCHANGED and withdrawalDelay is UNCHANGED and withdrawalDetails is UNCHANGED
+    )
+    if withdrawal_updated:
+        changed_withdrawalType = offer.withdrawalType if withdrawalType is UNCHANGED else withdrawalType
+        changed_withdrawalDelay = offer.withdrawalDelay if withdrawalDelay is UNCHANGED else withdrawalDelay
+
+        if not (withdrawalType is UNCHANGED and withdrawalDelay is UNCHANGED):
+            validation.check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)
 
     if offer.isFromProvider:
         validation.check_update_only_allowed_fields_for_offer_from_provider(set(modifications), offer.lastProvider)
@@ -264,6 +270,9 @@ def update_offer(
     logger.info("Offer has been updated", extra={"offer_id": offer.id}, technical_message_id="offer.updated")  # type: ignore [call-arg]
     if product_has_been_updated:
         logger.info("Product has been updated", extra={"product": offer.product.id})
+
+    if shouldSendMail and withdrawal_updated and FeatureToggle.WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL.is_active():
+        transactional_mails.send_email_for_each_ongoing_booking(offer)
 
     search.async_index_offer_ids([offer.id])
 
@@ -340,7 +349,7 @@ def _update_collective_offer(
     return updated_fields
 
 
-def batch_update_offers(query: BaseQuery, update_fields: dict) -> None:
+def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notif: bool = False) -> None:
     query = query.filter(models.Offer.validation == models.OfferValidationStatus.APPROVED)
     raw_results = query.with_entities(models.Offer.id, models.Offer.venueId).all()
     offer_ids, venue_ids = [], []
@@ -372,6 +381,13 @@ def batch_update_offers(query: BaseQuery, update_fields: dict) -> None:
         db.session.commit()
 
         search.async_index_offer_ids(offer_ids_batch)
+
+        withdrawal_updated = {"withdrawalDetails", "withdrawalType", "withdrawalDelay"}.intersection(
+            update_fields.keys()
+        )
+        if send_email_notif and withdrawal_updated and FeatureToggle.WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL.is_active():
+            for offer in query_to_update.all():
+                transactional_mails.send_email_for_each_ongoing_booking(offer)
 
 
 def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
