@@ -15,6 +15,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.routes.public import utils as public_utils
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import image_conversion
@@ -108,6 +109,19 @@ def _retrieve_offer_relations_query(query: sqla_orm.Query) -> sqla_orm.Query:
             )
         )
     )
+
+
+def _check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
+    if venue_id is None:
+        return
+
+    is_venue_tied_to_api_key = db.session.query(
+        offerers_models.Venue.query.filter(
+            offerers_models.Venue.managingOffererId == current_api_key.offererId, offerers_models.Venue.id == venue_id  # type: ignore [attr-defined]
+        ).exists()
+    ).scalar()
+    if not is_venue_tied_to_api_key:
+        raise api_errors.ApiErrors({"venue_id": ["The venue could not be found"]}, status_code=404)
 
 
 def _retrieve_offer_ids(is_event: bool, filtered_venue_id: int | None) -> list[int]:
@@ -346,6 +360,7 @@ def get_products(query: serialization.GetOffersQueryParams) -> serialization.Pro
     """
     Get products. Results are paginated.
     """
+    _check_venue_id_is_tied_to_api_key(query.venue_id)
     total_offer_ids = _retrieve_offer_ids(is_event=False, filtered_venue_id=query.venue_id)
     offset = query.limit * (query.page - 1)
 
@@ -446,6 +461,7 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     """
     Get events. Results are paginated.
     """
+    _check_venue_id_is_tied_to_api_key(query.venue_id)
     total_offer_ids = _retrieve_offer_ids(is_event=True, filtered_venue_id=query.venue_id)
     offset = query.limit * (query.page - 1)
 
