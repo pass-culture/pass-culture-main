@@ -82,13 +82,13 @@ def create_specific_invoice() -> None:
     db.session.commit()
 
     bookings = [
-        bookings_factories.UsedIndividualBookingFactory(
+        bookings_factories.UsedBookingFactory(
             stock=special_stock,
-            individualBooking__user=special_user,
+            user=special_user,
         ),
     ]
     for stock in stocks:
-        booking = bookings_factories.UsedIndividualBookingFactory(
+        booking = bookings_factories.UsedBookingFactory(
             stock=stock,
             user__deposit__source="create_specific_invoice() in industrial sandbox",
         )

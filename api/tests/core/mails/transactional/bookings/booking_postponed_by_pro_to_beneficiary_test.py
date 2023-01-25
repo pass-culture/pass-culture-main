@@ -16,7 +16,7 @@ class GetBookingPostponedByProToBeneficiaryTest:
     def test_should_get_sendinblue_email_data_when_stock_date_have_been_changed(self):
         # Given
         stock = EventStockFactory(beginningDatetime=datetime(2019, 8, 20, 12, 0, 0))
-        booking = bookings_factories.IndividualBookingFactory(stock=stock)
+        booking = bookings_factories.BookingFactory(stock=stock)
 
         # When
         booking_info_for_sendinblue = get_booking_postponed_by_pro_to_beneficiary_email_data(booking)

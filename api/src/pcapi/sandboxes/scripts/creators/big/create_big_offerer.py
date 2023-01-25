@@ -1,7 +1,7 @@
 import datetime
 import logging
 
-from pcapi.core.bookings.factories import IndividualBookingFactory
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
@@ -36,6 +36,6 @@ def create_big_offerer() -> None:
                 beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0)
                 + datetime.timedelta(days=20),
             )
-            IndividualBookingFactory(quantity=1, stock=stock)
+            BookingFactory(quantity=1, stock=stock)
         logger.info("create venue %d of big offerer", i)
     logger.info("end create big offerer with 5k+ booked offers")

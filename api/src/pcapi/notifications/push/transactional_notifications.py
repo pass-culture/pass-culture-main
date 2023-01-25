@@ -44,7 +44,7 @@ def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> Trans
     )
     return TransactionalNotificationData(
         group_id=GroupId.CANCEL_BOOKING.value,
-        user_ids=[booking.individualBooking.userId for booking in bookings],
+        user_ids=[booking.userId for booking in bookings],
         message=TransactionalNotificationMessage(
             title=f"{cancelled_object.capitalize()} annulée",
             body=f"""Ta {cancelled_object} "{bookings[0].stock.offer.name}" a été annulée par l'offreur.""",

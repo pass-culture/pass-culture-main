@@ -67,30 +67,6 @@ class BookingExportType(enum.Enum):
     EXCEL = "excel"
 
 
-class IndividualBooking(PcObject, Base, Model):
-    __tablename__ = "individual_booking"
-
-    userId: int = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
-    user = relationship(  # type: ignore [misc]
-        "User",
-        foreign_keys=[userId],
-        backref="userIndividualBookings",
-        lazy="joined",
-        innerjoin=True,
-    )
-
-    depositId = Column(BigInteger, ForeignKey("deposit.id"), index=True, nullable=True)
-    deposit = relationship("Deposit", back_populates="individual_bookings")  # type: ignore [misc]
-
-    booking = relationship(  # type: ignore [misc]
-        "Booking",
-        back_populates="individualBooking",
-        uselist=False,
-        lazy="joined",
-        innerjoin=True,
-    )
-
-
 class ExternalBooking(PcObject, Base, Model):
     bookingId: int = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
 
@@ -155,22 +131,9 @@ class Booking(PcObject, Base, Model):
 
     reimbursementDate = Column(DateTime, nullable=True, index=True)
 
-    individualBookingId = Column(
-        BigInteger,
-        ForeignKey("individual_booking.id"),
-        nullable=True,
-        unique=True,
-        index=True,
-    )
-    individualBooking = relationship(
-        IndividualBooking,
-        back_populates="booking",
-        uselist=False,
-    )
-
     depositId = Column(BigInteger, ForeignKey("deposit.id"), index=True, nullable=True)
 
-    deposit: Mapped["Deposit | None"] = relationship("Deposit", foreign_keys=[depositId], backref="bookings")
+    deposit: Mapped["Deposit | None"] = relationship("Deposit", foreign_keys=[depositId], back_populates="bookings")
 
     def mark_as_used(self) -> None:
         if self.is_used_or_reimbursed:
@@ -273,31 +236,19 @@ class Booking(PcObject, Base, Model):
 
     @property
     def firstName(self) -> str | None:
-        if self.individualBooking is not None:
-            return self.individualBooking.user.firstName
-
-        raise ValueError(f"Booking {self.id} has no individual booking.")
+        return self.user.firstName
 
     @property
     def lastName(self) -> str | None:
-        if self.individualBooking is not None:
-            return self.individualBooking.user.lastName
-
-        raise ValueError(f"Booking {self.id} has no individual booking.")
+        return self.user.lastName
 
     @property
     def userName(self) -> str:
-        if self.individualBooking is not None:
-            return self.individualBooking.user.full_name
-
-        raise ValueError(f"Booking {self.id} has no individual booking.")
+        return self.user.full_name
 
     @property
     def email(self) -> str:
-        if self.individualBooking is not None:
-            return self.individualBooking.user.email
-
-        raise ValueError(f"Booking {self.id} has no individual booking.")
+        return self.user.email
 
     @hybrid_property
     def isExternal(self) -> bool:
@@ -331,9 +282,8 @@ Booking.trig_ddl = f"""
             COALESCE(SUM(amount * quantity), 0) INTO sum_bookings
         FROM
             booking
-            JOIN individual_booking ON (booking."individualBookingId" = individual_booking.id)
         WHERE
-            individual_booking."depositId" = deposit_id
+            booking."depositId" = deposit_id
             AND NOT booking.status = '{BookingStatus.CANCELLED.value}'
             AND (NOT only_used_bookings OR booking.status in ('USED', 'REIMBURSED'));
         RETURN
@@ -358,7 +308,7 @@ Booking.trig_ddl = f"""
     RETURNS TRIGGER AS $$
     DECLARE
         lastStockUpdate date := (SELECT "dateModified" FROM stock WHERE id=NEW."stockId");
-        deposit_id bigint := (SELECT individual_booking."depositId" FROM booking LEFT JOIN individual_booking ON individual_booking.id = booking."individualBookingId" WHERE booking.id=NEW.id);
+        deposit_id bigint := (SELECT booking."depositId" FROM booking WHERE booking.id=NEW.id);
     BEGIN
     IF EXISTS (SELECT "quantity" FROM stock WHERE id=NEW."stockId" AND "quantity" IS NOT NULL)
         AND (
@@ -371,8 +321,7 @@ Booking.trig_ddl = f"""
     END IF;
 
     IF (
-        (NEW."individualBookingId" IS NOT NULL OR OLD."individualBookingId" IS NOT NULL)
-        AND (
+        (
         -- If this is a new booking, we probably want to check the wallet.
         OLD IS NULL
         -- If we're updating an existing booking...

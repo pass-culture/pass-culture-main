@@ -283,7 +283,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
             needsToFillCulturalSurvey=False,
         )
         db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
-        bookings_factory.IndividualBookingFactory(individualBooking__user=beneficiary_and_exunderage)
+        bookings_factory.BookingFactory(user=beneficiary_and_exunderage)
         db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
 
         fraud_factories.BeneficiaryFraudCheckFactory(user=beneficiary_and_exunderage)

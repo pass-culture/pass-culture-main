@@ -4,9 +4,9 @@ from urllib.parse import urlencode
 
 import pytest
 
-from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
-from pcapi.core.bookings.factories import IndividualBookingFactory
-from pcapi.core.bookings.factories import UsedIndividualBookingFactory
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import CancelledBookingFactory
+from pcapi.core.bookings.factories import UsedBookingFactory
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -22,7 +22,7 @@ class Returns200Test:
         # Given
         user_admin = users_factories.AdminFactory(email="admin@example.com")
         user_offerer = offerers_factories.UserOffererFactory(user=user_admin)
-        booking = IndividualBookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
+        booking = BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
         url = f"/bookings/token/{booking.token}"
 
         # When
@@ -46,7 +46,7 @@ class Returns200Test:
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com", publicName="John Doe")
         user_admin = users_factories.AdminFactory(email="admin@example.com")
-        booking = IndividualBookingFactory(individualBooking__user=user)
+        booking = BookingFactory(user=user)
         booking_token = booking.token.lower()
         url = f"/bookings/token/{booking_token}"
 
@@ -71,7 +71,7 @@ class Returns200Test:
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user+plus@example.com")
         user_admin = users_factories.AdminFactory(email="admin@example.com")
-        booking = IndividualBookingFactory(individualBooking__user=user)
+        booking = BookingFactory(user=user)
         url_email = urlencode({"email": "user+plus@example.com"})
         url = f"/bookings/token/{booking.token}?{url_email}"
 
@@ -87,7 +87,7 @@ class Returns204Test:
     def when_user_not_logged_in_and_gives_right_email(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        booking = IndividualBookingFactory(individualBooking__user=user)
+        booking = BookingFactory(user=user)
         url = f"/bookings/token/{booking.token}?email={user.email}"
 
         # When
@@ -102,8 +102,8 @@ class Returns204Test:
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        booking = IndividualBookingFactory(
-            individualBooking__user=user, stock=offers_factories.EventStockFactory(), cancellation_limit_date=yesterday
+        booking = BookingFactory(
+            user=user, stock=offers_factories.EventStockFactory(), cancellation_limit_date=yesterday
         )
         url = f"/bookings/token/{booking.token}?email={user.email}&offer_id={humanize(booking.stock.offer.id)}"
 
@@ -118,7 +118,7 @@ class Returns204Test:
     def when_user_not_logged_in_and_give_right_email_and_offer_id_thing(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        booking = IndividualBookingFactory(individualBooking__user=user, stock=offers_factories.ThingStockFactory())
+        booking = BookingFactory(user=user, stock=offers_factories.ThingStockFactory())
         url = f"/bookings/token/{booking.token}?email={user.email}&offer_id={humanize(booking.stock.offerId)}"
 
         # When
@@ -149,7 +149,7 @@ class Returns404Test:
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         user_admin = users_factories.AdminFactory(email="admin@example.com")
-        booking = IndividualBookingFactory(individualBooking__user=user)
+        booking = BookingFactory(user=user)
 
         url = f"/bookings/token/{booking.token}?email=toto@example.com"
 
@@ -165,7 +165,7 @@ class Returns404Test:
         # Given
 
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        booking = IndividualBookingFactory(individualBooking__user=user)
+        booking = BookingFactory(user=user)
 
         url = f"/bookings/token/{booking.token}?email={user.email}&offer_id={humanize(0)}"
 
@@ -181,7 +181,7 @@ class Returns404Test:
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user+plus@example.com")
         user_admin = users_factories.AdminFactory(email="admin@example.com")
-        booking = IndividualBookingFactory(individualBooking__user=user)
+        booking = BookingFactory(user=user)
         url = f"/bookings/token/{booking.token}?email={user.email}"
 
         # When
@@ -196,7 +196,7 @@ class Returns400Test:
     def when_user_not_logged_in_and_doesnt_give_email(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        booking = IndividualBookingFactory(individualBooking__user=user)
+        booking = BookingFactory(user=user)
         url = f"/bookings/token/{booking.token}"
 
         # When
@@ -214,7 +214,7 @@ class Returns400Test:
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         users_factories.BeneficiaryGrant18Factory(email="querying@example.com")
-        booking = IndividualBookingFactory(individualBooking__user=user)
+        booking = BookingFactory(user=user)
         url = f"/bookings/token/{booking.token}"
 
         # When
@@ -230,11 +230,11 @@ class Returns403Test:
     def when_booking_not_confirmed(self, client):
         # Given
         cancellation_date = datetime.utcnow() + timedelta(days=7)
-        unconfirmed_booking = IndividualBookingFactory(
+        unconfirmed_booking = BookingFactory(
             stock=offers_factories.EventStockFactory(), cancellation_limit_date=cancellation_date
         )
         url = (
-            f"/bookings/token/{unconfirmed_booking.token}?email={unconfirmed_booking.individualBooking.user.email}"
+            f"/bookings/token/{unconfirmed_booking.token}?email={unconfirmed_booking.user.email}"
             f"&offer_id={humanize(unconfirmed_booking.stock.offerId)}"
         )
 
@@ -257,8 +257,7 @@ class Returns403Test:
         # Given
         booking = finance_factories.PaymentFactory().booking
         url = (
-            f"/bookings/token/{booking.token}?"
-            f"email={booking.individualBooking.user.email}&offer_id={humanize(booking.stock.offerId)}"
+            f"/bookings/token/{booking.token}?" f"email={booking.user.email}&offer_id={humanize(booking.stock.offerId)}"
         )
 
         # When
@@ -274,7 +273,7 @@ class Returns410Test:
     def when_booking_is_cancelled(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        booking = CancelledIndividualBookingFactory(individualBooking__user=user)
+        booking = CancelledBookingFactory(user=user)
         url = f"/bookings/token/{booking.token}?email={user.email}&offer_id={humanize(booking.stock.offerId)}"
 
         # When
@@ -288,7 +287,7 @@ class Returns410Test:
     def when_booking_is_already_validated(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        booking = UsedIndividualBookingFactory(individualBooking__user=user)
+        booking = UsedBookingFactory(user=user)
         url = f"/bookings/token/{booking.token}?email={user.email}&offer_id={humanize(booking.stock.offerId)}"
 
         # When

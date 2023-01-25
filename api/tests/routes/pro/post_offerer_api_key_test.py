@@ -10,7 +10,7 @@ from pcapi.utils.human_ids import humanize
 
 @pytest.mark.usefixtures("db_session")
 def test_api_key_journey(client):
-    booking = booking_factories.IndividualBookingFactory()
+    booking = booking_factories.BookingFactory()
     user_offerer = UserOffererFactory(offerer=booking.offerer)
     client.with_session_auth(user_offerer.user.email)
 

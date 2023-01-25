@@ -1860,12 +1860,10 @@ class PatchProductTest:
             lastProvider=individual_offers_api_provider,
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime=None)
-        confirmed_booking = bookings_factories.IndividualBookingFactory(
+        confirmed_booking = bookings_factories.BookingFactory(
             stock=stock, status=bookings_models.BookingStatus.CONFIRMED
         )
-        used_booking = bookings_factories.IndividualBookingFactory(
-            stock=stock, status=bookings_models.BookingStatus.USED
-        )
+        used_booking = bookings_factories.BookingFactory(stock=stock, status=bookings_models.BookingStatus.USED)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/products/{product_offer.id}",

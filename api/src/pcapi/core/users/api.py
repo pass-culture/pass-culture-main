@@ -585,9 +585,7 @@ def get_domains_credit(
         deposit_bookings = [
             booking
             for booking in user_bookings
-            if booking.individualBooking is not None
-            and booking.individualBooking.depositId == user.deposit.id
-            and booking.status != bookings_models.BookingStatus.CANCELLED
+            if booking.depositId == user.deposit.id and booking.status != bookings_models.BookingStatus.CANCELLED
         ]
 
     domains_credit = models.DomainsCredit(

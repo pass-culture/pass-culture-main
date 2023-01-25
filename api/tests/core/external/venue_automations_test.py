@@ -67,7 +67,7 @@ class VenueAutomationsTest:
         venue_old_booking = offerers_factories.VenueFactory(
             managingOfferer=offerer_validated_92_days_ago, bookingEmail="old_booking@example.com"
         )
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             dateCreated=date_92_days_ago,
             stock=offers_factories.ThingStockFactory(
                 offer=offers_factories.ThingOfferFactory(
@@ -80,7 +80,7 @@ class VenueAutomationsTest:
         venue_has_booking = offerers_factories.VenueFactory(
             managingOfferer=offerer_validated_92_days_ago, bookingEmail="has_booking@example.com"
         )
-        bookings_factories.IndividualBookingFactory(
+        bookings_factories.BookingFactory(
             stock=offers_factories.ThingStockFactory(
                 offer=offers_factories.ThingOfferFactory(
                     venue=venue_has_booking, validation=OfferValidationStatus.APPROVED

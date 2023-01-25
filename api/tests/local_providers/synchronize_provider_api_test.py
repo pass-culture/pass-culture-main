@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 from unittest import mock
 
@@ -103,8 +104,10 @@ class ProviderAPICronTest:
         create_product(ISBNs[8], isSynchronizationCompatible=False, product_price="7.08")
 
         stock_with_booking = create_stock(ISBNs[5], siret, venue, quantity=20, product_price="18.01")
-        BookingFactory(stock=stock_with_booking)
-        BookingFactory(stock=stock_with_booking, quantity=2)
+        BookingFactory(stock=stock_with_booking, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
+        BookingFactory(
+            stock=stock_with_booking, quantity=2, user__deposit__expirationDate=datetime(year=2031, month=12, day=31)
+        )
 
         # When
         with requests_mock.Mocker() as request_mock:

@@ -1,7 +1,7 @@
 import datetime
 import logging
 
-from pcapi.core.bookings.factories import IndividualBookingFactory
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
@@ -43,7 +43,7 @@ def create_offers_fully_booked(user_bene: User, venue: Venue) -> None:
             subcategoryId=subcategories.SEANCE_CINE.id,
         )
         stock_event = EventStockFactory(offer=offer_event, quantity=1)
-        IndividualBookingFactory(quantity=1, stock=stock_event, user=user_bene, individualBooking__user=user_bene)
+        BookingFactory(quantity=1, stock=stock_event, user=user_bene)
 
         offer_thing = ThingOfferFactory(
             name=f"Livre complétement réservé {i}",
@@ -51,7 +51,7 @@ def create_offers_fully_booked(user_bene: User, venue: Venue) -> None:
             subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         stock_thing = ThingStockFactory(offer=offer_thing, quantity=1)
-        IndividualBookingFactory(quantity=1, stock=stock_thing, user=user_bene, individualBooking__user=user_bene)
+        BookingFactory(quantity=1, stock=stock_thing, user=user_bene)
 
         offer_with_past_stock = EventOfferFactory(
             name=f"Ciné avec 1 stock passé complétement réservé {i}",
@@ -64,7 +64,7 @@ def create_offers_fully_booked(user_bene: User, venue: Venue) -> None:
             beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0) - datetime.timedelta(days=5),
             quantity=1,
         )
-        IndividualBookingFactory(quantity=1, stock=stock_past, user=user_bene, individualBooking__user=user_bene)
+        BookingFactory(quantity=1, stock=stock_past, user=user_bene)
 
     logger.info("create_offers_fully_booked")
 

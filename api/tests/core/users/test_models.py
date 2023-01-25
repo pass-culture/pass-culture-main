@@ -370,22 +370,22 @@ class UserWalletBalanceTest:
 
     def test_balance(self):
         user = users_factories.BeneficiaryGrant18Factory()
-        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, quantity=1, amount=10)
-        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, quantity=2, amount=20)
-        bookings_factories.IndividualBookingFactory(individualBooking__user=user, quantity=3, amount=30)
-        bookings_factories.CancelledIndividualBookingFactory(individualBooking__user=user, quantity=4, amount=40)
+        bookings_factories.UsedBookingFactory(user=user, quantity=1, amount=10)
+        bookings_factories.UsedBookingFactory(user=user, quantity=2, amount=20)
+        bookings_factories.BookingFactory(user=user, quantity=3, amount=30)
+        bookings_factories.CancelledBookingFactory(user=user, quantity=4, amount=40)
 
         assert user.wallet_balance == 300 - (10 + 2 * 20 + 3 * 30)
 
     def test_real_balance_with_only_used_bookings(self):
         user = users_factories.BeneficiaryGrant18Factory()
-        bookings_factories.IndividualBookingFactory(individualBooking__user=user, quantity=1, amount=30)
+        bookings_factories.BookingFactory(user=user, quantity=1, amount=30)
 
         assert user.wallet_balance == 300 - 30
 
     def test_balance_when_expired(self):
         user = users_factories.BeneficiaryGrant18Factory()
-        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, quantity=1, amount=10)
+        bookings_factories.UsedBookingFactory(user=user, quantity=1, amount=10)
         deposit = user.deposit
         deposit.expirationDate = datetime(2000, 1, 1)
 
@@ -398,13 +398,13 @@ class SQLFunctionsTest:
             user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
             # disable trigger because deposit.expirationDate > now() is False in database time
             db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
-            bookings_factories.IndividualBookingFactory(individualBooking__user=user, amount=18)
+            bookings_factories.BookingFactory(user=user, amount=18)
             db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
 
         finance_api.create_deposit(user, "test", user_models.EligibilityType.AGE18)
 
-        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, amount=10)
-        bookings_factories.IndividualBookingFactory(individualBooking__user=user, amount=1)
+        bookings_factories.UsedBookingFactory(user=user, amount=10)
+        bookings_factories.BookingFactory(user=user, amount=1)
 
         assert db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0] == decimal.Decimal(289)
         assert db.session.query(sa.func.get_wallet_balance(user.id, True)).first()[0] == decimal.Decimal(290)
@@ -430,7 +430,7 @@ class SQLFunctionsTest:
             user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
             # disable trigger because deposit.expirationDate > now() is False in database time
             db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
-            bookings_factories.IndividualBookingFactory(individualBooking__user=user, amount=18)
+            bookings_factories.BookingFactory(user=user, amount=18)
             db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
 
         assert db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0] == 0
@@ -438,8 +438,8 @@ class SQLFunctionsTest:
     def test_deposit_balance(self):
         deposit = users_factories.DepositGrantFactory()
 
-        bookings_factories.UsedIndividualBookingFactory(individualBooking__deposit=deposit, amount=10)
-        bookings_factories.IndividualBookingFactory(individualBooking__deposit=deposit, amount=1)
+        bookings_factories.UsedBookingFactory(deposit=deposit, amount=10)
+        bookings_factories.BookingFactory(deposit=deposit, amount=1)
 
         assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 289
         assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 290

@@ -49,7 +49,6 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     educational_models.CollectiveBooking.query.delete()
     bookings_models.ExternalBooking.query.delete()
     bookings_models.Booking.query.delete()
-    bookings_models.IndividualBooking.query.delete()
     educational_models.CollectiveStock.query.delete()
     offers_models.Stock.query.delete()
     users_models.Favorite.query.delete()

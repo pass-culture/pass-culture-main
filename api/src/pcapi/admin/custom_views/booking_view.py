@@ -74,11 +74,7 @@ class BookingView(BaseCustomAdminView):
                 token = search_form.token.data.strip().upper()
                 booking = (
                     booking_models.Booking.query.filter_by(token=token)
-                    .options(
-                        joinedload(booking_models.Booking.individualBooking).joinedload(
-                            booking_models.IndividualBooking.user
-                        )
-                    )
+                    .options(joinedload(booking_models.Booking.user))
                     .options(joinedload(booking_models.Booking.stock).joinedload(Stock.offer))
                     .one_or_none()
                 )
@@ -90,11 +86,7 @@ class BookingView(BaseCustomAdminView):
                     cancel_form = CancelForm(booking_id=booking.id)
         elif "id" in request.args:
             booking = (
-                booking_models.Booking.query.options(
-                    joinedload(booking_models.Booking.individualBooking).joinedload(
-                        booking_models.IndividualBooking.user
-                    )
-                )
+                booking_models.Booking.query.options(joinedload(booking_models.Booking.user))
                 .options(joinedload(booking_models.Booking.stock).joinedload(Stock.offer))
                 .get(request.args["id"])
             )

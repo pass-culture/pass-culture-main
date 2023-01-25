@@ -19,7 +19,8 @@ class BookingFactory(BaseFactory):
     quantity = 1
     stock = factory.SubFactory(offers_factories.StockFactory)
     token = factory.LazyFunction(random_token)
-    user = None
+    user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
+    deposit = factory.LazyAttribute(lambda o: o.user.deposit)
     amount = factory.SelfAttribute("stock.price")
     status = models.BookingStatus.CONFIRMED
 
@@ -68,27 +69,3 @@ class ReimbursedBookingFactory(BookingFactory):
     status = models.BookingStatus.REIMBURSED
     dateUsed = factory.LazyFunction(datetime.datetime.utcnow)
     reimbursementDate = factory.LazyFunction(datetime.datetime.utcnow)
-
-
-class IndividualBookingSubFactory(BaseFactory):
-    class Meta:
-        model = models.IndividualBooking
-
-    user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
-
-    deposit = factory.LazyAttribute(lambda o: o.user.deposit)
-
-
-class IndividualBookingFactory(BookingFactory):
-    individualBooking = factory.SubFactory(IndividualBookingSubFactory)
-    user = None
-
-
-class CancelledIndividualBookingFactory(CancelledBookingFactory):
-    individualBooking = factory.SubFactory(IndividualBookingSubFactory)
-    user = None
-
-
-class UsedIndividualBookingFactory(UsedBookingFactory):
-    individualBooking = factory.SubFactory(IndividualBookingSubFactory)
-    user = None

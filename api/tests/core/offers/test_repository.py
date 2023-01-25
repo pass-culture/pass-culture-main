@@ -1145,23 +1145,23 @@ class IncomingEventStocksTest:
         query = repository.find_event_stocks_happening_in_x_days(number_of_days=7)
         assert {stock.id for stock in query} == {self.stock_next_week.id}
 
-    @freeze_time("2020-10-15 15:00:00")
+    @freeze_time("2022-10-15 15:00:00")
     def test_find_today_event_stock_ids_metropolitan_france(self):
         self.setup_stocks()
 
-        today_min = datetime(2020, 10, 15, 12, 00)
-        today_max = datetime(2020, 10, 15, 23, 00)
+        today_min = datetime(2022, 10, 15, 12, 00)
+        today_max = datetime(2022, 10, 15, 23, 00)
 
         stock_ids = repository.find_today_event_stock_ids_metropolitan_france(today_min, today_max)
 
         assert set(stock_ids) == {self.stock_today.id}
 
-    @freeze_time("2020-10-15 15:00:00")
+    @freeze_time("2022-10-15 15:00:00")
     def test_find_today_event_stock_ids_by_departments(self):
         self.setup_stocks()
 
-        today_min = datetime(2020, 10, 15, 8, 00)
-        today_max = datetime(2020, 10, 15, 19, 00)
+        today_min = datetime(2022, 10, 15, 8, 00)
+        today_max = datetime(2022, 10, 15, 19, 00)
 
         departments_prefixes = ["971"]
 

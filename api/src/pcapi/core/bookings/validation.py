@@ -5,7 +5,6 @@ from pcapi.core.bookings import constants
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.models import IndividualBooking
 import pcapi.core.finance.repository as finance_repository
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
@@ -34,9 +33,8 @@ def check_can_book_free_offer(user: User, stock: Stock) -> None:
 def check_offer_already_booked(user: User, offer: Offer) -> None:
     """Raise ``OfferIsAlreadyBooked`` if the user already booked this offer."""
     if db.session.query(
-        IndividualBooking.query.join(Booking)
-        .filter(
-            IndividualBooking.user == user,
+        Booking.query.filter(
+            Booking.user == user,
             Booking.status != BookingStatus.CANCELLED,
         )
         .join(Stock)
@@ -91,7 +89,7 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer) -
 
 
 def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
-    if booking.individualBooking is None or booking.individualBooking.userId != user.id:
+    if booking.userId != user.id:
         raise exceptions.BookingDoesntExist()
     if booking.is_cancelled:
         raise exceptions.BookingIsCancelled()

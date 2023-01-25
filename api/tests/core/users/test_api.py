@@ -226,12 +226,12 @@ class SuspendAccountTest:
 
     def test_suspend_beneficiary(self):
         user = users_factories.BeneficiaryGrant18Factory()
-        cancellable_booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
+        cancellable_booking = bookings_factories.BookingFactory(user=user)
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        confirmed_booking = bookings_factories.IndividualBookingFactory(
-            individualBooking__user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
+        confirmed_booking = bookings_factories.BookingFactory(
+            user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
         )
-        used_booking = bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user)
+        used_booking = bookings_factories.UsedBookingFactory(user=user)
         author = users_factories.AdminFactory()
         reason = users_constants.SuspensionReason.FRAUD_SUSPICION
         old_password_hash = user.password
@@ -256,7 +256,7 @@ class SuspendAccountTest:
         )
 
     def test_suspend_pro(self):
-        booking = bookings_factories.IndividualBookingFactory()
+        booking = bookings_factories.BookingFactory()
         pro = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
         author = users_factories.AdminFactory()
         reason = users_constants.SuspensionReason.FRAUD_SUSPICION
@@ -273,7 +273,7 @@ class SuspendAccountTest:
         )
 
     def test_suspend_pro_with_other_offerer_users(self):
-        booking = bookings_factories.IndividualBookingFactory()
+        booking = bookings_factories.BookingFactory()
         pro = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
         offerers_factories.UserOffererFactory(offerer=booking.offerer)
         author = users_factories.AdminFactory()
@@ -630,35 +630,35 @@ class DomainsCreditTest:
         user = users_factories.BeneficiaryGrant18Factory(deposit__version=1, deposit__amount=500)
 
         # booking only in all domains
-        bookings_factories.IndividualBookingFactory(
-            individualBooking__user=user,
+        bookings_factories.BookingFactory(
+            user=user,
             amount=50,
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )
-        bookings_factories.IndividualBookingFactory(
-            individualBooking__user=user,
+        bookings_factories.BookingFactory(
+            user=user,
             amount=5,
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )
 
         # booking in digital domain
-        bookings_factories.IndividualBookingFactory(
-            individualBooking__user=user,
+        bookings_factories.BookingFactory(
+            user=user,
             amount=80,
             stock__offer__subcategoryId=subcategories.JEU_EN_LIGNE.id,
             stock__offer__url="http://on.line",
         )
 
         # booking in physical domain
-        bookings_factories.IndividualBookingFactory(
-            individualBooking__user=user,
+        bookings_factories.BookingFactory(
+            user=user,
             amount=150,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         # cancelled booking
-        bookings_factories.CancelledIndividualBookingFactory(
-            individualBooking__user=user,
+        bookings_factories.CancelledBookingFactory(
+            user=user,
             amount=150,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
@@ -673,8 +673,8 @@ class DomainsCreditTest:
         user = users_factories.BeneficiaryGrant18Factory()
 
         # booking in physical domain
-        bookings_factories.IndividualBookingFactory(
-            individualBooking__user=user,
+        bookings_factories.BookingFactory(
+            user=user,
             amount=250,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
@@ -687,8 +687,8 @@ class DomainsCreditTest:
 
     def test_get_domains_credit_deposit_expired(self):
         user = users_factories.BeneficiaryGrant18Factory()
-        bookings_factories.IndividualBookingFactory(
-            individualBooking__user=user,
+        bookings_factories.BookingFactory(
+            user=user,
             amount=250,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )

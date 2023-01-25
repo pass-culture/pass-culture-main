@@ -3,7 +3,7 @@ from datetime import timedelta
 import logging
 from random import choice
 
-from pcapi.core.bookings.factories import IndividualBookingFactory
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
@@ -114,8 +114,8 @@ def _create_bookings_for_other_beneficiaries(
             else:
                 booking_amount = None
 
-            bookings_by_name[booking_name] = IndividualBookingFactory(
-                individualBooking__user=user,
+            bookings_by_name[booking_name] = BookingFactory(
+                user=user,
                 status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
                 stock=stock,
                 dateUsed=datetime.utcnow() - timedelta(days=2) if is_used else None,
@@ -167,8 +167,8 @@ def _create_has_booked_some_bookings(
             stock.bookingLimitDatetime = datetime.utcnow() - timedelta(days=5)
             repository.save(stock)
 
-        booking = IndividualBookingFactory(
-            individualBooking__user=user,
+        booking = BookingFactory(
+            user=user,
             status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
             stock=stock,
             dateUsed=datetime.utcnow() - timedelta(days=2) if is_used else None,

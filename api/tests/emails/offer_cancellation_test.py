@@ -24,7 +24,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         stock = offers_factories.EventStockFactory(
             beginningDatetime=beginning_datetime, price=20, quantity=10, bookingLimitDatetime=booking_limit_datetime
         )
-        booking = bookings_factories.IndividualBookingFactory(stock=stock)
+        booking = bookings_factories.BookingFactory(stock=stock)
 
         # When
         with patch("pcapi.core.bookings.repository.find_ongoing_bookings_by_stock", return_value=[]):
@@ -60,10 +60,8 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         stock = offers_factories.EventStockFactory(
             beginningDatetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc), price=20, quantity=10
         )
-        booking1 = bookings_factories.IndividualBookingFactory(stock=stock, token="98765")
-        booking2 = bookings_factories.IndividualBookingFactory(
-            individualBooking__user=other_beneficiary, stock=stock, token="12345"
-        )
+        booking1 = bookings_factories.BookingFactory(stock=stock, token="98765")
+        booking2 = bookings_factories.BookingFactory(user=other_beneficiary, stock=stock, token="12345")
 
         # When
         with patch("pcapi.core.bookings.repository.find_ongoing_bookings_by_stock", return_value=[booking2]):
@@ -84,9 +82,9 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
     def test_offer_cancellation_confirmation_by_offerer_thing_and_already_existing_booking(self, app):
         # Given
         stock = offers_factories.ThingStockFactory(price=0, quantity=10)
-        booking = bookings_factories.IndividualBookingFactory(stock=stock, token="12346")
+        booking = bookings_factories.BookingFactory(stock=stock, token="12346")
 
-        booking2 = bookings_factories.IndividualBookingFactory(stock=stock, token="12345")
+        booking2 = bookings_factories.BookingFactory(stock=stock, token="12345")
         ongoing_bookings = [booking2]
 
         # When

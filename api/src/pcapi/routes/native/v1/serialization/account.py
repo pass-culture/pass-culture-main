@@ -184,17 +184,13 @@ class UserProfileResponse(BaseModel):
 
     @staticmethod
     def _get_booked_offers(user: users_models.User) -> dict:
-        not_cancelled_bookings = (
-            bookings_models.Booking.query.join(bookings_models.Booking.individualBooking)
-            .options(
-                joinedload(bookings_models.Booking.stock)
-                .joinedload(offers_models.Stock.offer)
-                .load_only(offers_models.Offer.id)
-            )
-            .filter(
-                bookings_models.IndividualBooking.userId == user.id,
-                bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
-            )
+        not_cancelled_bookings = bookings_models.Booking.query.options(
+            joinedload(bookings_models.Booking.stock)
+            .joinedload(offers_models.Stock.offer)
+            .load_only(offers_models.Offer.id)
+        ).filter(
+            bookings_models.Booking.userId == user.id,
+            bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
         )
 
         return {booking.stock.offer.id: booking.id for booking in not_cancelled_bookings}

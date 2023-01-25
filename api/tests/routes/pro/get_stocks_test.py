@@ -29,7 +29,9 @@ class Returns200Test:
             beginningDatetime=now,
             bookingLimitDatetime=now,
         )
-        bookings_factories.BookingFactory.create_batch(3, stock=stock)
+        bookings_factories.BookingFactory.create_batch(
+            3, stock=stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31)
+        )
         offerers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
         client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 

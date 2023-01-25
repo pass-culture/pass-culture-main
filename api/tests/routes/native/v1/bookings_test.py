@@ -4,7 +4,6 @@ from datetime import timedelta
 from flask_jwt_extended.utils import create_access_token
 from freezegun import freeze_time
 import pytest
-from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.models import Booking
@@ -45,10 +44,8 @@ class PostBookingTest:
 
         assert response.status_code == 200
 
-        booking = (
-            Booking.query.filter(Booking.stockId == stock.id).options(joinedload(Booking.individualBooking)).first()
-        )
-        assert booking.individualBooking.userId == user.id
+        booking = Booking.query.filter(Booking.stockId == stock.id).first()
+        assert booking.userId == user.id
         assert response.json["bookingId"] == booking.id
 
     def test_no_stock_found(self, app):
@@ -77,7 +74,7 @@ class PostBookingTest:
 
     def test_already_booked(self, app):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = booking_factories.IndividualBookingFactory(individualBooking__user=user)
+        booking = booking_factories.BookingFactory(user=user)
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -108,52 +105,48 @@ class GetBookingsTest:
         OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
-        permanent_booking = booking_factories.UsedIndividualBookingFactory(
-            individualBooking__user=user,
+        permanent_booking = booking_factories.UsedBookingFactory(
+            user=user,
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
             dateUsed=datetime(2021, 2, 3),
         )
 
-        event_booking = booking_factories.IndividualBookingFactory(
-            individualBooking__user=user, stock=EventStockFactory(beginningDatetime=datetime(2021, 3, 14))
+        event_booking = booking_factories.BookingFactory(
+            user=user, stock=EventStockFactory(beginningDatetime=datetime(2021, 3, 14))
         )
 
         digital_stock = StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
         second_activation_code = digital_stock.activationCodes[1]
-        digital_booking = booking_factories.UsedIndividualBookingFactory(
-            individualBooking__user=user,
+        digital_booking = booking_factories.UsedBookingFactory(
+            user=user,
             stock=digital_stock,
             activationCode=first_activation_code,
         )
-        ended_digital_booking = booking_factories.UsedIndividualBookingFactory(
-            individualBooking__user=user,
+        ended_digital_booking = booking_factories.UsedBookingFactory(
+            user=user,
             displayAsEnded=True,
             stock=digital_stock,
             activationCode=second_activation_code,
         )
-        expire_tomorrow = booking_factories.IndividualBookingFactory(
-            individualBooking__user=user, dateCreated=datetime.utcnow() - timedelta(days=29)
+        expire_tomorrow = booking_factories.BookingFactory(
+            user=user, dateCreated=datetime.utcnow() - timedelta(days=29)
         )
-        used_but_in_future = booking_factories.UsedIndividualBookingFactory(
-            individualBooking__user=user,
+        used_but_in_future = booking_factories.UsedBookingFactory(
+            user=user,
             dateUsed=datetime(2021, 3, 11),
             stock=StockFactory(beginningDatetime=datetime(2021, 3, 15)),
         )
 
-        cancelled_permanent_booking = booking_factories.CancelledIndividualBookingFactory(
-            individualBooking__user=user,
+        cancelled_permanent_booking = booking_factories.CancelledBookingFactory(
+            user=user,
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
             cancellation_date=datetime(2021, 3, 10),
         )
-        cancelled = booking_factories.CancelledIndividualBookingFactory(
-            individualBooking__user=user, cancellation_date=datetime(2021, 3, 8)
-        )
-        used1 = booking_factories.UsedIndividualBookingFactory(
-            individualBooking__user=user, dateUsed=datetime(2021, 3, 1)
-        )
-        used2 = booking_factories.UsedIndividualBookingFactory(
-            individualBooking__user=user,
+        cancelled = booking_factories.CancelledBookingFactory(user=user, cancellation_date=datetime(2021, 3, 8))
+        used1 = booking_factories.UsedBookingFactory(user=user, dateUsed=datetime(2021, 3, 1))
+        used2 = booking_factories.UsedBookingFactory(
+            user=user,
             displayAsEnded=True,
             dateUsed=datetime(2021, 3, 2),
             stock__offer__url=OFFER_URL,
@@ -240,8 +233,8 @@ class GetBookingsTest:
     def test_get_bookings_15_17_user(self, client):
         user = users_factories.UnderageBeneficiaryFactory(email=self.identifier)
 
-        booking = booking_factories.UsedIndividualBookingFactory(
-            individualBooking__user=user,
+        booking = booking_factories.UsedBookingFactory(
+            user=user,
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
             dateUsed=datetime(2021, 2, 3),
         )
@@ -259,11 +252,9 @@ class GetBookingsTest:
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         stock = StockFactory(offer__url=OFFER_URL)
 
-        cancelled_booking = booking_factories.CancelledIndividualBookingFactory(
-            individualBooking__user=user, displayAsEnded=True, stock=stock
-        )
-        ongoing_booking = booking_factories.IndividualBookingFactory(
-            individualBooking__user=user,
+        cancelled_booking = booking_factories.CancelledBookingFactory(user=user, displayAsEnded=True, stock=stock)
+        ongoing_booking = booking_factories.BookingFactory(
+            user=user,
             stock=stock,
         )
 
@@ -288,8 +279,8 @@ class GetBookingsTest:
     @freeze_time("2021-03-12")
     def test_get_bookings_withdrawal_informations(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking_factories.IndividualBookingFactory(
-            individualBooking__user=user,
+        booking_factories.BookingFactory(
+            user=user,
             stock__offer__subcategoryId=subcategories.CONCERT.id,
             stock__offer__withdrawalDetails="Veuillez chercher votre billet au guichet",
             stock__offer__withdrawalType=WithdrawalTypeEnum.ON_SITE,
@@ -307,9 +298,7 @@ class GetBookingsTest:
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_bookings_with_external_booking_infos(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = booking_factories.IndividualBookingFactory(
-            individualBooking__user=user, stock__offer__subcategoryId=subcategories.SEANCE_CINE.id
-        )
+        booking = booking_factories.BookingFactory(user=user, stock__offer__subcategoryId=subcategories.SEANCE_CINE.id)
         ExternalBookingFactory(booking=booking, barcode="111111111", seat="A_1")
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
 
@@ -330,7 +319,7 @@ class CancelBookingTest:
 
     def test_cancel_booking(self, app):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = booking_factories.IndividualBookingFactory(individualBooking__user=user)
+        booking = booking_factories.BookingFactory(user=user)
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -347,7 +336,7 @@ class CancelBookingTest:
 
     def test_cancel_others_booking(self, app):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = booking_factories.IndividualBookingFactory()
+        booking = booking_factories.BookingFactory()
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -359,8 +348,8 @@ class CancelBookingTest:
 
     def test_cancel_confirmed_booking(self, app):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = booking_factories.IndividualBookingFactory(
-            individualBooking__user=user, cancellation_limit_date=datetime.utcnow() - timedelta(days=1)
+        booking = booking_factories.BookingFactory(
+            user=user, cancellation_limit_date=datetime.utcnow() - timedelta(days=1)
         )
 
         access_token = create_access_token(identity=self.identifier)
@@ -377,8 +366,8 @@ class CancelBookingTest:
 
     def test_cancel_cancelled_booking(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = booking_factories.IndividualBookingFactory(
-            individualBooking__user=user,
+        booking = booking_factories.BookingFactory(
+            user=user,
             status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.BENEFICIARY,
         )
@@ -397,7 +386,7 @@ class ToggleBookingVisibilityTest:
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         access_token = create_access_token(identity=self.identifier)
 
-        booking = booking_factories.IndividualBookingFactory(individualBooking__user=user, displayAsEnded=None)
+        booking = booking_factories.BookingFactory(user=user, displayAsEnded=None)
         booking_id = booking.id
 
         test_client = TestClient(app.test_client())
@@ -421,8 +410,8 @@ class ToggleBookingVisibilityTest:
 
         stock = StockWithActivationCodesFactory()
         activation_code = stock.activationCodes[0]
-        booking = booking_factories.UsedIndividualBookingFactory(
-            individualBooking__user=user,
+        booking = booking_factories.UsedBookingFactory(
+            user=user,
             displayAsEnded=None,
             dateUsed=datetime.utcnow(),
             stock=stock,

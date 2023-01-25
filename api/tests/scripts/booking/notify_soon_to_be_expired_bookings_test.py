@@ -4,7 +4,7 @@ from unittest import mock
 
 import pytest
 
-from pcapi.core.bookings.factories import IndividualBookingFactory
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.repository import repository
@@ -25,12 +25,12 @@ class NotifyUsersOfSoonToBeExpiredBookingsTest:
         booking_date_22_days_ago = now - timedelta(days=22)
 
         dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        expire_in_7_days_dvd_individual_booking = IndividualBookingFactory(
+        expire_in_7_days_dvd_individual_booking = BookingFactory(
             stock__offer__product=dvd,
             dateCreated=booking_date_23_days_ago,
         )
         non_expired_cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
-        dont_expire_in_7_days_cd_individual_booking = IndividualBookingFactory(
+        dont_expire_in_7_days_cd_individual_booking = BookingFactory(
             stock__offer__product=non_expired_cd,
             dateCreated=booking_date_22_days_ago,
         )
@@ -41,5 +41,5 @@ class NotifyUsersOfSoonToBeExpiredBookingsTest:
 
         # Then
         mocked_email_recap.assert_called_once_with(
-            expire_in_7_days_dvd_individual_booking.individualBooking.user, [expire_in_7_days_dvd_individual_booking]
+            expire_in_7_days_dvd_individual_booking.user, [expire_in_7_days_dvd_individual_booking]
         )

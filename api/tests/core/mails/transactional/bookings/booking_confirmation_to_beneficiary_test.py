@@ -5,8 +5,8 @@ from datetime import timezone
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.bookings.factories import IndividualBookingFactory
-from pcapi.core.bookings.factories import UsedIndividualBookingFactory
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import UsedBookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.criteria.factories as criteria_factories
 from pcapi.core.mails import models
@@ -28,7 +28,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @freeze_time("2021-10-15 12:48:00")
 def sendinblue_send_email_test():
-    individual_booking = IndividualBookingFactory(
+    individual_booking = BookingFactory(
         stock=offers_factories.EventStockFactory(price=1.99), dateCreated=datetime.utcnow()
     )
     send_individual_booking_confirmation_email_to_beneficiary(individual_booking)
@@ -86,11 +86,9 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
 
 @freeze_time("2021-10-15 12:48:00")
 def test_should_return_event_specific_data_for_email_when_offer_is_an_event_sendinblue():
-    booking = IndividualBookingFactory(
-        stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow()
-    )
+    booking = BookingFactory(stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow())
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
-    email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+    email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
     expected = get_expected_base_sendinblue_email_data(booking, mediation)
     assert email_data == expected
@@ -98,12 +96,12 @@ def test_should_return_event_specific_data_for_email_when_offer_is_an_event_send
 
 @freeze_time("2021-10-15 12:48:00")
 def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event_sendinblue():
-    booking = booking = IndividualBookingFactory(
+    booking = booking = BookingFactory(
         stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow(), quantity=2
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-    email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+    email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
     expected = get_expected_base_sendinblue_email_data(
         booking,
@@ -122,10 +120,10 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing_sendi
         offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         offer__name="Super bien culturel",
     )
-    booking = IndividualBookingFactory(stock=stock, dateCreated=datetime.utcnow())
+    booking = BookingFactory(stock=stock, dateCreated=datetime.utcnow())
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-    email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+    email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
     expected = get_expected_base_sendinblue_email_data(
         booking,
@@ -145,14 +143,14 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing_sendi
 
 @freeze_time("2021-10-15 12:48:00")
 def test_should_use_public_name_when_available_sendinblue():
-    booking = IndividualBookingFactory(
+    booking = BookingFactory(
         stock__offer__venue__name="LIBRAIRIE GENERALE UNIVERSITAIRE COLBERT",
         stock__offer__venue__publicName="Librairie Colbert",
         dateCreated=datetime.utcnow(),
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-    email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+    email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
     expected = get_expected_base_sendinblue_email_data(
         booking,
@@ -166,13 +164,13 @@ def test_should_use_public_name_when_available_sendinblue():
 @freeze_time("2021-10-15 12:48:00")
 def test_should_return_withdrawal_details_when_available_sendinblue():
     withdrawal_details = "Conditions de retrait spécifiques."
-    booking = IndividualBookingFactory(
+    booking = BookingFactory(
         stock__offer__withdrawalDetails=withdrawal_details,
         dateCreated=datetime.utcnow(),
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-    email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+    email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
     expected = get_expected_base_sendinblue_email_data(
         booking,
@@ -185,7 +183,7 @@ def test_should_return_withdrawal_details_when_available_sendinblue():
 
 @freeze_time("2021-10-15 12:48:00")
 def test_should_return_offer_tags():
-    booking = IndividualBookingFactory(
+    booking = BookingFactory(
         dateCreated=datetime.utcnow(),
         stock__offer__criteria=[
             criteria_factories.CriterionFactory(name="Tagged_offer"),
@@ -193,7 +191,7 @@ def test_should_return_offer_tags():
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-    email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+    email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
     expected = get_expected_base_sendinblue_email_data(
         booking,
@@ -207,7 +205,7 @@ def test_should_return_offer_tags():
 @freeze_time("2021-10-15 12:48:00")
 class DigitalOffersTestSendinblue:
     def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing_sendinblue(self):
-        booking = IndividualBookingFactory(
+        booking = BookingFactory(
             quantity=10,
             stock__price=0,
             stock__offer__product__subcategoryId=subcategories.VOD.id,
@@ -217,7 +215,7 @@ class DigitalOffersTestSendinblue:
         )
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-        email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+        email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
         expected = get_expected_base_sendinblue_email_data(
             booking,
@@ -245,7 +243,7 @@ class DigitalOffersTestSendinblue:
         )
         digital_stock = offers_factories.StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
-        booking = UsedIndividualBookingFactory(
+        booking = UsedBookingFactory(
             stock__offer=offer,
             activationCode=first_activation_code,
             dateCreated=datetime(2018, 1, 1),
@@ -253,7 +251,7 @@ class DigitalOffersTestSendinblue:
 
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-        email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+        email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
         expected = get_expected_base_sendinblue_email_data(
             booking,
             mediation,
@@ -282,8 +280,8 @@ class DigitalOffersTestSendinblue:
         assert email_data == expected
 
     def test_use_activation_code_instead_of_token_if_possible_sendinblue(self):
-        booking = IndividualBookingFactory(
-            individualBooking__user__email="used-email@example.com",
+        booking = BookingFactory(
+            user__email="used-email@example.com",
             quantity=10,
             stock__price=0,
             stock__offer__product__subcategoryId=subcategories.VOD.id,
@@ -294,7 +292,7 @@ class DigitalOffersTestSendinblue:
         offers_factories.ActivationCodeFactory(stock=booking.stock, booking=booking, code="code_toto")
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-        email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+        email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
         expected = get_expected_base_sendinblue_email_data(
             booking,
@@ -318,7 +316,7 @@ class DigitalOffersTestSendinblue:
         assert email_data == expected
 
     def test_add_expiration_date_from_activation_code_sendinblue(self):
-        booking = IndividualBookingFactory(
+        booking = BookingFactory(
             quantity=10,
             stock__price=0,
             stock__offer__product__subcategoryId=subcategories.VOD.id,
@@ -334,7 +332,7 @@ class DigitalOffersTestSendinblue:
         )
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-        email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+        email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
         expected = get_expected_base_sendinblue_email_data(
             booking,
@@ -358,8 +356,8 @@ class DigitalOffersTestSendinblue:
 
 
 def test_should_return_total_price_for_duo_offers_sendinblue():
-    booking = IndividualBookingFactory(quantity=2, stock__price=10)
-    email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+    booking = BookingFactory(quantity=2, stock__price=10)
+    email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
     assert email_data.params["OFFER_PRICE"] == "20.00 €"
 
 
@@ -372,9 +370,9 @@ def test_digital_offer_without_departement_code_information_sendinblue():
     offer = offers_factories.DigitalOfferFactory()
     stock = offers_factories.StockFactory(offer=offer)
     date_created = datetime(2021, 7, 1, 10, 0, 0, tzinfo=timezone.utc)
-    booking = IndividualBookingFactory(stock=stock, dateCreated=date_created)
+    booking = BookingFactory(stock=stock, dateCreated=date_created)
 
-    email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+    email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
     assert email_data.params["BOOKING_DATE"] == "1 juillet 2021"
     assert email_data.params["BOOKING_HOUR"] == "12h00"
 
@@ -382,14 +380,14 @@ def test_digital_offer_without_departement_code_information_sendinblue():
 @freeze_time("2021-10-15 12:48:00")
 class BooksBookingExpirationDateTestSendinblue:
     def test_should_return_new_expiration_delay_data_for_email_when_offer_is_a_book_sendinblue(self):
-        booking = IndividualBookingFactory(
+        booking = BookingFactory(
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
             stock__offer__name="Super livre",
             dateCreated=datetime.utcnow(),
         )
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-        email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+        email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
         expected = get_expected_base_sendinblue_email_data(
             booking,
@@ -410,7 +408,7 @@ class BookingWithWithdrawalTypeTest:
     def should_use_withdrawal_type_and_delay_when_available(self):
         withdrawal_type = WithdrawalTypeEnum.ON_SITE
         withdrawal_delay = 60 * 60 * 24 * 2
-        booking = IndividualBookingFactory(
+        booking = BookingFactory(
             stock__offer__withdrawalType=withdrawal_type,
             stock__offer__withdrawalDelay=withdrawal_delay,
             dateCreated=datetime.utcnow(),
@@ -418,7 +416,7 @@ class BookingWithWithdrawalTypeTest:
 
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-        email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+        email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
         expected = get_expected_base_sendinblue_email_data(
             booking,

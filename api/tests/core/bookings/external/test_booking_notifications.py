@@ -35,14 +35,14 @@ def test_send_today_events_notifications_only_to_individual_bookings_users():
     user2 = users_factories.BeneficiaryGrant18Factory()
 
     # should be fetched
-    bookings_factories.IndividualBookingFactory(stock=stock_today, user=user1)
-    bookings_factories.IndividualBookingFactory(stock=stock_today, user=user2)
+    bookings_factories.BookingFactory(stock=stock_today, user=user1)
+    bookings_factories.BookingFactory(stock=stock_today, user=user2)
 
     # should not be fetched: cancelled
-    bookings_factories.IndividualBookingFactory(stock=stock_today, status=BookingStatus.CANCELLED, user=user2)
+    bookings_factories.BookingFactory(stock=stock_today, status=BookingStatus.CANCELLED, user=user2)
 
     # should not be fetched: next week
-    bookings_factories.IndividualBookingFactory(stock=stock_next_week, user=user2)
+    bookings_factories.BookingFactory(stock=stock_next_week, user=user2)
 
     send_today_events_notifications_metropolitan_france()
 
@@ -61,7 +61,7 @@ def test_notify_users_bookings_not_retrieved() -> None:
     creation_date = datetime.utcnow() - constants.BOOKINGS_AUTO_EXPIRY_DELAY + timedelta(days=3)
 
     # booking that will expire in three days
-    booking = bookings_factories.IndividualBookingFactory(user=user, stock=stock, dateCreated=creation_date)
+    booking = bookings_factories.BookingFactory(user=user, stock=stock, dateCreated=creation_date)
 
     notify_users_bookings_not_retrieved()
     assert len(testing.requests) == 1

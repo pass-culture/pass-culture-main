@@ -62,21 +62,21 @@ class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
         created_23_days_ago = now - timedelta(days=23)
 
         book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        soon_to_be_expired_book_booking = booking_factories.IndividualBookingFactory(
+        soon_to_be_expired_book_booking = booking_factories.BookingFactory(
             stock__offer__product=book,
             dateCreated=created_5_days_ago,
             user=user,
         )
 
         dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        soon_to_be_expired_dvd_booking = booking_factories.IndividualBookingFactory(
+        soon_to_be_expired_dvd_booking = booking_factories.BookingFactory(
             stock__offer__product=dvd,
             dateCreated=created_23_days_ago,
             user=user,
         )
 
         cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
-        soon_to_be_expired_cd_booking = booking_factories.IndividualBookingFactory(
+        soon_to_be_expired_cd_booking = booking_factories.BookingFactory(
             stock__offer__product=cd,
             dateCreated=created_23_days_ago,
             user=user,
