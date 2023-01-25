@@ -16,28 +16,29 @@ export const Pagination = ({
   onPreviousPageClick,
   onNextPageClick,
   pageCount,
-}: PaginationProps) => (
-  <div className={styles['pagination']}>
-    <button
-      disabled={currentPage === 1}
-      onClick={onPreviousPageClick}
-      type="button"
-      className={styles['button']}
-    >
-      <Icon alt="Page précédente" svg="ico-left-arrow" />
-    </button>
+}: PaginationProps) =>
+  pageCount > 1 ? (
+    <div className={styles['pagination']}>
+      <button
+        disabled={currentPage === 1}
+        onClick={onPreviousPageClick}
+        type="button"
+        className={styles['button']}
+      >
+        <Icon alt="Page précédente" svg="ico-left-arrow" />
+      </button>
 
-    <span>
-      Page {currentPage}/{pageCount}
-    </span>
+      <span>
+        Page {currentPage}/{pageCount}
+      </span>
 
-    <button
-      disabled={currentPage === pageCount}
-      onClick={onNextPageClick}
-      type="button"
-      className={styles['button']}
-    >
-      <Icon alt="Page suivante" svg="ico-right-arrow" />
-    </button>
-  </div>
-)
+      <button
+        disabled={currentPage === pageCount}
+        onClick={onNextPageClick}
+        type="button"
+        className={styles['button']}
+      >
+        <Icon alt="Page suivante" svg="ico-right-arrow" />
+      </button>
+    </div>
+  ) : null

@@ -18,7 +18,6 @@ import {
   ALL_CATEGORIES_OPTION,
   ALL_VENUES,
   ALL_VENUES_OPTION,
-  DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Offer, TSearchFilters } from 'core/Offers/types'
@@ -835,29 +834,6 @@ describe('route CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       expect(screen.getByText(offers[0].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
-    })
-
-    it('should not be able to click on previous arrow when being on the first page', async () => {
-      // Given
-      const filters = { page: DEFAULT_PAGE }
-      // When
-      await renderOffers(store, filters)
-      // Then
-      const previousIcon = screen.getByAltText('Page précédente')
-      expect(previousIcon.closest('button')).toBeDisabled()
-    })
-
-    it('should not be able to click on next arrow when being on the last page', async () => {
-      // Given
-      jest
-        .spyOn(api, 'getCollectiveOffers')
-        // @ts-expect-error FIX ME
-        .mockResolvedValueOnce(offersRecap)
-      // When
-      await renderOffers(store)
-      // Then
-      const nextIcon = screen.getByAltText('Page suivante')
-      expect(nextIcon.closest('button')).toBeDisabled()
     })
 
     describe('when 501 offers are fetched', () => {
