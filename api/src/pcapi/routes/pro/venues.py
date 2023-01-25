@@ -117,6 +117,7 @@ def edit_venue(venue_id: str, body: venues_serialize.EditVenueBodyModel) -> venu
         "isEmailAppliedOnAllOffers",
         "isWithdrawalAppliedOnAllOffers",
         "contact",
+        "shouldSendMail",
     }
     update_venue_attrs = body.dict(exclude=not_venue_fields, exclude_unset=True)
     venue_attrs = as_dict(venue)
@@ -139,7 +140,9 @@ def edit_venue(venue_id: str, body: venues_serialize.EditVenueBodyModel) -> venu
         update_all_venue_offers_accessibility_job.delay(venue, edited_accessibility)
 
     if have_withdrawal_details_changes and body.isWithdrawalAppliedOnAllOffers:
-        update_all_venue_offers_withdrawal_details_job.delay(venue, body.withdrawalDetails)
+        update_all_venue_offers_withdrawal_details_job.delay(
+            venue, body.withdrawalDetails, send_email_notif=body.shouldSendMail
+        )
 
     if body.bookingEmail and body.isEmailAppliedOnAllOffers:
         update_all_venue_offers_email_job.delay(venue, body.bookingEmail)

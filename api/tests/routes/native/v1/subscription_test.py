@@ -22,7 +22,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class NextStepTest:
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
-    def test_next_subscription_test(self, client):
+    def test_next_subscription(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
             - relativedelta(years=18, months=5),
@@ -76,7 +76,7 @@ class NextStepTest:
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=True,
     )
     @freeze_time("2022-09-08 11:54:22")
-    def test_next_subscription_maintenance_page_test(self, client):
+    def test_next_subscription_maintenance_page(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
             - relativedelta(years=15, months=5),

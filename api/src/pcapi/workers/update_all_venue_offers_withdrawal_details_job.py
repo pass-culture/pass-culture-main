@@ -7,8 +7,8 @@ from pcapi.workers.decorators import job
 
 @job(worker.low_queue)
 def update_all_venue_offers_withdrawal_details_job(
-    venue: offerers_models.Venue,
-    withdrawal_details: str,
+    venue: offerers_models.Venue, withdrawal_details: str, send_email_notif: bool = False
 ) -> None:
-    query = offers_models.Offer.query.filter_by(venueId=venue.id)
-    offers_api.batch_update_offers(query, {"withdrawalDetails": withdrawal_details})
+    query = offers_models.Offer.query.filter(offers_models.Offer.venueId == venue.id)
+
+    offers_api.batch_update_offers(query, {"withdrawalDetails": withdrawal_details}, send_email_notif=send_email_notif)
