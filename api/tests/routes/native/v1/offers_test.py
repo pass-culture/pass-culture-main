@@ -66,14 +66,18 @@ class OffersTest:
         )
         MediationFactory(id=111, offer=offer, thumbCount=1, credit="street credit")
 
-        bookableStock = EventStockFactory(offer=offer, price=12.34, quantity=2)
+        bookableStock = EventStockFactory(
+            offer=offer,
+            price=12.34,
+            quantity=2,
+        )
         expiredStock = EventStockFactory(
             offer=offer, price=45.68, beginningDatetime=datetime.utcnow() - timedelta(days=1)
         )
         exhaustedStock = EventStockFactory(offer=offer, price=89.00, quantity=1)
 
-        BookingFactory(stock=bookableStock)
-        BookingFactory(stock=exhaustedStock)
+        BookingFactory(stock=bookableStock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
+        BookingFactory(stock=exhaustedStock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
 
         offer_id = offer.id
         with assert_no_duplicated_queries():

@@ -22,17 +22,17 @@ from pcapi.core.users.factories import BeneficiaryGrant18Factory
 class SendSendiblueBeneficiaryBookingCancellationEmailTest:
     def test_should_called_send_email_with_valid_data(self):
         # given
-        booking = booking_factories.IndividualBookingFactory()
+        booking = booking_factories.BookingFactory()
 
         # when
-        send_booking_cancellation_by_beneficiary_email(booking.individualBooking)
+        send_booking_cancellation_by_beneficiary_email(booking)
 
         # then
         assert (
             mails_testing.outbox[0].sent_data["template"]
             == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY.value.__dict__
         )
-        assert mails_testing.outbox[0].sent_data["To"] == booking.individualBooking.user.email
+        assert mails_testing.outbox[0].sent_data["To"] == booking.user.email
         params_key_list = [
             "CAN_BOOK_AGAIN",
             "EVENT_DATE",
@@ -52,8 +52,8 @@ class SendSendiblueBeneficiaryBookingCancellationEmailTest:
 class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
     def test_should_return_thing_data_when_booking_is_a_thing(self):
         # Given
-        booking = booking_factories.CancelledIndividualBookingFactory(
-            individualBooking__user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
+        booking = booking_factories.CancelledBookingFactory(
+            user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
             stock=ThingStockFactory(
                 price=10.20,
                 beginningDatetime=datetime.utcnow() - timedelta(days=1),
@@ -63,7 +63,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
         )
 
         # When
-        email_data = get_booking_cancellation_by_beneficiary_email_data(booking.individualBooking)
+        email_data = get_booking_cancellation_by_beneficiary_email_data(booking)
 
         # Then
         assert email_data.params == {
@@ -82,8 +82,8 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
     @freeze_time("2019-11-26 18:29:20.891028")
     def test_should_return_event_data_when_booking_is_an_event(self):
         # Given
-        booking = booking_factories.CancelledIndividualBookingFactory(
-            individualBooking__user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
+        booking = booking_factories.CancelledBookingFactory(
+            user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
             stock=EventStockFactory(
                 price=10.20,
                 beginningDatetime=datetime.utcnow(),
@@ -93,7 +93,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
         )
 
         # When
-        email_data = get_booking_cancellation_by_beneficiary_email_data(booking.individualBooking)
+        email_data = get_booking_cancellation_by_beneficiary_email_data(booking)
 
         # Then
         assert email_data.params == {
@@ -111,20 +111,20 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
 
     def test_should_return_is_free_offer_when_offer_price_equals_to_zero(self):
         # Given
-        booking = booking_factories.CancelledIndividualBookingFactory(stock__price=0)
+        booking = booking_factories.CancelledBookingFactory(stock__price=0)
 
         # When
-        email_data = get_booking_cancellation_by_beneficiary_email_data(booking.individualBooking)
+        email_data = get_booking_cancellation_by_beneficiary_email_data(booking)
 
         # Then
         assert email_data.params["IS_FREE_OFFER"] is True
 
     def test_should_return_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
         # Given
-        booking = booking_factories.CancelledIndividualBookingFactory(quantity=2, stock__price=10)
+        booking = booking_factories.CancelledBookingFactory(quantity=2, stock__price=10)
 
         # When
-        email_data = get_booking_cancellation_by_beneficiary_email_data(booking.individualBooking)
+        email_data = get_booking_cancellation_by_beneficiary_email_data(booking)
 
         # Then
         assert email_data.params["OFFER_PRICE"] == 20.00

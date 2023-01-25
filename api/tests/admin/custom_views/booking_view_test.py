@@ -21,7 +21,7 @@ from tests.conftest import TestClient
 class BookingViewTest:
     def test_search_booking(self, app):
         users_factories.AdminFactory(email="admin@example.com")
-        booking = bookings_factories.IndividualBookingFactory()
+        booking = bookings_factories.BookingFactory()
 
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post("/pc/back-office/bookings/", form={"token": booking.token})
@@ -33,7 +33,7 @@ class BookingViewTest:
 
     def test_show_mark_as_used_button(self, app):
         users_factories.AdminFactory(email="admin@example.com")
-        bookings_factories.CancelledIndividualBookingFactory(token="ABCDEF")
+        bookings_factories.CancelledBookingFactory(token="ABCDEF")
 
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post("/pc/back-office/bookings/", form={"token": "abcdeF"})
@@ -44,7 +44,7 @@ class BookingViewTest:
 
     def test_uncancel_and_mark_as_used(self, app):
         users_factories.AdminFactory(email="admin@example.com")
-        booking = bookings_factories.CancelledIndividualBookingFactory()
+        booking = bookings_factories.CancelledBookingFactory()
 
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         route = f"/pc/back-office/bookings/mark-as-used/{booking.id}"
@@ -61,7 +61,7 @@ class BookingViewTest:
 
     def test_fail_to_uncancel_and_mark_as_used(self, app):
         users_factories.AdminFactory(email="admin@example.com")
-        booking = bookings_factories.IndividualBookingFactory(status=BookingStatus.CONFIRMED)
+        booking = bookings_factories.BookingFactory(status=BookingStatus.CONFIRMED)
 
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         route = f"/pc/back-office/bookings/mark-as-used/{booking.id}"
@@ -77,7 +77,7 @@ class BookingViewTest:
 
     def test_cancel_booking(self, app, client):
         admin = users_factories.AdminFactory()
-        booking = bookings_factories.IndividualBookingFactory()
+        booking = bookings_factories.BookingFactory()
 
         route = f"/pc/back-office/bookings/cancel/{booking.id}"
         response = client.with_session_auth(admin.email).post(route, form={})
@@ -94,7 +94,7 @@ class BookingViewTest:
 
     def test_can_not_cancel_refunded_booking(self, app):
         users_factories.AdminFactory(email="admin@example.com")
-        booking = bookings_factories.UsedIndividualBookingFactory()
+        booking = bookings_factories.UsedBookingFactory()
         finance_factories.PaymentFactory(booking=booking)
 
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
@@ -113,7 +113,7 @@ class BookingViewTest:
 
     def test_cant_cancel_cancelled_booking(self, app):
         users_factories.AdminFactory(email="admin@example.com")
-        booking = bookings_factories.CancelledIndividualBookingFactory()
+        booking = bookings_factories.CancelledBookingFactory()
 
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         route = f"/pc/back-office/bookings/cancel/{booking.id}"
@@ -131,7 +131,7 @@ class BookingViewTest:
 
     def test_cancel_used_booking_without_payment(self, app):
         users_factories.AdminFactory(email="admin@example.com")
-        booking = bookings_factories.UsedIndividualBookingFactory()
+        booking = bookings_factories.UsedBookingFactory()
 
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         route = f"/pc/back-office/bookings/cancel/{booking.id}"

@@ -1,7 +1,7 @@
 import datetime
 
 from pcapi.core import mails
-from pcapi.core.bookings.models import IndividualBooking
+from pcapi.core.bookings.models import Booking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.utils import offer_app_link
@@ -11,10 +11,10 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
 def get_booking_cancellation_by_beneficiary_email_data(
-    individual_booking: IndividualBooking,
+    booking: Booking,
 ) -> models.TransactionalEmailData:
-    stock = individual_booking.booking.stock
-    beneficiary = individual_booking.user
+    stock = booking.stock
+    beneficiary = booking.user
     offer = stock.offer
     is_free_offer = stock.price == 0
     can_book_again = beneficiary.deposit.expirationDate > datetime.datetime.utcnow()
@@ -36,9 +36,9 @@ def get_booking_cancellation_by_beneficiary_email_data(
             "EVENT_HOUR": event_hour,
             "IS_FREE_OFFER": is_free_offer,
             "IS_EVENT": offer.isEvent,
-            "IS_EXTERNAL": individual_booking.booking.isExternal,
+            "IS_EXTERNAL": booking.isExternal,
             "OFFER_NAME": offer.name,
-            "OFFER_PRICE": float(individual_booking.booking.total_amount),
+            "OFFER_PRICE": float(booking.total_amount),
             "USER_FIRST_NAME": beneficiary.firstName,
             "CAN_BOOK_AGAIN": can_book_again,
             "OFFER_LINK": offer_app_link(offer),
@@ -46,6 +46,6 @@ def get_booking_cancellation_by_beneficiary_email_data(
     )
 
 
-def send_booking_cancellation_by_beneficiary_email(individual_booking: IndividualBooking) -> bool:
-    data = get_booking_cancellation_by_beneficiary_email_data(individual_booking)
-    return mails.send(recipients=[individual_booking.user.email], data=data)
+def send_booking_cancellation_by_beneficiary_email(booking: Booking) -> bool:
+    data = get_booking_cancellation_by_beneficiary_email_data(booking)
+    return mails.send(recipients=[booking.user.email], data=data)

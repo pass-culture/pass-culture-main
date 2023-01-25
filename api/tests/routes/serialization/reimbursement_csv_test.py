@@ -257,8 +257,8 @@ def test_find_all_offerer_reimbursement_details() -> None:
     # reimbursement point.
     finance_factories.BankInformationFactory(venue=venue1)
     finance_factories.BankInformationFactory(venue=venue2)
-    booking1 = bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue1)
-    booking2 = bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue2)
+    booking1 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue1)
+    booking2 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue2)
     collective_booking3 = educational_factories.UsedCollectiveBookingFactory(
         collectiveStock__beginningDatetime=datetime.utcnow(),
         collectiveStock__collectiveOffer__venue=venue2,
@@ -305,10 +305,8 @@ class CollectiveReimbursementDetailsTest:
         # reimbursement point.
         finance_factories.BankInformationFactory(venue=venue1)
         finance_factories.BankInformationFactory(venue=venue2)
-        booking1 = bookings_factories.UsedIndividualBookingFactory(
-            dateUsed=datetime(2022, 6, 18), stock__offer__venue=venue1
-        )
-        booking2 = bookings_factories.UsedIndividualBookingFactory(
+        booking1 = bookings_factories.UsedBookingFactory(dateUsed=datetime(2022, 6, 18), stock__offer__venue=venue1)
+        booking2 = bookings_factories.UsedBookingFactory(
             dateUsed=datetime(2022, 6, 18),
             stock__offer__venue=venue2,
         )

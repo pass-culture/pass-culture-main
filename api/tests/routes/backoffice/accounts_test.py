@@ -784,8 +784,8 @@ class GetBeneficiaryCreditTest:
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.READ_PUBLIC_ACCOUNT])
 
-        bookings_factories.IndividualBookingFactory(
-            individualBooking__user=grant_18,
+        bookings_factories.BookingFactory(
+            user=grant_18,
             stock__offer__product=offers_factories.DigitalProductFactory(),
             amount=12.5,
         )

@@ -43,8 +43,7 @@ def _create_activation_item_offer(
         quantity=10000,
     )
 
-    bookings_factories.IndividualBookingFactory(
-        individualBooking__user=user,
+    bookings_factories.BookingFactory(
         user=user,
         stock=stock,
         token=token,

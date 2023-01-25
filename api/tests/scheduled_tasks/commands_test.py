@@ -40,7 +40,7 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
         stock = offers_factories.EventStockFactory(
             beginningDatetime=tomorrow,
         )
-        bookings_factories.IndividualBookingFactory.create_batch(3, stock=stock)
+        bookings_factories.BookingFactory.create_batch(3, stock=stock)
 
         assert send_email_reminder_tomorrow_event_to_beneficiaries() is None
 
@@ -55,12 +55,12 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
         stock = offers_factories.EventStockFactory(
             beginningDatetime=tomorrow,
         )
-        individual_bookings = bookings_factories.IndividualBookingFactory.create_batch(3, stock=stock)
+        individual_bookings = bookings_factories.BookingFactory.create_batch(3, stock=stock)
 
         mock_get_booking_event_reminder_to_beneficiary_email_data.side_effect = [
-            get_booking_event_reminder_to_beneficiary_email_data(individual_bookings[0].individualBooking),
+            get_booking_event_reminder_to_beneficiary_email_data(individual_bookings[0]),
             RuntimeError("error should be caught"),
-            get_booking_event_reminder_to_beneficiary_email_data(individual_bookings[2].individualBooking),
+            get_booking_event_reminder_to_beneficiary_email_data(individual_bookings[2]),
         ]
 
         send_email_reminder_tomorrow_event_to_beneficiaries()
@@ -75,20 +75,20 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
         stock = offers_factories.EventStockFactory(
             beginningDatetime=tomorrow,
         )
-        individual_booking_with_error = bookings_factories.IndividualBookingFactory(stock=stock).individualBooking
+        individual_booking_with_error = bookings_factories.BookingFactory(stock=stock)
 
         mock_get_booking_event_reminder_to_beneficiary_email_data.side_effect = Exception("error should be caught")
 
         with caplog.at_level(logging.ERROR):
             send_email_reminder_tomorrow_event_to_beneficiaries()
 
-            assert caplog.records[0].extra["individualBookingId"] == individual_booking_with_error.id
+            assert caplog.records[0].extra["BookingId"] == individual_booking_with_error.id
             assert caplog.records[0].extra["userId"] == individual_booking_with_error.userId
 
     def should_execute_one_query_only(self):
         tomorrow = datetime.utcnow() + timedelta(days=1)
         stock = offers_factories.EventStockFactory(beginningDatetime=tomorrow)
-        bookings_factories.IndividualBookingFactory.create_batch(3, stock=stock)
+        bookings_factories.BookingFactory.create_batch(3, stock=stock)
 
         with assert_no_duplicated_queries():
             send_email_reminder_tomorrow_event_to_beneficiaries()

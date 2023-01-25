@@ -20,10 +20,10 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_send_booking_cancellation_email_to_offerer(self):
         # Given
-        booking = bookings_factories.IndividualBookingFactory(
-            individualBooking__user__email="user@example.com",
-            individualBooking__user__firstName="Guy",
-            individualBooking__user__lastName="G.",
+        booking = bookings_factories.BookingFactory(
+            user__email="user@example.com",
+            user__firstName="Guy",
+            user__lastName="G.",
             stock__offer__bookingEmail="booking@example.com",
         )
 
@@ -44,7 +44,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
     def test_should_return_sendinblue_data_with_no_ongoing_booking(self):
         # Given
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime(2019, 10, 9, 10, 20, 00))
-        booking = bookings_factories.CancelledIndividualBookingFactory(stock=stock, quantity=2)
+        booking = bookings_factories.CancelledBookingFactory(stock=stock, quantity=2)
 
         # When
         email_data = get_booking_cancellation_by_beneficiary_to_pro_email_data(booking)
@@ -70,7 +70,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
     def test_should_return_sendinblue_data_with_ongoing_bookings(self):
         # Given
         stock = offers_factories.EventStockFactory(price=0, beginningDatetime=datetime(2019, 10, 9, 10, 20, 00))
-        booking1 = bookings_factories.CancelledIndividualBookingFactory(stock=stock, quantity=2)
+        booking1 = bookings_factories.CancelledBookingFactory(stock=stock, quantity=2)
 
         # When
         email_data = get_booking_cancellation_by_beneficiary_to_pro_email_data(booking1)
@@ -97,7 +97,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
         # Given
         virtual_venue = offerers_factories.VirtualVenueFactory()
         stock = offers_factories.ThingStockFactory(offer__venue=virtual_venue)
-        booking1 = bookings_factories.CancelledIndividualBookingFactory(stock=stock, quantity=2)
+        booking1 = bookings_factories.CancelledBookingFactory(stock=stock, quantity=2)
 
         # When
         email_data = get_booking_cancellation_by_beneficiary_to_pro_email_data(booking1)

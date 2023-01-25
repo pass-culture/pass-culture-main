@@ -17,8 +17,8 @@ class SuspendFraudulentUsersByIdsTest:
         admin_user = AdminFactory(email="admin@example.com")
         fraudulent_user_1 = BeneficiaryGrant18Factory(id=5)
         fraudulent_user_2 = BeneficiaryGrant18Factory(id=16)
-        booking_factories.IndividualBookingFactory(individualBooking__user=fraudulent_user_1)
-        booking_factories.UsedIndividualBookingFactory(individualBooking__user=fraudulent_user_2)
+        booking_factories.BookingFactory(user=fraudulent_user_1)
+        booking_factories.UsedBookingFactory(user=fraudulent_user_2)
         user_ids_csv = (io.BytesIO(b"user_id\n5\n16"), "user_ids.csv")
         files = {"user_ids_csv": user_ids_csv}
         headers = {"content-type": "multipart/form-data"}

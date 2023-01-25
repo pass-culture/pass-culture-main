@@ -18,8 +18,8 @@ import pytest
 from pcapi import settings
 from pcapi.core import testing
 from pcapi.core.bookings import factories as booking_factories
-from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
-from pcapi.core.bookings.factories import IndividualBookingFactory
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
@@ -104,8 +104,8 @@ class AccountTest:
             **USER_DATA,
         )
 
-        booking = IndividualBookingFactory(individualBooking__user=user, amount=Decimal("123.45"))
-        CancelledIndividualBookingFactory(individualBooking__user=user, amount=Decimal("123.45"))
+        booking = BookingFactory(user=user, amount=Decimal("123.45"))
+        CancelledBookingFactory(user=user, amount=Decimal("123.45"))
 
         client.with_token(self.identifier)
 
@@ -1388,8 +1388,8 @@ class ValidatePhoneNumberTest:
 
 class SuspendAccountTest:
     def test_suspend_account(self, client, app):
-        booking = booking_factories.IndividualBookingFactory()
-        user = booking.individualBooking.user
+        booking = booking_factories.BookingFactory()
+        user = booking.user
 
         client.with_token(email=user.email)
         response = client.post("/native/v1/account/suspend")

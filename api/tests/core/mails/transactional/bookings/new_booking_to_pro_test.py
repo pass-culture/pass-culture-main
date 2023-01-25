@@ -18,9 +18,9 @@ def make_booking(**kwargs):
     attributes = dict(
         dateCreated=datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc),
         token="ABC123",
-        individualBooking__user__firstName="John",
-        individualBooking__user__lastName="Doe",
-        individualBooking__user__email="john@example.com",
+        user__firstName="John",
+        user__lastName="Doe",
+        user__email="john@example.com",
         stock__beginningDatetime=datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc),
         stock__price=10,
         stock__offer__name="Super évènement",
@@ -34,7 +34,7 @@ def make_booking(**kwargs):
         stock__offer__venue__departementCode="75",
     )
     attributes.update(kwargs)
-    return bookings_factories.IndividualBookingFactory(**attributes)
+    return bookings_factories.BookingFactory(**attributes)
 
 
 def get_expected_base_email_data(booking, **overrides):
@@ -71,7 +71,7 @@ class OffererBookingRecapTest:
     def test_with_event(self):
         booking = make_booking()
 
-        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking)
 
         expected = get_expected_base_email_data(booking)
         assert email_data.params == expected
@@ -85,7 +85,7 @@ class OffererBookingRecapTest:
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
 
-        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking)
 
         expected = get_expected_base_email_data(
             booking,
@@ -115,7 +115,7 @@ class OffererBookingRecapTest:
             stock__offer__venue__siret=None,
         )
 
-        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking)
 
         expected = get_expected_base_email_data(
             booking,
@@ -145,7 +145,7 @@ class OffererBookingRecapTest:
             stock__offer__venue__siret=None,
         )
 
-        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking)
 
         expected = get_expected_base_email_data(
             booking,
@@ -174,7 +174,7 @@ class OffererBookingRecapTest:
         )
 
         # When
-        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking)
 
         # Then
         expected = get_expected_base_email_data(
@@ -202,7 +202,7 @@ class OffererBookingRecapTest:
         )
 
         # When
-        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking)
 
         # Then
         expected = get_expected_base_email_data(booking, MUST_USE_TOKEN_FOR_PAYMENT=True)
@@ -216,7 +216,7 @@ class OffererBookingRecapTest:
         )
 
         # When
-        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking)
 
         # Then
         expected = get_expected_base_email_data(booking, PRICE="Gratuit", MUST_USE_TOKEN_FOR_PAYMENT=False)
@@ -229,7 +229,7 @@ class OffererBookingRecapTest:
         ActivationCodeFactory(stock=booking.stock, booking=booking, code="code_toto")
 
         # When
-        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking)
 
         # Then
         expected = get_expected_base_email_data(booking, MUST_USE_TOKEN_FOR_PAYMENT=False)
@@ -245,17 +245,17 @@ class OffererBookingRecapTest:
         )
         digital_stock = offers_factories.StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
-        booking = bookings_factories.UsedIndividualBookingFactory(
-            individualBooking__user__email="john@example.com",
-            individualBooking__user__firstName="John",
-            individualBooking__user__lastName="Doe",
+        booking = bookings_factories.UsedBookingFactory(
+            user__email="john@example.com",
+            user__firstName="John",
+            user__lastName="Doe",
             stock__offer=offer,
             activationCode=first_activation_code,
             dateCreated=datetime(2018, 1, 1),
         )
 
         # When
-        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking)
 
         # Then
         expected = get_expected_base_email_data(
@@ -283,17 +283,17 @@ class OffererBookingRecapTest:
         )
         digital_stock = offers_factories.StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
-        booking = bookings_factories.UsedIndividualBookingFactory(
-            individualBooking__user__email="john@example.com",
-            individualBooking__user__firstName="John",
-            individualBooking__user__lastName="Doe",
+        booking = bookings_factories.UsedBookingFactory(
+            user__email="john@example.com",
+            user__firstName="John",
+            user__lastName="Doe",
             stock__offer=offer,
             activationCode=first_activation_code,
             dateCreated=datetime(2018, 1, 1),
         )
 
         # When
-        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking)
 
         # Then
         expected = get_expected_base_email_data(
@@ -319,7 +319,7 @@ class OffererBookingRecapTest:
     def test_should_not_truncate_price(self):
         booking = make_booking(stock__price=5.86)
 
-        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking)
 
         expected = get_expected_base_email_data(booking, PRICE="5.86 €")
         assert email_data.params == expected
@@ -331,7 +331,7 @@ class OffererBookingRecapTest:
             stock__offer__venue__publicName="Public name",
         )
 
-        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking)
 
         expected = get_expected_base_email_data(booking, VENUE_NAME="Public name")
         assert email_data.params == expected
@@ -339,12 +339,10 @@ class OffererBookingRecapTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_add_user_phone_number_to_params(self):
         # given
-        booking = make_booking(individualBooking__user__phoneNumber="0123456789")
+        booking = make_booking(user__phoneNumber="0123456789")
 
         # when
-        email_data = get_new_booking_to_pro_email_data(
-            booking.individualBooking,
-        )
+        email_data = get_new_booking_to_pro_email_data(booking)
 
         # then
         assert email_data.params["USER_PHONENUMBER"] == "+33123456789"
@@ -353,14 +351,14 @@ class OffererBookingRecapTest:
 class SendNewBookingEmailToProTest:
     @pytest.mark.usefixtures("db_session")
     def test_send_to_offerer(self):
-        booking = bookings_factories.IndividualBookingFactory(
-            individualBooking__user__email="user@example.com",
-            individualBooking__user__firstName="Tom",
-            individualBooking__user__lastName="P",
+        booking = bookings_factories.BookingFactory(
+            user__email="user@example.com",
+            user__firstName="Tom",
+            user__lastName="P",
             stock__offer__bookingEmail="booking.email@example.com",
         )
 
-        send_user_new_booking_to_pro_email(booking.individualBooking, first_venue_booking=False)
+        send_user_new_booking_to_pro_email(booking, first_venue_booking=False)
 
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == "booking.email@example.com"
@@ -374,14 +372,14 @@ class SendNewBookingEmailToProTest:
 class SendFirstVenueBookingEmailToProTest:
     @pytest.mark.usefixtures("db_session")
     def test_send_to_offerer(self):
-        booking = bookings_factories.IndividualBookingFactory(
-            individualBooking__user__email="user@example.com",
-            individualBooking__user__firstName="Tom",
-            individualBooking__user__lastName="P",
+        booking = bookings_factories.BookingFactory(
+            user__email="user@example.com",
+            user__firstName="Tom",
+            user__lastName="P",
             stock__offer__venue__bookingEmail="venue@bookingEmail.app",
         )
 
-        send_user_new_booking_to_pro_email(booking.individualBooking, first_venue_booking=True)
+        send_user_new_booking_to_pro_email(booking, first_venue_booking=True)
 
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == "venue@bookingEmail.app"

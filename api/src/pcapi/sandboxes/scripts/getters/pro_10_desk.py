@@ -10,7 +10,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_o
     venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
     offer = offers_factories.ThingOfferFactory(venue=venue, isActive=True)
     stock = offers_factories.StockFactory(offer=offer)
-    booking = bookings_factories.IndividualBookingFactory(stock=stock)
+    booking = bookings_factories.BookingFactory(stock=stock)
 
     return {
         "booking": get_booking_helper(booking),

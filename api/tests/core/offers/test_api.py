@@ -539,10 +539,10 @@ class DeleteStockTest:
     def test_delete_stock_cancel_bookings_and_send_emails(self):
         offerer_email = "offerer@example.com"
         stock = factories.EventStockFactory(offer__bookingEmail=offerer_email)
-        booking1 = bookings_factories.IndividualBookingFactory(stock=stock)
-        booking2 = bookings_factories.CancelledIndividualBookingFactory(stock=stock)
-        booking3 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
-        booking4 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
+        booking1 = bookings_factories.BookingFactory(stock=stock)
+        booking2 = bookings_factories.CancelledBookingFactory(stock=stock)
+        booking3 = bookings_factories.UsedBookingFactory(stock=stock)
+        booking4 = bookings_factories.UsedBookingFactory(stock=stock)
         finance_factories.PricingFactory(
             booking=booking4,
             status=finance_models.PricingStatus.PROCESSED,
@@ -580,8 +580,8 @@ class DeleteStockTest:
         assert last_request == {
             "group_id": "Cancel_booking",
             "user_ids": {
-                booking1.individualBooking.userId,
-                booking3.individualBooking.userId,
+                booking1.userId,
+                booking3.userId,
             },
             "message": {
                 "body": f"""Ta réservation "{stock.offer.name}" a été annulée par l'offreur.""",

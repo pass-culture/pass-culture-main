@@ -46,9 +46,9 @@ def create_beneficiary_with_empty_deposit() -> None:
         deposit__source="sandbox",
         needsToFillCulturalSurvey=False,
     )
-    bookings_factories.IndividualBookingFactory(
+    bookings_factories.BookingFactory(
         amount=beneficiary_user.deposit.amount,
-        individualBooking__user=beneficiary_user,
+        user=beneficiary_user,
         # OffererFactory and VenueFactory would set the siren and
         # siret to '000000000[00000]', which we sometimes use in our
         # prod database for (probably dubious) reasons. That would make

@@ -47,9 +47,7 @@ class Deposit(PcObject, Base, Model):
 
     user: "users_models.User" = sqla_orm.relationship("User", foreign_keys=[userId], backref="deposits")
 
-    individual_bookings: list["bookings_models.IndividualBooking"] = sqla_orm.relationship(
-        "IndividualBooking", back_populates="deposit"
-    )
+    bookings: list["bookings_models.Booking"] = sqla_orm.relationship("Booking", back_populates="deposit")
 
     source: str = sqla.Column(sqla.String(300), nullable=False)
 

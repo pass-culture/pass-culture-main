@@ -17,8 +17,8 @@ def send_booking_cancellation_emails_to_user_and_offerer(
     booking: Booking,
     reason: BookingCancellationReasons,
 ) -> bool:
-    if reason == BookingCancellationReasons.BENEFICIARY and booking.individualBooking is not None:
-        send_booking_cancellation_by_beneficiary_email(booking.individualBooking)
+    if reason == BookingCancellationReasons.BENEFICIARY:
+        send_booking_cancellation_by_beneficiary_email(booking)
         return send_booking_cancellation_by_beneficiary_to_pro_email(booking)
     if reason == BookingCancellationReasons.OFFERER:
         send_booking_cancellation_by_pro_to_beneficiary_email(booking)

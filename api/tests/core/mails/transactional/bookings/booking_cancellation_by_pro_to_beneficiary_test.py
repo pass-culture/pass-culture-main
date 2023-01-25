@@ -20,8 +20,8 @@ import pcapi.core.offers.factories as offers_factories
 class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
     def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self):
         # Given
-        booking = bookings_factories.IndividualBookingFactory(
-            individualBooking__user__email="user@example.com",
+        booking = bookings_factories.BookingFactory(
+            user__email="user@example.com",
             user__firstName="Jeanne",
         )
 
@@ -58,10 +58,10 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         stock = offers_factories.EventStockFactory(
             beginningDatetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
         )
-        booking = bookings_factories.IndividualBookingFactory(
+        booking = bookings_factories.BookingFactory(
             stock=stock,
-            individualBooking__user__firstName="Georges",
-            individualBooking__user__lastName="Moustiquos",
+            user__firstName="Georges",
+            user__lastName="Moustiquos",
         )
 
         # When
@@ -87,10 +87,10 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
     def test_should_return_thing_data_when_booking_is_on_a_thing(self):
         # Given
         stock = offers_factories.ThingStockFactory()
-        booking = bookings_factories.IndividualBookingFactory(
+        booking = bookings_factories.BookingFactory(
             stock=stock,
-            individualBooking__user__firstName="Georges",
-            individualBooking__user__lastName="Doux",
+            user__firstName="Georges",
+            user__lastName="Doux",
         )
 
         # When
@@ -117,10 +117,10 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
     def test_should_return_thing_data_when_booking_is_on_an_online_offer(self):
         # Given
         stock = offers_factories.ThingStockFactory(offer__product=offers_factories.DigitalProductFactory())
-        booking = bookings_factories.IndividualBookingFactory(
+        booking = bookings_factories.BookingFactory(
             stock=stock,
-            individualBooking__user__firstName="Georges",
-            individualBooking__user__lastName="Georges",
+            user__firstName="Georges",
+            user__lastName="Georges",
         )
 
         # When
@@ -145,9 +145,9 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
 
     def test_should_not_display_the_price_when_booking_is_on_a_free_offer(self):
         # Given
-        booking = bookings_factories.IndividualBookingFactory(
+        booking = bookings_factories.BookingFactory(
             stock__price=0,
-            individualBooking__user__firstName="Georges",
+            user__firstName="Georges",
         )
 
         # When
@@ -159,10 +159,10 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
 
     def test_should_display_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
         # Given
-        booking = bookings_factories.IndividualBookingFactory(
+        booking = bookings_factories.BookingFactory(
             amount=10,
             quantity=2,
-            individualBooking__user__firstName="Georges",
+            user__firstName="Georges",
         )
 
         # When

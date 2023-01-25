@@ -1,4 +1,4 @@
-from pcapi.core.bookings.factories import IndividualBookingFactory
+from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
@@ -18,7 +18,7 @@ class Returns200Test:
             offerer=offer.venue.managingOfferer,
         )
         stock = offers_factories.StockFactory(offer=offer)
-        booking = IndividualBookingFactory(stock=stock)
+        booking = BookingFactory(stock=stock)
 
         # when
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
@@ -34,7 +34,7 @@ class Returns200Test:
                 "body": f"""Ta commande "{offer.name}" a été annulée par l'offreur.""",
                 "title": "Commande annulée",
             },
-            "user_ids": [booking.individualBooking.userId],
+            "user_ids": [booking.userId],
             "can_be_asynchronously_retried": False,
         }
 

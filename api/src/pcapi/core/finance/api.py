@@ -445,10 +445,9 @@ def _get_pricing_point_id_and_current_revenue(
     assert booking.dateUsed is not None  # helps mypy for `_get_revenue_period()`
     pricing_point_id = _get_pricing_point_link(booking).pricingPointId
     revenue_period = _get_revenue_period(booking.dateUsed)
+    # Collective bookings must not be included in revenue.
     current_revenue = (
         bookings_models.Booking.query.join(models.Pricing)
-        # Collective bookings must not be included in revenue.
-        .filter(bookings_models.Booking.individualBookingId.isnot(None))
         .filter(
             models.Pricing.pricingPointId == pricing_point_id,
             # The following filter is not strictly necessary, because
@@ -476,7 +475,7 @@ def _price_booking(
     new_revenue = current_revenue
     is_booking_collective = isinstance(booking, educational_models.CollectiveBooking)
     # Collective bookings must not be included in revenue.
-    if not is_booking_collective and booking.individualBookingId:
+    if not is_booking_collective:
         new_revenue += utils.to_eurocents(booking.total_amount)
     rule_finder = reimbursement.CustomRuleFinder()
     # FIXME (dbaty, 2021-11-10): `revenue` here is in eurocents but
@@ -1149,8 +1148,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
             offerers_models.Venue,
             offerers_models.Venue.id == models.Cashflow.reimbursementPointId,
         )
-        .join(bookings_models.Booking.individualBooking)
-        .join(bookings_models.IndividualBooking.deposit)
+        .join(bookings_models.Booking.deposit)
         .filter(models.Cashflow.batchId == batch_id)
         .group_by(
             offerers_models.Venue.id,
@@ -1626,7 +1624,6 @@ def get_reimbursements_by_venue(
             models.Pricing.amount.label("pricing_amount"),
             bookings_models.Booking.amount.label("booking_unit_amount"),
             bookings_models.Booking.quantity.label("booking_quantity"),
-            bookings_models.Booking.individualBookingId,
         )
         .join(models.Pricing.booking)
         .join(bookings_models.Booking.venue)
@@ -1653,8 +1650,7 @@ def get_reimbursements_by_venue(
         for booking in bookings:
             reimbursed_amount += booking.pricing_amount
             validated_booking_amount += decimal.Decimal(booking.booking_unit_amount) * booking.booking_quantity
-            if booking.individualBookingId:
-                individual_amount += booking.pricing_amount
+            individual_amount += booking.pricing_amount
         reimbursements_by_venue[venue_id] = {
             "venue_name": venue_common_name,
             "reimbursed_amount": reimbursed_amount,

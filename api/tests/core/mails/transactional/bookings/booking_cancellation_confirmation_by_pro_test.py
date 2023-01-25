@@ -27,9 +27,8 @@ class BookingCancellationConfirmationByProEmailData:
             venue__name="Venue name",
             product__name="My Event",
         )
-        booking = booking_factories.IndividualBookingFactory(
+        booking = booking_factories.BookingFactory(
             user=beneficiary,
-            individualBooking__user=beneficiary,
             stock__offer=offer,
             stock__beginningDatetime=datetime(2019, 10, 9, 10, 20, 00),
             stock__price=12.52,
@@ -63,9 +62,8 @@ class BookingCancellationConfirmationByProEmailData:
             venue__publicName="La grande librairie",
             product__name="Le récit de voyage",
         )
-        booking = booking_factories.IndividualBookingFactory(
+        booking = booking_factories.BookingFactory(
             user=beneficiary,
-            individualBooking__user=beneficiary,
             stock__offer=offer,
             stock__price=0,
             token="12346",
@@ -75,9 +73,8 @@ class BookingCancellationConfirmationByProEmailData:
         other_beneficiary = users_factories.BeneficiaryGrant18Factory(
             publicName="James Bond", firstName="James", lastName="Bond", email="bond@example.com"
         )
-        booking2 = booking_factories.IndividualBookingFactory(
+        booking2 = booking_factories.BookingFactory(
             user=other_beneficiary,
-            individualBooking__user=other_beneficiary,
             stock__offer=offer,
             stock__price=0,
             token="12345",
@@ -105,7 +102,7 @@ class BookingCancellationConfirmationByProEmailData:
 class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
     def test_sends_to_offerer_administration(self):
         # Given
-        booking = booking_factories.IndividualBookingFactory(stock__offer__bookingEmail="offerer@example.com")
+        booking = booking_factories.BookingFactory(stock__offer__bookingEmail="offerer@example.com")
 
         # When
 

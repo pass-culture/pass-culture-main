@@ -3,8 +3,8 @@ from datetime import timedelta
 
 import pytest
 
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
-from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
@@ -23,7 +23,7 @@ import pcapi.core.users.factories as users_factories
 class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
     def test_should_send_email_to_beneficiary_when_expired_book_booking_cancelled(self):
         amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
-        expired_today_book_booking = IndividualBookingFactory(
+        expired_today_book_booking = BookingFactory(
             user=amnesiac_user, stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id
         )
         send_expired_bookings_to_beneficiary_email(amnesiac_user, [expired_today_book_booking])
@@ -37,10 +37,10 @@ class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
 
     def test_should_send_email_to_beneficiary_when_expired_others_bookings_cancelled(self):
         amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
-        expired_today_dvd_booking = IndividualBookingFactory(
+        expired_today_dvd_booking = BookingFactory(
             user=amnesiac_user, stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id
         )
-        expired_today_cd_booking = IndividualBookingFactory(
+        expired_today_cd_booking = BookingFactory(
             user=amnesiac_user, stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id
         )
         send_expired_bookings_to_beneficiary_email(amnesiac_user, [expired_today_cd_booking, expired_today_dvd_booking])
@@ -54,10 +54,10 @@ class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
 
     def test_should_send_two_emails_to_beneficiary_when_expired_books_and_other_bookings_cancelled(self):
         amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
-        expired_today_book_booking = IndividualBookingFactory(
+        expired_today_book_booking = BookingFactory(
             user=amnesiac_user, stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id
         )
-        expired_today_cd_booking = IndividualBookingFactory(
+        expired_today_cd_booking = BookingFactory(
             user=amnesiac_user, stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id
         )
         send_expired_bookings_to_beneficiary_email(
@@ -70,7 +70,7 @@ class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
 
     def test_should_get_correct_data_when_expired_bookings_cancelled(self):
         now = datetime.utcnow()
-        amnesiac_user = users_factories.UserFactory(email="dory@example.com", firstName="Dory")
+        amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com", firstName="Dory")
         long_ago = now - timedelta(days=31)
         dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
         expired_today_dvd_booking = CancelledBookingFactory(

@@ -22,10 +22,10 @@ class Returns200Test:
     def test_when_user_has_rights_and_regular_offer(self, client):
         # Given
         past = datetime.utcnow() - timedelta(days=2)
-        booking = bookings_factories.IndividualBookingFactory(
-            individualBooking__user__email="beneficiary@example.com",
-            individualBooking__user__phoneNumber="0101010101",
-            individualBooking__user__dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2),
+        booking = bookings_factories.BookingFactory(
+            user__email="beneficiary@example.com",
+            user__phoneNumber="0101010101",
+            user__dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2),
             stock__beginningDatetime=past,
             stock__offer=offers_factories.EventOfferFactory(
                 extraData={
@@ -51,7 +51,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "bookingId": humanize(booking.id),
-            "dateOfBirth": isoformat(booking.individualBooking.user.birth_date),
+            "dateOfBirth": isoformat(booking.user.birth_date),
             "datetime": format_into_utc_date(booking.stock.beginningDatetime),
             "ean13": None,
             "email": "beneficiary@example.com",
@@ -76,7 +76,7 @@ class Returns200Test:
 
     def test_when_api_key_is_provided_and_rights_and_regular_offer(self, client):
         # Given
-        booking = bookings_factories.IndividualBookingFactory()
+        booking = bookings_factories.BookingFactory()
         offerers_factories.ApiKeyFactory(offerer=booking.offerer, prefix="test_prefix")
 
         # When
@@ -88,7 +88,7 @@ class Returns200Test:
 
     def test_when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, client):
         # Given
-        booking = bookings_factories.IndividualBookingFactory(
+        booking = bookings_factories.BookingFactory(
             stock__beginningDatetime=datetime.utcnow() - timedelta(days=2),
         )
         user_offerer = offerers_factories.UserOffererFactory(offerer=booking.offerer)
@@ -116,7 +116,7 @@ class Returns401Test:
 class Returns403Test:
     def test_when_user_doesnt_have_rights_and_token_exists(self, client):
         # Given
-        booking = bookings_factories.IndividualBookingFactory()
+        booking = bookings_factories.BookingFactory()
         another_pro_user = offerers_factories.UserOffererFactory().user
 
         # When
@@ -131,7 +131,7 @@ class Returns403Test:
 
     def test_when_given_api_key_not_related_to_booking_offerer(self, client):
         # Given
-        booking = bookings_factories.IndividualBookingFactory()
+        booking = bookings_factories.BookingFactory()
         offerers_factories.ApiKeyFactory()  # another offerer's API key
 
         # When
@@ -148,7 +148,7 @@ class Returns403Test:
     def test_when_booking_not_confirmed(self, client):
         # Given
         next_week = datetime.utcnow() + timedelta(weeks=1)
-        booking = bookings_factories.IndividualBookingFactory(stock__beginningDatetime=next_week)
+        booking = bookings_factories.BookingFactory(stock__beginningDatetime=next_week)
         pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
 
         # When

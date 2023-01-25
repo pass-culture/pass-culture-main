@@ -356,10 +356,11 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         # given
         _, grant_18, _, _, _ = create_bunch_of_accounts()
 
-        bookings_factories.IndividualBookingFactory(
-            individualBooking__user=grant_18,
+        bookings_factories.BookingFactory(
+            user=grant_18,
             stock__offer__product=offers_factories.DigitalProductFactory(),
             amount=12.5,
+            user__deposit__expirationDate=datetime.datetime(year=2031, month=12, day=31),
         )
 
         # when

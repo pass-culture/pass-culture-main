@@ -1,6 +1,6 @@
 from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
-from pcapi.core.bookings.models import IndividualBooking
+from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -9,9 +9,8 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 
 
 def get_new_booking_to_pro_email_data(
-    individual_booking: IndividualBooking, first_venue_booking: bool = False
+    booking: Booking, first_venue_booking: bool = False
 ) -> models.TransactionalEmailData:
-    booking = individual_booking.booking
     offer = booking.stock.offer
     venue = offer.venue
 
@@ -43,8 +42,8 @@ def get_new_booking_to_pro_email_data(
 
     data = models.TransactionalEmailData(
         reply_to=models.EmailInfo(
-            email=individual_booking.user.email,
-            name=individual_booking.user.full_name,
+            email=booking.user.email,
+            name=booking.user.full_name,
         ),
         template=template,
         params={
@@ -63,15 +62,13 @@ def get_new_booking_to_pro_email_data(
             "OFFER_SUBCATEGORY": offer_subcategory,
             "PRICE": "Gratuit" if booking.stock.price == 0 else f"{booking.stock.price} €",
             "QUANTITY": booking.quantity,
-            "USER_EMAIL": individual_booking.user.email,
-            "USER_FIRSTNAME": individual_booking.user.firstName,
-            "USER_LASTNAME": individual_booking.user.lastName,
-            "USER_PHONENUMBER": individual_booking.user.phoneNumber or "",
+            "USER_EMAIL": booking.user.email,
+            "USER_FIRSTNAME": booking.user.firstName,
+            "USER_LASTNAME": booking.user.lastName,
+            "USER_PHONENUMBER": booking.user.phoneNumber or "",
             "VENUE_NAME": venue.publicName if venue.publicName else venue.name,
             "MUST_USE_TOKEN_FOR_PAYMENT": not (
-                individual_booking.booking.stock.price == 0
-                or individual_booking.booking.activationCode
-                or is_booking_autovalidated
+                booking.stock.price == 0 or booking.activationCode or is_booking_autovalidated
             ),
             "WITHDRAWAL_PERIOD": booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
             if offer.subcategoryId == subcategories.LIVRE_PAPIER.id
@@ -82,13 +79,13 @@ def get_new_booking_to_pro_email_data(
     return data
 
 
-def send_user_new_booking_to_pro_email(individual_booking: IndividualBooking, first_venue_booking: bool) -> bool:
+def send_user_new_booking_to_pro_email(booking: Booking, first_venue_booking: bool) -> bool:
     if first_venue_booking:
-        offerer_booking_email = individual_booking.booking.stock.offer.venue.bookingEmail
+        offerer_booking_email = booking.stock.offer.venue.bookingEmail
     else:
-        offerer_booking_email = individual_booking.booking.stock.offer.bookingEmail
+        offerer_booking_email = booking.stock.offer.bookingEmail
 
     if not offerer_booking_email:
         return True
-    data = get_new_booking_to_pro_email_data(individual_booking, first_venue_booking)
+    data = get_new_booking_to_pro_email_data(booking, first_venue_booking)
     return mails.send(recipients=[offerer_booking_email], data=data)

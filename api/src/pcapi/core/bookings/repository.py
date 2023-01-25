@@ -32,7 +32,6 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
-from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.utils import _apply_departement_timezone
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories
@@ -95,11 +94,7 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
     if email:
         # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
         # all emails have been sanitized in the database.
-        query = (
-            query.join(IndividualBooking)
-            .join(IndividualBooking.user)
-            .filter(func.lower(User.email) == sanitize_email(email))
-        )
+        query = query.join(Booking.user).filter(func.lower(User.email) == sanitize_email(email))
 
     if offer_id is not None:
         query = query.join(Stock).join(Offer).filter(Offer.id == offer_id)
@@ -179,8 +174,7 @@ def find_used_by_token(token: str) -> Booking:
 def find_expiring_individual_bookings_query() -> BaseQuery:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
     return (
-        IndividualBooking.query.join(Booking)
-        .join(Stock)
+        Booking.query.join(Stock)
         .join(Offer)
         .filter(
             Booking.status == BookingStatus.CONFIRMED,
@@ -212,8 +206,7 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
     )
 
     return (
-        IndividualBooking.query.join(Booking)
-        .join(Stock)
+        Booking.query.join(Stock)
         .join(Offer)
         .filter(
             Booking.status == BookingStatus.CONFIRMED,
@@ -228,7 +221,7 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
                 else_=(Booking.dateCreated + constants.BOOKINGS_AUTO_EXPIRY_DELAY).between(*rest_window),
             ),
         )
-        .order_by(IndividualBooking.userId)
+        .order_by(Booking.userId)
     )
 
 
@@ -246,7 +239,6 @@ def find_user_ids_with_expired_individual_bookings(expired_on: date = None) -> L
         user_id
         for user_id, in (
             db.session.query(User.id)
-            .join(IndividualBooking)
             .join(Booking)
             .filter(
                 Booking.status == BookingStatus.CANCELLED,
@@ -259,26 +251,21 @@ def find_user_ids_with_expired_individual_bookings(expired_on: date = None) -> L
     ]
 
 
-def get_expired_individual_bookings_for_user(user: User, expired_on: date = None) -> list[IndividualBooking]:
+def get_expired_individual_bookings_for_user(user: User, expired_on: date = None) -> list[Booking]:
     expired_on = expired_on or date.today()
-    return (
-        IndividualBooking.query.join(Booking)
-        .filter(
-            IndividualBooking.user == user,
-            Booking.status == BookingStatus.CANCELLED,
-            Booking.cancellationDate >= expired_on,
-            Booking.cancellationDate < (expired_on + timedelta(days=1)),
-            Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
-        )
-        .all()
-    )
+    return Booking.query.filter(
+        Booking.user == user,
+        Booking.status == BookingStatus.CANCELLED,
+        Booking.cancellationDate >= expired_on,
+        Booking.cancellationDate < (expired_on + timedelta(days=1)),
+        Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
+    ).all()
 
 
-def find_expired_individual_bookings_ordered_by_offerer(expired_on: date = None) -> list[IndividualBooking]:
+def find_expired_individual_bookings_ordered_by_offerer(expired_on: date = None) -> list[Booking]:
     expired_on = expired_on or date.today()
     return (
-        IndividualBooking.query.join(Booking)
-        .filter(Booking.status == BookingStatus.CANCELLED)
+        Booking.query.filter(Booking.status == BookingStatus.CANCELLED)
         .filter(cast(Booking.cancellationDate, Date) == expired_on)
         .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
         .order_by(Booking.offererId)
@@ -350,16 +337,14 @@ def find_offers_booked_by_beneficiaries(users: list[User]) -> list[Offer]:
         Offer.query.distinct(Offer.id)
         .join(Stock)
         .join(Booking)
-        .join(IndividualBooking)
-        .filter(IndividualBooking.userId.in_(user.id for user in users))
+        .filter(Booking.userId.in_(user.id for user in users))
         .all()
     )
 
 
 def find_cancellable_bookings_by_beneficiaries(users: list[User]) -> list[Booking]:
     return (
-        Booking.query.join(IndividualBooking)
-        .filter(IndividualBooking.userId.in_(user.id for user in users))
+        Booking.query.filter(Booking.userId.in_(user.id for user in users))
         .filter(Booking.status == BookingStatus.CONFIRMED)
         .all()
     )
@@ -374,9 +359,8 @@ def find_cancellable_bookings_by_offerer(offerer_id: int) -> list[Booking]:
 
 def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
     return (
-        Booking.query.join(Booking.individualBooking)
-        .filter(
-            IndividualBooking.depositId == deposit_id,
+        Booking.query.filter(
+            Booking.depositId == deposit_id,
             or_(Booking.status != BookingStatus.CANCELLED, Booking.status == None),
         )
         .options(joinedload(Booking.stock).joinedload(Stock.offer))
@@ -546,8 +530,7 @@ def _get_filtered_booking_pro(
             offer_type,
             extra_joins=(
                 Stock.offer,
-                Booking.individualBooking,
-                IndividualBooking.user,
+                Booking.user,
             ),
         )
         .with_entities(
@@ -734,7 +717,6 @@ def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[B
         )
         .join(Stock, Offer)
         .filter_by(canExpire=True)
-        .filter(Booking.individualBookingId != None)  # noqa
         .filter(Booking.status == BookingStatus.CONFIRMED)
         .yield_per(1_000)
     )
@@ -769,15 +751,14 @@ def offerer_has_ongoing_bookings(offerer_id: int) -> bool:
     ).scalar()
 
 
-def find_individual_bookings_event_happening_tomorrow_query() -> list[IndividualBooking]:
+def find_individual_bookings_event_happening_tomorrow_query() -> list[Booking]:
     tomorrow = datetime.utcnow() + timedelta(days=1)
     tomorrow_min = datetime.combine(tomorrow, time.min)
     tomorrow_max = datetime.combine(tomorrow, time.max)
 
     return (
-        IndividualBooking.query.join(
-            IndividualBooking.user,
-            IndividualBooking.booking,
+        Booking.query.join(
+            Booking.user,
             Booking.stock,
             Stock.offer,
             Offer.venue,
@@ -788,11 +769,10 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Individual
         .filter(Offer.isEvent)
         .filter(not_(Offer.isDigital))
         .filter(Booking.status != BookingStatus.CANCELLED)
-        .options(contains_eager(IndividualBooking.user))
-        .options(contains_eager(IndividualBooking.booking).contains_eager(Booking.activationCode))
+        .options(contains_eager(Booking.user))
+        .options(contains_eager(Booking.activationCode))
         .options(
-            contains_eager(IndividualBooking.booking)
-            .contains_eager(Booking.stock)
+            contains_eager(Booking.stock)
             .contains_eager(Stock.offer)
             .options(
                 contains_eager(Offer.venue),
