@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import FormLayout from 'components/FormLayout'
 import { IcoEuro, IconPlusCircle, TrashFilledIcon } from 'icons'
 import { Checkbox, InfoBox, Button, TextInput } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { BaseCheckbox } from 'ui-kit/form/shared'
 
 import {
@@ -120,13 +120,18 @@ export const PriceCategoriesForm = (): JSX.Element => {
                   )}
                 />
 
-                <Button
-                  variant={ButtonVariant.TERNARY}
-                  Icon={TrashFilledIcon}
-                  disabled={values.priceCategories.length <= 1}
-                  onClick={() => arrayHelpers.remove(index)}
-                  aria-label="Supprimer le tarif"
-                />
+                <div className={styles['trash-button']}>
+                  <Button
+                    variant={ButtonVariant.TERNARY}
+                    Icon={TrashFilledIcon}
+                    iconPosition={IconPositionEnum.CENTER}
+                    disabled={values.priceCategories.length <= 1}
+                    onClick={() => arrayHelpers.remove(index)}
+                    hasTooltip
+                  >
+                    Supprimer le tarif
+                  </Button>
+                </div>
               </FormLayout.Row>
             ))}
             <Button
