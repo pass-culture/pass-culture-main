@@ -129,9 +129,6 @@ SET
 ;
 
 
-UPDATE venue SET "validationToken" = pg_temp.random_text(27) WHERE "validationToken" IS NOT NULL;
-
-
 -- Anonymize beneficiary_fraud_check table content
 UPDATE beneficiary_fraud_check
 SET "resultContent" = "resultContent" || (
