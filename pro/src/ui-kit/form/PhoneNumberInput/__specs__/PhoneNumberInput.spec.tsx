@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import React from 'react'
-import '@testing-library/jest-dom'
 
 import { PHONE_CODE_COUNTRY_CODE_OPTIONS, PLACEHOLDER_MAP } from '../constants'
 import PhoneNumberInput from '../PhoneNumberInput'

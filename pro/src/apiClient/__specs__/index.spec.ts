@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom'
 import fetch from 'jest-fetch-mock'
 
 import { api, apiContremarque } from 'apiClient/api'

@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom'
 import { renderHook } from '@testing-library/react-hooks'
 import React from 'react'
 import { MemoryRouter } from 'react-router'

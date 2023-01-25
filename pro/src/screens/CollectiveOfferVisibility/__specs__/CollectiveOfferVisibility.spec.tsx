@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom'
 import 'react-router-dom'
 
 import { render, screen, waitFor } from '@testing-library/react'

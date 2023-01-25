@@ -1,5 +1,3 @@
-import '@testing-library/jest-dom'
-
 import { IStockEventFormValues } from 'components/StockEventForm'
 import { stockEventFactory } from 'components/StockEventForm/stockEventFactory'
 

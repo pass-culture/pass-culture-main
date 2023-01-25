@@ -4,7 +4,6 @@ import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
-import '@testing-library/jest-dom'
 
 import { api } from 'apiClient/api'
 import {

@@ -1,5 +1,3 @@
-import '@testing-library/jest-dom'
-
 import { setUser } from '@sentry/browser'
 import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
