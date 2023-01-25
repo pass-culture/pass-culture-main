@@ -338,12 +338,17 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalDetails: str | None
     siret: str | None
     hasMissingReimbursementPoint: bool
+    hasCreatedOffer: bool
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
 
     @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "VenueListItemResponseModel":
+    def from_orm(
+        cls,
+        venue: offerers_models.Venue,
+        ids_of_venues_with_offers: typing.Iterable[int] = (),
+    ) -> "VenueListItemResponseModel":
         now = datetime.utcnow()
         venue.offererName = venue.managingOfferer.name
         venue.hasMissingReimbursementPoint = not (
@@ -355,6 +360,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
             )
             or venue.hasPendingBankInformationApplication
         )
+        venue.hasCreatedOffer = venue.id in ids_of_venues_with_offers
         return super().from_orm(venue)
 
     class Config:
