@@ -5,7 +5,7 @@ module.exports = {
     '\\.(css|less|scss|sass)$': '<rootDir>/src/utils/styleMock.js',
   },
   modulePaths: ['node_modules', 'src'],
-  setupFiles: ['<rootDir>/jest.setup.js', 'jest-canvas-mock'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js', 'jest-canvas-mock'],
   testEnvironment: 'jsdom',
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',

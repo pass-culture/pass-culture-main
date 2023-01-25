@@ -1,5 +1,3 @@
-import '@testing-library/jest-dom'
-
 import { formatPhoneNumber } from '../ProfileAndSupport'
 
 describe('profile: formatPhoneNumber', () => {

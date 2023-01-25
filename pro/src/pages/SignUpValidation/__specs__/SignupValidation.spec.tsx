@@ -1,5 +1,3 @@
-import '@testing-library/jest-dom'
-
 import { render, waitFor } from '@testing-library/react'
 import type { Action, History } from 'history'
 import { createBrowserHistory } from 'history'

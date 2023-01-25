@@ -1,5 +1,3 @@
-import '@testing-library/jest-dom'
-
 import { render, screen } from '@testing-library/react'
 import { Formik } from 'formik'
 import { createBrowserHistory } from 'history'

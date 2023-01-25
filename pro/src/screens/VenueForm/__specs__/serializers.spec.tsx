@@ -1,5 +1,3 @@
-import '@testing-library/jest-dom'
-
 import { EditVenueBodyModel } from 'apiClient/v1'
 import { IVenueFormValues } from 'components/VenueForm'
 

@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import { Formik } from 'formik'
-import '@testing-library/jest-dom'
 import React from 'react'
 
 import { OfferAddressType } from 'apiClient/v1'

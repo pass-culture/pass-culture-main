@@ -1,5 +1,3 @@
-import '@testing-library/jest-dom'
-
 import { parse } from 'querystring'
 
 import {
