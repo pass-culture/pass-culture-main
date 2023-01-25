@@ -489,6 +489,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     subcategoryId: SubcategoryIdEnum | None
     domains: list[int] | None
     interventionArea: list[str] | None
+    venueId: int | None
 
     @validator("name", allow_reuse=True)
     def validate_name(cls, name: str | None) -> str | None:
@@ -528,6 +529,12 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         if not booking_emails:
             raise ValueError("Un email doit etre renseigné.")
         return booking_emails
+
+    @validator("venueId", allow_reuse=True)
+    def validate_venue_id(cls, venue_id: int | None) -> int | None:
+        if venue_id is None:
+            raise ValueError("venue_id cannot be NULL.")
+        return venue_id
 
     class Config:
         alias_generator = to_camel

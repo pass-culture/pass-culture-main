@@ -7,6 +7,7 @@ from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.factories import EducationalDomainFactory
+from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
@@ -184,6 +185,28 @@ class Returns200Test:
         assert template.domains == [domain]
         assert template.interventionArea == ["01", "2A"]
 
+    def test_patch_collective_offer_replacing_venue_with_same_offerer(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offerer,
+        )
+        offer = CollectiveOfferFactory(venue__managingOfferer=offerer)
+        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        CollectiveBookingFactory(collectiveStock__collectiveOffer=offer)
+
+        # When
+        data = {"venueId": venue2.id}
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 200
+        updated_offer = CollectiveOffer.query.get(offer.id)
+        assert updated_offer.venueId == venue2.id
+
 
 class Returns400Test:
     def test_patch_non_approved_offer_fails(self, app, client):
@@ -358,6 +381,74 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
+
+    def test_cannot_update_offer_with_used_booking(self, client):
+        # Given
+        offer = CollectiveOfferFactory()
+        UsedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer=offer,
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {
+            "name": "New name",
+        }
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"global": ["Les offres utilisées ou remboursées ne sont pas modifiable."]}
+
+    def test_patch_collective_offer_replacing_by_non_unknown_venue(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offerer,
+        )
+        offer = CollectiveOfferFactory(venue__managingOfferer=offerer)
+
+        # When
+        data = {"venueId": 0}
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 404
+        assert response.json["venueId"] == "le lieu doit exister"
+
+    def test_patch_collective_offer_replacing_venue_with_different_offerer(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerer2 = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offerer,
+        )
+        offer = CollectiveOfferFactory(
+            venue__managingOfferer=offerer
+            # offer.venueId= 17442
+        )
+        venue2 = offerers_factories.VenueFactory(
+            managingOfferer=offerer2,
+        )
+
+        # When
+        data = {"venueId": venue2.id}
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 403
+        assert response.json == {"venueId": "new venue need to have same offerer"}
 
 
 class Returns403Test:

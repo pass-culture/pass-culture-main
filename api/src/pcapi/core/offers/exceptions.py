@@ -116,6 +116,14 @@ class SubcategoryNotEligibleForEducationalOffer(OfferCreationBaseException):
         )
 
 
+class OffererOfVenueDontMatchOfferer(Exception):
+    pass
+
+
+class VenueIdDontExist(Exception):
+    pass
+
+
 class UnknownOfferSubCategory(OfferCreationBaseException):
     def __init__(self) -> None:
         super().__init__(

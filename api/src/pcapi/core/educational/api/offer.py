@@ -11,14 +11,17 @@ from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational import validation
+from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.models import HasImageMixin
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository
+from pcapi.core.offers import exceptions as offers_exception
 from pcapi.core.offers import validation as offer_validation
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
@@ -365,7 +368,7 @@ def update_collective_offer_educational_institution(
 ) -> educational_models.CollectiveOffer:
     offer = educational_repository.get_collective_offer_by_id(offer_id)
     if educational_institution_id is not None:
-        validation.check_institution_id_exists(educational_institution_id)
+        educational_validation.check_institution_id_exists(educational_institution_id)
 
     if offer.collectiveStock and not offer.collectiveStock.isEditable:
         raise exceptions.CollectiveOfferNotEditable()
@@ -397,7 +400,7 @@ def create_collective_offer_public(
 
     offer_validation.check_offer_subcategory_is_valid(body.subcategory_id)
     offer_validation.check_offer_is_eligible_for_educational(body.subcategory_id)
-    validation.validate_offer_venue(body.offer_venue)
+    educational_validation.validate_offer_venue(body.offer_venue)
 
     educational_domains = educational_repository.get_educational_domains_from_ids(body.domains)
 
@@ -491,7 +494,7 @@ def edit_collective_offer_public(
         .one_or_none()
     )
     if collective_stock_unique_booking:
-        validation.check_collective_booking_status_pending(collective_stock_unique_booking)
+        educational_validation.check_collective_booking_status_pending(collective_stock_unique_booking)
 
     # This variable is meant for Adage mailing
     updated_fields = []
@@ -599,6 +602,125 @@ def attach_image(
         db.session.rollback()
         raise
     db.session.commit()
+
+
+def update_collective_offer(
+    offer_id: int,
+    new_values: dict,
+) -> None:
+    offer_to_update = educational_models.CollectiveOffer.query.filter(
+        educational_models.CollectiveOffer.id == offer_id
+    ).first()
+
+    educational_validation.check_if_offer_not_used_or_reimbursed(offer_to_update)
+
+    if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
+        offerer = repository.get_by_collective_offer_id(offer_to_update.id)
+        new_venue = repository.get_venue_by_id(new_values["venueId"])
+        if not new_venue:
+            raise offers_exception.VenueIdDontExist()
+        if new_venue.managingOffererId != offerer.id:
+            raise offers_exception.OffererOfVenueDontMatchOfferer()
+
+    updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values)
+
+    search.async_index_collective_offer_ids([offer_to_update.id])
+
+    notify_educational_redactor_on_collective_offer_or_stock_edit(
+        offer_to_update.id,
+        updated_fields,
+    )
+
+
+def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
+
+    query = educational_models.CollectiveOfferTemplate.query
+    query = query.filter(educational_models.CollectiveOfferTemplate.id == offer_id)
+    offer_to_update = query.first()
+
+    if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
+        offerer = repository.get_by_collective_offer_id(offer_to_update.id)
+        new_venue = repository.get_venue_by_id(new_values["venueId"])
+        if not new_venue:
+            raise offers_exception.VenueIdDontExist()
+        if new_venue.managingOffererId != offerer.id:
+            raise offers_exception.OffererOfVenueDontMatchOfferer()
+
+    _update_collective_offer(offer=offer_to_update, new_values=new_values)
+    search.async_index_collective_offer_template_ids([offer_to_update.id])
+
+
+def _update_collective_offer(
+    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
+    new_values: dict,
+) -> list[str]:
+    offer_validation.check_validation_status(offer)
+    # This variable is meant for Adage mailing
+    updated_fields = []
+    for key, value in new_values.items():
+        updated_fields.append(key)
+
+        if key == "subcategoryId":
+            offer_validation.check_offer_is_eligible_for_educational(value.name)
+            offer.subcategoryId = value.name
+            continue
+
+        if key == "domains":
+            domains = get_educational_domains_from_ids(value)
+            offer.domains = domains
+            continue
+
+        setattr(offer, key, value)
+
+    db.session.add(offer)
+    db.session.commit()
+    return updated_fields
+
+
+def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
+    collective_offer_ids_tuples = query.filter(
+        educational_models.CollectiveOffer.validation == OfferValidationStatus.APPROVED
+    ).with_entities(educational_models.CollectiveOffer.id)
+
+    collective_offer_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
+    number_of_collective_offers_to_update = len(collective_offer_ids)
+    batch_size = 1000
+
+    for current_start_index in range(0, number_of_collective_offers_to_update, batch_size):
+        collective_offer_ids_batch = collective_offer_ids[
+            current_start_index : min(current_start_index + batch_size, number_of_collective_offers_to_update)
+        ]
+
+        query_to_update = educational_models.CollectiveOffer.query.filter(
+            educational_models.CollectiveOffer.id.in_(collective_offer_ids_batch)
+        )
+        query_to_update.update(update_fields, synchronize_session=False)
+        db.session.commit()
+
+        search.async_index_collective_offer_ids(collective_offer_ids_batch)
+
+
+def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
+    collective_offer_ids_tuples = query.filter(
+        educational_models.CollectiveOfferTemplate.validation == OfferValidationStatus.APPROVED
+    ).with_entities(educational_models.CollectiveOfferTemplate.id)
+
+    collective_offer_template_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
+    number_of_collective_offers_template_to_update = len(collective_offer_template_ids)
+    batch_size = 1000
+
+    for current_start_index in range(0, number_of_collective_offers_template_to_update, batch_size):
+        collective_offer_template_ids_batch = collective_offer_template_ids[
+            current_start_index : min(current_start_index + batch_size, number_of_collective_offers_template_to_update)
+        ]
+
+        query_to_update = educational_models.CollectiveOfferTemplate.query.filter(
+            educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids_batch)
+        )
+        query_to_update.update(update_fields, synchronize_session=False)
+        db.session.commit()
+
+        search.async_index_collective_offer_template_ids(collective_offer_template_ids_batch)
 
 
 # PRIVATE

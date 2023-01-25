@@ -8,6 +8,7 @@ import sqlalchemy.orm as sqla_orm
 from pcapi import repository
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
+from pcapi.core.educational.api import offer as educational_offer_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
@@ -177,9 +178,11 @@ def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBody
     collective_query = offers_repository.get_collective_offers_by_offer_ids(current_user, body.ids)
     collective_template_query = offers_repository.get_collective_offers_template_by_offer_ids(current_user, body.ids)
     offers_api.batch_update_offers(query, {"isActive": body.is_active})
-    offers_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
+    educational_offer_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
     if collective_template_query is not None:
-        offers_api.batch_update_collective_offers_template(collective_template_query, {"isActive": body.is_active})
+        educational_offer_api.batch_update_collective_offers_template(
+            collective_template_query, {"isActive": body.is_active}
+        )
 
 
 @private_api.route("/offers/all-active-status", methods=["PATCH"])

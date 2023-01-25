@@ -25,12 +25,11 @@ import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.external.attributes.api import update_external_pro
 import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers import models as offerers_model
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
 from pcapi.core.users.models import ExpenseDomain
@@ -114,7 +113,7 @@ def create_offer(
     motor_disability_compliant: bool,
     name: str,
     subcategory_id: str,
-    venue: Venue,
+    venue: offerers_model.Venue,
     visual_disability_compliant: bool,
     booking_email: str | None = None,
     description: str | None = None,
@@ -270,57 +269,6 @@ def update_offer(
     return offer
 
 
-def update_collective_offer(
-    offer_id: int,
-    new_values: dict,
-) -> None:
-    offer_to_update = educational_models.CollectiveOffer.query.filter(
-        educational_models.CollectiveOffer.id == offer_id
-    ).first()
-
-    updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values)
-
-    search.async_index_collective_offer_ids([offer_to_update.id])
-
-    educational_api_offer.notify_educational_redactor_on_collective_offer_or_stock_edit(
-        offer_to_update.id,
-        updated_fields,
-    )
-
-
-def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
-    query = educational_models.CollectiveOfferTemplate.query
-    query = query.filter(educational_models.CollectiveOfferTemplate.id == offer_id)
-    offer_to_update = query.first()
-    _update_collective_offer(offer=offer_to_update, new_values=new_values)
-    search.async_index_collective_offer_template_ids([offer_to_update.id])
-
-
-def _update_collective_offer(
-    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate, new_values: dict
-) -> list[str]:
-    validation.check_validation_status(offer)
-    # This variable is meant for Adage mailing
-    updated_fields = []
-    for key, value in new_values.items():
-        updated_fields.append(key)
-
-        if key == "subcategoryId":
-            validation.check_offer_is_eligible_for_educational(value.name)
-            offer.subcategoryId = value.name
-            continue
-
-        if key == "domains":
-            domains = educational_api_offer.get_educational_domains_from_ids(value)
-            offer.domains = domains
-            continue
-
-        setattr(offer, key, value)
-    db.session.add(offer)
-    db.session.commit()
-    return updated_fields
-
-
 def batch_update_offers(query: BaseQuery, update_fields: dict) -> None:
     query = query.filter(models.Offer.validation == models.OfferValidationStatus.APPROVED)
     raw_results = query.with_entities(models.Offer.id, models.Offer.venueId).all()
@@ -353,52 +301,6 @@ def batch_update_offers(query: BaseQuery, update_fields: dict) -> None:
         db.session.commit()
 
         search.async_index_offer_ids(offer_ids_batch)
-
-
-def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
-    collective_offer_ids_tuples = query.filter(
-        educational_models.CollectiveOffer.validation == models.OfferValidationStatus.APPROVED
-    ).with_entities(educational_models.CollectiveOffer.id)
-
-    collective_offer_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
-    number_of_collective_offers_to_update = len(collective_offer_ids)
-    batch_size = 1000
-
-    for current_start_index in range(0, number_of_collective_offers_to_update, batch_size):
-        collective_offer_ids_batch = collective_offer_ids[
-            current_start_index : min(current_start_index + batch_size, number_of_collective_offers_to_update)
-        ]
-
-        query_to_update = educational_models.CollectiveOffer.query.filter(
-            educational_models.CollectiveOffer.id.in_(collective_offer_ids_batch)
-        )
-        query_to_update.update(update_fields, synchronize_session=False)
-        db.session.commit()
-
-        search.async_index_collective_offer_ids(collective_offer_ids_batch)
-
-
-def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
-    collective_offer_ids_tuples = query.filter(
-        educational_models.CollectiveOfferTemplate.validation == models.OfferValidationStatus.APPROVED
-    ).with_entities(educational_models.CollectiveOfferTemplate.id)
-
-    collective_offer_template_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
-    number_of_collective_offers_template_to_update = len(collective_offer_template_ids)
-    batch_size = 1000
-
-    for current_start_index in range(0, number_of_collective_offers_template_to_update, batch_size):
-        collective_offer_template_ids_batch = collective_offer_template_ids[
-            current_start_index : min(current_start_index + batch_size, number_of_collective_offers_template_to_update)
-        ]
-
-        query_to_update = educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids_batch)
-        )
-        query_to_update.update(update_fields, synchronize_session=False)
-        db.session.commit()
-
-        search.async_index_collective_offer_template_ids(collective_offer_template_ids_batch)
 
 
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: typing.List[Booking]) -> None:
@@ -700,7 +602,7 @@ def _delete_mediations_and_thumbs(mediations: list[models.Mediation]) -> None:
             db.session.delete(mediation)
 
 
-def update_stock_id_at_providers(venue: Venue, old_siret: str) -> None:
+def update_stock_id_at_providers(venue: offerers_model.Venue, old_siret: str) -> None:
     current_siret = venue.siret
 
     stocks = (
@@ -1107,7 +1009,7 @@ def batch_delete_draft_offers(query: BaseQuery) -> None:
     db.session.commit()
 
 
-def _get_or_create_label(label: str, venue: Venue) -> models.PriceCategoryLabel:
+def _get_or_create_label(label: str, venue: offerers_model.Venue) -> models.PriceCategoryLabel:
     price_category_label = models.PriceCategoryLabel.query.filter_by(label=label, venue=venue).one_or_none()
     if not price_category_label:
         return models.PriceCategoryLabel(label=label, venue=venue)

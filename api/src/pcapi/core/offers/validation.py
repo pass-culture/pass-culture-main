@@ -270,7 +270,9 @@ def check_image(
         raise exceptions.ImageTooLarge(max_width, max_height)
 
 
-def check_validation_status(offer: Offer | CollectiveOffer | CollectiveOfferTemplate) -> None:
+def check_validation_status(
+    offer: Offer | CollectiveOffer | CollectiveOfferTemplate,
+) -> None:
     if offer.validation in (OfferValidationStatus.REJECTED, OfferValidationStatus.PENDING):
         error = ApiErrors()
         error.add_error("global", "Les offres refusées ou en attente de validation ne sont pas modifiables")

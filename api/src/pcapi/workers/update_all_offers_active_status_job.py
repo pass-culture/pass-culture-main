@@ -1,3 +1,4 @@
+from pcapi.core.educational.api import offer as educational_api_offers
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.workers import worker
@@ -42,9 +43,11 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
         period_ending_date=filters["period_ending_date"],
     )
     offers_api.batch_update_offers(individual_offer_query, {"isActive": is_active})
-    offers_api.batch_update_collective_offers(collective_offer_query, {"isActive": is_active})
+    educational_api_offers.batch_update_collective_offers(collective_offer_query, {"isActive": is_active})
     if collective_offer_template_query is not None:
-        offers_api.batch_update_collective_offers_template(collective_offer_template_query, {"isActive": is_active})
+        educational_api_offers.batch_update_collective_offers_template(
+            collective_offer_template_query, {"isActive": is_active}
+        )
 
 
 @job(worker.low_queue)
@@ -71,8 +74,10 @@ def update_all_collective_offers_active_status_job(filters: dict, is_active: boo
         period_beginning_date=filters["period_beginning_date"],
         period_ending_date=filters["period_ending_date"],
     )
-    offers_api.batch_update_collective_offers(collective_offer_query, {"isActive": is_active})
-    offers_api.batch_update_collective_offers_template(collective_offer_template_query, {"isActive": is_active})
+    educational_api_offers.batch_update_collective_offers(collective_offer_query, {"isActive": is_active})
+    educational_api_offers.batch_update_collective_offers_template(
+        collective_offer_template_query, {"isActive": is_active}
+    )
 
 
 @job(worker.low_queue)

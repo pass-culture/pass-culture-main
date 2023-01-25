@@ -7,10 +7,9 @@ from flask_login import login_required
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import adage as educational_api_adage
-from pcapi.core.educational.api import offer as educational_api_offer
+from pcapi.core.educational.api import offer as educational_offer_api
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
-from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
@@ -37,7 +36,7 @@ logger = logging.getLogger(__name__)
 def get_collective_offers(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> collective_offers_serialize.ListCollectiveOffersResponseModel:
-    capped_offers = educational_api_offer.list_collective_offers_for_pro_user(
+    capped_offers = educational_offer_api.list_collective_offers_for_pro_user(
         user_id=current_user.id,
         user_is_admin=current_user.has_admin_role,
         category_id=query.categoryId,
@@ -121,7 +120,7 @@ def create_collective_offer(
         logger.error("offerer_id sent in body", extra={"offerer_id": body.offerer_id})
 
     try:
-        offer = educational_api_offer.create_collective_offer(offer_data=body, user=current_user)
+        offer = educational_offer_api.create_collective_offer(offer_data=body, user=current_user)
     except offerers_exceptions.CannotFindOffererSiren:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     except offerers_exceptions.CannotFindOffererForOfferId:
@@ -200,9 +199,13 @@ def edit_collective_offer(
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        offers_api.update_collective_offer(offer_id=dehumanized_id, new_values=body.dict(exclude_unset=True))
+        educational_offer_api.update_collective_offer(offer_id=dehumanized_id, new_values=body.dict(exclude_unset=True))
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
+    except offers_exceptions.OffererOfVenueDontMatchOfferer:
+        raise ApiErrors({"venueId": "new venue need to have same offerer"}, 403)
+    except offers_exceptions.VenueIdDontExist:
+        raise ApiErrors({"venueId": "le lieu doit exister"}, 404)
     except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not update offer: educational domains not found.",
@@ -213,9 +216,9 @@ def edit_collective_offer(
             status_code=404,
         )
 
-    offer = educational_api_offer.get_collective_offer_by_id(dehumanized_id)
+    offer = educational_offer_api.get_collective_offer_by_id(dehumanized_id)
     if offer.template and (not offer.template.domains or not offer.template.interventionArea):
-        offers_api.update_collective_offer_template(
+        educational_offer_api.update_collective_offer_template(
             offer_id=offer.template.id,
             new_values={"domains": [domain.id for domain in offer.domains], "interventionArea": offer.interventionArea},
         )
@@ -241,7 +244,7 @@ def create_collective_offer_template_from_collective_offer(
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        collective_offer_template = educational_api_offer.create_collective_offer_template_from_collective_offer(
+        collective_offer_template = educational_offer_api.create_collective_offer_template_from_collective_offer(
             price_detail=body.price_detail, user=current_user, offer_id=dehumanized_offer_id
         )
     except educational_exceptions.CollectiveOfferNotFound:
@@ -275,7 +278,9 @@ def edit_collective_offer_template(
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        offers_api.update_collective_offer_template(offer_id=dehumanized_id, new_values=body.dict(exclude_unset=True))
+        educational_offer_api.update_collective_offer_template(
+            offer_id=dehumanized_id, new_values=body.dict(exclude_unset=True)
+        )
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
     except educational_exceptions.EducationalDomainsNotFound:
@@ -324,8 +329,8 @@ def patch_all_collective_offers_active_status(
 def patch_collective_offers_active_status(
     body: collective_offers_serialize.PatchCollectiveOfferActiveStatusBodyModel,
 ) -> None:
-    collective_query = educational_api_offer.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
-    offers_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
+    collective_query = educational_offer_api.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
+    educational_offer_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
 
 
 @private_api.route("/collective/offers-template/active-status", methods=["PATCH"])
@@ -337,10 +342,12 @@ def patch_collective_offers_active_status(
 def patch_collective_offers_template_active_status(
     body: collective_offers_serialize.PatchCollectiveOfferActiveStatusBodyModel,
 ) -> None:
-    collective_template_query = educational_api_offer.get_query_for_collective_offers_template_by_ids_for_user(
+    collective_template_query = educational_offer_api.get_query_for_collective_offers_template_by_ids_for_user(
         current_user, body.ids
     )
-    offers_api.batch_update_collective_offers_template(collective_template_query, {"isActive": body.is_active})
+    educational_offer_api.batch_update_collective_offers_template(
+        collective_template_query, {"isActive": body.is_active}
+    )
 
 
 @private_api.route("/collective/offers/<offer_id>/educational_institution", methods=["PATCH"])
@@ -365,7 +372,7 @@ def patch_collective_offers_educational_institution(
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        offer = educational_api_offer.update_collective_offer_educational_institution(
+        offer = educational_offer_api.update_collective_offer_educational_institution(
             offer_id=dehumanized_id,
             educational_institution_id=body.educational_institution_id,
             user=current_user,
@@ -392,13 +399,13 @@ def patch_collective_offers_educational_institution(
 def patch_collective_offer_publication(offer_id: str) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_api_offer.get_collective_offer_by_id(dehumanized_id)
+        offer = educational_offer_api.get_collective_offer_by_id(dehumanized_id)
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors({"offerer": ["Acune offre trouvée pour cet id"]}, status_code=404)
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    offer = educational_api_offer.publish_collective_offer(
+    offer = educational_offer_api.publish_collective_offer(
         offer=offer,
         user=current_user,
     )
@@ -419,13 +426,13 @@ def patch_collective_offer_template_publication(
 ) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
     dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_api_offer.get_collective_offer_template_by_id(dehumanized_id)
+        offer = educational_offer_api.get_collective_offer_template_by_id(dehumanized_id)
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors({"offerer": ["Acune offre trouvée pour cet id"]}, status_code=404)
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    offer = educational_api_offer.publish_collective_offer_template(offer_template=offer, user=current_user)
+    offer = educational_offer_api.publish_collective_offer_template(offer_template=offer, user=current_user)
 
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
 
@@ -445,7 +452,7 @@ def create_collective_offer_template(
         logger.error("offerer_id sent in body", extra={"offerer_id": body.offerer_id})
 
     try:
-        offer = educational_api_offer.create_collective_offer_template(offer_data=body, user=current_user)
+        offer = educational_offer_api.create_collective_offer_template(offer_data=body, user=current_user)
     except offerers_exceptions.CannotFindOffererSiren:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     except offerers_exceptions.CannotFindOffererForOfferId:
@@ -519,7 +526,7 @@ def attach_offer_image(
 ) -> collective_offers_serialize.AttachImageResponseModel:
     dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_api_offer.get_collective_offer_by_id(dehumanized_id)
+        offer = educational_offer_api.get_collective_offer_by_id(dehumanized_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
@@ -552,7 +559,7 @@ def attach_offer_image(
             status_code=400,
         )
 
-    educational_api_offer.attach_image(
+    educational_offer_api.attach_image(
         obj=offer,
         image=image_as_bytes,
         crop_params=form.crop_params,
@@ -574,14 +581,14 @@ def attach_offer_template_image(
 ) -> collective_offers_serialize.AttachImageResponseModel:
     dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_api_offer.get_collective_offer_template_by_id(dehumanized_id)
+        offer = educational_offer_api.get_collective_offer_template_by_id(dehumanized_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     image_as_bytes = form.get_image_as_bytes(request)
-    educational_api_offer.attach_image(
+    educational_offer_api.attach_image(
         obj=offer,
         image=image_as_bytes,
         crop_params=form.crop_params,
@@ -602,13 +609,13 @@ def delete_offer_image(
 ) -> None:
     dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_api_offer.get_collective_offer_by_id(dehumanized_id)
+        offer = educational_offer_api.get_collective_offer_by_id(dehumanized_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    educational_api_offer.delete_image(obj=offer)
+    educational_offer_api.delete_image(obj=offer)
 
 
 @private_api.route("/collective/offers-template/<offer_id>/image", methods=["DELETE"])
@@ -622,13 +629,13 @@ def delete_offer_template_image(
 ) -> None:
     dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_api_offer.get_collective_offer_template_by_id(dehumanized_id)
+        offer = educational_offer_api.get_collective_offer_template_by_id(dehumanized_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    educational_api_offer.delete_image(obj=offer)
+    educational_offer_api.delete_image(obj=offer)
 
 
 @private_api.route("/collective/offers/redactors", methods=["GET"])
