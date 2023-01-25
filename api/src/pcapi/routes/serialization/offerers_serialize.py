@@ -38,7 +38,9 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
 
     @classmethod
     def from_orm(
-        cls, venue: offerers_models.Venue, venues_with_offers: Iterable[int] = None
+        cls,
+        venue: offerers_models.Venue,
+        ids_of_venues_with_offers: Iterable[int] = (),
     ) -> "GetOffererVenueResponseModel":
         now = datetime.utcnow()
         venue.hasMissingReimbursementPoint = not (
@@ -50,7 +52,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
             )
             or venue.hasPendingBankInformationApplication
         )
-        venue.hasCreatedOffer = False if venues_with_offers is None else venue.id in venues_with_offers
+        venue.hasCreatedOffer = venue.id in ids_of_venues_with_offers
         return super().from_orm(venue)
 
     class Config:
@@ -119,9 +121,11 @@ class GetOffererResponseModel(BaseModel):
         # `Offerer.managedVenues` relationship which does not
         # join-load what we want.
         res = super().from_orm(offerer)
-        venues_with_offers = offerers_repository.get_venues_with_offers(offerer.id)
+        ids_of_venues_with_offers = offerers_repository.get_ids_of_venues_with_offers([offerer.id])
 
-        res.managedVenues = [GetOffererVenueResponseModel.from_orm(venue, venues_with_offers) for venue in venues]
+        res.managedVenues = [
+            GetOffererVenueResponseModel.from_orm(venue, ids_of_venues_with_offers) for venue in venues
+        ]
         return res
 
     class Config:
