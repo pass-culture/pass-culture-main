@@ -2,9 +2,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { PriceCategoryModel } from './PriceCategoryModel';
+import type { CreatePriceCategoryModel } from './CreatePriceCategoryModel';
+import type { EditPriceCategoryModel } from './EditPriceCategoryModel';
 
 export type PriceCategoryBody = {
-  priceCategories: Array<PriceCategoryModel>;
+  priceCategories: Array<(CreatePriceCategoryModel | EditPriceCategoryModel)>;
 };
 
