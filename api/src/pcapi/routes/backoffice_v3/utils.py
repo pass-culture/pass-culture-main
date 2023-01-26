@@ -29,7 +29,9 @@ class UnauthenticatedUserError(Exception):
     pass
 
 
-def has_current_user_permission(permission: perm_models.Permissions) -> bool:
+def has_current_user_permission(permission: perm_models.Permissions | str) -> bool:
+    if isinstance(permission, str):
+        permission = perm_models.Permissions[permission]
     return permission in current_user.backoffice_profile.permissions or settings.IS_TESTING
 
 

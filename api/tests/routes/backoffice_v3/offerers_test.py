@@ -2022,7 +2022,7 @@ class UpdateOffererTagTest:
         endpoint_kwargs = {"offerer_tag_id": 1}
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
-    def test_update_offerer(self, authenticated_client):
+    def test_update_offerer_tag(self, authenticated_client):
         offerer_tag_not_to_edit = offerers_factories.OffererTagFactory(name="zzzzzzzz-end-of-the-list")
         category_to_keep = offerers_factories.OffererTagCategoryFactory(label="AAA")
         category_to_remove = offerers_factories.OffererTagCategoryFactory(label="BBB")
@@ -2192,3 +2192,38 @@ class CreateOffererTagTest:
 
         form["csrf_token"] = g.get("csrf_token", "")
         return authenticated_client.post(url, form=form)
+
+
+class DeleteOffererTagTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.offerer_tag.delete_offerer_tag"
+        endpoint_kwargs = {"offerer_tag_id": 1}
+        needed_permission = perm_models.Permissions.DELETE_OFFERER_TAG
+
+    def test_delete_offerer_tag(self, authenticated_client):
+        tags = offerers_factories.OffererTagFactory.create_batch(3)
+        offerers_factories.OffererFactory(tags=tags[1:])
+
+        response = self.delete_offerer_tag(authenticated_client, tags[1].id)
+
+        assert response.status_code == 303
+        assert set(offerers_models.OffererTag.query.all()) == {tags[0], tags[2]}
+        assert offerers_models.Offerer.query.one().tags == [tags[2]]
+
+    def test_delete_non_existing_tag(self, authenticated_client):
+        tag = offerers_factories.OffererTagFactory()
+
+        response = self.delete_offerer_tag(authenticated_client, tag.id + 1)
+
+        assert response.status_code == 404
+        assert offerers_models.OffererTag.query.count() == 1
+
+    def delete_offerer_tag(self, authenticated_client, offerer_tag_id):
+        # generate csrf token
+        authenticated_client.get(url_for("backoffice_v3_web.offerer_tag.list_offerer_tags"))
+
+        form = {"csrf_token": g.get("csrf_token", "")}
+        return authenticated_client.post(
+            url_for("backoffice_v3_web.offerer_tag.delete_offerer_tag", offerer_tag_id=offerer_tag_id), form=form
+        )
