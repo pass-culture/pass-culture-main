@@ -1,5 +1,71 @@
 # Package `models`
 
+## Typage des colonnes des modèles
+
+### Inférence des types
+
+- Cas 1 : Le cas nominal
+
+  SqlAlchemy et mypy infèrent correctement le type.
+
+  - Exemple:
+    ```python
+    ageMin = sa.Column(sa.Integer, nullable=True) # ageMin est de type int | None
+    ```
+
+- Cas 2 : le cas des colonnes non nullables
+
+  Même si une colonne est non nullable, le type inféré par mypy est <python type> | None
+
+  En effet, à l'instanciation de l'objet, on n'a aucune garantie que l'attribut ne soit pas `None`.
+  Le remplissage de la valeur par défaut a lieu au moment du `commit` en base de donnée.
+
+  - Exemple :
+    ```python
+    >> m1 = MyClass()
+    >> m1.id
+    None
+    ```
+
+  Dans ce cas, on choisit de considérer que le type n'est pas `None`. Les cas où l'attribut peut être `None` sont beaucoup plus rares, entre
+  l'instanciation de la classe et son commit en base de données.
+  :warning: Faire bien attention à ce cas lors de la création d'objets
+
+  - Exemple :
+    ```python
+    subcategoryId: str = sa.Column(sa.Text, nullable=False) # subcategoryId est de type str
+    ```
+
+- Cas 3 : le cas où mypy ne sait pas inférer
+
+  Parfois, mypy ne parvient pas à inférer de type, par exemple dans le cas d'une `relationship` entre deux tables.
+  Dans ce cas il faut explicitement fournir le type.
+
+  - Exemple :
+    ```python
+    product: Product = sa.orm.relationship(Product, back_populates="offers") # product est de type Product
+    ```
+
+### Quand utiliser Mapped ?
+
+Dans certains cas, on peut avoir besoin de typer avec `sqlalchemy.orm.Mapped`.
+Notamment quand on a besoin d'appliquer une fonction à l'attribut de classe (Généralement dans une query).
+
+- Exemple:
+
+  ```python
+  import sqlalchemy.orm as sa_orm
+
+  class Offer:
+    id: sa_orm.Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True)
+
+  Offer.query.filter(Offer.id.in_(my_list))
+  ```
+
+### Références
+
+[https://docs.sqlalchemy.org/en/14/orm/extensions/mypy.html#usage](https://docs.sqlalchemy.org/en/14/orm/extensions/mypy.html#usage)
+
 ## Feature Flags
 
 Les Feature Flags (ou Feature Toggle) permettent de désactiver / activer une fonctionnalité depuis l'admin (ex: [admin staging](https://backend.staging.passculture.team/pc/back-office/feature/)) sans avoir besoin de déployer de code.
