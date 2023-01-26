@@ -37,5 +37,6 @@ def get_eac_new_collective_prebooking_email_data(
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": booking.educationalInstitution.postalCode,
             "EDUCATIONAL_INSTITUTION_NAME": booking.educationalInstitution.name,
             "IS_EVENT": True,
+            "BOOKING_ID": booking.id,
         },
     )
