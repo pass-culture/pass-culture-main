@@ -40,16 +40,15 @@ INCLUDED_MODELS = {
 }
 
 
-def _get_included_attributes(
-    response: ubble_fraud_models.UbbleIdentificationResponse, type_: str
-) -> ubble_fraud_models.UbbleIdentificationObject:
-    filtered = list(filter(lambda included: included["type"] == type_, response["included"]))  # type: ignore [arg-type, index]
-    attributes = INCLUDED_MODELS[type_](**filtered[0].get("attributes")) if filtered else None
-    return attributes
+def _get_included_attributes(response: dict, type_: str) -> ubble_fraud_models.UbbleIdentificationObject | None:
+    filtered = [incl for incl in response["included"] if incl["type"] == type_]
+    if not filtered:
+        return None
+    return INCLUDED_MODELS[type_](**filtered[0].get("attributes"))
 
 
-def _get_data_attribute(response: ubble_fraud_models.UbbleIdentificationResponse, name: str) -> typing.Any:
-    return response["data"]["attributes"].get(name)  # type: ignore [index]
+def _get_data_attribute(response: dict, name: str) -> typing.Any:
+    return response["data"]["attributes"].get(name)
 
 
 def _parse_ubble_gender(ubble_gender: str | None) -> users_models.GenderEnum | None:
@@ -61,14 +60,17 @@ def _parse_ubble_gender(ubble_gender: str | None) -> users_models.GenderEnum | N
 
 
 def _extract_useful_content_from_response(
-    response: ubble_fraud_models.UbbleIdentificationResponse,
+    response: dict,
 ) -> ubble_fraud_models.UbbleContent:
-    documents: ubble_fraud_models.UbbleIdentificationDocuments = _get_included_attributes(response, "documents")  # type: ignore [assignment]
-    document_checks: ubble_fraud_models.UbbleIdentificationDocumentChecks = _get_included_attributes(  # type: ignore [assignment]
-        response, "document-checks"
+    documents = typing.cast(
+        ubble_fraud_models.UbbleIdentificationDocuments, _get_included_attributes(response, "documents")
     )
-    reference_data_checks: ubble_fraud_models.UbbleIdentificationReferenceDataChecks = _get_included_attributes(  # type: ignore [assignment]
-        response, "reference-data-checks"
+    document_checks = typing.cast(
+        ubble_fraud_models.UbbleIdentificationDocumentChecks, _get_included_attributes(response, "document-checks")
+    )
+    reference_data_checks = typing.cast(
+        ubble_fraud_models.UbbleIdentificationReferenceDataChecks,
+        _get_included_attributes(response, "reference-data-checks"),
     )
 
     comment = _get_data_attribute(response, "comment")

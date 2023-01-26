@@ -317,9 +317,9 @@ class InternalReviewSource(enum.Enum):
 
 
 class PhoneValidationFraudData(pydantic.BaseModel):
-    message: str | None  # legacy field, still present in database
-    phone_number: str | None
-    source: InternalReviewSource | None  # legacy field, still present in database
+    message: str | None = None  # legacy field, still present in database
+    phone_number: str | None = None
+    source: InternalReviewSource | None = None  # legacy field, still present in database
 
 
 class ProfileCompletionContent(pydantic.BaseModel):
@@ -452,7 +452,9 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=sa.func.now()
     )
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-    user = sa.orm.relationship("User", foreign_keys=[userId], backref="beneficiaryFraudChecks", order_by=dateCreated)  # type: ignore [misc]
+    user: users_models.User = sa.orm.relationship(
+        "User", foreign_keys=[userId], backref="beneficiaryFraudChecks", order_by=dateCreated
+    )
 
     def get_detailed_source(self) -> str:
         if self.type == FraudCheckType.DMS.value:
@@ -507,12 +509,14 @@ class OrphanDmsApplication(PcObject, Base, Model):
 class BeneficiaryFraudReview(PcObject, Base, Model):
     __tablename__ = "beneficiary_fraud_review"
     authorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-    author = sa.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")  # type: ignore [misc]
+    author: users_models.User = sa.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")
     dateReviewed: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     reason = sa.Column(sa.Text)
     review = sa.Column(sa.Enum(FraudReviewStatus, create_constraint=False))
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-    user = sa.orm.relationship("User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudReviews"))  # type: ignore [misc]
+    user: users_models.User = sa.orm.relationship(
+        "User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudReviews")
+    )
 
 
 @dataclasses.dataclass

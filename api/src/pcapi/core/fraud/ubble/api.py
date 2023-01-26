@@ -36,7 +36,10 @@ def _ubble_result_fraud_item(
         id_provider_detected_eligibility = subscription_api.get_id_provider_detected_eligibility(user, content)
         if id_provider_detected_eligibility is None:
             status = fraud_models.FraudStatus.KO
-            age = users_utils.get_age_at_date(content.get_birth_date(), content.get_registration_datetime())  # type: ignore [arg-type]
+            birth_date = content.get_birth_date()
+            registration_datetime = content.get_registration_datetime()
+            assert birth_date and registration_datetime  # helps mypy next line
+            age = users_utils.get_age_at_date(birth_date, registration_datetime)
             if age < min(users_constants.ELIGIBILITY_UNDERAGE_RANGE):
                 reason_code = fraud_models.FraudReasonCode.AGE_TOO_YOUNG
                 detail = f"L'utilisateur n'a pas encore l'âge requis ({age} ans)"

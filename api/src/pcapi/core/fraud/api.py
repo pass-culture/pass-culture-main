@@ -25,8 +25,9 @@ from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
 
 from . import models
-from .common.models import IdentityCheckContent
+from .common import models as common_models
 from .ubble import api as ubble_api
+from .ubble import models as ubble_models
 
 
 logger = logging.getLogger(__name__)
@@ -99,15 +100,18 @@ def on_identity_fraud_check_result(
     beneficiary_fraud_check: models.BeneficiaryFraudCheck,
 ) -> list[models.FraudItem]:
     fraud_items: list[models.FraudItem] = []
-    identity_content: models.IdentityCheckContent = beneficiary_fraud_check.source_data()  # type: ignore [name-defined]
+    identity_content: common_models.IdentityCheckContent = beneficiary_fraud_check.source_data()
 
     if beneficiary_fraud_check.type == models.FraudCheckType.UBBLE:
+        assert isinstance(identity_content, ubble_models.UbbleContent)
         fraud_items += ubble_api.ubble_fraud_checks(user, identity_content)
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.DMS:
+        assert isinstance(identity_content, models.DMSContent)
         fraud_items += dms_fraud_checks(user, identity_content)
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.EDUCONNECT:
+        assert isinstance(identity_content, models.EduconnectContent)
         fraud_items += educonnect_fraud_checks(user, identity_content)
 
     else:
@@ -367,7 +371,7 @@ def _create_failed_phone_validation_fraud_check(
         reasonCodes=reason_codes,
         type=models.FraudCheckType.PHONE_VALIDATION,
         thirdPartyId=f"PC-{user.id}",
-        resultContent=fraud_check_data,  # type: ignore [arg-type]
+        resultContent=fraud_check_data.dict(),
         eligibilityType=user.eligibility,
         status=models.FraudCheckStatus.KO,
     )
@@ -386,7 +390,7 @@ def handle_phone_already_exists(user: users_models.User, phone_number: str) -> m
     )
     reason = f"Le numéro est déjà utilisé par l'utilisateur {orig_user_id}"
     reason_codes = [models.FraudReasonCode.PHONE_ALREADY_EXISTS]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)  # type: ignore [call-arg]
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)
 
     return _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
@@ -394,7 +398,7 @@ def handle_phone_already_exists(user: users_models.User, phone_number: str) -> m
 def handle_blacklisted_sms_recipient(user: users_models.User, phone_number: str) -> models.BeneficiaryFraudCheck:
     reason = "Le numéro saisi est interdit"
     reason_codes = [models.FraudReasonCode.BLACKLISTED_PHONE_NUMBER]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)  # type: ignore [call-arg]
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)
 
     return _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
@@ -402,7 +406,7 @@ def handle_blacklisted_sms_recipient(user: users_models.User, phone_number: str)
 def handle_invalid_country_code(user: users_models.User, phone_number: str) -> models.BeneficiaryFraudCheck:
     reason = "L'indicatif téléphonique est invalide"
     reason_codes = [models.FraudReasonCode.INVALID_PHONE_COUNTRY_CODE]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)  # type: ignore [call-arg]
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)
 
     return _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
@@ -410,7 +414,7 @@ def handle_invalid_country_code(user: users_models.User, phone_number: str) -> m
 def handle_sms_sending_limit_reached(user: users_models.User) -> None:
     reason = "Le nombre maximum de sms envoyés est atteint"
     reason_codes = [models.FraudReasonCode.SMS_SENDING_LIMIT_REACHED]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)  # type: ignore [call-arg, arg-type]
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)  # type: ignore [arg-type]
 
     _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
@@ -418,7 +422,7 @@ def handle_sms_sending_limit_reached(user: users_models.User) -> None:
 def handle_phone_validation_attempts_limit_reached(user: users_models.User, attempts_count: int) -> None:
     reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
     reason_codes = [models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)  # type: ignore [call-arg, arg-type]
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)  # type: ignore [arg-type]
 
     _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
@@ -600,7 +604,7 @@ def handle_ok_manual_review(
     if not fraud_check:
         raise FraudCheckError("Pas de vérification d'identité effectuée")
 
-    source_data: IdentityCheckContent = fraud_check.source_data()
+    source_data: common_models.IdentityCheckContent = fraud_check.source_data()
     try:
         _check_id_piece_number_unicity(user, source_data.get_id_piece_number())
         _check_ine_hash_unicity(user, source_data.get_ine_hash())
@@ -721,7 +725,7 @@ def create_profile_completion_fraud_check(
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
         type=models.FraudCheckType.PROFILE_COMPLETION,
-        resultContent=fraud_check_content,  # type: ignore [arg-type]
+        resultContent=fraud_check_content.dict(),
         status=models.FraudCheckStatus.OK,
         thirdPartyId=f"profile-completion-{user.id}",
         eligibilityType=eligibility,
@@ -733,7 +737,7 @@ def create_profile_completion_fraud_check(
 def get_duplicate_beneficiary(fraud_check: models.BeneficiaryFraudCheck) -> users_models.User | None:
     identity_content = fraud_check.source_data()
 
-    if not isinstance(identity_content, IdentityCheckContent):
+    if not isinstance(identity_content, common_models.IdentityCheckContent):
         raise ValueError("Invalid fraud check identity content type")
 
     first_name = identity_content.get_first_name()
@@ -783,7 +787,7 @@ def _anonymize_email(email: str) -> str:
 
 def get_duplicate_beneficiary_anonymized_email(
     rejected_user: users_models.User,
-    identity_content: IdentityCheckContent,
+    identity_content: common_models.IdentityCheckContent,
     duplicate_reason_code: models.FraudReasonCode,
 ) -> str | None:
     duplicate_beneficiary = None
