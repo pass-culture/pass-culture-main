@@ -13,6 +13,7 @@ from pcapi.routes.backoffice_v3.filters import format_date
 import pcapi.utils.email as email_utils
 
 from .helpers import comment as comment_helpers
+from .helpers import html_parser
 from .helpers import unauthorized as unauthorized_helpers
 
 
@@ -38,15 +39,15 @@ class GetProUserTest:
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        content = response.data.decode("utf-8")
+        content = html_parser.content_as_text(response.data)
 
-        assert str(user.id) in content
+        assert f"User ID : {str(user.id)} " in content
         assert user.firstName in content
         assert user.lastName.upper() in content
         assert user.email in content
-        assert user.phoneNumber in content
-        assert user.postalCode in content
-        assert user.departementCode in content
+        assert f"Tél : {user.phoneNumber} " in content
+        assert f"Code postal : {user.postalCode} " in content
+        assert f"Département : {user.departementCode} " in content
         assert "Pro" in content
 
     def test_get_not_pro_user(self, authenticated_client):  # type: ignore
