@@ -28,6 +28,7 @@ import pcapi.utils.regions as regions_utils
 
 from . import search_utils
 from . import utils
+from .forms import empty as empty_forms
 from .forms import offerer as offerer_forms
 from .serialization import offerers as serialization
 
@@ -658,7 +659,13 @@ def list_offerer_tags() -> utils.BackofficeResponse:
     create_tag_form = offerer_forms.EditOffererTagForm()
     create_tag_form.categories.choices = [(cat.id, cat.label or cat.name) for cat in categories]
 
-    return render_template("offerer/offerer_tag.html", rows=offerer_tags, forms=forms, create_tag_form=create_tag_form)
+    return render_template(
+        "offerer/offerer_tag.html",
+        rows=offerer_tags,
+        forms=forms,
+        create_tag_form=create_tag_form,
+        delete_tag_form=empty_forms.EmptyForm(),
+    )
 
 
 @offerer_tag_blueprint.route("/<int:offerer_tag_id>", methods=["POST"])
@@ -730,3 +737,18 @@ def create_offerer_tag() -> utils.BackofficeResponse:
 
 def get_offerer_tag_categories() -> list[offerers_models.OffererTagCategory]:
     return offerers_models.OffererTagCategory.query.order_by(offerers_models.OffererTagCategory.label).all()
+
+
+@offerer_tag_blueprint.route("/<int:offerer_tag_id>/delete", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.DELETE_OFFERER_TAG)
+def delete_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
+    offerer_tag_to_delete = offerers_models.OffererTag.query.get_or_404(offerer_tag_id)
+
+    try:
+        db.session.delete(offerer_tag_to_delete)
+        db.session.commit()
+    except sa.exc.DBAPIError as exception:
+        db.session.rollback()
+        flash(f"Une erreur s'est produite : {str(exception)}", "warning")
+
+    return redirect(url_for("backoffice_v3_web.offerer_tag.list_offerer_tags"), code=303)

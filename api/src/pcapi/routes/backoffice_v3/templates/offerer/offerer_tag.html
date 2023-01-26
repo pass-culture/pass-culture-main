@@ -59,6 +59,15 @@
                                                 Modifier le tag structure
                                         </a>
                                     </li>
+                                    {% if has_permission("DELETE_OFFERER_TAG") %}
+                                        <li class="dropdown-item p-0">
+                                            <a class="btn btn-sm d-block w-100 text-start px-3"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#delete-offerer-tag-modal-{{ offerer_tag.id }}">
+                                                    Supprimer le tag structure
+                                            </a>
+                                        </li>
+                                    {% endif %}
                                 </ul>
                                 {% set form = forms[offerer_tag.id] %}
                                 <div class="modal modal-lg fade" id="edit-offerer-tag-modal-{{ offerer_tag.id }}" tabindex="-1"
@@ -83,6 +92,35 @@
                                         </div>
                                     </div>
                                 </div>
+                                {% if has_permission("DELETE_OFFERER_TAG") %}
+                                    <div class="modal modal-lg fade" id="delete-offerer-tag-modal-{{ offerer_tag.id }}" tabindex="-1"
+                                        aria-labelledby="delete-offerer-tag-modal-{{ offerer_tag.id }}-label" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <form action="{{ url_for("backoffice_v3_web.offerer_tag.delete_offerer_tag", offerer_tag_id=offerer_tag.id) }}"
+                                                    method="POST" data-turbo="false">
+                                                    <div class="modal-header" id="delete-offerer-tag-modal-{{ offerer_tag.id }}-label">
+                                                        <h5 class="modal-title">Supprimer le tag {{ offerer_tag.name }}</h5>
+                                                    </div>
+                                                    <div class="modal-body row">
+                                                        <p>
+                                                            Le tag <strong>{{ offerer_tag.label or offerer_tag.name }}</strong> sera définitivement supprimé
+                                                            de la base de données et retiré de toutes les structures auxquelles il est associé. Veuillez confirmer ce choix.
+                                                        </p>
+                                                        <div class="form-group">
+                                                            {% set form = delete_tag_form %}
+                                                            {% include "components/form_body.html" %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
+                                                        <button type="submit" class="btn btn-primary">Confirmer</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                             </div>
                         </td>
                         <td>{{ offerer_tag.id }}</td>

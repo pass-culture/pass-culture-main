@@ -5,6 +5,7 @@ from pcapi.core.permissions import models as perm_models
 ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "admin": [
         perm_models.Permissions.MANAGE_PERMISSIONS,
+        perm_models.Permissions.DELETE_OFFERER_TAG,
     ],
     "support-N1": [
         perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT,
