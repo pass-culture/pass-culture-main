@@ -148,6 +148,7 @@ class Returns200Test:
             offer__venue__dateModifiedAtLastProvider=now,
             offer__venue__bookingEmail="test@test.com",
             offer__venue__managingOfferer=user_offerer.offerer,
+            priceCategory__priceCategoryLabel__label="Au pied du mur",
         )
         offer = stock.offer
         venue = offer.venue
@@ -241,6 +242,7 @@ class Returns200Test:
                     "remainingQuantity": 1000,
                 }
             ],
+            "priceCategories": [{"label": "Au pied du mur", "price": 10.0}],
             "subcategoryId": "SEANCE_CINE",
             "thumbUrl": None,
             "url": None,

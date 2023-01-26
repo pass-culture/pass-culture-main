@@ -8,6 +8,7 @@ import type { GetOfferProductResponseModel } from './GetOfferProductResponseMode
 import type { GetOfferStockResponseModel } from './GetOfferStockResponseModel';
 import type { GetOfferVenueResponseModel } from './GetOfferVenueResponseModel';
 import type { OfferStatus } from './OfferStatus';
+import type { PriceCategoryResponseModel } from './PriceCategoryResponseModel';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 
@@ -44,6 +45,7 @@ export type GetIndividualOfferResponseModel = {
   motorDisabilityCompliant?: boolean | null;
   name: string;
   nonHumanizedId: number;
+  priceCategories?: Array<PriceCategoryResponseModel> | null;
   product: GetOfferProductResponseModel;
   productId: string;
   status: OfferStatus;

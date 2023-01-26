@@ -1137,7 +1137,7 @@ def edit_price_category(
         validation.check_stock_price(price, offer)
         price_category.price = price
 
-    if label is not UNCHANGED and label != price_category.priceCategoryLabel.label:
+    if label is not UNCHANGED and label != price_category.label:
         price_category_label = _get_or_create_label(label, offer.venue)
         price_category.priceCategoryLabel = price_category_label
 

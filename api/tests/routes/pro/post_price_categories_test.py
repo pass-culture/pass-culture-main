@@ -25,7 +25,7 @@ class Returns200Test:
         price_category = offers_models.PriceCategory.query.one()
         assert price_category.offerId == offer.id
         assert price_category.price == decimal.Decimal("20.34")
-        assert price_category.priceCategoryLabel.label == "Behind a post"
+        assert price_category.label == "Behind a post"
 
     def test_create_multiple_price_categories(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
@@ -47,28 +47,47 @@ class Returns200Test:
         assert response.status_code == 200
         assert offers_models.PriceCategory.query.count() == 3
 
-    def test_does_not_duplicate_price_categories_label_when_label_exists(self, client):
-        offer = offers_factories.ThingOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
+    def test_edit_one_price_category(self, client):
+        offer = offers_factories.OfferFactory()
+        price_category = offers_factories.PriceCategoryFactory(
+            offer=offer,
+        )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        offers_factories.PriceCategoryFactory(
-            offer=offer,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Already exists", venue=offer.venue),
+
+        data = {
+            "priceCategories": [
+                {"price": 200.54, "label": "Behind a post", "id": price_category.id},
+            ],
+        }
+
+        client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        price_category = offers_models.PriceCategory.query.one()
+        assert price_category.price == decimal.Decimal("200.54")
+        assert price_category.label == "Behind a post"
+
+    def test_edit_part_of_price_category(self, client):
+        offer = offers_factories.OfferFactory()
+        price_category = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change")
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
         )
 
         data = {
             "priceCategories": [
-                {"price": 20, "label": "Already exists"},
+                {"price": 200, "id": price_category.id},
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
-
-        assert response.status_code == 200
-        assert offers_models.PriceCategory.query.count() == 2
-        assert offers_models.PriceCategoryLabel.query.count() == 1
+        client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        price_category = offers_models.PriceCategory.query.one()
+        assert price_category.price == decimal.Decimal("200")
+        assert price_category.label == "Do not change"
 
     def test_update_part_of_price_category(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
