@@ -50,7 +50,7 @@ const OfferIndividualWizard = () => {
           exact
           path={[
             `${path}/creation/tarifs`,
-            `${path}/brouillon/tarif`,
+            `${path}/brouillon/tarifs`,
             `${path}/tarifs`,
           ]}
         >
