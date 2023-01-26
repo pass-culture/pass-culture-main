@@ -81,6 +81,7 @@ describe('useGetOfferIndividual', () => {
         url: null,
       },
       productId: 'AJFA',
+      priceCategories: [{ price: 12.2, label: 'Mon premier tariff' }],
       stocks: [
         {
           beginningDatetime: '2022-05-23T08:25:31.009799Z',
