@@ -1108,3 +1108,18 @@ def batch_delete_draft_offers(query: BaseQuery) -> None:
     )
     models.Offer.query.filter(*filters).delete(synchronize_session=False)
     db.session.commit()
+
+
+def _get_or_create_label(label: str, venue: Venue) -> models.PriceCategoryLabel:
+    price_category_label = models.PriceCategoryLabel.query.filter_by(label=label, venue=venue).one_or_none()
+    if not price_category_label:
+        return models.PriceCategoryLabel(label=label, venue=venue)
+    return price_category_label
+
+
+def create_price_category(offer: models.Offer, label: str, price: decimal.Decimal) -> models.PriceCategory:
+    validation.check_stock_price(price, offer)
+    price_category_label = _get_or_create_label(label, offer.venue)
+    created_price_category = models.PriceCategory(offer=offer, price=price, priceCategoryLabel=price_category_label)
+    repository.add_to_session(created_price_category)
+    return created_price_category
