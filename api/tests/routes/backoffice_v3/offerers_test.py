@@ -85,14 +85,14 @@ class GetOffererTest:
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        content = response.data.decode("utf-8")
+        content = html_parser.content_as_text(response.data)
 
         assert offerer.name in content
-        assert str(offerer.id) in content
-        assert offerer.siren in content
-        assert offerer.city in content
-        assert offerer.postalCode in content
-        assert offerer.address in content
+        assert f"Offerer ID : {offerer.id} " in content
+        assert f"SIREN : {offerer.siren} " in content
+        assert f"Ville : {offerer.city} " in content
+        assert f"Code postal : {offerer.postalCode} " in content
+        assert f"Adresse : {offerer.address} " in content
         assert "Structure" in content
 
 
