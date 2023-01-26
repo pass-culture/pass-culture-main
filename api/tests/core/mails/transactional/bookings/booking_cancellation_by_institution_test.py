@@ -34,4 +34,5 @@ class SendEducationeBookingCancellationByInstitutionEmailTest:
             "EDUCATIONAL_INSTITUTION_CITY": booking.educationalInstitution.city,
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": booking.educationalInstitution.postalCode,
             "COLLECTIVE_CANCELLATION_REASON": booking.cancellationReason.value,
+            "BOOKING_ID": booking.id,
         }

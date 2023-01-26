@@ -357,7 +357,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             beginningDatetime=datetime(2022, 11, 24, 12, 53, 00),
             collectiveOffer__name="Ma première offre expirée",
         )
-        educational_factories.CancelledCollectiveBookingFactory(
+        first_expired_booking = educational_factories.CancelledCollectiveBookingFactory(
             cancellationReason=CollectiveBookingCancellationReasons.EXPIRED,
             cancellationDate=today,
             collectiveStock=stock_one,
@@ -405,6 +405,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             "EDUCATIONAL_INSTITUTION_CITY": institution.city,
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": institution.postalCode,
             "COLLECTIVE_CANCELLATION_REASON": CollectiveBookingCancellationReasons.EXPIRED.value,
+            "BOOKING_ID": first_expired_booking.id,
         }
 
         second_educational_institution = second_expired_booking.educationalInstitution
@@ -422,4 +423,5 @@ class NotifyOfferersOfExpiredBookingsTest:
             "EDUCATIONAL_INSTITUTION_CITY": second_educational_institution.city,
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": second_educational_institution.postalCode,
             "COLLECTIVE_CANCELLATION_REASON": CollectiveBookingCancellationReasons.EXPIRED.value,
+            "BOOKING_ID": second_expired_booking.id,
         }
