@@ -87,6 +87,24 @@ class DigitalOfferFactory(OfferFactory):
     venue = factory.SubFactory(offerers_factories.VirtualVenueFactory)
 
 
+class PriceCategoryLabelFactory(BaseFactory):
+    class Meta:
+        model = models.PriceCategoryLabel
+
+    label = factory.Sequence("Tariff {}".format)
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
+
+
+class PriceCategoryFactory(BaseFactory):
+    class Meta:
+        model = models.PriceCategory
+
+    price = 10
+    priceCategoryLabel = factory.SubFactory(
+        PriceCategoryLabelFactory,
+    )
+
+
 class StockFactory(BaseFactory):
     class Meta:
         model = models.Stock
@@ -94,6 +112,11 @@ class StockFactory(BaseFactory):
     offer = factory.SubFactory(OfferFactory)
     price = 10
     quantity = 1000
+    priceCategory = factory.SubFactory(
+        PriceCategoryFactory,
+        offer=factory.SelfAttribute("..offer"),
+        priceCategoryLabel__venue=factory.SelfAttribute("..offer.venue"),
+    )
 
     beginningDatetime = factory.Maybe(
         "offer.isEvent",

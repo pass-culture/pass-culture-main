@@ -1,10 +1,13 @@
 from datetime import datetime
+import decimal
 import enum
+import typing
 from typing import Any
 
 from pydantic import EmailStr
 from pydantic import Field
 from pydantic import HttpUrl
+from pydantic import constr
 from pydantic import root_validator
 from pydantic import validator
 from pydantic.utils import GetterDict
@@ -487,3 +490,18 @@ class CategoriesResponseModel(BaseModel):
 
 class DeleteOfferRequestBody(BaseModel):
     ids: list[str | None]
+
+
+class PriceCategoryModel(BaseModel):
+    if typing.TYPE_CHECKING:
+        label: str
+    else:
+        label: constr(min_length=1, max_length=20)
+    price: decimal.Decimal
+
+
+class PriceCategoryBody(BaseModel):
+    price_categories: list[PriceCategoryModel]
+
+    class Config:
+        alias_generator = to_camel

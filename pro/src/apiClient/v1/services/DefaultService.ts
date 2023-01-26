@@ -63,6 +63,7 @@ import type { PostCollectiveOfferTemplateBodyModel } from '../models/PostCollect
 import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
 import type { PostVenueBodyModel } from '../models/PostVenueBodyModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
+import type { PriceCategoryBody } from '../models/PriceCategoryBody';
 import type { ProUserCreationBodyModel } from '../models/ProUserCreationBodyModel';
 import type { ReimbursementPointListResponseModel } from '../models/ReimbursementPointListResponseModel';
 import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel';
@@ -1408,6 +1409,32 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/offers/{offer_id}',
+      path: {
+        'offer_id': offerId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * post_price_categories <POST>
+   * @param offerId
+   * @param requestBody
+   * @returns GetIndividualOfferResponseModel OK
+   * @throws ApiError
+   */
+  public postPriceCategories(
+    offerId: string,
+    requestBody?: PriceCategoryBody,
+  ): CancelablePromise<GetIndividualOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offers/{offer_id}/price_categories',
       path: {
         'offer_id': offerId,
       },
