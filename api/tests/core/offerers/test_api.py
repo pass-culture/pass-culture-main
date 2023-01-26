@@ -647,6 +647,19 @@ class UpdateOffererTest:
         }
 
 
+class SearchOffererTest:
+    def test_search_offerer(self):
+        offerer1 = offerers_factories.OffererFactory()
+        offerer2 = offerers_factories.OffererFactory(name=f"Musée Magique {offerer1.id}")
+
+        search_result = offerers_api.search_offerer(search_query=str(offerer1.id)).all()
+        assert len(search_result) == 1
+        assert offerer1 in search_result
+
+        search_result = offerers_api.search_offerer(search_query=offerer2.name).all()
+        assert offerer2 in search_result
+
+
 class ValidateOffererAttachmentTest:
     def test_offerer_attachment_is_validated(self):
         # Given
