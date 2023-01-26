@@ -1,11 +1,6 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import {
-  OFFER_STATUS_PENDING,
-  OFFER_STATUS_REJECTED,
-} from 'core/Offers/constants'
 import { Banner } from 'ui-kit'
 import { CGU_URL } from 'utils/config'
 
@@ -45,11 +40,6 @@ const OfferStatusBanner = ({ status }: IOfferStatusBanner): JSX.Element => {
     )
   }
   return <></>
-}
-
-OfferStatusBanner.propTypes = {
-  status: PropTypes.oneOf([OFFER_STATUS_REJECTED, OFFER_STATUS_PENDING])
-    .isRequired,
 }
 
 export default OfferStatusBanner
