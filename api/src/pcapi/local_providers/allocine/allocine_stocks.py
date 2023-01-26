@@ -16,12 +16,10 @@ import pcapi.core.providers.models as providers_models
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
 from pcapi.domain.price_rule import AllocineStocksPriceRule
-from pcapi.local_providers.allocine import telerama_festival_constants
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import local_datetime_to_default_timezone
 
@@ -212,17 +210,6 @@ class AllocineStocks(LocalProvider):
 
         if "price" not in allocine_stock.fieldsUpdated:
             allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)
-
-        # Remove this code and the FF WIP_ENABLE_ALLOCINE_TELERAMA_FESTIVAL_SPECIAL_PRICE after January 24, 2023
-        if not FeatureToggle.WIP_ENABLE_ALLOCINE_TELERAMA_FESTIVAL_SPECIAL_PRICE.is_active():
-            return
-        if (
-            allocine_stock.offerId in telerama_festival_constants.TELERAMA_OFFER_IDS
-            and telerama_festival_constants.TELERAMA_FESTIVAL_START_DATE
-            <= allocine_stock.beginningDatetime.date()
-            < telerama_festival_constants.TELERAMA_FESTIVAL_END_DATE
-        ):
-            allocine_stock.price = telerama_festival_constants.TELERAMA_SHOW_PRICE
 
     def apply_allocine_price_rule(self, allocine_stock: Stock) -> decimal.Decimal:
         for price_rule in self.venue_provider.priceRules:
