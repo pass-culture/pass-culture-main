@@ -28,6 +28,10 @@ class PhoneValidationAttemptsLimitReached(PhoneVerificationException):
         super().__init__()
 
 
+class PhoneNumberNotFoundInToken(PhoneVerificationException):
+    pass
+
+
 class UnvalidatedEmail(PhoneVerificationException):
     pass
 
