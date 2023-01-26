@@ -57,6 +57,7 @@
 
 @mixin input-theme-error {
   border-color: forms.$input-border-color-error;
+  outline-color: forms.$input-border-color-error;
 }
 
 @mixin input-icon-wrapper($icon-width: 16px) {
