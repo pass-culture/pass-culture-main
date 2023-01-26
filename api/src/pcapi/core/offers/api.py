@@ -1123,3 +1123,24 @@ def create_price_category(offer: models.Offer, label: str, price: decimal.Decima
     created_price_category = models.PriceCategory(offer=offer, price=price, priceCategoryLabel=price_category_label)
     repository.add_to_session(created_price_category)
     return created_price_category
+
+
+def edit_price_category(
+    offer: models.Offer,
+    price_category: models.PriceCategory,
+    label: str | T_UNCHANGED = UNCHANGED,
+    price: decimal.Decimal | T_UNCHANGED = UNCHANGED,
+) -> models.PriceCategory:
+    validation.check_price_category_is_updatable(price_category)
+
+    if price is not UNCHANGED and price != price_category.price:
+        validation.check_stock_price(price, offer)
+        price_category.price = price
+
+    if label is not UNCHANGED and label != price_category.priceCategoryLabel.label:
+        price_category_label = _get_or_create_label(label, offer.venue)
+        price_category.priceCategoryLabel = price_category_label
+
+    repository.add_to_session(price_category)
+
+    return price_category

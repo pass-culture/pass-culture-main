@@ -21,6 +21,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.providers import constants as providers_constants
@@ -204,6 +205,13 @@ def check_stock_is_updatable(stock: Stock, editing_provider: providers_models.Pr
     check_validation_status(stock.offer)
     check_provider_can_edit_stock(stock.offer, editing_provider)
     check_event_expiration(stock)
+
+
+def check_price_category_is_updatable(
+    price_category: PriceCategory, editing_provider: providers_models.Provider | None = None
+) -> None:
+    check_validation_status(price_category.offer)
+    check_provider_can_edit_stock(price_category.offer, editing_provider)
 
 
 def check_event_expiration(stock: CollectiveStock | Stock) -> None:

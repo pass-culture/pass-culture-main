@@ -492,16 +492,31 @@ class DeleteOfferRequestBody(BaseModel):
     ids: list[str | None]
 
 
-class PriceCategoryModel(BaseModel):
+class CreatePriceCategoryModel(BaseModel):
     if typing.TYPE_CHECKING:
         label: str
     else:
         label: constr(min_length=1, max_length=20)
     price: decimal.Decimal
 
+    class Config:
+        extra = "forbid"
+
+
+class EditPriceCategoryModel(BaseModel):
+    id: int
+    if typing.TYPE_CHECKING:
+        label: str | None
+    else:
+        label: constr(min_length=1, max_length=20) | None
+    price: decimal.Decimal | None
+
+    class Config:
+        extra = "forbid"
+
 
 class PriceCategoryBody(BaseModel):
-    price_categories: list[PriceCategoryModel]
+    price_categories: list[CreatePriceCategoryModel | EditPriceCategoryModel]
 
     class Config:
         alias_generator = to_camel
