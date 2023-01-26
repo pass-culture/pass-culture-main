@@ -9,68 +9,93 @@ from pcapi.models import db
 from tests.conftest import TestClient
 
 
-@pytest.mark.usefixtures("db_session")
-class UnsubscribeUserTest:
-    def test_unsubscribe_user(self, app):
+class SubscribeOrUnsubscribeUserTestHelper:
+    # attributes overriden in inherited test classes
+    endpoint = NotImplemented
+    initial_marketing_email = NotImplemented
+    expected_marketing_email = NotImplemented
+
+    def test_webhook_ok(self, app):
         # Given
-        existing_user = UserFactory(email="lucy.ellingson@kennet.ca")
+        existing_user = UserFactory(
+            email="lucy.ellingson@kennet.ca",
+            notificationSubscriptions={"marketing_push": True, "marketing_email": self.initial_marketing_email},
+        )
         headers = {"X-Forwarded-For": "185.107.232.1"}
         data = {"email": "lucy.ellingson@kennet.ca"}
-        assert existing_user.notificationSubscriptions["marketing_email"]
+        assert existing_user.notificationSubscriptions["marketing_email"] is self.initial_marketing_email
 
         # When
-        response = TestClient(app.test_client()).post("/webhooks/sendinblue/unsubscribe", json=data, headers=headers)
+        response = TestClient(app.test_client()).post(self.endpoint, json=data, headers=headers)
 
         # Then
         assert response.status_code == 204
         db.session.refresh(existing_user)
-        assert not existing_user.notificationSubscriptions["marketing_email"]
+        assert existing_user.notificationSubscriptions["marketing_email"] is self.expected_marketing_email
 
-    def test_unsubscribe_user_from_forbidden_ip(self, app):
+    def test_webhook_from_forbidden_ip(self, app):
         # Given
-        existing_user = UserFactory(email="lucy.ellingson@kennet.ca")
-        assert existing_user.notificationSubscriptions["marketing_email"]
+        existing_user = UserFactory(
+            email="lucy.ellingson@kennet.ca",
+            notificationSubscriptions={"marketing_push": True, "marketing_email": self.initial_marketing_email},
+        )
+        assert existing_user.notificationSubscriptions["marketing_email"] is self.initial_marketing_email
 
         headers = {"X-Forwarded-For": "127.0.0.1"}
         data = {"email": "lucy.ellingson@kennet.ca"}
 
         # When
         with override_settings(IS_DEV=False):
-            response = TestClient(app.test_client()).post(
-                "/webhooks/sendinblue/unsubscribe", json=data, headers=headers
-            )
+            response = TestClient(app.test_client()).post(self.endpoint, json=data, headers=headers)
 
         # Then
         assert response.status_code == 401
         db.session.refresh(existing_user)
-        assert existing_user.notificationSubscriptions["marketing_email"]
+        assert existing_user.notificationSubscriptions["marketing_email"] is self.initial_marketing_email
 
-    def test_unsubscribe_user_bad_request(self, app):
+    def test_webhook_bad_request(self, app):
         # Given
-        existing_user = UserFactory(email="lucy.ellingson@kennet.ca")
-        assert existing_user.notificationSubscriptions["marketing_email"]
+        existing_user = UserFactory(
+            email="lucy.ellingson@kennet.ca",
+            notificationSubscriptions={"marketing_push": True, "marketing_email": self.initial_marketing_email},
+        )
+        assert existing_user.notificationSubscriptions["marketing_email"] is self.initial_marketing_email
 
         headers = {"X-Forwarded-For": "185.107.232.1"}
         data = {}
 
         # When
-        response = TestClient(app.test_client()).post("/webhooks/sendinblue/unsubscribe", json=data, headers=headers)
+        response = TestClient(app.test_client()).post(self.endpoint, json=data, headers=headers)
 
         # Then
         assert response.status_code == 400
         db.session.refresh(existing_user)
-        assert existing_user.notificationSubscriptions["marketing_email"]
+        assert existing_user.notificationSubscriptions["marketing_email"] is self.initial_marketing_email
 
-    def test_unsubscribe_user_does_not_exist(self, app):
+    def test_webhook_user_does_not_exist(self, app):
         # Given
         headers = {"X-Forwarded-For": "185.107.232.1"}
         data = {"email": "lucy.ellingson@kennet.ca"}
 
         # When
-        response = TestClient(app.test_client()).post("/webhooks/sendinblue/unsubscribe", json=data, headers=headers)
+        response = TestClient(app.test_client()).post(self.endpoint, json=data, headers=headers)
 
         # Then
         assert response.status_code == 400
+
+
+@pytest.mark.usefixtures("db_session")
+class UnsubscribeUserTest(SubscribeOrUnsubscribeUserTestHelper):
+    endpoint = "/webhooks/sendinblue/unsubscribe"
+    initial_marketing_email = True
+    expected_marketing_email = False
+
+
+@pytest.mark.usefixtures("db_session")
+class SubscribeUserTest(SubscribeOrUnsubscribeUserTestHelper):
+    endpoint = "/webhooks/sendinblue/subscribe"
+    initial_marketing_email = False
+    expected_marketing_email = True
 
 
 @pytest.mark.usefixtures("db_session")

@@ -60,9 +60,7 @@ def _check_sendinblue_source_ip() -> None:
         )
 
 
-@public_api.route("/webhooks/sendinblue/unsubscribe", methods=["POST"])
-@spectree_serialize(on_success_status=204)
-def sendinblue_unsubscribe_user() -> None:
+def _toggle_marketing_email_subscription(subscribe: bool) -> None:
     _check_sendinblue_source_ip()
 
     user_email = request.json.get("email")  # type: ignore [union-attr]
@@ -72,16 +70,36 @@ def sendinblue_unsubscribe_user() -> None:
             status_code=400,
         )
 
-    user_to_unsubscribe = find_user_by_email(user_email)
-    if user_to_unsubscribe is None:
+    user = find_user_by_email(user_email)
+    if user is None:
         raise ApiErrors({"User": "user not found for email %s" % user_email}, status_code=400)
 
-    user_to_unsubscribe.notificationSubscriptions = (
-        {**user_to_unsubscribe.notificationSubscriptions, "marketing_email": False}
-        if user_to_unsubscribe.notificationSubscriptions is not None
-        else {"marketing_email": False}
+    user.notificationSubscriptions = (
+        {**user.notificationSubscriptions, "marketing_email": subscribe}
+        if user.notificationSubscriptions is not None
+        else {"marketing_email": subscribe}
     )
-    repository.save(user_to_unsubscribe)
+    repository.save(user)
+
+
+@public_api.route("/webhooks/sendinblue/unsubscribe", methods=["POST"])
+@spectree_serialize(on_success_status=204)
+def sendinblue_unsubscribe_user() -> None:
+    """
+    Automation scenario is configured in Sendinblue to call this webhook after user unsubscribes.
+    Blacklist status and MARKETING_EMAIL_SUBSCRIPTION are updated in the scenario, so we don't need to sync them again.
+    """
+    _toggle_marketing_email_subscription(False)
+
+
+@public_api.route("/webhooks/sendinblue/subscribe", methods=["POST"])
+@spectree_serialize(on_success_status=204)
+def sendinblue_subscribe_user() -> None:
+    """
+    Automation scenario is configured in Sendinblue to call this webhook after user unsubscribes.
+    Blacklist status and MARKETING_EMAIL_SUBSCRIPTION are updated in the scenario, so we don't need to sync them again.
+    """
+    _toggle_marketing_email_subscription(True)
 
 
 @public_api.route("/webhooks/sendinblue/importcontacts/<int:list_id>/<int:iteration>", methods=["POST"])
