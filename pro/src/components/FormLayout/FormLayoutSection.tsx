@@ -1,13 +1,15 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { Title, Banner } from 'ui-kit'
+import { Title } from 'ui-kit'
 import { Link } from 'ui-kit/Banners/Banner'
 
 import style from './FormLayout.module.scss'
 
+import { FormLayoutDescription } from '.'
+
 interface IFormLayoutSectionProps {
-  title?: React.ReactNode
+  title: React.ReactNode
   description?: string
   children: React.ReactNode | React.ReactNode[]
   className?: string
@@ -31,20 +33,11 @@ const Section = ({
             {title}
           </Title>
         </legend>
-        {description && !descriptionAsBanner && (
-          <p className={style['form-layout-section-description']}>
-            {description}
-          </p>
-        )}
-        {description && descriptionAsBanner && (
-          <Banner
-            type="notification-info"
-            className={style['form-layout-section-description']}
-            links={links}
-          >
-            {description}
-          </Banner>
-        )}
+        <FormLayoutDescription
+          description={description}
+          isBanner={descriptionAsBanner}
+          links={links}
+        />
       </div>
       {children}
     </div>
