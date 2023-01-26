@@ -2,7 +2,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import FormLayout from 'components/FormLayout'
+import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import { IStockFormRowAction } from 'components/StockFormActions/types'
@@ -341,13 +341,12 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         <SynchronizedProviderInformation providerName={providerName} />
       )}
       <FormLayout>
-        <FormLayout.Section
-          description={isDisabled ? undefined : description}
-          links={isDisabled ? undefined : links}
-          descriptionAsBanner={
-            !isDisabled && mode === OFFER_WIZARD_MODE.EDITION
-          }
-        >
+        <div aria-current="page">
+          <FormLayoutDescription
+            description={description}
+            links={links}
+            isBanner
+          />
           <form onSubmit={formik.handleSubmit} data-testid="stock-thing-form">
             <StockThingFormRow
               actions={actions}
@@ -376,7 +375,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
               isFormEmpty={isFormEmpty()}
             />
           </form>
-        </FormLayout.Section>
+        </div>
       </FormLayout>
       <RouteLeavingGuardOfferIndividual
         when={formik.dirty && !isClickingFromActionBar}
