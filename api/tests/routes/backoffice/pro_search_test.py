@@ -288,45 +288,6 @@ class ProSearchOffererTest:
         assert_offerer_equals(response_list[0], self.offerers[2])  # Théâtre du Centre (most relevant)
         assert_offerer_equals(response_list[1], self.offerers[11])  # Théâtre du Centaure (very close to the first one)
 
-    @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_search_pro_by_two_consistent_criteria(self, client):
-        # given
-        self._create_offerers()
-        user = users_factories.UserFactory()
-        auth_token = generate_token(user, [Permissions.SEARCH_PRO_ACCOUNT])
-
-        # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for(
-                "backoffice_blueprint.search_pro", q=f"{self.offerers[2].siren} {self.offerers[2].name}", type="offerer"
-            ),
-        )
-
-        # then
-        assert response.status_code == 200
-        response_list = response.json["data"]
-        assert len(response_list) == 1  # Single result because only one is matching SIREN even if name is close
-        assert_offerer_equals(response_list[0], self.offerers[2])
-
-    @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_search_pro_by_two_unconsistent_criteria(self, client):
-        # given
-        self._create_offerers()
-        user = users_factories.UserFactory()
-        auth_token = generate_token(user, [Permissions.SEARCH_PRO_ACCOUNT])
-
-        # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for(
-                "backoffice_blueprint.search_pro", q=f"{self.offerers[0].siren} {self.offerers[1].name}", type="offerer"
-            ),
-        )
-
-        # then
-        assert response.status_code == 200
-        response_list = response.json["data"]
-        assert len(response_list) == 0
-
     @pytest.mark.parametrize("query", ["987654321", "festival@example.com", "Festival de la Montagne", ""])
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_offerer_no_result(self, client, query):
