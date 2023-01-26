@@ -15,7 +15,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.factories import AllocineVenueProviderFactory
 from pcapi.core.providers.factories import AllocineVenueProviderPriceRuleFactory
-from pcapi.core.testing import override_features
 from pcapi.local_providers import AllocineStocks
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
@@ -1130,82 +1129,6 @@ class UpdateObjectsTest:
             assert Offer.query.filter(Offer.venueId == venue1.id).count() == 1
             assert Offer.query.filter(Offer.venueId == venue2.id).count() == 1
             assert len(created_stock) == 2
-
-        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
-        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
-        @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
-        @pytest.mark.usefixtures("db_session")
-        @override_features(WIP_ENABLE_ALLOCINE_TELERAMA_FESTIVAL_SPECIAL_PRICE=True)
-        def test_should_apply_telerama_prices_on_concerned_shows(
-            self, mock_poster_get_allocine, mock_call_allocine_api, app
-        ):
-            mock_poster_get_allocine.return_value = bytes()
-            mock_call_allocine_api.side_effect = [
-                iter(
-                    [
-                        {
-                            "node": {
-                                "movie": MOVIE_INFO,
-                                "showtimes": [
-                                    {
-                                        "startsAt": "2023-01-14T10:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                    {
-                                        "startsAt": "2023-01-20T18:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                    {
-                                        "startsAt": "2023-01-27T18:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                ],
-                            }
-                        }
-                    ]
-                ),
-            ]
-
-            venue = offerers_factories.VenueFactory(
-                managingOfferer__siren="775671464",
-                name="Cinema Allocine",
-                siret="77567146400110",
-                bookingEmail="toto@example.com",
-            )
-
-            allocine_venue_provider = AllocineVenueProviderFactory(venue=venue, quantity=None)
-            AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider, price=10)
-
-            product = offers_factories.ProductFactory(
-                name="Test event",
-                subcategoryId=subcategories.SEANCE_CINE.id,
-                durationMinutes=60,
-                idAtProviders="TW92aWU6Mzc4MzI=",
-            )
-            OfferFactory(
-                product=product,
-                name="Test event",
-                subcategoryId=subcategories.SEANCE_CINE.id,
-                durationMinutes=60,
-                idAtProvider="TW92aWU6Mzc4MzI=%77567146400110-VO",
-                venue=venue,
-            )
-
-            allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-            allocine_stocks_provider.updateObjects()
-
-            created_stocks = Stock.query.order_by(Stock.beginningDatetime).all()
-
-            assert len(created_stocks) == 3
-            assert created_stocks[0].price == 10
-            assert created_stocks[1].price == 10
-            assert created_stocks[2].price == 10
 
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
