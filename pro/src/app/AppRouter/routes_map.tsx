@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 import { Redirect, useLocation } from 'react-router-dom'
 
+import { App } from 'pages/AdageIframe/app/App'
 import Bookings from 'pages/Bookings'
 import CollectiveBookings from 'pages/CollectiveBookings'
 import CollectiveOfferRoutes from 'pages/CollectiveOfferRoutes'
@@ -61,6 +62,14 @@ export const routesWithoutLayout: IRoute[] = [
     component: RedirectToConnexionComponent,
     exact: true,
     path: '/',
+  },
+  {
+    component: App,
+    exact: true,
+    path: '/adage-iframe',
+    meta: {
+      public: true,
+    },
   },
   {
     component: Signup,

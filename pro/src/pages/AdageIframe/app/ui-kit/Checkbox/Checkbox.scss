@@ -1,0 +1,90 @@
+@use "styles/variables/_colorsAdageIframe.scss" as colors;
+@import "sass-rem";
+
+.base-checkbox {
+  display: inline-flex;
+  cursor: pointer;
+  align-items: center;
+
+  &-label {
+    line-height: 1em;
+
+    :disabled + & {
+      color: colors.$input-text-color-disabled;
+      cursor: default;
+    }
+  }
+
+  &-icon {
+    margin-right: rem(8px);
+    color: colors.$input-text-color;
+
+    :disabled + & {
+      color: colors.$input-text-color-disabled;
+    }
+  }
+
+  &-input {
+    appearance: none;
+    border: 2px solid colors.$grey-dark;
+    border-radius: 4px;
+    flex: 0 0 auto;
+    font-size: inherit;
+    height: 1.1875em;
+    margin-right: rem(8px);
+    outline: none;
+    padding: 0;
+    position: relative;
+    vertical-align: middle;
+    width: 1.1875em;
+    cursor: pointer;
+
+    &:checked {
+      background-color: colors.$grey-dark;
+
+      &::after {
+        background-image: url(/icons/checkbox-check.svg);
+        background-position: center;
+        background-repeat: no-repeat;
+        content: "";
+        height: 100%;
+        position: absolute;
+        width: 100%;
+      }
+
+      &:hover {
+        background-color: colors.$primary;
+        border-color: colors.$primary;
+      }
+
+      &:focus {
+        background-color: colors.$primary-dark;
+        border-color: colors.$primary-dark;
+      }
+
+      &:disabled {
+        background-color: colors.$grey-medium;
+        border-color: colors.$grey-medium;
+        cursor: not-allowed;
+        opacity: 1;
+      }
+    }
+
+    &:not(:checked) {
+      background-color: colors.$white;
+
+      &:hover {
+        border-color: colors.$primary;
+      }
+
+      &:focus {
+        border-color: colors.$primary-dark;
+      }
+
+      &:disabled {
+        border-color: colors.$grey-medium;
+        opacity: 1;
+      }
+    }
+  }
+}

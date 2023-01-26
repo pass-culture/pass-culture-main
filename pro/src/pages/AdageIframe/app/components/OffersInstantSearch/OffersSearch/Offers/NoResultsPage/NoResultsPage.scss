@@ -1,0 +1,38 @@
+@use "styles/variables/_colorsAdageIframe.scss" as colors;
+@import "sass-rem";
+
+.no-results {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  margin-top: rem(45px);
+
+  &-text {
+    color: colors.$black;
+  }
+
+  &-icon {
+    height: rem(80px);
+    width: rem(80px);
+  }
+
+  &-button {
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      .no-results-button-reset-icon {
+        fill: colors.$white;
+      }
+    }
+
+    &-reset-icon {
+      height: rem(20px);
+      width: rem(20px);
+      fill: colors.$primary;
+      margin-right: rem(10px);
+    }
+  }
+}

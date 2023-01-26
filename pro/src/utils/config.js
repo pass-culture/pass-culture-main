@@ -47,3 +47,16 @@ if (typeof window !== 'undefined') {
 }
 export const ROOT_PATH =
   process.env.STORYBOOK_ROOT_PATH || CALC_ROOT_PATH || 'http://localhost:3001/'
+
+export const IS_PROD = !IS_DEV
+
+export const LOGS_DATA = process.env.REACT_APP_LOGS_DATA === 'true'
+
+export const {
+  REACT_APP_ALGOLIA_APP_ID: ALGOLIA_APP_ID,
+  REACT_APP_ALGOLIA_API_KEY: ALGOLIA_API_KEY,
+  REACT_APP_ALGOLIA_COLLECTIVE_OFFERS_INDEX: ALGOLIA_COLLECTIVE_OFFERS_INDEX,
+  REACT_APP_ASSETS_URL: ASSETS_URL,
+} = process.env
+
+console.log(process.env)

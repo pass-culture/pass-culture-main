@@ -1,0 +1,83 @@
+@use "styles/variables/_colorsAdageIframe.scss" as colors;
+@import "sass-rem";
+
+.button {
+  border-style: none;
+  border-radius: rem(24px);
+  padding: rem(8px) rem(24px);
+  font-weight: 700;
+  font-size: rem(15px);
+
+  &-is-loading {
+    padding: rem(4px) rem(24px);
+  }
+
+  &-spinner {
+    height: rem(24px);
+  }
+
+  &-secondary {
+    color: colors.$primary;
+    background-color: colors.$white;
+    border: rem(2px) solid colors.$primary;
+
+    &:focus,
+    &:hover {
+      color: colors.$white;
+    }
+
+    .button-spinner {
+      fill: colors.$primary;
+    }
+  }
+
+  &-primary {
+    color: colors.$white;
+    background-color: colors.$primary;
+    border: rem(2px) solid colors.$primary;
+
+    .button-spinner {
+      fill: colors.$white;
+    }
+  }
+
+  &:focus,
+  &:hover {
+    outline: none;
+    background-color: colors.$primary-dark;
+    border-color: colors.$primary-dark;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:disabled {
+    background-color: colors.$primary-disabled;
+    border: rem(3px) solid colors.$primary-disabled;
+    cursor: not-allowed;
+  }
+}
+
+.button-spinner {
+  @media screen and (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+
+  animation: rotation 3s infinite linear;
+
+  .content::after {
+    content: attr(data-dots);
+    position: absolute;
+  }
+
+  @keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(359deg);
+    }
+  }
+}

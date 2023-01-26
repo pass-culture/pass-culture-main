@@ -1,0 +1,17 @@
+@use "styles/variables/_colorsAdageIframe.scss" as colors;
+@import "sass-rem";
+
+.pellet {
+  width: rem(18px);
+  height: rem(18px);
+  padding: rem(6px);
+  border-radius: rem(100px);
+  background-color: colors.$grey-light;
+  color: colors.$black;
+  font-size: rem(9px);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
