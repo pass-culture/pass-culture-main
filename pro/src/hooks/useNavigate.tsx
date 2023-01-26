@@ -3,7 +3,7 @@
 /* istanbul ignore file */
 import { useHistory } from 'react-router'
 
-interface INaviateFunction {
+interface INavigateFunction {
   (
     url: string,
     options?: {
@@ -12,7 +12,7 @@ interface INaviateFunction {
   ): void
 }
 
-const useNavigate = (): INaviateFunction => {
+const useNavigate = (): INavigateFunction => {
   const history = useHistory()
   return (url: string, options = { replace: false }) =>
     options.replace ? history.replace(url) : history.push(url)

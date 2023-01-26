@@ -1,7 +1,8 @@
 import React, { ReactNode, useCallback, useState } from 'react'
-import { Redirect, useHistory, Prompt } from 'react-router-dom'
+import { Redirect, Prompt } from 'react-router-dom'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { useNavigate } from 'hooks'
 
 export interface IShouldBlockNavigationReturnValue {
   redirectPath?: string | null
@@ -59,7 +60,7 @@ const RouteLeavingGuard = ({
   // FIX ME no any
   const [nextLocation, setNextLocation] = useState<any>('')
   const [isConfirmedNavigation, setIsConfirmedNavigation] = useState(false)
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleBlockedNavigation = useCallback(
     (chosenLocation: any) => {
@@ -71,12 +72,12 @@ const RouteLeavingGuard = ({
         return false
       }
       if (redirectPath) {
-        history.push({ pathname: redirectPath })
+        navigate(redirectPath)
         return false
       }
       return true
     },
-    [isConfirmedNavigation, history, shouldBlockNavigation]
+    [isConfirmedNavigation, navigate, shouldBlockNavigation]
   )
 
   const closeModal = useCallback(() => {
