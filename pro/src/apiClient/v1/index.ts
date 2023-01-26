@@ -138,6 +138,8 @@ export type { PostCollectiveOfferTemplateBodyModel } from './models/PostCollecti
 export type { PostOfferBodyModel } from './models/PostOfferBodyModel';
 export type { PostVenueBodyModel } from './models/PostVenueBodyModel';
 export type { PostVenueProviderBody } from './models/PostVenueProviderBody';
+export type { PriceCategoryBody } from './models/PriceCategoryBody';
+export type { PriceCategoryModel } from './models/PriceCategoryModel';
 export type { ProUserCreationBodyModel } from './models/ProUserCreationBodyModel';
 export type { ProviderResponse } from './models/ProviderResponse';
 export type { ReimbursementCsvQueryModel } from './models/ReimbursementCsvQueryModel';

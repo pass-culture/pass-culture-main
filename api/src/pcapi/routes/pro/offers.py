@@ -322,3 +322,21 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
             for subcategory in subcategories.ALL_SUBCATEGORIES
         ],
     )
+
+
+@private_api.route("/offers/<offer_id>/price_categories", methods=["POST"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def post_price_categories(
+    offer_id: int, body: offers_serialize.PriceCategoryBody
+) -> offers_serialize.GetIndividualOfferResponseModel:
+    offer = models.Offer.query.get_or_404(offer_id)
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    with repository.transaction():
+        for price_category in body.price_categories:
+            offers_api.create_price_category(offer, price_category.label, price_category.price)
+
+    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
