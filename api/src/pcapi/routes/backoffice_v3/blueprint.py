@@ -43,6 +43,7 @@ backoffice_v3_web_schema.register(backoffice_v3_web)
 def extra_funcs() -> dict:
     return {
         "csrf_token": empty_forms.EmptyForm().csrf_token,
+        "has_permission": utils.has_current_user_permission,
         "can_user_add_comment": utils.can_user_add_comment,
         "is_user_offerer_action_type": utils.is_user_offerer_action_type,
     }
