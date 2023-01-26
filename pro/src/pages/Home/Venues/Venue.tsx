@@ -208,7 +208,7 @@ const Venue = ({
                   svg={isStatOpen ? 'ico-caret-down' : 'ico-caret-right'}
                 />
                 {hasNewOfferCreationJourney ? (
-                  <div className="align-baseline">{publicName || name}</div>
+                  <span className="align-baseline">{publicName || name}</span>
                 ) : (
                   <Link
                     className="title-text align-baseline"
