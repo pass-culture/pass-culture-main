@@ -425,6 +425,14 @@ class GetOfferMediationResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
+class PriceCategoryResponseModel(BaseModel):
+    price: float
+    label: str
+
+    class Config:
+        orm_mode = True
+
+
 class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     activeMediation: GetOfferMediationResponseModel | None
     ageMax: int | None
@@ -454,6 +462,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     mediaUrls: list[str]
     mediations: list[GetOfferMediationResponseModel]
     name: str
+    priceCategories: list[PriceCategoryResponseModel] | None
     product: GetOfferProductResponseModel
     productId: str
     stocks: list[GetOfferStockResponseModel]
