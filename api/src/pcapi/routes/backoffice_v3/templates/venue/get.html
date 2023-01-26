@@ -183,16 +183,16 @@
                     <div class="col-4">
                         {% if dms_stats %}
                             <p class="mb-1">
-                                <span class="fw-bold">statut DMS :</span>
+                                <span class="fw-bold">Statut DMS : </span>
                                 {{ dms_stats.status }}
                             </p>
 
                             <p class="mb-1">
-                                <span class="fw-bold">date de dépôt du dossier DMS :</span>
+                                <span class="fw-bold">Date de dépôt du dossier DMS : </span>
                                 {{ dms_stats.subscriptionDate | format_date }}
                             </p>
 
-                            <p class="mb-1  d-flex justify-content-center">
+                            <p class="mb-4 d-flex">
                                 <a href="{{ dms_stats.url }}" class="card-link">
                                     <button class="btn btn-outline-primary lead fw-bold mt-2">
                                         ACCÉDER AU DOSSIER DMS

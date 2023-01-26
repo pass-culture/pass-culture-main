@@ -10,6 +10,7 @@ from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
+from pcapi import settings
 from pcapi.connectors.dms.api import DMSGraphQLClient
 import pcapi.core.history.models as history_models
 from pcapi.core.offerers import api as offerers_api
@@ -65,7 +66,7 @@ def get_dms_stats(dms_application_id: int | None) -> serialization.VenueDmsStats
         subscriptionDate=datetime.fromisoformat(
             dms_stats["dossier"]["dateDepot"]  # pylint: disable=unsubscriptable-object
         ),
-        url=f"https://www.demarches-simplifiees.fr/dossiers/{dms_application_id}",
+        url=f"https://www.demarches-simplifiees.fr/procedures/{settings.DMS_VENUE_PROCEDURE_ID_V4}/dossiers/{dms_application_id}",
     )
 
 
