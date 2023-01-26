@@ -186,8 +186,8 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
     if token.get_extra_data():
         phone_number = token.get_extra_data().phone_number
     else:
-        # TODO(viconnex): raise here in next release
-        phone_number = user.phoneNumber
+        logger.error("Phone number not found in token", extra={"token_id": token.id, "user_id": user.id})
+        raise exceptions.PhoneNumberNotFoundInToken()
 
     db.session.delete(token)
 
