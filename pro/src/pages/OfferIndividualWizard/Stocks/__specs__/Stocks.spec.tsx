@@ -5,6 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { OfferStatus } from 'apiClient/v1'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
@@ -88,8 +89,50 @@ describe('screens:Stocks', () => {
     renderStocksScreen({ storeOverride, contextOverride })
     expect(
       screen.getByText(
-        'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’évènement. Vous pouvez annuler un évènement en supprimant la ligne de stock associée. Cette action est irréversible.'
+        'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’évènement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente'
       )
     ).toBeInTheDocument()
   })
+
+  const offerStatusWithoutBanner = [OfferStatus.REJECTED, OfferStatus.PENDING]
+  it.each(offerStatusWithoutBanner)(
+    'should not render stock description banner',
+    async offerStatus => {
+      contextOverride.offer = {
+        ...contextOverride.offer,
+        isEvent: true,
+        status: offerStatus,
+      } as IOfferIndividual
+      renderStocksScreen({ storeOverride, contextOverride })
+      expect(
+        screen.queryByText(
+          'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’évènement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente'
+        )
+      ).not.toBeInTheDocument()
+    }
+  )
+
+  const offerStatusWithBanner = [
+    OfferStatus.ACTIVE,
+    OfferStatus.EXPIRED,
+    OfferStatus.SOLD_OUT,
+    OfferStatus.INACTIVE,
+    OfferStatus.DRAFT,
+  ]
+  it.each(offerStatusWithBanner)(
+    'should render stock description banner',
+    async offerStatus => {
+      contextOverride.offer = {
+        ...contextOverride.offer,
+        isEvent: true,
+        status: offerStatus,
+      } as IOfferIndividual
+      renderStocksScreen({ storeOverride, contextOverride })
+      expect(
+        screen.queryByText(
+          'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’évènement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente'
+        )
+      ).toBeInTheDocument()
+    }
+  )
 })
