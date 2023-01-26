@@ -68,8 +68,9 @@ class GetVenueTest:
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        assert venue.name in response.data.decode("utf-8")
         response_text = html_parser.content_as_text(response.data)
+        assert venue.name in response_text
+        assert f"Venue ID : {venue.id} " in response_text
         assert "Éligible EAC : Non" in response_text
         assert "ID Adage" not in response_text
         assert f"Site web : {venue.contact.website}" in response_text
