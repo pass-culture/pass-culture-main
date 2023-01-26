@@ -4,17 +4,17 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_a11y.scss" as a11y;
 
-$border-size: rem.torem(3px);
+$border-size-selected: rem.torem(2px);
 
 .button {
   background-color: transparent;
-  outline: rem.torem(1px) solid colors.$grey-dark;
+  border: rem.torem(1px) solid colors.$grey-dark;
   border-radius: rem.torem(8px);
   position: relative;
   font-size: rem.torem(15px);
 
   // reserve space for border
-  padding: $border-size;
+  padding: $border-size-selected;
 
   &-radio {
     @include a11y.visually-hidden;
@@ -29,6 +29,8 @@ $border-size: rem.torem(3px);
 
   &-radio-on {
     fill: colors.$tertiary;
+    top: calc(rem.torem(16px) - $border-size-selected);
+    right: calc(rem.torem(16px) - $border-size-selected);
   }
 
   &-icon {
@@ -54,7 +56,7 @@ $border-size: rem.torem(3px);
 
   &.is-selected {
     border-color: colors.$tertiary;
-    border: $border-size solid colors.$tertiary;
+    border: $border-size-selected solid colors.$tertiary;
     font-weight: 700;
     background-color: colors.$light-pink;
   }
@@ -100,8 +102,9 @@ $border-size: rem.torem(3px);
   &.is-selected {
     $padding: rem.torem(40px);
 
-    padding: calc($padding - $border-size) calc(rem.torem(16px) - $border-size)
-      calc(rem.torem(32px) - $border-size);
+    padding: calc($padding - $border-size-selected)
+      calc(rem.torem(16px) - $border-size-selected)
+      calc(rem.torem(32px) - $border-size-selected);
   }
 }
 
@@ -113,7 +116,7 @@ $border-size: rem.torem(3px);
   &.is-selected {
     $padding: rem.torem(16px);
 
-    padding: calc($padding - $border-size);
+    padding: calc($padding - $border-size-selected);
   }
 
   .button-icon {
