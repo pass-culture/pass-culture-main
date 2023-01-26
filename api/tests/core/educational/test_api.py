@@ -808,6 +808,7 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
             "USER_LASTNAME": booking.educationalRedactor.lastName,
             "USER_EMAIL": booking.educationalRedactor.email,
             "EDUCATIONAL_INSTITUTION_NAME": booking.educationalInstitution.name,
+            "BOOKING_ID": booking.id,
         }
 
     @mock.patch(

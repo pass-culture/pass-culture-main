@@ -74,6 +74,7 @@ class Returns200Test:
             "EDUCATIONAL_INSTITUTION_CITY": educational_institution.city,
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": educational_institution.postalCode,
             "COLLECTIVE_CANCELLATION_REASON": collective_booking.cancellationReason.value,
+            "BOOKING_ID": collective_booking.id,
         }
 
     def test_refuse_collective_booking_when_pending(self, client: Any) -> None:

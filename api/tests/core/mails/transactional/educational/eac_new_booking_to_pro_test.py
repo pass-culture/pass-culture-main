@@ -39,4 +39,5 @@ class SendEacNewBookingEmailToProTest:
             "EDUCATIONAL_INSTITUTION_CITY": booking.educationalInstitution.city,
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": booking.educationalInstitution.postalCode,
             "IS_EVENT": True,
+            "BOOKING_ID": booking.id,
         }

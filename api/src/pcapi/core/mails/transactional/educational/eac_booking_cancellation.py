@@ -23,6 +23,7 @@ def get_education_booking_cancellation_email_data(booking: CollectiveBooking) ->
             "EDUCATIONAL_INSTITUTION_CITY": institution.city,
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": institution.postalCode,
             "COLLECTIVE_CANCELLATION_REASON": booking.cancellationReason.value if booking.cancellationReason else "",
+            "BOOKING_ID": booking.id,
         },
     )
 
