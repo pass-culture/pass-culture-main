@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { FieldArray } from 'formik'
 import React from 'react'
 
@@ -24,6 +25,7 @@ export const PriceCategoriesForm = ({
 }: PriceCategoriesFormProps): JSX.Element => {
   return (
     <>
+      <FormLayout.MandatoryInfo />
       <FieldArray
         name="priceCategories"
         render={arrayHelpers => (
@@ -31,14 +33,20 @@ export const PriceCategoriesForm = ({
             {values.priceCategories.map((priceCategory, index) => (
               <FormLayout.Row key={index} inline>
                 <TextInput
+                  smallLabel
                   name={`priceCategories[${index}].label`}
                   label="Intitulé du tarif"
                   placeholder="Ex : catégorie 1, orchestre..."
                   maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
                   countCharacters
-                  className={styles['label-input']}
+                  className={cn(
+                    styles['label-input'],
+                    styles['field-layout-align-self']
+                  )}
+                  isLabelHidden={index !== 0}
                 />
                 <TextInput
+                  smallLabel
                   name={`priceCategories[${index}].price`}
                   label="Tarif par personne"
                   placeholder="Ex : 25€"
@@ -46,7 +54,11 @@ export const PriceCategoriesForm = ({
                   step="0.01"
                   max={PRICE_CATEGORY_PRICE_MAX}
                   rightIcon={() => <IcoEuro />}
-                  className={styles['price-input']}
+                  className={cn(
+                    styles['price-input'],
+                    styles['field-layout-align-self']
+                  )}
+                  isLabelHidden={index !== 0}
                 />
               </FormLayout.Row>
             ))}
