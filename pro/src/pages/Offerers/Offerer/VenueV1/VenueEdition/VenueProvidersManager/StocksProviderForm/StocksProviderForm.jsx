@@ -2,6 +2,8 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import Icon from 'ui-kit/Icon/Icon'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -44,17 +46,20 @@ const StocksProviderForm = ({
 
   return (
     <>
-      <form className="stocks-provider-form" onSubmit={handleOpenConfirmDialog}>
+      <div className="stocks-provider-form">
         <div className="account-section">
           <div className="account-label">Compte</div>
           <div className="account-value">{siret}</div>
         </div>
         <div className="provider-import-button-container">
-          <button className="secondary-button" type="submit">
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            onClick={handleOpenConfirmDialog}
+          >
             Importer
-          </button>
+          </Button>
         </div>
-      </form>
+      </div>
       {isConfirmDialogOpened && (
         <ConfirmDialog
           cancelText="Annuler"
