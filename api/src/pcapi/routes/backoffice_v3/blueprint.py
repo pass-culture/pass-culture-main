@@ -5,7 +5,6 @@ from spectree import SecurityScheme
 from pcapi import settings
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
-from pcapi.utils.urls import build_pc_pro_venue_link
 
 from . import utils
 from .forms import empty as empty_forms
@@ -46,5 +45,4 @@ def extra_funcs() -> dict:
         "csrf_token": empty_forms.EmptyForm().csrf_token,
         "can_user_add_comment": utils.can_user_add_comment,
         "is_user_offerer_action_type": utils.is_user_offerer_action_type,
-        "build_pc_pro_venue_link": build_pc_pro_venue_link,
     }

@@ -21,7 +21,7 @@
                     </a>
                 </td>
                 <td class="text-break">
-                    <a href="{{ build_pc_pro_venue_link(venue) }}" class="link-primary">
+                    <a href="{{ venue | pc_pro_venue_link }}" class="link-primary">
                         {{ venue.publicName or venue.name }}
                     </a>
                 </td>
