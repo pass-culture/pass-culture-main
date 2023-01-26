@@ -2,7 +2,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useState, useEffect } from 'react'
 
 import { api } from 'apiClient/api'
-import FormLayout from 'components/FormLayout'
+import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import {
@@ -109,6 +109,26 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const isPriceCategoriesActive = useActiveFeature(
     'WIP_ENABLE_MULTI_PRICE_STOCKS'
   )
+
+  let description
+  let links
+
+  if (!isOfferDisabled(offer.status)) {
+    if (mode === OFFER_WIZARD_MODE.EDITION) {
+      description =
+        'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’évènement. \n Vous pouvez annuler un évènement en supprimant la ligne de stock associée. Cette action est irréversible.'
+      links = [
+        {
+          href: 'https://aide.passculture.app/hc/fr/articles/4411992053649--Acteurs-Culturels-Comment-annuler-ou-reporter-un-%C3%A9v%C3%A9nement-',
+          linkTitle: 'Comment reporter ou annuler un évènement ?',
+        },
+      ]
+    } else {
+      description =
+        'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’évènement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente'
+    }
+  }
+
   const onSubmit = async (formValues: { stocks: IStockEventFormValues[] }) => {
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       const changesOnStockWithBookings = hasChangesOnStockWithBookings(
@@ -342,28 +362,13 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         />
       )}
       <FormLayout>
-        <form onSubmit={formik.handleSubmit} data-testid="stock-event-form">
-          <FormLayout.Section
-            description={
-              isOfferDisabled(offer.status)
-                ? undefined
-                : 'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’évènement. \n Vous pouvez annuler un évènement en supprimant la ligne de stock associée. Cette action est irréversible.'
-            }
-            links={
-              isOfferDisabled(offer.status)
-                ? undefined
-                : [
-                    {
-                      href: 'https://aide.passculture.app/hc/fr/articles/4411992053649--Acteurs-Culturels-Comment-annuler-ou-reporter-un-%C3%A9v%C3%A9nement-',
-                      linkTitle: 'Comment reporter ou annuler un évènement ?',
-                    },
-                  ]
-            }
-            descriptionAsBanner={
-              !isOfferDisabled(offer.status) &&
-              mode === OFFER_WIZARD_MODE.EDITION
-            }
-          >
+        <div aria-current="page">
+          <form onSubmit={formik.handleSubmit} data-testid="stock-event-form">
+            <FormLayoutDescription
+              description={description}
+              links={links}
+              isBanner
+            />
             <StockFormList offer={offer} onDeleteStock={onDeleteStock} />
             <ActionBar
               isDisabled={formik.isSubmitting || isOfferDisabled(offer.status)}
@@ -375,8 +380,8 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
               shouldTrack={shouldTrack}
               isFormEmpty={isFormEmpty()}
             />
-          </FormLayout.Section>
-        </form>
+          </form>
+        </div>
       </FormLayout>
 
       <RouteLeavingGuardOfferIndividual
