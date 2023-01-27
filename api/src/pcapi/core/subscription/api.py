@@ -819,4 +819,5 @@ def initialize_identity_fraud_check(
         eligibilityType=eligibility_type,
     )
     pcapi_repository.repository.save(fraud_check)
+    batch.track_identity_check_started_event(user.id, fraud_check.type)
     return fraud_check
