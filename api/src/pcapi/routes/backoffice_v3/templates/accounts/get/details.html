@@ -1,90 +1,28 @@
-<div class="row row-cols-1 g-4 py-3">
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
+{% from "components/presentation/details/tabs.html" import build_details_tab %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
 
-                <ul class="nav nav-tabs" id="account-details-tab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button
-                            class="nav-link"
-                            id="history-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#history-tab-pane"
-                            type="button"
-                            role="tab"
-                            aria-controls="history-tab-pane"
-                            aria-selected="true"
-                        >
-                            Historique du compte
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button
-                            class="nav-link active"
-                            id="personal-information-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#personal-information-tab-pane"
-                            type="button"
-                            role="tab"
-                            aria-controls="personal-information-tab-pane"
-                            aria-selected="false"
-                        >
-                            Informations personnelles
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button
-                            class="nav-link"
-                            id="bookings-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#bookings-tab-pane"
-                            type="button"
-                            role="tab"
-                            aria-controls="bookings-tab-pane"
-                            aria-selected="false"
-                        >
-                            Suivi des réservations
-                        </button>
-                    </li>
-                </ul>
+    {% call build_details_tabs_wrapper() %}
+        {{ build_details_tab("history", "Historique du compte", true) }}
+        {{ build_details_tab("personal-information", "Informations personnelles") }}
+        {{ build_details_tab("bookings", "Suivi des réservations") }}
+    {% endcall %}
 
-                <div class="tab-content" id="account-details-tab-content">
-                    <div
-                        class="tab-pane fade"
-                        id="history-tab-pane"
-                        role="tabpanel"
-                        aria-labelledby="history-tab"
-                        tabindex="0"
-                    >
-                        {% include "accounts/get/details/history.html" %}
-                    </div>
+    {% call build_details_tabs_content_wrapper() %}
+        {% call build_details_tab_content("history", true) %}
+            {% include "accounts/get/details/history.html" %}
+        {% endcall %}
 
-                    <div
-                        class="tab-pane fade show active"
-                        id="personal-information-tab-pane"
-                        role="tabpanel"
-                        aria-labelledby="personal-information-tab"
-                        tabindex="0"
-                    >
-                        {% include "accounts/get/details/personal_information_bookmarks.html" %}
-                        {% include "accounts/get/details/personal_information_user_details.html" %}
-                        {% for history_type, history in eligibility_history.items() %}
-                            {% include "accounts/get/details/personal_information_registration.html" %}
-                        {% endfor %}
-                    </div>
+        {% call build_details_tab_content("personal-information") %}
+            {% include "accounts/get/details/personal_information_bookmarks.html" %}
+            {% include "accounts/get/details/personal_information_user_details.html" %}
+            {% for history_type, history in eligibility_history.items() %}
+                {% include "accounts/get/details/personal_information_registration.html" %}
+            {% endfor %}
+        {% endcall %}
 
-                    <div
-                        class="tab-pane fade"
-                        id="bookings-tab-pane"
-                        role="tabpanel"
-                        aria-labelledby="bookings-tab"
-                        tabindex="0"
-                    >
-                        {% include "accounts/get/details/bookings.html" %}
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</div>
+        {% call build_details_tab_content("bookings") %}
+            {% include "accounts/get/details/bookings.html" %}
+        {% endcall %}
+    {% endcall %}
