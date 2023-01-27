@@ -5,9 +5,8 @@ import { Link } from 'ui-kit/Banners/Banner'
 
 import style from './FormLayout.module.scss'
 
-interface IFormLayoutDescriptionProps {
+export interface IFormLayoutDescriptionProps {
   description?: string
-  className?: string
   isBanner?: boolean
   links?: Link[]
 }
