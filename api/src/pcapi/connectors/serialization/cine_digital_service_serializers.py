@@ -108,7 +108,7 @@ class TariffCDS(BaseModel):
 
 class VoucherTypeCDS(BaseModel):
     id: int
-    code: str
+    code: str | None
     tariff: TariffCDS | None = Field(alias="tariffid")
 
     class Config:
