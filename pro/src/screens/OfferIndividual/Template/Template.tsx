@@ -17,6 +17,7 @@ export interface ITemplateProps {
   title?: string
   withStepper?: boolean
   withStatus?: boolean
+  withBanner?: boolean
   children: JSX.Element | JSX.Element[]
 }
 
@@ -25,6 +26,7 @@ const Template = ({
   children,
   withStepper = true,
   withStatus = true,
+  withBanner = true,
 }: ITemplateProps) => {
   const { offer, setOffer, shouldTrack } = useOfferIndividualContext()
   const mode = useOfferWizardMode()
@@ -69,7 +71,7 @@ const Template = ({
           {offer && <h4>{offer.name}</h4>}
         </OfferFormLayout.TitleBlock>
       )}
-      {offer && <OfferStatusBanner status={offer.status} />}
+      {offer && withBanner && <OfferStatusBanner status={offer.status} />}
       {withStepper && (
         <OfferFormLayout.Stepper>
           <OfferIndividualBreadcrumb shouldTrack={shouldTrack} />

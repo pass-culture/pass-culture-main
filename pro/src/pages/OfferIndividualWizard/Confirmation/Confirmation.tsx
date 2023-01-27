@@ -9,7 +9,7 @@ const Confirmation = (): JSX.Element => {
   const { offer } = useOfferIndividualContext()
   // FIXME : we should not need  as IOfferIndividual cause parent route would redirect on offer loading error
   return (
-    <WizardTemplate withStepper={false} withStatus={false}>
+    <WizardTemplate withStepper={false} withStatus={false} withBanner={false}>
       <OfferIndividualConfirmationScreen offer={offer as IOfferIndividual} />
     </WizardTemplate>
   )
