@@ -1,54 +1,24 @@
+{% from "components/presentation/details/tabs.html" import build_details_tab %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+
 <turbo-frame id="pro_user_details_frame">
 
-    <ul class="nav nav-tabs nav-fill" id="pills-tab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button
-                class="nav-link fw-bolder py-3 {{ 'active' if active_tab == 'history' else '' }}"
-                id="pills-home-tab"
-                data-bs-toggle="pill"
-                data-bs-target="#pills-home"
-                type="button"
-                role="tab"
-                aria-controls="pills-home"
-                aria-selected="true"
-            >
-                HISTORIQUE DU COMPTE
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button
-                class="nav-link fw-bolder py-3 {{ 'active' if active_tab == 'user_offerers' else '' }}"
-                id="pills-offerers-tab"
-                data-bs-toggle="pill"
-                data-bs-target="#pills-offerers"
-                type="button"
-                role="tab"
-                aria-controls="pills-offerers"
-                aria-selected="false"
-            >
-                RATTACHEMENTS AUX STRUCTURES
-            </button>
-        </li>
-    </ul>
+    {% call build_details_tabs_wrapper() %}
+        {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
 
-    <div class="tab-content bg-body border border-top-0" id="pills-tabContent">
-        <div 
-            class="tab-pane fade show p-4 {{ 'active' if active_tab == 'history' else '' }}"
-            id="pills-home"
-            role="tabpanel"
-            aria-labelledby="pills-home-tab"
-            tabindex="0"
-        >
+        {{ build_details_tab("user_offerers", "Rattachements aux structures", active_tab == 'user_offerers') }}
+    {% endcall %}
+
+    {% call build_details_tabs_content_wrapper() %}
+        {% call build_details_tab_content("history", active_tab == 'history') %}
             {% include "pro_user/get/details/history.html" %}
-        </div>
-        <div
-            class="tab-pane fade show p-4 {{ 'active' if active_tab == 'user_offerers' else '' }}"
-            id="pills-offerers"
-            role="tabpanel"
-            aria-labelledby="pills-offerers-tab"
-            tabindex="0">
+        {% endcall %}
+
+        {% call build_details_tab_content("user_offerers", active_tab == 'user_offerers') %}
             {% include "pro_user/get/details/user_offerer.html" %}
-        </div>
-    </div>
+        {% endcall %}
+    {% endcall %}
 
 </turbo-frame>

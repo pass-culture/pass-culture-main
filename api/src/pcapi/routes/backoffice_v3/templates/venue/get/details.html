@@ -1,27 +1,18 @@
+{% from "components/presentation/details/tabs.html" import build_details_tab %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+
 <turbo-frame id="venue_details_frame">
 
-    <ul class="nav nav-tabs nav-fill" id="pills-tab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button
-                class="nav-link active fw-bolder py-3"
-                id="pills-history-tab"
-                data-bs-toggle="pill"
-                data-bs-target="#pills-history"
-                type="button"
-                role="tab"
-                aria-controls="pills-history"
-                aria-selected="true"
-            >
-                HISTORIQUE DU COMPTE
-            </button>
-        </li>
-    </ul>
+    {% call build_details_tabs_wrapper() %}
+        {{ build_details_tab("history", "Historique du compte", true) }}
+    {% endcall %}
 
-    <div class="tab-content bg-body border border-top-0" id="pills-tabContent">
-        <div class="tab-pane fade show active p-4" id="pills-history" role="tabpanel" aria-labelledby="pills-history-tab" tabindex="0">
+    {% call build_details_tabs_content_wrapper() %}
+        {% call build_details_tab_content("history", true) %}
             {% include "venue/get/details/history.html" %}
-        </div>
-    </div>
+        {% endcall %}
+    {% endcall %}
 
 </turbo-frame>
-
