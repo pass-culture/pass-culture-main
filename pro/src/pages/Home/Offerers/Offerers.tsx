@@ -230,7 +230,6 @@ const Offerers = ({ receivedOffererNames }: IOfferersProps) => {
           <h2 className="h-section-title">Structures et lieux</h2>
           <OffererDetails
             handleChangeOfferer={handleChangeOfferer}
-            hasPhysicalVenues={physicalVenues.length > 0}
             isUserOffererValidated={isUserOffererValidated}
             offererOptions={offererOptions}
             selectedOfferer={selectedOfferer}
