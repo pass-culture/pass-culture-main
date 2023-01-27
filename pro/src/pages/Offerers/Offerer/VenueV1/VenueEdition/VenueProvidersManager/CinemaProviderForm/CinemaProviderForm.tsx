@@ -55,7 +55,7 @@ export const CinemaProviderForm = ({
 
   return (
     <FormikProvider value={formik}>
-      <Form onSubmit={formik.handleSubmit}>
+      <Form>
         <FormLayout>
           {!isLoading && (
             <div className="cinema-provider-form">
@@ -81,6 +81,7 @@ export const CinemaProviderForm = ({
                   <SubmitButton
                     className="primary-button"
                     isLoading={formik.isSubmitting}
+                    onClick={formik.handleSubmit}
                   >
                     Importer les offres
                   </SubmitButton>
