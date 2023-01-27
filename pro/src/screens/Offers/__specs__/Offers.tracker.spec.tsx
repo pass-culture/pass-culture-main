@@ -1,7 +1,10 @@
-import { screen } from '@testing-library/react'
+import '@testing-library/jest-dom'
+
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import { UserRole } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
@@ -16,6 +19,12 @@ const mockLogEvent = jest.fn()
 
 const renderOffers = (props: IOffersProps) =>
   renderWithProviders(<Offers {...props} />)
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    listOfferersNames: jest.fn().mockReturnValue({}),
+  },
+}))
 
 describe('tracker screen Offers', () => {
   it('should track when clciking on offer link', async () => {
@@ -45,8 +54,29 @@ describe('tracker screen Offers', () => {
       setLogEvent: null,
     }))
 
+    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        {
+          id: 'A1',
+          nonHumanizedId: 1,
+          name: 'Mon super cinéma',
+        },
+        {
+          id: 'B1',
+          nonHumanizedId: 1,
+          name: 'Ma super librairie',
+        },
+      ],
+    })
+
     // When
-    renderOffers(props)
+    await renderOffers(props)
+
+    await waitFor(() => {
+      expect(screen.getByText('Créer une offre')).toBeInTheDocument()
+    })
+    expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
+    expect(api.listOfferersNames).toHaveBeenCalledWith(undefined, true)
 
     // Then
     const createLink = screen.getByText('Créer une offre')
