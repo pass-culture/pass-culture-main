@@ -67,16 +67,13 @@ class DuplicateIneHash(Exception):
 def on_educonnect_result(
     user: users_models.User, educonnect_content: models.EduconnectContent
 ) -> models.BeneficiaryFraudCheck:
-    eligibility_type = educonnect_content.get_eligibility_type_at_registration()
-
-    fraud_check = models.BeneficiaryFraudCheck(
+    fraud_check = subscription_api.initialize_identity_fraud_check(
+        eligibility_type=educonnect_content.get_eligibility_type_at_registration(),
+        fraud_check_type=models.FraudCheckType.EDUCONNECT,
+        identity_content=educonnect_content,
+        third_party_id=str(educonnect_content.educonnect_id),
         user=user,
-        type=models.FraudCheckType.EDUCONNECT,
-        thirdPartyId=str(educonnect_content.educonnect_id),
-        resultContent=educonnect_content.dict(),
-        eligibilityType=eligibility_type,
     )
-
     on_identity_fraud_check_result(user, fraud_check)
     repository.save(fraud_check)
     return fraud_check

@@ -174,7 +174,21 @@ def handle_dms_application(
 
     fraud_check = fraud_dms_api.get_fraud_check(user, application_number)
     if fraud_check is None:
-        fraud_check = fraud_dms_api.create_fraud_check(user, application_number, application_content)
+        eligibility_type = (
+            fraud_api.decide_eligibility(
+                user, application_content.get_birth_date(), application_content.get_registration_datetime()
+            )
+            if application_content
+            else None
+        )
+
+        fraud_check = subscription_api.initialize_identity_fraud_check(
+            eligibility_type=eligibility_type,
+            fraud_check_type=fraud_models.FraudCheckType.DMS,
+            identity_content=application_content,
+            third_party_id=str(application_number),
+            user=user,
+        )
     else:
         if _is_fraud_check_up_to_date(fraud_check, application_content):
             logger.info("[DMS] FraudCheck already up to date", extra=log_extra_data)
