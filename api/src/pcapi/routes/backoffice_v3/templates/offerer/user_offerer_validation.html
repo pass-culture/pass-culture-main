@@ -144,6 +144,7 @@
 
 {% block scripts %}
     <script src="{{ url_for('static', filename='backoffice/js/pc-table-multi-select.js') }}"></script>
+    <script src="{{ url_for('static', filename='backoffice/js/pc-override-custom-textarea-enter.js') }}"></script>
     <script>
 
         document.getElementById("batch-pending-button").addEventListener('click', (e) => {
@@ -175,10 +176,10 @@
                 <div class="modal-body row">
                     <div class="form-floating my-3 col">
                         <input name="object_ids" type="hidden" value="${idValidations}"></input>
-                        <textarea name="comment" class="form-control" id="${ div_id }-textarea" rows="3" style="height:100%;"></textarea>
-                        <label for=${ div_id }-textarea"><label for="comment">Raison</label></label>
+                        <textarea name="comment" class="form-control" id="${div_id}-textarea" rows="3" style="height:100%;" onkeydown="manageTextAreaKeydown(event)"></textarea>
+                        <label for=${div_id}-textarea"><label for="comment">Raison</label></label>
                     </div>
-                    <button type="button" class="btn btn-outline-secondary col-1 h-50" id="${ div_id }-newline">⏎</button>
+                    <button type="button" class="btn btn-outline-secondary col-1 h-50" id="${div_id}-newline" onclick="manageReturnButton(event)">⏎</button>
                 </div>
 
                 <div class="modal-footer">
@@ -203,6 +204,8 @@
             getBatchModal().querySelector('.modal-content').innerHTML = html
         }
 
+
+
         function initBatchModal() {
             var modal = document.createElement('div')
             modal.classList.add('modal', 'fade')
@@ -213,9 +216,14 @@
             modal.innerHTML = `<div class="modal-dialog">
                 <div class="modal-content"></div>
             </div>`
+
             document.getElementById("batch-modal").appendChild(modal)
             return modal
         }
+
+
+
+
     </script>
 
 
