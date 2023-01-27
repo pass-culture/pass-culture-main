@@ -173,7 +173,7 @@ class RunIntegrationTest:
         assert fraud_check.userId == user.id
         assert fraud_check.thirdPartyId == "123"
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
-        assert len(push_testing.requests) == 2
+        assert len(push_testing.requests) == 3
 
         # Check that a PROFILE_COMPLETION fraud check is created
         profile_completion_fraud_checks = [
@@ -277,7 +277,7 @@ class RunIntegrationTest:
             user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
         ).one_or_none()
         assert dms_check
-        assert len(push_testing.requests) == 2
+        assert len(push_testing.requests) == 3
 
         assert not user.is_beneficiary
         assert not user.deposit
@@ -318,7 +318,7 @@ class RunIntegrationTest:
         ).one_or_none()
         assert dms_check
 
-        assert len(push_testing.requests) == 2
+        assert len(push_testing.requests) == 3
 
         assert not user.is_beneficiary
         assert not user.deposit
@@ -391,7 +391,7 @@ class RunIntegrationTest:
             if fraud_check.type == fraud_models.FraudCheckType.HONOR_STATEMENT
         )
 
-        assert len(push_testing.requests) == 3
+        assert len(push_testing.requests) == 4
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 96  # accepted as beneficiary email
@@ -548,8 +548,8 @@ class RunIntegrationTest:
             TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
         )
 
-        assert len(push_testing.requests) == 3
-        assert push_testing.requests[0]["attribute_values"]["u.is_beneficiary"]
+        assert len(push_testing.requests) == 4
+        assert push_testing.requests[1]["attribute_values"]["u.is_beneficiary"]
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_dms_application_value_error(self, get_applications_with_details):
