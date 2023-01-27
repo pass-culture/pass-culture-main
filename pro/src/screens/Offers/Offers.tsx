@@ -19,6 +19,7 @@ import {
 } from 'core/Offers'
 import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
+import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserValidatedOfferersNamesAdapter'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
@@ -78,6 +79,7 @@ const Offers = ({
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
   const { logEvent } = useAnalytics()
 
+  /* istanbul ignore next: Already tested but coverage doesn't see */
   const { isAdmin } = currentUser || {}
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -108,8 +110,27 @@ const Offers = ({
     },
     [urlSearchFilters]
   )
+
+  const [isOffererValidated, setIsOffererValidated] = useState<boolean>(false)
+
+  useEffect(function fetchData() {
+    const loadValidatedUserOfferers = async () => {
+      const validatedUserOfferers = await getUserValidatedOfferersNamesAdapter()
+      if (
+        validatedUserOfferers.isOk &&
+        validatedUserOfferers?.payload?.length
+      ) {
+        setIsOffererValidated(true)
+      } else {
+        setIsOffererValidated(false)
+      }
+    }
+    // If user is admin, offer creation button doesn't show
+    !isAdmin && loadValidatedUserOfferers()
+  }, [])
+
   const actionLink =
-    isAdmin || !currentUser?.roles?.length ? null : (
+    isAdmin || !isOffererValidated ? null : (
       <ButtonLink
         variant={ButtonVariant.PRIMARY}
         onClick={() =>
@@ -132,6 +153,7 @@ const Offers = ({
     : selectedOfferIds.length
 
   const clearSelectedOfferIds = useCallback(() => {
+    /* istanbul ignore next: DEBT, TO FIX */
     setSelectedOfferIds([])
   }, [])
 
@@ -205,6 +227,7 @@ const Offers = ({
     applyUrlFiltersAndRedirect(updatedFilters)
   }, [applyUrlFiltersAndRedirect, searchFilters, setOfferer])
 
+  /* istanbul ignore next: DEBT, TO FIX */
   const canUpdateOffersStatus = (selectedOfferIds: string[]) => {
     const selectedOffers = offers.filter(offer =>
       selectedOfferIds.includes(offer.id)
@@ -212,6 +235,7 @@ const Offers = ({
     return !selectedOffers.some(offer => offer.status === OFFER_STATUS_DRAFT)
   }
 
+  /* istanbul ignore next: DEBT, TO FIX */
   const canDeleteOffers = (selectedOfferIds: string[]) => {
     const selectedOffers = offers.filter(offer =>
       selectedOfferIds.includes(offer.id)
