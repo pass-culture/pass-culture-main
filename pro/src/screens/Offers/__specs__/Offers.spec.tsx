@@ -1,7 +1,10 @@
-import { screen } from '@testing-library/react'
+import '@testing-library/jest-dom'
+
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import { UserRole } from 'apiClient/v1'
 import {
   ALL_CATEGORIES,
@@ -66,6 +69,12 @@ jest.mock('utils/date', () => ({
   getToday: jest
     .fn()
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    listOfferersNames: jest.fn().mockReturnValue({}),
+  },
 }))
 
 describe('screen Offers', () => {
@@ -637,23 +646,43 @@ describe('screen Offers', () => {
   })
 
   describe('button to create an offer', () => {
-    it('should not be displayed when user is an admin', () => {
+    it('should not be displayed when user is an admin', async () => {
       // Given
       props.currentUser.isAdmin = true
 
       // When
-      renderOffers(props, store)
+      await renderOffers(props, store)
 
       // Then
       expect(screen.queryByText('Créer une offre')).toBeNull()
     })
 
-    it('should be displayed when user is not an admin', () => {
+    it('should be displayed when user is not an admin', async () => {
+      jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [
+          {
+            id: 'A1',
+            nonHumanizedId: 1,
+            name: 'Mon super cinéma',
+          },
+          {
+            id: 'B1',
+            nonHumanizedId: 1,
+            name: 'Ma super librairie',
+          },
+        ],
+      })
+
       // Given
       props.currentUser.isAdmin = false
 
       // When
-      renderOffers(props, store)
+      await renderOffers(props, store)
+
+      await waitFor(() => {
+        expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
+        expect(screen.getByText('Créer une offre')).toBeInTheDocument()
+      })
 
       // Then
       const createLink = queryByTextTrimHtml(screen, 'Créer une offre', {
@@ -663,12 +692,17 @@ describe('screen Offers', () => {
       expect(createLink).not.toBeNull()
     })
 
-    it('should not be displayed when user is not yet validated', () => {
-      // Given
-      props.currentUser.roles = []
+    it('should not be displayed when user is not yet validated', async () => {
+      jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [],
+      })
 
       // When
-      renderOffers(props, store)
+      await renderOffers(props, store)
+
+      await waitFor(() => {
+        expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
+      })
 
       // Then
       const createLink = queryByTextTrimHtml(screen, 'Créer une offre', {
