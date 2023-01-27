@@ -23,7 +23,9 @@ TOKEN_URI = "https://accounts.google.com/o/oauth2/token"
 
 BACKOFFICE_SERVICE_ACCOUNT_SCOPES = ("https://www.googleapis.com/auth/admin.directory.group.readonly",)
 
-BACKOFFICE_ROLE_NAME_RE = re.compile(r"^backoffice-(?P<role>.+)$")
+BACKOFFICE_ROLE_NAME_RE = re.compile(
+    (r"^backoffice-((?P<env>(testing|staging|production|integration))-)?(?P<role>.+)$")
+)
 BEARER_RE = re.compile(r"^Bearer (?P<token>.+)$")
 
 
@@ -83,11 +85,19 @@ def get_groups_from_google_workspace(email: str) -> dict:
     return response
 
 
-def extract_roles_from_google_workspace_groups(api_response: dict) -> list[str]:
-    roles = []
+def extract_roles_from_google_workspace_groups(api_response: dict) -> set[str]:
+    roles = set()
     for group in api_response.get("groups", []):
         if match := BACKOFFICE_ROLE_NAME_RE.match(group.get("name")):
-            roles.append(match.group("role"))
+            # add role if either:
+            #   1. no env defined inside role name (eg. backoffice-admin
+            #      instead of backoffice-staging-admin) or
+            #   2. defined env does not match the current env
+            env = match.group("env")
+            if env and env.lower() != settings.ENV:
+                continue
+
+            roles.add(match.group("role"))
     return roles
 
 
