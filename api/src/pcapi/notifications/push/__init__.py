@@ -9,6 +9,7 @@ from pcapi.utils.module_loading import import_string
 
 class BatchEvent(enum.Enum):
     USER_DEPOSIT_ACTIVATED = "user_deposit_activated"
+    USER_IDENTITY_CHECK_STARTED = "user_identity_check_started"
 
 
 def update_user_attributes(
