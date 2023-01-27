@@ -25,6 +25,7 @@ from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+import pcapi.notifications.push.testing as push_testing
 from pcapi.utils import requests as requests_utils
 
 import tests
@@ -56,6 +57,13 @@ class UbbleWorkflowTest:
 
         ubble_request = ubble_mock.last_request.json()
         assert ubble_request["data"]["attributes"]["webhook"] == "http://localhost/webhooks/ubble/application_status"
+
+        assert push_testing.requests[0] == {
+            "can_be_asynchronously_retried": True,
+            "event_name": "user_identity_check_started",
+            "event_payload": {"type": "ubble"},
+            "user_id": user.id,
+        }
 
     @pytest.mark.parametrize(
         "state, status, fraud_check_status",

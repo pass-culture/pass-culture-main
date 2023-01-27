@@ -800,3 +800,23 @@ def _get_subscription_message(
             return educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
         case _:
             return subscription_messages.get_generic_ko_message(fraud_check.user.id)
+
+
+def initialize_identity_fraud_check(
+    eligibility_type: users_models.EligibilityType | None,
+    fraud_check_type: fraud_models.FraudCheckType,
+    identity_content: common_fraud_models.IdentityCheckContent,
+    third_party_id: str,
+    user: users_models.User,
+) -> fraud_models.BeneficiaryFraudCheck:
+    """Create a fraud check for the user, with the identity information provided by the identity provider."""
+    fraud_check = fraud_models.BeneficiaryFraudCheck(
+        user=user,
+        type=fraud_check_type,
+        thirdPartyId=third_party_id,
+        resultContent=identity_content.dict() if identity_content else None,
+        status=fraud_models.FraudCheckStatus.STARTED,
+        eligibilityType=eligibility_type,
+    )
+    pcapi_repository.repository.save(fraud_check)
+    return fraud_check

@@ -9,7 +9,6 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
-from pcapi.models import db
 
 
 UBBLE_TEST_EMAIL_RE = re.compile(r"^.+(\+ubble_test@.+|@yeswehack.ninja)$")
@@ -104,19 +103,6 @@ def ubble_fraud_checks(
             fraud_items.append(fraud_api.duplicate_id_piece_number_fraud_item(user, id_piece_number))
 
     return fraud_items
-
-
-def start_ubble_fraud_check(user: users_models.User, ubble_content: ubble_fraud_models.UbbleContent) -> None:
-    fraud_check = fraud_models.BeneficiaryFraudCheck(
-        user=user,
-        type=fraud_models.FraudCheckType.UBBLE,
-        thirdPartyId=str(ubble_content.identification_id),
-        resultContent=ubble_content,  # type: ignore [arg-type]
-        status=fraud_models.FraudCheckStatus.STARTED,
-        eligibilityType=user.eligibility,
-    )
-    db.session.add(fraud_check)
-    db.session.commit()
 
 
 def get_ubble_fraud_check(identification_id: str) -> fraud_models.BeneficiaryFraudCheck | None:
