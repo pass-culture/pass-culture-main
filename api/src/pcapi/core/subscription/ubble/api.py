@@ -12,6 +12,7 @@ from pcapi import settings
 from pcapi.connectors.beneficiaries import outscale
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.external.attributes import api as external_attributes_api
+import pcapi.core.external.batch as batch_notification
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
@@ -85,7 +86,7 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
         pcapi_repository.repository.save(fraud_check)
 
 
-def start_ubble_workflow(user: users_models.User, first_name: str, last_name: str, redirect_url: str) -> str:
+def start_ubble_workflow(user: users_models.User, first_name: str, last_name: str, redirect_url: str) -> HttpUrl | None:
     content = ubble.start_identification(
         user_id=user.id,
         first_name=first_name,
@@ -93,8 +94,16 @@ def start_ubble_workflow(user: users_models.User, first_name: str, last_name: st
         webhook_url=flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
         redirect_url=redirect_url,
     )
-    ubble_fraud_api.start_ubble_fraud_check(user, content)
-    return content.identification_url  # type: ignore [return-value]
+    fraud_check = subscription_api.initialize_identity_fraud_check(
+        eligibility_type=user.eligibility,
+        fraud_check_type=fraud_models.FraudCheckType.UBBLE,
+        identity_content=content,
+        third_party_id=str(content.identification_id),
+        user=user,
+    )
+    batch_notification.track_identity_check_started_event(user.id, fraud_check.type)
+
+    return content.identification_url
 
 
 def get_most_relevant_ubble_error(

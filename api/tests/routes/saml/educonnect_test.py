@@ -18,6 +18,7 @@ from pcapi.core.subscription.educonnect import api as educonnect_subscription_ap
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
+import pcapi.notifications.push.testing as push_testing
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -168,6 +169,13 @@ class EduconnectTest:
         assert user.dateOfBirth == signup_birth_date
         assert user.validatedBirthDate == datetime.date(2006, 8, 18)
         assert user.ineHash is None
+
+        assert push_testing.requests[0] == {
+            "can_be_asynchronously_retried": True,
+            "event_name": "user_identity_check_started",
+            "event_payload": {"type": "educonnect"},
+            "user_id": user.id,
+        }
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
     def test_connexion_date_missing(self, mock_get_educonnect_saml_client, client, caplog, app):

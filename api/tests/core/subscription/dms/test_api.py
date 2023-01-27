@@ -18,6 +18,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
+import pcapi.notifications.push.testing as push_testing
 from pcapi.repository import repository
 
 from tests.scripts.beneficiary.fixture import make_parsed_graphql_application
@@ -94,6 +95,25 @@ class HandleDmsApplicationTest:
         "\n"
         "L’équipe du pass Culture"
     )
+
+    @freezegun.freeze_time("2016-11-02")
+    def test_handle_dms_application_sends_user_identity_check_started_event(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(2000, 1, 1))
+        dms_response = make_parsed_graphql_application(
+            application_number=1234,
+            state=dms_models.GraphQLApplicationStates.accepted,
+            email=user.email,
+            birth_date=datetime.datetime(2016, 1, 1),
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        assert push_testing.requests[0] == {
+            "can_be_asynchronously_retried": True,
+            "event_name": "user_identity_check_started",
+            "event_payload": {"type": "dms"},
+            "user_id": user.id,
+        }
 
     def test_concurrent_accepted_calls(self):
         user = users_factories.UserFactory(
