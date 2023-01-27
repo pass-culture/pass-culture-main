@@ -5,17 +5,17 @@ import { Link } from 'ui-kit/Banners/Banner'
 
 import style from './FormLayout.module.scss'
 
-interface IFormLayoutSectionProps {
+interface IFormLayoutDescriptionProps {
   description?: string
   className?: string
   isBanner?: boolean
   links?: Link[]
 }
-const FormLayoutDescription = ({
+const Description = ({
   description,
   isBanner = false,
   links,
-}: IFormLayoutSectionProps): JSX.Element => (
+}: IFormLayoutDescriptionProps): JSX.Element => (
   <>
     {description && !isBanner && (
       <p className={style['form-layout-section-description-content']}>
@@ -36,4 +36,4 @@ const FormLayoutDescription = ({
   </>
 )
 
-export default FormLayoutDescription
+export default Description
