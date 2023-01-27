@@ -421,6 +421,7 @@ class CineDigitalServiceGetPCVoucherTypesTest:
             {"id": 2, "code": "PSCULTURE", "tariffid": {"id": 3, "price": 5, "active": True, "labeltariff": ""}},
             {"id": 3, "code": "PSCULTURE", "tariffid": {"id": 4, "price": 6, "active": True, "labeltariff": ""}},
             {"id": 4, "code": "PSCULTURE"},
+            {"id": 5, "code": None},
         ]
 
         mocked_get_resource.return_value = json_voucher_types
