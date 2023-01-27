@@ -186,7 +186,7 @@ class UpdateOffererTest:
         assert offerer_to_edit.postalCode == new_postal_code
         assert offerer_to_edit.address == new_address
 
-        history_rows = html_parser.extract_table_rows(response.data, parent_id="pills-home")
+        history_rows = html_parser.extract_table_rows(response.data, parent_id="history-tab-pane")
         assert len(history_rows) == 1
         assert history_rows[0]["Type"] == history_models.ActionType.INFO_MODIFIED.value
         assert f"Ville : {old_city} => {offerer_to_edit.city}" in history_rows[0]["Commentaire"]
@@ -221,7 +221,7 @@ class UpdateOffererTest:
         assert updated_offerer.postalCode == "29200"
         assert updated_offerer.address == "Place de la Liberté"
 
-        history_rows = html_parser.extract_table_rows(response.data, parent_id="pills-home")
+        history_rows = html_parser.extract_table_rows(response.data, parent_id="history-tab-pane")
         assert len(history_rows) == 1
         assert history_rows[0]["Type"] == history_models.ActionType.INFO_MODIFIED.value
         assert history_rows[0]["Auteur"] == legit_user.full_name
@@ -445,7 +445,7 @@ class GetOffererDetailsTest:
 
         assert response.status_code == 200
 
-        rows = html_parser.extract_table_rows(response.data, parent_id="pills-home")
+        rows = html_parser.extract_table_rows(response.data, parent_id="history-tab-pane")
         assert len(rows) == 1
         assert rows[0]["Type"] == history_models.ActionType.COMMENT.value
         assert rows[0]["Commentaire"] == action.comment
@@ -471,7 +471,7 @@ class GetOffererDetailsTest:
 
         assert response.status_code == 200
 
-        rows = html_parser.extract_table_rows(response.data, parent_id="pills-home")
+        rows = html_parser.extract_table_rows(response.data, parent_id="history-tab-pane")
         assert len(rows) == 1
         assert rows[0]["Type"] == history_models.ActionType.OFFERER_NEW.value
         assert rows[0]["Commentaire"] == action.comment
@@ -490,7 +490,7 @@ class GetOffererDetailsTest:
             response = authenticated_client.get(url)
 
         assert response.status_code == 200
-        assert html_parser.count_table_rows(response.data, parent_id="pills-home") == 0
+        assert html_parser.count_table_rows(response.data, parent_id="history-tab-pane") == 0
 
     def test_action_name_depends_on_type(self, authenticated_client, offerer):
         admin_user = users_factories.AdminFactory()
@@ -577,7 +577,7 @@ class GetOffererDetailsTest:
 
         # then
         assert response.status_code == 200
-        rows = html_parser.extract_table_rows(response.data, parent_id="pills-home")
+        rows = html_parser.extract_table_rows(response.data, parent_id="history-tab-pane")
         assert len(rows) == 4
 
         assert rows[0]["Type"] == "Structure validée"
@@ -618,7 +618,7 @@ class GetOffererDetailsTest:
 
         # then
         assert response.status_code == 200
-        rows = html_parser.extract_table_rows(response.data, "pills-pro-users")
+        rows = html_parser.extract_table_rows(response.data, "pro-users-tab-pane")
         assert len(rows) == 3
 
         assert rows[0]["ID"] == str(uo1.user.id)
@@ -687,7 +687,7 @@ class GetOffererDetailsTest:
             response = authenticated_client.get(url)
         assert response.status_code == 200
 
-        rows = html_parser.extract_table_rows(response.data, "pills-managed-venues")
+        rows = html_parser.extract_table_rows(response.data, "managed-venues-tab-pane")
         assert len(rows) == 2
 
         assert rows[0]["ID"] == str(venue_1.id)

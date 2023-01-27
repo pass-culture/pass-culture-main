@@ -1,0 +1,43 @@
+{% macro build_details_tab(name, title, is_active=False) %}
+    <li class="nav-item" role="presentation">
+        <button
+            class="{{ 'nav-link active fw-bolder' if is_active else 'nav-link' }}"
+            id="{{ name ~ '-tab' }}"
+            data-bs-toggle="tab"
+            data-bs-target="{{ '#' ~ name ~ '-tab-pane' }}"
+            type="button"
+            role="tab"
+            aria-controls="{{ name ~ 'tab-pane' }}"
+            aria-selected="true"
+        >
+            {{ title }}
+        </button>
+    </li>
+{% endmacro %}
+
+
+{% macro build_details_tabs_wrapper(name="details-tab") %}
+    <ul class="nav nav-tabs nav-fill mt-4" id="{{ name }}" role="tablist">
+        {{ caller() }}
+    </ul>
+{% endmacro %}
+
+
+{% macro build_details_tab_content(name, is_active=False) %}
+    <div
+        class="tab-pane fade p-4 {{ 'show active' if is_active }}"
+        id="{{ name ~ '-tab-pane' }}"
+        role="tabpanel"
+        aria-labelledby="{{ name ~ '-tab' }}"
+        tabindex="0"
+    >
+        {{ caller() }}
+    </div>
+{% endmacro %}
+
+
+{% macro build_details_tabs_content_wrapper() %}
+    <div class="tab-content bg-body border border-top-0" id="account-details-tab-content">
+        {{ caller() }}
+    </div>
+{% endmacro %}

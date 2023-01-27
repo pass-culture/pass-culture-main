@@ -1,80 +1,28 @@
+{% from "components/presentation/details/tabs.html" import build_details_tab %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+
 <turbo-frame id="offerer_details_frame">
 
-    <ul class="nav nav-tabs nav-fill" id="pills-tab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button
-                class="nav-link fw-bolder py-3 {{ 'active' if active_tab == 'history' else '' }}"
-                id="pills-home-tab"
-                data-bs-toggle="pill"
-                data-bs-target="#pills-home"
-                type="button"
-                role="tab"
-                aria-controls="pills-home"
-                aria-selected="true"
-            >
-                HISTORIQUE DU COMPTE
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button
-                class="nav-link fw-bolder py-3 {{ 'active' if active_tab == 'users' else '' }}"
-                id="pills-pro-users-tab"
-                data-bs-toggle="pill"
-                data-bs-target="#pills-pro-users"
-                type="button"
-                role="tab"
-                aria-controls="pills-pro-users"
-                aria-selected="false"
-            >
-                COMPTE(S) PRO RATTACHÉ(S)
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button
-                class="nav-link fw-bolder py-3 {{ 'active' if active_tab == 'managed_venues' else '' }}"
-                id="pills-managed-venues-tab"
-                data-bs-toggle="pill"
-                data-bs-target="#pills-managed-venues"
-                type="button"
-                role="tab"
-                aria-controls="pills-managed-venues"
-                aria-selected="false"
-            >
-                LIEUX ASSOCIÉS
-            </button>
-        </li>
-    </ul>
+    {% call build_details_tabs_wrapper() %}
+        {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
+        {{ build_details_tab("pro-users", "Compte(s) pro rattaché(s)", active_tab == 'users') }}
+        {{ build_details_tab("managed-venues", "Lieux associés", active_tab == 'managed_venues') }}
+    {% endcall %}
 
-    <div class="tab-content bg-body border border-top-0" id="pills-tabContent">
-        <div
-            class="tab-pane fade show p-4 {{ 'active' if active_tab == 'history' else '' }}"
-            id="pills-home"
-            role="tabpanel"
-            aria-labelledby="pills-home-tab"
-            tabindex="0"
-        >
+    {% call build_details_tabs_content_wrapper() %}
+        {% call build_details_tab_content("history", active_tab == 'history') %}
             {% include "offerer/get/details/history.html" %}
-        </div>
+        {% endcall %}
 
-        <div
-            class="tab-pane fade show p-4 {{ 'active' if active_tab == 'users' else '' }}"
-            id="pills-pro-users"
-            role="tabpanel"
-            aria-labelledby="pills-pro-users-tab"
-            tabindex="0"
-        >
+        {% call build_details_tab_content("pro-users", active_tab == 'users') %}
             {% include "offerer/get/details/users.html" %}
-        </div>
+        {% endcall %}
 
-        <div 
-            class="tab-pane fade show p-4 {{ 'active' if active_tab == 'managed_venues' else '' }}"
-            id="pills-managed-venues"
-            role="tabpanel"
-            aria-labelledby="pills-details-tab"
-            tabindex="0"
-        >
+        {% call build_details_tab_content("managed-venues", active_tab == 'managed_venues') %}
         {% include "offerer/get/details/managed_venues.html" %}
-        </div>
-    </div>
+        {% endcall %}
+    {% endcall %}
 
 </turbo-frame>
