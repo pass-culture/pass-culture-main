@@ -7,6 +7,7 @@ from pcapi.core.auth.api import authenticate_with_permissions
 from pcapi.core.auth.api import extract_roles_from_google_workspace_groups
 from pcapi.core.permissions.factories import PermissionFactory
 from pcapi.core.permissions.factories import RoleFactory
+from pcapi.core.testing import override_settings
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.repository import repository
@@ -18,7 +19,23 @@ from .factories import GoogleWorkspaceGroupList
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@override_settings(ENV="staging")
 def test_can_extract_roles_from_google_workspace_groups():
+    # given
+    backoffice_groups = ["backoffice-staging-admin", "backoffice-testing-pro-support"]
+    other_groups = ["random-group", "dummy-group"]
+    api_response_json = GoogleWorkspaceGroupList(
+        groups=[GoogleWorkspaceGroup(name=group) for group in backoffice_groups + other_groups]
+    )
+
+    # when
+    extracted_roles = extract_roles_from_google_workspace_groups(api_response_json)
+
+    # then
+    assert extracted_roles == {"admin"}
+
+
+def test_can_extract_roles_from_legacy_google_workspace_groups():
     # given
     backoffice_groups = ["backoffice-admin", "backoffice-public-support", "backoffice-pro-support"]
     other_groups = ["random-group", "dummy-group"]
@@ -30,7 +47,7 @@ def test_can_extract_roles_from_google_workspace_groups():
     extracted_roles = extract_roles_from_google_workspace_groups(api_response_json)
 
     # then
-    assert sorted(extracted_roles) == ["admin", "pro-support", "public-support"]
+    assert extracted_roles == {"admin", "pro-support", "public-support"}
 
 
 def test_get_token_with_permission_from_google_token_id():
