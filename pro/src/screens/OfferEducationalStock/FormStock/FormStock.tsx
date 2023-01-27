@@ -14,12 +14,13 @@ import {
   TOTAL_PRICE_LABEL,
 } from '../constants/labels'
 
-interface IFormStockProps {
+export interface IFormStockProps {
   mode: Mode
 }
 
 const FormStock = ({ mode }: IFormStockProps): JSX.Element => {
-  const { values } = useFormikContext<OfferEducationalStockFormValues>()
+  const { values, setFieldValue } =
+    useFormikContext<OfferEducationalStockFormValues>()
 
   return (
     <FormLayout.Row inline>
@@ -29,6 +30,11 @@ const FormStock = ({ mode }: IFormStockProps): JSX.Element => {
         minDateTime={new Date()}
         name="eventDate"
         smallLabel
+        onChange={(name, date) => {
+          if (mode === Mode.EDITION) {
+            setFieldValue('bookingLimitDatetime', date)
+          }
+        }}
       />
       <TimePicker
         disabled={mode === Mode.READ_ONLY}
