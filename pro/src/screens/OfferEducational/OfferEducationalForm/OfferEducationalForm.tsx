@@ -5,7 +5,12 @@ import { Link } from 'react-router-dom'
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import FormLayout from 'components/FormLayout'
-import { IOfferEducationalFormValues, Mode } from 'core/OfferEducational'
+import {
+  CollectiveOffer,
+  CollectiveOfferTemplate,
+  IOfferEducationalFormValues,
+  Mode,
+} from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useNotification from 'hooks/useNotification'
@@ -40,6 +45,7 @@ type IOfferEducationalFormProps = Omit<
   onImageUpload: IImageUploaderOfferProps['onImageUpload']
   onImageDelete: IImageUploaderOfferProps['onImageDelete']
   isOfferCreated?: boolean
+  offer?: CollectiveOffer | CollectiveOfferTemplate
 }
 
 const OfferEducationalForm = ({
@@ -53,6 +59,7 @@ const OfferEducationalForm = ({
   onImageUpload,
   onImageDelete,
   isOfferCreated = false,
+  offer,
 }: IOfferEducationalFormProps): JSX.Element => {
   const notify = useNotification()
 
@@ -131,6 +138,7 @@ const OfferEducationalForm = ({
         userOfferers={userOfferers}
         venuesOptions={venuesOptions}
         categories={categories}
+        offer={offer}
       />
       {isEligible && values.offererId && values.venueId ? (
         <>
