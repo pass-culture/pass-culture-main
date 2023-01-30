@@ -2,6 +2,7 @@ from typing import cast
 
 from pcapi.core.educational.api.institution import search_educational_institution
 from pcapi.routes.public import blueprints
+from pcapi.routes.public.collective.serialization import institutions as institutions_serialization
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -17,7 +18,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
         **(
             {
                 "HTTP_200": (
-                    offers_serialization.CollectiveOffersListEducationalInstitutionResponseModel,
+                    institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel,
                     "La liste des établissement scolaires éligibles.",
                 ),
                 "HTTP_400": (
@@ -34,8 +35,8 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 )
 @api_key_required
 def list_educational_institutions(
-    query: offers_serialization.GetListEducationalInstitutionsQueryModel,
-) -> offers_serialization.CollectiveOffersListEducationalInstitutionResponseModel:
+    query: institutions_serialization.GetListEducationalInstitutionsQueryModel,
+) -> institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste établissements scolaires."""
 
@@ -47,9 +48,9 @@ def list_educational_institutions(
         institution_type=query.institution_type,
         limit=query.limit,
     )
-    return offers_serialization.CollectiveOffersListEducationalInstitutionResponseModel(
+    return institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel(
         __root__=[
-            offers_serialization.CollectiveOffersEducationalInstitutionResponseModel.from_orm(institution)
+            institutions_serialization.CollectiveOffersEducationalInstitutionResponseModel.from_orm(institution)
             for institution in institutions
         ]
     )

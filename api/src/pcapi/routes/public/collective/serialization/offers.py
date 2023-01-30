@@ -205,21 +205,6 @@ class CollectiveOffersListResponseModel(BaseModel):
     __root__: list[CollectiveOffersResponseModel]
 
 
-class CollectiveOffersVenueResponseModel(BaseModel):
-    id: int
-    name: str
-    address: str | None
-    postalCode: str | None
-    city: str | None
-
-    class Config:
-        orm_mode = True
-
-
-class CollectiveOffersListVenuesResponseModel(BaseModel):
-    __root__: list[CollectiveOffersVenueResponseModel]
-
-
 class CollectiveOffersSubCategoryResponseModel(BaseModel):
     id: str
     label: str
@@ -248,63 +233,6 @@ class CollectiveOffersCategoryResponseModel(BaseModel):
 
 class CollectiveOffersListCategoriesResponseModel(BaseModel):
     __root__: list[CollectiveOffersCategoryResponseModel]
-
-
-class CollectiveOffersDomainResponseModel(BaseModel):
-    id: int
-    name: str
-
-    class Config:
-        orm_mode = True
-
-
-class CollectiveOffersListDomainsResponseModel(BaseModel):
-    __root__: list[CollectiveOffersDomainResponseModel]
-
-
-class CollectiveOffersStudentLevelResponseModel(BaseModel):
-    id: str
-    name: str
-
-
-MAX_LIMIT_EDUCATIONAL_INSTITUTION = 20
-
-
-class GetListEducationalInstitutionsQueryModel(BaseModel):
-    id: int | None
-    name: str | None
-    institution_type: str | None
-    city: str | None
-    postal_code: str | None
-    limit: int = MAX_LIMIT_EDUCATIONAL_INSTITUTION
-
-    @validator("limit")
-    def validate_limit(cls, limit: int) -> int:
-        limit = min(limit, MAX_LIMIT_EDUCATIONAL_INSTITUTION)
-        return limit
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class CollectiveOffersListStudentLevelsResponseModel(BaseModel):
-    __root__: list[CollectiveOffersStudentLevelResponseModel]
-
-
-class CollectiveOffersEducationalInstitutionResponseModel(BaseModel):
-    id: int
-    name: str
-    institutionType: str
-    city: str
-    postalCode: str
-
-    class Config:
-        orm_mode = True
-
-
-class CollectiveOffersListEducationalInstitutionResponseModel(BaseModel):
-    __root__: list[CollectiveOffersEducationalInstitutionResponseModel]
 
 
 class GetPublicCollectiveOfferResponseModel(BaseModel):
