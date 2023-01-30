@@ -15,24 +15,21 @@
   margin-bottom: rem.torem(40px);
 }
 
-.first-free-input {
-  margin-top: rem.torem(40px);
+.form-row-actions {
+  height: size.$input-min-height;
+  display: flex;
+  align-items: center;
+
+  > * {
+    line-height: 1;
+  }
 }
 
-.other-free-input {
-  margin-top: rem.torem(8px);
-}
-
-.field-layout-align-self {
-  align-self: flex-start;
-}
-
-.trash-button {
+.first-row {
   // "Center" with input
   // We are using margin-top and not flex center because when there is an error the
   // input field grows at the bottom and we don't want the icon to move
   margin-top: calc(
-    #{fonts.$body-line-height} + #{forms.$label-space-before-input} +
-      (#{size.$input-min-height} - #{size.$button-icon-size}) / 2
+    #{forms.$label-small-space-before-input} + #{fonts.$caption-line-height}
   );
 }

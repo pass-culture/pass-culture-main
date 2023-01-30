@@ -39,7 +39,7 @@ const getSingleValidationSchema = () => {
     price: yup
       .number()
       .typeError('Doit être un nombre')
-      .moreThan(-0.01, 'Doit être positif')
+      .min(0, 'Doit être positif')
       .max(300, 'Veuillez renseigner un prix inférieur à 300€')
       .required('Veuillez renseigner un prix'),
     bookingLimitDatetime: yup.date().nullable().test({
@@ -53,7 +53,7 @@ const getSingleValidationSchema = () => {
       .number()
       .nullable()
       .typeError('Doit être un nombre')
-      .moreThan(-1, 'Doit être positif')
+      .min(0, 'Doit être positif')
       .when(['bookingsQuantity'], (bookingsQuantity, schema) => {
         const bookingQuantityNumber = parseInt(bookingsQuantity, 10)
         if (!isNaN(bookingQuantityNumber)) {

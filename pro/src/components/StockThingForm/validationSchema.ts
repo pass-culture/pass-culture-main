@@ -8,7 +8,7 @@ export const getValidationSchema = (
     price: yup
       .number()
       .typeError('Veuillez renseigner un prix')
-      .moreThan(-0.01, 'Le prix ne peut pas être inferieur à 0€')
+      .min(0, 'Le prix ne peut pas être inferieur à 0€')
       .max(300, 'Veuillez renseigner un prix inférieur à 300€')
       .required('Veuillez renseigner un prix'),
     bookingLimitDatetime: yup.date().nullable(),
@@ -16,7 +16,7 @@ export const getValidationSchema = (
       .number()
       .nullable()
       .typeError('Doit être un nombre')
-      .moreThan(-1, 'Doit être positif'),
+      .min(0, 'Doit être positif'),
     activationCodes: yup.array(),
   }
   if (minQuantity !== null) {

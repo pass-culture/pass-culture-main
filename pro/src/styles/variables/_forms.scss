@@ -7,7 +7,8 @@ $input-border-color-focus: colors.$black;
 $input-border-width-focus: rem.torem(2px);
 $input-border-color-error: colors.$red-warning;
 $input-border-color-disabled: colors.$grey-light;
-$input-hover-shadow: 0 rem.torem(3px) rem.torem(4px) 0 colors.$grey-medium-shadow;
+$input-hover-shadow: 0 rem.torem(3px) rem.torem(4px) 0
+  colors.$grey-medium-shadow;
 $input-bg-color: colors.$white;
 $input-bg-color-disabled: colors.$grey-light;
 $input-text-color-disabled: $input-color-grey-dark;
@@ -18,3 +19,4 @@ $input-right-icon-padding: rem.torem(32px);
 $input-error-reserved-space: rem.torem(18px);
 $input-space-before-error: rem.torem(8px);
 $label-space-before-input: rem.torem(8px);
+$label-small-space-before-input: rem.torem(16px);
