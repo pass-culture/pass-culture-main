@@ -150,7 +150,7 @@ describe('venue form trackers', () => {
     }))
   })
 
-  it('Tracking form submit', async () => {
+  it('Tracking success form submit', async () => {
     renderForm(true)
     jest.spyOn(api, 'postCreateVenue').mockResolvedValue({
       id: 'ID',
@@ -159,7 +159,20 @@ describe('venue form trackers', () => {
     await userEvent.click(screen.getByText(/Enregistrer/))
 
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_SAVE_VENUE, {
-      from: `/`,
+      from: `/structures/AE/lieux/ID`,
+      saved: true,
+    })
+  })
+
+  it('Tracking failing form submit', async () => {
+    renderForm(true)
+    jest.spyOn(api, 'postCreateVenue').mockRejectedValue({})
+
+    await userEvent.click(screen.getByText(/Enregistrer/))
+
+    expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_SAVE_VENUE, {
+      from: `/structures/AE/lieux/ID`,
+      saved: false,
     })
   })
 

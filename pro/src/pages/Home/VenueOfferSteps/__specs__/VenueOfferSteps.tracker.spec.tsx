@@ -53,19 +53,13 @@ describe('VenueOfferSteps', () => {
 
     await userEvent.click(screen.getByText(/Créer un lieu/))
 
-    expect(mockLogEvent).toHaveBeenCalledTimes(2)
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
       1,
       Events.CLICKED_CREATE_VENUE,
       {
         from: '/',
-      }
-    )
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      2,
-      Events.CLICKED_ADD_FIRST_VENUE_IN_OFFERER,
-      {
-        from: '/',
+        is_first_venue: true,
       }
     )
   })

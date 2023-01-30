@@ -143,6 +143,7 @@ describe('venue create offer link', () => {
     expect(mockLogEvent).toHaveBeenCalledWith(
       VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
       {
+        from: '/',
         venue_id: props.id,
       }
     )
