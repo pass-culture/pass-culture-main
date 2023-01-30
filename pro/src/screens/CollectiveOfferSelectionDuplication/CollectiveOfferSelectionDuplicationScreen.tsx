@@ -65,19 +65,19 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         setShowAll(false)
       }
 
-      setIsLoading(false)
       setOffers(payload.offers)
+      setIsLoading(false)
     },
     [notify]
   )
 
   useEffect(() => {
-    filterTemplateOfferByName('')
-  }, [])
+    filterTemplateOfferByName(formik.initialValues.searchFilter)
+  }, [formik.initialValues.searchFilter])
 
   const handleOnSubmit = () => {
     const templateOfferId = formik.values.templateOfferId
-    if (templateOfferId.length < 1) {
+    if (templateOfferId === '') {
       return notify.error(
         'Vous devez séléctionner une offre vitrine à dupliquer'
       )
@@ -96,7 +96,8 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         <Form>
           <div className={styles['search-container']}>
             <TextInput
-              label=""
+              label="Offre vitrine à dupliquer"
+              isLabelHidden
               name="searchFilter"
               placeholder="Rechercher une offre vitrine"
             />
@@ -106,7 +107,7 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
               }
               isLoading={isLoading}
               className={styles['search-button']}
-              aria-label="search-button"
+              aria-label="Button de recherche"
               Icon={SearchIco}
             >
               Rechercher
@@ -116,27 +117,27 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 ? 'Les dernières offres vitrines créées'
                 : `${pluralize(offers.length, 'offre')} vitrine`}
             </p>
-            {offers?.slice(0, 5).map(el => (
+            {offers?.slice(0, 5).map(offer => (
               <div
-                key={el.id}
+                key={offer.id}
                 className={cn(styles['offer-selection'], {
                   [styles['offer-selected']]:
-                    formik.values.templateOfferId === el.id,
+                    formik.values.templateOfferId === offer.id,
                 })}
               >
                 <RadioButton
                   name="templateOfferId"
-                  value={el.id}
+                  value={offer.id}
                   label={
                     <div className={styles['offer-selection-label']}>
                       <Thumb
-                        url={el.thumbUrl}
-                        alt={el.name}
+                        url={offer.thumbUrl}
+                        alt={offer.name}
                         className={styles['img-offer']}
                       />
                       <p className={styles['offer-title']}>
-                        <strong>{el.name}</strong>
-                        {el.venue.name}
+                        <strong>{offer.name}</strong>
+                        {offer.venue.name}
                       </p>
                     </div>
                   }
