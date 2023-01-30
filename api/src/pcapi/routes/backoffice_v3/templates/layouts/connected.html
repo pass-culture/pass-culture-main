@@ -45,10 +45,9 @@
                 <nav class="">
                     <div class="nav nav-pills flex-column">
                         {% call menu_section("Jeunes et grand public") %}
-                            {{ menu_section_item("Jeunes bénéficiaires ou à venir", "backoffice_v3_web.public_accounts.search_public_accounts") }}
-                            <!--                                {{ menu_section_item("Utilisateurs grand public", "backoffice_v3_web.home") }}-->
-                            <!--                                {{ menu_section_item("Feature flipping", "backoffice_v3_web.home") }}-->
-                            <!--                                {{ menu_section_item("Catégories et sous-catégories", "backoffice_v3_web.home") }}-->
+                            {% if has_permission("SEARCH_PUBLIC_ACCOUNT") %}
+                                {{ menu_section_item("Jeunes bénéficiaires ou à venir", "backoffice_v3_web.public_accounts.search_public_accounts") }}
+                            {% endif %}
                         {% endcall %}
                     </div>
 
@@ -56,36 +55,40 @@
 
                     <div class="nav nav-pills flex-column">
                         {% call menu_section("Acteurs culturels") %}
-                            {{ menu_section_item("Liste des acteurs culturels", "backoffice_v3_web.search_pro") }}
-                            {{ menu_section_item("Structures à valider", "backoffice_v3_web.validation.list_offerers_to_validate") }}
-                            {{ menu_section_item("Rattachements à valider", "backoffice_v3_web.validation.list_offerers_attachments_to_validate") }}
-                            {{ menu_section_item("Tags structure", "backoffice_v3_web.offerer_tag.list_offerer_tags") }}
-                            {{ menu_section_item("Rechercher des offres", "backoffice_v3_web.offer.list_offers") }}
-                            <!--                                {{ menu_section_item("Catégories et sous-catégories d'offres", "backoffice_v3_web.home") }}-->
+                            {% if has_permission("READ_PRO_ENTITY") %}
+                                {{ menu_section_item("Liste des acteurs culturels", "backoffice_v3_web.search_pro") }}
+                            {% endif %}
+                            {% if has_permission("VALIDATE_OFFERER") %}
+                                {{ menu_section_item("Structures à valider", "backoffice_v3_web.validation.list_offerers_to_validate") }}
+                                {{ menu_section_item("Rattachements à valider", "backoffice_v3_web.validation.list_offerers_attachments_to_validate") }}
+                            {% endif %}
+                            {% if has_permission("MANAGE_OFFERER_TAG") %}
+                                {{ menu_section_item("Tags structure", "backoffice_v3_web.offerer_tag.list_offerer_tags") }}
+                            {% endif %}
+                            {% if has_permission("READ_OFFERS") %}
+                                {{ menu_section_item("Rechercher des offres", "backoffice_v3_web.offer.list_offers") }}
+                            {% endif %}
                         {% endcall %}
                     </div>
-
                     <hr>
-
-                    <div class="nav nav-pills flex-column">
-                        {% call menu_section("Réservations") %}
-                            {{ menu_section_item("Réservations individuelles", "backoffice_v3_web.individual_bookings.list_individual_bookings") }}
-                            {{ menu_section_item("Réservations collectives", "backoffice_v3_web.collective_bookings.list_collective_bookings") }}
-                        {% endcall %}
-
-                    </div>
-
-                    <hr>
-
-                    <div class="nav nav-pills flex-column">
-                        {% call menu_section("Admin") %}
-                            {{ menu_section_item("Gestion des rôles", "backoffice_v3_web.get_roles") }}
-                        {% endcall %}
-                    </div>
-
-                    <hr>
+                    {% if has_permission("READ_BOOKINGS") %}
+                        <div class="nav nav-pills flex-column">
+                            {% call menu_section("Réservations") %}
+                                {{ menu_section_item("Réservations individuelles", "backoffice_v3_web.individual_bookings.list_individual_bookings") }}
+                                {{ menu_section_item("Réservations collectives", "backoffice_v3_web.collective_bookings.list_collective_bookings") }}
+                            {% endcall %}
+                        </div>
+                        <hr>
+                    {% endif %}
+                    {% if has_permission("MANAGE_PERMISSIONS") %}
+                        <div class="nav nav-pills flex-column">
+                            {% call menu_section("Admin") %}
+                                {{ menu_section_item("Gestion des rôles", "backoffice_v3_web.get_roles") }}
+                            {% endcall %}
+                        </div>
+                        <hr>
+                    {% endif %}
                 </nav>
-
             </div>
         </div>
         <div class="row">
