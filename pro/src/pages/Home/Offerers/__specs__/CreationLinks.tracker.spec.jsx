@@ -197,14 +197,7 @@ describe('trackers creationLinks', () => {
       Events.CLICKED_CREATE_VENUE,
       {
         from: '/',
-      }
-    )
-
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      2,
-      Events.CLICKED_ADD_FIRST_VENUE_IN_OFFERER,
-      {
-        from: '/',
+        is_first_venue: true,
       }
     )
   })

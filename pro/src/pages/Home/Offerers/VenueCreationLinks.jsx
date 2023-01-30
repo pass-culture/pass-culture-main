@@ -37,9 +37,9 @@ const VenueCreationLinks = ({
             isExternal: false,
           }}
           onClick={() => {
-            logEvent?.(Events.CLICKED_CREATE_VENUE, { from: location.pathname })
-            logEvent?.(Events.CLICKED_ADD_FIRST_VENUE_IN_OFFERER, {
+            logEvent?.(Events.CLICKED_CREATE_VENUE, {
               from: location.pathname,
+              is_first_venue: !hasPhysicalVenue && !hasVirtualOffers,
             })
           }}
         >

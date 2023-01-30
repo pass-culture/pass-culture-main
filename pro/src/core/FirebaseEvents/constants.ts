@@ -12,7 +12,6 @@ export enum Events {
   CLICKED_ADD_BANK_INFORMATIONS = 'hasClickedAddBankInformation',
   CLICKED_NO_PRICING_POINT_SELECTED_YET = 'hasClickedNoPricingPointSelectedYet',
   CLICKED_ADD_VENUE_IN_OFFERER = 'hasClickedAddVenueInOfferer',
-  CLICKED_ADD_FIRST_VENUE_IN_OFFERER = 'hasClickedAddFirstVenueInOfferer',
   CLICKED_SEE_LATER_FROM_SUCCESS_VENUE_CREATION_MODAL = 'hasClickedSeeLaterFromSuccessVenueCreationModal',
   CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL = 'hasClickedSeeLaterFromSuccessOfferCreationModal',
   CLICKED_SAVE_VENUE = 'hasClickedSaveVenue',
