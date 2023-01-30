@@ -98,7 +98,7 @@ const StockEventForm = ({
       <TextInput
         smallLabel
         name={`stocks[${stockIndex}]price`}
-        label="Prix"
+        label="Tarif"
         isLabelHidden={stockIndex !== 0}
         className={cn(styles['input-price'], styles['field-layout-align-self'])}
         classNameLabel={formRowStyles['field-layout-label']}

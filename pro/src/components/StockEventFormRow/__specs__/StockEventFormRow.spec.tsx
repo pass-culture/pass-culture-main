@@ -66,7 +66,7 @@ describe('StockFormRow', () => {
 
     expect(screen.getByLabelText('Date')).toBeInTheDocument()
     expect(screen.getByLabelText('Horaire')).toBeInTheDocument()
-    expect(screen.getByLabelText('Prix')).toBeInTheDocument()
+    expect(screen.getByLabelText('Tarif')).toBeInTheDocument()
     expect(
       screen.getByLabelText('Date limite de réservation')
     ).toBeInTheDocument()

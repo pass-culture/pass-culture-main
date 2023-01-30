@@ -29,6 +29,7 @@ describe('StockFormActions', () => {
   it('render actions button open', () => {
     renderStockFormActions({
       actions,
+      stockIndex: 0,
     })
 
     expect(
@@ -40,6 +41,7 @@ describe('StockFormActions', () => {
   it('render actions list', async () => {
     renderStockFormActions({
       actions,
+      stockIndex: 0,
     })
     await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
     expect(screen.getByText('Action label')).toBeInTheDocument()

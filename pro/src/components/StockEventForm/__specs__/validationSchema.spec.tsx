@@ -100,7 +100,7 @@ describe('StockEventForm:validationSchema', () => {
   it('should display price error %s', async () => {
     renderStockEventForm()
 
-    const inputPrice = screen.getByLabelText('Prix')
+    const inputPrice = screen.getByLabelText('Tarif')
     await userEvent.type(inputPrice, '301')
     await userEvent.tab()
     const errorPrice = screen.queryByTestId('error-stocks[0]price')
@@ -113,7 +113,7 @@ describe('StockEventForm:validationSchema', () => {
   const dataSetPrice = ['0', '100', '299']
   it.each(dataSetPrice)('should not display price error', async price => {
     renderStockEventForm()
-    const inputPrice = screen.getByLabelText('Prix')
+    const inputPrice = screen.getByLabelText('Tarif')
     await userEvent.type(inputPrice, price)
     await userEvent.tab()
     expect(screen.queryByTestId('error-stocks[0]price')).not.toBeInTheDocument()

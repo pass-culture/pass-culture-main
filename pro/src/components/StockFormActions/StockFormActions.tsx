@@ -4,7 +4,7 @@ import cn from 'classnames'
 import React from 'react'
 import '@reach/menu-button/styles.css'
 
-import { ReactComponent as OptionMenuIcon } from 'icons/ico-more-horiz.svg'
+import { ReactComponent as OtherIcon } from 'icons/ico-other.svg'
 
 import styles from './StockFormActions.module.scss'
 import { IStockFormRowAction } from './types'
@@ -12,10 +12,12 @@ import { IStockFormRowAction } from './types'
 export interface IStockFormActionsProps {
   disabled?: boolean
   actions: IStockFormRowAction[]
+  stockIndex?: number
 }
 const StockFormActions = ({
   disabled = false,
   actions,
+  stockIndex = 0,
 }: IStockFormActionsProps): JSX.Element => {
   return (
     <div className={styles['stock-form-actions']}>
@@ -27,9 +29,11 @@ const StockFormActions = ({
           type="button"
           data-testid="stock-form-actions-button-open"
         >
-          <OptionMenuIcon
+          <OtherIcon
             title="Opérations sur le stock"
-            className={styles['menu-button-icon']}
+            className={cn(styles['menu-button-icon'], {
+              [styles['menu-button-icon-first']]: stockIndex === 0,
+            })}
           />
         </MenuButton>
 
