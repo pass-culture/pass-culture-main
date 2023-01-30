@@ -136,6 +136,7 @@ export const createPatchOfferPayload = (
       changedValues = offerSerializer[key](changedValues, offer)
     }
   })
-
+  // We use this to patch phone number when user want to make it empty
+  changedValues.contactPhone = offer.phone || null
   return changedValues
 }
