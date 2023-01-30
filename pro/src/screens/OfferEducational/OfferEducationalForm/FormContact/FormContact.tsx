@@ -17,7 +17,7 @@ const FormContact = ({
     title="Contact"
   >
     <FormLayout.Row className={styles['phone-number-row']}>
-      <PhoneNumberInput name="phone" disabled={disableForm} />
+      <PhoneNumberInput name="phone" disabled={disableForm} isOptional />
     </FormLayout.Row>
     <FormLayout.Row>
       <TextInput

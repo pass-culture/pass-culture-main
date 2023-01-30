@@ -9,7 +9,7 @@ const isOneTrue = (values: Record<string, boolean>): boolean =>
 
 const isPhoneValid = (phone: string | undefined): boolean => {
   if (!phone) {
-    return false
+    return true
   }
 
   const phoneNumber = parsePhoneNumberFromString(phone, 'FR')
@@ -78,14 +78,11 @@ export const validationSchema = yup.object().shape({
       motor: yup.boolean(),
       none: yup.boolean(),
     }),
-  phone: yup
-    .string()
-    .required('Veuillez entrer un numéro de téléphone valide')
-    .test({
-      name: 'is-phone-valid',
-      message: 'Veuillez entrer un numéro de téléphone valide',
-      test: isPhoneValid,
-    }),
+  phone: yup.string().test({
+    name: 'is-phone-valid',
+    message: 'Veuillez entrer un numéro de téléphone valide',
+    test: isPhoneValid,
+  }),
   email: yup
     .string()
     .required('Veuillez renseigner une adresse e-mail')
