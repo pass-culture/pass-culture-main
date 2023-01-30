@@ -1050,7 +1050,8 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_place(
                 for s in offer.activeStocks
                 if cinema_providers_utils.get_showtime_id_from_uuid(s.idAtProviders, venue_provider.provider.localClass)
                 == show_id
-            )
+            ),
+            None,
         )
         if stock and remaining_places <= 0:
             update_stock_quantity_to_dn_booked_quantity(stock.id)

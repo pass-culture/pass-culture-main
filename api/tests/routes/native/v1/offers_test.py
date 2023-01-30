@@ -290,7 +290,7 @@ class OffersTest:
 
         response_return_value = mock.MagicMock(status_code=200, text="", headers={"Content-Type": "application/json"})
         response_return_value.json = mock.MagicMock(
-            return_value=fixtures.ShowtimesWithFilmIdEndpointResponse.PAGE_1_JSON_DATA
+            return_value=fixtures.ShowtimesWithFilmIdEndpointResponse.PAGE_1_JSON_DATA_3_SHOWTIMES
         )
         request_get.return_value = response_return_value
 
@@ -318,7 +318,8 @@ class OffersTest:
             offer=offer, idAtProviders=f"{offer_id_at_provider}#{second_show_id}", quantity=96
         )
 
-        client.get(f"/native/v1/offer/{offer.id}")
+        response = client.get(f"/native/v1/offer/{offer.id}")
+        assert response.status_code == 200
         assert first_show_stock.remainingQuantity == 96
         assert second_show_stock.remainingQuantity == 0
 
