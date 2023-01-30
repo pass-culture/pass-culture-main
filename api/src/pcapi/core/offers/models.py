@@ -39,6 +39,7 @@ from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
+    from pcapi.core.offerers.models import Venue
     from pcapi.core.users.models import User
 
 
@@ -165,6 +166,10 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     price: decimal.Decimal = sa.Column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
     )
+    priceCategoryId: int | None = sa.Column(
+        sa.BigInteger, sa.ForeignKey("price_category.id"), index=True, nullable=True
+    )
+    priceCategory: sa_orm.Mapped["PriceCategory | None"] = sa.orm.relationship("PriceCategory", back_populates="stocks")
     quantity = sa.Column(sa.Integer, nullable=True)
     rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
 
@@ -388,6 +393,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     name: str = sa.Column(sa.String(140), nullable=False)
     # FIXME (cgaunet, 2022-08-02): this field seems to be unused
     mediaUrls: list[str] = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
+    priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa.orm.relationship("PriceCategory", back_populates="offer")
     product: Product = sa.orm.relationship(Product, backref="offers")
     productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
     rankingWeight = sa.Column(sa.Integer, nullable=True)
@@ -726,3 +732,39 @@ class BookMacroSection(PcObject, Base, Model):
 
     macroSection: str = sa.Column(sa.Text, nullable=False)
     section: str = sa.Column(sa.Text, nullable=False, unique=True)
+
+
+class PriceCategoryLabel(PcObject, Base, Model):
+    label: str = sa.Column(sa.Text(), nullable=False)
+    priceCategory: sa_orm.Mapped["PriceCategory"] = sa.orm.relationship(
+        "PriceCategory", back_populates="priceCategoryLabel"
+    )
+    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False)
+    venue: sa_orm.Mapped["Venue"] = sa.orm.relationship("Venue", back_populates="priceCategoriesLabel")
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "label",
+            "venueId",
+            name="unique_label_venue",
+        ),
+    )
+
+
+class PriceCategory(PcObject, Base, Model):
+    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
+    offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", back_populates="priceCategories")
+    price: decimal.Decimal = sa.Column(
+        sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
+    )
+    priceCategoryLabelId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("price_category_label.id"), index=True, nullable=False
+    )
+    priceCategoryLabel: sa_orm.Mapped["PriceCategoryLabel"] = sa.orm.relationship(
+        "PriceCategoryLabel", back_populates="priceCategory"
+    )
+    stocks: sa_orm.Mapped[list["Stock"]] = relationship("Stock", back_populates="priceCategory")
+
+    @property
+    def label(self) -> str:
+        return self.priceCategoryLabel.label

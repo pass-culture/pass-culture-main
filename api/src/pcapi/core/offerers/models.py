@@ -66,6 +66,7 @@ from . import constants
 
 if typing.TYPE_CHECKING:
     import pcapi.core.criteria.models as criteria_models
+    import pcapi.core.offers.models as offers_models
     import pcapi.core.providers.models as providers_models
     import pcapi.core.users.models as users_models
 
@@ -288,6 +289,10 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     collectiveEmail = Column(Text, nullable=True)
     bankInformation: finance_models.BankInformation | None = relationship(
         "BankInformation", back_populates="venue", uselist=False
+    )
+
+    priceCategoriesLabel: sa_orm.Mapped[list["offers_models.PriceCategoryLabel"]] = relationship(
+        "PriceCategoryLabel", back_populates="venue"
     )
 
     @property
