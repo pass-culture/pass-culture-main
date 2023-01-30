@@ -22,7 +22,7 @@
   &-small-label &-label {
     @include fonts.caption;
 
-    margin-bottom: rem.torem(16px);
+    margin-bottom: forms.$label-small-space-before-input;
   }
 
   &-inline {
