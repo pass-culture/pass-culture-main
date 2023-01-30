@@ -48,9 +48,7 @@ def get(user_id: int) -> utils.BackofficeResponse:
     )
     dst = url_for(".update_pro_user", user_id=user.id)
 
-    can_edit_user = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
-
-    return render_template("pro_user/get.html", user=user, form=form, dst=dst, can_edit_user=can_edit_user)
+    return render_template("pro_user/get.html", user=user, form=form, dst=dst)
 
 
 @pro_user_blueprint.route("/details", methods=["GET"])

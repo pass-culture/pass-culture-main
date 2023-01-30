@@ -21,14 +21,15 @@
                 <div class="col-4">
                     <h6 class="fs-6 fw-bold">Email </h6>
                     <p>{{ user.email | escape }} </p>
+                    {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
+                        <form action="{{ url_for('.resend_validation_email', user_id=user.id) }}" method="POST">
+                            {{ resend_email_validation_form.csrf_token }}
 
-                    <form action="{{ url_for('.resend_validation_email', user_id=user.id) }}" method="POST">
-                        {{ resend_email_validation_form.csrf_token }}
-
-                        <button class="btn btn-outline-primary lead fw-bold mt-2">
-                            Renvoyer l'email de validation
-                        </button>
-                    </form>
+                            <button class="btn btn-outline-primary lead fw-bold mt-2">
+                                Renvoyer l'email de validation
+                            </button>
+                        </form>
+                    {% endif %}
                 </div>
 
             </div>
@@ -38,14 +39,16 @@
                 <div class="col-4">
                     <h6 class="fs-6 fw-bold">Numéro de téléphone </h6>
                     <p>{{ user.phoneNumber | format_phone_number | escape }} </p>
+                    {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
 
-                    <form action="{{ url_for('.send_validation_code', user_id=user.id) }}" method="POST">
-                        {{ send_validation_code_form.csrf_token }}
+                        <form action="{{ url_for('.send_validation_code', user_id=user.id) }}" method="POST">
+                            {{ send_validation_code_form.csrf_token }}
 
-                        <button class="btn btn-outline-primary lead fw-bold mt-2">
-                            Envoyer un code de validation
-                        </button>
-                    </form>
+                            <button class="btn btn-outline-primary lead fw-bold mt-2">
+                                Envoyer un code de validation
+                            </button>
+                        </form>
+                    {% endif %}
                 </div>
 
                 <div class="col-4">
@@ -95,10 +98,12 @@
                 </div>
 
                 <div class="col-4">
-                    <a href="{{ url_for('.edit_public_account', user_id=user.id) }}"
-                       class="btn btn-outline-primary lead fw-bold mt-2">
-                        Modifier les informations
-                    </a>
+                    {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
+                        <a href="{{ url_for('.edit_public_account', user_id=user.id) }}"
+                           class="btn btn-outline-primary lead fw-bold mt-2">
+                            Modifier les informations
+                        </a>
+                    {% endif %}
                 </div>
 
             </div>

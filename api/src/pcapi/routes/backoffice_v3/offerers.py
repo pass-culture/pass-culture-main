@@ -67,8 +67,6 @@ def render_offerer_details(
 
     dst = url_for(".update_offerer", offerer_id=offerer.id)
 
-    can_edit_user = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
-
     return render_template(
         "offerer/get.html",
         offerer=offerer,
@@ -77,7 +75,6 @@ def render_offerer_details(
         is_collective_eligible=basic_info.is_collective_eligible,
         form=form,
         dst=dst,
-        can_edit_user=can_edit_user,
     )
 
 
