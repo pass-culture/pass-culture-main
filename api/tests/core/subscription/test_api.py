@@ -22,6 +22,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
+from pcapi.core.users import young_status
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import PhoneValidationStatusType
 
@@ -2312,3 +2313,18 @@ class GetStatusFromFraudCheckTest:
             )
             == subscription_models.SubscriptionItemStatus.PENDING
         )
+
+    def should_not_be_eligible_when_ko_amin_review(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.get_date_of_birth_to_be_eligible(users_models.EligibilityType.AGE18),
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.BeneficiaryFraudReviewFactory(
+            user=user,
+            review=fraud_models.FraudReviewStatus.KO,
+        )
+
+        user_subscription_state = subscription_api.get_user_subscription_state(user)
+
+        assert user_subscription_state.fraud_status == subscription_models.SubscriptionItemStatus.KO
+        assert user_subscription_state.young_status == young_status.NonEligible()
