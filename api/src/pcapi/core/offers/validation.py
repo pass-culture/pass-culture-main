@@ -485,3 +485,10 @@ def check_offer_is_from_current_cinema_provider(offer: Offer) -> bool:
 def check_is_duo_compliance(is_duo: bool | None, subcategory: subcategories.Subcategory) -> None:
     if is_duo and not subcategory.can_be_duo:
         raise exceptions.OfferCannotBeDuo()
+
+
+def check_price_categories_deletable(offer: Offer) -> None:
+    if offer.validation != OfferValidationStatus.DRAFT:
+        raise ApiErrors(
+            {"global": "Les catégories de prix ne sont pas supprimables sur les offres qui ne sont pas en brouillon"}
+        )

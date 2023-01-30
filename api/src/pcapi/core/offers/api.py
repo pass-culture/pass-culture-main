@@ -1142,3 +1142,12 @@ def edit_price_category(
     repository.add_to_session(price_category)
 
     return price_category
+
+
+def delete_price_category(offer: models.Offer, price_category: models.PriceCategory) -> None:
+    """
+    Deletes a price category and its related stocks, by cascade, if the offer is still in draft.
+    The stock is truly deleted instead of being soft deleted.
+    """
+    validation.check_price_categories_deletable(offer)
+    db.session.delete(price_category)
