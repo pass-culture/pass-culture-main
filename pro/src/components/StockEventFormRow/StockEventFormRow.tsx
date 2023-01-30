@@ -39,7 +39,11 @@ const StockEventFormRow = ({
             [styles['stock-first-action']]: stockIndex == 0,
           })}
         >
-          <StockFormActions actions={actions} disabled={actionDisabled} />
+          <StockFormActions
+            actions={actions}
+            disabled={actionDisabled}
+            stockIndex={stockIndex}
+          />
         </div>
       )}
     </div>

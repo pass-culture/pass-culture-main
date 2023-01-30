@@ -41,7 +41,7 @@ describe('StockEventForm', () => {
 
     expect(screen.getByLabelText('Date', { exact: true })).toBeInTheDocument()
     expect(screen.getByLabelText('Horaire')).toBeInTheDocument()
-    expect(screen.getByLabelText('Prix')).toBeInTheDocument()
+    expect(screen.getByLabelText('Tarif')).toBeInTheDocument()
     expect(
       screen.getByLabelText('Date limite de réservation')
     ).toBeInTheDocument()
@@ -49,7 +49,7 @@ describe('StockEventForm', () => {
 
     expect(screen.getByLabelText('Date', { exact: true })).not.toBeDisabled()
     expect(screen.getByLabelText('Horaire')).not.toBeDisabled()
-    expect(screen.getByLabelText('Prix')).not.toBeDisabled()
+    expect(screen.getByLabelText('Tarif')).not.toBeDisabled()
     expect(
       screen.getByLabelText('Date limite de réservation')
     ).not.toBeDisabled()
@@ -63,7 +63,7 @@ describe('StockEventForm', () => {
     })
     expect(screen.getByLabelText('Date', { exact: true })).toBeDisabled()
     expect(screen.getByLabelText('Horaire')).toBeDisabled()
-    expect(screen.getByLabelText('Prix')).toBeDisabled()
+    expect(screen.getByLabelText('Tarif')).toBeDisabled()
     expect(screen.getByLabelText('Date limite de réservation')).toBeDisabled()
     expect(screen.getByLabelText('Quantité')).toBeDisabled()
   })
@@ -74,7 +74,7 @@ describe('StockEventForm', () => {
     })
     expect(screen.getByLabelText('Date', { exact: true })).not.toBeDisabled()
     expect(screen.getByLabelText('Horaire')).not.toBeDisabled()
-    expect(screen.getByLabelText('Prix')).not.toBeDisabled()
+    expect(screen.getByLabelText('Tarif')).not.toBeDisabled()
     expect(
       screen.getByLabelText('Date limite de réservation')
     ).not.toBeDisabled()
@@ -95,7 +95,7 @@ describe('StockEventForm', () => {
 
     expect(screen.getByLabelText('Date', { exact: true })).toBeDisabled()
     expect(screen.getByLabelText('Horaire')).toBeDisabled()
-    expect(screen.getByLabelText('Prix')).toBeDisabled()
+    expect(screen.getByLabelText('Tarif')).toBeDisabled()
     expect(screen.getByLabelText('Date limite de réservation')).toBeDisabled()
     expect(screen.getByLabelText('Quantité')).toBeDisabled()
   })
@@ -135,7 +135,7 @@ describe('StockEventForm', () => {
     async ({ value, expectedNumber }) => {
       renderStockEventForm(props)
 
-      const priceInput = screen.getByLabelText('Prix', {
+      const priceInput = screen.getByLabelText('Tarif', {
         exact: false,
       })
       await userEvent.type(priceInput, value)

@@ -151,7 +151,7 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Tarif'), '20')
     await userEvent.click(
       screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
     )
@@ -169,7 +169,7 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Tarif'), '20')
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )
@@ -201,7 +201,7 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Tarif'), '20')
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape précédente' })
     )
@@ -217,7 +217,7 @@ describe('screens:StocksEvent', () => {
     })
 
     renderStockEventScreen(props, contextValue)
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Tarif'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -232,7 +232,7 @@ describe('screens:StocksEvent', () => {
     })
 
     renderStockEventScreen(props, contextValue)
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Tarif'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -253,7 +253,7 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Tarif'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -284,7 +284,7 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Tarif'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -319,7 +319,7 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Tarif'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -354,7 +354,7 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Tarif'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -395,7 +395,7 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Tarif'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
 
