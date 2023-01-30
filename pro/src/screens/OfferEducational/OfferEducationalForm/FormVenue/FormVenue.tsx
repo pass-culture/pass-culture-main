@@ -1,12 +1,18 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import { GetEducationalOffererResponseModel } from 'apiClient/v1'
+import {
+  CollectiveBookingStatus,
+  GetEducationalOffererResponseModel,
+} from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import {
   applyVenueDefaultsToFormValues,
+  CollectiveOffer,
+  CollectiveOfferTemplate,
   EducationalCategories,
   IOfferEducationalFormValues,
+  isCollectiveOffer,
   Mode,
 } from 'core/OfferEducational'
 import { Banner, Select } from 'ui-kit'
@@ -19,6 +25,7 @@ interface IFormVenueProps {
   isEligible: boolean | undefined
   mode: Mode
   isOfferCreated: boolean
+  offer?: CollectiveOffer | CollectiveOfferTemplate
   categories: EducationalCategories
 }
 
@@ -28,9 +35,24 @@ const FormVenue = ({
   isEligible,
   mode,
   isOfferCreated,
+  offer,
   categories,
 }: IFormVenueProps): JSX.Element => {
-  const disableForm = mode !== Mode.CREATION || isOfferCreated
+  const lastBookingStatus = isCollectiveOffer(offer)
+    ? offer.lastBookingStatus
+    : null
+  const disableOfferSelection = mode !== Mode.CREATION || isOfferCreated
+  const disabledBookingStatus = [
+    CollectiveBookingStatus.USED,
+    CollectiveBookingStatus.REIMBURSED,
+  ]
+  const disableVenueSelection =
+    mode === Mode.READ_ONLY ||
+    (lastBookingStatus &&
+      disableOfferSelection &&
+      disabledBookingStatus.includes(lastBookingStatus))
+      ? true
+      : false
 
   let offerersOptions = userOfferers.map(item => ({
     value: item['id'] as string,
@@ -42,7 +64,6 @@ const FormVenue = ({
       ...offerersOptions,
     ]
   }
-
   const { values, setFieldValue, setValues } =
     useFormikContext<IOfferEducationalFormValues>()
 
@@ -54,7 +75,7 @@ const FormVenue = ({
       <FormLayout.Row>
         <Select
           onChange={() => setFieldValue('venueId', '')}
-          disabled={offerersOptions.length === 1 || disableForm}
+          disabled={offerersOptions.length === 1 || disableOfferSelection}
           label={OFFERER_LABEL}
           name="offererId"
           options={offerersOptions}
@@ -88,7 +109,9 @@ const FormVenue = ({
       {isEligible === true && venuesOptions.length > 0 && (
         <FormLayout.Row>
           <Select
-            disabled={venuesOptions.length === 1 || !isEligible || disableForm}
+            disabled={
+              venuesOptions.length === 1 || !isEligible || disableVenueSelection
+            }
             label={VENUE_LABEL}
             name="venueId"
             options={venuesOptions}
