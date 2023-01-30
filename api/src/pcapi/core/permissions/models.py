@@ -20,16 +20,28 @@ class Permissions(enum.Enum):
     """
 
     MANAGE_PERMISSIONS = "gérer les droits"
+
     SEARCH_PUBLIC_ACCOUNT = "rechercher un compte bénéficiaire/grand public"
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
     REVIEW_PUBLIC_ACCOUNT = "faire une revue manuelle d'un compte bénéficiaire/grand public"
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"
+    MANUAL_REVIEW_PUBLIC_ACCOUNT = "permet la revue manuelle sur le profil jeune"
+
     SEARCH_PRO_ACCOUNT = "rechercher un acteur culturel"
     READ_PRO_ENTITY = "visualiser une structure, un lieu ou un compte pro"
     MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"
-    VALIDATE_OFFERER = "gérer la validation des structures et des rattachements"
+
     MANAGE_BOOKINGS = "gérer les réservations"
+    SEARCH_BOOKINGS = "rechercher les réservation"
+    READ_BOOKINGS = "visualiser les réservation"
+
+    SEARCH_OFFERS = "rechercher les offres"
+    READ_OFFERS = "visualiser les offres"
     MANAGE_OFFERS = "gérer les offres"
+
+    VALIDATE_OFFERER = "gérer la validation des structures et des rattachements"
+
+    MANAGE_OFFERER_TAG = "gérer les tags structure"
     DELETE_OFFERER_TAG = "supprimer un tag structure"
 
     @classmethod
@@ -108,6 +120,7 @@ class Roles(enum.Enum):
     BIZDEV = "bizdev"
     PROGRAMMATION = "programmation"
     PRODUCT_MANAGEMENT = "product-management"
+    CHARGE_DEVELOPPEMENT = "charge-developpement"
     HOMOLOGATION = "homologation"
 
 
