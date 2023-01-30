@@ -3,6 +3,7 @@ from typing import cast
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.routes.public import blueprints
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
+from pcapi.routes.public.collective.serialization import venues as venues_serialization
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
@@ -18,7 +19,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
         **(
             {
                 "HTTP_200": (
-                    offers_serialization.CollectiveOffersListVenuesResponseModel,
+                    venues_serialization.CollectiveOffersListVenuesResponseModel,
                     "La liste des lieux ou vous pouvez créer une offre.",
                 ),
                 "HTTP_401": (
@@ -30,7 +31,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
     ),
 )
 @api_key_required
-def list_venues() -> offers_serialization.CollectiveOffersListVenuesResponseModel:
+def list_venues() -> venues_serialization.CollectiveOffersListVenuesResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste des lieux associés à la structure authentifiée par le jeton d'API.
 
@@ -39,6 +40,6 @@ def list_venues() -> offers_serialization.CollectiveOffersListVenuesResponseMode
     offerer_id = current_api_key.offererId  # type: ignore [attr-defined]
     venues = offerers_repository.get_all_venues_by_offerer_id(offerer_id)
 
-    return offers_serialization.CollectiveOffersListVenuesResponseModel(
-        __root__=[offers_serialization.CollectiveOffersVenueResponseModel.from_orm(venue) for venue in venues]
+    return venues_serialization.CollectiveOffersListVenuesResponseModel(
+        __root__=[venues_serialization.CollectiveOffersVenueResponseModel.from_orm(venue) for venue in venues]
     )
