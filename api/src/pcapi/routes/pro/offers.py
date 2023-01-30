@@ -389,3 +389,14 @@ def post_price_categories(
             )
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+
+
+@private_api.route("/offers/<offer_id>/price_categories/<price_category_id>", methods=["DELETE"])
+@login_required
+@spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
+def delete_price_category(offer_id: int, price_category_id: int) -> None:
+    offer = models.Offer.query.get_or_404(offer_id)
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    price_category = models.PriceCategory.query.get_or_404(price_category_id)
+    offers_api.delete_price_category(offer, price_category)

@@ -1448,6 +1448,31 @@ export class DefaultService {
   }
 
   /**
+   * delete_price_category <DELETE>
+   * @param offerId
+   * @param priceCategoryId
+   * @returns void
+   * @throws ApiError
+   */
+  public deletePriceCategory(
+    offerId: string,
+    priceCategoryId: string,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'DELETE',
+      url: '/offers/{offer_id}/price_categories/{price_category_id}',
+      path: {
+        'offer_id': offerId,
+        'price_category_id': priceCategoryId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * get_stocks <GET>
    * @param offerId
    * @returns StocksResponseModel OK
