@@ -6,7 +6,7 @@ from pcapi.workers.decorators import job
 
 @job(worker.low_queue)
 def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
-    query = offers_repository.get_offers_by_filters(
+    individual_offer_query = offers_repository.get_offers_by_filters(
         user_id=filters["user_id"],
         user_is_admin=filters["is_user_admin"],
         offerer_id=filters["offerer_id"],
@@ -18,6 +18,7 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
         period_beginning_date=filters["period_beginning_date"],
         period_ending_date=filters["period_ending_date"],
     )
+    individual_offer_query = offers_repository.exclude_offers_from_inactive_venue_provider(individual_offer_query)
     collective_offer_query = offers_repository.get_collective_offers_by_filters(
         user_id=filters["user_id"],
         user_is_admin=filters["is_user_admin"],
@@ -40,7 +41,7 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
         period_beginning_date=filters["period_beginning_date"],
         period_ending_date=filters["period_ending_date"],
     )
-    offers_api.batch_update_offers(query, {"isActive": is_active})
+    offers_api.batch_update_offers(individual_offer_query, {"isActive": is_active})
     offers_api.batch_update_collective_offers(collective_offer_query, {"isActive": is_active})
     if collective_offer_template_query is not None:
         offers_api.batch_update_collective_offers_template(collective_offer_template_query, {"isActive": is_active})
