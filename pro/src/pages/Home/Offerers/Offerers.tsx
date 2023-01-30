@@ -249,9 +249,8 @@ const Offerers = ({ receivedOffererNames }: IOfferersProps) => {
         </>
       )}
       {
-        /* istanbul ignore next: DEBT, TO FIX */ isOffererSoftDeleted && (
-          <SoftDeletedOffererWarning />
-        )
+        /* istanbul ignore next: DEBT, TO FIX */ isUserOffererValidated &&
+          isOffererSoftDeleted && <SoftDeletedOffererWarning />
       }
       {!userHasOfferers && <OffererCreationLinks />}
       {creationLinkCondition && (
