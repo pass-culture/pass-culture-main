@@ -320,6 +320,7 @@ const OfferType = (): JSX.Element => {
 
           {isDuplicateOfferSelectionActive &&
             isEligible &&
+            !isLoadingEligibility &&
             collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE &&
             hasCollectiveTemplateOffer && (
               <FormLayout.Section
