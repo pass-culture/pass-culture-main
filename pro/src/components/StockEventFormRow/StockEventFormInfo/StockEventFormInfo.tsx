@@ -32,6 +32,7 @@ const StockEventFormInfo = ({
         className={styles['field-info-remaining-stocks']}
         classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
+        hideHiddenFooter
       />
       <TextInput
         name={`stocks[${stockIndex}]bookingsQuantity`}
@@ -43,6 +44,7 @@ const StockEventFormInfo = ({
         className={styles['field-info-bookings']}
         classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
+        hideHiddenFooter
       />
     </div>
   )
