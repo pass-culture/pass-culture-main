@@ -6,6 +6,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.providers import factories as providers_factories
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -103,3 +104,31 @@ class Returns204Test:
         assert approved_offer.isActive
         assert not pending_offer.isActive
         assert not rejected_offer.isActive
+
+    def test_only_offers_from_active_venue_provider_are_activated(self, app):
+        venue = offerers_factories.VenueFactory()
+        active_venue_provider = providers_factories.VenueProviderFactory(isActive=True, venue=venue)
+        inactive_venue_provider = providers_factories.VenueProviderFactory(isActive=False, venue=venue)
+        offer_from_active_venue_provider = offers_factories.OfferFactory(
+            lastProvider=active_venue_provider.provider, venue=venue, isActive=False
+        )
+        offer_not_from_provider = offers_factories.OfferFactory(isActive=False, venue=venue)
+        offer_from_inactive_venue_provider = offers_factories.OfferFactory(
+            lastProvider=inactive_venue_provider.provider, venue=venue, isActive=False
+        )
+        offer_from_deleted_venue_provider = offers_factories.OfferFactory(
+            lastProvider=providers_factories.ProviderFactory(), isActive=False, venue=venue
+        )
+
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=venue.managingOfferer)
+
+        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
+        data = {"isActive": True, "venueId": humanize(venue.id)}
+        response = client.patch("/offers/all-active-status", json=data)
+
+        assert response.status_code == 202
+
+        assert offer_from_active_venue_provider.isActive
+        assert offer_not_from_provider.isActive
+        assert not offer_from_inactive_venue_provider.isActive
+        assert not offer_from_deleted_venue_provider.isActive

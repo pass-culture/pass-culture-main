@@ -322,11 +322,8 @@ def _update_collective_offer(
 
 
 def batch_update_offers(query: BaseQuery, update_fields: dict) -> None:
-    raw_results = (
-        query.filter(models.Offer.validation == models.OfferValidationStatus.APPROVED)
-        .with_entities(models.Offer.id, models.Offer.venueId)
-        .all()
-    )
+    query = query.filter(models.Offer.validation == models.OfferValidationStatus.APPROVED)
+    raw_results = query.with_entities(models.Offer.id, models.Offer.venueId).all()
     offer_ids, venue_ids = [], []
     if raw_results:
         offer_ids, venue_ids = zip(*raw_results)
