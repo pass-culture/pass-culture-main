@@ -327,7 +327,7 @@ describe('screens:StocksEvent:Edition', () => {
 
     // create new stock
     await userEvent.click(await screen.findByText('Ajouter une date'))
-    await userEvent.type(screen.getAllByLabelText('Prix')[0], '20')
+    await userEvent.type(screen.getAllByLabelText('Tarif')[0], '20')
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
     )
@@ -335,7 +335,7 @@ describe('screens:StocksEvent:Edition', () => {
     await userEvent.click(screen.getAllByText('Supprimer le stock')[0])
 
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
-    expect(screen.getAllByLabelText('Prix').length).toBe(1)
+    expect(screen.getAllByLabelText('Tarif').length).toBe(1)
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
@@ -375,7 +375,7 @@ describe('screens:StocksEvent:Edition', () => {
 
     // create new stock
     await userEvent.click(await screen.findByText('Ajouter une date'))
-    await userEvent.type(screen.getAllByLabelText('Prix')[0], '20')
+    await userEvent.type(screen.getAllByLabelText('Tarif')[0], '20')
 
     // delete existing stock
     jest.spyOn(api, 'getOffer').mockResolvedValue(previousApiOffer)
@@ -391,7 +391,7 @@ describe('screens:StocksEvent:Edition', () => {
     expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID_2')
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
 
-    const allPriceInputs = screen.getAllByLabelText('Prix')
+    const allPriceInputs = screen.getAllByLabelText('Tarif')
     expect(allPriceInputs).toHaveLength(2)
     expect(allPriceInputs[1]).toHaveValue(10.01)
     expect(allPriceInputs[0]).toHaveValue(20)
@@ -422,7 +422,7 @@ describe('screens:StocksEvent:Edition', () => {
     expect(deleteButton).toHaveAttribute('aria-disabled', 'true')
     await deleteButton.click()
     expect(api.deleteStock).not.toHaveBeenCalled()
-    expect(screen.getByLabelText('Prix')).toHaveValue(10.01)
+    expect(screen.getByLabelText('Tarif')).toHaveValue(10.01)
   })
 
   it('should allow user to delete stock from a synchronized offer', async () => {
@@ -536,7 +536,7 @@ describe('screens:StocksEvent:Edition', () => {
     renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
 
-    await userEvent.type(await screen.getByLabelText('Prix'), '20')
+    await userEvent.type(await screen.getByLabelText('Tarif'), '20')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
@@ -551,8 +551,10 @@ describe('screens:StocksEvent:Edition', () => {
     renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
     // FireEvent.change instead of userEvent.type because userEvent change value but the test doesn"t work (it probably doesn't set touched at true for price field, only with inputs type number)
-    fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '20' } })
-    await expect(screen.getByLabelText('Prix')).toHaveValue(20)
+    fireEvent.change(screen.getByLabelText('Tarif'), {
+      target: { value: '20' },
+    })
+    await expect(screen.getByLabelText('Tarif')).toHaveValue(20)
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )

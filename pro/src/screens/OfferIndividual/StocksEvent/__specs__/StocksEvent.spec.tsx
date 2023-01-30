@@ -145,7 +145,7 @@ describe('screens:StocksEvent', () => {
       )
     ).toBeInTheDocument()
 
-    expect(screen.getByLabelText('Prix')).toBeInTheDocument()
+    expect(screen.getByLabelText('Tarif')).toBeInTheDocument()
     expect(screen.getByLabelText('Date', { exact: true })).toBeInTheDocument()
     expect(screen.getByLabelText('Horaire')).toBeInTheDocument()
     expect(
@@ -164,7 +164,7 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Prix'), '21')
+    await userEvent.type(screen.getByLabelText('Tarif'), '21')
     await userEvent.click(
       screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
     )
@@ -216,7 +216,7 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(await screen.getByText('25'))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Tarif'), '20')
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )
@@ -262,7 +262,7 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Tarif'), '20')
     await userEvent.click(screen.getByLabelText('Date limite de réservation'))
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(
