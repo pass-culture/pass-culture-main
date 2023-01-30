@@ -202,3 +202,17 @@ class YoungStatusTest:
         status = young_status.Suspended()
         with pytest.raises(attrs.exceptions.FrozenInstanceError):
             status.status_type = young_status.YoungStatusType.BENEFICIARY
+
+    @pytest.mark.parametrize(
+        "review_status",
+        [
+            fraud_models.FraudReviewStatus.OK,
+            fraud_models.FraudReviewStatus.KO,
+            fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS,
+        ],
+    )
+    def should_be_beneficiary_when_beneficiary_with_any_admin_review(self, review_status):
+        user = users_factories.BeneficiaryGrant18Factory()
+        fraud_factories.BeneficiaryFraudReviewFactory(user=user, review=review_status)
+
+        assert young_status.young_status(user) == young_status.Beneficiary()
