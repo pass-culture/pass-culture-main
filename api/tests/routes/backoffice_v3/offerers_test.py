@@ -539,7 +539,7 @@ class GetOffererHistoryDataTest:
 
 class CommentOffererTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, unauthorized_helpers.MissingCSRFHelper):
-        endpoint = "backoffice_v3_web.offerer_comment.comment_offerer"
+        endpoint = "backoffice_v3_web.offerer.comment_offerer"
         endpoint_kwargs = {"offerer_id": 1}
         needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -567,14 +567,14 @@ class CommentOffererTest:
         offerer_detail_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id)
         authenticated_client.get(offerer_detail_url)
 
-        url = url_for("backoffice_v3_web.offerer_comment.comment_offerer", offerer_id=offerer.id)
+        url = url_for("backoffice_v3_web.offerer.comment_offerer", offerer_id=offerer.id)
         form = {"comment": comment, "csrf_token": g.get("csrf_token", "")}
 
         return authenticated_client.post(url, form=form)
 
 
 class ListOfferersToValidateUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-    endpoint = "backoffice_v3_web.validate_offerer.list_offerers_to_validate"
+    endpoint = "backoffice_v3_web.validation.list_offerers_to_validate"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
 
@@ -597,9 +597,7 @@ class ListOfferersToValidateTest:
 
             # when
             with assert_no_duplicated_queries():
-                response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate")
-                )
+                response = authenticated_client.get(url_for("backoffice_v3_web.validation.list_offerers_to_validate"))
 
             # then
             assert response.status_code == 200
@@ -654,9 +652,7 @@ class ListOfferersToValidateTest:
 
             # when
             with assert_no_duplicated_queries():
-                response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate")
-                )
+                response = authenticated_client.get(url_for("backoffice_v3_web.validation.list_offerers_to_validate"))
 
             # then
             assert response.status_code == 200
@@ -682,9 +678,7 @@ class ListOfferersToValidateTest:
 
             # when
             with assert_no_duplicated_queries():
-                response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate")
-                )
+                response = authenticated_client.get(url_for("backoffice_v3_web.validation.list_offerers_to_validate"))
 
             # then
             assert response.status_code == 200
@@ -723,7 +717,7 @@ class ListOfferersToValidateTest:
 
             # when
             response = authenticated_client.get(
-                url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", **pagination_config)
+                url_for("backoffice_v3_web.validation.list_offerers_to_validate", **pagination_config)
             )
 
             # then
@@ -748,7 +742,7 @@ class ListOfferersToValidateTest:
             # when
             with assert_no_duplicated_queries():
                 response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", regions=region_filter)
+                    url_for("backoffice_v3_web.validation.list_offerers_to_validate", regions=region_filter)
                 )
 
             # then
@@ -779,7 +773,7 @@ class ListOfferersToValidateTest:
             # when
             with assert_no_duplicated_queries():
                 response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", tags=tags_ids)
+                    url_for("backoffice_v3_web.validation.list_offerers_to_validate", tags=tags_ids)
                 )
 
             # then
@@ -810,7 +804,7 @@ class ListOfferersToValidateTest:
             with assert_no_duplicated_queries():
                 response = authenticated_client.get(
                     url_for(
-                        "backoffice_v3_web.validate_offerer.list_offerers_to_validate",
+                        "backoffice_v3_web.validation.list_offerers_to_validate",
                         from_date="2022-11-05",
                         to_date="2022-11-08",
                     )
@@ -827,7 +821,7 @@ class ListOfferersToValidateTest:
             # when
             response = authenticated_client.get(
                 url_for(
-                    "backoffice_v3_web.validate_offerer.list_offerers_to_validate",
+                    "backoffice_v3_web.validation.list_offerers_to_validate",
                     from_date="05/11/2022",
                 )
             )
@@ -841,7 +835,7 @@ class ListOfferersToValidateTest:
             # when
             with assert_no_duplicated_queries():
                 response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q=search)
+                    url_for("backoffice_v3_web.validation.list_offerers_to_validate", q=search)
                 )
 
             # then
@@ -853,7 +847,7 @@ class ListOfferersToValidateTest:
             # when
             with assert_no_duplicated_queries():
                 response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="35400")
+                    url_for("backoffice_v3_web.validation.list_offerers_to_validate", q="35400")
                 )
 
             # then
@@ -865,7 +859,7 @@ class ListOfferersToValidateTest:
             # when
             with assert_no_duplicated_queries():
                 response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="35")
+                    url_for("backoffice_v3_web.validation.list_offerers_to_validate", q="35")
                 )
 
             # then
@@ -881,7 +875,7 @@ class ListOfferersToValidateTest:
             # when
             with assert_no_duplicated_queries():
                 response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="quimper")
+                    url_for("backoffice_v3_web.validation.list_offerers_to_validate", q="quimper")
                 )
 
             # then
@@ -894,7 +888,7 @@ class ListOfferersToValidateTest:
         def test_list_search_by_invalid_number_of_digits(self, authenticated_client, search):
             # when
             response = authenticated_client.get(
-                url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q=search)
+                url_for("backoffice_v3_web.validation.list_offerers_to_validate", q=search)
             )
 
             # then
@@ -908,7 +902,7 @@ class ListOfferersToValidateTest:
             # when
             with assert_no_duplicated_queries():
                 response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="sadi@example.com")
+                    url_for("backoffice_v3_web.validation.list_offerers_to_validate", q="sadi@example.com")
                 )
 
             # then
@@ -920,7 +914,7 @@ class ListOfferersToValidateTest:
             # when
             with assert_no_duplicated_queries():
                 response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q="Felix faure")
+                    url_for("backoffice_v3_web.validation.list_offerers_to_validate", q="Felix faure")
                 )
 
             # then
@@ -950,7 +944,7 @@ class ListOfferersToValidateTest:
             # when
             with assert_no_duplicated_queries():
                 response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", q=search_filter)
+                    url_for("backoffice_v3_web.validation.list_offerers_to_validate", q=search_filter)
                 )
 
             # then
@@ -977,7 +971,7 @@ class ListOfferersToValidateTest:
             # when
             with assert_no_duplicated_queries():
                 response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate", status=status_filter)
+                    url_for("backoffice_v3_web.validation.list_offerers_to_validate", status=status_filter)
                 )
 
             # then
@@ -990,7 +984,7 @@ class ListOfferersToValidateTest:
 
         def test_offerers_stats_are_displayed(self, authenticated_client, offerers_to_be_validated):
             # when
-            response = authenticated_client.get(url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate"))
+            response = authenticated_client.get(url_for("backoffice_v3_web.validation.list_offerers_to_validate"))
 
             # then
             assert response.status_code == 200
@@ -1003,7 +997,7 @@ class ListOfferersToValidateTest:
 
 class ValidateOffererUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
-    endpoint = "backoffice_v3_web.offerer.validate"
+    endpoint = "backoffice_v3_web.validation.validate_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -1014,7 +1008,7 @@ class ValidateOffererTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.offerer.validate", offerer_id=user_offerer.offerer.id)
+        url = url_for("backoffice_v3_web.validation.validate_offerer", offerer_id=user_offerer.offerer.id)
         response = send_request(authenticated_client, user_offerer.offererId, url)
 
         # then
@@ -1034,7 +1028,7 @@ class ValidateOffererTest:
 
     def test_validate_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
         # when
-        url = url_for("backoffice_v3_web.offerer.validate", offerer_id=1)
+        url = url_for("backoffice_v3_web.validation.validate_offerer", offerer_id=1)
         response = send_request(authenticated_client, 1, url)
 
         # then
@@ -1045,7 +1039,7 @@ class ValidateOffererTest:
         user_offerer = offerers_factories.UserOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.offerer.validate", offerer_id=user_offerer.offerer.id)
+        url = url_for("backoffice_v3_web.validation.validate_offerer", offerer_id=user_offerer.offerer.id)
         response = send_request(authenticated_client, user_offerer.offererId, url)
 
         # then
@@ -1057,7 +1051,7 @@ class ValidateOffererTest:
 
 class RejectOffererUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
-    endpoint = "backoffice_v3_web.offerer.reject"
+    endpoint = "backoffice_v3_web.validation.reject_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -1070,7 +1064,7 @@ class RejectOffererTest:
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # deleted when rejected
 
         # when
-        url = url_for("backoffice_v3_web.offerer.reject", offerer_id=offerer.id)
+        url = url_for("backoffice_v3_web.validation.reject_offerer", offerer_id=offerer.id)
         response = send_request(authenticated_client, offerer.id, url)
 
         # then
@@ -1092,7 +1086,7 @@ class RejectOffererTest:
 
     def test_reject_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
         # when
-        url = url_for("backoffice_v3_web.offerer.reject", offerer_id=1)
+        url = url_for("backoffice_v3_web.validation.reject_offerer", offerer_id=1)
         response = send_request(authenticated_client, 1, url)
 
         # then
@@ -1103,7 +1097,7 @@ class RejectOffererTest:
         offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.REJECTED)
 
         # when
-        url = url_for("backoffice_v3_web.offerer.reject", offerer_id=offerer.id)
+        url = url_for("backoffice_v3_web.validation.reject_offerer", offerer_id=offerer.id)
         response = send_request(authenticated_client, offerer.id, url)
 
         # then
@@ -1115,7 +1109,7 @@ class RejectOffererTest:
 
 class SetOffererPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
-    endpoint = "backoffice_v3_web.offerer.set_pending"
+    endpoint = "backoffice_v3_web.validation.set_offerer_pending"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -1126,7 +1120,7 @@ class SetOffererPendingTest:
         offerer = offerers_factories.NotValidatedOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.offerer.set_pending", offerer_id=offerer.id)
+        url = url_for("backoffice_v3_web.validation.set_offerer_pending", offerer_id=offerer.id)
         response = send_request(authenticated_client, offerer.id, url, {"comment": "En attente de documents"})
 
         # then
@@ -1147,7 +1141,7 @@ class SetOffererPendingTest:
 
     def test_set_offerer_pending_returns_404_if_offerer_is_not_found(self, authenticated_client):
         # when
-        url = url_for("backoffice_v3_web.offerer.set_pending", offerer_id=1)
+        url = url_for("backoffice_v3_web.validation.set_offerer_pending", offerer_id=1)
         response = send_request(authenticated_client, 1, url, {"comment": "Questionnaire"})
         # then
         assert response.status_code == 404
@@ -1155,7 +1149,7 @@ class SetOffererPendingTest:
 
 class ToggleTopActorUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
-    endpoint = "backoffice_v3_web.offerer.toggle_top_actor"
+    endpoint = "backoffice_v3_web.validation.toggle_top_actor"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -1166,7 +1160,7 @@ class ToggleTopActorTest:
         offerer = offerers_factories.UserNotValidatedOffererFactory().offerer
 
         # when
-        url = url_for("backoffice_v3_web.offerer.toggle_top_actor", offerer_id=offerer.id)
+        url = url_for("backoffice_v3_web.validation.toggle_top_actor", offerer_id=offerer.id)
         response = send_request(authenticated_client, offerer.id, url, {"is_top_actor": "on"})
 
         # then
@@ -1177,7 +1171,7 @@ class ToggleTopActorTest:
         assert offerer_mappings[0].offererId == offerer.id
 
         # when
-        url = url_for("backoffice_v3_web.offerer.toggle_top_actor", offerer_id=offerer.id)
+        url = url_for("backoffice_v3_web.validation.toggle_top_actor", offerer_id=offerer.id)
         response = send_request(authenticated_client, offerer.id, url)
 
         # then
@@ -1190,7 +1184,7 @@ class ToggleTopActorTest:
 
         # when
         for _ in range(2):
-            url = url_for("backoffice_v3_web.offerer.toggle_top_actor", offerer_id=offerer.id)
+            url = url_for("backoffice_v3_web.validation.toggle_top_actor", offerer_id=offerer.id)
             response = send_request(authenticated_client, offerer.id, url, {"is_top_actor": "on"})
 
             # then
@@ -1206,14 +1200,14 @@ class ToggleTopActorTest:
         # given
 
         # when
-        url = url_for("backoffice_v3_web.offerer.toggle_top_actor", offerer_id=1)
+        url = url_for("backoffice_v3_web.validation.toggle_top_actor", offerer_id=1)
         response = send_request(authenticated_client, 1, url, {"is_top_actor": "on"})
         # then
         assert response.status_code == 404
 
 
 class ListUserOffererToValidateUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-    endpoint = "backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate"
+    endpoint = "backoffice_v3_web.validation.list_offerers_attachments_to_validate"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
 
@@ -1233,7 +1227,7 @@ class ListUserOffererToValidateTest:
         # when
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
-                url_for("backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate")
+                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate")
             )
 
         # then
@@ -1290,7 +1284,7 @@ class ListUserOffererToValidateTest:
         # when
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
-                url_for("backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate")
+                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate")
             )
 
         # then
@@ -1322,7 +1316,7 @@ class ListUserOffererToValidateTest:
         # when
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
-                url_for("backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate")
+                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate")
             )
 
         # then
@@ -1362,7 +1356,7 @@ class ListUserOffererToValidateTest:
 
         # when
         response = authenticated_client.get(
-            url_for("backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", **pagination_config)
+            url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", **pagination_config)
         )
 
         # then
@@ -1400,9 +1394,7 @@ class ListUserOffererToValidateTest:
         # when
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
-                url_for(
-                    "backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", status=status_filter
-                )
+                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", status=status_filter)
             )
 
         # then
@@ -1445,7 +1437,7 @@ class ListUserOffererToValidateTest:
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
                 url_for(
-                    "backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate",
+                    "backoffice_v3_web.validation.list_offerers_attachments_to_validate",
                     offerer_status=offerer_status_filter,
                 )
             )
@@ -1471,9 +1463,7 @@ class ListUserOffererToValidateTest:
         # when
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
-                url_for(
-                    "backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", regions=region_filter
-                )
+                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", regions=region_filter)
             )
 
         # then
@@ -1504,7 +1494,7 @@ class ListUserOffererToValidateTest:
         # when
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
-                url_for("backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", tags=tags_ids)
+                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", tags=tags_ids)
             )
 
         # then
@@ -1531,7 +1521,7 @@ class ListUserOffererToValidateTest:
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
                 url_for(
-                    "backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate",
+                    "backoffice_v3_web.validation.list_offerers_attachments_to_validate",
                     from_date="2022-11-25",
                     to_date="2022-11-25",
                 )
@@ -1546,7 +1536,7 @@ class ListUserOffererToValidateTest:
         # when
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
-                url_for("backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", q="97100")
+                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", q="97100")
             )
 
         # then
@@ -1558,7 +1548,7 @@ class ListUserOffererToValidateTest:
         # when
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
-                url_for("backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", q="972")
+                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", q="972")
             )
 
         # then
@@ -1570,7 +1560,7 @@ class ListUserOffererToValidateTest:
         # when
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
-                url_for("backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", q="Fort De France")
+                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", q="Fort De France")
             )
 
         # then
@@ -1582,7 +1572,7 @@ class ListUserOffererToValidateTest:
         # when
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
-                url_for("backoffice_v3_web.validate_offerer.list_offerers_attachments_to_validate", q="b@example.com")
+                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", q="b@example.com")
             )
 
         # then
@@ -1593,7 +1583,7 @@ class ListUserOffererToValidateTest:
 
 class ValidateOffererAttachmentUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
-    endpoint = "backoffice_v3_web.user_offerer.user_offerer_validate"
+    endpoint = "backoffice_v3_web.validation.validate_user_offerer"
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -1604,7 +1594,7 @@ class ValidateOffererAttachmentTest:
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.user_offerer.user_offerer_validate", user_offerer_id=user_offerer.id)
+        url = url_for("backoffice_v3_web.validation.validate_user_offerer", user_offerer_id=user_offerer.id)
         response = send_request(authenticated_client, user_offerer.offererId, url)
 
         # then
@@ -1631,7 +1621,7 @@ class ValidateOffererAttachmentTest:
 
     def test_validate_offerer_attachment_returns_404_if_offerer_is_not_found(self, authenticated_client, offerer):
         # when
-        url = url_for("backoffice_v3_web.user_offerer.user_offerer_validate", user_offerer_id=42)
+        url = url_for("backoffice_v3_web.validation.validate_user_offerer", user_offerer_id=42)
         response = send_request(authenticated_client, offerer.id, url)
 
         # then
@@ -1642,7 +1632,7 @@ class ValidateOffererAttachmentTest:
         user_offerer = offerers_factories.UserOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.user_offerer.user_offerer_validate", user_offerer_id=user_offerer.id)
+        url = url_for("backoffice_v3_web.validation.validate_user_offerer", user_offerer_id=user_offerer.id)
         response = send_request(authenticated_client, user_offerer.offererId, url)
 
         # then
@@ -1654,7 +1644,7 @@ class ValidateOffererAttachmentTest:
 
 class RejectOffererAttachmentUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
-    endpoint = "backoffice_v3_web.user_offerer.user_offerer_reject"
+    endpoint = "backoffice_v3_web.validation.reject_user_offerer"
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -1665,7 +1655,7 @@ class RejectOffererAttachmentTest:
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.user_offerer.user_offerer_reject", user_offerer_id=user_offerer.id)
+        url = url_for("backoffice_v3_web.validation.reject_user_offerer", user_offerer_id=user_offerer.id)
         response = send_request(authenticated_client, user_offerer.offererId, url)
 
         # then
@@ -1691,7 +1681,7 @@ class RejectOffererAttachmentTest:
 
     def test_reject_offerer_returns_404_if_offerer_attachment_is_not_found(self, authenticated_client, offerer):
         # when
-        url = url_for("backoffice_v3_web.user_offerer.user_offerer_reject", user_offerer_id=42)
+        url = url_for("backoffice_v3_web.validation.reject_user_offerer", user_offerer_id=42)
         response = send_request(authenticated_client, offerer.id, url)
 
         # then
@@ -1700,7 +1690,7 @@ class RejectOffererAttachmentTest:
 
 class SetOffererAttachmentPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
-    endpoint = "backoffice_v3_web.user_offerer.user_offerer_set_pending"
+    endpoint = "backoffice_v3_web.validation.set_user_offerer_pending"
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
@@ -1711,7 +1701,7 @@ class SetOffererAttachmentPendingTest:
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.user_offerer.user_offerer_set_pending", user_offerer_id=user_offerer.id)
+        url = url_for("backoffice_v3_web.validation.set_user_offerer_pending", user_offerer_id=user_offerer.id)
         response = send_request(
             authenticated_client, user_offerer.offererId, url, {"comment": "En attente de documents"}
         )
@@ -1853,7 +1843,7 @@ class AddUserOffererAndValidateTest:
 
 class SetBatchOffererAttachmentPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
-    endpoint = "backoffice_v3_web.validate_offerer.user_offerer_set_batch_pending"
+    endpoint = "backoffice_v3_web.validation.batch_set_user_offerer_pending"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
 
@@ -1861,7 +1851,7 @@ class SetBatchOffererAttachmentPendingTest:
     def test_batch_set_offerer_attachment_pending(self, legit_user, authenticated_client):
         user_offerers = offerers_factories.NotValidatedUserOffererFactory.create_batch(10)
         parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
-        url = url_for("backoffice_v3_web.validate_offerer.user_offerer_set_batch_pending")
+        url = url_for("backoffice_v3_web.validation.batch_set_user_offerer_pending")
         response = send_request(
             authenticated_client,
             user_offerers[0].offerer.id,
@@ -1889,7 +1879,7 @@ class SetBatchOffererAttachmentPendingTest:
 
 class BatchOffererAttachmentValidateUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
-    endpoint = "backoffice_v3_web.validate_offerer.user_offerer_batch_validate"
+    endpoint = "backoffice_v3_web.validation.batch_validate_user_offerer"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
 
@@ -1897,7 +1887,7 @@ class BatchOffererAttachmentValidateTest:
     def test_batch_set_offerer_attachment_validate(self, legit_user, authenticated_client):
         user_offerers = offerers_factories.NotValidatedUserOffererFactory.create_batch(10)
         parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
-        url = url_for("backoffice_v3_web.validate_offerer.user_offerer_batch_validate")
+        url = url_for("backoffice_v3_web.validation.batch_validate_user_offerer")
         response = send_request(
             authenticated_client,
             user_offerers[0].offerer.id,
@@ -1933,7 +1923,7 @@ class BatchOffererAttachmentValidateTest:
 
 class BatchOffererAttachmentRejectUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
-    endpoint = "backoffice_v3_web.validate_offerer.user_offerer_batch_reject"
+    endpoint = "backoffice_v3_web.validation.batch_reject_user_offerer"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
 
@@ -1941,7 +1931,7 @@ class BatchOffererAttachmentRejectTest:
     def test_batch_set_offerer_attachment_reject(self, legit_user, authenticated_client):
         user_offerers = offerers_factories.NotValidatedUserOffererFactory.create_batch(10)
         parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
-        url = url_for("backoffice_v3_web.validate_offerer.user_offerer_batch_reject")
+        url = url_for("backoffice_v3_web.validation.batch_reject_user_offerer")
         response = send_request(
             authenticated_client,
             user_offerers[0].offerer.id,

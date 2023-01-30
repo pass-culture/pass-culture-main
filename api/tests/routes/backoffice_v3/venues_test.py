@@ -185,13 +185,13 @@ class HasReimbursementPointTest:
 
 class UpdateVenueTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        endpoint = "backoffice_v3_web.manage_venue.update"
+        endpoint = "backoffice_v3_web.venue.update_venue"
         endpoint_kwargs = {"venue_id": 1}
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_update_venue(self, authenticated_client, offerer):
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        url = url_for("backoffice_v3_web.manage_venue.update", venue_id=venue.id)
+        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = {
             "siret": venue.managingOfferer.siren + "98765",
             "city": "Umeå",
@@ -220,7 +220,7 @@ class UpdateVenueTest:
     def test_update_virtual_venue(self, authenticated_client, offerer):
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
-        url = url_for("backoffice_v3_web.manage_venue.update", venue_id=venue.id)
+        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = {
             "email": venue.contact.email + ".update",
             "phone_number": "+33102030456",
@@ -237,7 +237,7 @@ class UpdateVenueTest:
         assert venue.contact.phone_number == data["phone_number"]
 
     def test_update_with_missing_data(self, authenticated_client, venue):
-        url = url_for("backoffice_v3_web.manage_venue.update", venue_id=venue.id)
+        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = {"email": venue.contact.email + ".update"}
 
         response = authenticated_client.post(url, json=data)

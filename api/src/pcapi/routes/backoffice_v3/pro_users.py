@@ -25,7 +25,7 @@ from .forms import pro_user as pro_user_forms
 pro_user_blueprint = utils.child_backoffice_blueprint(
     "pro_user",
     __name__,
-    url_prefix="/pro/pro_user/<int:user_id>",
+    url_prefix="/pro/user/<int:user_id>",
     permission=perm_models.Permissions.READ_PRO_ENTITY,
 )
 
@@ -55,7 +55,34 @@ def get(user_id: int) -> utils.BackofficeResponse:
     return render_template("pro_user/get.html", user=user, form=form, dst=dst, can_edit_user=can_edit_user)
 
 
-@pro_user_blueprint.route("", methods=["POST"])
+@pro_user_blueprint.route("/details", methods=["GET"])
+def get_details(user_id: int) -> utils.BackofficeResponse:
+    user = users_models.User.query.get_or_404(user_id)
+    actions = history_repository.find_all_actions_by_user(user_id)
+    can_add_comment = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+    user_offerers = (
+        offerers_models.UserOfferer.query.filter_by(userId=user_id)
+        .order_by(offerers_models.UserOfferer.dateCreated)
+        .options(sa.orm.joinedload(offerers_models.UserOfferer.offerer))
+        .all()
+    )
+
+    form = pro_user_forms.CommentForm()
+    dst = url_for("backoffice_v3_web.pro_user.comment_pro_user", user_id=user.id)
+
+    return render_template(
+        "pro_user/get/details.html",
+        user=user,
+        form=form,
+        dst=dst,
+        actions=actions,
+        can_add_comment=can_add_comment,
+        user_offerers=user_offerers,
+        active_tab=request.args.get("active_tab", "history"),
+    )
+
+
+@pro_user_blueprint.route("/update", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_pro_user(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
@@ -100,33 +127,6 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
 
     flash("Informations mises à jour", "success")
     return redirect(url_for(".get", user_id=user_id), code=303)
-
-
-@pro_user_blueprint.route("/details", methods=["GET"])
-def get_details(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
-    actions = history_repository.find_all_actions_by_user(user_id)
-    can_add_comment = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
-    user_offerers = (
-        offerers_models.UserOfferer.query.filter_by(userId=user_id)
-        .order_by(offerers_models.UserOfferer.dateCreated)
-        .options(sa.orm.joinedload(offerers_models.UserOfferer.offerer))
-        .all()
-    )
-
-    form = pro_user_forms.CommentForm()
-    dst = url_for("backoffice_v3_web.pro_user.comment_pro_user", user_id=user.id)
-
-    return render_template(
-        "pro_user/get/details.html",
-        user=user,
-        form=form,
-        dst=dst,
-        actions=actions,
-        can_add_comment=can_add_comment,
-        user_offerers=user_offerers,
-        active_tab=request.args.get("active_tab", "history"),
-    )
 
 
 @pro_user_blueprint.route("/comment", methods=["POST"])

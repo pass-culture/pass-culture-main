@@ -206,7 +206,7 @@ def get_details(offerer_id: int) -> utils.BackofficeResponse:
     history = get_offerer_history_data(offerer)
 
     form = offerer_forms.CommentForm()
-    dst = url_for("backoffice_v3_web.offerer_comment.comment_offerer", offerer_id=offerer.id)
+    dst = url_for("backoffice_v3_web.offerer.comment_offerer", offerer_id=offerer.id)
 
     can_add_user = utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
     add_user_form = _get_add_pro_user_form(offerer) if can_add_user else None
@@ -225,15 +225,8 @@ def get_details(offerer_id: int) -> utils.BackofficeResponse:
     )
 
 
-offerer_comment_blueprint = utils.child_backoffice_blueprint(
-    "offerer_comment",
-    __name__,
-    url_prefix="/pro/offerer/<int:offerer_id>/comment",
-    permission=perm_models.Permissions.MANAGE_PRO_ENTITY,
-)
-
-
-@offerer_comment_blueprint.route("", methods=["POST"])
+@offerer_blueprint.route("/comment", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
@@ -247,8 +240,8 @@ def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
     return redirect(url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_id), code=303)
 
 
-validate_offerer_blueprint = utils.child_backoffice_blueprint(
-    "validate_offerer",
+validation_blueprint = utils.child_backoffice_blueprint(
+    "validation",
     __name__,
     url_prefix="/pro/validation",
     permission=perm_models.Permissions.VALIDATE_OFFERER,
@@ -295,7 +288,7 @@ def _redirect_after_offerer_validation_action(code: int = 303) -> utils.Backoffi
     if request.referrer:
         return redirect(request.referrer, code)
 
-    return redirect(url_for("backoffice_v3_web.validate_offerer.list_offerers_to_validate"), code)
+    return redirect(url_for("backoffice_v3_web.validation.list_offerers_to_validate"), code)
 
 
 @dataclass
@@ -306,7 +299,7 @@ class OffererToBeValidatedRow:
     owner: users_models.User
 
 
-@validate_offerer_blueprint.route("/offerer", methods=["GET"])
+@validation_blueprint.route("/offerer", methods=["GET"])
 def list_offerers_to_validate() -> utils.BackofficeResponse:
     stats = offerers_api.count_offerers_by_validation_status()
 
@@ -350,9 +343,8 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
     )
 
 
-@offerer_blueprint.route("/validate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def validate(offerer_id: int) -> utils.BackofficeResponse:
+@validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["POST"])
+def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
     try:
@@ -365,9 +357,8 @@ def validate(offerer_id: int) -> utils.BackofficeResponse:
     return _redirect_after_offerer_validation_action()
 
 
-@offerer_blueprint.route("/reject", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def reject(offerer_id: int) -> utils.BackofficeResponse:
+@validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["POST"])
+def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
     form = offerer_forms.OptionalCommentForm()
@@ -385,9 +376,8 @@ def reject(offerer_id: int) -> utils.BackofficeResponse:
     return _redirect_after_offerer_validation_action()
 
 
-@offerer_blueprint.route("/pending", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def set_pending(offerer_id: int) -> utils.BackofficeResponse:
+@validation_blueprint.route("/offerer/<int:offerer_id>/pending", methods=["POST"])
+def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
     form = offerer_forms.OptionalCommentForm()
@@ -401,8 +391,7 @@ def set_pending(offerer_id: int) -> utils.BackofficeResponse:
     return _redirect_after_offerer_validation_action()
 
 
-@offerer_blueprint.route("/top-actor", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+@validation_blueprint.route("/offerer/<int:offerer_id>/top-actor", methods=["POST"])
 def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
@@ -452,7 +441,7 @@ def _get_serialized_user_offerer_last_comment(
     )
 
 
-@validate_offerer_blueprint.route("/user_offerer", methods=["GET"])
+@validation_blueprint.route("/user-offerer", methods=["GET"])
 def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
     form = offerer_forms.UserOffererValidationListForm(request.args)
     if not form.validate():
@@ -516,8 +505,8 @@ user_offerer_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-@user_offerer_blueprint.route("/validate", methods=["POST"])
-def user_offerer_validate(user_offerer_id: int) -> utils.BackofficeResponse:
+@validation_blueprint.route("/user-offerer/<int:user_offerer_id>/validate", methods=["POST"])
+def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = offerers_models.UserOfferer.query.filter_by(id=user_offerer_id).one_or_none()
     if not user_offerer:
         raise NotFound()
@@ -538,8 +527,8 @@ def user_offerer_validate(user_offerer_id: int) -> utils.BackofficeResponse:
     return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
 
-@user_offerer_blueprint.route("/reject", methods=["POST"])
-def user_offerer_reject(user_offerer_id: int) -> utils.BackofficeResponse:
+@validation_blueprint.route("/user-offerer/<int:user_offerer_id>/reject", methods=["POST"])
+def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = offerers_models.UserOfferer.query.filter_by(id=user_offerer_id).one_or_none()
     if not user_offerer:
         raise NotFound()
@@ -558,8 +547,8 @@ def user_offerer_reject(user_offerer_id: int) -> utils.BackofficeResponse:
     return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
 
-@user_offerer_blueprint.route("/pending", methods=["POST"])
-def user_offerer_set_pending(user_offerer_id: int) -> utils.BackofficeResponse:
+@validation_blueprint.route("/user-offerer/<int:user_offerer_id>/pending", methods=["POST"])
+def set_user_offerer_pending(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = offerers_models.UserOfferer.query.filter_by(id=user_offerer_id).one_or_none()
     if not user_offerer:
         raise NotFound()
@@ -619,25 +608,25 @@ def _user_offerer_batch_action(
     return _redirect_after_offerer_validation_action()
 
 
-@validate_offerer_blueprint.route("/user_offerer/batch-pending", methods=["POST"])
-def user_offerer_set_batch_pending() -> utils.BackofficeResponse:
+@validation_blueprint.route("/user-offerer/batch-pending", methods=["POST"])
+def batch_set_user_offerer_pending() -> utils.BackofficeResponse:
     return _user_offerer_batch_action(offerers_api.set_offerer_attachment_pending)
 
 
-@validate_offerer_blueprint.route("/user_offerer/batch-reject", methods=["POST"])
-def user_offerer_batch_reject() -> utils.BackofficeResponse:
+@validation_blueprint.route("/user-offerer/batch-reject", methods=["POST"])
+def batch_reject_user_offerer() -> utils.BackofficeResponse:
     return _user_offerer_batch_action(offerers_api.reject_offerer_attachment)
 
 
-@validate_offerer_blueprint.route("/user_offerer/batch-validate", methods=["POST"])
-def user_offerer_batch_validate() -> utils.BackofficeResponse:
+@validation_blueprint.route("/user-offerer/batch-validate", methods=["POST"])
+def batch_validate_user_offerer() -> utils.BackofficeResponse:
     return _user_offerer_batch_action(offerers_api.validate_offerer_attachment)
 
 
 offerer_tag_blueprint = utils.child_backoffice_blueprint(
     "offerer_tag",
     __name__,
-    url_prefix="/pro/offerer_tag",
+    url_prefix="/pro/offerer-tag",
     permission=perm_models.Permissions.MANAGE_PRO_ENTITY,
 )
 
@@ -668,7 +657,7 @@ def list_offerer_tags() -> utils.BackofficeResponse:
     )
 
 
-@offerer_tag_blueprint.route("/<int:offerer_tag_id>", methods=["POST"])
+@offerer_tag_blueprint.route("/<int:offerer_tag_id>/update", methods=["POST"])
 def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
     categories = get_offerer_tag_categories()
     offerer_tag_to_update = offerers_models.OffererTag.query.get_or_404(offerer_tag_id)
