@@ -181,6 +181,7 @@ const OfferEducational = ({
             onImageDelete={onImageDelete}
             onImageUpload={onImageUpload}
             isOfferCreated={isOfferCreated}
+            offer={offer}
           />
         </form>
       </FormikProvider>

@@ -103,6 +103,13 @@ const serializer = {
 
 const templateSerializer = {
   ...serializer,
+  venueId: (
+    payload: PatchCollectiveOfferBodyModel,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    venueId: offer.venueId,
+  }),
   priceDetail: (
     payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
