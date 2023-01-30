@@ -14,6 +14,7 @@ from sqlalchemy import Index
 from sqlalchemy import Integer
 from sqlalchemy import Numeric
 from sqlalchemy import String
+from sqlalchemy import Text
 from sqlalchemy import and_
 from sqlalchemy import case
 from sqlalchemy import event
@@ -131,6 +132,8 @@ class Booking(PcObject, Base, Model):
     user = relationship("User", foreign_keys=[userId], backref="userBookings")  # type: ignore [misc]
 
     amount: Decimal = Column(Numeric(10, 2), nullable=False)
+
+    priceCategoryLabel: str | None = Column(Text, nullable=True)
 
     cancellationDate = Column(DateTime, nullable=True)
 
