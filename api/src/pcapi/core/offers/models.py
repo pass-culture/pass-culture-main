@@ -763,7 +763,7 @@ class PriceCategory(PcObject, Base, Model):
     priceCategoryLabel: sa_orm.Mapped["PriceCategoryLabel"] = sa.orm.relationship(
         "PriceCategoryLabel", back_populates="priceCategory"
     )
-    stocks: sa_orm.Mapped[list["Stock"]] = relationship("Stock", back_populates="priceCategory")
+    stocks: sa_orm.Mapped[list["Stock"]] = relationship("Stock", back_populates="priceCategory", cascade="all")
 
     @property
     def label(self) -> str:
