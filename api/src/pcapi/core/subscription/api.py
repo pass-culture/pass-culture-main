@@ -352,15 +352,6 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
             ),
         )
 
-    # Early return if there is an admin manual review
-    if fraud_repository.has_admin_ko_review(user):
-        return subscription_models.UserSubscriptionState(
-            fraud_status=models.SubscriptionItemStatus.KO,
-            next_step=None,
-            young_status=young_status_module.NonEligible(),
-            subscription_message=subscription_messages.get_generic_ko_message(user.id),
-        )
-
     # Early return if user is beneficiary
     if user.is_beneficiary and not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
         if user.has_active_deposit:
@@ -373,6 +364,15 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
             fraud_status=models.SubscriptionItemStatus.OK,
             next_step=None,
             young_status=young_status_module.ExBeneficiary(),
+        )
+
+    # Early return if there is an admin manual review
+    if fraud_repository.has_admin_ko_review(user):
+        return subscription_models.UserSubscriptionState(
+            fraud_status=models.SubscriptionItemStatus.KO,
+            next_step=None,
+            young_status=young_status_module.NonEligible(),
+            subscription_message=subscription_messages.get_generic_ko_message(user.id),
         )
 
     # Early return if user is not eligible
