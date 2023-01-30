@@ -67,7 +67,7 @@
                             <form
                                     action="
 
-                                            {{ url_for("backoffice_v3_web.user_offerer.user_offerer_validate",user_offerer_id=user_offerer.id,
+                                            {{ url_for("backoffice_v3_web.validation.validate_user_offerer",user_offerer_id=user_offerer.id,
                                                     ) }}"
                                     method="POST">
                                 {{ csrf_token }}
@@ -114,12 +114,12 @@
 
 {% for user_offerer in users_offerer %}
     {% call build_edit_status_modal(
-        url_for("backoffice_v3_web.user_offerer.user_offerer_reject", user_offerer_id=user_offerer.id),
+        url_for("backoffice_v3_web.validation.reject_user_offerer", user_offerer_id=user_offerer.id),
         "reject-modal-" + user_offerer.userId|string, "Rejeter le rattachement") %}
         Rejeter le rattachement de {{ user_offerer.user.email }}
     {% endcall %}
     {% call build_edit_status_modal(
-        url_for("backoffice_v3_web.user_offerer.user_offerer_set_pending", user_offerer_id=user_offerer.id),
+        url_for("backoffice_v3_web.validation.set_user_offerer_pending", user_offerer_id=user_offerer.id),
         "pending-modal-" + user_offerer.userId|string, "Mettre en attente le rattachement") %}
         Mettre en attente le rattachement de {{ user_offerer.user.email }}
     {% endcall %}

@@ -30,7 +30,6 @@ import pcapi.core.users.utils as users_utils
 from pcapi.models import db
 import pcapi.utils.email as email_utils
 
-from . import blueprint
 from . import search_utils
 from . import utils
 from .forms import account as account_forms
@@ -40,8 +39,15 @@ from .serialization import accounts
 from .serialization import search
 
 
-@blueprint.backoffice_v3_web.route("/public_accounts/search", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT)
+public_accounts_blueprint = utils.child_backoffice_blueprint(
+    "public_accounts",
+    __name__,
+    url_prefix="/public-accounts",
+    permission=perm_models.Permissions.READ_PUBLIC_ACCOUNT,
+)
+
+
+@public_accounts_blueprint.route("/search", methods=["GET"])
 def search_public_accounts() -> utils.BackofficeResponse:
     """
     Renders two search pages: first the one with the search form, then
@@ -104,7 +110,7 @@ def render_search_template(form: search_forms.SearchForm | None = None) -> str:
     )
 
 
-@blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>", methods=["GET"])
+@public_accounts_blueprint.route("/<int:user_id>", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 def get_public_account(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
@@ -136,7 +142,7 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
     )
 
 
-@blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>/edit", methods=["GET"])
+@public_accounts_blueprint.route("/<int:user_id>/edit", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def edit_public_account(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
@@ -155,7 +161,7 @@ def edit_public_account(user_id: int) -> utils.BackofficeResponse:
     return render_template("accounts/edit.html", form=form, dst=dst, user=user)
 
 
-@blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>", methods=["POST"])
+@public_accounts_blueprint.route("/<int:user_id>/update", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def update_public_account(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
@@ -188,10 +194,10 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
     external_attributes_api.update_external_user(user)
 
     flash("Informations mises à jour", "success")
-    return redirect(url_for(".get_public_account", user_id=user_id), code=303)
+    return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
 
-@blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>/resend-validation-email", methods=["POST"])
+@public_accounts_blueprint.route("/<int:user_id>/resend-validation-email", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
@@ -204,17 +210,17 @@ def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
         users_api.request_email_confirmation(user)
         flash("Email de validation envoyé", "success")
 
-    return redirect(url_for(".get_public_account", user_id=user_id), code=303)
+    return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
 
-@blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>/send-validation-code", methods=["POST"])
+@public_accounts_blueprint.route("/<int:user_id>/send-validation-code", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def send_validation_code(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
 
     if not user.phoneNumber:
         flash("L'utilisateur n'a pas de numéro de téléphone", "warning")
-        return redirect(url_for(".get_public_account", user_id=user_id), code=303)
+        return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
     try:
         phone_validation_api.send_phone_validation_code(
@@ -244,10 +250,10 @@ def send_validation_code(user_id: int) -> utils.BackofficeResponse:
     else:
         flash("Le code a été envoyé", "success")
 
-    return redirect(url_for(".get_public_account", user_id=user_id), code=303)
+    return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
 
-@blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>/review", methods=["GET"])
+@public_accounts_blueprint.route("/<int:user_id>/review", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def edit_public_account_review(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
@@ -255,7 +261,7 @@ def edit_public_account_review(user_id: int) -> utils.BackofficeResponse:
     return render_template("accounts/edit_review.html", form=form, user=user)
 
 
-@blueprint.backoffice_v3_web.route("/public_accounts/<int:user_id>/review", methods=["POST"])
+@public_accounts_blueprint.route("/<int:user_id>/review", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def review_public_account(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
@@ -285,7 +291,7 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
     else:
         flash("Validation réussie", "success")
 
-    return redirect(url_for(".get_public_account", user_id=user_id), code=303)
+    return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
 
 def fetch_rows(search_model: search.SearchUserModel) -> Pagination:
@@ -293,7 +299,7 @@ def fetch_rows(search_model: search.SearchUserModel) -> Pagination:
 
 
 def get_public_account_link(user_id: int) -> str:
-    return url_for(".get_public_account", user_id=user_id)
+    return url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id)
 
 
 def get_eligibility_history(user: users_models.User) -> dict[str, accounts.EligibilitySubscriptionHistoryModel]:

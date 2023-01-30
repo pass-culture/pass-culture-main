@@ -20,7 +20,7 @@ from .forms import collective_booking as collective_booking_forms
 collective_bookings_blueprint = utils.child_backoffice_blueprint(
     "collective_bookings",
     __name__,
-    url_prefix="/collective_bookings",
+    url_prefix="/collective-bookings",
     permission=perm_models.Permissions.MANAGE_BOOKINGS,
 )
 

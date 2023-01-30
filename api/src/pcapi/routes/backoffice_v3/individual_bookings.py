@@ -22,7 +22,7 @@ from .forms import individual_booking as individual_booking_forms
 individual_bookings_blueprint = utils.child_backoffice_blueprint(
     "individual_bookings",
     __name__,
-    url_prefix="/individual_bookings",
+    url_prefix="/individual-bookings",
     permission=perm_models.Permissions.MANAGE_BOOKINGS,
 )
 
