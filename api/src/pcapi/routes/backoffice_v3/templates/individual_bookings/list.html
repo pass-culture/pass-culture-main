@@ -47,7 +47,7 @@
                             <td>{{ booking.token }}</td>
                             <td>
                                 {% if booking.user %}
-                                    <a href="{{ url_for('backoffice_v3_web.get_public_account', user_id=booking.user.id) }}" class="link-primary">
+                                    <a href="{{ url_for('backoffice_v3_web.public_accounts.get_public_account', user_id=booking.user.id) }}" class="link-primary">
                                         {{ booking.user.full_name | escape }} ({{ booking.user.id }})
                                     </a>
                                 {% endif %}

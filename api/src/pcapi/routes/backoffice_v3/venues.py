@@ -187,7 +187,7 @@ def get_details(venue_id: int) -> utils.BackofficeResponse:
     actions = sorted(venue.action_history, key=lambda action: action.actionDate, reverse=True)
 
     form = forms.CommentForm()
-    dst = url_for("backoffice_v3_web.manage_venue.comment", venue_id=venue.id)
+    dst = url_for("backoffice_v3_web.venue.comment_venue", venue_id=venue.id)
 
     return render_template(
         "venue/get/details.html",
@@ -198,16 +198,9 @@ def get_details(venue_id: int) -> utils.BackofficeResponse:
     )
 
 
-manage_venue_blueprint = utils.child_backoffice_blueprint(
-    "manage_venue",
-    __name__,
-    url_prefix="/pro/venue/<int:venue_id>/",
-    permission=perm_models.Permissions.MANAGE_PRO_ENTITY,
-)
-
-
-@manage_venue_blueprint.route("/update", methods=["POST"])
-def update(venue_id: int) -> utils.BackofficeResponse:
+@venue_blueprint.route("/update", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def update_venue(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue(venue_id)
 
     if venue.isVirtual:
@@ -246,8 +239,9 @@ def update(venue_id: int) -> utils.BackofficeResponse:
     return redirect(url_for("backoffice_v3_web.venue.get", venue_id=venue.id), code=303)
 
 
-@manage_venue_blueprint.route("", methods=["POST"])
-def comment(venue_id: int) -> utils.BackofficeResponse:
+@venue_blueprint.route("/comment", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def comment_venue(venue_id: int) -> utils.BackofficeResponse:
     venue = offerers_models.Venue.query.get_or_404(venue_id)
 
     form = forms.CommentForm()

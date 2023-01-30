@@ -68,7 +68,7 @@
                                         <li class="dropdown-item p-0">
                                             <form
                                                     action="{{ url_for(
-                                                    "backoffice_v3_web.offerer.validate",
+                                                    "backoffice_v3_web.validation.validate_offerer",
                                                     offerer_id=offerer.id
                                                 ) }}"
                                                     method="POST">
@@ -108,7 +108,7 @@
                                 <div class="form-check form-switch">
                                     <form
                                             action="{{ url_for(
-                                                "backoffice_v3_web.offerer.toggle_top_actor",
+                                                "backoffice_v3_web.validation.toggle_top_actor",
                                                 offerer_id=offerer.id
                                             ) }}"
                                             method="POST">
@@ -144,12 +144,12 @@
 
                 {% for offerer in rows.items %}
                     {% call build_edit_status_modal(
-                    url_for("backoffice_v3_web.offerer.reject", offerer_id=offerer.id),
+                    url_for("backoffice_v3_web.validation.reject_offerer", offerer_id=offerer.id),
                     "reject-modal-" + offerer.id|string, "Rejeter la structure") %}
                         Rejeter la structure {{ offerer.name | upper }}
                     {% endcall %}
                     {% call build_edit_status_modal(
-                    url_for("backoffice_v3_web.offerer.set_pending", offerer_id=offerer.id),
+                    url_for("backoffice_v3_web.validation.set_offerer_pending", offerer_id=offerer.id),
                     "pending-modal-" + offerer.id|string, "Mettre en attente la structure") %}
                         Mettre en attente la structure {{ offerer.name | upper }}
                     {% endcall %}

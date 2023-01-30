@@ -66,7 +66,7 @@
                                         <li class="dropdown-item p-0">
                                             <form
                                                     action="{{ url_for(
-                                                    "backoffice_v3_web.user_offerer.user_offerer_validate",
+                                                    "backoffice_v3_web.validation.validate_user_offerer",
                                                     offerer_id=offerer.id,
                                                     user_offerer_id=user_offerer.id
                                                 ) }}"
@@ -124,12 +124,12 @@
 
                {% for user_offerer in rows.items %}
                     {% call build_edit_status_modal(
-                    url_for("backoffice_v3_web.user_offerer.user_offerer_reject", offerer_id=user_offerer.offererId, user_offerer_id=user_offerer.id),
+                    url_for("backoffice_v3_web.validation.reject_user_offerer", offerer_id=user_offerer.offererId, user_offerer_id=user_offerer.id),
                     "reject-modal-" + user_offerer.id|string, "Rejeter le rattachement") %}
                         Rejeter le rattachement à {{ user_offerer.offerer.name | upper }}
                     {% endcall %}
                     {% call build_edit_status_modal(
-                    url_for("backoffice_v3_web.user_offerer.user_offerer_set_pending", offerer_id=user_offerer.offererId, user_offerer_id=user_offerer.id),
+                    url_for("backoffice_v3_web.validation.set_user_offerer_pending", offerer_id=user_offerer.offererId, user_offerer_id=user_offerer.id),
                     "pending-modal-" + user_offerer.id|string, "Mettre en attente le rattachement") %}
                         Mettre en attente le rattachement à {{ user_offerer.offerer.name | upper }}
                     {% endcall %}
@@ -148,13 +148,13 @@
     <script>
 
         document.getElementById("batch-pending-button").addEventListener('click', (e) => {
-            generateModalOnclick("{{ url_for("backoffice_v3_web.validate_offerer.user_offerer_set_batch_pending") }}", "Mettre en attente le(s) rattachement(s)", "pending-modal", "Mettre en attente")
+            generateModalOnclick("{{ url_for("backoffice_v3_web.validation.batch_set_user_offerer_pending") }}", "Mettre en attente le(s) rattachement(s)", "pending-modal", "Mettre en attente")
         })
         document.getElementById("batch-validating-button").addEventListener('click', (e) => {
-            generateModalOnclick("{{ url_for("backoffice_v3_web.validate_offerer.user_offerer_batch_validate") }}", "Valider le(s) rattachement(s)", "validating-modal", "Valider")
+            generateModalOnclick("{{ url_for("backoffice_v3_web.validation.batch_validate_user_offerer") }}", "Valider le(s) rattachement(s)", "validating-modal", "Valider")
         })
         document.getElementById("batch-rejecting-button").addEventListener('click', (e) => {
-            generateModalOnclick("{{ url_for("backoffice_v3_web.validate_offerer.user_offerer_batch_reject") }}", "Rejeter le(s) rattachement(s)", "rejecting-modal", "Rejeter")
+            generateModalOnclick("{{ url_for("backoffice_v3_web.validation.batch_reject_user_offerer") }}", "Rejeter le(s) rattachement(s)", "rejecting-modal", "Rejeter")
         })
 
         function generateModalOnclick(url, title, div_id, button_text) {

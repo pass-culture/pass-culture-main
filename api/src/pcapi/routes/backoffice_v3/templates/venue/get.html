@@ -30,7 +30,7 @@
                         <div class="modal fade" id="venue-edit-details" tabindex="-1"
                              aria-labelledby="venue-edit-details-label" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
-                                <form action="{{ url_for("backoffice_v3_web.manage_venue.update", venue_id=venue.id) }}"
+                                <form action="{{ url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id) }}"
                                       method="POST" class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title">Modifier les informations du lieu</h5>

@@ -1,0 +1,9 @@
+{% extends "layouts/connected.html" %}
+
+{% block page %}
+
+<div class="py-4 px-5">
+    <h1 class="text-muted text-center mt-5">Bienvenue {{ current_user.firstName | empty_string_if_null }}, dans le Backoffice du pass Culture !</h1>
+</div>
+
+{% endblock %}
