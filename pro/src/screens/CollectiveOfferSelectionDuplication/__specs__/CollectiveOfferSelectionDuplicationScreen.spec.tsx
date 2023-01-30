@@ -93,6 +93,12 @@ describe('CollectiveOfferConfirmation', () => {
   it('should display list of offers matching user search', async () => {
     renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
 
+    await waitFor(() =>
+      expect(
+        screen.getByText('Les dernières offres vitrines créées')
+      ).toBeInTheDocument()
+    )
+
     const searchField = screen.getByPlaceholderText(
       'Rechercher une offre vitrine'
     )
@@ -100,7 +106,7 @@ describe('CollectiveOfferConfirmation', () => {
     await userEvent.type(searchField, 'Le nom de l’offre 3')
 
     await userEvent.click(
-      screen.getByRole('button', { name: /search-button/i })
+      screen.getByRole('button', { name: /Button de recherche/i })
     )
 
     expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
@@ -119,6 +125,12 @@ describe('CollectiveOfferConfirmation', () => {
   it('should select an offer', async () => {
     renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
 
+    await waitFor(() =>
+      expect(
+        screen.getByText('Les dernières offres vitrines créées')
+      ).toBeInTheDocument()
+    )
+
     expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
 
     const inputOffer = await waitFor(() => screen.getAllByRole('radio')[0])
@@ -130,6 +142,12 @@ describe('CollectiveOfferConfirmation', () => {
   it('should redirect on submit button and offer selected', async () => {
     await jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
     renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
+
+    await waitFor(() =>
+      expect(
+        screen.getByText('Les dernières offres vitrines créées')
+      ).toBeInTheDocument()
+    )
 
     const inputOffer = await waitFor(() => screen.getAllByRole('radio')[0])
     await userEvent.click(inputOffer)
@@ -146,6 +164,12 @@ describe('CollectiveOfferConfirmation', () => {
       // @ts-expect-error FIX ME : will be fix PC-19976
       .mockReturnValue([])
     renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
+
+    await waitFor(() =>
+      expect(
+        screen.getByText('Les dernières offres vitrines créées')
+      ).toBeInTheDocument()
+    )
 
     expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
 
@@ -164,6 +188,12 @@ describe('CollectiveOfferConfirmation', () => {
     jest.spyOn(api, 'getCollectiveOffers').mockRejectedValueOnce('')
     renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
 
+    await waitFor(() =>
+      expect(
+        screen.getByText('Les dernières offres vitrines créées')
+      ).toBeInTheDocument()
+    )
+
     const searchField = screen.getByPlaceholderText(
       'Rechercher une offre vitrine'
     )
@@ -171,7 +201,7 @@ describe('CollectiveOfferConfirmation', () => {
     await userEvent.type(searchField, 'Le nom de l’offre 3')
 
     await userEvent.click(
-      screen.getByRole('button', { name: /search-button/i })
+      screen.getByRole('button', { name: /Button de recherche/i })
     )
     await waitFor(() =>
       expect(notifyError).toHaveBeenNthCalledWith(
@@ -183,6 +213,12 @@ describe('CollectiveOfferConfirmation', () => {
 
   it('should display error when offer not selected', async () => {
     renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
+
+    await waitFor(() =>
+      expect(
+        screen.getByText('Les dernières offres vitrines créées')
+      ).toBeInTheDocument()
+    )
 
     const buttonNextStep = screen.getByText('Étape suivante')
     await userEvent.click(buttonNextStep)
