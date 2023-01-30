@@ -34,7 +34,7 @@ const ButtonImageEdit = ({
           <Icon
             alt="Modifier l’image"
             className={styles['icon-modify-image']}
-            svg="ico-pen-black"
+            svg="ico-pen-black-big"
           />
           Modifier
         </Button>
