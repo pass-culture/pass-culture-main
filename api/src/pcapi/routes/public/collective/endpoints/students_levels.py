@@ -3,6 +3,7 @@ from typing import cast
 from pcapi.core.educational import models as educational_models
 from pcapi.routes.public import blueprints
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
+from pcapi.routes.public.collective.serialization import students_levels as students_levels_serialization
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
@@ -17,7 +18,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
         **(
             {
                 "HTTP_200": (
-                    offers_serialization.CollectiveOffersListStudentLevelsResponseModel,
+                    students_levels_serialization.CollectiveOffersListStudentLevelsResponseModel,
                     "La liste des domaines d'éducation.",
                 ),
                 "HTTP_401": (
@@ -29,12 +30,12 @@ from pcapi.validation.routes.users_authentifications import api_key_required
     ),
 )
 @api_key_required
-def list_students_levels() -> offers_serialization.CollectiveOffersListStudentLevelsResponseModel:
+def list_students_levels() -> students_levels_serialization.CollectiveOffersListStudentLevelsResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées."""
-    return offers_serialization.CollectiveOffersListStudentLevelsResponseModel(
+    return students_levels_serialization.CollectiveOffersListStudentLevelsResponseModel(
         __root__=[
-            offers_serialization.CollectiveOffersStudentLevelResponseModel(
+            students_levels_serialization.CollectiveOffersStudentLevelResponseModel(
                 id=student_level.name, name=student_level.value
             )
             for student_level in educational_models.StudentLevels
