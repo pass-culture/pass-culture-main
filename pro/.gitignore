@@ -47,3 +47,5 @@ licenses.json
 # reports
 tyrion_report.html
 result.html
+
+public/icons/*.svg
