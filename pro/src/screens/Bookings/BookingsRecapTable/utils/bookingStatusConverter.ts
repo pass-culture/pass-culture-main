@@ -55,7 +55,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     historyClassName: 'bs-history-confirmed',
     statusClassName: 'booking-status-confirmed',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    svgIconFilename: 'ico-status-validated',
+    svgIconFilename: 'ico-status-validated-white',
   },
 ]
 
@@ -101,7 +101,7 @@ const COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     status: 'confirmée',
     label: 'L’établissement scolaire ne peut plus annuler la réservation',
     statusClassName: 'booking-status-confirmed',
-    svgIconFilename: 'ico-status-validated',
+    svgIconFilename: 'ico-status-validated-white',
   },
 ]
 
