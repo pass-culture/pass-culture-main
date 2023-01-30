@@ -1405,3 +1405,30 @@ class GetFilteredCollectiveOffersTest:
             status=educational_models.CollectiveOfferDisplayedStatus.ENDED.value,
         )
         assert offers.all() == [collective_offer_ended]
+
+
+@pytest.mark.usefixtures("db_session")
+class ExcludeOffersFromInactiveVenueProviderTest:
+    def test_exclude_offers_from_inactive_venue_provider(self):
+        active_venue_provider = providers_factories.VenueProviderFactory(isActive=True)
+        inactive_venue_provider = providers_factories.VenueProviderFactory(isActive=False)
+        offer_from_active_venue_provider = factories.OfferFactory(
+            lastProvider=active_venue_provider.provider,
+            venue=active_venue_provider.venue,
+        )
+        offer_not_from_provider = factories.OfferFactory()
+        offer_from_inactive_venue_provider = factories.OfferFactory(
+            lastProvider=inactive_venue_provider.provider,
+            venue=inactive_venue_provider.venue,
+        )
+        offer_from_deleted_venue_provider = factories.OfferFactory(
+            lastProvider=inactive_venue_provider.provider,
+        )
+
+        result_query = repository.exclude_offers_from_inactive_venue_provider(models.Offer.query)
+        selected_offers = result_query.all()
+
+        assert offer_from_active_venue_provider in selected_offers
+        assert offer_not_from_provider in selected_offers
+        assert offer_from_inactive_venue_provider not in selected_offers
+        assert offer_from_deleted_venue_provider not in selected_offers

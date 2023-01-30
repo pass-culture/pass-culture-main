@@ -28,6 +28,7 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
+from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.infrastructure.repository.pro_offers.offers_recap_domain_converter import to_domain
@@ -722,3 +723,22 @@ def search_offers_by_filters(
             offers = offers.filter(sa.func.unaccent(models.Offer.name).ilike(f"%{name_query}%")).limit(limit)
 
     return offers.distinct()
+
+
+def exclude_offers_from_inactive_venue_provider(query: BaseQuery) -> BaseQuery:
+    return (
+        query.outerjoin(models.Offer.lastProvider)
+        .outerjoin(
+            providers_models.VenueProvider,
+            sa.and_(
+                providers_models.Provider.id == providers_models.VenueProvider.providerId,
+                providers_models.VenueProvider.venueId == models.Offer.venueId,
+            ),
+        )
+        .filter(
+            sa.or_(
+                models.Offer.lastProviderId.is_(None),
+                providers_models.VenueProvider.isActive == True,
+            )
+        )
+    )
