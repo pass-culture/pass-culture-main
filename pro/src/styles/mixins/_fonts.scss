@@ -2,6 +2,7 @@
 @use "styles/variables/_colors.scss" as colors;
 
 $body-line-height: rem.torem(20px);
+$caption-line-height: rem.torem(16px);
 
 /* stylelint-disable pass-culture/no-font-properties */
 @mixin hero() {
@@ -62,7 +63,7 @@ $body-line-height: rem.torem(20px);
 @mixin caption() {
   font-size: rem.torem(12px);
   font-weight: 600;
-  line-height: rem.torem(16px);
+  line-height: $caption-line-height;
 }
 
 // seems future captions will be smaller

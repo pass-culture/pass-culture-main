@@ -39,7 +39,7 @@ describe('PriceCategories', () => {
     const values: PriceCategoriesFormValues = {
       priceCategories: [
         priceCategoryFormFactory(),
-        { ...priceCategoryFormFactory(), price: 0 },
+        priceCategoryFormFactory({ price: 0 }),
         priceCategoryFormFactory(),
       ],
       isDuo: false,
