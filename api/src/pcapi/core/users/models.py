@@ -381,7 +381,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     @property
     def full_name(self) -> str | None:
-        return f"{self.firstName or ''} {self.lastName or ''}".strip()
+        return (f"{self.firstName or ''} {self.lastName or ''}".strip()) or self.publicName
 
     @property
     def has_active_deposit(self):  # type: ignore [no-untyped-def]
