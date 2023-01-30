@@ -248,10 +248,10 @@ const Venue = ({
                       isExternal: false,
                     }}
                     onClick={() => {
-                      logEvent?.(
-                        VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
-                        venueIdTrackParam
-                      )
+                      logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
+                        from: location.pathname,
+                        ...venueIdTrackParam,
+                      })
                     }}
                     Icon={IcoPlusCircle}
                   >

@@ -81,15 +81,14 @@ const VenueFormScreen = ({
           })
         )
 
-    logEvent?.(Events.CLICKED_SAVE_VENUE, {
-      from: location.pathname,
-    })
-
+    let savedSuccess: boolean
     request
       .then(response => {
         if (!hasNewOfferCreationJourney || currentUser.isAdmin) {
           notify.success('Vos modifications ont bien été enregistrées')
         }
+
+        savedSuccess = true
 
         history.push(
           venueSubmitRedirectUrl(
@@ -103,6 +102,7 @@ const VenueFormScreen = ({
         )
       })
       .catch(error => {
+        savedSuccess = false
         let formErrors
         if (isErrorAPIError(error)) {
           formErrors = error.body
@@ -130,6 +130,12 @@ const VenueFormScreen = ({
           formik.setErrors(serializeApiErrors(formErrors, apiFieldsMap))
           formik.setStatus('apiError')
         }
+      })
+      .finally(() => {
+        logEvent?.(Events.CLICKED_SAVE_VENUE, {
+          from: location.pathname,
+          saved: savedSuccess,
+        })
       })
   }
 
