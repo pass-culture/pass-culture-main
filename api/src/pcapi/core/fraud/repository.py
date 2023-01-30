@@ -27,6 +27,9 @@ def has_failed_phone_validation(user: users_models.User) -> bool:
 
 
 def has_admin_ko_review(user: users_models.User) -> bool:
-    return db.session.query(
-        models.BeneficiaryFraudReview.query.filter_by(userId=user.id, review=models.FraudReviewStatus.KO).exists()
-    ).scalar()
+    latest_admin_review = (
+        models.BeneficiaryFraudReview.query.filter_by(userId=user.id)
+        .order_by(models.BeneficiaryFraudReview.dateReviewed.desc())
+        .first()
+    )
+    return bool(latest_admin_review and latest_admin_review.review == models.FraudReviewStatus.KO)
