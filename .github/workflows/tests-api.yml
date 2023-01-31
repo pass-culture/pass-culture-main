@@ -65,7 +65,7 @@ jobs:
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_ACCESS_TOKEN }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_CI_WEBHOOK }}
           SLACK_CHANNEL: dev
           SLACK_COLOR: ${{ job.status }}
           SLACK_USERNAME: Github Actions Bot
@@ -110,7 +110,7 @@ jobs:
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_ACCESS_TOKEN }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_CI_WEBHOOK }}
           SLACK_CHANNEL: dev
           SLACK_COLOR: ${{ job.status }}
           SLACK_USERNAME: Github Actions Bot
@@ -206,7 +206,7 @@ jobs:
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_ACCESS_TOKEN }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_CI_WEBHOOK }}
           SLACK_CHANNEL: dev
           SLACK_COLOR: ${{ job.status }}
           SLACK_USERNAME: Github Actions Bot
@@ -315,7 +315,7 @@ jobs:
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_ACCESS_TOKEN }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_CI_WEBHOOK }}
           SLACK_CHANNEL: dev
           SLACK_COLOR: ${{ job.status }}
           SLACK_USERNAME: Github Actions Bot
