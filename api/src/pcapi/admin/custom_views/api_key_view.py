@@ -6,15 +6,15 @@ from wtforms.fields import StringField
 from wtforms.validators import ValidationError
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.api import API_KEY_SEPARATOR
 from pcapi.core.offerers.api import generate_api_key
 from pcapi.core.offerers.models import ApiKey
-from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.models import db
 
 
 def check_siren(form: Form, field: Field) -> None:
-    offerer = find_offerer_by_siren(field.data)
+    offerer = offerers_repository.find_offerer_by_siren(field.data)
     if not offerer:
         raise ValidationError("Aucune structure existante avec ce SIREN.")
 
@@ -44,7 +44,7 @@ class ApiKeyView(BaseAdminView):
     def on_model_change(self, form: Form, model: ApiKey, is_created: bool) -> None:
         if is_created:
             with db.session.no_autoflush:
-                offerer_id = find_offerer_by_siren(form.offererSiren.data).id  # type: ignore [union-attr]
+                offerer_id = offerers_repository.find_offerer_by_siren(form.offererSiren.data).id  # type: ignore [union-attr]
                 api_key, clear_api_key = generate_api_key(offerer_id)
             model.offererId = offerer_id
             model.prefix = api_key.prefix

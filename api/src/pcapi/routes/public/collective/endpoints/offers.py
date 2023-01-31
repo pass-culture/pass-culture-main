@@ -3,7 +3,7 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offerers import exceptions as offerers_exceptions
-from pcapi.core.offerers import repository as offerers_repository
+from pcapi.core.offerers import repository
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
@@ -333,7 +333,7 @@ def patch_collective_offer_public(
         )
 
     if new_values.get("venueId"):
-        venue = offerers_repository.find_venue_by_id(new_values["venueId"])
+        venue = repository.find_venue_by_id(new_values["venueId"])
         if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):  # type: ignore [attr-defined]
             raise ApiErrors(
                 errors={
@@ -344,7 +344,7 @@ def patch_collective_offer_public(
 
     if new_values.get("offerVenue"):
         if new_values["offerVenue"] == collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value:
-            venue = offerers_repository.find_venue_by_id(new_values["offerVenue"]["venuId"])
+            venue = repository.find_venue_by_id(new_values["offerVenue"]["venuId"])
             if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):  # type: ignore [attr-defined]
                 raise ApiErrors(
                     errors={

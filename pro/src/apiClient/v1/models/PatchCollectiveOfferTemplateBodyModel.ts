@@ -22,6 +22,7 @@ export type PatchCollectiveOfferTemplateBodyModel = {
   priceDetail?: string | null;
   students?: Array<StudentLevels> | null;
   subcategoryId?: SubcategoryIdEnum | null;
+  venueId?: number | null;
   visualDisabilityCompliant?: boolean | null;
 };
 

@@ -6,7 +6,7 @@ import sqlalchemy.orm as sqla_orm
 
 import pcapi.core.educational.exceptions as educational_exceptions
 from pcapi.core.offerers import api
-from pcapi.core.offerers import repository
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.exceptions import ApiKeyCountMaxReached
 from pcapi.core.offerers.exceptions import ApiKeyDeletionDenied
 from pcapi.core.offerers.exceptions import ApiKeyPrefixGenerationError
@@ -47,7 +47,7 @@ N_VENUES_THRESHOLD_TO_SHOW_OFFER_COUNT = 20
     on_error_statuses=[400], response_model=GetOfferersListResponseModel, api=blueprint.pro_private_schema
 )
 def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseModel:
-    offerers_query = repository.get_all_offerers_for_user(
+    offerers_query = offerers_repository.get_all_offerers_for_user(
         current_user,
         keywords=query.keywords,
     )
@@ -94,7 +94,7 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
             offer_counts.update({venue.id: -1 for venue in offerer.managedVenues})
         else:
             venue_ids = {venue.id for venue in offerer.managedVenues}
-        offer_counts.update(repository.get_offer_counts_by_venue(venue_ids))
+        offer_counts.update(offerers_repository.get_offer_counts_by_venue(venue_ids))
 
     return GetOfferersListResponseModel(
         offerers=[
@@ -117,7 +117,7 @@ def list_offerers_names(query: GetOfferersNamesQueryModel) -> GetOfferersNamesRe
     if query.offerer_id is not None:
         offerers = offerers_models.Offerer.query.filter(offerers_models.Offerer.id == dehumanize(query.offerer_id))
     else:
-        offerers = repository.get_all_offerers_for_user(
+        offerers = offerers_repository.get_all_offerers_for_user(
             user=current_user,
             validated=query.validated,
             include_non_validated_user_offerers=not query.validated_for_user,
@@ -219,7 +219,7 @@ def get_available_reimbursement_points(
     offerers_models.Offerer.query.get_or_404(offerer_id)
     check_user_has_access_to_offerer(current_user, offerer_id)
 
-    reimbursement_points = repository.find_available_reimbursement_points_for_offerer(offerer_id)
+    reimbursement_points = offerers_repository.find_available_reimbursement_points_for_offerer(offerer_id)
     return offerers_serialize.ReimbursementPointListResponseModel(
         __root__=[
             offerers_serialize.ReimbursementPointResponseModel(

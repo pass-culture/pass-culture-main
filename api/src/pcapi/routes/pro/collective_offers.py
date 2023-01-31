@@ -206,6 +206,8 @@ def edit_collective_offer(
         raise ApiErrors({"venueId": "new venue need to have same offerer"}, 403)
     except offers_exceptions.VenueIdDontExist:
         raise ApiErrors({"venueId": "le lieu doit exister"}, 404)
+    except offers_exceptions.CollectiveOfferUsedOrReimbursedCantBeEdited:
+        raise ApiErrors({"global": "Les offres utilisées ou remboursées ne sont pas modifiable."}, 403)
     except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not update offer: educational domains not found.",
@@ -292,7 +294,7 @@ def edit_collective_offer_template(
             {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
             status_code=404,
         )
-    offer = educational_api_offer.get_collective_offer_template_by_id(dehumanized_id)
+    offer = educational_offer_api.get_collective_offer_template_by_id(dehumanized_id)
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
 
 

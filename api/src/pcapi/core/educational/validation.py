@@ -8,6 +8,7 @@ from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.offers import exceptions as offers_exception
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import collective_offers_serialize
@@ -133,6 +134,4 @@ def check_if_offer_not_used_or_reimbursed(offer: CollectiveOffer) -> None:
     if offer.collectiveStock:
         for booking in offer.collectiveStock.collectiveBookings:
             if booking.status is CollectiveBookingStatus.USED or booking.status is CollectiveBookingStatus.REIMBURSED:
-                raise ApiErrors(
-                    {"global": ["Les offres utilisées ou remboursées ne sont pas modifiable."]}, status_code=400
-                )
+                raise offers_exception.CollectiveOfferUsedOrReimbursedCantBeEdited()

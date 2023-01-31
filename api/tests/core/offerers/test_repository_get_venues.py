@@ -1,7 +1,7 @@
 import pytest
 
+from pcapi.core.offerers import repository
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.users.factories as users_factories
 
 
@@ -74,7 +74,7 @@ class GetFilteredVenuesForProUserTest:
         venue_3 = offerers_factories.VenueFactory(name="CC - name", managingOfferer=offerer)
 
         # when
-        venue_list = offerers_repository.get_filtered_venues(pro_user_id=pro_user.id, user_is_admin=False)
+        venue_list = repository.get_filtered_venues(pro_user_id=pro_user.id, user_is_admin=False)
 
         # then
         assert len(venue_list) == 3
@@ -88,7 +88,7 @@ class GetFilteredVenuesForProUserTest:
         pro_user = users_factories.ProFactory(email="user.pro@test.com")
 
         # when
-        venue_list = offerers_repository.get_filtered_venues(pro_user_id=pro_user.id, user_is_admin=False)
+        venue_list = repository.get_filtered_venues(pro_user_id=pro_user.id, user_is_admin=False)
 
         # then
         assert len(venue_list) == 0
@@ -100,7 +100,7 @@ class GetFilteredVenuesForProUserTest:
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when
-        venue_list = offerers_repository.get_filtered_venues(pro_user_id=pro_user.id, user_is_admin=False)
+        venue_list = repository.get_filtered_venues(pro_user_id=pro_user.id, user_is_admin=False)
 
         # then
         assert len(venue_list) == 4
@@ -118,7 +118,7 @@ class GetFilteredVenuesForProUserTest:
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when
-        venue_list = offerers_repository.get_filtered_venues(
+        venue_list = repository.get_filtered_venues(
             pro_user_id=pro_user.id,
             user_is_admin=False,
             validated_offerer=True,
@@ -139,7 +139,7 @@ class GetFilteredVenuesForProUserTest:
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when
-        venue_list = offerers_repository.get_filtered_venues(
+        venue_list = repository.get_filtered_venues(
             pro_user_id=pro_user.id,
             user_is_admin=False,
             validated_offerer=False,
@@ -159,7 +159,7 @@ class GetFilteredVenuesForProUserTest:
         expected_venue = venues["owned_venue_validated"]
 
         # when
-        venue_list = offerers_repository.get_filtered_venues(
+        venue_list = repository.get_filtered_venues(
             pro_user_id=pro_user.id,
             user_is_admin=False,
             offerer_id=expected_venue.managingOfferer.id,
@@ -178,7 +178,7 @@ class GetFilteredVenuesForProUserTest:
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when
-        venue_list = offerers_repository.get_filtered_venues(
+        venue_list = repository.get_filtered_venues(
             pro_user_id=pro_user.id,
             user_is_admin=False,
             active_offerers_only=True,
@@ -197,7 +197,7 @@ class GetFilteredVenuesForProUserTest:
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when
-        venue_list = offerers_repository.get_filtered_venues(
+        venue_list = repository.get_filtered_venues(
             pro_user_id=pro_user.id,
             user_is_admin=False,
             active_offerers_only=False,
@@ -247,7 +247,7 @@ class GetFilteredVenuesForAdminTest:
         venues = self._setup_venues_for_users()
 
         # when
-        venue_list = offerers_repository.get_filtered_venues(
+        venue_list = repository.get_filtered_venues(
             pro_user_id=admin.id,
             user_is_admin=True,
         )
@@ -268,9 +268,7 @@ class GetFilteredVenuesForAdminTest:
         venues = self._setup_venues_for_users()
 
         # when
-        venue_list = offerers_repository.get_filtered_venues(
-            pro_user_id=admin.id, user_is_admin=True, validated_offerer=True
-        )
+        venue_list = repository.get_filtered_venues(pro_user_id=admin.id, user_is_admin=True, validated_offerer=True)
 
         # then
         assert len(venue_list) == 2
@@ -286,9 +284,7 @@ class GetFilteredVenuesForAdminTest:
         venues = self._setup_venues_for_users()
 
         # when
-        venue_list = offerers_repository.get_filtered_venues(
-            pro_user_id=admin.id, user_is_admin=True, validated_offerer=False
-        )
+        venue_list = repository.get_filtered_venues(pro_user_id=admin.id, user_is_admin=True, validated_offerer=False)
 
         # then
         assert len(venue_list) == 2

@@ -18,10 +18,10 @@ from pcapi.core.educational.models import HasImageMixin
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import repository
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exception
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offer_validation
-from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
@@ -615,10 +615,10 @@ def update_collective_offer(
     educational_validation.check_if_offer_not_used_or_reimbursed(offer_to_update)
 
     if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
-        offerer = repository.get_by_collective_offer_id(offer_to_update.id)
-        new_venue = repository.get_venue_by_id(new_values["venueId"])
+        new_venue = offerers_repository.get_venue_by_id(new_values["venueId"])
         if not new_venue:
             raise offers_exception.VenueIdDontExist()
+        offerer = offerers_repository.get_by_collective_offer_id(offer_to_update.id)
         if new_venue.managingOffererId != offerer.id:
             raise offers_exception.OffererOfVenueDontMatchOfferer()
 
@@ -637,12 +637,11 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
     query = educational_models.CollectiveOfferTemplate.query
     query = query.filter(educational_models.CollectiveOfferTemplate.id == offer_id)
     offer_to_update = query.first()
-
     if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
-        offerer = repository.get_by_collective_offer_id(offer_to_update.id)
-        new_venue = repository.get_venue_by_id(new_values["venueId"])
+        new_venue = offerers_repository.get_venue_by_id(new_values["venueId"])
         if not new_venue:
             raise offers_exception.VenueIdDontExist()
+        offerer = offerers_repository.get_by_collective_offer_id(offer_to_update.id)
         if new_venue.managingOffererId != offerer.id:
             raise offers_exception.OffererOfVenueDontMatchOfferer()
 
@@ -679,7 +678,7 @@ def _update_collective_offer(
 
 def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
     collective_offer_ids_tuples = query.filter(
-        educational_models.CollectiveOffer.validation == OfferValidationStatus.APPROVED
+        educational_models.CollectiveOffer.validation == offers_models.OfferValidationStatus.APPROVED
     ).with_entities(educational_models.CollectiveOffer.id)
 
     collective_offer_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
@@ -702,7 +701,7 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
 
 def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
     collective_offer_ids_tuples = query.filter(
-        educational_models.CollectiveOfferTemplate.validation == OfferValidationStatus.APPROVED
+        educational_models.CollectiveOfferTemplate.validation == offers_models.OfferValidationStatus.APPROVED
     ).with_entities(educational_models.CollectiveOfferTemplate.id)
 
     collective_offer_template_ids = [offer_id for offer_id, in collective_offer_ids_tuples]

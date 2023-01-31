@@ -1,6 +1,6 @@
 from typing import cast
 
-from pcapi.core.offerers import repository as offerers_repository
+from pcapi.core.offerers import repository
 from pcapi.routes.public import blueprints
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.public.collective.serialization import venues as venues_serialization
@@ -38,7 +38,7 @@ def list_venues() -> venues_serialization.CollectiveOffersListVenuesResponseMode
     Tous les lieux enregistrés, sont listés ici avec leurs coordonnées.
     """
     offerer_id = current_api_key.offererId  # type: ignore [attr-defined]
-    venues = offerers_repository.get_all_venues_by_offerer_id(offerer_id)
+    venues = repository.get_all_venues_by_offerer_id(offerer_id)
 
     return venues_serialization.CollectiveOffersListVenuesResponseModel(
         __root__=[venues_serialization.CollectiveOffersVenueResponseModel.from_orm(venue) for venue in venues]

@@ -1,6 +1,6 @@
 import logging
 
-from pcapi.core.offerers.repository import find_venue_by_id
+from pcapi.core.offerers import repository
 from pcapi.core.providers import api
 from pcapi.core.providers import constants
 from pcapi.core.providers.models import StockDetail
@@ -28,7 +28,7 @@ def synchronize_stocks_job(serialized_stock_details: list[dict], venue_id: str) 
         for stock_detail in serialized_stock_details
     ]
 
-    venue = find_venue_by_id(venue_id)  # type: ignore [arg-type]
+    venue = repository.find_venue_by_id(venue_id)  # type: ignore [arg-type]
     operations = api.synchronize_stocks(stock_details, venue, provider_id=pc_provider.id)  # type: ignore [arg-type]
     logger.info(
         "Processed stocks synchronization",

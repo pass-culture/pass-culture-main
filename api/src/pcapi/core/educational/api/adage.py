@@ -11,7 +11,6 @@ from pcapi.core.educational.api.venue import get_relative_venues_by_siret
 from pcapi.core.mails.transactional import send_eac_offerer_activation_email
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
-from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.models import db
 from pcapi.routes.serialization import venues_serialize
 from pcapi.utils.cache import get_from_cache
@@ -113,7 +112,7 @@ def synchronize_adage_ids_on_venues() -> None:
         if not venue.adageId:
             # Update the users in SiB in case of previous adageId being none
             # This is because we track if the user has an adageId, not the value of the adageId
-            emails = get_emails_by_venue(venue)
+            emails = offerers_repository.get_emails_by_venue(venue)
             for email in emails:
                 update_external_pro(email)
             send_eac_offerer_activation_email(venue, list(emails))

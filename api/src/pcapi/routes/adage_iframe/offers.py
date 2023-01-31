@@ -4,7 +4,7 @@ from sqlalchemy.orm import exc as orm_exc
 
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api.categories import get_educational_categories
-from pcapi.core.offerers.repository import get_venue_by_id
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
@@ -49,7 +49,7 @@ def get_collective_offer(
 
     offer_venue_id = offer.offerVenue.get("venueId", None)
     if offer_venue_id:
-        offer_venue = get_venue_by_id(dehumanize_or_raise(offer_venue_id))
+        offer_venue = offerers_repository.get_venue_by_id(dehumanize_or_raise(offer_venue_id))
     else:
         offer_venue = None
 
@@ -71,7 +71,7 @@ def get_collective_offer_template(
 
     offer_venue_id = offer.offerVenue.get("venueId", None)
     if offer_venue_id:
-        offer_venue = get_venue_by_id(dehumanize_or_raise(offer_venue_id))
+        offer_venue = offerers_repository.get_venue_by_id(dehumanize_or_raise(offer_venue_id))
     else:
         offer_venue = None
 

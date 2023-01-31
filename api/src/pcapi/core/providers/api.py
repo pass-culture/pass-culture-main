@@ -9,7 +9,7 @@ from pcapi.core.logging import log_elapsed
 from pcapi.core.mails.transactional import send_venue_provider_deleted_email
 from pcapi.core.mails.transactional import send_venue_provider_disabled_email
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers.repository import find_venue_by_id
+from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.providers.constants as providers_constants
@@ -37,7 +37,7 @@ def create_venue_provider(
     if not provider:
         raise providers_exceptions.ProviderNotFound()
 
-    venue = find_venue_by_id(venue_id)
+    venue = offerers_repository.find_venue_by_id(venue_id)
 
     if not venue:
         raise providers_exceptions.VenueNotFound()

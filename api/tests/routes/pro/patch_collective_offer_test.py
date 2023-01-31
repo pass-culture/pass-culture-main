@@ -402,10 +402,10 @@ class Returns400Test:
         )
 
         # Then
-        assert response.status_code == 400
-        assert response.json == {"global": ["Les offres utilisées ou remboursées ne sont pas modifiable."]}
+        assert response.status_code == 403
+        assert response.json == {"global": "Les offres utilisées ou remboursées ne sont pas modifiable."}
 
-    def test_patch_collective_offer_replacing_by_non_unknown_venue(self, client):
+    def test_patch_collective_offer_replacing_by_unknown_venue(self, client):
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(

@@ -1,9 +1,9 @@
 from pcapi.core import mails
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offerers.repository as offerers_repository
 from pcapi.settings import PRO_URL
 from pcapi.utils.human_ids import humanize
 

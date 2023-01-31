@@ -5,8 +5,8 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.offerers import exceptions as offerers_exceptions
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
-import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer

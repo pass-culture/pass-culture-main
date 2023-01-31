@@ -124,6 +124,10 @@ class VenueIdDontExist(Exception):
     pass
 
 
+class CollectiveOfferUsedOrReimbursedCantBeEdited(Exception):
+    pass
+
+
 class UnknownOfferSubCategory(OfferCreationBaseException):
     def __init__(self) -> None:
         super().__init__(

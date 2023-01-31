@@ -35,11 +35,11 @@ import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.validation as finance_validation
 import pcapi.core.history.api as history_api
 from pcapi.core.mails.transactional.pro.permanent_venue_needs_picture import send_permanent_venue_needs_picture
+from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.exceptions as offerers_exception
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
-import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.offers.api import update_stock_id_at_providers
 from pcapi.models import db
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id

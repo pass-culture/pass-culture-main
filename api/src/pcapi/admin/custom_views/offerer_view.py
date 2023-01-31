@@ -16,10 +16,10 @@ from pcapi.core.external import zendesk_sell
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
+from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import OffererTag
-import pcapi.core.offerers.repository as offerers_repository
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 from pcapi.utils.urls import build_pc_pro_offerer_link

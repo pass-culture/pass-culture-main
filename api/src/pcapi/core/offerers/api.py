@@ -26,6 +26,7 @@ import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
@@ -49,7 +50,6 @@ from pcapi.utils.regions import get_department_codes_for_region
 
 from . import exceptions
 from . import models
-from . import repository as offerers_repository
 from . import validation
 
 

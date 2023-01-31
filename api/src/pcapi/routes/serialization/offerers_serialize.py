@@ -4,9 +4,9 @@ from typing import Iterable
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
+from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offerers.repository as offerers_repository
-import pcapi.core.users.models as users_models
+from pcapi.core.users import models as users_models
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import humanize_field
