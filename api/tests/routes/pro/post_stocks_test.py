@@ -15,6 +15,7 @@ from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import dehumanize
@@ -26,7 +27,7 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class Returns201Test:
     @patch("pcapi.core.search.async_index_offer_ids")
-    def test_create_one_stock(self, mocked_async_index_offer_ids, app):
+    def test_create_one_product_stock(self, mocked_async_index_offer_ids, app):
         # Given
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(
@@ -52,9 +53,112 @@ class Returns201Test:
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert offer.isActive == False
+        assert offers_models.PriceCategory.query.count() == 0
+        assert offers_models.PriceCategoryLabel.query.count() == 0
         assert offer.validation == OfferValidationStatus.DRAFT
         assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
         mocked_async_index_offer_ids.assert_not_called()
+
+    def test_create_event_stocks(self, app):
+        # Given
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        beginning = datetime.utcnow() + relativedelta(days=10)
+
+        # When
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [
+                {
+                    "price": 20,
+                    "beginningDatetime": serialize(beginning),
+                    "bookingLimitDatetime": serialize(beginning),
+                },
+                {
+                    "price": 20,
+                    "beginningDatetime": serialize(beginning),
+                    "bookingLimitDatetime": serialize(beginning),
+                },
+                {
+                    "price": 30,
+                    "beginningDatetime": serialize(beginning),
+                    "bookingLimitDatetime": serialize(beginning),
+                },
+            ],
+        }
+
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
+        assert response.status_code == 201
+
+        response_dict = response.json
+        assert len(response_dict["stocks"]) == len(stock_data["stocks"])
+
+        created_stocks = Stock.query.order_by(Stock.price).all()
+        assert len(created_stocks) == 3
+        assert offers_models.PriceCategory.query.count() == 2
+        assert offers_models.PriceCategoryLabel.query.count() == 2
+        assert created_stocks[0].price == 20
+        assert created_stocks[0].priceCategory.price == 20
+        assert created_stocks[0].priceCategory.label == "Tarif 1"
+        assert created_stocks[0].priceCategory is created_stocks[1].priceCategory
+        assert created_stocks[2].price == 30
+        assert created_stocks[2].priceCategory.price == 30
+        assert created_stocks[2].priceCategory.label == "Tarif 2"
+
+    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
+    def test_create_event_stocks_with_multi_price(self, app):
+        # Given
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        shared_label = offers_factories.PriceCategoryLabelFactory(label="Shared", venue=offer.venue)
+        first_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=shared_label, price=20)
+        unique_label = offers_factories.PriceCategoryLabelFactory(label="unique", venue=offer.venue)
+        second_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=unique_label, price=30)
+        beginning = datetime.utcnow() + relativedelta(days=10)
+
+        # When
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [
+                {
+                    "priceCategoryId": first_price_cat.id,
+                    "beginningDatetime": serialize(beginning),
+                    "bookingLimitDatetime": serialize(beginning),
+                },
+                {
+                    "priceCategoryId": second_price_cat.id,
+                    "beginningDatetime": serialize(beginning),
+                    "bookingLimitDatetime": serialize(beginning),
+                },
+                {
+                    "priceCategoryId": first_price_cat.id,
+                    "beginningDatetime": serialize(beginning),
+                    "bookingLimitDatetime": serialize(beginning),
+                },
+            ],
+        }
+
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
+        assert response.status_code == 201
+        created_stocks = Stock.query.order_by(Stock.price).all()
+        assert len(created_stocks) == 3
+        assert offers_models.PriceCategory.query.count() == 2
+        assert offers_models.PriceCategoryLabel.query.count() == 2
+        assert created_stocks[0].price == 20
+        assert created_stocks[0].priceCategory.price == 20
+        assert created_stocks[0].priceCategory.label == "Shared"
+        assert created_stocks[0].priceCategory is created_stocks[1].priceCategory
+        assert created_stocks[2].priceCategory is second_price_cat
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_edit_one_stock(self, mocked_async_index_offer_ids, client):
@@ -378,7 +482,7 @@ class Returns400Test:
 
     def when_invalid_quantity_or_price_for_edition_and_creation(self, app):
         # Given
-        offer = offers_factories.ThingOfferFactory()
+        offer = offers_factories.EventOfferFactory()
         existing_stock = offers_factories.StockFactory(offer=offer, price=10)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -393,11 +497,13 @@ class Returns400Test:
                 {
                     "humanizedId": humanize(existing_stock.id),
                     "price": -3,
+                    "beginningDatetime": serialize(booking_limit_datetime),
                     "bookingLimitDatetime": serialize(booking_limit_datetime),
                 },
                 {
                     "quantity": -2,
                     "price": 0,
+                    "beginningDatetime": serialize(booking_limit_datetime),
                     "bookingLimitDatetime": serialize(booking_limit_datetime),
                 },
             ],
@@ -612,6 +718,58 @@ class Returns400Test:
         assert response_dict == {
             "stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"],
         }
+
+    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
+    def test_cannot_create_event_without_price_category(self, app):
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        beginning = datetime.utcnow() + relativedelta(days=10)
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [
+                {
+                    "price": 20,
+                    "beginningDatetime": serialize(beginning),
+                    "bookingLimitDatetime": serialize(beginning),
+                }
+            ],
+        }
+
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
+        assert response.status_code == 400
+        assert response.json["price_category_id"] == ["Le tarif est obligatoire pour les offres évènement"]
+
+    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
+    def test_cannot_create_event_with_wrong_price_category_id(self, app):
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        price_category = offers_factories.PriceCategoryFactory(offer=offer)
+        beginning = datetime.utcnow() + relativedelta(days=10)
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [
+                {
+                    "price": 20,
+                    "beginningDatetime": serialize(beginning),
+                    "bookingLimitDatetime": serialize(beginning),
+                    "priceCategoryId": price_category.id + 1,
+                }
+            ],
+        }
+
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
+        assert response.status_code == 400
+        assert response.json["price_category_id"] == [f"Le tarif avec l'id {price_category.id + 1} n'existe pas"]
 
 
 @pytest.mark.usefixtures("db_session")

@@ -178,9 +178,7 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 400
-        assert response.json == {
-            "price_category_id": [f"La catégorie de prix avec l'id {price_category.id + 1} n'existe pas"]
-        }
+        assert response.json == {"price_category_id": [f"Le tarif avec l'id {price_category.id + 1} n'existe pas"]}
 
     def test_update_unreachable_price_category(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
@@ -212,5 +210,5 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
         assert response.status_code == 400
         assert response.json == {
-            "price_category_id": [f"La catégorie de prix avec l'id {unreachable_price_category.id} n'existe pas"]
+            "price_category_id": [f"Le tarif avec l'id {unreachable_price_category.id} n'existe pas"]
         }
