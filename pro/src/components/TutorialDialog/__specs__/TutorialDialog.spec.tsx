@@ -1,14 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
-import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import TutorialDialog from '../TutorialDialog'
 
@@ -23,38 +20,31 @@ const stepTitles = [
   'Suivre et gérer vos réservations',
 ]
 
-const renderTutorialDialog = async (store: Store) => {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <TutorialDialog />
-      </MemoryRouter>
-    </Provider>
-  )
-}
+const renderTutorialDialog = (storeOverrides: any) =>
+  renderWithProviders(<TutorialDialog />, { storeOverrides })
 
 const mockLogEvent = jest.fn()
 
 describe('tutorial modal', () => {
-  let store: Store
+  let storeOverrides: any
 
   beforeEach(() => {
-    store = configureTestStore({})
+    storeOverrides = {}
   })
   it('should trigger an event when the user arrive on /accueil for the first time', async () => {
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
-    store = configureTestStore({
+    storeOverrides = {
       user: {
         currentUser: {
           id: 'test_id',
           hasSeenProTutorials: false,
         },
       },
-    })
-    renderTutorialDialog(store)
+    }
+    renderTutorialDialog(storeOverrides)
     const closeButton = screen.getByTitle('Fermer la modale')
     await userEvent.click(closeButton)
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.TUTO_PAGE_VIEW, {
@@ -65,31 +55,31 @@ describe('tutorial modal', () => {
   })
 
   it('should show tutorial dialog if user has not seen it yet', async () => {
-    store = configureTestStore({
+    storeOverrides = {
       user: {
         currentUser: {
           id: 'test_id',
           hasSeenProTutorials: false,
         },
       },
-    })
+    }
 
-    await renderTutorialDialog(store)
+    await renderTutorialDialog(storeOverrides)
 
     expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
   })
 
   it("shouldn't show tutorial dialog if user has already seen it", async () => {
-    store = configureTestStore({
+    storeOverrides = {
       user: {
         currentUser: {
           id: 'test_id',
           hasSeenProTutorials: true,
         },
       },
-    })
+    }
 
-    await renderTutorialDialog(store)
+    await renderTutorialDialog(storeOverrides)
 
     expect(screen.queryByText(stepTitles[0])).not.toBeInTheDocument()
   })
@@ -97,16 +87,16 @@ describe('tutorial modal', () => {
   describe('interacting with navigation buttons', () => {
     let buttonNext: HTMLElement
     beforeEach(async () => {
-      store = configureTestStore({
+      storeOverrides = {
         user: {
           currentUser: {
             id: 'test_id',
             hasSeenProTutorials: false,
           },
         },
-      })
+      }
 
-      await renderTutorialDialog(store)
+      await renderTutorialDialog(storeOverrides)
       buttonNext = screen.getByText('Suivant')
     })
 

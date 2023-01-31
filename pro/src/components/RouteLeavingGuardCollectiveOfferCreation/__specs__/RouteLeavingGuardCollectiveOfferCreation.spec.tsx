@@ -11,7 +11,7 @@ import RouteLeavingGuardCollectiveOfferCreation, {
   RouteLeavingGuardCollectiveOfferCreationProps,
 } from '../RouteLeavingGuardCollectiveOfferCreation'
 
-const renderRouteLeavingGuardCollectiveOfferCreation = async (
+const renderRouteLeavingGuardCollectiveOfferCreation = (
   props: RouteLeavingGuardCollectiveOfferCreationProps,
   history: History
 ) => {

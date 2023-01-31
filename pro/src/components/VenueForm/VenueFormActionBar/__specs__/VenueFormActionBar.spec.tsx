@@ -1,13 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
-import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { Router } from 'react-router'
 
 import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueFormActionBar } from '../index'
 
@@ -16,37 +13,31 @@ const renderVanueFormActionBar = ({
 }: {
   isCreatingVenue: boolean
 }) => {
-  render(
-    <Provider
-      store={configureTestStore({
-        user: {
-          initialized: true,
-          currentUser: {
-            id: 'EY',
-            isAdmin: true,
-            publicName: 'USER',
-          } as SharedCurrentUserResponseModel,
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser: {
+        id: 'EY',
+        isAdmin: true,
+        publicName: 'USER',
+      } as SharedCurrentUserResponseModel,
+    },
+    features: {
+      list: [
+        {
+          nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
+          isActive: true,
         },
-        features: {
-          list: [
-            {
-              nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
-              isActive: true,
-            },
-          ],
-          initialized: true,
-        },
-      })}
-    >
-      <Router history={createBrowserHistory()}>
-        <Formik initialValues={{}} onSubmit={jest.fn()}>
-          <VenueFormActionBar
-            isCreatingVenue={isCreatingVenue}
-            offererId="59"
-          />
-        </Formik>
-      </Router>
-    </Provider>
+      ],
+      initialized: true,
+    },
+  }
+
+  renderWithProviders(
+    <Formik initialValues={{}} onSubmit={jest.fn()}>
+      <VenueFormActionBar isCreatingVenue={isCreatingVenue} offererId="59" />
+    </Formik>,
+    { storeOverrides }
   )
 }
 jest.mock('hooks/useRemoteConfig', () => ({

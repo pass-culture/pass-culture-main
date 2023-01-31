@@ -1,10 +1,8 @@
-import { render } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
 
 import useNotification from 'hooks/useNotification'
 import * as notificationReducer from 'store/reducers/notificationReducer'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 const TestComponent = (): JSX.Element | null => {
   const notify = useNotification()
@@ -37,11 +35,7 @@ describe('useNotification', () => {
       'showNotification'
     )
 
-    render(
-      <Provider store={configureTestStore()}>
-        <TestComponent />
-      </Provider>
-    )
+    renderWithProviders(<TestComponent />)
 
     expect(mockShowNotification).toHaveBeenCalledTimes(4)
     expect(mockShowNotification).toHaveBeenNthCalledWith(1, {
