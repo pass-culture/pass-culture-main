@@ -246,8 +246,11 @@ class PriceBookingTest:
     def test_price_booking_checks_pricing_point(self):
         booking = bookings_factories.UsedBookingFactory()
         assert booking.venue.current_pricing_point_id is None
-        pricing = api.price_booking(booking)
-        assert pricing is None
+        # We're not interested in the error details. The exception is
+        # a safety belt, we should not call `price_booking()` if there
+        # is no pricing point.
+        with pytest.raises(ValueError):
+            api.price_booking(booking)
 
     def test_num_queries(self):
         booking = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())
@@ -667,6 +670,47 @@ class DeleteDependentPricingsTest:
         with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[pricing_point2.id]):
             api._delete_dependent_pricings(booking, "some log message")
         assert models.Pricing.query.one() == pricing
+
+    def test_scenario5(self):
+        # 0. Venue is linked to pricing point 1.
+        # 1. Booking B1 and B2 are used on 2022-12-15.
+        # 2. Venue is linked to pricing point 2.
+        # B2 should be priced after B1 (orderer by their id).
+        venue = offerers_factories.VenueFactory(
+            siret=None,
+            comment="no SIRET",
+        )
+        offerer = venue.managingOfferer
+        ppoint1 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_api.link_venue_to_pricing_point(
+            venue,
+            ppoint1.id,
+            datetime.datetime(2022, 1, 1),
+        )
+        ppoint2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_api.link_venue_to_pricing_point(
+            venue,
+            ppoint2.id,
+            datetime.datetime(2022, 12, 20),
+            force_link=True,
+        )
+
+        used_at = datetime.datetime(2022, 12, 15)  # during ppoint1 link period
+        b1 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, dateUsed=used_at)
+        b2 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, dateUsed=used_at)
+
+        # Suppose that we priced b2 first (which we should not).
+        factories.PricingFactory(booking=b2, pricingPoint=ppoint1)
+        # If we were to price b1 now, that should delete b2's pricing
+        # because b1 must be priced before b2.
+        api.price_booking(b1)
+        assert b1.pricings
+        assert not b2.pricings
+        # Now price b2...
+        api.price_booking(b2)
+        assert b2.pricings
+        # The pricing of b1 should not be deleted.
+        assert b1.pricings
 
 
 class PriceBookingsTest:

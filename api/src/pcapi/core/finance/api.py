@@ -236,35 +236,61 @@ def _get_bookings_to_price(
     model: typing.Type[bookings_models.Booking] | typing.Type[educational_models.CollectiveBooking],
     window: tuple[datetime.datetime, datetime.datetime],
 ) -> BaseQuery:
-    query = model.query
+    bookings_with_right_pricing_point = model.query
     if model == bookings_models.Booking:
-        query = (
-            query.filter(
-                bookings_models.Booking.status == bookings_models.BookingStatus.USED,
-            )
-            .join(bookings_models.Booking.stock)
-            .outerjoin(
-                models.Pricing,
-                models.Pricing.bookingId == bookings_models.Booking.id,
-            )
-            .order_by(*_PRICE_BOOKINGS_ORDER_CLAUSE)
-        )
+        bookings_with_right_pricing_point = bookings_with_right_pricing_point.filter(
+            bookings_models.Booking.status == bookings_models.BookingStatus.USED,
+        ).outerjoin(models.Pricing, models.Pricing.bookingId == model.id)
     else:
-        query = query.outerjoin(
-            models.Pricing,
-            models.Pricing.collectiveBookingId == educational_models.CollectiveBooking.id,
-        ).order_by(
+        bookings_with_right_pricing_point = bookings_with_right_pricing_point.outerjoin(
+            models.Pricing, models.Pricing.collectiveBookingId == model.id
+        )
+
+    # Select the "right" pricing point link to use for each booking.
+    # This is done in a CTE because we must first find those links,
+    # and only then apply a filter to look for bookings.
+    bookings_with_right_pricing_point = (
+        bookings_with_right_pricing_point.filter(
+            model.dateUsed.between(*window),  # type: ignore [union-attr]
+            models.Pricing.id.is_(None) | (models.Pricing.status == models.PricingStatus.CANCELLED),
+        )
+        .distinct(model.id, offerers_models.VenuePricingPointLink.venueId)
+        .join(model.venue)
+        .join(offerers_models.Venue.pricing_point_links)
+        .filter(
+            offerers_models.VenuePricingPointLink.timespan.contains(model.dateUsed)
+            # See comment in `_delete_dependent_pricings()` about the corner cases
+            # that we ignore here.
+            | (model.dateUsed < sqla.func.lower(offerers_models.VenuePricingPointLink.timespan))
+        )
+        .order_by(
+            model.id,
+            offerers_models.VenuePricingPointLink.venueId,
+            sqla.func.lower(offerers_models.VenuePricingPointLink.timespan),
+        )
+        .with_entities(
+            model.id.label("booking_id"),  # type: ignore [attr-defined]
+            offerers_models.VenuePricingPointLink.id.label("pricing_point_link_id"),
+        )
+        .cte("bookings_with_right_pricing_point")
+    )
+
+    query = (
+        db.session.query(model)
+        .join(bookings_with_right_pricing_point, bookings_with_right_pricing_point.c.booking_id == model.id)
+        .join(
+            offerers_models.VenuePricingPointLink,
+            offerers_models.VenuePricingPointLink.id == bookings_with_right_pricing_point.c.pricing_point_link_id,
+        )
+    )
+
+    if model == bookings_models.Booking:
+        query = query.join(bookings_models.Booking.stock).order_by(*_PRICE_BOOKINGS_ORDER_CLAUSE)
+    else:
+        query = query.order_by(
             educational_models.CollectiveBooking.dateUsed,
             educational_models.CollectiveBooking.id,
         )
-
-    query = query.filter(
-        model.dateUsed.between(*window),  # type: ignore [union-attr]
-        models.Pricing.id.is_(None) | (models.Pricing.status == models.PricingStatus.CANCELLED),
-    )
-
-    query = query.join(model.venue)
-    query = query.join(offerers_models.Venue.pricing_point_links)
 
     query = query.options(
         sqla_orm.load_only(model.id),
@@ -335,8 +361,6 @@ def get_non_cancelled_pricing_from_booking(
 def price_booking(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> models.Pricing | None:
-    if not booking.venue.pricing_point_links:
-        return None
     # Handle bookings that were used when we fetched them in `price_bookings()`
     # but have been marked as unused since then.
     if not booking.dateUsed:
@@ -366,8 +390,6 @@ def price_booking(
         ):
             return None
 
-        if not booking.venue.pricing_point_links:
-            return None
         pricing_point = _get_pricing_point_link(booking).pricingPoint
         if pricing_point.id != pricing_point_id:
             # The pricing point has changed since the beginning of the
@@ -520,31 +542,70 @@ def _delete_dependent_pricings(
 
     assert booking.dateUsed is not None  # helps mypy for `_get_revenue_period()`
     revenue_period_start, revenue_period_end = _get_revenue_period(booking.dateUsed)
-    pricings = models.Pricing.query
     pricing_point_id = _get_pricing_point_link(booking).pricingPointId
-    pricings = pricings.filter_by(pricingPointId=pricing_point_id)
 
-    pricings = (
-        pricings.join(models.Pricing.booking).join(bookings_models.Booking.stock).join(bookings_models.Booking.venue)
-    )
-
-    pricings = pricings.join(offerers_models.Venue.pricing_point_links)
-
-    pricings = pricings.filter(
-        models.Pricing.valueDate.between(revenue_period_start, revenue_period_end),
-        sqla.func.ROW(*_PRICE_BOOKINGS_ORDER_CLAUSE) > sqla.func.ROW(*_booking_comparison_tuple(booking)),
-    )
-
-    pricings = (
-        pricings.with_entities(
+    # Select the "right" pricing point link to use for each booking.
+    # This is done in a CTE because we must first find those links,
+    # and only then apply a filter to look for pricings to delete.
+    pricings_with_right_pricing_point = (
+        models.Pricing.query.filter_by(pricingPointId=pricing_point_id)
+        .distinct(models.Pricing.id, offerers_models.VenuePricingPointLink.venueId)
+        .join(
+            offerers_models.VenuePricingPointLink,
+            offerers_models.VenuePricingPointLink.venueId == models.Pricing.venueId,
+        )
+        .filter(
+            offerers_models.VenuePricingPointLink.timespan.contains(booking.dateUsed)
+            # If a pricing point was selected after the booking
+            # validation, choose it. Corner cases: the link may have
+            # ended, and it may even be followed by another pricing
+            # point link. Using the first or the latest link in this
+            # case both seems to make sense. We use the first link for
+            # simplicity's sake and because these corner cases should
+            # be rare.
+            | (booking.dateUsed < sqla.func.lower(offerers_models.VenuePricingPointLink.timespan))
+        )
+        .order_by(
             models.Pricing.id,
-            models.Pricing.bookingId,
+            offerers_models.VenuePricingPointLink.venueId,
+            sqla.func.lower(offerers_models.VenuePricingPointLink.timespan),
+        )
+        .with_entities(
+            models.Pricing.id,
             models.Pricing.status,
+            models.Pricing.bookingId,
+            models.Pricing.valueDate,
+            offerers_models.VenuePricingPointLink.id.label("pricing_point_link_id"),
+        )
+        .cte("pricings_with_right_pricing_point")
+    )
+
+    pricings = (
+        db.session.query(
+            pricings_with_right_pricing_point.c.id,
+            pricings_with_right_pricing_point.c.bookingId,
+            pricings_with_right_pricing_point.c.status,
             bookings_models.Booking.stockId,
         )
-        .distinct()
-        .all()
+        # FIXME (dbaty, 2023-02-01): Here we JOIN on the `booking`
+        # table again, even though we already did above in the
+        # CTE. This is because _PRICE_BOOKINGS_ORDER_CLAUSE references
+        # `Booking.dateUsed`, not our CTE. Perhaps we could trick it
+        # to use a (new) CTE column if we alias it? Ditto for the JOIN
+        # on `venue_pricing_point_link` table.
+        .join(bookings_models.Booking, bookings_models.Booking.id == pricings_with_right_pricing_point.c.bookingId)
+        .join(offers_models.Stock, offers_models.Stock.id == bookings_models.Booking.stockId)
+        .join(
+            offerers_models.VenuePricingPointLink,
+            offerers_models.VenuePricingPointLink.id == pricings_with_right_pricing_point.c.pricing_point_link_id,
+        )
+        .filter(
+            pricings_with_right_pricing_point.c.valueDate.between(revenue_period_start, revenue_period_end),
+            sqla.func.ROW(*_PRICE_BOOKINGS_ORDER_CLAUSE) > sqla.func.ROW(*_booking_comparison_tuple(booking)),
+        )
     )
+
+    pricings = pricings.all()
     if not pricings:
         return
     pricing_ids = {p.id for p in pricings}
