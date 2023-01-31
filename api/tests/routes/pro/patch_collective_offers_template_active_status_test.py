@@ -1,6 +1,10 @@
+from unittest.mock import patch
+
 import pytest
 
 from pcapi.core import testing
+from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
+from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
@@ -19,9 +23,13 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
-        client = client.with_session_auth("pro@example.com")
         data = {"ids": [humanize(offer1.id), humanize(offer2.id)], "isActive": True}
-        response = client.patch("/collective/offers-template/active-status", json=data)
+
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            client = client.with_session_auth("pro@example.com")
+            response = client.patch("/collective/offers-template/active-status", json=data)
 
         # Then
         assert response.status_code == 204
@@ -55,14 +63,45 @@ class Returns204Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
-        client = client.with_session_auth("pro@example.com")
         data = {
             "ids": [humanize(approved_offer.id), humanize(pending_offer.id), humanize(rejected_offer.id)],
             "isActive": True,
         }
-        response = client.patch("/collective/offers-template/active-status", json=data)
+
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            client = client.with_session_auth("pro@example.com")
+            response = client.patch("/collective/offers-template/active-status", json=data)
 
         assert response.status_code == 204
         assert approved_offer.isActive
         assert not pending_offer.isActive
         assert not rejected_offer.isActive
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns403Test:
+    def test_when_activating_all_existing_offers_active_status_when_cultural_partners_not_found(self, client):
+        # Given
+        offer1 = CollectiveOfferFactory(isActive=False)
+        venue = offer1.venue
+        offer2 = CollectiveOfferTemplateFactory(venue=venue, isActive=False)
+
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+
+        # When
+        client = client.with_session_auth("pro@example.com")
+        data = {"ids": [humanize(offer1.id), humanize(offer2.id)], "isActive": True}
+
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+            side_effect=CulturalPartnerNotFoundException,
+        ):
+            response = client.patch("/collective/offers-template/active-status", json=data)
+
+        # Then
+        assert response.status_code == 403
+        assert response.json == {"Partner": ["User not in Adage can't edit the offer"]}
+        assert offer1.isActive == False
