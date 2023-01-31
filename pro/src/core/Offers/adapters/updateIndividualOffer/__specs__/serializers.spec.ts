@@ -3,6 +3,7 @@ import { PatchOfferBodyModel } from 'apiClient/v1'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { IOfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
+import { individualOfferFactory } from 'utils/individualApiFactories'
 
 import {
   serializeDurationMinutes,
@@ -112,7 +113,9 @@ describe('test updateIndividualOffer::serializers', () => {
     })
 
     it('should serialize patchBody', () => {
-      expect(serializePatchOffer(formValues)).toEqual(patchBody)
+      expect(
+        serializePatchOffer({ offer: individualOfferFactory(), formValues })
+      ).toEqual(patchBody)
     })
     it('should serialize patchBody with default', () => {
       formValues = {
@@ -129,7 +132,9 @@ describe('test updateIndividualOffer::serializers', () => {
         externalTicketOfficeUrl: undefined,
         url: undefined,
       }
-      expect(serializePatchOffer(formValues)).toEqual(patchBody)
+      expect(
+        serializePatchOffer({ offer: individualOfferFactory(), formValues })
+      ).toEqual(patchBody)
     })
   })
 })
