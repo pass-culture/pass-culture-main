@@ -1,33 +1,35 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
-import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ActionsBar, { IActionBarProps } from '../ActionsBar'
 
-interface IRenderActionsBar {
-  props: IActionBarProps
-  store: Store
-}
+const renderActionsBar = (props: IActionBarProps) => {
+  const storeOverrides = {
+    offers: {
+      searchFilters: {
+        nameOrIsbn: 'keyword',
+        venueId: 'E3',
+        offererId: 'A4',
+      },
+    },
+  }
 
-const renderActionsBar = ({ props, store }: IRenderActionsBar) =>
-  render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/offres']}>
-        <ActionsBar {...props} />
-        <Notification />
-      </MemoryRouter>
-    </Provider>
+  renderWithProviders(
+    <>
+      <ActionsBar {...props} />
+      <Notification />
+    </>,
+    { storeOverrides, initialRouterEntries: ['/offres'] }
   )
+}
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -43,7 +45,6 @@ const mockCanDeleteOffers = jest.fn().mockReturnValue(true)
 
 describe('src | components | pages | Offers | ActionsBar', () => {
   let props: IActionBarProps
-  let store: Store
 
   beforeEach(() => {
     props = {
@@ -57,15 +58,6 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       areAllOffersSelected: false,
       audience: Audience.INDIVIDUAL,
     }
-    store = configureTestStore({
-      offers: {
-        searchFilters: {
-          nameOrIsbn: 'keyword',
-          venueId: 'E3',
-          offererId: 'A4',
-        },
-      },
-    })
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
@@ -74,7 +66,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
   it('should have buttons to activate and deactivate offers, to delete, and to abort action', () => {
     // when
-    renderActionsBar({ props, store })
+    renderActionsBar(props)
 
     screen.getByText('Publier', { selector: 'button' })
 
@@ -98,7 +90,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     props.nbSelectedOffers = 1
 
     // when
-    renderActionsBar({ props, store })
+    renderActionsBar(props)
 
     // then
     expect(screen.queryByText('1 offre sélectionnée')).toBeInTheDocument()
@@ -106,7 +98,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
   it('should say how many offers are selected when more than 1 offer are selected', () => {
     // when
-    renderActionsBar({ props, store })
+    renderActionsBar(props)
 
     // then
     expect(screen.queryByText('2 offres sélectionnées')).toBeInTheDocument()
@@ -117,7 +109,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     props.nbSelectedOffers = 501
 
     // when
-    renderActionsBar({ props, store })
+    renderActionsBar(props)
 
     // then
     expect(screen.queryByText('500+ offres sélectionnées')).toBeInTheDocument()
@@ -126,7 +118,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
   describe('on click on "Publier" button', () => {
     it('should activate selected offers', async () => {
       // given
-      renderActionsBar({ props, store })
+      renderActionsBar(props)
 
       // when
       await userEvent.click(screen.getByText('Publier'))
@@ -146,7 +138,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       // given
       mockCanUpdatedOfferStatus.mockReturnValueOnce(false)
 
-      renderActionsBar({ props, store })
+      renderActionsBar(props)
 
       // when
       await userEvent.click(screen.getByText('Publier'))
@@ -165,7 +157,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
   describe('on click on "Supprimer" button', () => {
     it('should delete selected draft offers', async () => {
       // given
-      renderActionsBar({ props, store })
+      renderActionsBar(props)
 
       // when
       await userEvent.click(screen.getByText('Supprimer'))
@@ -190,7 +182,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       mockCanDeleteOffers.mockReturnValueOnce(false)
 
-      renderActionsBar({ props, store })
+      renderActionsBar(props)
 
       // when
       await userEvent.click(screen.getByText('Supprimer'))
@@ -209,7 +201,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     it('should deactivate selected offers', async () => {
       // given
       props.areAllOffersSelected = false
-      renderActionsBar({ props, store })
+      renderActionsBar(props)
 
       // when
       await userEvent.click(screen.getByText('Désactiver'))
@@ -241,7 +233,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
   it('should unselect offers and hide action bar on click on "Annuler" button', async () => {
     // given
-    renderActionsBar({ props, store })
+    renderActionsBar(props)
 
     // when
     await userEvent.click(screen.getByText('Annuler'))
@@ -255,7 +247,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       // given
       props.areAllOffersSelected = true
 
-      renderActionsBar({ props, store })
+      renderActionsBar(props)
       const activateButton = screen.getByText('Publier')
       const expectedBody = {
         isActive: true,
@@ -277,7 +269,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     it('should deactivate all offers on click on "Désactiver" button', async () => {
       // given
       props.areAllOffersSelected = true
-      renderActionsBar({ props, store })
+      renderActionsBar(props)
       const deactivateButton = screen.getByText('Désactiver')
       const expectedBody = {
         isActive: false,
@@ -311,7 +303,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     it('should track cancel all offers on click on "Annuler" button', async () => {
       // given
       props.areAllOffersSelected = true
-      renderActionsBar({ props, store })
+      renderActionsBar(props)
       const deactivateButton = screen.getByText('Désactiver')
 
       // when
@@ -334,7 +326,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     it('should track cancel offer on click on "Annuler" button', async () => {
       // given
       props.areAllOffersSelected = false
-      renderActionsBar({ props, store })
+      renderActionsBar(props)
       const deactivateButton = screen.getByText('Désactiver')
 
       // when

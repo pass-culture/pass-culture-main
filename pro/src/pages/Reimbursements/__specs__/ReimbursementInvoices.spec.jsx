@@ -1,11 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Reimbursements from '../Reimbursements'
 
@@ -24,26 +23,23 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const initialStore = {
-  user: {
-    currentUser: {
-      publicName: 'François',
-      isAdmin: false,
-      hasSeenProTutorials: true,
+const renderReimbursements = props => {
+  const storeOverrides = {
+    user: {
+      currentUser: {
+        publicName: 'François',
+        isAdmin: false,
+        hasSeenProTutorials: true,
+      },
+      initialized: true,
     },
-    initialized: true,
-  },
-}
+  }
 
-const renderReimbursements = (store, props) => {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/remboursements/justificatifs']}>
-        <Route path="/remboursements" exact={false}>
-          <Reimbursements {...props} />
-        </Route>
-      </MemoryRouter>
-    </Provider>
+  renderWithProviders(
+    <Route path="/remboursements" exact={false}>
+      <Reimbursements {...props} />
+    </Route>,
+    { storeOverrides, initialRouterEntries: ['/remboursements/justificatifs'] }
   )
 }
 
@@ -99,10 +95,8 @@ const BASE_INVOICES = [
 
 describe('reimbursementsWithFilters', () => {
   let props
-  let store
 
   beforeEach(() => {
-    store = configureTestStore(initialStore)
     props = { currentUser: { isAdmin: false } }
     jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: BASE_VENUES })
     jest.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
@@ -110,7 +104,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('shoud render a table with invoices', async () => {
-    renderReimbursements(store, props)
+    renderReimbursements(props)
 
     const button = screen.queryByRole('link', {
       name: /Lancer la recherche/i,
@@ -156,7 +150,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('shoud reorder invoices on order buttons click', async () => {
-    renderReimbursements(store, props)
+    renderReimbursements(props)
     const button = screen.queryByRole('link', {
       name: /Lancer la recherche/i,
     })

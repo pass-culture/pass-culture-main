@@ -1,7 +1,5 @@
 import { render } from '@testing-library/react'
-// c'est du bluff, l'import existe vraiment
-// eslint-disable-next-line
-import { LocationDescriptor } from 'history'
+import type { LocationDescriptor } from 'history'
 import React, { ReactNode } from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -17,11 +15,23 @@ export const renderWithProviders = (
 ) => {
   const store = configureTestStore(overrides?.storeOverrides)
 
-  return render(
+  const { rerender, ...otherRenderResult } = render(
     <Provider store={store}>
       <MemoryRouter initialEntries={overrides?.initialRouterEntries}>
         {component}
       </MemoryRouter>
     </Provider>
   )
+
+  return {
+    ...otherRenderResult,
+    rerender: (newChildren: ReactNode) =>
+      rerender(
+        <Provider store={store}>
+          <MemoryRouter initialEntries={overrides?.initialRouterEntries}>
+            {newChildren}
+          </MemoryRouter>
+        </Provider>
+      ),
+  }
 }

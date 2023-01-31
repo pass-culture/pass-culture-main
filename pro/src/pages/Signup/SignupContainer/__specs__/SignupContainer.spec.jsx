@@ -1,15 +1,14 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SignupContainer from '../SignupContainer'
 
@@ -24,27 +23,24 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderSignUp = storeOveride => {
-  const store = configureTestStore(storeOveride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/inscription']}>
-        <Route path="/inscription">
-          <SignupContainer />
-        </Route>
-        <Route path="/accueil">
-          <span>I'm logged in as a pro user</span>
-        </Route>
-        <Route path="/structures">
-          <span>I'm logged in as an Admin</span>
-        </Route>
-        <Route path="/inscription/confirmation">
-          <span>I'm the confirmation page</span>
-        </Route>
-      </MemoryRouter>
-    </Provider>
+const renderSignUp = storeOverrides =>
+  renderWithProviders(
+    <>
+      <Route path="/inscription">
+        <SignupContainer />
+      </Route>
+      <Route path="/accueil">
+        <span>I'm logged in as a pro user</span>
+      </Route>
+      <Route path="/structures">
+        <span>I'm logged in as an Admin</span>
+      </Route>
+      <Route path="/inscription/confirmation">
+        <span>I'm the confirmation page</span>
+      </Route>
+    </>,
+    { storeOverrides, initialRouterEntries: ['/inscription'] }
   )
-}
 
 describe('Signup', () => {
   let store
@@ -64,7 +60,7 @@ describe('Signup', () => {
     Element.prototype.scrollIntoView = jest.fn()
   })
 
-  it('should redirect to accueil page if the user is logged in', async () => {
+  it.only('should redirect to accueil page if the user is logged in', async () => {
     // when the user is logged in and lands on signup validation page
     store.user = {
       currentUser: {

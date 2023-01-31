@@ -1,27 +1,18 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { add } from 'date-fns'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
-import type { Store } from 'redux'
 
 import { OfferStatus } from 'apiClient/v1'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferNameCell, { OfferNameCellProps } from '../OfferNameCell'
 
-const renderOfferNameCell = (props: OfferNameCellProps, store: Store) => {
-  render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/offres']}>
-        <OfferNameCell {...props} />
-      </MemoryRouter>
-    </Provider>
-  )
-}
+const renderOfferNameCell = (props: OfferNameCellProps) =>
+  renderWithProviders(<OfferNameCell {...props} />, {
+    initialRouterEntries: ['/offres'],
+  })
 
 jest.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
@@ -29,7 +20,6 @@ jest.mock('hooks/useActiveFeature', () => ({
 }))
 
 describe('OfferNameCell', () => {
-  const store: Store<RootState> = configureTestStore({})
   let defaultOffer: Offer
   beforeEach(() => {
     defaultOffer = {
@@ -72,14 +62,11 @@ describe('OfferNameCell', () => {
       ],
     }
 
-    renderOfferNameCell(
-      {
-        offer: eventOffer,
-        editionOfferLink: '#',
-        audience: Audience.COLLECTIVE,
-      },
-      store
-    )
+    renderOfferNameCell({
+      offer: eventOffer,
+      editionOfferLink: '#',
+      audience: Audience.COLLECTIVE,
+    })
 
     const warningIco = screen.queryByAltText('Attention')
     expect(warningIco).not.toBeNull()
@@ -99,14 +86,11 @@ describe('OfferNameCell', () => {
         },
       ],
     }
-    renderOfferNameCell(
-      {
-        offer: eventOffer,
-        editionOfferLink: '#',
-        audience: Audience.COLLECTIVE,
-      },
-      store
-    )
+    renderOfferNameCell({
+      offer: eventOffer,
+      editionOfferLink: '#',
+      audience: Audience.COLLECTIVE,
+    })
 
     const warningIco = screen.queryByAltText('Attention')
     expect(warningIco).toBeNull()

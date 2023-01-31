@@ -1,7 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { OfferStatus } from 'apiClient/v1'
 import {
@@ -10,18 +8,14 @@ import {
 } from 'context/OfferIndividualContext'
 import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
 import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Stocks from '../Stocks'
 
-const renderStocksScreen = ({
-  storeOverride = {},
-  contextOverride,
-}: {
-  storeOverride: Partial<RootState>
+const renderStocksScreen = (
+  storeOverrides: Partial<RootState> = {},
   contextOverride: Partial<IOfferIndividualContext>
-}) => {
-  const store = configureTestStore(storeOverride)
+) => {
   const contextValue: IOfferIndividualContext = {
     offerId: null,
     offer: null,
@@ -35,19 +29,16 @@ const renderStocksScreen = ({
     showVenuePopin: {},
     ...contextOverride,
   }
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/creation/stocks']}>
-        <OfferIndividualContext.Provider value={contextValue}>
-          <Stocks />
-        </OfferIndividualContext.Provider>
-      </MemoryRouter>
-    </Provider>
+  return renderWithProviders(
+    <OfferIndividualContext.Provider value={contextValue}>
+      <Stocks />
+    </OfferIndividualContext.Provider>,
+    { storeOverrides, initialRouterEntries: ['/creation/stocks'] }
   )
 }
 
 describe('screens:Stocks', () => {
-  let storeOverride: Partial<RootState>
+  let storeOverrides: Partial<RootState>
   let contextOverride: Partial<IOfferIndividualContext>
   let offer: Partial<IOfferIndividual>
 
@@ -59,7 +50,7 @@ describe('screens:Stocks', () => {
       } as IOfferIndividualVenue,
       stocks: [],
     }
-    storeOverride = {}
+    storeOverrides = {}
     contextOverride = {
       offerId: 'OFFER_ID',
       offer: offer as IOfferIndividual,
@@ -72,7 +63,7 @@ describe('screens:Stocks', () => {
       isEvent: false,
       isDigital: false,
     } as IOfferIndividual
-    renderStocksScreen({ storeOverride, contextOverride })
+    renderStocksScreen(storeOverrides, contextOverride)
     expect(
       screen.getByText(
         'Les bénéficiaires ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
@@ -84,7 +75,7 @@ describe('screens:Stocks', () => {
       ...contextOverride.offer,
       isEvent: true,
     } as IOfferIndividual
-    renderStocksScreen({ storeOverride, contextOverride })
+    renderStocksScreen(storeOverrides, contextOverride)
     expect(
       screen.getByText(
         'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’évènement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente'
@@ -101,7 +92,7 @@ describe('screens:Stocks', () => {
         isEvent: true,
         status: offerStatus,
       } as IOfferIndividual
-      renderStocksScreen({ storeOverride, contextOverride })
+      renderStocksScreen(storeOverrides, contextOverride)
       expect(
         screen.queryByText(
           'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’évènement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente'
@@ -125,7 +116,7 @@ describe('screens:Stocks', () => {
         isEvent: true,
         status: offerStatus,
       } as IOfferIndividual
-      renderStocksScreen({ storeOverride, contextOverride })
+      renderStocksScreen(storeOverrides, contextOverride)
       expect(
         screen.queryByText(
           'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’évènement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente'
