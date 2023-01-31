@@ -1,5 +1,7 @@
 import { api } from 'apiClient/api'
 
+import { offerAdageActivated, offerAdageDeactivate } from '../constants'
+
 type IPayloadSuccess = null
 type IPayloadFailure = null
 type PatchIsOfferActiveAdapter = Adapter<
@@ -23,9 +25,7 @@ export const patchIsTemplateOfferActiveAdapter: PatchIsOfferActiveAdapter =
       })
       return {
         isOk: true,
-        message: isActive
-          ? 'Votre offre est maintenant active et visible dans ADAGE'
-          : 'Votre offre est désactivée et n’est plus visible sur ADAGE',
+        message: isActive ? offerAdageActivated : offerAdageDeactivate,
         payload: null,
       }
     } catch (error) {

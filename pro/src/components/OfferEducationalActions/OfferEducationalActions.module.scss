@@ -12,3 +12,10 @@
   height: rem.torem(24px);
   width: rem.torem(1px);
 }
+
+.button-link {
+  svg {
+    width: rem.torem(20px);
+    height: rem.torem(20px);
+  }
+}

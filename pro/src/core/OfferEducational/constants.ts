@@ -61,3 +61,8 @@ export const DEFAULT_VISIBILITY_FORM_VALUES: VisibilityFormValues = {
 }
 
 export const MAX_DETAILS_LENGTH = 1000
+
+export const offerAdageActivated =
+  'Votre offre est maintenant active et visible dans ADAGE'
+export const offerAdageDeactivate =
+  'Votre offre est désactivée et n’est plus visible sur ADAGE'

@@ -111,7 +111,7 @@ describe('bookings offer cell', () => {
         isCollective: true,
       })
 
-      const warningIco = screen.queryByAltText('Attention')
+      const warningIco = screen.queryByTitle('Attention')
       expect(warningIco).not.toBeNull()
     })
 
@@ -137,7 +137,7 @@ describe('bookings offer cell', () => {
         isCollective: true,
       })
 
-      const warningIco = screen.queryByAltText('Attention')
+      const warningIco = screen.queryByTitle('Attention')
       expect(warningIco).toBeNull()
     })
   })

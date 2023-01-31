@@ -1,4 +1,8 @@
 import { api } from 'apiClient/api'
+import {
+  offerAdageActivated,
+  offerAdageDeactivate,
+} from 'core/OfferEducational/constants'
 
 import { patchIsTemplateOfferActiveAdapter } from '../patchIsTemplateOfferActiveAdapter'
 
@@ -51,9 +55,7 @@ describe('patchIsTemplateOfferActiveAdapter', () => {
 
     // then
     expect(response.isOk).toBeTruthy()
-    expect(response.message).toBe(
-      'Votre offre est désactivée et n’est plus visible sur ADAGE'
-    )
+    expect(response.message).toBe(offerAdageDeactivate)
   })
   it('should confirm when the offer was deactivated', async () => {
     // given
@@ -69,8 +71,6 @@ describe('patchIsTemplateOfferActiveAdapter', () => {
 
     // then
     expect(response.isOk).toBeTruthy()
-    expect(response.message).toBe(
-      'Votre offre est maintenant active et visible dans ADAGE'
-    )
+    expect(response.message).toBe(offerAdageActivated)
   })
 })
