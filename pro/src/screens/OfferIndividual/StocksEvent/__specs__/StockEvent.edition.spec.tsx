@@ -155,7 +155,7 @@ describe('screens:StocksEvent:Edition', () => {
         url: null,
       },
       productId: 'AJFA',
-      priceCategories: [{ price: 12.2, label: 'Mon premier tariff' }],
+      priceCategories: [{ price: 12.2, label: 'Mon premier tariff', id: 1 }],
       stocks: [
         {
           beginningDatetime: '2023-01-23T08:25:31.009799Z',
