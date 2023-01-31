@@ -1,9 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Venues from '../Venues'
 
@@ -16,16 +14,8 @@ describe('src | components | pages | OffererCreation | Venues', () => {
       venues: [],
     }
   })
-  const renderReturnVenues = (overrideStore = {}) => {
-    const store = configureTestStore(overrideStore)
-    return render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Venues {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
-  }
+  const renderReturnVenues = (storeOverrides = {}) =>
+    renderWithProviders(<Venues {...props} />, { storeOverrides })
 
   describe('render', () => {
     it('should render a title', () => {

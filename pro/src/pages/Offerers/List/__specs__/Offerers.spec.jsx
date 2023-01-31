@@ -1,22 +1,13 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offerers from '../Offerers'
 
-const renderOfferers = async (storeOverride = {}) => {
-  const store = configureTestStore(storeOverride)
-  render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <Offerers />
-      </MemoryRouter>
-    </Provider>
-  )
+const renderOfferers = async (storeOverrides = {}) => {
+  renderWithProviders(<Offerers />, { storeOverrides })
 }
 
 jest.mock('apiClient/api', () => ({

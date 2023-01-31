@@ -1,7 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { generatePath, MemoryRouter, Route } from 'react-router'
+import { generatePath, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -12,7 +11,7 @@ import {
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OfferIndividualWizard } from '..'
 
@@ -151,20 +150,16 @@ const apiOffer: GetIndividualOfferResponseModel = {
 }
 
 const renderOfferIndividualWizardRoute = (
-  storeOverride: any,
+  storeOverrides: any,
   url = '/offre/v3'
-) => {
-  const store = configureTestStore(storeOverride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[url]}>
-        <Route path={['/offre/individuelle/:offerId']}>
-          <OfferIndividualWizard />
-        </Route>
-      </MemoryRouter>
-    </Provider>
+) =>
+  renderWithProviders(
+    <Route path={['/offre/individuelle/:offerId']}>
+      <OfferIndividualWizard />
+    </Route>,
+    { storeOverrides, initialRouterEntries: [url] }
   )
-}
+
 describe('test OfferIndividualWisard', () => {
   let store: any
 

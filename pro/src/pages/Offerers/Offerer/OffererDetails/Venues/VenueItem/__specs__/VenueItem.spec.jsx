@@ -1,28 +1,16 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router-dom'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import VenueItem from '../VenueItem'
 
 describe('src | components | pages | OffererCreation | VenueItem', () => {
   let props
-  let store
 
-  const renderVenueItem = () => {
-    return render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <VenueItem {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
-  }
+  const renderVenueItem = () => renderWithProviders(<VenueItem {...props} />)
 
   beforeEach(() => {
-    store = configureTestStore({})
     props = {
       venue: {
         id: 'AAA',

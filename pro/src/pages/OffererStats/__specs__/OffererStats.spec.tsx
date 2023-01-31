@@ -1,12 +1,10 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererStats from '../OffererStats'
 
@@ -28,35 +26,28 @@ jest.mock('hooks/useRemoteConfig', () => ({
   default: () => ({ remoteConfig: {} }),
 }))
 
-const renderOffererStats = (store: Store) => {
-  render(
-    <Provider store={store}>
-      <OffererStats />
-    </Provider>
-  )
+const renderOffererStats = () => {
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser: {
+        firstName: 'John',
+        dateCreated: '2022-07-29T12:18:43.087097Z',
+        email: 'john@do.net',
+        id: '1',
+        nonHumanizedId: '1',
+        isAdmin: false,
+        isEmailValidated: true,
+        roles: [],
+      },
+    },
+  }
+
+  renderWithProviders(<OffererStats />, { storeOverrides })
 }
 
 describe('OffererStatsScreen', () => {
-  let currentUser
-  let store: Store
   beforeEach(() => {
-    currentUser = {
-      firstName: 'John',
-      dateCreated: '2022-07-29T12:18:43.087097Z',
-      email: 'john@do.net',
-      id: '1',
-      nonHumanizedId: '1',
-      isAdmin: false,
-      isEmailValidated: true,
-      roles: [],
-    }
-
-    store = configureTestStore({
-      user: {
-        initialized: true,
-        currentUser,
-      },
-    })
     jest.spyOn(api, 'getOfferer').mockResolvedValue({
       id: 'A1',
       managedVenues: [
@@ -87,7 +78,7 @@ describe('OffererStatsScreen', () => {
   })
 
   it('should display all offerer options on render', async () => {
-    renderOffererStats(store)
+    renderOffererStats()
 
     await waitFor(() => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
@@ -103,7 +94,7 @@ describe('OffererStatsScreen', () => {
       error: notifyError,
     }))
     jest.spyOn(api, 'listOfferersNames').mockRejectedValueOnce('')
-    renderOffererStats(store)
+    renderOffererStats()
 
     await waitFor(() => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)

@@ -1,17 +1,11 @@
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Homepage from '../../Homepage'
 
@@ -25,7 +19,7 @@ jest.mock('apiClient/api', () => ({
 
 const mockLogEvent = jest.fn()
 const renderHomePage = () => {
-  const store = configureTestStore({
+  const storeOverrides = {
     user: {
       currentUser: {
         id: 'fake_id',
@@ -36,15 +30,9 @@ const renderHomePage = () => {
       },
       initialized: true,
     },
-  })
+  }
 
-  render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <Homepage />
-      </MemoryRouter>
-    </Provider>
-  )
+  renderWithProviders(<Homepage />, { storeOverrides })
 }
 
 describe('trackers creationLinks', () => {

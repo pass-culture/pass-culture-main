@@ -1,26 +1,17 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererCreation from '../OffererCreation'
 
-const renderOffererCreation = store => {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <OffererCreation />
-      </MemoryRouter>
-    </Provider>
-  )
-}
+const renderOffererCreation = storeOverrides =>
+  renderWithProviders(<OffererCreation />, { storeOverrides })
 
 describe('src | components | OffererCreation', () => {
   describe('render', () => {
     it('should render a OffererCreationUnavailable component when pro offerer creation is disabled', () => {
-      const store = configureTestStore({
+      const store = {
         features: {
           initialized: true,
           list: [
@@ -33,7 +24,7 @@ describe('src | components | OffererCreation', () => {
             },
           ],
         },
-      })
+      }
 
       renderOffererCreation(store)
 
@@ -43,7 +34,7 @@ describe('src | components | OffererCreation', () => {
     })
 
     it('should render a OffererCreation component', () => {
-      const store = configureTestStore({})
+      const store = {}
 
       renderOffererCreation(store)
 

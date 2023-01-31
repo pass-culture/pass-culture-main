@@ -1,17 +1,14 @@
 import {
-  render,
   screen,
   within,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
@@ -30,13 +27,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const renderVenueProvidersManager = async props => {
-  render(
-    <Provider store={configureTestStore()}>
-      <MemoryRouter>
-        <VenueProvidersManager {...props} />
-      </MemoryRouter>
-    </Provider>
-  )
+  renderWithProviders(<VenueProvidersManager {...props} />)
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }

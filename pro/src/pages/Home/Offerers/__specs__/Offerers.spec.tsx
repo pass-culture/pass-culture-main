@@ -1,14 +1,9 @@
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
+
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { api } from '../../../../apiClient/api'
-import { configureTestStore } from '../../../../store/testUtils'
 import Offerers from '../Offerers'
 
 jest.mock('apiClient/api', () => ({
@@ -18,22 +13,19 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const renderOfferers = async () => {
-  render(
-    <Provider store={configureTestStore()}>
-      <MemoryRouter>
-        <Offerers
-          receivedOffererNames={{
-            offerersNames: [{ id: 'idd', name: 'name', nonHumanizedId: 1 }],
-          }}
-        />
-      </MemoryRouter>
-    </Provider>
+  renderWithProviders(
+    <Offerers
+      receivedOffererNames={{
+        offerersNames: [{ id: 'idd', name: 'name', nonHumanizedId: 1 }],
+      }}
+    />
   )
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'), {
     timeout: 20000,
   })
 }
+
 describe('Offerers', () => {
   beforeEach(async () => {
     jest.spyOn(api, 'getOfferer').mockRejectedValue({ status: 403 })

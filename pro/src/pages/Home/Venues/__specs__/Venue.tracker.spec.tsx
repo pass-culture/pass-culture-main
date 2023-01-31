@@ -1,29 +1,19 @@
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
-import { configureTestStore } from 'store/testUtils'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Venue, { IVenueProps } from '../Venue'
 
 const mockLogEvent = jest.fn()
 
-const renderVenue = async (props: IVenueProps) => {
-  const store = configureTestStore()
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <Venue {...props} />
-      </MemoryRouter>
-    </Provider>
-  )
-}
+const renderVenue = async (props: IVenueProps) =>
+  renderWithProviders(<Venue {...props} />)
 
 const trackerForVenue = [
   {

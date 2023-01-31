@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { generatePath, MemoryRouter, Route } from 'react-router'
+import { generatePath, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
@@ -16,7 +15,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { IOfferIndividual } from 'core/Offers/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Confirmation from '../Confirmation'
 
@@ -46,7 +45,7 @@ const renderOffer = (
     showVenuePopin: {},
     ...contextOverride,
   }
-  const store = configureTestStore({
+  const storeOverrides = {
     user: {
       initialized: true,
       currentUser: {
@@ -56,18 +55,18 @@ const renderOffer = (
       },
     },
     ...storeOverride,
-  })
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/confirmation']}>
-        <Route path="/confirmation">
-          <OfferIndividualContext.Provider value={contextValue}>
-            <Confirmation />
-          </OfferIndividualContext.Provider>
-        </Route>
-      </MemoryRouter>
+  }
+
+  return renderWithProviders(
+    <>
+      <Route path="/confirmation">
+        <OfferIndividualContext.Provider value={contextValue}>
+          <Confirmation />
+        </OfferIndividualContext.Provider>
+      </Route>
       <Notification />
-    </Provider>
+    </>,
+    { storeOverrides, initialRouterEntries: ['/confirmation'] }
   )
 }
 

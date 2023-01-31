@@ -1,19 +1,13 @@
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 import ReactTooltip from 'react-tooltip'
 
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import VenueProvidersManager from '../../index'
 
@@ -30,14 +24,12 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const renderVenueProvidersManager = async props => {
-  render(
-    <Provider store={configureTestStore()}>
-      <MemoryRouter>
-        <VenueProvidersManager {...props} />
-        <Notification />
-        <ReactTooltip html />
-      </MemoryRouter>
-    </Provider>
+  renderWithProviders(
+    <>
+      <VenueProvidersManager {...props} />
+      <Notification />
+      <ReactTooltip html />
+    </>
   )
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }

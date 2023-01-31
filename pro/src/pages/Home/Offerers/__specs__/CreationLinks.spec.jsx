@@ -1,16 +1,13 @@
 import {
-  render,
   screen,
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Homepage from '../../Homepage'
 
@@ -28,7 +25,7 @@ jest.mock('hooks/useNewOfferCreationJourney', () => ({
 }))
 
 const renderHomePage = async () => {
-  const store = configureTestStore({
+  const storeOverrides = {
     user: {
       currentUser: {
         id: 'fake_id',
@@ -39,15 +36,9 @@ const renderHomePage = async () => {
       },
       initialized: true,
     },
-  })
+  }
 
-  render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <Homepage />
-      </MemoryRouter>
-    </Provider>
-  )
+  renderWithProviders(<Homepage />, { storeOverrides })
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
