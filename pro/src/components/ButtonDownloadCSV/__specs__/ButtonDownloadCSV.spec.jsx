@@ -1,24 +1,22 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import fetch from 'jest-fetch-mock'
 import React from 'react'
-import { Provider } from 'react-redux'
 
 import Notification from 'components/Notification/Notification'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { configureTestStore } from '../../../store/testUtils'
 import ButtonDownloadCSV from '../ButtonDownloadCSV'
 
-const renderButtonDownloadCSV = async ({ props, storeOverrides }) => {
-  const store = configureTestStore(storeOverrides)
-
-  return render(
-    <Provider store={store}>
+const renderButtonDownloadCSV = async ({ props, storeOverrides }) =>
+  renderWithProviders(
+    <>
       <ButtonDownloadCSV {...props}>Fake Button</ButtonDownloadCSV>
       <Notification />
-    </Provider>
+    </>,
+    { storeOverrides }
   )
-}
+
 describe('src | components | Layout | ButtonDownloadCSV', () => {
   describe('render', () => {
     it('should disable button during download', async () => {
