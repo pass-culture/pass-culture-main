@@ -285,7 +285,10 @@ class UserTest:
         assert user.full_name == f"{user.firstName} {user.lastName}"
 
         no_name_user = users_factories.UserFactory(firstName="", lastName="")
-        assert no_name_user.full_name == no_name_user.publicName
+        assert no_name_user.full_name is no_name_user.publicName
+
+        really_no_name_user = users_factories.UserFactory(firstName="", lastName="", publicName="   ")
+        assert really_no_name_user.full_name is really_no_name_user.email
 
     def test_pro_validation_status(self):
         user = users_factories.UserFactory()
