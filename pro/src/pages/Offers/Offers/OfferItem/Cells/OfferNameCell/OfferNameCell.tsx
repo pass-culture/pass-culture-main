@@ -128,10 +128,10 @@ const OfferNameCell = ({
             </div>
           )}
           {shouldShowCollectiveWarning && (
-            <div>
+            <div className={styles['sold-out']}>
               <Icon
                 className={styles['sold-out-icon']}
-                svg="ico-warning"
+                svg="ico-notification-error"
                 alt="Attention"
               />
 
