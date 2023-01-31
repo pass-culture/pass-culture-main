@@ -1,12 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { Route } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ProfileAndSupport from '../ProfileAndSupport'
 
@@ -16,23 +15,23 @@ const renderProfileAndSupport = () => {
   const currentUser = {
     id: 'EY',
   }
-  const store = configureTestStore({
+  const storeOverrides = {
     user: {
       initialized: true,
       currentUser,
     },
-  })
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/accueil']}>
-        <Route path="/profil">
-          <h1>Page profil</h1>
-        </Route>
-        <Route path="/accueil">
-          <ProfileAndSupport />
-        </Route>
-      </MemoryRouter>
-    </Provider>
+  }
+
+  return renderWithProviders(
+    <>
+      <Route path="/profil">
+        <h1>Page profil</h1>
+      </Route>
+      <Route path="/accueil">
+        <ProfileAndSupport />
+      </Route>
+    </>,
+    { storeOverrides, initialRouterEntries: ['/accueil'] }
   )
 }
 

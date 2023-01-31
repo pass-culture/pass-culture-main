@@ -1,14 +1,8 @@
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererDetails from '../OffererDetails'
 
@@ -17,16 +11,6 @@ jest.mock('apiClient/api', () => ({
     getOfferer: jest.fn(),
   },
 }))
-
-const renderOffererDetails = ({ props, store }) => {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <OffererDetails {...props} />
-      </MemoryRouter>
-    </Provider>
-  )
-}
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -37,10 +21,6 @@ jest.mock('react-router-dom', () => ({
 
 describe('src | components | pages | Offerer | OffererDetails', () => {
   let props
-  let store
-  beforeEach(() => {
-    store = configureTestStore()
-  })
 
   api.getOfferer.mockResolvedValue({
     id: 'AA',
@@ -63,7 +43,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
   describe('render', () => {
     it('should render Venues', async () => {
       // when
-      renderOffererDetails({ props, store })
+      renderWithProviders(<OffererDetails {...props} />)
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
       // then

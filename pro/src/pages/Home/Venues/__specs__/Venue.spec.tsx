@@ -1,14 +1,11 @@
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
-import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
 import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
-import { configureTestStore } from 'store/testUtils'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Venue, { IVenueProps } from '../Venue'
 
@@ -18,22 +15,13 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderVenue = (props: IVenueProps, store: Store) => {
-  render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <Venue {...props} />
-      </MemoryRouter>
-    </Provider>
-  )
-}
+const renderVenue = (props: IVenueProps) =>
+  renderWithProviders(<Venue {...props} />)
 
 describe('venues', () => {
   let props: IVenueProps
-  let store: Store
 
   beforeEach(() => {
-    store = configureTestStore()
     props = {
       id: 'VENUE01',
       isVirtual: false,
@@ -50,7 +38,7 @@ describe('venues', () => {
 
   it('should display stats tiles', async () => {
     // When
-    renderVenue(props, store)
+    renderVenue(props)
 
     await userEvent.click(
       screen.getByTitle('Afficher les statistiques de My venue')
@@ -90,7 +78,7 @@ describe('venues', () => {
 
   it('should contain a link for each stats', async () => {
     // When
-    renderVenue(props, store)
+    renderVenue(props)
     await userEvent.click(
       screen.getByTitle('Afficher les statistiques de My venue')
     )
@@ -103,7 +91,7 @@ describe('venues', () => {
 
   it('should redirect to filtered bookings when clicking on link', async () => {
     // When
-    renderVenue(props, store)
+    renderVenue(props)
     await userEvent.click(
       screen.getByTitle('Afficher les statistiques de My venue')
     )
@@ -141,7 +129,7 @@ describe('venues', () => {
       props.isVirtual = true
 
       // When
-      renderVenue(props, store)
+      renderVenue(props)
       await userEvent.click(
         screen.getByTitle('Afficher les statistiques de My venue')
       )
@@ -161,7 +149,7 @@ describe('venues', () => {
       props.isVirtual = false
 
       // When
-      renderVenue(props, store)
+      renderVenue(props)
       await userEvent.click(
         screen.getByTitle('Afficher les statistiques de My venue')
       )
@@ -179,7 +167,7 @@ describe('venues', () => {
       props.isVirtual = false
 
       // When
-      renderVenue(props, store)
+      renderVenue(props)
       await userEvent.click(
         screen.getByTitle('Afficher les statistiques de My venue')
       )
@@ -200,7 +188,7 @@ describe('venues', () => {
         .spyOn(useNewOfferCreationJourney, 'default')
         .mockReturnValue(true)
       // When
-      renderVenue(props, store)
+      renderVenue(props)
 
       // Then
       expect(
@@ -217,7 +205,7 @@ describe('venues', () => {
       props.hasCreatedOffer = true
 
       // When
-      renderVenue(props, store)
+      renderVenue(props)
 
       // Then
       expect(

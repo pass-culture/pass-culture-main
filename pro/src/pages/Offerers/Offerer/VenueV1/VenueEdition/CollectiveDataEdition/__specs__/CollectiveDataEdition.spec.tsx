@@ -1,8 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
@@ -11,7 +9,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { mainlandOptions, domtomOptions } from 'core/shared/interventionOptions'
 import * as useNotification from 'hooks/useNotification'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveDataEdition from '../CollectiveDataEdition'
 
@@ -87,13 +85,7 @@ const waitForLoader = () =>
   })
 
 const renderCollectiveDataEdition = () =>
-  render(
-    <MemoryRouter>
-      <Provider store={configureTestStore({})}>
-        <CollectiveDataEdition />
-      </Provider>
-    </MemoryRouter>
-  )
+  renderWithProviders(<CollectiveDataEdition />)
 
 describe('CollectiveDataEdition', () => {
   const notifyErrorMock = jest.fn()

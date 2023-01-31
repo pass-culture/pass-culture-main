@@ -1,23 +1,13 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router-dom'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import NotificationMessage from '../Notification'
 
-const renderNotificationMessage = ({ props, storeOverrides = {} }) => {
-  const store = configureTestStore(storeOverrides)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <NotificationMessage {...props} />
-      </MemoryRouter>
-    </Provider>
-  )
-}
+const renderNotificationMessage = props =>
+  renderWithProviders(<NotificationMessage {...props} />)
 
 describe('src | components | pages | Venue | Notification', () => {
   const props = {
@@ -27,7 +17,7 @@ describe('src | components | pages | Venue | Notification', () => {
   }
 
   it('should display a succes messsage when venue is created', () => {
-    renderNotificationMessage({ props })
+    renderNotificationMessage(props)
     expect(
       queryByTextTrimHtml(
         screen,

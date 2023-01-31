@@ -1,10 +1,8 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   Events,
@@ -25,23 +23,21 @@ const renderVenueOfferSteps = (
   const currentUser = {
     id: 'EY',
   }
-  const store = configureTestStore({
+  const storeOverrides = {
     user: {
       initialized: true,
       currentUser,
     },
-  })
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/accueil']}>
-        <VenueOfferSteps
-          hasVenue={venueId != null}
-          venueId={venueId}
-          offererId="AB"
-          hasMissingReimbursementPoint={hasMissingReimbursementPoint}
-        />
-      </MemoryRouter>
-    </Provider>
+  }
+
+  return renderWithProviders(
+    <VenueOfferSteps
+      hasVenue={venueId != null}
+      venueId={venueId}
+      offererId="AB"
+      hasMissingReimbursementPoint={hasMissingReimbursementPoint}
+    />,
+    { storeOverrides, initialRouterEntries: ['/accueil'] }
   )
 }
 

@@ -1,29 +1,23 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { Formik } from 'formik'
-import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Form } from 'react-final-form'
-import { Provider } from 'react-redux'
-import { Router } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ReimbursementFields from '../ReimbursementFields'
 
-const renderReimbursementFields = async (props, store) => {
-  const rtlReturn = render(
-    <Router history={createBrowserHistory()}>
-      <Provider store={store}>
-        <Formik onSubmit={() => {}} initialValues={{}}>
-          {({ handleSubmit }) => (
-            <Form onSubmit={handleSubmit}>
-              {() => <ReimbursementFields {...props} />}
-            </Form>
-          )}
-        </Formik>
-      </Provider>
-    </Router>
+const renderReimbursementFields = async (props, storeOverrides) => {
+  const rtlReturn = renderWithProviders(
+    <Formik onSubmit={() => {}} initialValues={{}}>
+      {({ handleSubmit }) => (
+        <Form onSubmit={handleSubmit}>
+          {() => <ReimbursementFields {...props} />}
+        </Form>
+      )}
+    </Formik>,
+    { storeOverrides }
   )
 
   const loadingMessage = screen.queryByText('Chargement en cours ...')
@@ -61,9 +55,9 @@ describe('src | Venue | ReimbursementFields', () => {
   let store
   beforeEach(() => {
     props = { venue, offerer }
-    store = configureTestStore({
+    store = {
       app: { logEvent: mockLogEvent },
-    })
+    }
     jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
   })
 
