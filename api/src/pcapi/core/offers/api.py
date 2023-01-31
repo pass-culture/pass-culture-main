@@ -16,11 +16,8 @@ from pcapi import settings
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.core import search
-from pcapi.core.bookings.api import cancel_bookings_from_stock_by_offerer
-from pcapi.core.bookings.api import mark_as_unused
-from pcapi.core.bookings.api import update_cancellation_limit_dates
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.bookings.api as bookings_api
+import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
 import pcapi.core.criteria.models as criteria_models
@@ -34,11 +31,9 @@ import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
-from pcapi.core.offerers.models import Venue
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
-from pcapi.core.users.models import ExpenseDomain
-from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
@@ -118,7 +113,7 @@ def create_offer(
     motor_disability_compliant: bool,
     name: str,
     subcategory_id: str,
-    venue: Venue,
+    venue: offerers_models.Venue,
     visual_disability_compliant: bool,
     booking_email: str | None = None,
     description: str | None = None,
@@ -424,7 +419,9 @@ def batch_update_collective_offers_template(query: BaseQuery, update_fields: dic
         search.async_index_collective_offer_template_ids(collective_offer_template_ids_batch)
 
 
-def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: typing.List[Booking]) -> None:
+def _notify_pro_upon_stock_edit_for_event_offer(
+    stock: models.Stock, bookings: typing.List[bookings_models.Booking]
+) -> None:
     if stock.offer.isEvent:
         if not transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings)):
             logger.warning(
@@ -433,7 +430,7 @@ def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: t
             )
 
 
-def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: typing.List[Booking]) -> None:
+def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: typing.List[bookings_models.Booking]) -> None:
     if bookings:
         if stock.beginningDatetime is None:
             logger.error(
@@ -441,7 +438,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: typing.
                 extra={"stock": stock.id},
             )
             return
-        bookings = update_cancellation_limit_dates(bookings, stock.beginningDatetime)
+        bookings = bookings_api.update_cancellation_limit_dates(bookings, stock.beginningDatetime)
         date_in_two_days = datetime.datetime.utcnow() + datetime.timedelta(days=2)
         check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days
         if check_event_is_in_more_than_48_hours:
@@ -569,7 +566,7 @@ def handle_stocks_edition(offer_id: int, edited_stocks: list[typing.Tuple[models
             _notify_beneficiaries_upon_stock_edit(stock, bookings)
 
 
-def publish_offer(offer: models.Offer, user: User | None) -> models.Offer:
+def publish_offer(offer: models.Offer, user: users_models.User | None) -> models.Offer:
     offer.isActive = True
     update_offer_fraud_information(offer, user)
     search.async_index_offer_ids([offer.id])
@@ -583,7 +580,7 @@ def publish_offer(offer: models.Offer, user: User | None) -> models.Offer:
 
 def update_offer_fraud_information(
     offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | models.Offer,
-    user: User | None,
+    user: users_models.User | None,
     *,
     silent: bool = False,
 ) -> None:
@@ -612,10 +609,10 @@ def update_offer_fraud_information(
             logger.warning("Could not send first venue approved offer email", extra={"offer_id": offer.id})
 
 
-def _invalidate_bookings(bookings: list[Booking]) -> list[Booking]:
+def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookings_models.Booking]:
     for booking in bookings:
-        if booking.status is BookingStatus.USED:
-            mark_as_unused(booking)
+        if booking.status is bookings_models.BookingStatus.USED:
+            bookings_api.mark_as_unused(booking)
     return bookings
 
 
@@ -626,7 +623,7 @@ def delete_stock(stock: models.Stock) -> None:
     repository.save(stock)
 
     # the algolia sync for the stock will happen within this function
-    cancelled_bookings = cancel_bookings_from_stock_by_offerer(stock)
+    cancelled_bookings = bookings_api.cancel_bookings_from_stock_by_offerer(stock)
 
     logger.info(
         "Deleted stock and cancelled its bookings",
@@ -649,7 +646,7 @@ def delete_stock(stock: models.Stock) -> None:
 
 
 def create_mediation(
-    user: User | None,
+    user: users_models.User | None,
     offer: models.Offer,
     credit: str | None,
     image_as_bytes: bytes,
@@ -723,7 +720,7 @@ def _delete_mediations_and_thumbs(mediations: list[models.Mediation]) -> None:
             db.session.delete(mediation)
 
 
-def update_stock_id_at_providers(venue: Venue, old_siret: str) -> None:
+def update_stock_id_at_providers(venue: offerers_models.Venue, old_siret: str) -> None:
     current_siret = venue.siret
 
     stocks = (
@@ -754,13 +751,13 @@ def update_stock_id_at_providers(venue: Venue, old_siret: str) -> None:
     repository.save(*stocks_to_update)
 
 
-def get_expense_domains(offer: models.Offer) -> list[ExpenseDomain]:
-    domains = {ExpenseDomain.ALL.value}
+def get_expense_domains(offer: models.Offer) -> list[users_models.ExpenseDomain]:
+    domains = {users_models.ExpenseDomain.ALL.value}
 
     if finance_conf.digital_cap_applies_to_offer(offer):
-        domains.add(ExpenseDomain.DIGITAL.value)
+        domains.add(users_models.ExpenseDomain.DIGITAL.value)
     if finance_conf.physical_cap_applies_to_offer(offer):
-        domains.add(ExpenseDomain.PHYSICAL.value)
+        domains.add(users_models.ExpenseDomain.PHYSICAL.value)
 
     return list(domains)  # type: ignore [arg-type]
 
@@ -942,7 +939,7 @@ def update_pending_offer_validation(offer: models.Offer, validation_status: mode
     return True
 
 
-def import_offer_validation_config(config_as_yaml: str, user: User = None) -> models.OfferValidationConfig:
+def import_offer_validation_config(config_as_yaml: str, user: users_models.User = None) -> models.OfferValidationConfig:
     try:
         config_as_dict = yaml.safe_load(config_as_yaml)
         validation.check_validation_config_parameters(config_as_dict, validation.KEY_VALIDATION_CONFIG["init"])
@@ -999,7 +996,7 @@ def unindex_expired_offers(process_all_expired: bool = False) -> None:
         page += 1
 
 
-def report_offer(user: User, offer: models.Offer, reason: str, custom_reason: str | None) -> None:
+def report_offer(user: users_models.User, offer: models.Offer, reason: str, custom_reason: str | None) -> None:
     try:
         # transaction() handles the commit/rollback operations
         #
@@ -1072,7 +1069,11 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_place(
 
 def delete_unwanted_existing_product(isbn: str) -> None:
     product_has_at_least_one_booking = (
-        models.Product.query.filter_by(idAtProviders=isbn).join(models.Offer).join(models.Stock).join(Booking).count()
+        models.Product.query.filter_by(idAtProviders=isbn)
+        .join(models.Offer)
+        .join(models.Stock)
+        .join(bookings_models.Booking)
+        .count()
         > 0
     )
     product = (
@@ -1130,7 +1131,7 @@ def batch_delete_draft_offers(query: BaseQuery) -> None:
     db.session.commit()
 
 
-def _get_or_create_label(label: str, venue: Venue) -> models.PriceCategoryLabel:
+def _get_or_create_label(label: str, venue: offerers_models.Venue) -> models.PriceCategoryLabel:
     price_category_label = models.PriceCategoryLabel.query.filter_by(label=label, venue=venue).one_or_none()
     if not price_category_label:
         return models.PriceCategoryLabel(label=label, venue=venue)

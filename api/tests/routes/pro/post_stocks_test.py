@@ -215,7 +215,7 @@ class Returns201Test:
         )
         assert mails_testing.outbox[1].sent_data["To"] == "beneficiary@bookingEmail.fr"
 
-    @mock.patch("pcapi.core.offers.api.update_cancellation_limit_dates")
+    @mock.patch("pcapi.core.bookings.api.update_cancellation_limit_dates")
     def should_update_bookings_cancellation_limit_date_on_delayed_event(
         self, mock_update_cancellation_limit_dates, app
     ):
