@@ -1,8 +1,7 @@
-import { render, waitFor } from '@testing-library/react'
+import { waitFor } from '@testing-library/react'
 import type { Action, History } from 'history'
 import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Provider } from 'react-redux'
 import reactRouter from 'react-router'
 import { Router } from 'react-router-dom'
 
@@ -13,8 +12,8 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import type { IUseCurrentUserReturn } from 'hooks/useCurrentUser'
 import * as useCurrentUser from 'hooks/useCurrentUser'
 import * as useNotification from 'hooks/useNotification'
-import { configureTestStore } from 'store/testUtils'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SignUpValidation from '../SignUpValidation'
 
@@ -24,7 +23,6 @@ jest.mock('hooks/useNotification')
 
 describe('src | components | pages | Signup | validation', () => {
   let history: History
-  let store = configureTestStore()
   const mockUseNotification = {
     close: jest.fn(),
     error: jest.fn(),
@@ -34,17 +32,8 @@ describe('src | components | pages | Signup | validation', () => {
   }
 
   beforeEach(() => {
-    store = configureTestStore({
-      user: {
-        currentUser: null,
-      },
-      features: {
-        list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
-      },
-    })
     history = createBrowserHistory()
     jest.spyOn(reactRouter, 'useParams').mockReturnValue({ token: 'AAA' })
-    store = configureTestStore()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...mockUseNotification,
     }))
@@ -82,12 +71,10 @@ describe('src | components | pages | Signup | validation', () => {
       },
     } as IUseCurrentUserReturn)
     // when the user is logged in and lands on signup validation page
-    render(
-      <Provider store={store}>
-        <Router history={history}>
-          <SignUpValidation />
-        </Router>
-      </Provider>
+    renderWithProviders(
+      <Router history={history}>
+        <SignUpValidation />
+      </Router>
     )
     // then the validity of his token should not be verified
     expect(validateUser).not.toHaveBeenCalled()
@@ -99,12 +86,10 @@ describe('src | components | pages | Signup | validation', () => {
   it('should verify validity of user token and redirect to connexion', async () => {
     const validateUser = jest.spyOn(api, 'validateUser').mockResolvedValue()
     // when the user lands on signup validation page
-    render(
-      <Provider store={store}>
-        <Router history={history}>
-          <SignUpValidation />
-        </Router>
-      </Provider>
+    renderWithProviders(
+      <Router history={history}>
+        <SignUpValidation />
+      </Router>
     )
     // then the validity of his token should be verified
     expect(validateUser).toHaveBeenCalledTimes(1)
@@ -118,12 +103,10 @@ describe('src | components | pages | Signup | validation', () => {
   it('should call media campaign tracker once', () => {
     jest.spyOn(api, 'validateUser').mockResolvedValue()
     // when the user lands on signup validation page
-    render(
-      <Provider store={store}>
-        <Router history={history}>
-          <SignUpValidation />
-        </Router>
-      </Provider>
+    renderWithProviders(
+      <Router history={history}>
+        <SignUpValidation />
+      </Router>
     )
     // then the media campaign tracker should be called once
     expect(campaignTracker.signUpValidation).toHaveBeenCalledTimes(1)
@@ -137,12 +120,10 @@ describe('src | components | pages | Signup | validation', () => {
       success: notifySuccess,
     }))
     // given the user lands on signup validation page
-    render(
-      <Provider store={store}>
-        <Router history={history}>
-          <SignUpValidation />
-        </Router>
-      </Provider>
+    renderWithProviders(
+      <Router history={history}>
+        <SignUpValidation />
+      </Router>
     )
     // when his token is successfully validated
     // then a success message should be dispatched
@@ -172,12 +153,10 @@ describe('src | components | pages | Signup | validation', () => {
       )
     )
     // given the user lands on signup validation page
-    render(
-      <Provider store={store}>
-        <Router history={history}>
-          <SignUpValidation />
-        </Router>
-      </Provider>
+    renderWithProviders(
+      <Router history={history}>
+        <SignUpValidation />
+      </Router>
     )
     // when his token is not successfully validated
     // then an error message should be dispatched

@@ -1,16 +1,13 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
-import type { Store } from 'redux'
 
 import { OfferStatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferItem, { OfferItemProps } from '../OfferItem'
 
@@ -25,28 +22,20 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOfferItem = (props: OfferItemProps, store: Store) => {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <table>
-          <tbody>
-            <OfferItem {...props} />
-          </tbody>
-        </table>
-      </MemoryRouter>
-    </Provider>
+const renderOfferItem = (props: OfferItemProps) =>
+  renderWithProviders(
+    <table>
+      <tbody>
+        <OfferItem {...props} />
+      </tbody>
+    </table>
   )
-}
 
 describe('src | components | pages | Offers | OfferItem', () => {
   let props: OfferItemProps
   let eventOffer: Offer
-  let store: Store
 
   beforeEach(() => {
-    store = configureTestStore({})
-
     eventOffer = {
       id: 'M4',
       isActive: true,
@@ -82,7 +71,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
   describe('offer item tracking', () => {
     it('track when clicking on offer thumb', async () => {
       // when
-      renderOfferItem(props, store)
+      renderOfferItem(props)
 
       // then
       await userEvent.click(
@@ -105,7 +94,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
     it('should track when clicking on offer stocks', async () => {
       // given
-      renderOfferItem(props, store)
+      renderOfferItem(props)
       await userEvent.click(screen.getByText('Stocks'))
 
       // then
@@ -126,7 +115,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
     it('should track when clicking on offer pen', async () => {
       // when
-      renderOfferItem(props, store)
+      renderOfferItem(props)
       // then
       const editLink = screen.getAllByRole('link')
       await userEvent.click(editLink[3])
@@ -148,7 +137,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
   it('should track when clicking on offer title', async () => {
     // when
-    renderOfferItem(props, store)
+    renderOfferItem(props)
 
     // then
     const offerTitle = screen.getByText(props.offer.name as string, {
@@ -174,7 +163,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     it('should track with draft informations', async () => {
       // when
       props.offer.status = OfferStatus.DRAFT
-      renderOfferItem(props, store)
+      renderOfferItem(props)
 
       // then
       const offerTitle = screen.getByText(props.offer.name as string, {
@@ -199,7 +188,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     it('should track with draft informations', async () => {
       // when
       props.offer.status = OfferStatus.DRAFT
-      renderOfferItem(props, store)
+      renderOfferItem(props)
 
       // then
       const deleteDraftOfferButton = screen.getByRole('button', {

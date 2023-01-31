@@ -1,14 +1,13 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Provider } from 'react-redux'
 import { Route, Router } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SetPassword from '../SetPassword'
 
@@ -16,34 +15,33 @@ jest.mock('apiClient/api', () => ({
   api: { postNewPassword: jest.fn() },
 }))
 
-const renderSetPassword = (store, history) =>
-  render(
-    <Provider store={store}>
-      <Router history={history}>
-        <Route path="/creation-de-mot-de-passe/:token?">
-          <>
-            <SetPassword />
-            <Notification />
-          </>
-        </Route>
-      </Router>
-    </Provider>
+const renderSetPassword = (storeOverrides, history) =>
+  renderWithProviders(
+    <Router history={history}>
+      <Route path="/creation-de-mot-de-passe/:token?">
+        <>
+          <SetPassword />
+          <Notification />
+        </>
+      </Route>
+    </Router>,
+    { storeOverrides }
   )
 
 describe('src | components | pages | SetPassword', () => {
   let store, history, historyPushSpy
   beforeEach(() => {
-    store = configureTestStore()
+    store = {}
     history = createBrowserHistory()
     history.push('/creation-de-mot-de-passe/AT3VXY5EB')
     historyPushSpy = jest.spyOn(history, 'push')
   })
+
   it('should redirect the user to structure page', async () => {
     // Given
-
-    store = configureTestStore({
+    store = {
       user: { currentUser: { publicName: 'Bosetti' } },
-    })
+    }
     renderSetPassword(store, history)
 
     // Then
