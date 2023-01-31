@@ -373,11 +373,7 @@ def post_price_categories(
         for price_category_to_edit in price_categories_to_edit:
             if price_category_to_edit.id not in existing_price_categories:
                 raise ApiErrors(
-                    {
-                        "price_category_id": [
-                            "La catégorie de prix avec l'id %s n'existe pas" % price_category_to_edit.id
-                        ]
-                    },
+                    {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % price_category_to_edit.id]},
                     status_code=400,
                 )
             data = price_category_to_edit.dict(exclude_unset=True)

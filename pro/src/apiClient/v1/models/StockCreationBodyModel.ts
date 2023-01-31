@@ -7,7 +7,8 @@ export type StockCreationBodyModel = {
   activationCodesExpirationDatetime?: string | null;
   beginningDatetime?: string | null;
   bookingLimitDatetime?: string | null;
-  price: number;
+  price?: number | null;
+  priceCategoryId?: number | null;
   quantity?: number | null;
 };
 
