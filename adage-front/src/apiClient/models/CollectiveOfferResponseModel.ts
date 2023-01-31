@@ -12,7 +12,7 @@ import type { StudentLevels } from './StudentLevels';
 export type CollectiveOfferResponseModel = {
   audioDisabilityCompliant: boolean;
   contactEmail: string;
-  contactPhone: string;
+  contactPhone?: string | null;
   description?: string | null;
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;

@@ -3,7 +3,7 @@ import React from 'react'
 import { SummaryLayout } from 'components/SummaryLayout'
 
 interface ICollectiveOfferContactSectionProps {
-  phone: string
+  phone?: string | null
   email: string
 }
 
