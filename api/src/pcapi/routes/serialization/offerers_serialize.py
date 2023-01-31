@@ -172,6 +172,7 @@ class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityCompliance
     collectiveInterventionArea: list[str] | None
     collectivePhone: str | None
     collectiveEmail: str | None
+    collectiveOfferCategoryId: str | None
     _humanize_id = humanize_field("id")
 
     class Config:

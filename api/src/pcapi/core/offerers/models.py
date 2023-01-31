@@ -295,6 +295,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         "PriceCategoryLabel", back_populates="venue"
     )
 
+    collectiveOfferCategoryId = sa.Column(sa.Text, nullable=True)
+
     @property
     def is_eligible_for_search(self) -> bool:
         not_administrative = self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE
