@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -28,8 +27,7 @@ import {
   getOfferIndividualPath,
   getOfferIndividualUrl,
 } from 'core/Offers/utils/getOfferIndividualUrl'
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksThing, { IStocksThingProps } from '../StocksThing'
 
@@ -50,70 +48,61 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderStockThingScreen = ({
-  props,
-  storeOverride = {},
-  contextValue,
-}: {
-  props: IStocksThingProps
-  storeOverride: Partial<RootState>
+const renderStockThingScreen = (
+  props: IStocksThingProps,
   contextValue: IOfferIndividualContext
-}) => {
-  const store = configureTestStore(storeOverride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter
-        initialEntries={[
-          getOfferIndividualUrl({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-            offerId: contextValue.offerId || undefined,
-          }),
-        ]}
+) =>
+  renderWithProviders(
+    <>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
       >
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <OfferIndividualContext.Provider value={contextValue}>
-            <StocksThing {...props} />
-          </OfferIndividualContext.Provider>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>Next page</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>Save draft page</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>Previous page</div>
-        </Route>
-        <Notification />
-      </MemoryRouter>
-    </Provider>
+        <OfferIndividualContext.Provider value={contextValue}>
+          <StocksThing {...props} />
+        </OfferIndividualContext.Provider>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <div>Next page</div>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <div>Save draft page</div>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <div>Previous page</div>
+      </Route>
+      <Notification />
+    </>,
+    {
+      initialRouterEntries: [
+        getOfferIndividualUrl({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          offerId: contextValue.offerId || undefined,
+        }),
+      ],
+    }
   )
-}
 
 describe('screens:StocksThing', () => {
   let props: IStocksThingProps
-  let storeOverride: Partial<RootState>
   let contextValue: IOfferIndividualContext
   let offer: Partial<IOfferIndividual>
 
@@ -129,7 +118,6 @@ describe('screens:StocksThing', () => {
     props = {
       offer: offer as IOfferIndividual,
     }
-    storeOverride = {}
     contextValue = {
       offerId: 'OFFER_ID',
       offer: offer as IOfferIndividual,
@@ -154,7 +142,7 @@ describe('screens:StocksThing', () => {
       isDigital: false,
     }
 
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
     expect(
       screen.getByText('Offre synchronisée avec Ciné Office')
     ).toBeInTheDocument()
@@ -178,7 +166,7 @@ describe('screens:StocksThing', () => {
       subcategoryId: 'TESTID',
       isDigital: true,
     }
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
     expect(
       screen.getByText('Offre synchronisée avec Ciné Office')
     ).toBeInTheDocument()
@@ -197,7 +185,7 @@ describe('screens:StocksThing', () => {
       subcategoryId: LIVRE_PAPIER_SUBCATEGORY_ID,
       isDigital: false,
     }
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
     expect(
       screen.getByText(
         'Les bénéficiaires ont 10 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
@@ -212,7 +200,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
     const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
     const draftButton = screen.getByRole('button', {
       name: 'Sauvegarder le brouillon',
@@ -233,7 +221,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
     const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
     const draftButton = screen.getByRole('button', {
       name: 'Sauvegarder le brouillon',
@@ -263,7 +251,7 @@ describe('screens:StocksThing', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape précédente' })
@@ -291,7 +279,7 @@ describe('screens:StocksThing', () => {
       )
     )
 
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
 
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(
@@ -312,7 +300,7 @@ describe('screens:StocksThing', () => {
         ...(offer as IOfferIndividual),
         isDigital: true,
       }
-      renderStockThingScreen({ props, storeOverride, contextValue })
+      renderStockThingScreen(props, contextValue)
 
       await userEvent.type(screen.getByLabelText('Prix'), '20')
 
@@ -377,7 +365,7 @@ describe('screens:StocksThing', () => {
         ...(offer as IOfferIndividual),
         isDigital: true,
       }
-      renderStockThingScreen({ props, storeOverride, contextValue })
+      renderStockThingScreen(props, contextValue)
 
       await userEvent.click(
         screen.getByTestId('stock-form-actions-button-open')
@@ -421,7 +409,7 @@ describe('screens:StocksThing', () => {
           } as IOfferIndividualStock,
         ],
       }
-      renderStockThingScreen({ props, storeOverride, contextValue })
+      renderStockThingScreen(props, contextValue)
 
       expect(screen.getByLabelText('Quantité')).toBeDisabled()
       const expirationInput = screen.getByLabelText("Date d'expiration")
@@ -430,7 +418,7 @@ describe('screens:StocksThing', () => {
     })
 
     it('should show a success notification if nothing has been touched', async () => {
-      renderStockThingScreen({ props, storeOverride, contextValue })
+      renderStockThingScreen(props, contextValue)
       await userEvent.click(
         screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
       )
@@ -450,7 +438,7 @@ describe('screens:StocksThing', () => {
   it.each(setNumberPriceValue)(
     'should only type numbers for price input',
     async ({ value, expectedNumber }) => {
-      renderStockThingScreen({ props, storeOverride, contextValue })
+      renderStockThingScreen(props, contextValue)
 
       const priceInput = screen.getByLabelText('Prix', {
         exact: false,
@@ -470,7 +458,7 @@ describe('screens:StocksThing', () => {
   it.each(setNumberQuantityValue)(
     'should only type numbers for quantity input',
     async ({ value, expectedNumber }) => {
-      renderStockThingScreen({ props, storeOverride, contextValue })
+      renderStockThingScreen(props, contextValue)
 
       const quantityInput = screen.getByLabelText('Quantité', {
         exact: false,
@@ -480,7 +468,7 @@ describe('screens:StocksThing', () => {
     }
   )
   it('should display success message on save draft button when stock form is empty', async () => {
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
 
     await expect(screen.getByTestId('stock-thing-form')).toBeInTheDocument()
 

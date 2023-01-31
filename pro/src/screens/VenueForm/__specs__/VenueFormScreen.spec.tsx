@@ -1,9 +1,8 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryHistory } from 'history'
 import fetch from 'jest-fetch-mock'
 import React from 'react'
-import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 
 import { apiAdresse } from 'apiClient/adresse'
@@ -16,7 +15,7 @@ import { IVenueFormValues } from 'components/VenueForm'
 import { IOfferer } from 'core/Offerers/types'
 import { IVenue } from 'core/Venue'
 import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueFormScreen } from '../index'
 
@@ -39,15 +38,15 @@ const renderForm = (
   isCreatingVenue: boolean,
   venue?: IVenue | undefined
 ) => {
-  render(
-    <Provider
-      store={configureTestStore({
-        user: {
-          initialized: true,
-          currentUser,
-        },
-      })}
-    >
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser,
+    },
+  }
+
+  renderWithProviders(
+    <>
       <Router history={createMemoryHistory()}>
         <VenueFormScreen
           initialValues={initialValues}
@@ -61,9 +60,11 @@ const renderForm = (
         />
       </Router>
       <Notification />
-    </Provider>
+    </>,
+    { storeOverrides }
   )
 }
+
 jest.mock('apiClient/api', () => ({
   api: {
     postCreateVenue: jest.fn(),

@@ -1,28 +1,21 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
-import { configureTestStore } from 'store/testUtils'
 import { collectiveOfferFactory } from 'utils/apiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferType from '../OfferType'
 
-const renderOfferTypes = (storeOverride: any) => {
-  const store = configureTestStore(storeOverride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/creation']}>
-        <OfferType />
-      </MemoryRouter>
-    </Provider>
-  )
-}
+const renderOfferTypes = (storeOverrides: any) =>
+  renderWithProviders(<OfferType />, {
+    storeOverrides,
+    initialRouterEntries: ['/creation'],
+  })
 
 const mockHistoryPush = jest.fn()
 jest.mock('react-router-dom', () => ({

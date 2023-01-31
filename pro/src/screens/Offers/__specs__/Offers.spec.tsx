@@ -1,9 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
-import type { Store } from 'redux'
 
 import { UserRole } from 'apiClient/v1'
 import {
@@ -20,20 +17,14 @@ import {
 } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
-import { configureTestStore } from 'store/testUtils'
 import { offerFactory, offererFactory } from 'utils/apiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import Offers, { IOffersProps } from '../Offers'
 
-const renderOffers = (props: IOffersProps, store: Store) => {
-  render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <Offers {...props} />
-      </MemoryRouter>
-    </Provider>
-  )
+const renderOffers = (props: IOffersProps, storeOverrides: any) => {
+  renderWithProviders(<Offers {...props} />, { storeOverrides })
 }
 
 const categoriesAndSubcategories = {
@@ -86,7 +77,7 @@ describe('screen Offers', () => {
     publicName: string
     roles: Array<UserRole>
   }
-  let store: Store
+  let store: any
   let offersRecap: Offer[]
 
   beforeEach(() => {
@@ -97,7 +88,7 @@ describe('screen Offers', () => {
       publicName: 'USER',
       roles: [UserRole.PRO],
     }
-    store = configureTestStore({
+    store = {
       user: {
         initialized: true,
         currentUser,
@@ -105,7 +96,7 @@ describe('screen Offers', () => {
       offers: {
         searchFilters: DEFAULT_SEARCH_FILTERS,
       },
-    })
+    }
     offersRecap = [offerFactory({ venue: proVenues[0] })]
 
     props = {
@@ -498,7 +489,7 @@ describe('screen Offers', () => {
                   venueId: 'JI',
                 },
               },
-              configureTestStore({
+              {
                 user: {
                   initialized: true,
                   currentUser,
@@ -506,7 +497,7 @@ describe('screen Offers', () => {
                 offers: {
                   searchFilters: { ...DEFAULT_SEARCH_FILTERS, venueId: 'JI' },
                 },
-              })
+              }
             )
             // When
             await userEvent.selectOptions(
@@ -543,7 +534,7 @@ describe('screen Offers', () => {
                   venueId: 'IJ',
                 },
               },
-              configureTestStore({
+              {
                 user: {
                   initialized: true,
                   currentUser,
@@ -551,7 +542,7 @@ describe('screen Offers', () => {
                 offers: {
                   searchFilters: { ...DEFAULT_SEARCH_FILTERS, venueId: 'IJ' },
                 },
-              })
+              }
             )
             // Then
             const selectAllOffersCheckbox =
@@ -568,7 +559,7 @@ describe('screen Offers', () => {
                   offererId: 'A4',
                 },
               },
-              configureTestStore({
+              {
                 user: {
                   initialized: true,
                   currentUser,
@@ -576,7 +567,7 @@ describe('screen Offers', () => {
                 offers: {
                   searchFilters: { ...DEFAULT_SEARCH_FILTERS, offererId: 'A4' },
                 },
-              })
+              }
             )
             // Then
             const selectAllOffersCheckbox =
@@ -691,13 +682,7 @@ describe('screen Offers', () => {
   describe('offers selection', () => {
     it('should display actionsBar when at least one offer is selected', async () => {
       // Given
-      render(
-        <Provider store={store}>
-          <MemoryRouter>
-            <Offers {...props} />
-          </MemoryRouter>
-        </Provider>
-      )
+      renderWithProviders(<Offers {...props} />, { storeOverrides: store })
 
       // When
       const checkbox = screen.getByTestId(`select-offer-${offersRecap[0].id}`)

@@ -1,8 +1,7 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { ApiError, GetIndividualOfferResponseModel } from 'apiClient/v1'
@@ -22,7 +21,7 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { IInformationsProps, Informations as InformationsScreen } from '..'
 
@@ -42,10 +41,18 @@ jest.mock('repository/pcapi/pcapi', () => ({
 
 const renderInformationsScreen = (
   props: IInformationsProps,
-  storeOverride: any,
   contextOverride: Partial<IOfferIndividualContext>
 ) => {
-  const store = configureTestStore(storeOverride)
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser: {
+        publicName: 'John Do',
+        isAdmin: false,
+        email: 'email@example.com',
+      },
+    },
+  }
   const contextValue: IOfferIndividualContext = {
     offerId: null,
     offer: null,
@@ -59,37 +66,37 @@ const renderInformationsScreen = (
     showVenuePopin: {},
     ...contextOverride,
   }
-  return render(
-    <Provider store={store}>
-      <MemoryRouter
-        initialEntries={[
-          getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-        ]}
+  return renderWithProviders(
+    <>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
       >
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <OfferIndividualContext.Provider value={contextValue}>
-            <InformationsScreen {...props} />
-          </OfferIndividualContext.Provider>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>There is the stock route content</div>
-        </Route>
-      </MemoryRouter>
+        <OfferIndividualContext.Provider value={contextValue}>
+          <InformationsScreen {...props} />
+        </OfferIndividualContext.Provider>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <div>There is the stock route content</div>
+      </Route>
       <Notification />
-    </Provider>
+    </>,
+    {
+      storeOverrides,
+      initialRouterEntries: [
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        }),
+      ],
+    }
   )
 }
 
@@ -97,21 +104,10 @@ const scrollIntoViewMock = jest.fn()
 
 describe('screens:OfferIndividual::Informations::creation', () => {
   let props: IInformationsProps
-  let store: any
   let contextOverride: Partial<IOfferIndividualContext>
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    store = {
-      user: {
-        initialized: true,
-        currentUser: {
-          publicName: 'John Do',
-          isAdmin: false,
-          email: 'email@example.com',
-        },
-      },
-    }
     const categories = [
       {
         id: 'A',
@@ -208,7 +204,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should submit minimal physical offer', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -251,7 +247,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should display api errors', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -295,7 +291,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should submit minimal virtual offer', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -341,7 +337,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     expect(pcapi.postThumbnail).not.toHaveBeenCalled()
   })
   it('should leave the user to creation page on draft save', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -381,7 +377,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should track when submitting offer', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -408,7 +404,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should track when creating draft offer', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -435,7 +431,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should track when cancelling creation', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     await userEvent.click(await screen.findByText('Annuler et quitter'))
 

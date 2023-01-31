@@ -1,47 +1,32 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { OfferStatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StockSection, { IStockSection } from '../StockSection'
 
 const mockLogEvent = jest.fn()
 
-const renderStockSection = ({
-  props,
-  storeOverride = {},
-  url = '/recapitulatif',
-}: {
-  props: IStockSection
-  storeOverride?: Partial<RootState>
-  url?: string
-}) => {
-  const store = configureTestStore({
-    ...storeOverride,
-  })
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[url]}>
-        <Route path="/recapitulatif">
-          <StockSection {...props} />
-        </Route>
-        <Route path="/creation/recapitulatif">
-          <StockSection {...props} />
-        </Route>
-        <Route path="/brouillon/recapitulatif">
-          <StockSection {...props} />
-        </Route>
-      </MemoryRouter>
-    </Provider>
+const renderStockSection = (props: IStockSection, url = '/recapitulatif') =>
+  renderWithProviders(
+    <>
+      <Route path="/recapitulatif">
+        <StockSection {...props} />
+      </Route>
+      <Route path="/creation/recapitulatif">
+        <StockSection {...props} />
+      </Route>
+      <Route path="/brouillon/recapitulatif">
+        <StockSection {...props} />
+      </Route>
+    </>,
+    { initialRouterEntries: [url] }
   )
-}
 
 describe('Summary stock section trackers', () => {
   let props: IStockSection
@@ -62,7 +47,7 @@ describe('Summary stock section trackers', () => {
     }))
   })
   it('should track creation summary (v2)', async () => {
-    renderStockSection({ props, url: '/creation/recapitulatif' })
+    renderStockSection(props, '/creation/recapitulatif')
 
     await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
 
@@ -82,7 +67,7 @@ describe('Summary stock section trackers', () => {
   })
 
   it('should track edition summary (v2)', async () => {
-    renderStockSection({ props })
+    renderStockSection(props)
 
     await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
 
@@ -102,7 +87,7 @@ describe('Summary stock section trackers', () => {
   })
 
   it('should track draft summary (v2)', async () => {
-    renderStockSection({ props, url: '/brouillon/recapitulatif' })
+    renderStockSection(props, '/brouillon/recapitulatif')
 
     await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
 
@@ -122,10 +107,7 @@ describe('Summary stock section trackers', () => {
   })
 
   it('should track creation summary (v3)', async () => {
-    renderStockSection({
-      props,
-      url: '/creation/recapitulatif',
-    })
+    renderStockSection(props, '/creation/recapitulatif')
 
     await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
 
@@ -145,7 +127,7 @@ describe('Summary stock section trackers', () => {
   })
 
   it('should track edition summary (v3)', async () => {
-    renderStockSection({ props })
+    renderStockSection(props)
     await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)

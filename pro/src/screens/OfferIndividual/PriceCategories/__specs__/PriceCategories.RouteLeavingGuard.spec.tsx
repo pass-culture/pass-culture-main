@@ -1,17 +1,16 @@
 import '@testing-library/jest-dom'
 
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { generatePath, MemoryRouter, Route } from 'react-router'
+import { generatePath, Route } from 'react-router'
 
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
-import { configureTestStore } from 'store/testUtils'
 import { ButtonLink } from 'ui-kit'
 import { individualOfferFactory } from 'utils/individualApiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import PriceCategories, { IPriceCategories } from '../PriceCategories'
 
@@ -32,51 +31,47 @@ const renderPriceCategories = (
     }),
     { offerId: 'AA' }
   )
-) => {
-  const store = configureTestStore()
-
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[url]}>
-        <Route
-          path={Object.values(OFFER_WIZARD_MODE).map(mode =>
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.TARIFS,
-              mode,
-            })
-          )}
+) =>
+  renderWithProviders(
+    <>
+      <Route
+        path={Object.values(OFFER_WIZARD_MODE).map(mode =>
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.TARIFS,
+            mode,
+          })
+        )}
+      >
+        <PriceCategories {...props} />
+        <ButtonLink link={{ to: '/outside', isExternal: false }}>
+          Go outside !
+        </ButtonLink>
+        <ButtonLink
+          link={{
+            to: getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.STOCKS,
+              mode: OFFER_WIZARD_MODE.DRAFT,
+            }),
+            isExternal: false,
+          }}
         >
-          <PriceCategories {...props} />
-          <ButtonLink link={{ to: '/outside', isExternal: false }}>
-            Go outside !
-          </ButtonLink>
-          <ButtonLink
-            link={{
-              to: getOfferIndividualPath({
-                step: OFFER_WIZARD_STEP_IDS.STOCKS,
-                mode: OFFER_WIZARD_MODE.DRAFT,
-              }),
-              isExternal: false,
-            }}
-          >
-            Go to stocks !
-          </ButtonLink>
-        </Route>
-        <Route path="/outside">
-          <div>This is outside offer creation</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          })}
-        >
-          <div>There is the stock route content</div>
-        </Route>
-      </MemoryRouter>
-    </Provider>
+          Go to stocks !
+        </ButtonLink>
+      </Route>
+      <Route path="/outside">
+        <div>This is outside offer creation</div>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        })}
+      >
+        <div>There is the stock route content</div>
+      </Route>
+    </>,
+    { initialRouterEntries: [url] }
   )
-}
 
 describe('PriceCategories', () => {
   it('should let going to information when clicking on previous step in creation', async () => {

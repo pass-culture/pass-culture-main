@@ -1,91 +1,79 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { generatePath, MemoryRouter, Route } from 'react-router'
+import { generatePath, Route } from 'react-router'
 
 import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StockSection, { IStockSection } from '../StockSection'
 
 const mockLogEvent = jest.fn()
 
-const renderStockSection = ({
-  props,
-  storeOverride = {},
-  url = getOfferIndividualPath({
+const renderStockSection = (
+  props: IStockSection,
+  url: string = getOfferIndividualPath({
     step: OFFER_WIZARD_STEP_IDS.SUMMARY,
     mode: OFFER_WIZARD_MODE.EDITION,
-  }),
-}: {
-  props: IStockSection
-  storeOverride?: Partial<RootState>
-  url?: string
-}) => {
-  const store = configureTestStore({
-    ...storeOverride,
   })
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[url]}>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-        >
-          <StockSection {...props} />
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <StockSection {...props} />
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          })}
-        >
-          <StockSection {...props} />
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>Offer V3 creation: page stocks</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-        >
-          <div>Offer V3 edition: page stocks</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          })}
-        >
-          <div>Offer V3 brouillon: page stocks</div>
-        </Route>
-      </MemoryRouter>
-    </Provider>
+) =>
+  renderWithProviders(
+    <>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        })}
+      >
+        <StockSection {...props} />
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <StockSection {...props} />
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        })}
+      >
+        <StockSection {...props} />
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <div>Offer V3 creation: page stocks</div>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        })}
+      >
+        <div>Offer V3 edition: page stocks</div>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        })}
+      >
+        <div>Offer V3 brouillon: page stocks</div>
+      </Route>
+    </>,
+    { initialRouterEntries: [url] }
   )
-}
 
 describe('Summary stock section', () => {
   let props: IStockSection
@@ -107,16 +95,16 @@ describe('Summary stock section', () => {
         offerId: 'TEST_OFFER_ID',
         offerStatus: OfferStatus.SOLD_OUT,
       }
-      renderStockSection({
+      renderStockSection(
         props,
-        url: generatePath(
+        generatePath(
           getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
-        ),
-      })
+        )
+      )
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()
@@ -135,16 +123,16 @@ describe('Summary stock section', () => {
         offerId: 'TEST_OFFER_ID',
         offerStatus: OfferStatus.EXPIRED,
       }
-      renderStockSection({
+      renderStockSection(
         props,
-        url: generatePath(
+        generatePath(
           getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
-        ),
-      })
+        )
+      )
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()
@@ -157,16 +145,16 @@ describe('Summary stock section', () => {
         offerId: 'TEST_OFFER_ID',
         offerStatus: OfferStatus.SOLD_OUT,
       }
-      renderStockSection({
+      renderStockSection(
         props,
-        url: generatePath(
+        generatePath(
           getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
-        ),
-      })
+        )
+      )
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()
@@ -191,16 +179,16 @@ describe('Summary stock section', () => {
     })
 
     it('should render creation summary (v3)', async () => {
-      renderStockSection({
+      renderStockSection(
         props,
-        url: generatePath(
+        generatePath(
           getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
-        ),
-      })
+        )
+      )
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()
@@ -215,7 +203,7 @@ describe('Summary stock section', () => {
     })
 
     it('should render edition summary (v3)', async () => {
-      renderStockSection({ props })
+      renderStockSection(props)
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()
@@ -238,7 +226,7 @@ describe('Summary stock section', () => {
           bookingLimitDatetime: '2001-06-12',
         },
       }
-      renderStockSection({ props })
+      renderStockSection(props)
       expect(screen.getByText(/Date limite de réservation/)).toBeInTheDocument()
     })
 
@@ -254,7 +242,7 @@ describe('Summary stock section', () => {
           },
         }
 
-        renderStockSection({ props })
+        renderStockSection(props)
         expect(screen.getByText('Illimité')).toBeInTheDocument()
       }
     )
@@ -285,16 +273,16 @@ describe('Summary stock section', () => {
     })
 
     it('should render creation summary (v3)', async () => {
-      renderStockSection({
+      renderStockSection(
         props,
-        url: generatePath(
+        generatePath(
           getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
-        ),
-      })
+        )
+      )
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()
@@ -307,16 +295,16 @@ describe('Summary stock section', () => {
     })
 
     it('should render brouillon summary (v3)', async () => {
-      renderStockSection({
+      renderStockSection(
         props,
-        url: generatePath(
+        generatePath(
           getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.DRAFT,
           }),
           { offerId: 'AA' }
-        ),
-      })
+        )
+      )
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()
@@ -329,7 +317,7 @@ describe('Summary stock section', () => {
     })
 
     it('should render edition summary (v3)', async () => {
-      renderStockSection({ props })
+      renderStockSection(props)
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()
@@ -365,16 +353,16 @@ describe('Summary stock section', () => {
           departmentCode: '78',
         },
       ]
-      renderStockSection({
+      renderStockSection(
         props,
-        url: generatePath(
+        generatePath(
           getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
-        ),
-      })
+        )
+      )
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()

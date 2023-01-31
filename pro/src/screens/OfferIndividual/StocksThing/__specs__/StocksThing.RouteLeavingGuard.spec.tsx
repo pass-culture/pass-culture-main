@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { generatePath, MemoryRouter, Route } from 'react-router'
+import { generatePath, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -19,9 +18,8 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
 import { ButtonLink } from 'ui-kit'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksThing, { IStocksThingProps } from '../StocksThing'
 
@@ -44,85 +42,75 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderStockThingScreen = ({
-  props,
-  storeOverride = {},
-  contextValue,
-  url = generatePath(
+const renderStockThingScreen = (
+  props: IStocksThingProps,
+  contextValue: IOfferIndividualContext,
+  url: string = generatePath(
     getOfferIndividualPath({
       step: OFFER_WIZARD_STEP_IDS.STOCKS,
       mode: OFFER_WIZARD_MODE.CREATION,
     }),
     { offerId: 'AA' }
-  ),
-}: {
-  props: IStocksThingProps
-  storeOverride: Partial<RootState>
-  contextValue: IOfferIndividualContext
-  url?: string
-}) => {
-  const store = configureTestStore(storeOverride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[url]}>
-        <Route
-          path={Object.values(OFFER_WIZARD_MODE).map(mode =>
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.STOCKS,
-              mode,
-            })
-          )}
-        >
-          <OfferIndividualContext.Provider value={contextValue}>
-            <StocksThing {...props} />
-            <ButtonLink link={{ to: '/outside', isExternal: false }}>
-              Go outside !
-            </ButtonLink>
-          </OfferIndividualContext.Provider>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>Next page</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          })}
-        >
-          <div>Next page draft</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>Save draft page</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>Previous page</div>
-        </Route>
-        <Route path="/outside">
-          <div>This is outside stock form</div>
-        </Route>
-      </MemoryRouter>
-    </Provider>
   )
-}
+) =>
+  renderWithProviders(
+    <>
+      <Route
+        path={Object.values(OFFER_WIZARD_MODE).map(mode =>
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode,
+          })
+        )}
+      >
+        <OfferIndividualContext.Provider value={contextValue}>
+          <StocksThing {...props} />
+          <ButtonLink link={{ to: '/outside', isExternal: false }}>
+            Go outside !
+          </ButtonLink>
+        </OfferIndividualContext.Provider>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <div>Next page</div>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        })}
+      >
+        <div>Next page draft</div>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <div>Save draft page</div>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <div>Previous page</div>
+      </Route>
+      <Route path="/outside">
+        <div>This is outside stock form</div>
+      </Route>
+    </>,
+    { initialRouterEntries: [url] }
+  )
 
 describe('screens:StocksThing', () => {
   let props: IStocksThingProps
-  let storeOverride: Partial<RootState>
   let contextValue: IOfferIndividualContext
   let offer: Partial<IOfferIndividual>
 
@@ -137,7 +125,6 @@ describe('screens:StocksThing', () => {
     props = {
       offer: offer as IOfferIndividual,
     }
-    storeOverride = {}
     contextValue = {
       offerId: null,
       offer: null,
@@ -163,7 +150,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
 
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(
@@ -177,7 +164,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
 
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(
@@ -192,7 +179,7 @@ describe('screens:StocksThing', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -204,7 +191,7 @@ describe('screens:StocksThing', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
 
     await userEvent.type(screen.getByLabelText('Quantité'), '20')
     await userEvent.click(
@@ -221,7 +208,7 @@ describe('screens:StocksThing', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
 
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(
@@ -249,7 +236,7 @@ describe('screens:StocksThing', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
     await userEvent.type(screen.getByLabelText('Quantité'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
@@ -264,7 +251,7 @@ describe('screens:StocksThing', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
     await userEvent.type(screen.getByLabelText('Quantité'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
@@ -282,7 +269,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
 
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(screen.getByText('Go outside !'))
@@ -309,11 +296,7 @@ describe('screens:StocksThing', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockThingScreen({
-      props,
-      storeOverride,
-      contextValue,
-    })
+    renderStockThingScreen(props, contextValue)
     await userEvent.type(screen.getByLabelText('Prix'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
@@ -334,18 +317,17 @@ describe('screens:StocksThing', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockThingScreen({
+    renderStockThingScreen(
       props,
-      storeOverride,
       contextValue,
-      url: generatePath(
+      generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.DRAFT,
         }),
         { offerId: 'AA' }
-      ),
-    })
+      )
+    )
     await userEvent.type(screen.getByLabelText('Prix'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
@@ -366,18 +348,17 @@ describe('screens:StocksThing', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockThingScreen({
+    renderStockThingScreen(
       props,
-      storeOverride,
       contextValue,
-      url: generatePath(
+      generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
         { offerId: 'AA' }
-      ),
-    })
+      )
+    )
     await userEvent.type(screen.getByLabelText('Prix'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
@@ -427,18 +408,17 @@ describe('screens:StocksThing', () => {
 
     props.offer = offer as IOfferIndividual
     contextValue.offer = offer as IOfferIndividual
-    renderStockThingScreen({
+    renderStockThingScreen(
       props,
-      storeOverride,
       contextValue,
-      url: generatePath(
+      generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.DRAFT,
         }),
         { offerId: 'AA' }
-      ),
-    })
+      )
+    )
     await userEvent.type(screen.getByLabelText('Prix'), '20')
 
     await userEvent.click(screen.getByText('Étape suivante'))
