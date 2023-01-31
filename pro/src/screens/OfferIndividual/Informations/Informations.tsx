@@ -30,6 +30,7 @@ import {
   getOfferIndividualAdapter,
   updateIndividualOffer,
 } from 'core/Offers/adapters'
+import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { FORM_ERROR_MESSAGE } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
@@ -143,7 +144,10 @@ const Informations = ({
   ): Promise<void> => {
     const { isOk, payload } = !offer
       ? await createIndividualOffer(formValues)
-      : await updateIndividualOffer({ offer, formValues })
+      : await updateIndividualOffer({
+          serializedOffer: serializePatchOffer({ offer, formValues }),
+          offerId: offer.id,
+        })
 
     const nextStep = computeNextStep(
       mode,
