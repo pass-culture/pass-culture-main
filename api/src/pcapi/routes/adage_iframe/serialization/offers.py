@@ -144,7 +144,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     students: list[educational_models.StudentLevels]
     offerVenue: CollectiveOfferOfferVenue
     contactEmail: str
-    contactPhone: str
+    contactPhone: str | None
     durationMinutes: int | None
     offerId: str | None
     educationalPriceDetail: str | None
@@ -195,7 +195,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     students: list[educational_models.StudentLevels]
     offerVenue: CollectiveOfferOfferVenue
     contactEmail: str
-    contactPhone: str
+    contactPhone: str | None
     durationMinutes: int | None
     educationalPriceDetail: str | None
     offerId: str | None

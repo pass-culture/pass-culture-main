@@ -240,7 +240,7 @@ class CollectiveOffer(
 
     contactEmail: str = sa.Column(sa.String(120), nullable=False)
 
-    contactPhone: str = sa.Column(sa.Text, nullable=False)
+    contactPhone: str | None = sa.Column(sa.Text, nullable=True)
 
     offerVenue: dict = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
@@ -420,7 +420,7 @@ class CollectiveOfferTemplate(
 
     contactEmail: str = sa.Column(sa.String(120), nullable=False)
 
-    contactPhone: str = sa.Column(sa.Text, nullable=False)
+    contactPhone: str | None = sa.Column(sa.Text, nullable=True)
 
     offerVenue: dict = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
