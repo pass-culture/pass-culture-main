@@ -1,10 +1,8 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import * as csvService from 'pages/CsvTable/adapters/getCsvData'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CsvTable, { ICsvTableProps } from '../CsvTable'
 import { ITableData } from '../types'
@@ -15,22 +13,8 @@ interface ICsvTableTestProps {
 
 // FIXME: we don't have store type yet.
 // This will be irrelevant soon as we are removing it
-const renderCsvTable = async ({
-  props,
-  storeOverride = {},
-}: {
-  props: ICsvTableTestProps
-  storeOverride?: any
-}) => {
-  const store = configureTestStore(storeOverride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <CsvTable {...(props as unknown as ICsvTableProps)} />
-      </MemoryRouter>
-    </Provider>
-  )
-}
+const renderCsvTable = (props: ICsvTableTestProps) =>
+  renderWithProviders(<CsvTable {...(props as unknown as ICsvTableProps)} />)
 
 const getCsvDataMock = jest.spyOn(csvService, 'getCsvData')
 
@@ -55,7 +39,7 @@ describe('src | components | layout | CsvTable', () => {
   describe('render', () => {
     it('should render a CsvTable component with a spinner, then a message with no data when there is an error', async () => {
       props.getCsvData.mockRejectedValue(null)
-      renderCsvTable({ props })
+      renderCsvTable(props)
 
       expect(screen.getByText('Chargement en cours')).toBeInTheDocument()
       await waitFor(() => {
@@ -67,7 +51,7 @@ describe('src | components | layout | CsvTable', () => {
 
     it('should render a CsvTable component with a spinner, then a message with no data when there is no data', async () => {
       props.getCsvData.mockResolvedValue({ ...dataFromCsv, data: [] })
-      renderCsvTable({ props })
+      renderCsvTable(props)
 
       expect(screen.getByText('Chargement en cours')).toBeInTheDocument()
       await waitFor(() => {
@@ -78,7 +62,7 @@ describe('src | components | layout | CsvTable', () => {
     })
 
     it('should render a CsvTable component with a spinner, then a table with the data', async () => {
-      renderCsvTable({ props })
+      renderCsvTable(props)
 
       expect(screen.getByText('Chargement en cours')).toBeInTheDocument()
       await waitFor(() => {

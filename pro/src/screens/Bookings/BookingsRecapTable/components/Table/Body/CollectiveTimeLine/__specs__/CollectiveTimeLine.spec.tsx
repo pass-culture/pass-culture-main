@@ -1,8 +1,5 @@
-import { render, screen } from '@testing-library/react'
-import { createMemoryHistory } from 'history'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { Router } from 'react-router'
 
 import {
   CollectiveBookingBankInformationStatus,
@@ -11,29 +8,24 @@ import {
 } from 'apiClient/v1'
 import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
 import { BOOKING_STATUS } from 'core/Bookings'
-import { configureTestStore } from 'store/testUtils'
 import {
   collectiveBookingDetailsFactory,
   collectiveBookingRecapFactory,
 } from 'utils/collectiveApiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveTimeLine from '../CollectiveTimeLine'
 
 const renderCollectiveTimeLine = (
   bookingRecap: CollectiveBookingResponseModel,
   bookingDetails: CollectiveBookingByIdResponseModel
-) => {
-  render(
-    <Provider store={configureTestStore()}>
-      <Router history={createMemoryHistory()}>
-        <CollectiveTimeLine
-          bookingRecap={bookingRecap}
-          bookingDetails={bookingDetails}
-        />
-      </Router>
-    </Provider>
+) =>
+  renderWithProviders(
+    <CollectiveTimeLine
+      bookingRecap={bookingRecap}
+      bookingDetails={bookingDetails}
+    />
   )
-}
 
 describe('collective timeline', () => {
   let bookingDetails = collectiveBookingDetailsFactory()

@@ -1,8 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -19,12 +17,12 @@ import {
   categoriesFactory,
   subCategoriesFactory,
 } from 'screens/OfferEducational/__tests-utils__'
-import { configureTestStore } from 'store/testUtils'
 import {
   collectiveStockFactory,
   collectiveOfferTemplateFactory,
   collectiveOfferFactory,
 } from 'utils/collectiveApiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferSummaryEdition from '../CollectiveOfferSummaryEdition'
 
@@ -32,7 +30,7 @@ const renderCollectiveOfferSummaryEdition = (
   offer: CollectiveOfferTemplate | CollectiveOffer,
   categories: EducationalCategories
 ) => {
-  const store = configureTestStore({
+  const storeOverrides = {
     user: {
       initialized: true,
       currentUser: {
@@ -46,17 +44,15 @@ const renderCollectiveOfferSummaryEdition = (
         roles: [],
       },
     },
-  })
-  render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <CollectiveOfferSummaryEdition
-          offer={offer}
-          categories={categories}
-          reloadCollectiveOffer={jest.fn()}
-        />
-      </MemoryRouter>
-    </Provider>
+  }
+
+  renderWithProviders(
+    <CollectiveOfferSummaryEdition
+      offer={offer}
+      categories={categories}
+      reloadCollectiveOffer={jest.fn()}
+    />,
+    { storeOverrides }
   )
 }
 
