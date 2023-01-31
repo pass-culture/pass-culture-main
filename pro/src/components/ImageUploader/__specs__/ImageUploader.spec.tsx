@@ -1,29 +1,13 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
 
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ImageUploader, { IImageUploaderProps } from '../ImageUploader'
 import { UploaderModeEnum } from '../types'
 
-interface IRenderImageUploaderProps {
-  storeOverride?: Partial<RootState>
-  props: IImageUploaderProps
-}
-const renderImageUploader = ({
-  storeOverride = {},
-  props,
-}: IRenderImageUploaderProps) => {
-  const store = configureTestStore(storeOverride)
-
-  return render(
-    <Provider store={store}>
-      <ImageUploader {...props} />
-    </Provider>
-  )
-}
+const renderImageUploader = (props: IImageUploaderProps) =>
+  renderWithProviders(<ImageUploader {...props} />)
 
 describe('ImageUploader', () => {
   let props: IImageUploaderProps
@@ -48,9 +32,7 @@ describe('ImageUploader', () => {
   })
 
   it('should render image uploader for existing file', async () => {
-    renderImageUploader({
-      props,
-    })
+    renderImageUploader(props)
     expect(
       screen.getByAltText('Prévisualisation de l’image')
     ).toBeInTheDocument()
@@ -75,9 +57,7 @@ describe('ImageUploader', () => {
       onImageDelete: async () => {},
       mode: UploaderModeEnum.OFFER,
     }
-    renderImageUploader({
-      props,
-    })
+    renderImageUploader(props)
     expect(
       screen.queryByAltText('Prévisualisation de l’image')
     ).not.toBeInTheDocument()

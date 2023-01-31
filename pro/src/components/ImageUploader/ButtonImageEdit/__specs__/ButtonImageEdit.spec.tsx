@@ -1,22 +1,15 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
 
 import * as apiHelpers from 'apiClient/helpers'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ButtonImageEdit, { IButtonImageEditProps } from '../ButtonImageEdit'
 
-const renderButtonImageEdit = (props: IButtonImageEditProps) => {
-  const store = configureTestStore()
-  return render(
-    <Provider store={store}>
-      <ButtonImageEdit {...props} />
-    </Provider>
-  )
-}
+const renderButtonImageEdit = (props: IButtonImageEditProps) =>
+  renderWithProviders(<ButtonImageEdit {...props} />)
 
 describe('test ButtonImageEdit', () => {
   let props: IButtonImageEditProps

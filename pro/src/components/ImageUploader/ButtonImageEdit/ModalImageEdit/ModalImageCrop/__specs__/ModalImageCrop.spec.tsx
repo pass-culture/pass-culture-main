@@ -1,10 +1,8 @@
-import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
 
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ModalImageCrop from '../ModalImageCrop'
 
@@ -26,11 +24,8 @@ const defaultProps = {
 
 describe('venue image edit', () => {
   it('closes the modal on cancel button click', async () => {
-    const store = configureTestStore()
-    const { getByText } = render(
-      <Provider store={store}>
-        <ModalImageCrop {...defaultProps} />
-      </Provider>
+    const { getByText } = renderWithProviders(
+      <ModalImageCrop {...defaultProps} />
     )
     await userEvent.click(getByText('Remplacer l’image'))
     expect(mockReplaceImage).toHaveBeenCalledTimes(1)

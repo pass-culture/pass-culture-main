@@ -1,24 +1,12 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
 
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import AppPreviewVenue, { IAppPreviewVenueProps } from '../AppPreviewVenue'
 
-interface IRenderAppPreviewVenueProps {
-  storeOverride?: Partial<RootState>
-  props: IAppPreviewVenueProps
-}
-const renderAppPreviewVenue = ({ props }: IRenderAppPreviewVenueProps) => {
-  const store = configureTestStore()
-  return render(
-    <Provider store={store}>
-      <AppPreviewVenue {...props} />
-    </Provider>
-  )
-}
+const renderAppPreviewVenue = (props: IAppPreviewVenueProps) =>
+  renderWithProviders(<AppPreviewVenue {...props} />)
 
 describe('AppPreviewVenue', () => {
   let props: IAppPreviewVenueProps
@@ -30,9 +18,7 @@ describe('AppPreviewVenue', () => {
   })
 
   it('should render app preview venue', async () => {
-    await renderAppPreviewVenue({
-      props,
-    })
+    await renderAppPreviewVenue(props)
     expect(screen.getByTestId('app-preview-venue-img-home')).toBeInTheDocument()
     expect(screen.getByTestId('app-preview-venue-img')).toBeInTheDocument()
   })

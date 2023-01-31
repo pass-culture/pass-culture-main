@@ -1,25 +1,21 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
+
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { ButtonLinkNewWindow, IButtonLinkNewWindowProps } from '..'
-import { configureTestStore } from '../../../store/testUtils'
 
 window.open = jest.fn()
 const mockLogEvent = jest.fn()
 
-const renderButtonLinkNewWindow = async (props: IButtonLinkNewWindowProps) => {
-  const store = configureTestStore()
-
-  return render(
-    <Provider store={store}>
-      <ButtonLinkNewWindow {...props}>
-        <p>clique moi</p>
-      </ButtonLinkNewWindow>
-    </Provider>
+const renderButtonLinkNewWindow = (props: IButtonLinkNewWindowProps) =>
+  renderWithProviders(
+    <ButtonLinkNewWindow {...props}>
+      <p>clique moi</p>
+    </ButtonLinkNewWindow>
   )
-}
+
 describe('tracker ButtonLinkNewWindow', () => {
   it('should track offer when clicking on link', async () => {
     const props = {

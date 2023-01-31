@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ImageUploaderOffer, {
   IImageUploaderOfferProps,
@@ -13,14 +12,8 @@ jest.mock('../utils', () => ({
   buildInitialValues: jest.fn(),
 }))
 
-const renderImageUploaderOffer = (props: IImageUploaderOfferProps) => {
-  const store = configureTestStore()
-  return render(
-    <Provider store={store}>
-      <ImageUploaderOffer {...props} />
-    </Provider>
-  )
-}
+const renderImageUploaderOffer = (props: IImageUploaderOfferProps) =>
+  renderWithProviders(<ImageUploaderOffer {...props} />)
 
 describe('test ImageUploaderOffer', () => {
   let props: IImageUploaderOfferProps

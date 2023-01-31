@@ -1,25 +1,15 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router-dom'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferBreadcrumb, {
   CollectiveOfferBreadcrumbStep,
   IOfferBreadcrumb,
 } from '../CollectiveOfferBreadcrumb'
 
-const renderCollectiveOfferBreadcrumb = (props: IOfferBreadcrumb) => {
-  const store = configureTestStore()
-  return render(
-    <MemoryRouter>
-      <Provider store={store}>
-        <CollectiveOfferBreadcrumb {...props} />
-      </Provider>
-    </MemoryRouter>
-  )
-}
+const renderCollectiveOfferBreadcrumb = (props: IOfferBreadcrumb) =>
+  renderWithProviders(<CollectiveOfferBreadcrumb {...props} />)
 
 describe('src | components | CollectiveOfferBreadcrumb', () => {
   let props: IOfferBreadcrumb
