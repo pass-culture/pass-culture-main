@@ -36,18 +36,18 @@ ZENDESK_TAG_SUSPENDED = "suspendu"
 
 def _get_backoffice_support_beneficiary_user_links(user_id: int) -> list[str]:
     return [
-        f"{settings.API_URL}/backofficev3/public_accounts/{user_id}",
+        f"{settings.BACKOFFICE_URL}/public_accounts/{user_id}",
         f"{settings.API_URL}/pc/back-office/support_beneficiary/details/?id={user_id}",
         f"{settings.API_URL}/pc/back-office/beneficiary_users/details/?id={user_id}",
     ]
 
 
 def _get_backoffice_pro_user_link(user_id: int) -> str:
-    return f"{settings.API_URL}/backofficev3/pro/pro_user/{user_id}"
+    return f"{settings.BACKOFFICE_URL}/pro/pro_user/{user_id}"
 
 
 def _get_backoffice_venues_links(venues_ids: Iterable[int]) -> list[str]:
-    return [f"{settings.API_URL}/backofficev3/pro/venue/{venue_id}" for venue_id in venues_ids]
+    return [f"{settings.BACKOFFICE_URL}/pro/venue/{venue_id}" for venue_id in venues_ids]
 
 
 def _format_list(raw_list: Iterable[str] | None) -> str | None:

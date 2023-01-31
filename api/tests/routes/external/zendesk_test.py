@@ -39,7 +39,7 @@ class ZendeskWebhookTest:
             },
         )
 
-        expected_bo_url = f"{settings.API_URL}/backofficev3/public_accounts/{user.id}"
+        expected_bo_url = f"{settings.BACKOFFICE_URL}/public_accounts/{user.id}"
 
         assert response.status_code == 204
         assert len(users_testing.zendesk_requests) == 2  # user attributes and internal note
@@ -99,7 +99,7 @@ class ZendeskWebhookTest:
                 "phone": "+33634567890",
                 "tags": ["suspendu", "éligible"],
                 "user_fields": {
-                    "backoffice_url": f"{settings.API_URL}/backofficev3/public_accounts/{user.id}",
+                    "backoffice_url": f"{settings.BACKOFFICE_URL}/public_accounts/{user.id}",
                     "user_id": user.id,
                     "first_name": user.firstName,
                     "last_name": user.lastName,
@@ -137,7 +137,7 @@ class ZendeskWebhookTest:
             },
         )
 
-        expected_bo_url = f"{settings.API_URL}/backofficev3/public_accounts/{user.id}"
+        expected_bo_url = f"{settings.BACKOFFICE_URL}/public_accounts/{user.id}"
 
         assert response.status_code == 204
         assert len(users_testing.zendesk_requests) == 2  # user attributes and internal note
@@ -188,7 +188,7 @@ class ZendeskWebhookTest:
                 "email": pro_user.email,
                 "tags": ["PRO", "département_75"],
                 "user_fields": {
-                    "backoffice_url": f"{settings.API_URL}/backofficev3/pro/pro_user/{pro_user.id}",
+                    "backoffice_url": f"{settings.BACKOFFICE_URL}/pro/pro_user/{pro_user.id}",
                     "user_id": pro_user.id,
                     "first_name": pro_user.firstName,
                     "last_name": pro_user.lastName,
@@ -199,7 +199,7 @@ class ZendeskWebhookTest:
                 },
             }
         }
-        assert f"{settings.API_URL}/backofficev3/pro/pro_user/{pro_user.id}" in str(
+        assert f"{settings.BACKOFFICE_URL}/pro/pro_user/{pro_user.id}" in str(
             users_testing.zendesk_requests[1]["data"]["ticket"]["comment"]["html_body"]
         )
         assert users_testing.zendesk_requests[1]["data"]["ticket"]["comment"]["public"] is False
@@ -227,7 +227,7 @@ class ZendeskWebhookTest:
                 "email": venue.bookingEmail,
                 "tags": ["PRO", "département_06"],
                 "user_fields": {
-                    "backoffice_url": f"{settings.API_URL}/backofficev3/pro/venue/{venue.id}",
+                    "backoffice_url": f"{settings.BACKOFFICE_URL}/pro/venue/{venue.id}",
                     "user_id": None,
                     "first_name": None,
                     "last_name": None,
@@ -238,7 +238,7 @@ class ZendeskWebhookTest:
                 },
             }
         }
-        assert f"{settings.API_URL}/backofficev3/pro/venue/{venue.id}" in str(
+        assert f"{settings.BACKOFFICE_URL}/pro/venue/{venue.id}" in str(
             users_testing.zendesk_requests[1]["data"]["ticket"]["comment"]["html_body"]
         )
         assert users_testing.zendesk_requests[1]["data"]["ticket"]["comment"]["public"] is False
