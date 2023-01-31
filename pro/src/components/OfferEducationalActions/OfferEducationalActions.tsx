@@ -15,7 +15,6 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
-  toDateStrippedOfTimezone,
 } from 'utils/date'
 
 import CancelCollectiveBookingModal from '../CancelCollectiveBookingModal'
@@ -53,7 +52,7 @@ const OfferEducationalActions = ({
         : null
     if (offerEventDate && lastBookingId) {
       const eventDateFormated = formatBrowserTimezonedDateAsUTC(
-        toDateStrippedOfTimezone(offerEventDate),
+        new Date(offerEventDate),
         FORMAT_ISO_DATE_ONLY
       )
       return `/reservations/collectives?page=1&offerEventDate=${eventDateFormated}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=${lastBookingId}`
