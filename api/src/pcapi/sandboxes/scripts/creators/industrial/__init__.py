@@ -9,9 +9,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion imp
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import create_industrial_criteria
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_draft_offers import create_industrial_draft_offers
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_educational_bookings import (
-    create_industrial_educational_bookings,
-)
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data import create_eac_data
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_products import *
@@ -91,7 +89,7 @@ def save_industrial_sandbox() -> None:
 
     create_venue_labels(sandbox=True)
 
-    create_industrial_educational_bookings()
+    create_eac_data()
 
     # Now that they booked, we can expire these users' deposit.
     for name, user in users_by_name.items():
