@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { generatePath, MemoryRouter, Route } from 'react-router'
+import { generatePath, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -20,10 +19,9 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
 import { ButtonLink } from 'ui-kit'
 import { getToday } from 'utils/date'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksEvent, { IStocksEventProps } from '../StocksEvent'
 
@@ -46,77 +44,67 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderStockEventScreen = ({
-  props,
-  storeOverride = {},
-  contextValue,
-  url = getOfferIndividualPath({
+const renderStockEventScreen = (
+  props: IStocksEventProps,
+  contextValue: IOfferIndividualContext,
+  url: string = getOfferIndividualPath({
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
     mode: OFFER_WIZARD_MODE.CREATION,
-  }),
-}: {
-  props: IStocksEventProps
-  storeOverride: Partial<RootState>
-  contextValue: IOfferIndividualContext
-  url?: string
-}) => {
-  const store = configureTestStore(storeOverride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[url]}>
-        <Route
-          path={Object.values(OFFER_WIZARD_MODE).map(mode =>
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.STOCKS,
-              mode,
-            })
-          )}
-        >
-          <OfferIndividualContext.Provider value={contextValue}>
-            <StocksEvent {...props} />
-            <ButtonLink link={{ to: '/outside', isExternal: false }}>
-              Go outside !
-            </ButtonLink>
-          </OfferIndividualContext.Provider>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>Next page</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
+  })
+) =>
+  renderWithProviders(
+    <>
+      <Route
+        path={Object.values(OFFER_WIZARD_MODE).map(mode =>
+          getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>Save draft page</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>Previous page</div>
-        </Route>
-        <Route path="/outside">
-          <div>This is outside stock form</div>
-        </Route>
-        <Notification />
-      </MemoryRouter>
-    </Provider>
+            mode,
+          })
+        )}
+      >
+        <OfferIndividualContext.Provider value={contextValue}>
+          <StocksEvent {...props} />
+          <ButtonLink link={{ to: '/outside', isExternal: false }}>
+            Go outside !
+          </ButtonLink>
+        </OfferIndividualContext.Provider>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <div>Next page</div>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <div>Save draft page</div>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <div>Previous page</div>
+      </Route>
+      <Route path="/outside">
+        <div>This is outside stock form</div>
+      </Route>
+      <Notification />
+    </>,
+    { initialRouterEntries: [url] }
   )
-}
 
 const today = getToday()
 
 describe('screens:StocksEvent', () => {
   let props: IStocksEventProps
-  let storeOverride: Partial<RootState>
   let contextValue: IOfferIndividualContext
   let offer: Partial<IOfferIndividual>
 
@@ -131,7 +119,6 @@ describe('screens:StocksEvent', () => {
     props = {
       offer: offer as IOfferIndividual,
     }
-    storeOverride = {}
     contextValue = {
       offerId: null,
       offer: null,
@@ -158,7 +145,7 @@ describe('screens:StocksEvent', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
 
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
@@ -176,7 +163,7 @@ describe('screens:StocksEvent', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
 
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
@@ -196,7 +183,7 @@ describe('screens:StocksEvent', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -208,7 +195,7 @@ describe('screens:StocksEvent', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
 
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
@@ -229,7 +216,7 @@ describe('screens:StocksEvent', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
     await userEvent.type(screen.getByLabelText('Prix'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
@@ -244,7 +231,7 @@ describe('screens:StocksEvent', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
     await userEvent.type(screen.getByLabelText('Prix'), '20')
 
     await userEvent.click(screen.getByText('Go outside !'))
@@ -260,7 +247,7 @@ describe('screens:StocksEvent', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
 
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
@@ -292,11 +279,7 @@ describe('screens:StocksEvent', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockEventScreen({
-      props,
-      storeOverride,
-      contextValue,
-    })
+    renderStockEventScreen(props, contextValue)
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
@@ -321,18 +304,17 @@ describe('screens:StocksEvent', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockEventScreen({
+    renderStockEventScreen(
       props,
-      storeOverride,
       contextValue,
-      url: generatePath(
+      generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.DRAFT,
         }),
         { offerId: 'AA' }
-      ),
-    })
+      )
+    )
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
@@ -357,18 +339,17 @@ describe('screens:StocksEvent', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockEventScreen({
+    renderStockEventScreen(
       props,
-      storeOverride,
       contextValue,
-      url: generatePath(
+      generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.DRAFT,
         }),
         { offerId: 'AA' }
-      ),
-    })
+      )
+    )
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
@@ -399,18 +380,17 @@ describe('screens:StocksEvent', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockEventScreen({
+    renderStockEventScreen(
       props,
-      storeOverride,
       contextValue,
-      url: generatePath(
+      generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
         { offerId: 'AA' }
-      ),
-    })
+      )
+    )
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))

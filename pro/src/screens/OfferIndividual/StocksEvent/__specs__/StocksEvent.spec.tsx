@@ -1,8 +1,7 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -21,14 +20,13 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
 import { getToday } from 'utils/date'
 import {
   individualOfferFactory,
   individualOfferVenueFactory,
   individualStockFactory,
 } from 'utils/individualApiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { STOCKS_PER_PAGE } from '../StockFormList/StockFormList'
 import StocksEvent, { IStocksEventProps } from '../StocksEvent'
@@ -50,63 +48,54 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T09:00:00Z')),
 }))
 
-const renderStockEventScreen = ({
-  props,
-  storeOverride = {},
-  contextValue,
-}: {
-  props: IStocksEventProps
-  storeOverride: Partial<RootState>
+const renderStockEventScreen = (
+  props: IStocksEventProps,
   contextValue: IOfferIndividualContext
-}) => {
-  const store = configureTestStore(storeOverride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter
-        initialEntries={[
-          getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-        ]}
+) =>
+  renderWithProviders(
+    <>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
       >
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <OfferIndividualContext.Provider value={contextValue}>
-            <StocksEvent {...props} />
-          </OfferIndividualContext.Provider>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>Next page</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>Previous page</div>
-        </Route>
-        <Notification />
-      </MemoryRouter>
-    </Provider>
+        <OfferIndividualContext.Provider value={contextValue}>
+          <StocksEvent {...props} />
+        </OfferIndividualContext.Provider>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <div>Next page</div>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <div>Previous page</div>
+      </Route>
+      <Notification />
+    </>,
+    {
+      initialRouterEntries: [
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        }),
+      ],
+    }
   )
-}
 
 const today = getToday()
 
 describe('screens:StocksEvent', () => {
   let props: IStocksEventProps
-  let storeOverride: Partial<RootState>
   let contextValue: IOfferIndividualContext
   let offer: IOfferIndividual
 
@@ -121,7 +110,6 @@ describe('screens:StocksEvent', () => {
     props = {
       offer: offer,
     }
-    storeOverride = {}
     contextValue = {
       offerId: null,
       offer: offer,
@@ -146,7 +134,7 @@ describe('screens:StocksEvent', () => {
       isDigital: false,
     }
 
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
     expect(
       screen.getByText('Offre synchronisée avec Ciné Office')
     ).toBeInTheDocument()
@@ -170,7 +158,7 @@ describe('screens:StocksEvent', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
 
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
@@ -205,7 +193,7 @@ describe('screens:StocksEvent', () => {
       ...offer,
       stocks: [stock],
     }
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
@@ -223,7 +211,7 @@ describe('screens:StocksEvent', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText('25'))
     await userEvent.click(screen.getByLabelText('Horaire'))
@@ -268,7 +256,7 @@ describe('screens:StocksEvent', () => {
       )
     )
 
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
 
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
@@ -290,7 +278,7 @@ describe('screens:StocksEvent', () => {
   })
 
   it('should show a success notification if nothing has been touched', async () => {
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
@@ -301,7 +289,7 @@ describe('screens:StocksEvent', () => {
   })
 
   it('should display draft success message on save draft button when stock form is empty', async () => {
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
 
     await screen.findByTestId('stock-event-form')
 
@@ -332,7 +320,7 @@ describe('screens:StocksEvent', () => {
       ...offer,
       stocks: [stock],
     }
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
     expect(screen.getByTestId('stock-event-form')).toBeInTheDocument()
     await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
     expect(
@@ -352,7 +340,7 @@ describe('screens:StocksEvent', () => {
       ...offer,
       stocks: [],
     }
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
     expect(screen.getByTestId('stock-event-form')).toBeInTheDocument()
     await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
     expect(
@@ -376,7 +364,7 @@ describe('screens:StocksEvent', () => {
       stocks,
     }
 
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
 
     expect(
       screen.queryAllByRole('button', { name: 'Opérations sur le stock' })

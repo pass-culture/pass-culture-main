@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -26,7 +25,7 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { IInformationsProps, Informations as InformationsScreen } from '..'
 
@@ -45,10 +44,18 @@ const scrollIntoViewMock = jest.fn()
 
 const renderInformationsScreen = (
   props: IInformationsProps,
-  storeOverride: any,
   contextOverride: Partial<IOfferIndividualContext>
 ) => {
-  const store = configureTestStore(storeOverride)
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser: {
+        publicName: 'John Do',
+        isAdmin: false,
+        email: 'email@example.com',
+      },
+    },
+  }
   const contextValue: IOfferIndividualContext = {
     offerId: null,
     offer: null,
@@ -62,59 +69,48 @@ const renderInformationsScreen = (
     showVenuePopin: {},
     ...contextOverride,
   }
-  return render(
-    <Provider store={store}>
-      <MemoryRouter
-        initialEntries={[
-          getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          }),
-        ]}
+  return renderWithProviders(
+    <>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        })}
       >
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          })}
-        >
-          <OfferIndividualContext.Provider value={contextValue}>
-            <InformationsScreen {...props} />
-          </OfferIndividualContext.Provider>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          })}
-        >
-          <div>There is the stock route content</div>
-        </Route>
-      </MemoryRouter>
+        <OfferIndividualContext.Provider value={contextValue}>
+          <InformationsScreen {...props} />
+        </OfferIndividualContext.Provider>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        })}
+      >
+        <div>There is the stock route content</div>
+      </Route>
       <Notification />
-    </Provider>
+    </>,
+    {
+      storeOverrides,
+      initialRouterEntries: [
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        }),
+      ],
+    }
   )
 }
 
 describe('screens:OfferIndividual::Informations:draft', () => {
   let props: IInformationsProps
-  let store: any
   let contextOverride: Partial<IOfferIndividualContext>
   let offer: IOfferIndividual
   let subCategories: IOfferSubCategory[]
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    store = {
-      user: {
-        initialized: true,
-        currentUser: {
-          publicName: 'John Do',
-          isAdmin: false,
-          email: 'email@example.com',
-        },
-      },
-    }
     const categories = [
       {
         id: 'CID',
@@ -286,7 +282,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
   })
 
   it('should submit minimal physical offer', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
     await userEvent.click(await screen.findByText('Étape suivante'))
 
     expect(api.patchOffer).toHaveBeenCalledTimes(1)
@@ -315,7 +311,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       venueId: offer.venue.id,
     }
 
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
     await userEvent.click(await screen.findByText('Étape suivante'))
 
     expect(api.patchOffer).toHaveBeenCalledTimes(1)
@@ -331,7 +327,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
   })
 
   it('should track when creating draft offer using Étape suivante', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
     await userEvent.click(await screen.findByText('Étape suivante'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -350,7 +346,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
   })
 
   it('should track when creating draft offer using Sauvegarder le brouillon', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
     await userEvent.click(await screen.findByText('Sauvegarder le brouillon'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -369,7 +365,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
   })
 
   it('should track when cancelling draft edition', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     await userEvent.click(await screen.findByText('Annuler et quitter'))
 

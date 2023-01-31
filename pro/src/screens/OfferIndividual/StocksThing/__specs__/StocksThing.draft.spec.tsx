@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
@@ -22,8 +21,7 @@ import {
   getOfferIndividualPath,
   getOfferIndividualUrl,
 } from 'core/Offers/utils/getOfferIndividualUrl'
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksThing, { IStocksThingProps } from '../StocksThing'
 
@@ -44,54 +42,45 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderStockThingScreen = ({
-  props,
-  storeOverride = {},
-  contextValue,
-}: {
-  props: IStocksThingProps
-  storeOverride: Partial<RootState>
+const renderStockThingScreen = (
+  props: IStocksThingProps,
   contextValue: IOfferIndividualContext
-}) => {
-  const store = configureTestStore(storeOverride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter
-        initialEntries={[
-          getOfferIndividualUrl({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-            offerId: contextValue.offerId || undefined,
-          }),
-        ]}
+) =>
+  renderWithProviders(
+    <>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        })}
       >
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          })}
-        >
-          <OfferIndividualContext.Provider value={contextValue}>
-            <StocksThing {...props} />
-          </OfferIndividualContext.Provider>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          })}
-        >
-          <div>Next page</div>
-        </Route>
-        <Notification />
-      </MemoryRouter>
-    </Provider>
+        <OfferIndividualContext.Provider value={contextValue}>
+          <StocksThing {...props} />
+        </OfferIndividualContext.Provider>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        })}
+      >
+        <div>Next page</div>
+      </Route>
+      <Notification />
+    </>,
+    {
+      initialRouterEntries: [
+        getOfferIndividualUrl({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+          offerId: contextValue.offerId || undefined,
+        }),
+      ],
+    }
   )
-}
 
 describe('screens:StocksThing::draft', () => {
   let props: IStocksThingProps
-  let storeOverride: Partial<RootState>
   let contextValue: IOfferIndividualContext
   let offer: Partial<IOfferIndividual>
   let stock: Partial<IOfferIndividualStock>
@@ -116,7 +105,6 @@ describe('screens:StocksThing::draft', () => {
     props = {
       offer: offer as IOfferIndividual,
     }
-    storeOverride = {}
     contextValue = {
       offerId: 'OFFER_ID',
       offer: offer as IOfferIndividual,
@@ -136,7 +124,7 @@ describe('screens:StocksThing::draft', () => {
   })
 
   it('should show a success notification if nothing has been touched', async () => {
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -153,7 +141,7 @@ describe('screens:StocksThing::draft', () => {
   })
 
   it('should show a success notification if nothing has been touched and click on next step', async () => {
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
 
     await userEvent.click(
       screen.getByRole('button', {

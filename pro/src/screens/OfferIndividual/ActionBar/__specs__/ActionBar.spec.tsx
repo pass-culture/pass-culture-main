@@ -1,11 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { ActionBar } from '..'
 import { IActionBarProps } from '../ActionBar'
@@ -17,23 +15,20 @@ const renderActionBar = ({
   props: IActionBarProps
   url?: string
 }) => {
-  return render(
-    <Provider
-      store={configureTestStore({
-        offers: {
-          searchFilters: {
-            filter: 'my_filter',
-            other_filter: 'my_other_filter',
-          },
-          pageNumber: 3,
-        },
-      })}
-    >
-      <MemoryRouter initialEntries={[url]}>
-        <ActionBar {...props} />
-      </MemoryRouter>
-    </Provider>
-  )
+  const storeOverrides = {
+    offers: {
+      searchFilters: {
+        filter: 'my_filter',
+        other_filter: 'my_other_filter',
+      },
+      pageNumber: 3,
+    },
+  }
+
+  return renderWithProviders(<ActionBar {...props} />, {
+    storeOverrides,
+    initialRouterEntries: [url],
+  })
 }
 
 describe('OfferIndividual::ActionBar', () => {
