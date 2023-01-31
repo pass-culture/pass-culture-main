@@ -190,7 +190,12 @@ class UpdateVenueTest:
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_update_venue(self, authenticated_client, offerer):
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        website = "update.venue@example.com"
+        social_medias = {"instagram": "https://instagram.com/update.venue"}
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer, contact__website=website, contact__social_medias=social_medias
+        )
+
         url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = {
             "siret": venue.managingOfferer.siren + "98765",
@@ -216,6 +221,10 @@ class UpdateVenueTest:
         assert venue.contact.email == data["email"]
         assert venue.contact.phone_number == data["phone_number"]
         assert venue.isPermanent == data["isPermanent"]
+
+        # should not have been updated or erased
+        assert venue.contact.website == website
+        assert venue.contact.social_medias == social_medias
 
         assert len(venue.action_history) == 1
 
