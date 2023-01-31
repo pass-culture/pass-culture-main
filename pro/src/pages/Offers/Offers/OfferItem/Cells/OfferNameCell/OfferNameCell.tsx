@@ -16,6 +16,7 @@ import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import { AlertFilledIcon } from 'icons'
 import { Tag } from 'ui-kit'
 import Icon from 'ui-kit/Icon/Icon'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
@@ -129,10 +130,9 @@ const OfferNameCell = ({
           )}
           {shouldShowCollectiveWarning && (
             <div className={styles['sold-out']}>
-              <Icon
+              <AlertFilledIcon
                 className={styles['sold-out-icon']}
-                svg="ico-notification-error"
-                alt="Attention"
+                title="Attention"
               />
 
               <span className={styles['sold-out-dates']}>

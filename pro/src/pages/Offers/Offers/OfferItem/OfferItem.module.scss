@@ -109,8 +109,8 @@
   }
 
   .sold-out {
-    width: rem.torem(20px);
-    height: rem.torem(20px);
+    width: rem.torem(24px);
+    height: rem.torem(24px);
   }
 
   .sold-out-dates {
@@ -130,9 +130,6 @@
   }
 
   .sold-out-icon {
-    margin-left: rem.torem(6px);
-    width: rem.torem(20px);
-
     &:hover,
     &:focus {
       & ~ .sold-out-dates {
