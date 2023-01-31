@@ -1,5 +1,4 @@
 import {
-  render,
   screen,
   waitFor,
   waitForElementToBeRemoved,
@@ -7,11 +6,10 @@ import {
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Reimbursements from '../Reimbursements'
 
@@ -30,16 +28,12 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderReimbursements = (storeOverride = {}) => {
-  const store = configureTestStore(storeOverride)
-  const utils = render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/remboursements/details']}>
-        <Route path="/remboursements" exact={false}>
-          <Reimbursements />
-        </Route>
-      </MemoryRouter>
-    </Provider>
+const renderReimbursements = (storeOverrides = {}) => {
+  const utils = renderWithProviders(
+    <Route path="/remboursements" exact={false}>
+      <Reimbursements />
+    </Route>,
+    { storeOverrides, initialRouterEntries: ['/remboursements/details'] }
   )
 
   const getElements = () => ({
@@ -91,7 +85,7 @@ const renderReimbursements = (storeOverride = {}) => {
 
   const getElementsOnLoadingComplete = async () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-    const elements = getElements(storeOverride)
+    const elements = getElements(storeOverrides)
 
     return {
       ...elements,

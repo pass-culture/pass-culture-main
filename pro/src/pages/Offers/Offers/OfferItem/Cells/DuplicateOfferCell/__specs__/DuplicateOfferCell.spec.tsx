@@ -1,11 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import DuplicateOfferCell, {
   LOCAL_STORAGE_HAS_SEEN_MODAL_KEY,
@@ -16,7 +15,7 @@ jest.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
 }))
 
 const renderDuplicateOfferCell = () => {
-  const store = configureTestStore({
+  const storeOverrides = {
     user: {
       initialized: true,
       currentUser: {
@@ -25,24 +24,24 @@ const renderDuplicateOfferCell = () => {
         email: 'email@example.com',
       },
     },
-  })
-  render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/offres']}>
-        <Route path="/offres">
-          <table>
-            <tbody>
-              <tr>
-                <DuplicateOfferCell templateOfferId="AE" />
-              </tr>
-            </tbody>
-          </table>
-        </Route>
-        <Route path="/offre/duplication/collectif/AE">
-          <div>Parcours de duplication d’offre</div>
-        </Route>
-      </MemoryRouter>
-    </Provider>
+  }
+
+  renderWithProviders(
+    <>
+      <Route path="/offres">
+        <table>
+          <tbody>
+            <tr>
+              <DuplicateOfferCell templateOfferId="AE" />
+            </tr>
+          </tbody>
+        </table>
+      </Route>
+      <Route path="/offre/duplication/collectif/AE">
+        <div>Parcours de duplication d’offre</div>
+      </Route>
+    </>,
+    { storeOverrides, initialRouterEntries: ['/offres'] }
   )
 }
 

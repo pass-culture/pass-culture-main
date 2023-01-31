@@ -1,9 +1,6 @@
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
-import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
 import { ApiError, OfferStatus } from 'apiClient/v1'
@@ -12,8 +9,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferItem, { OfferItemProps } from '../OfferItem'
 
@@ -25,29 +21,23 @@ jest.mock('apiClient/api', () => ({
 
 const mockRefreshOffer = jest.fn()
 
-const renderOfferItem = (props: OfferItemProps, store: Store) => {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <table>
-          <tbody>
-            <OfferItem {...props} />
-          </tbody>
-        </table>
-        <Notification />
-      </MemoryRouter>
-    </Provider>
+const renderOfferItem = (props: OfferItemProps) =>
+  renderWithProviders(
+    <>
+      <table>
+        <tbody>
+          <OfferItem {...props} />
+        </tbody>
+      </table>
+      <Notification />
+    </>
   )
-}
 
 describe('src | components | pages | Offers | OfferItem', () => {
   let props: OfferItemProps
   let eventOffer: Offer
-  let store: Store<RootState>
 
   beforeEach(() => {
-    store = configureTestStore({})
-
     eventOffer = {
       id: 'M4',
       isActive: true,
@@ -79,7 +69,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('thumb Component', () => {
       it('should render an image with url from offer when offer has a thumb url', () => {
         // when
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         expect(
@@ -92,7 +82,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.offer.thumbUrl = null
 
         // when
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         expect(
@@ -104,7 +94,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('action buttons', () => {
       it('should display a button to show offer stocks', () => {
         // given
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         expect(screen.queryByText('Stocks')).toBeInTheDocument()
@@ -118,7 +108,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           // given
           props.offer.status = OfferStatus.DRAFT
 
-          renderOfferItem(props, store)
+          renderOfferItem(props)
 
           await userEvent.click(screen.getByRole('button'))
           const deleteButton = screen.getByRole('button', {
@@ -138,7 +128,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           // given
           props.offer.status = OfferStatus.DRAFT
 
-          renderOfferItem(props, store)
+          renderOfferItem(props)
           jest.spyOn(api, 'deleteDraftOffers').mockRejectedValue(
             new ApiError(
               {} as ApiRequestOptions,
@@ -171,7 +161,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       describe('edit offer link', () => {
         it('should be displayed when offer is editable', () => {
           // when
-          renderOfferItem(props, store)
+          renderOfferItem(props)
 
           // then
           const links = screen.getAllByRole('link')
@@ -185,7 +175,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           props.offer.isEditable = false
 
           // when
-          renderOfferItem(props, store)
+          renderOfferItem(props)
 
           // then
           const links = screen.getAllByRole('link')
@@ -200,7 +190,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('offer title', () => {
       it('should contain a link with the offer name and details link', () => {
         // when
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         const offerTitle = screen.queryByText(props.offer.name as string, {
@@ -223,7 +213,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       }
 
       // when
-      renderOfferItem(props, store)
+      renderOfferItem(props)
 
       // then
       expect(screen.queryByText(props.offer.venue.name)).toBeInTheDocument()
@@ -239,7 +229,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       }
 
       // when
-      renderOfferItem(props, store)
+      renderOfferItem(props)
 
       // then
       expect(screen.queryByText('lieu de ouf')).toBeInTheDocument()
@@ -255,7 +245,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       }
 
       // when
-      renderOfferItem(props, store)
+      renderOfferItem(props)
 
       // then
       expect(
@@ -268,7 +258,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       eventOffer.productIsbn = '123456789'
 
       // when
-      renderOfferItem(props, store)
+      renderOfferItem(props)
 
       // then
       expect(screen.queryByText('123456789')).toBeInTheDocument()
@@ -277,7 +267,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('offer remaining quantity or institution', () => {
       it('should be 0 when individual offer has no stock', () => {
         // when
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         expect(screen.queryByText('0')).toBeInTheDocument()
@@ -292,7 +282,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         expect(screen.queryByText('5')).toBeInTheDocument()
@@ -306,7 +296,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         expect(screen.queryByText('Illimité')).toBeInTheDocument()
@@ -318,7 +308,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.offer.educationalInstitution = null
 
         // when
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         expect(
@@ -339,7 +329,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         }
 
         // when
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         expect(screen.queryByText('Collège Bellevue')).toBeInTheDocument()
@@ -361,7 +351,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         expect(screen.queryByText('2 dates')).toBeInTheDocument()
@@ -377,7 +367,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         expect(screen.getByText('27/05/2021 17:00')).toBeInTheDocument()
@@ -391,7 +381,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         expect(screen.queryByText(/épuisée/)).not.toBeInTheDocument()
@@ -406,7 +396,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         eventOffer.status = OfferStatus.SOLD_OUT
 
         // when
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         expect(screen.queryByText(/épuisées/)).not.toBeInTheDocument()
@@ -422,7 +412,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         const numberOfStocks = screen.getByText('1 date épuisée', {
@@ -440,7 +430,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // then
         expect(
@@ -454,7 +444,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.offer.isActive = false
 
       // When
-      renderOfferItem(props, store)
+      renderOfferItem(props)
 
       // Then
       expect(screen.getByText('My little offer').closest('tr')).toHaveClass(
@@ -467,7 +457,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       'should display the offer greyed when offer is %s',
       status => {
         props.offer.status = status
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // Then
         expect(screen.getByText('My little offer').closest('tr')).toHaveClass(
@@ -481,7 +471,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       'should not display the offer greyed when offer is %s',
       status => {
         props.offer.status = status
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         // Then
         expect(
@@ -495,7 +485,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.offer.status = OfferStatus.DRAFT
 
       // When
-      renderOfferItem(props, store)
+      renderOfferItem(props)
 
       // Then
       const links = screen.getAllByRole('link')
@@ -509,7 +499,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       it('should display a tag when offer is template', () => {
         props.audience = Audience.COLLECTIVE
         props.offer.isShowcase = true
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         expect(
           within(screen.getAllByRole('cell')[2]).getByText('Offre vitrine')
@@ -519,7 +509,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       it('should not display a tag when offer is not template', () => {
         props.audience = Audience.COLLECTIVE
         props.offer.isShowcase = false
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         expect(
           within(screen.getAllByRole('cell')[1]).queryByText('Offre vitrine')
@@ -529,7 +519,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       it('should not display a duplicate offer button when offer is not template', () => {
         props.audience = Audience.COLLECTIVE
         props.offer.isShowcase = false
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         const duplicateButton = screen.queryByRole('button', {
           name: 'Créer une offre réservable pour un établissement scolaire',
@@ -542,7 +532,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.audience = Audience.COLLECTIVE
         props.offer.isShowcase = true
 
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         const duplicateButton = screen.getByRole('button', {
           name: 'Créer une offre réservable pour un établissement scolaire',
@@ -560,7 +550,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.offer.isShowcase = true
         Storage.prototype.getItem = jest.fn(() => 'true')
 
-        renderOfferItem(props, store)
+        renderOfferItem(props)
 
         const duplicateButton = screen.getByRole('button', {
           name: 'Créer une offre réservable pour un établissement scolaire',

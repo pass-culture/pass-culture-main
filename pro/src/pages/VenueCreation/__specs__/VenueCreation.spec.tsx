@@ -1,32 +1,41 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
-import type { Store } from 'redux'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import {
-  GetOffererResponseModel,
-  SharedCurrentUserResponseModel,
-} from 'apiClient/v1'
-import { configureTestStore } from 'store/testUtils'
+import { GetOffererResponseModel } from 'apiClient/v1'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import AppLayout from '../../../app/AppLayout'
 import VenueCreation from '../VenueCreation'
 
-const renderVenueCreation = async (offererId: string, store: Store) => {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter
-        initialEntries={[`/structures/${offererId}/lieux/creation`]}
-      >
-        <AppLayout>
-          <Route exact path={'/structures/:offererId/lieux/creation'}>
-            <VenueCreation />
-          </Route>
-        </AppLayout>
-      </MemoryRouter>
-    </Provider>
+const renderVenueCreation = async (offererId: string) => {
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser: {
+        firstName: 'John',
+        dateCreated: '2022-07-29T12:18:43.087097Z',
+        email: 'john@do.net',
+        id: '1',
+        nonHumanizedId: '1',
+        isAdmin: false,
+        isEmailValidated: true,
+        roles: [],
+      },
+    },
+  }
+
+  return renderWithProviders(
+    <AppLayout>
+      <Route exact path={'/structures/:offererId/lieux/creation'}>
+        <VenueCreation />
+      </Route>
+    </AppLayout>,
+    {
+      storeOverrides,
+      initialRouterEntries: [`/structures/${offererId}/lieux/creation`],
+    }
   )
 }
 
@@ -39,27 +48,9 @@ jest.mock('apiClient/api', () => ({
 }))
 
 describe('route VenueCreation', () => {
-  let currentUser: SharedCurrentUserResponseModel
-  let store: Store
   let offerer: GetOffererResponseModel
 
   beforeEach(() => {
-    currentUser = {
-      firstName: 'John',
-      dateCreated: '2022-07-29T12:18:43.087097Z',
-      email: 'john@do.net',
-      id: '1',
-      nonHumanizedId: '1',
-      isAdmin: false,
-      isEmailValidated: true,
-      roles: [],
-    }
-    store = configureTestStore({
-      user: {
-        initialized: true,
-        currentUser,
-      },
-    })
     offerer = {
       id: 'ABCD',
     } as GetOffererResponseModel
@@ -70,7 +61,7 @@ describe('route VenueCreation', () => {
   })
   it('should display venue form screen with creation title', async () => {
     // When
-    await renderVenueCreation(offerer.id, store)
+    await renderVenueCreation(offerer.id)
 
     // Then
     const venueCreationTitle = await screen.findByText('Création d’un lieu')
@@ -78,7 +69,7 @@ describe('route VenueCreation', () => {
   })
   it('should display modal when user try to quite venue creation', async () => {
     // When
-    await renderVenueCreation(offerer.id, store)
+    await renderVenueCreation(offerer.id)
     // Then
     const homeNavBarButton = await screen.findByText('Accueil')
     await homeNavBarButton.click()
@@ -93,7 +84,7 @@ describe('route VenueCreation', () => {
   })
   it('should display modal when user cancel venue creation', async () => {
     // When
-    await renderVenueCreation(offerer.id, store)
+    await renderVenueCreation(offerer.id)
     // Then
     const cancelFormButton = await screen.findByText('Annuler et quitter')
     await cancelFormButton.click()
@@ -108,7 +99,7 @@ describe('route VenueCreation', () => {
   })
   it('should not display modal when user submit venue creation', async () => {
     // When
-    await renderVenueCreation(offerer.id, store)
+    await renderVenueCreation(offerer.id)
     // Then
     const homeNavBarButton = await screen.findByText('Enregistrer et continuer')
     await homeNavBarButton.click()

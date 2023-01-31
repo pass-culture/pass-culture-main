@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
@@ -10,7 +9,7 @@ import { ApiError } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SignIn from '../SignIn'
 
@@ -21,26 +20,23 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderSignIn = storeOveride => {
-  const store = configureTestStore(storeOveride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/connexion']}>
-        <SignIn />
-        <Route path="/accueil">
-          <span>I'm logged standard user redirect route</span>
-        </Route>
-        <Route path="/structures">
-          <span>I'm logged admin redirect route</span>
-        </Route>
-        <Route path="/inscription">
-          <span>I'm the inscription page</span>
-        </Route>
-        <Notification />
-      </MemoryRouter>
-    </Provider>
+const renderSignIn = storeOverrides =>
+  renderWithProviders(
+    <>
+      <SignIn />
+      <Route path="/accueil">
+        <span>I'm logged standard user redirect route</span>
+      </Route>
+      <Route path="/structures">
+        <span>I'm logged admin redirect route</span>
+      </Route>
+      <Route path="/inscription">
+        <span>I'm the inscription page</span>
+      </Route>
+      <Notification />
+    </>,
+    { storeOverrides, initialRouterEntries: ['/connexion'] }
   )
-}
 
 describe('src | components | pages | SignIn', () => {
   let store

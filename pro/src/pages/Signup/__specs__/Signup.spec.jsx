@@ -1,11 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { configureTestStore } from 'store/testUtils'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Signup from '../Signup'
 
@@ -17,16 +15,16 @@ jest.mock('apiClient/api', () => ({
 }))
 
 describe('src | components | pages | Signup', () => {
-  let store
+  let storeOverrides
   beforeEach(() => {
-    store = configureTestStore({
+    storeOverrides = {
       user: {
         currentUser: null,
       },
       features: {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
-    })
+    }
     api.listFeatures.mockResolvedValue([])
   })
   afterEach(jest.resetAllMocks)
@@ -40,13 +38,7 @@ describe('src | components | pages | Signup', () => {
     }
 
     // when
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Signup {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
+    renderWithProviders(<Signup {...props} />, { storeOverrides })
 
     // then
     expect(
@@ -63,13 +55,7 @@ describe('src | components | pages | Signup', () => {
     }
 
     // when
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Signup {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
+    renderWithProviders(<Signup {...props} />, { storeOverrides })
 
     // then
     expect(
@@ -84,20 +70,14 @@ describe('src | components | pages | Signup', () => {
         pathname: '/inscription',
       },
     }
-    const store = configureTestStore({
+    const storeOverrides = {
       features: {
         list: [{ isActive: false, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
-    })
+    }
 
     // when
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Signup {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
+    renderWithProviders(<Signup {...props} />, { storeOverrides })
 
     // then
     expect(
@@ -118,21 +98,12 @@ describe('src | components | pages | Signup', () => {
     }
 
     // when
-    const { rerender } = render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Signup {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
+    const { rerender } = renderWithProviders(<Signup {...props} />, {
+      storeOverrides,
+    })
+
     // when rerender
-    rerender(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Signup {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
+    rerender(<Signup {...props} />)
 
     // then
     expect(campaignTracker.signUp).toHaveBeenCalledTimes(1)

@@ -1,16 +1,10 @@
 import { parse } from 'querystring'
 
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryHistory } from 'history'
 import React from 'react'
-import { Provider } from 'react-redux'
 import { Router } from 'react-router'
-import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
@@ -25,13 +19,13 @@ import {
 import { Offer, TSearchFilters } from 'core/Offers/types'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
-import { configureTestStore } from 'store/testUtils'
 import { offerFactory } from 'utils/apiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffersRoute from '../../../pages/Offers/OffersRoute'
 
 const renderOffers = async (
-  store: Store,
+  storeOverrides: any,
   filters: Partial<TSearchFilters> & {
     page?: number
     audience?: Audience
@@ -40,12 +34,11 @@ const renderOffers = async (
   const history = createMemoryHistory()
   const route = computeOffersUrl(filters)
   history.push(route)
-  render(
-    <Provider store={store}>
-      <Router history={history}>
-        <OffersRoute />
-      </Router>
-    </Provider>
+  renderWithProviders(
+    <Router history={history}>
+      <OffersRoute />
+    </Router>,
+    { storeOverrides }
   )
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
@@ -111,7 +104,7 @@ describe('route Offers', () => {
     name: string
     publicName: string
   }
-  let store: Store
+  let store: any
   let offersRecap: Offer[]
 
   beforeEach(() => {
@@ -121,7 +114,7 @@ describe('route Offers', () => {
       name: 'Current User',
       publicName: 'USER',
     }
-    store = configureTestStore({
+    store = {
       user: {
         initialized: true,
         currentUser,
@@ -129,7 +122,7 @@ describe('route Offers', () => {
       offers: {
         searchFilters: DEFAULT_SEARCH_FILTERS,
       },
-    })
+    }
     offersRecap = [offerFactory({ venue: proVenues[0] })]
     // @ts-expect-error FIX ME
     jest.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
@@ -235,7 +228,7 @@ describe('route Offers', () => {
 
       describe('when user is admin', () => {
         beforeEach(() => {
-          store = configureTestStore({
+          store = {
             user: {
               initialized: true,
               currentUser: { ...currentUser, isAdmin: true },
@@ -243,7 +236,7 @@ describe('route Offers', () => {
             offers: {
               searchFilters: DEFAULT_SEARCH_FILTERS,
             },
-          })
+          }
         })
         describe('status filter can only be used with an offerer or a venue filter for performance reasons', () => {
           it('should reset and disable status filter when venue filter is deselected', async () => {
