@@ -52,7 +52,7 @@ describe('patchIsTemplateOfferActiveAdapter', () => {
     // then
     expect(response.isOk).toBeTruthy()
     expect(response.message).toBe(
-      'Votre offre est maintenant inactive et sera invisible pour les utilisateurs d’ADAGE.'
+      'Votre offre est désactivée et n’est plus visible sur ADAGE'
     )
   })
   it('should confirm when the offer was deactivated', async () => {
@@ -70,7 +70,7 @@ describe('patchIsTemplateOfferActiveAdapter', () => {
     // then
     expect(response.isOk).toBeTruthy()
     expect(response.message).toBe(
-      'Votre offre est maintenant active et visible dans ADAGE.'
+      'Votre offre est maintenant active et visible dans ADAGE'
     )
   })
 })

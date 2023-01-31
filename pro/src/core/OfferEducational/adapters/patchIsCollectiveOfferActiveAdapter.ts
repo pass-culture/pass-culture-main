@@ -22,8 +22,8 @@ export const patchIsCollectiveOfferActiveAdapter: PatchIsOfferActiveAdapter =
       return {
         isOk: true,
         message: isActive
-          ? 'Votre offre est maintenant active et visible dans ADAGE.'
-          : 'Votre offre est maintenant inactive et sera invisible pour les utilisateurs d’ADAGE.',
+          ? 'Votre offre est maintenant active et visible dans ADAGE'
+          : 'Votre offre est désactivée et n’est plus visible sur ADAGE',
         payload: null,
       }
     } catch (error) {
