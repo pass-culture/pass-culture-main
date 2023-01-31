@@ -1,13 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { CollectiveBookingStatus, OfferStatus } from 'apiClient/v1'
 import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferEducationalActions, {
   IOfferEducationalActions,
@@ -17,7 +15,7 @@ const renderOfferEducationalActions = (
   props: IOfferEducationalActions,
   storeOverride?: Partial<RootState>
 ) => {
-  const store = configureTestStore({
+  const storeOverrides = {
     user: {
       initialized: true,
       currentUser: {
@@ -36,14 +34,10 @@ const renderOfferEducationalActions = (
       ],
     },
     ...storeOverride,
+  }
+  return renderWithProviders(<OfferEducationalActions {...props} />, {
+    storeOverrides,
   })
-  return render(
-    <MemoryRouter>
-      <Provider store={store}>
-        <OfferEducationalActions {...props} />
-      </Provider>
-    </MemoryRouter>
-  )
 }
 
 describe('OfferEducationalActions', () => {

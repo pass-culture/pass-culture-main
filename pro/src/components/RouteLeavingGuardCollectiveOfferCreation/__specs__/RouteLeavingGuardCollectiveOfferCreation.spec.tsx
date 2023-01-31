@@ -1,12 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import type { History } from 'history'
 import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 import { Link } from 'react-router-dom'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import RouteLeavingGuardCollectiveOfferCreation, {
   RouteLeavingGuardCollectiveOfferCreationProps,
@@ -14,20 +13,17 @@ import RouteLeavingGuardCollectiveOfferCreation, {
 
 const renderRouteLeavingGuardCollectiveOfferCreation = async (
   props: RouteLeavingGuardCollectiveOfferCreationProps,
-  history: History,
-  store = configureTestStore({})
+  history: History
 ) => {
-  render(
-    <Provider store={store}>
-      <Router history={history}>
-        <Link to="/about">About</Link>
-        <Link to={`/offre/creation/collective`}>Création</Link>
-        <Link to={`/offre/AE/collective/stocks`}>Stocks</Link>
-        <Link to={`/offre/AE/collectif/visibilite`}>Visibilité</Link>
-        <Link to={`/offre/AE/collective/confirmation`}>Confirmation</Link>
-        <RouteLeavingGuardCollectiveOfferCreation {...props} />
-      </Router>
-    </Provider>
+  renderWithProviders(
+    <Router history={history}>
+      <Link to="/about">About</Link>
+      <Link to={`/offre/creation/collective`}>Création</Link>
+      <Link to={`/offre/AE/collective/stocks`}>Stocks</Link>
+      <Link to={`/offre/AE/collectif/visibilite`}>Visibilité</Link>
+      <Link to={`/offre/AE/collective/confirmation`}>Confirmation</Link>
+      <RouteLeavingGuardCollectiveOfferCreation {...props} />
+    </Router>
   )
 }
 
@@ -63,8 +59,7 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation', () => {
 
     it('should not display confirmation modal when following template creation flow', async () => {
       history.push('/offre/creation/collectif')
-      const store = configureTestStore()
-      renderRouteLeavingGuardCollectiveOfferCreation(props, history, store)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
 
       history.push('/offre/AE/collectif/vitrine/creation/recapitulatif')
       expect(
@@ -131,11 +126,9 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation', () => {
   })
 
   describe('when going backward', () => {
-    const store = configureTestStore()
-
     it('should not display confirmation modal when going from stocks to offer creation', () => {
       history.push('/offre/AE/collectif/stocks')
-      renderRouteLeavingGuardCollectiveOfferCreation(props, history, store)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
       history.push('/offre/creation/collectif')
 
       expect(
@@ -145,7 +138,7 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation', () => {
 
     it('should not display confirmation modal when going from stocks to offer creation with offer id in url', () => {
       history.push('/offre/AE/collectif/stocks')
-      renderRouteLeavingGuardCollectiveOfferCreation(props, history, store)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
       history.push('/offre/collectif/AE/creation')
 
       expect(
@@ -155,7 +148,7 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation', () => {
 
     it('should not display confirmation modal when going from visibility to stocks', () => {
       history.push('/offre/AE/collectif/visibilite')
-      renderRouteLeavingGuardCollectiveOfferCreation(props, history, store)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
       history.push('/offre/AE/collectif/stocks')
 
       expect(
@@ -165,7 +158,7 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation', () => {
 
     it('should not display confirmation modal when going from visibility to offer creation', () => {
       history.push('/offre/AE/collectif/visibilite')
-      renderRouteLeavingGuardCollectiveOfferCreation(props, history, store)
+      renderRouteLeavingGuardCollectiveOfferCreation(props, history)
       history.push('/offre/collectif/AE/creation')
 
       expect(

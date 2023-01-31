@@ -1,16 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { TOffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   FORM_DEFAULT_VALUES,
@@ -30,21 +28,18 @@ const renderOfferIndividualForm = ({
   onSubmit: () => void
   props: IOfferIndividualFormProps
 }) => {
-  const store = configureTestStore({
+  const storeOverrides = {
     user: { currentUser: { publicName: 'François', isAdmin: false } },
-  })
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <Formik
-          initialValues={initialValues}
-          onSubmit={onSubmit}
-          validationSchema={validationSchema}
-        >
-          <OfferIndividualForm {...props} />
-        </Formik>
-      </MemoryRouter>
-    </Provider>
+  }
+  return renderWithProviders(
+    <Formik
+      initialValues={initialValues}
+      onSubmit={onSubmit}
+      validationSchema={validationSchema}
+    >
+      <OfferIndividualForm {...props} />
+    </Formik>,
+    { storeOverrides }
   )
 }
 

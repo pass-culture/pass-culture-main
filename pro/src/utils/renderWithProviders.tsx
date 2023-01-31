@@ -10,16 +10,16 @@ import { configureTestStore } from 'store/testUtils'
 
 export const renderWithProviders = (
   component: ReactNode,
-  overrides: {
+  overrides?: {
     storeOverrides?: any
     initialRouterEntries?: LocationDescriptor<unknown>[]
   }
 ) => {
-  const store = configureTestStore(overrides.storeOverrides)
+  const store = configureTestStore(overrides?.storeOverrides)
 
   return render(
     <Provider store={store}>
-      <MemoryRouter initialEntries={overrides.initialRouterEntries}>
+      <MemoryRouter initialEntries={overrides?.initialRouterEntries}>
         {component}
       </MemoryRouter>
     </Provider>
