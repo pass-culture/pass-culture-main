@@ -77,7 +77,7 @@ describe('OfferNameCell', () => {
       audience: Audience.COLLECTIVE,
     })
 
-    const warningIco = screen.queryByAltText('Attention')
+    const warningIco = screen.queryByTitle('Attention')
     expect(warningIco).not.toBeNull()
   })
   it('should not display warning when limit booking date is in more than 7 days', () => {
@@ -101,7 +101,7 @@ describe('OfferNameCell', () => {
       audience: Audience.COLLECTIVE,
     })
 
-    const warningIco = screen.queryByAltText('Attention')
+    const warningIco = screen.queryByTitle('Attention')
     expect(warningIco).toBeNull()
   })
 })

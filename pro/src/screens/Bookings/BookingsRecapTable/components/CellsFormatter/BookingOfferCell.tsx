@@ -19,12 +19,12 @@ import { OFFER_STATUS_PENDING } from 'core/Offers'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
+import { AlertFilledIcon } from 'icons'
 import {
   getDate,
   getRemainingTime,
   shouldDisplayWarning,
 } from 'pages/Offers/Offers/OfferItem/Cells/OfferNameCell/utils'
-import Icon from 'ui-kit/Icon/Icon'
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
 
@@ -103,13 +103,11 @@ const BookingOfferCell = ({
             {eventDatetimeFormatted || isbn}
             <span className={styles['stocks']}>
               {shouldShowCollectiveWarning && (
-                <div>
-                  <Icon
+                <div className={styles['sold-out-container']}>
+                  <AlertFilledIcon
                     className={styles['sold-out-icon']}
-                    svg="ico-notification-error"
-                    alt="Attention"
+                    title="Attention"
                   />
-
                   <span className={styles['sold-out-dates']}>
                     La date limite de réservation par le chef d'établissement
                     est dans{' '}
