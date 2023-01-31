@@ -9,6 +9,7 @@ from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
 import sentry_sdk
 import sqlalchemy.exc as sqla_exc
+from werkzeug.exceptions import BadRequest
 import yaml
 from yaml.scanner import ScannerError
 
@@ -450,15 +451,26 @@ def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: typing.
             )
 
 
+def _get_or_create_price_category(price: decimal.Decimal, offer: models.Offer) -> models.PriceCategory:
+    price_category = next((c for c in offer.priceCategories if c.price == price), None)
+    if not price_category:
+        label = f"Tarif {len(offer.priceCategories) + 1}"
+        return models.PriceCategory(
+            price=price, offer=offer, priceCategoryLabel=_get_or_create_label(label, offer.venue)
+        )
+    return price_category
+
+
 def create_stock(
     offer: models.Offer,
-    price: decimal.Decimal,
+    price: decimal.Decimal | None,
     quantity: int | None,
     activation_codes: list[str] | None = None,
     activation_codes_expiration_datetime: datetime.datetime | None = None,
     beginning_datetime: datetime.datetime | None = None,
     booking_limit_datetime: datetime.datetime | None = None,
     creating_provider: providers_models.Provider | None = None,
+    price_category: models.PriceCategory | None = None,
 ) -> models.Stock:
     validation.check_booking_limit_datetime(None, beginning_datetime, booking_limit_datetime)
 
@@ -474,6 +486,20 @@ def create_stock(
     if beginning_datetime and booking_limit_datetime and beginning_datetime < booking_limit_datetime:
         booking_limit_datetime = beginning_datetime
 
+    if price is None:
+        if price_category:
+            price = price_category.price
+        else:
+            # This should never happen
+            raise BadRequest()
+
+    if offer.isEvent and price_category is None:
+        # FIXME: (mageoffray, 2023-31-01)
+        # should be deleted with FF WIP_ENABLE_MULTI_PRICE_STOCKS
+        # If a price_category is sent it means the FF
+        # WIP_ENABLE_MULTI_PRICE_STOCKS is enabled
+        price_category = _get_or_create_price_category(price, offer)
+
     validation.check_required_dates_for_stock(offer, beginning_datetime, booking_limit_datetime)
     validation.check_validation_status(offer)
     validation.check_provider_can_create_stock(offer, creating_provider)
@@ -482,10 +508,11 @@ def create_stock(
 
     created_stock = models.Stock(
         offerId=offer.id,
-        price=decimal.Decimal(price),
+        price=price,
         quantity=quantity,
         beginningDatetime=beginning_datetime,
         bookingLimitDatetime=booking_limit_datetime,
+        priceCategory=price_category,
     )
     created_activation_codes = []
 

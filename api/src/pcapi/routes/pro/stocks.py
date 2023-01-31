@@ -1,8 +1,8 @@
-import decimal
 import logging
 
 from flask_login import current_user
 from flask_login import login_required
+import sqlalchemy.orm as sqla_orm
 
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Venue
@@ -11,6 +11,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
+import pcapi.core.offers.validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
@@ -63,12 +64,20 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
-    offer = offers_models.Offer.query.get(body.offer_id)
+    offer = (
+        offers_models.Offer.query.options(
+            sqla_orm.joinedload(offers_models.Offer.priceCategories),
+        )
+        .filter_by(id=body.offer_id)
+        .one()
+    )
 
     stocks_to_edit = [stock for stock in body.stocks if isinstance(stock, serialization.StockEditionBodyModel)]
     stocks_to_create = [stock for stock in body.stocks if isinstance(stock, serialization.StockCreationBodyModel)]
     if stocks_to_edit:
         existing_stocks = _get_existing_stocks(body.offer_id, stocks_to_edit)
+
+    price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
 
     upserted_stocks = []
     edited_stocks_with_update_info: list[tuple[offers_models.Stock, bool]] = []
@@ -81,7 +90,7 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
                     )
                 edited_stock, is_beginning_updated = offers_api.edit_stock(
                     existing_stocks[stock_to_edit.id],
-                    price=decimal.Decimal(stock_to_edit.price),
+                    price=stock_to_edit.price,
                     quantity=stock_to_edit.quantity,
                     beginning_datetime=serialization_utils.as_utc_without_timezone(stock_to_edit.beginning_datetime)
                     if stock_to_edit.beginning_datetime
@@ -96,14 +105,16 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
                 edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
 
             for stock_to_create in stocks_to_create:
+                offers_validation.check_stock_has_price_or_price_category(offer, stock_to_create, price_categories)
                 created_stock = offers_api.create_stock(
                     offer,
-                    price=decimal.Decimal(stock_to_create.price),
+                    price=stock_to_create.price,
                     activation_codes=stock_to_create.activation_codes,
                     activation_codes_expiration_datetime=stock_to_create.activation_codes_expiration_datetime,
                     quantity=stock_to_create.quantity,
                     beginning_datetime=stock_to_create.beginning_datetime,
                     booking_limit_datetime=stock_to_create.booking_limit_datetime,
+                    price_category=price_categories.get(stock_to_create.price_category_id, None),
                 )
                 upserted_stocks.append(created_stock)
 

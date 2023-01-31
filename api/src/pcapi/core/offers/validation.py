@@ -34,6 +34,7 @@ from pcapi.domain import show_types
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.feature import FeatureToggle
+from pcapi.routes.public.books_stocks import serialization
 from pcapi.utils import date
 
 
@@ -491,4 +492,28 @@ def check_price_categories_deletable(offer: Offer) -> None:
     if offer.validation != OfferValidationStatus.DRAFT:
         raise ApiErrors(
             {"global": "Les catégories de prix ne sont pas supprimables sur les offres qui ne sont pas en brouillon"}
+        )
+
+
+def check_stock_has_price_or_price_category(
+    offer: Offer,
+    stock: serialization.StockCreationBodyModel | serialization.StockEditionBodyModel,
+    existing_price_categories: dict,
+) -> None:
+    if not FeatureToggle.WIP_ENABLE_MULTI_PRICE_STOCKS.is_active() or offer.isThing:
+        if stock.price is None:
+            raise ApiErrors(
+                {"price": ["Le prix est obligatoire pour les offres produit"]},
+                status_code=400,
+            )
+        return
+    if not stock.price_category_id:
+        raise ApiErrors(
+            {"price_category_id": ["Le tarif est obligatoire pour les offres évènement"]},
+            status_code=400,
+        )
+    if stock.price_category_id not in existing_price_categories:
+        raise ApiErrors(
+            {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % stock.price_category_id]},
+            status_code=400,
         )

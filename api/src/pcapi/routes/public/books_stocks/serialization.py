@@ -67,7 +67,8 @@ class StockCreationBodyModel(BaseModel):
     activation_codes_expiration_datetime: datetime | None
     beginning_datetime: datetime | None
     booking_limit_datetime: datetime | None
-    price: float
+    price: decimal.Decimal | None
+    price_category_id: int | None
     quantity: int | None
 
     class Config:
@@ -79,7 +80,7 @@ class StockEditionBodyModel(BaseModel):
     beginning_datetime: datetime | None
     booking_limit_datetime: datetime | None
     humanized_id: str
-    price: float
+    price: decimal.Decimal
     quantity: int | None
 
     class Config:
