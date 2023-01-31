@@ -1,5 +1,6 @@
 import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
+import { CompatRouter } from 'react-router-dom-v5-compat'
 
 import { App, AppRouter } from 'app'
 import Notification from 'components/Notification/Notification'
@@ -14,12 +15,16 @@ const Root = (): JSX.Element => {
       <AnalyticsContextProvider>
         <RemoteContextProvider>
           <BrowserRouter>
-            <App>
-              <>
-                <AppRouter />
-                <Notification />
-              </>
-            </App>
+            {/* Temporary router for react-router v6 migration */}
+            {/* https://www.npmjs.com/package/react-router-dom-v5-compat */}
+            <CompatRouter>
+              <App>
+                <>
+                  <AppRouter />
+                  <Notification />
+                </>
+              </App>
+            </CompatRouter>
           </BrowserRouter>
         </RemoteContextProvider>
       </AnalyticsContextProvider>
