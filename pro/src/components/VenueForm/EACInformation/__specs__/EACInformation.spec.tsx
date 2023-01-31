@@ -1,11 +1,8 @@
-import { render, screen } from '@testing-library/react'
-import { createBrowserHistory } from 'history'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { Router } from 'react-router-dom'
 
 import { IVenue } from 'core/Venue'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import EACInformation from '../EACInformation'
 
@@ -15,15 +12,10 @@ const renderEACInformation = async ({
 }: {
   venue?: IVenue | null
   isCreatingVenue: boolean
-}) => {
-  render(
-    <Router history={createBrowserHistory()}>
-      <Provider store={configureTestStore({})}>
-        <EACInformation isCreatingVenue={isCreatingVenue} venue={venue} />
-      </Provider>
-    </Router>
+}) =>
+  renderWithProviders(
+    <EACInformation isCreatingVenue={isCreatingVenue} venue={venue} />
   )
-}
 
 describe('components | EACInformation', () => {
   it('should not be able to access information page when creating a venue', async () => {

@@ -1,26 +1,22 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ActionsBarSticky from '../ActionsBarSticky'
 
-const renderActionsBar = () => {
-  render(
-    <Provider store={configureTestStore()}>
-      <ActionsBarSticky>
-        <ActionsBarSticky.Left>
-          <div>left content</div>
-        </ActionsBarSticky.Left>
+const renderActionsBar = () =>
+  renderWithProviders(
+    <ActionsBarSticky>
+      <ActionsBarSticky.Left>
+        <div>left content</div>
+      </ActionsBarSticky.Left>
 
-        <ActionsBarSticky.Right>
-          <div>right content</div>
-        </ActionsBarSticky.Right>
-      </ActionsBarSticky>
-    </Provider>
+      <ActionsBarSticky.Right>
+        <div>right content</div>
+      </ActionsBarSticky.Right>
+    </ActionsBarSticky>
   )
-}
 
 describe('ActionsBarSticky', () => {
   it('should render contents', () => {

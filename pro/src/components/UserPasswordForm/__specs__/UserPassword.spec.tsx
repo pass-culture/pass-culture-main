@@ -1,11 +1,8 @@
-// react-testing-library doc: https://testing-library.com/docs/react-testing-library/api
-
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { UserPasswordForm } from '..'
 import { IUserPasswordFormProps } from '../UserPasswordForm'
@@ -13,7 +10,7 @@ import { IUserPasswordFormProps } from '../UserPasswordForm'
 const postPasswordAdapterMock = jest.fn()
 
 const renderUserPasswordForm = (props: IUserPasswordFormProps) => {
-  const store = configureTestStore({
+  const storeOverrides = {
     user: {
       initialized: true,
       currentUser: {
@@ -24,12 +21,11 @@ const renderUserPasswordForm = (props: IUserPasswordFormProps) => {
         lastName: 'Do',
       },
     },
+  }
+
+  return renderWithProviders(<UserPasswordForm {...props} />, {
+    storeOverrides,
   })
-  return render(
-    <Provider store={store}>
-      <UserPasswordForm {...props} />
-    </Provider>
-  )
 }
 
 describe('components:UserPasswordForm', () => {

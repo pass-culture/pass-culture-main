@@ -1,13 +1,12 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
-import { Provider } from 'react-redux'
 import * as yup from 'yup'
 
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
-import { configureTestStore } from 'store/testUtils'
 import { SubmitButton } from 'ui-kit'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Notifications, { INotifications } from '../Notifications'
 import validationSchema from '../validationSchema'
@@ -23,7 +22,7 @@ const renderNotifications = ({
   onSubmit: () => void
   venueBookingEmail?: string | null
 }) => {
-  const store = {
+  const storeOverrides = {
     user: {
       currentUser: {
         email: 'email@example.com',
@@ -31,21 +30,21 @@ const renderNotifications = ({
       initialized: true,
     },
   }
-  return render(
-    <Provider store={configureTestStore(store)}>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={onSubmit}
-        validationSchema={yup.object().shape(validationSchema)}
-      >
-        <Form>
-          <Notifications {...props} venueBookingEmail={venueBookingEmail} />
-          <SubmitButton className="primary-button" isLoading={false}>
-            Submit
-          </SubmitButton>
-        </Form>
-      </Formik>
-    </Provider>
+
+  return renderWithProviders(
+    <Formik
+      initialValues={initialValues}
+      onSubmit={onSubmit}
+      validationSchema={yup.object().shape(validationSchema)}
+    >
+      <Form>
+        <Notifications {...props} venueBookingEmail={venueBookingEmail} />
+        <SubmitButton className="primary-button" isLoading={false}>
+          Submit
+        </SubmitButton>
+      </Form>
+    </Formik>,
+    { storeOverrides }
   )
 }
 

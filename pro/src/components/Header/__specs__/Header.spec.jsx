@@ -1,13 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Header from '../Header'
 
@@ -27,17 +25,11 @@ const defaultStore = {
   },
 }
 
-const renderHeader = (overrideStore = defaultStore) => {
-  const stubStore = configureTestStore(overrideStore)
-
-  return render(
-    <Provider store={stubStore}>
-      <MemoryRouter initialEntries={['/accueil']}>
-        <Header />
-      </MemoryRouter>
-    </Provider>
-  )
-}
+const renderHeader = (storeOverrides = defaultStore) =>
+  renderWithProviders(<Header />, {
+    storeOverrides,
+    initialRouterEntries: ['/accueil'],
+  })
 
 describe('navigation menu', () => {
   beforeEach(() => {

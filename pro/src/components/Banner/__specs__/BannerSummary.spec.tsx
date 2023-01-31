@@ -1,19 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
 
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { BannerSummary } from '../'
 
 describe('components:BannerSummary', () => {
   it('renders component successfully when offer is not draft', async () => {
-    render(
-      <Provider store={configureTestStore()}>
-        <BannerSummary mode={OFFER_WIZARD_MODE.CREATION} />
-      </Provider>
-    )
+    renderWithProviders(<BannerSummary mode={OFFER_WIZARD_MODE.CREATION} />)
     expect(
       screen.getByText(
         /Vérifiez les informations ci-dessous avant de publier votre offre./
@@ -25,12 +20,9 @@ describe('components:BannerSummary', () => {
       )
     ).toBeInTheDocument()
   })
+
   it('renders component successfully when offer is draft', async () => {
-    render(
-      <Provider store={configureTestStore()}>
-        <BannerSummary mode={OFFER_WIZARD_MODE.DRAFT} />
-      </Provider>
-    )
+    renderWithProviders(<BannerSummary mode={OFFER_WIZARD_MODE.DRAFT} />)
     expect(
       screen.getByText(
         /Vérifiez les informations ci-dessous avant de publier votre offre./
