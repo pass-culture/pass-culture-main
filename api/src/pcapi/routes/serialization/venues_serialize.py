@@ -9,6 +9,7 @@ import pydantic
 from pydantic import root_validator
 from pydantic import validator
 
+from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -316,12 +317,20 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
     collectiveAccessInformation: str | None
     collectivePhone: str | None
     collectiveEmail: str | None
+    collectiveOfferCategoryId: str | None
 
     _validate_collectiveDescription = string_length_validator("collectiveDescription", length=500)
     _validate_collectiveWebsite = string_length_validator("collectiveWebsite", length=150)
     _validate_collectiveAccessInformation = string_length_validator("collectiveAccessInformation", length=500)
     _validate_collectivePhone = string_length_validator("collectivePhone", length=50)
     _validate_collectiveEmail = string_length_validator("collectiveEmail", length=150)
+
+    @validator("collectiveOfferCategoryId")
+    @classmethod
+    def validate_subcategory_id(cls, subcategory_id: str | None) -> str | None:
+        if subcategory_id and not subcategory_id in subcategories_v2.COLLECTIVE_SUBCATEGORIES:
+            raise ValueError(f"Must be one of [{list(subcategories_v2.COLLECTIVE_SUBCATEGORIES)}]")
+        return subcategory_id
 
 
 class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
@@ -337,6 +346,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     siret: str | None
     hasMissingReimbursementPoint: bool
     hasCreatedOffer: bool
+    collectiveOfferCategoryId: str | None
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
