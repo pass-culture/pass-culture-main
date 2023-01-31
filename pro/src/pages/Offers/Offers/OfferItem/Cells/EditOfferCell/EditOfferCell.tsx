@@ -9,7 +9,7 @@ import {
 import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as PenIcon } from 'icons/ico-pen.svg'
+import { PenIcon } from 'icons'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 

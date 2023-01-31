@@ -7,8 +7,7 @@ import {
 } from 'apiClient/v1'
 import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
 import { BOOKING_STATUS } from 'core/Bookings'
-import { ReactComponent as ExternalLinkIcon } from 'icons/ico-external-site-filled.svg'
-import { ReactComponent as IcoPen } from 'icons/ico-pen.svg'
+import { ExternalLinkIcon, PenIcon } from 'icons'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Timeline from 'ui-kit/Timeline'
@@ -122,7 +121,7 @@ const CollectiveTimeLine = ({
               to: `/offre/${bookingRecap.stock.offerIdentifier}/collectif/stocks/edition`,
               isExternal: false,
             }}
-            Icon={IcoPen}
+            Icon={PenIcon}
           >
             Modifier la date limite de réservation
           </ButtonLink>

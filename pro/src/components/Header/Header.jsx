@@ -6,7 +6,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
-import { ReactComponent as IconCalendar } from 'icons/ico-calendar.svg'
+import { CalendarIcon } from 'icons'
 import { ReactComponent as IconDesk } from 'icons/ico-desk.svg'
 import { ReactComponent as IconEuro } from 'icons/ico-euro.svg'
 import { ReactComponent as IconHome } from 'icons/ico-home.svg'
@@ -85,7 +85,7 @@ const Header = () => {
             role="menuitem"
             to="/reservations"
           >
-            <IconCalendar aria-hidden className="nav-item-icon" />
+            <CalendarIcon aria-hidden className="nav-item-icon" />
             Réservations
           </NavLink>
 

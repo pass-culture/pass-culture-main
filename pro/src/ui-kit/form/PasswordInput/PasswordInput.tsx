@@ -1,8 +1,7 @@
 import { useField } from 'formik'
 import React, { useEffect, useState } from 'react'
 
-import { ReactComponent as IcoEyeClose } from 'icons/ico-eye-close.svg'
-import { ReactComponent as IcoEyeOpen } from 'icons/ico-eye-open.svg'
+import { EyeCloseIcon, EyeOpenIcon } from 'icons'
 
 import TextInput from '../TextInput'
 
@@ -51,13 +50,13 @@ const PasswordInput = ({
         rightButton={() => (
           <button onClick={handleToggleHidden} type="button">
             {isPasswordHidden ? (
-              <IcoEyeClose className={styles['password-input-eye-ico']}>
+              <EyeCloseIcon className={styles['password-input-eye-ico']}>
                 Afficher le mot de passe
-              </IcoEyeClose>
+              </EyeCloseIcon>
             ) : (
-              <IcoEyeOpen className={styles['password-input-eye-ico']}>
+              <EyeOpenIcon className={styles['password-input-eye-ico']}>
                 Cacher le mot de passe
-              </IcoEyeOpen>
+              </EyeOpenIcon>
             )}
           </button>
         )}

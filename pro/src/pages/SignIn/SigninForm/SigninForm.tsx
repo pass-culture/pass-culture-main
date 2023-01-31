@@ -11,7 +11,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { IcoKey } from 'icons'
+import { KeyIcon } from 'icons'
 import { setCurrentUser } from 'store/user/actions'
 import { PasswordInput, SubmitButton, TextInput } from 'ui-kit'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
@@ -115,7 +115,7 @@ const SigninForm = (): JSX.Element => {
                 }
                 to="/mot-de-passe-perdu"
               >
-                <IcoKey className="ico-key" />
+                <KeyIcon className="ico-key" />
                 Mot de passe égaré ?
               </Link>
               <div className="field buttons-field">

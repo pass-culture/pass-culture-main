@@ -2,16 +2,16 @@ import { FieldArray, useFormikContext } from 'formik'
 import React, { useCallback, useState } from 'react'
 
 import {
-  StockEventForm,
   IStockEventFormValues,
   STOCK_EVENT_FORM_DEFAULT_VALUES,
+  StockEventForm,
 } from 'components/StockEventForm'
 import { StockEventFormRow } from 'components/StockEventFormRow'
 import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
 import { useOfferWizardMode } from 'hooks'
 import { useModal } from 'hooks/useModal'
-import { IconPlusCircle } from 'icons'
+import { PlusCircleIcon } from 'icons'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { DialogStockDeleteConfirm } from 'screens/OfferIndividual/DialogStockDeleteConfirm'
 import { Button } from 'ui-kit'
@@ -69,7 +69,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
           <div className={styles['button-row']}>
             <Button
               variant={ButtonVariant.TERNARY}
-              Icon={IconPlusCircle}
+              Icon={PlusCircleIcon}
               onClick={() =>
                 arrayHelpers.unshift(STOCK_EVENT_FORM_DEFAULT_VALUES)
               }

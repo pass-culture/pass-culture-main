@@ -2,9 +2,7 @@ import React from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
-import { InfoPhoneIcon, LocationIcon } from 'icons'
-import { ReactComponent as MailIcon } from 'icons/ico-mail.svg'
-import { ReactComponent as IconUser } from 'icons/ico-user.svg'
+import { InfoPhoneIcon, LocationIcon, MailIcon, User2Icon } from 'icons'
 
 import CollectiveActionButtons from '../CollectiveActionButtons'
 import CollectiveTimeLine from '../CollectiveTimeLine'
@@ -55,7 +53,7 @@ const CollectiveBookingDetails = ({
 
             <div className={styles['contact-detail']}>
               <div className={styles['contact-detail-icon']}>
-                <IconUser />
+                <User2Icon />
               </div>
               {`${educationalRedactor.firstName} ${educationalRedactor.lastName}`}
             </div>

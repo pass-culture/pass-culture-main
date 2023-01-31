@@ -24,7 +24,7 @@ import { useNavigate, useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import useNotification from 'hooks/useNotification'
-import { IcoParty } from 'icons'
+import { PartyIcon } from 'icons'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
 import { DisplayOfferInAppLink } from 'screens/OfferIndividual/Summary/DisplayOfferInAppLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -212,7 +212,7 @@ const Summary = (
       </SummaryLayout>
       {newOfferCreation && displayRedirectDialog && (
         <RedirectDialog
-          icon={IcoParty}
+          icon={PartyIcon}
           onCancel={() => {
             logEvent?.(
               Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL,

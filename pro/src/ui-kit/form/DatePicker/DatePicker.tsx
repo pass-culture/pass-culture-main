@@ -3,7 +3,7 @@ import { useField } from 'formik'
 import React, { createRef } from 'react'
 import { default as ReactDatePicker, registerLocale } from 'react-datepicker'
 
-import { IcoCalendar } from 'icons'
+import { CalendarIcon } from 'icons'
 import { FORMAT_DD_MM_YYYY } from 'utils/date'
 
 import { BaseInput, FieldLayout } from '../shared'
@@ -67,7 +67,7 @@ const DatePicker = ({
         {...field}
         customInput={
           <BaseInput
-            rightIcon={() => <IcoCalendar />}
+            rightIcon={() => <CalendarIcon />}
             hasError={meta.touched && !!meta.error}
             ref={ref}
           />
