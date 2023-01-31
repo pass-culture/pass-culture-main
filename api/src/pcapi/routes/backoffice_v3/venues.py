@@ -223,9 +223,21 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         return render_venue_details(venue, form)
 
     attrs = {field.name: field.data for field in form if field.name and hasattr(venue, field.name)}
-    contact_attrs = {"email": form.email.data, "phone_number": form.phone_number.data}
 
-    contact_data = serialize_base.VenueContactModel(**contact_attrs)
+    if venue.contact:
+        # Use existing values, if any, to ensure that no data (website
+        # for example) will be erased by mistake
+        contact_data = serialize_base.VenueContactModel(
+            email=form.email.data,
+            phone_number=form.phone_number.data,
+            website=venue.contact.website,
+            social_medias=venue.contact.social_medias,
+        )
+    else:
+        contact_data = serialize_base.VenueContactModel(
+            email=form.email.data,
+            phone_number=form.phone_number.data,
+        )
 
     try:
         offerers_api.update_venue(venue, author=current_user, contact_data=contact_data, admin_update=True, **attrs)
