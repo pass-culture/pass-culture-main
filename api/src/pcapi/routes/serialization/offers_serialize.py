@@ -428,6 +428,7 @@ class GetOfferMediationResponseModel(BaseModel):
 class PriceCategoryResponseModel(BaseModel):
     price: float
     label: str
+    id: int
 
     class Config:
         orm_mode = True
