@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import { IcoEuro } from 'icons'
+import { EuroIcon } from 'icons'
 import { DatePicker, TextInput } from 'ui-kit'
 
 import styles from './StockThingForm.module.scss'
@@ -57,7 +57,7 @@ const StockThingForm = ({
         disabled={readOnlyFields.includes('price')}
         type="number"
         data-testid="input-price"
-        rightIcon={() => <IcoEuro tabIndex={-1} />}
+        rightIcon={() => <EuroIcon tabIndex={-1} />}
         step="0.01"
       />
       <DatePicker

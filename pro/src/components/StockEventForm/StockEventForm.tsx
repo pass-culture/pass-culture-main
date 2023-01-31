@@ -4,7 +4,7 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import formRowStyles from 'components/StockEventFormRow/SharedStockEventFormRow.module.scss'
-import { IcoEuro } from 'icons'
+import { EuroIcon } from 'icons'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
 
 import { STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS } from './constants'
@@ -104,7 +104,7 @@ const StockEventForm = ({
         classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('price')}
-        rightIcon={() => <IcoEuro />}
+        rightIcon={() => <EuroIcon />}
         type="number"
         step="0.01"
         hideHiddenFooter={true}

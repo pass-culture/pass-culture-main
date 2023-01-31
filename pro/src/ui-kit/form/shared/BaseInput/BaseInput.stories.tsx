@@ -1,7 +1,7 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as RightIcon } from 'icons/ico-calendar.svg'
+import { ReactComponent as RightIcon } from 'icons/icon-calendar.svg'
 
 import BaseInput from './BaseInput'
 

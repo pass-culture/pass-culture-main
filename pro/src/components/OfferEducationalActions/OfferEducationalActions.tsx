@@ -8,7 +8,7 @@ import {
   isCollectiveOffer,
 } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
-import { ReactComponent as IcoCircleArrow } from 'icons/ico-circle-arrow.svg'
+import { CircleArrowIcon } from 'icons'
 import { getCollectiveStatusLabel } from 'pages/Offers/Offers/OfferItem/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -107,7 +107,7 @@ const OfferEducationalActions = ({
               variant={ButtonVariant.TERNARY}
               className={style['button-link']}
               link={{ isExternal: false, to: getBookingLink() }}
-              Icon={IcoCircleArrow}
+              Icon={CircleArrowIcon}
               iconPosition={IconPositionEnum.LEFT}
             >
               Voir la{' '}
