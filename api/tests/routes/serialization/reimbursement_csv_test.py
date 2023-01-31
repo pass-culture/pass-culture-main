@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from itertools import count
 from unittest import mock
 
 import freezegun
@@ -71,64 +72,67 @@ class ReimbursementDetailsTest:
             payment.booking.offerer.id,
             reimbursement_period,
         )
-
+        row_number = count()
         # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        assert row[0] == "Validées et remboursables sur juin : 2nde quinzaine"
-        assert row[1] == invoice.date.date()
-        assert row[2] == invoice.reference
-        assert row[3] == cashflow.batch.label
+        assert row[next(row_number)] == "Validées et remboursables sur juin : 2nde quinzaine"
+        assert row[next(row_number)] == invoice.date.date()
+        assert row[next(row_number)] == invoice.reference
+        assert row[next(row_number)] == cashflow.batch.label
         # reimbursement point
-        assert row[4] == "Mon point de remboursement"
-        assert row[5] == "1 rue du point de remboursement 44000 Nantes"
-        assert row[6] == reimbursement_point.siret
-        assert row[7] == reimbursement_point.iban
+        assert row[next(row_number)] == "Mon point de remboursement"
+        assert row[next(row_number)] == "1 rue du point de remboursement 44000 Nantes"
+        assert row[next(row_number)] == reimbursement_point.siret
+        assert row[next(row_number)] == reimbursement_point.iban
         # venue
-        assert row[8] == booking.venue.name
-        assert row[9] == "1 boulevard Poissonnière 75000 Paris"
-        assert row[10] == booking.venue.siret
+        assert row[next(row_number)] == booking.venue.name
+        assert row[next(row_number)] == "1 boulevard Poissonnière 75000 Paris"
+        assert row[next(row_number)] == booking.venue.siret
         # offer and booking
-        assert row[11] == booking.stock.offer.name
-        assert row[12] == ""  # Unused for individual offer
-        assert row[13] == ""  # Unused for individual offer
-        assert row[14] == ""  # Unused for individual offer
-        assert row[15] == ""  # Unused for individual offer
-        assert row[16] == booking.token
-        assert row[17] == booking.dateUsed
+        assert row[next(row_number)] == booking.stock.offer.name
+        assert row[next(row_number)] == ""  # Unused for individual offer
+        assert row[next(row_number)] == ""  # Unused for individual offer
+        assert row[next(row_number)] == ""  # Unused for individual offer
+        assert row[next(row_number)] == ""  # Unused for individual offer
+        assert row[next(row_number)] == ""  # Unused for individual offer
+        assert row[next(row_number)] == booking.token
+        assert row[next(row_number)] == booking.dateUsed
         # reimbursement
-        assert row[18] == "21,00"
-        assert row[19] == "100 %"
-        assert row[20] == "21,00"
-        assert row[21] == "offre grand public"
+        assert row[next(row_number)] == "21,00"
+        assert row[next(row_number)] == "100 %"
+        assert row[next(row_number)] == "21,00"
+        assert row[next(row_number)] == "offre grand public"
 
         # legacy payment data
+        row_number = count()
         row = ReimbursementDetails(payments_info[1]).as_csv_row()
-        assert row[0] == "Validées et remboursables sur juin : 2nde quinzaine"
-        assert row[1] == ""  # no invoice, no date
-        assert row[2] == ""  # no invoice, no label
-        assert row[3] == ""  # unknown transfer label
+        assert row[next(row_number)] == "Validées et remboursables sur juin : 2nde quinzaine"
+        assert row[next(row_number)] == ""  # no invoice, no date
+        assert row[next(row_number)] == ""  # no invoice, no label
+        assert row[next(row_number)] == ""  # unknown transfer label
         # business unit (not known, hence supposed to be the venue)
-        assert row[4] == booking.venue.name
-        assert row[5] == "1 boulevard Poissonnière 75000 Paris"
-        assert row[6] == booking.venue.siret
-        assert row[7] == payment.iban
+        assert row[next(row_number)] == booking.venue.name
+        assert row[next(row_number)] == "1 boulevard Poissonnière 75000 Paris"
+        assert row[next(row_number)] == booking.venue.siret
+        assert row[next(row_number)] == payment.iban
         # venue
-        assert row[8] == booking.venue.name
-        assert row[9] == "1 boulevard Poissonnière 75000 Paris"
-        assert row[10] == booking.venue.siret
+        assert row[next(row_number)] == booking.venue.name
+        assert row[next(row_number)] == "1 boulevard Poissonnière 75000 Paris"
+        assert row[next(row_number)] == booking.venue.siret
         # offer and booking
-        assert row[11] == booking.stock.offer.name
-        assert row[12] == ""  # Unused for individual offer
-        assert row[13] == ""  # Unused for individual offer
-        assert row[14] == ""  # Unused for individual offer
-        assert row[15] == ""  # Unused for individual offer
-        assert row[16] == booking.token
-        assert row[17] == booking.dateUsed
+        assert row[next(row_number)] == booking.stock.offer.name
+        assert row[next(row_number)] == ""  # Unused for individual offer
+        assert row[next(row_number)] == ""  # Unused for individual offer
+        assert row[next(row_number)] == ""  # Unused for individual offer
+        assert row[next(row_number)] == ""  # Unused for individual offer
+        assert row[next(row_number)] == ""  # Unused for individual offer
+        assert row[next(row_number)] == booking.token
+        assert row[next(row_number)] == booking.dateUsed
         # reimbursement
-        assert row[18] == "21,00"
-        assert row[19] == f"{int(payment.reimbursementRate * 100)}%"
-        assert row[20] == "21,00"
-        assert row[21] == "offre grand public"
+        assert row[next(row_number)] == "21,00"
+        assert row[next(row_number)] == f"{int(payment.reimbursementRate * 100)}%"
+        assert row[next(row_number)] == "21,00"
+        assert row[next(row_number)] == "offre grand public"
 
     def test_reimbursement_details_with_custom_rule_as_csv(self) -> None:
         # given
@@ -167,11 +171,11 @@ class ReimbursementDetailsTest:
 
         # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        assert row[19] == "12,34 %"
+        assert row[20] == "12,34 %"
 
         # legacy payment data
         row = ReimbursementDetails(payments_info[1]).as_csv_row()
-        assert row[19] == ""
+        assert row[20] == ""
 
 
 @pytest.mark.usefixtures("db_session")
@@ -222,15 +226,15 @@ def test_generate_reimbursement_details_csv() -> None:
     rows = csv.splitlines()
     assert (
         rows[0]
-        == '''"Réservations concernées par le remboursement";"Date du justificatif";"N° du justificatif";"N° de virement";"Point de remboursement";"Adresse du point de remboursement";"SIRET du point de remboursement";"IBAN";"Raison sociale du lieu";"Adresse du lieu";"SIRET du lieu";"Nom de l'offre";"Nom (offre collective)";"Prénom (offre collective)";"Nom de l'établissement (offre collective)";"Date de l'évènement (offre collective)";"Contremarque";"Date de validation de la réservation";"Montant de la réservation";"Barème";"Montant remboursé";"Type d'offre"'''
+        == '''"Réservations concernées par le remboursement";"Date du justificatif";"N° du justificatif";"N° de virement";"Point de remboursement";"Adresse du point de remboursement";"SIRET du point de remboursement";"IBAN";"Raison sociale du lieu";"Adresse du lieu";"SIRET du lieu";"Nom de l'offre";"N° de réservation (offre collective)";"Nom (offre collective)";"Prénom (offre collective)";"Nom de l'établissement (offre collective)";"Date de l'évènement (offre collective)";"Contremarque";"Date de validation de la réservation";"Montant de la réservation";"Barème";"Montant remboursé";"Type d'offre"'''
     )
     assert (  # new pricing+cashflow data
         rows[1]
-        == f'''"Validées et remboursables sur juin : 2nde quinzaine";"{invoice_date_as_str}";"F220000001";"VIR1";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100 %";"21,00";"offre grand public"'''
+        == f'''"Validées et remboursables sur juin : 2nde quinzaine";"{invoice_date_as_str}";"F220000001";"VIR1";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100 %";"21,00";"offre grand public"'''
     )
     assert (  # legacy payment data
         rows[2]
-        == '''"Validées et remboursables sur juin : 2nde quinzaine";"";"";"";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100%";"21,00";"offre grand public"'''
+        == '''"Validées et remboursables sur juin : 2nde quinzaine";"";"";"";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100%";"21,00";"offre grand public"'''
     )
 
 
@@ -343,6 +347,7 @@ class CollectiveReimbursementDetailsTest:
             "48 boulevard des turlupins 75000 Paris",
             booking3.venue.siret,
             booking3.collectiveStock.collectiveOffer.name,
+            booking3.id,
             "Khteur",
             "Reda",
             booking3.educationalInstitution.name,
@@ -393,34 +398,36 @@ class CollectiveReimbursementDetailsTest:
         )
 
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        assert row[0] == "Validées et remboursables sur juin : 2nde quinzaine"
-        assert row[1] == invoice.date.date()
-        assert row[2] == invoice.reference
-        assert row[3] == cashflow.batch.label
+        row_number = count()
+        assert row[next(row_number)] == "Validées et remboursables sur juin : 2nde quinzaine"
+        assert row[next(row_number)] == invoice.date.date()
+        assert row[next(row_number)] == invoice.reference
+        assert row[next(row_number)] == cashflow.batch.label
         # reimbursement point
-        assert row[4] == "Mon point de remboursement"
-        assert row[5] == "1 rue du point de remboursement 44000 Nantes"
-        assert row[6] == "siret-rp"
-        assert row[7] == reimbursement_point.iban
+        assert row[next(row_number)] == "Mon point de remboursement"
+        assert row[next(row_number)] == "1 rue du point de remboursement 44000 Nantes"
+        assert row[next(row_number)] == "siret-rp"
+        assert row[next(row_number)] == reimbursement_point.iban
         # venue
-        assert row[8] == booking.venue.name
-        assert row[9] == "1 boulevard Poissonnière 75000 Paris"
-        assert row[10] == booking.venue.siret
+        assert row[next(row_number)] == booking.venue.name
+        assert row[next(row_number)] == "1 boulevard Poissonnière 75000 Paris"
+        assert row[next(row_number)] == booking.venue.siret
         # offer and booking
-        assert row[11] == booking.collectiveStock.collectiveOffer.name
-        assert row[12] == booking.educationalRedactor.lastName
-        assert row[13] == booking.educationalRedactor.firstName
-        assert row[14] == booking.educationalInstitution.name
-        assert row[15] == utc_datetime_to_department_timezone(booking.collectiveStock.beginningDatetime, "75").strftime(
-            "%d/%m/%Y %H:%M"
-        )
-        assert row[16] is None
-        assert row[17] == booking.dateUsed
+        assert row[next(row_number)] == booking.collectiveStock.collectiveOffer.name
+        assert row[next(row_number)] == booking.id
+        assert row[next(row_number)] == booking.educationalRedactor.lastName
+        assert row[next(row_number)] == booking.educationalRedactor.firstName
+        assert row[next(row_number)] == booking.educationalInstitution.name
+        assert row[next(row_number)] == utc_datetime_to_department_timezone(
+            booking.collectiveStock.beginningDatetime, "75"
+        ).strftime("%d/%m/%Y %H:%M")
+        assert row[next(row_number)] is None
+        assert row[next(row_number)] == booking.dateUsed
         # reimbursement
-        assert row[18] == "21,00"
-        assert row[19] == "100 %"
-        assert row[20] == "21,00"
-        assert row[21] == "offre collective"
+        assert row[next(row_number)] == "21,00"
+        assert row[next(row_number)] == "100 %"
+        assert row[next(row_number)] == "21,00"
+        assert row[next(row_number)] == "offre collective"
 
 
 def test_get_validation_period() -> None:

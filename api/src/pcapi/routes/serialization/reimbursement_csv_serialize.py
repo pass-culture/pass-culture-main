@@ -86,6 +86,7 @@ class ReimbursementDetails:
         "Adresse du lieu",
         "SIRET du lieu",
         "Nom de l'offre",
+        "N° de réservation (offre collective)",
         "Nom (offre collective)",
         "Prénom (offre collective)",
         "Nom de l'établissement (offre collective)",
@@ -189,6 +190,8 @@ class ReimbursementDetails:
         else:
             self.reimbursed_amount = format_number_as_french(finance_utils.to_euros(payment_info.amount))
 
+        self.collective_booking_id = payment_info.collective_booking_id or ""
+
         # Offer type
         self.offer_type = serialize_offer_type_educational_or_individual(
             offer_is_educational=payment_info.collective_booking_id != None
@@ -209,6 +212,7 @@ class ReimbursementDetails:
             self.venue_address,
             self.venue_siret,
             self.offer_name,
+            self.collective_booking_id,
             self.redactor_last_name,
             self.redactor_first_name,
             self.institution_name,
