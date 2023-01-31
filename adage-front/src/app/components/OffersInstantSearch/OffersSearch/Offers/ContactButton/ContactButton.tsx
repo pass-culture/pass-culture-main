@@ -16,7 +16,7 @@ const ContactButton = ({
 }: {
   className?: string
   contactEmail?: string
-  contactPhone?: string
+  contactPhone?: string | null
   offerId: number
   position: number
   queryId: string
