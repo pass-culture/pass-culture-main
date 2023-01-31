@@ -1,38 +1,32 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import AppLayout from '../AppLayout'
 
-const renderApp = async (props, store, url = '/') => {
-  render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[url]}>
-        <AppLayout {...props}>
-          <p>Sub component</p>
-        </AppLayout>
-      </MemoryRouter>
-    </Provider>
+const renderApp = async (props, storeOverrides, url = '/') =>
+  renderWithProviders(
+    <AppLayout {...props}>
+      <p>Sub component</p>
+    </AppLayout>,
+    { storeOverrides, initialRouterEntries: [url] }
   )
-}
 
 describe('src | AppLayout', () => {
   let props
-  let store
+  let storeOverrides
 
   beforeEach(() => {
     props = {}
-    store = configureTestStore({
+    storeOverrides = {
       user: { currentUser: { publicName: 'François', isAdmin: false } },
-    })
+    }
   })
 
   it('should not render domain name banner when arriving from new domain name', async () => {
     // Given / When
-    renderApp(props, store)
+    renderApp(props, storeOverrides)
 
     // Then
     await waitFor(() =>
@@ -46,7 +40,7 @@ describe('src | AppLayout', () => {
 
   it('should render domain name banner when coming from old domain name', async () => {
     // When
-    renderApp(props, store, '/?redirect=true')
+    renderApp(props, storeOverrides, '/?redirect=true')
 
     // Then
     await waitFor(() =>

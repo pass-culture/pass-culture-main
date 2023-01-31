@@ -1,11 +1,10 @@
 import { setUser } from '@sentry/browser'
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
-import { configureTestStore } from 'store/testUtils'
 import { URL_FOR_MAINTENANCE } from 'utils/config'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { App } from '../App'
 
@@ -15,26 +14,21 @@ jest.mock('hooks/useAnalytics', () => ({
 
 jest.mock('hooks/useLogNavigation', () => jest.fn())
 
-const renderApp = ({ props, store: storeOverride, initialEntries = '/' }) => {
-  const store = configureTestStore(storeOverride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <App {...props}>
-          <Route path={'/'}>
-            <p>Sub component</p>
-          </Route>
-          <Route path={'/login'}>
-            <p>Login page</p>
-          </Route>
-          <Route path={'/offres'}>
-            <p>Private Page</p>
-          </Route>
-        </App>
-      </MemoryRouter>
-    </Provider>
+const renderApp = ({ props, store: storeOverrides, initialEntries = '/' }) =>
+  renderWithProviders(
+    <App {...props}>
+      <Route path={'/'}>
+        <p>Sub component</p>
+      </Route>
+      <Route path={'/login'}>
+        <p>Login page</p>
+      </Route>
+      <Route path={'/offres'}>
+        <p>Private Page</p>
+      </Route>
+    </App>,
+    { storeOverrides, initialRouterEntries: [initialEntries] }
   )
-}
 
 jest.mock('@sentry/browser', () => ({
   setUser: jest.fn(),
@@ -86,6 +80,7 @@ describe('src | App', () => {
       expect(setHrefSpy).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
     })
   })
+
   it('should render a Redirect component when route is private and user not logged in', () => {
     store = {
       ...store,
@@ -95,6 +90,7 @@ describe('src | App', () => {
 
     expect(screen.getByText('Sub component')).toBeInTheDocument()
   })
+
   it('should render a Redirect component when loging out', () => {
     store = {
       ...store,
