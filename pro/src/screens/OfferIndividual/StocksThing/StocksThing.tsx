@@ -7,11 +7,11 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import { IStockFormRowAction } from 'components/StockFormActions/types'
 import {
-  StockThingForm,
-  getValidationSchema,
   buildInitialValues,
+  getValidationSchema,
   IStockThingFormValues,
   STOCK_THING_FORM_DEFAULT_VALUES,
+  StockThingForm,
 } from 'components/StockThingForm'
 import { setFormReadOnlyFields } from 'components/StockThingForm/utils'
 import { StockThingFormRow } from 'components/StockThingFormRow'
@@ -33,7 +33,7 @@ import { useNavigate, useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
-import { IcoTicketPlusFull, IcoTrashFilled } from 'icons'
+import { TicketPlusFullIcon, TrashFilledIcon } from 'icons'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
@@ -268,7 +268,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       },
       label: 'Supprimer le stock',
       disabled: false,
-      Icon: IcoTrashFilled,
+      Icon: TrashFilledIcon,
     },
   ]
 
@@ -292,7 +292,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       callback: activationCodeFormShow,
       label: "Ajouter des codes d'activation",
       disabled: isDisabled,
-      Icon: IcoTicketPlusFull,
+      Icon: TicketPlusFullIcon,
     })
   }
 

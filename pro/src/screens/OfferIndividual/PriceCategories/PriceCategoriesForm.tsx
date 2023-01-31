@@ -3,8 +3,8 @@ import { FieldArray, useFormikContext } from 'formik'
 import React, { useState } from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { IcoEuro, IconPlusCircle, TrashFilledIcon } from 'icons'
-import { Checkbox, InfoBox, Button, TextInput } from 'ui-kit'
+import { EuroIcon, PlusCircleIcon, TrashFilledIcon } from 'icons'
+import { Button, Checkbox, InfoBox, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { BaseCheckbox } from 'ui-kit/form/shared'
 
@@ -75,7 +75,7 @@ export const PriceCategoriesForm = (): JSX.Element => {
                   type="number"
                   step="0.01"
                   max={PRICE_CATEGORY_PRICE_MAX}
-                  rightIcon={() => <IcoEuro />}
+                  rightIcon={() => <EuroIcon />}
                   className={styles['price-input']}
                   onChange={onChangePrice(index)}
                   isLabelHidden={index !== 0}
@@ -109,7 +109,7 @@ export const PriceCategoriesForm = (): JSX.Element => {
 
             <Button
               variant={ButtonVariant.TERNARY}
-              Icon={IconPlusCircle}
+              Icon={PlusCircleIcon}
               onClick={() => arrayHelpers.push(INITIAL_PRICE_CATEGORY)}
               disabled={
                 values.priceCategories.length >= PRICE_CATEGORY_MAX_LENGTH

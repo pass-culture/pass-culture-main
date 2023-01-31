@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { IcoPen } from 'icons'
+import { PenIcon } from 'icons'
 import { ButtonLink, Title } from 'ui-kit'
 
 import style from './SummaryLayout.module.scss'
@@ -37,7 +37,7 @@ const Section = ({
               'aria-label': props['aria-label'],
             }}
             className={style['summary-layout-section-header-edit-link']}
-            Icon={IcoPen}
+            Icon={PenIcon}
             onClick={onLinkClick ? onLinkClick : undefined}
           >
             Modifier

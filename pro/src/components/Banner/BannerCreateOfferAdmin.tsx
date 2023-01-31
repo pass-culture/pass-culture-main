@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as IcoEyeOpen } from 'icons/ico-eye-full-open.svg'
+import { EyeOpenIcon } from 'icons'
 import Banner from 'ui-kit/Banners/Banner'
 
 const BannerCreateOfferAdmin = (): JSX.Element => (
@@ -10,7 +10,7 @@ const BannerCreateOfferAdmin = (): JSX.Element => (
       {
         href: '/structures',
         linkTitle: 'Aller à la liste des structures',
-        Icon: IcoEyeOpen,
+        Icon: EyeOpenIcon,
         isExternal: false,
       },
     ]}
