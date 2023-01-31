@@ -1,8 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -23,8 +22,7 @@ import {
   getOfferIndividualUrl,
 } from 'core/Offers/utils/getOfferIndividualUrl'
 import { Stocks } from 'pages/OfferIndividualWizard/Stocks'
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
@@ -33,60 +31,66 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderStockEventScreen = ({
-  storeOverride = {},
-}: {
-  storeOverride: Partial<RootState>
-}) => {
-  const store = configureTestStore(storeOverride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter
-        initialEntries={[
-          getOfferIndividualUrl({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-            offerId: 'OFFER_ID',
-          }),
-        ]}
+const renderStockEventScreen = () => {
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser: {
+        isAdmin: false,
+        dateCreated: '2001-01-01',
+        email: 'test@email.com',
+        id: 'USER_ID',
+        nonHumanizedId: 'ISER_ID',
+        roles: [],
+        isEmailValidated: true,
+      },
+    },
+  }
+
+  return renderWithProviders(
+    <>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        })}
       >
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-        >
-          <OfferIndividualContextProvider
-            isUserAdmin={false}
-            offerId="OFFER_ID"
-          >
-            <Stocks />
-          </OfferIndividualContextProvider>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-        >
-          <div>Next page</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-        >
-          <div>Previous page</div>
-        </Route>
-        <Notification />
-      </MemoryRouter>
-    </Provider>
+        <OfferIndividualContextProvider isUserAdmin={false} offerId="OFFER_ID">
+          <Stocks />
+        </OfferIndividualContextProvider>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        })}
+      >
+        <div>Next page</div>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        })}
+      >
+        <div>Previous page</div>
+      </Route>
+      <Notification />
+    </>,
+    {
+      storeOverrides,
+      initialRouterEntries: [
+        getOfferIndividualUrl({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+          offerId: 'OFFER_ID',
+        }),
+      ],
+    }
   )
 }
 
 describe('screens:StocksEvent:Edition', () => {
-  let storeOverride: Partial<RootState>
   let apiOffer: GetIndividualOfferResponseModel
 
   beforeEach(() => {
@@ -231,20 +235,7 @@ describe('screens:StocksEvent:Edition', () => {
       withdrawalType: null,
       withdrawalDelay: null,
     }
-    storeOverride = {
-      user: {
-        initialized: true,
-        currentUser: {
-          isAdmin: false,
-          dateCreated: '2001-01-01',
-          email: 'test@email.com',
-          id: 'USER_ID',
-          nonHumanizedId: 'ISER_ID',
-          roles: [],
-          isEmailValidated: true,
-        },
-      },
-    }
+
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     jest
       .spyOn(api, 'getCategories')
@@ -307,7 +298,7 @@ describe('screens:StocksEvent:Edition', () => {
       },
     ]
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    renderStockEventScreen({ storeOverride })
+    renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
@@ -331,7 +322,7 @@ describe('screens:StocksEvent:Edition', () => {
 
   it("should allow user to delete a stock he just created (and didn't save)", async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
-    renderStockEventScreen({ storeOverride })
+    renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
 
     // create new stock
@@ -379,7 +370,7 @@ describe('screens:StocksEvent:Edition', () => {
     ]
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
 
-    renderStockEventScreen({ storeOverride })
+    renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
 
     // create new stock
@@ -421,7 +412,7 @@ describe('screens:StocksEvent:Edition', () => {
       },
     ]
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    renderStockEventScreen({ storeOverride })
+    renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
 
     await userEvent.click(
@@ -444,7 +435,7 @@ describe('screens:StocksEvent:Edition', () => {
       enabledForPro: true,
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    renderStockEventScreen({ storeOverride })
+    renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
 
     await userEvent.click(
@@ -473,7 +464,7 @@ describe('screens:StocksEvent:Edition', () => {
       enabledForPro: true,
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    renderStockEventScreen({ storeOverride })
+    renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
 
     expect(screen.queryByText('Ajouter une date')).toBeDisabled()
@@ -491,7 +482,7 @@ describe('screens:StocksEvent:Edition', () => {
       enabledForPro: true,
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    renderStockEventScreen({ storeOverride })
+    renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
     await userEvent.type(screen.getByLabelText('Quantité'), '30')
     await userEvent.click(
@@ -514,7 +505,7 @@ describe('screens:StocksEvent:Edition', () => {
         ''
       )
     )
-    renderStockEventScreen({ storeOverride })
+    renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
 
     await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
@@ -542,7 +533,7 @@ describe('screens:StocksEvent:Edition', () => {
       },
     ]
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    renderStockEventScreen({ storeOverride })
+    renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
 
     await userEvent.type(await screen.getByLabelText('Prix'), '20')
@@ -557,7 +548,7 @@ describe('screens:StocksEvent:Edition', () => {
     jest
       .spyOn(api, 'upsertStocks')
       .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
-    renderStockEventScreen({ storeOverride })
+    renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
     // FireEvent.change instead of userEvent.type because userEvent change value but the test doesn"t work (it probably doesn't set touched at true for price field, only with inputs type number)
     fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '20' } })
@@ -573,7 +564,7 @@ describe('screens:StocksEvent:Edition', () => {
   })
 
   it('should show a success notification if nothing has been touched', async () => {
-    renderStockEventScreen({ storeOverride })
+    renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
 
     await userEvent.click(
@@ -587,9 +578,7 @@ describe('screens:StocksEvent:Edition', () => {
   })
   it('should not display any message when user delete empty stock', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
-    renderStockEventScreen({
-      storeOverride: { ...storeOverride },
-    })
+    renderStockEventScreen()
     apiOffer.stocks = []
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await screen.findByTestId('stock-event-form')
@@ -605,9 +594,7 @@ describe('screens:StocksEvent:Edition', () => {
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
   })
   it('should display draft success message on save button when stock form is empty and redirect to next page', async () => {
-    renderStockEventScreen({
-      storeOverride: { ...storeOverride },
-    })
+    renderStockEventScreen()
     apiOffer.stocks = []
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await screen.findByTestId('stock-event-form')

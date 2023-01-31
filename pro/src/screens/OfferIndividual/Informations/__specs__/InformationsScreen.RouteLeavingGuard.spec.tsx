@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { generatePath, MemoryRouter, Route } from 'react-router'
+import { generatePath, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -25,8 +24,8 @@ import { AccessiblityEnum } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
-import { configureTestStore } from 'store/testUtils'
 import { ButtonLink } from 'ui-kit'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { IInformationsProps, Informations as InformationsScreen } from '..'
 
@@ -44,7 +43,6 @@ jest.mock('repository/pcapi/pcapi', () => ({
 
 const renderInformationsScreen = (
   props: IInformationsProps,
-  storeOverride: any,
   contextOverride: Partial<IOfferIndividualContext>,
   url = generatePath(
     getOfferIndividualPath({
@@ -54,7 +52,16 @@ const renderInformationsScreen = (
     { offerId: 'AA' }
   )
 ) => {
-  const store = configureTestStore(storeOverride)
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser: {
+        publicName: 'John Do',
+        isAdmin: false,
+        email: 'email@example.com',
+      },
+    },
+  }
   const contextValue: IOfferIndividualContext = {
     offerId: null,
     offer: null,
@@ -68,43 +75,43 @@ const renderInformationsScreen = (
     showVenuePopin: {},
     ...contextOverride,
   }
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[url]}>
-        <Route
-          path={Object.values(OFFER_WIZARD_MODE).map(mode =>
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-              mode,
-            })
-          )}
-        >
-          <OfferIndividualContext.Provider value={contextValue}>
-            <InformationsScreen {...props} />
-            <ButtonLink link={{ to: '/outside', isExternal: false }}>
-              Go outside !
-            </ButtonLink>
-            <ButtonLink link={{ to: '/stocks', isExternal: false }}>
-              Go to stocks !
-            </ButtonLink>
-          </OfferIndividualContext.Provider>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>There is the stock route content</div>
-        </Route>
-        <Route path="/outside">
-          <>
-            <div>This is outside offer creation</div>
-          </>
-        </Route>
-      </MemoryRouter>
+
+  return renderWithProviders(
+    <>
+      <Route
+        path={Object.values(OFFER_WIZARD_MODE).map(mode =>
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode,
+          })
+        )}
+      >
+        <OfferIndividualContext.Provider value={contextValue}>
+          <InformationsScreen {...props} />
+          <ButtonLink link={{ to: '/outside', isExternal: false }}>
+            Go outside !
+          </ButtonLink>
+          <ButtonLink link={{ to: '/stocks', isExternal: false }}>
+            Go to stocks !
+          </ButtonLink>
+        </OfferIndividualContext.Provider>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+      >
+        <div>There is the stock route content</div>
+      </Route>
+      <Route path="/outside">
+        <>
+          <div>This is outside offer creation</div>
+        </>
+      </Route>
       <Notification />
-    </Provider>
+    </>,
+    { storeOverrides, initialRouterEntries: [url] }
   )
 }
 
@@ -112,22 +119,11 @@ const scrollIntoViewMock = jest.fn()
 
 describe('screens:OfferIndividual::Informations::creation', () => {
   let props: IInformationsProps
-  let store: any
   let contextOverride: Partial<IOfferIndividualContext>
   let offer: IOfferIndividual
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    store = {
-      user: {
-        initialized: true,
-        currentUser: {
-          publicName: 'John Do',
-          isAdmin: false,
-          email: 'email@example.com',
-        },
-      },
-    }
     offer = {
       id: 'AA',
       nonHumanizedId: 12,
@@ -311,7 +307,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should not block when from has not be touched', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -321,7 +317,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should block with creation block type when form has just been touched', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -334,7 +330,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should block with internal not valid block type when form has just been touched and nav is internal', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -347,7 +343,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should block with internal valid block type when form has been filled with mandatory data and nav is internal', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -364,7 +360,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should block with draft creation block when form has been filled with mandatory data', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -390,7 +386,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     }
 
     props.offererId = offer.id
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'New name')
@@ -418,7 +414,6 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     props.offererId = offer.id
     renderInformationsScreen(
       props,
-      store,
       contextOverride,
       generatePath(
         getOfferIndividualPath({
@@ -455,7 +450,6 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     props.offererId = offer.id
     renderInformationsScreen(
       props,
-      store,
       contextOverride,
       generatePath(
         getOfferIndividualPath({
@@ -483,7 +477,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should let submitting in block modal', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -504,7 +498,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should track when submitting draft in block modal', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -533,7 +527,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should let quitting without submit in block modal', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -552,7 +546,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should track when quitting without submit in block modal', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -580,7 +574,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should track when quitting without submit in block modal and not enough info to save draft', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -604,7 +598,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should not block when submitting minimal physical offer from action bar', async () => {
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -624,7 +618,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     // FIX ME: at first I wanna tested that user could aftewards go outside
     // but I'm not able to do it, in test the form remain dirty
     // I don't figure why, maybe because of api mocks
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -645,7 +639,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
 
   it('should track with offerId when offer has been created', async () => {
     contextOverride.offer = offer
-    renderInformationsScreen(props, store, contextOverride)
+    renderInformationsScreen(props, contextOverride)
 
     const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')

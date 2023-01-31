@@ -1,8 +1,7 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -23,7 +22,7 @@ import {
 } from 'core/Offers/utils/getOfferIndividualUrl'
 import Stocks from 'pages/OfferIndividualWizard/Stocks/Stocks'
 import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
@@ -42,67 +41,56 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderStockThingScreen = ({
-  offerId = 'OFFER_ID',
-  storeOverride = {},
-}: {
-  offerId?: string
-  storeOverride: Partial<RootState>
-}) => {
-  const store = configureTestStore(storeOverride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter
-        initialEntries={[
-          getOfferIndividualUrl({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-            offerId: offerId || undefined,
-          }),
-        ]}
+const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
+  renderWithProviders(
+    <>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        })}
       >
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-        >
-          <OfferIndividualContextProvider
-            isUserAdmin={false}
-            offerId="OFFER_ID"
-          >
-            <Stocks />
-          </OfferIndividualContextProvider>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-        >
-          <div>Next page</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          })}
-        >
-          <div>Save draft page</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-        >
-          <div>Previous page</div>
-        </Route>
-        <Notification />
-      </MemoryRouter>
-    </Provider>
+        <OfferIndividualContextProvider isUserAdmin={false} offerId="OFFER_ID">
+          <Stocks />
+        </OfferIndividualContextProvider>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        })}
+      >
+        <div>Next page</div>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        })}
+      >
+        <div>Save draft page</div>
+      </Route>
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        })}
+      >
+        <div>Previous page</div>
+      </Route>
+      <Notification />
+    </>,
+    {
+      storeOverrides,
+      initialRouterEntries: [
+        getOfferIndividualUrl({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+          offerId: 'OFFER_ID',
+        }),
+      ],
+    }
   )
-}
 
 describe('screens:StocksThing', () => {
   let storeOverride: Partial<RootState>
@@ -304,9 +292,7 @@ describe('screens:StocksThing', () => {
 
   it('should allow user to delete a stock', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
-    renderStockThingScreen({
-      storeOverride,
-    })
+    renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
     await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
     expect(
@@ -338,9 +324,7 @@ describe('screens:StocksThing', () => {
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
-    renderStockThingScreen({
-      storeOverride,
-    })
+    renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
 
     await userEvent.click(
@@ -370,9 +354,7 @@ describe('screens:StocksThing', () => {
         ''
       )
     )
-    renderStockThingScreen({
-      storeOverride,
-    })
+    renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
 
     await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
@@ -390,7 +372,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should show a success notification if nothing has been touched', async () => {
-    renderStockThingScreen({ storeOverride })
+    renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
 
     await userEvent.click(
@@ -405,9 +387,7 @@ describe('screens:StocksThing', () => {
   })
   it('should not display any message when user delete empty stock', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
-    renderStockThingScreen({
-      storeOverride: { ...storeOverride },
-    })
+    renderStockThingScreen(storeOverride)
     apiOffer.stocks = []
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await screen.findByTestId('stock-thing-form')
@@ -423,9 +403,7 @@ describe('screens:StocksThing', () => {
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
   })
   it('should display draft success message on save button when stock form is empty and redirect to next page', async () => {
-    renderStockThingScreen({
-      storeOverride: { ...storeOverride },
-    })
+    renderStockThingScreen(storeOverride)
     apiOffer.stocks = []
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await screen.findByTestId('stock-thing-form')

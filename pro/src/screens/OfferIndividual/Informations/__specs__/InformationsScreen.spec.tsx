@@ -1,8 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import {
   IOfferIndividualContext,
@@ -12,7 +10,7 @@ import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { IInformationsProps, Informations as InformationsScreen } from '..'
 
@@ -35,18 +33,24 @@ jest.mock('repository/pcapi/pcapi', () => ({
 
 const renderInformationsScreen = (
   props: IInformationsProps,
-  storeOverride: any,
   contextValue: IOfferIndividualContext
 ) => {
-  const store = configureTestStore(storeOverride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/creation']}>
-        <OfferIndividualContext.Provider value={contextValue}>
-          <InformationsScreen {...props} />
-        </OfferIndividualContext.Provider>
-      </MemoryRouter>
-    </Provider>
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser: {
+        publicName: 'John Do',
+        isAdmin: false,
+        email: 'email@example.com',
+      },
+    },
+  }
+
+  return renderWithProviders(
+    <OfferIndividualContext.Provider value={contextValue}>
+      <InformationsScreen {...props} />
+    </OfferIndividualContext.Provider>,
+    { storeOverrides, initialRouterEntries: ['/creation'] }
   )
 }
 
@@ -54,21 +58,10 @@ const scrollIntoViewMock = jest.fn()
 
 describe('screens:OfferIndividual::Informations', () => {
   let props: IInformationsProps
-  let store: any
   let contextValue: IOfferIndividualContext
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    store = {
-      user: {
-        initialized: true,
-        currentUser: {
-          publicName: 'John Do',
-          isAdmin: false,
-          email: 'email@example.com',
-        },
-      },
-    }
     const categories = [
       {
         id: 'A',
@@ -128,14 +121,14 @@ describe('screens:OfferIndividual::Informations', () => {
   })
 
   it('should render the component', async () => {
-    renderInformationsScreen(props, store, contextValue)
+    renderInformationsScreen(props, contextValue)
     expect(
       await screen.findByRole('heading', { name: 'Type d’offre' })
     ).toBeInTheDocument()
   })
 
   it('should call filterCategories when no venue id is given on initial values', async () => {
-    renderInformationsScreen(props, store, contextValue)
+    renderInformationsScreen(props, contextValue)
     await screen.findByRole('heading', { name: 'Type d’offre' })
     expect(utils.filterCategories).toHaveBeenCalledWith(
       contextValue.categories,
@@ -181,7 +174,7 @@ describe('screens:OfferIndividual::Informations', () => {
       },
     ]
 
-    renderInformationsScreen(props, store, contextValue)
+    renderInformationsScreen(props, contextValue)
     await screen.findByRole('heading', { name: 'Type d’offre' })
     expect(utils.filterCategories).toHaveBeenCalledWith(
       contextValue.categories,
@@ -230,7 +223,7 @@ describe('screens:OfferIndividual::Informations', () => {
     })
 
     it('should not display the full form when no venue are available', async () => {
-      renderInformationsScreen(props, store, contextValue)
+      renderInformationsScreen(props, contextValue)
       await userEvent.selectOptions(
         await screen.findByLabelText('Catégorie'),
         'A'
@@ -255,7 +248,7 @@ describe('screens:OfferIndividual::Informations', () => {
     })
 
     it('should display the full form when a venue is available', async () => {
-      renderInformationsScreen(props, store, contextValue)
+      renderInformationsScreen(props, contextValue)
       await userEvent.selectOptions(
         await screen.findByLabelText('Catégorie'),
         'A'
@@ -281,7 +274,7 @@ describe('screens:OfferIndividual::Informations', () => {
   })
 
   it('should scroll to error', async () => {
-    renderInformationsScreen(props, store, contextValue)
+    renderInformationsScreen(props, contextValue)
 
     const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')

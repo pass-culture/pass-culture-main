@@ -1,12 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StatusToggleButton, { IStatusToggleButton } from '../StatusToggleButton'
 
@@ -17,13 +16,9 @@ jest.mock('react-router-dom', () => ({
   }),
 }))
 
-const renderStatusToggleButton = (props: IStatusToggleButton) => {
-  render(
-    <Provider store={configureTestStore({})}>
-      <StatusToggleButton {...props} />
-    </Provider>
-  )
-}
+const renderStatusToggleButton = (props: IStatusToggleButton) =>
+  renderWithProviders(<StatusToggleButton {...props} />)
+
 describe('StatusToggleButton', () => {
   let props: IStatusToggleButton
   beforeEach(() => {

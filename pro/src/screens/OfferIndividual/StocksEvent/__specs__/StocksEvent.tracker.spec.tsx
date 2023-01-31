@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -17,9 +16,8 @@ import {
 import { Events } from 'core/FirebaseEvents/constants'
 import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
 import { getToday } from 'utils/date'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksEvent, { IStocksEventProps } from '../StocksEvent'
 
@@ -42,37 +40,27 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderStockEventScreen = ({
-  props,
-  storeOverride = {},
-  contextValue,
-  url = '/creation/stocks',
-}: {
-  props: IStocksEventProps
-  storeOverride: Partial<RootState>
-  contextValue: IOfferIndividualContext
-  url?: string
-}) => {
-  const store = configureTestStore(storeOverride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[url]}>
-        <Route path={['/creation/stocks', '/brouillon/stocks', '/stocks']}>
-          <OfferIndividualContext.Provider value={contextValue}>
-            <StocksEvent {...props} />
-          </OfferIndividualContext.Provider>
-        </Route>
-        <Notification />
-      </MemoryRouter>
-    </Provider>
+const renderStockEventScreen = (
+  props: IStocksEventProps,
+  contextValue: IOfferIndividualContext,
+  url = '/creation/stocks'
+) =>
+  renderWithProviders(
+    <>
+      <Route path={['/creation/stocks', '/brouillon/stocks', '/stocks']}>
+        <OfferIndividualContext.Provider value={contextValue}>
+          <StocksEvent {...props} />
+        </OfferIndividualContext.Provider>
+      </Route>
+      <Notification />
+    </>,
+    { initialRouterEntries: [url] }
   )
-}
 
 const today = getToday()
 
 describe('screens:StocksEvent', () => {
   let props: IStocksEventProps
-  let storeOverride: Partial<RootState>
   let contextValue: IOfferIndividualContext
   let offer: Partial<IOfferIndividual>
 
@@ -87,7 +75,6 @@ describe('screens:StocksEvent', () => {
     props = {
       offer: offer as IOfferIndividual,
     }
-    storeOverride = {}
     contextValue = {
       offerId: null,
       offer: null,
@@ -114,7 +101,7 @@ describe('screens:StocksEvent', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
 
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
@@ -142,12 +129,7 @@ describe('screens:StocksEvent', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockEventScreen({
-      props,
-      storeOverride,
-      contextValue,
-      url: '/brouillon/stocks',
-    })
+    renderStockEventScreen(props, contextValue, '/brouillon/stocks')
 
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
@@ -175,12 +157,7 @@ describe('screens:StocksEvent', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockEventScreen({
-      props,
-      storeOverride,
-      contextValue,
-      url: '/stocks',
-    })
+    renderStockEventScreen(props, contextValue, '/stocks')
 
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
@@ -207,7 +184,7 @@ describe('screens:StocksEvent', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
 
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
@@ -235,12 +212,7 @@ describe('screens:StocksEvent', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockEventScreen({
-      props,
-      storeOverride,
-      contextValue,
-      url: '/brouillon/stocks/',
-    })
+    renderStockEventScreen(props, contextValue, '/brouillon/stocks/')
 
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(await screen.getByText(today.getDate()))
@@ -269,7 +241,7 @@ describe('screens:StocksEvent', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockEventScreen({ props, storeOverride, contextValue })
+    renderStockEventScreen(props, contextValue)
 
     await userEvent.click(screen.getByText('Étape précédente'))
 
@@ -293,12 +265,7 @@ describe('screens:StocksEvent', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockEventScreen({
-      props,
-      storeOverride,
-      contextValue,
-      url: '/brouillon/stocks',
-    })
+    renderStockEventScreen(props, contextValue, '/brouillon/stocks')
 
     await userEvent.click(screen.getByText('Étape précédente'))
 
@@ -322,12 +289,7 @@ describe('screens:StocksEvent', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockEventScreen({
-      props,
-      storeOverride,
-      contextValue,
-      url: '/stocks',
-    })
+    renderStockEventScreen(props, contextValue, '/stocks')
 
     await userEvent.click(screen.getByText('Annuler et quitter'))
 
