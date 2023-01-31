@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -16,8 +15,7 @@ import {
 import { Events } from 'core/FirebaseEvents/constants'
 import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksThing, { IStocksThingProps } from '../StocksThing'
 
@@ -40,34 +38,22 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderStockThingScreen = ({
-  props,
-  storeOverride = {},
-  contextValue,
-  url = '/creation/stocks',
-}: {
-  props: IStocksThingProps
-  storeOverride: Partial<RootState>
-  contextValue: IOfferIndividualContext
-  url?: string
-}) => {
-  const store = configureTestStore(storeOverride)
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[url]}>
-        <Route path={['/creation/stocks', '/brouillon/stocks', '/stocks']}>
-          <OfferIndividualContext.Provider value={contextValue}>
-            <StocksThing {...props} />
-          </OfferIndividualContext.Provider>
-        </Route>
-      </MemoryRouter>
-    </Provider>
+const renderStockThingScreen = (
+  props: IStocksThingProps,
+  contextValue: IOfferIndividualContext,
+  url = '/creation/stocks'
+) =>
+  renderWithProviders(
+    <Route path={['/creation/stocks', '/brouillon/stocks', '/stocks']}>
+      <OfferIndividualContext.Provider value={contextValue}>
+        <StocksThing {...props} />
+      </OfferIndividualContext.Provider>
+    </Route>,
+    { initialRouterEntries: [url] }
   )
-}
 
 describe('screens:StocksThing', () => {
   let props: IStocksThingProps
-  let storeOverride: Partial<RootState>
   let contextValue: IOfferIndividualContext
   let offer: Partial<IOfferIndividual>
 
@@ -82,7 +68,6 @@ describe('screens:StocksThing', () => {
     props = {
       offer: offer as IOfferIndividual,
     }
-    storeOverride = {}
     contextValue = {
       offerId: null,
       offer: null,
@@ -108,7 +93,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
 
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
@@ -132,12 +117,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockThingScreen({
-      props,
-      storeOverride,
-      contextValue,
-      url: '/brouillon/stocks',
-    })
+    renderStockThingScreen(props, contextValue, '/brouillon/stocks')
 
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
@@ -161,7 +141,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
 
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(screen.getByText('Étape suivante'))
@@ -185,12 +165,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockThingScreen({
-      props,
-      storeOverride,
-      contextValue,
-      url: '/brouillon/stocks',
-    })
+    renderStockThingScreen(props, contextValue, '/brouillon/stocks')
 
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(screen.getByText('Étape suivante'))
@@ -214,12 +189,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
-    renderStockThingScreen({
-      props,
-      storeOverride,
-      contextValue,
-      url: '/stocks',
-    })
+    renderStockThingScreen(props, contextValue, '/stocks')
 
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
@@ -244,7 +214,7 @@ describe('screens:StocksThing', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockThingScreen({ props, storeOverride, contextValue })
+    renderStockThingScreen(props, contextValue)
 
     await userEvent.click(screen.getByText('Étape précédente'))
 
@@ -268,12 +238,7 @@ describe('screens:StocksThing', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockThingScreen({
-      props,
-      storeOverride,
-      contextValue,
-      url: '/brouillon/stocks',
-    })
+    renderStockThingScreen(props, contextValue, '/brouillon/stocks')
 
     await userEvent.click(screen.getByText('Étape précédente'))
 
@@ -297,12 +262,7 @@ describe('screens:StocksThing', () => {
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
-    renderStockThingScreen({
-      props,
-      storeOverride,
-      contextValue,
-      url: '/stocks',
-    })
+    renderStockThingScreen(props, contextValue, '/stocks')
 
     await userEvent.click(screen.getByText('Annuler et quitter'))
 

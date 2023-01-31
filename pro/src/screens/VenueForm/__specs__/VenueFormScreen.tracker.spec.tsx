@@ -1,9 +1,8 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createBrowserHistory } from 'history'
 import fetch from 'jest-fetch-mock'
 import React from 'react'
-import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 
 import { api } from 'apiClient/api'
@@ -18,7 +17,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { IOfferer } from 'core/Offerers/types'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueFormScreen } from '../index'
 
@@ -75,30 +74,29 @@ const formValues: IVenueFormValues = {
 }
 
 const renderForm = (isCreation: boolean) => {
-  render(
-    <Provider
-      store={configureTestStore({
-        user: {
-          initialized: true,
-          currentUser: {
-            isAdmin: false,
-          },
-        },
-      })}
-    >
-      <Router history={createBrowserHistory()}>
-        <VenueFormScreen
-          initialValues={formValues}
-          isCreatingVenue={isCreation}
-          offerer={{ id: 'AE', siren: '881457238' } as IOfferer}
-          venueTypes={venueTypes}
-          venueLabels={venueLabels}
-          providers={[]}
-          venueProviders={[]}
-        />
-      </Router>
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser: {
+        isAdmin: false,
+      },
+    },
+  }
+
+  renderWithProviders(
+    <Router history={createBrowserHistory()}>
+      <VenueFormScreen
+        initialValues={formValues}
+        isCreatingVenue={isCreation}
+        offerer={{ id: 'AE', siren: '881457238' } as IOfferer}
+        venueTypes={venueTypes}
+        venueLabels={venueLabels}
+        providers={[]}
+        venueProviders={[]}
+      />
       <Notification />
-    </Provider>
+    </Router>,
+    { storeOverrides }
   )
 }
 

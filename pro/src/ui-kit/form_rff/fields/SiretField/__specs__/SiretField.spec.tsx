@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Form } from 'react-final-form'
-import { Provider } from 'react-redux'
 
 import { apiAdresse } from 'apiClient/adresse'
 import { IAdresseData } from 'apiClient/adresse/types'
@@ -11,7 +10,7 @@ import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SiretField from '../SiretField'
 import siretApiValidate from '../validators/siretApiValidate'
@@ -55,20 +54,18 @@ describe('components | SiretField', () => {
         postalCode: '14400',
       },
     })
-    const store = configureTestStore()
-    render(
-      <Provider store={store}>
-        <Form initialValues={{}} name="venue" onSubmit={() => {}}>
-          {() => (
-            <SiretField
-              siren={siren}
-              readOnly={false}
-              label="Siret field"
-              required
-            />
-          )}
-        </Form>
-      </Provider>
+
+    renderWithProviders(
+      <Form initialValues={{}} name="venue" onSubmit={() => {}}>
+        {() => (
+          <SiretField
+            siren={siren}
+            readOnly={false}
+            label="Siret field"
+            required
+          />
+        )}
+      </Form>
     )
     const siretField = screen.getByLabelText('Siret field*')
     expect(siretField).toBeInTheDocument()

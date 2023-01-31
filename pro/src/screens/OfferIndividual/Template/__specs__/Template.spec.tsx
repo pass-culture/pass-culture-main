@@ -1,7 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { generatePath, MemoryRouter } from 'react-router'
+import { generatePath } from 'react-router'
 
 import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
@@ -12,7 +11,7 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Template, { ITemplateProps } from '../Template'
 
@@ -43,16 +42,14 @@ const renderTemplate = ({
     showVenuePopin: {},
     ...contextOverride,
   }
-  return render(
-    <Provider store={configureTestStore({})}>
-      <OfferIndividualContext.Provider value={contextValues}>
-        <MemoryRouter initialEntries={[url]}>
-          <Template {...props}>
-            <div>Template child</div>
-          </Template>
-        </MemoryRouter>
-      </OfferIndividualContext.Provider>
-    </Provider>
+
+  return renderWithProviders(
+    <OfferIndividualContext.Provider value={contextValues}>
+      <Template {...props}>
+        <div>Template child</div>
+      </Template>
+    </OfferIndividualContext.Provider>,
+    { initialRouterEntries: [url] }
   )
 }
 
