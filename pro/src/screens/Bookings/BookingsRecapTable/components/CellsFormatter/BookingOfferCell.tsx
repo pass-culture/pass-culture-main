@@ -106,7 +106,7 @@ const BookingOfferCell = ({
                 <div>
                   <Icon
                     className={styles['sold-out-icon']}
-                    svg="ico-warning"
+                    svg="ico-notification-error"
                     alt="Attention"
                   />
 
