@@ -1,17 +1,13 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React, { ComponentProps } from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
-import type { Store } from 'redux'
 
 import { Audience } from 'core/shared'
 import { EMPTY_FILTER_VALUE } from 'screens/Bookings/BookingsRecapTable/components/Filters/_constants'
 import * as constants from 'screens/Bookings/BookingsRecapTable/constants/NB_BOOKINGS_PER_PAGE'
 import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
-import { RootState } from 'store/reducers'
-import { configureTestStore } from 'store/testUtils'
 import { bookingRecapFactory } from 'utils/apiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import BookingsRecapTable from '../BookingsRecapTable'
 
@@ -36,7 +32,6 @@ const bookingInstitutionCustom = {
 }
 
 describe('components | BookingsRecapTable', () => {
-  let store: Store<Partial<RootState>>
   type Props = ComponentProps<typeof BookingsRecapTable>
 
   const defaultProps: Props = {
@@ -47,18 +42,10 @@ describe('components | BookingsRecapTable', () => {
     bookingsRecap: [],
   }
 
-  const renderBookingRecap = (props: Props) => {
-    return render(
-      <MemoryRouter initialEntries={['/reservations/collectives']}>
-        <Provider store={store}>
-          <BookingsRecapTable {...props} />
-        </Provider>
-      </MemoryRouter>
-    )
-  }
-  beforeEach(() => {
-    store = configureTestStore({})
-  })
+  const renderBookingRecap = (props: Props) =>
+    renderWithProviders(<BookingsRecapTable {...props} />, {
+      initialRouterEntries: ['/reservations/collectives'],
+    })
 
   it('should filter when filters change', async () => {
     const bookingsRecap = [

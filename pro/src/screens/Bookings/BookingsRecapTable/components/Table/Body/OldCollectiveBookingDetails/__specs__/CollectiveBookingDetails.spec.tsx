@@ -1,9 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { Router } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -11,7 +8,7 @@ import {
   OfferAddressType,
   StudentLevels,
 } from 'apiClient/v1'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveBookingDetails from '../CollectiveBookingDetails'
 
@@ -59,17 +56,13 @@ describe('CollectiveBookingDetails', () => {
   it('should reload bookings after cancelling one', async () => {
     const reloadBookings = jest.fn()
 
-    render(
-      <Provider store={configureTestStore({})}>
-        <Router history={createBrowserHistory()}>
-          <CollectiveBookingDetails
-            bookingDetails={bookingDetails}
-            reloadBookings={reloadBookings}
-            offerId="A1"
-            canCancelBooking={true}
-          />
-        </Router>
-      </Provider>
+    renderWithProviders(
+      <CollectiveBookingDetails
+        bookingDetails={bookingDetails}
+        reloadBookings={reloadBookings}
+        offerId="A1"
+        canCancelBooking={true}
+      />
     )
 
     await userEvent.click(
@@ -84,17 +77,13 @@ describe('CollectiveBookingDetails', () => {
   })
 
   it('Cancel booking button should be disabled when booking cannot be cancelled', async () => {
-    render(
-      <Provider store={configureTestStore({})}>
-        <Router history={createBrowserHistory()}>
-          <CollectiveBookingDetails
-            bookingDetails={bookingDetails}
-            reloadBookings={jest.fn()}
-            offerId="A1"
-            canCancelBooking={false}
-          />
-        </Router>
-      </Provider>
+    renderWithProviders(
+      <CollectiveBookingDetails
+        bookingDetails={bookingDetails}
+        reloadBookings={jest.fn()}
+        offerId="A1"
+        canCancelBooking={false}
+      />
     )
 
     expect(

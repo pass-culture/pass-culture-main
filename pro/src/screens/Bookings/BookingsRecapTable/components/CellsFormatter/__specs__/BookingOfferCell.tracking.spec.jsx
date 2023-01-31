@@ -1,24 +1,19 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import BookingOfferCell from '../BookingOfferCell'
 
 const mockLogEvent = jest.fn()
 
 const renderOfferCell = props => {
-  const store = configureTestStore({ app: { logEvent: mockLogEvent } })
+  const storeOverrides = { app: { logEvent: mockLogEvent } }
 
-  render(
-    <Provider store={store}>
-      <BookingOfferCell {...props} />
-    </Provider>
-  )
+  renderWithProviders(<BookingOfferCell {...props} />, { storeOverrides })
 }
 
 describe('tracking bookings offer cell', () => {

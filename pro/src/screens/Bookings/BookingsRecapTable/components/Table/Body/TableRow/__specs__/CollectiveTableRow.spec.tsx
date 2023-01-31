@@ -1,8 +1,5 @@
-import { render, screen } from '@testing-library/react'
-import { createBrowserHistory } from 'history'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { Router } from 'react-router-dom'
 import type { Row } from 'react-table'
 
 import { api } from 'apiClient/api'
@@ -14,7 +11,7 @@ import {
   OfferAddressType,
   StudentLevels,
 } from 'apiClient/v1'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveTableRow, { ITableBodyProps } from '../CollectiveTableRow'
 
@@ -28,16 +25,12 @@ jest.mock(
 )
 
 const renderCollectiveTableRow = (props: ITableBodyProps) =>
-  render(
-    <Router history={createBrowserHistory()}>
-      <Provider store={configureTestStore({})}>
-        <table>
-          <tbody>
-            <CollectiveTableRow {...props} />
-          </tbody>
-        </table>
-      </Provider>
-    </Router>
+  renderWithProviders(
+    <table>
+      <tbody>
+        <CollectiveTableRow {...props} />
+      </tbody>
+    </table>
   )
 
 describe('CollectiveTableRow', () => {

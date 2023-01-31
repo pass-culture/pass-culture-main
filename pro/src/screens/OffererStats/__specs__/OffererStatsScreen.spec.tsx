@@ -1,13 +1,11 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
 import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
 import { Option } from 'core/Offers/types'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererStatsScreen from '../OffererStatsScreen'
 
@@ -19,30 +17,33 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOffererStatsScreen = (offererOptions: Option[], store: Store) => {
-  render(
-    <Provider store={store}>
-      <OffererStatsScreen offererOptions={offererOptions} />
-    </Provider>
-  )
+const renderOffererStatsScreen = (offererOptions: Option[]) => {
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser: {
+        firstName: 'John',
+        dateCreated: '2022-07-29T12:18:43.087097Z',
+        email: 'john@do.net',
+        id: '1',
+        nonHumanizedId: '1',
+        isAdmin: false,
+        isEmailValidated: true,
+        roles: [],
+      },
+    },
+  }
+
+  renderWithProviders(<OffererStatsScreen offererOptions={offererOptions} />, {
+    storeOverrides,
+  })
 }
 
 describe('OffererStatsScreen', () => {
-  let currentUser
   let offererOptions: Option[]
   let offerers: GetOffererResponseModel[]
-  let store: Store
+
   beforeEach(() => {
-    currentUser = {
-      firstName: 'John',
-      dateCreated: '2022-07-29T12:18:43.087097Z',
-      email: 'john@do.net',
-      id: '1',
-      nonHumanizedId: '1',
-      isAdmin: false,
-      isEmailValidated: true,
-      roles: [],
-    }
     offererOptions = [
       {
         id: 'A1',
@@ -72,12 +73,6 @@ describe('OffererStatsScreen', () => {
       },
     ] as GetOffererResponseModel[]
 
-    store = configureTestStore({
-      user: {
-        initialized: true,
-        currentUser,
-      },
-    })
     jest.spyOn(api, 'getOfferer').mockImplementation(offererId => {
       return new CancelablePromise(resolve =>
         resolve(offerers.filter(offerer => offerer.id == offererId)[0])
@@ -92,7 +87,7 @@ describe('OffererStatsScreen', () => {
   })
 
   it('should get first offerer venues on render', async () => {
-    renderOffererStatsScreen(offererOptions, store)
+    renderOffererStatsScreen(offererOptions)
 
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
@@ -104,7 +99,7 @@ describe('OffererStatsScreen', () => {
   })
   it('should not display virtual venue if offerer has no digital offer', async () => {
     offerers[0].hasDigitalVenueAtLeastOneOffer = false
-    renderOffererStatsScreen(offererOptions, store)
+    renderOffererStatsScreen(offererOptions)
 
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
@@ -115,7 +110,7 @@ describe('OffererStatsScreen', () => {
     expect(venueOption).toBeInTheDocument()
   })
   it('should update venues  when selecting offerer and display offerer iframe', async () => {
-    renderOffererStatsScreen(offererOptions, store)
+    renderOffererStatsScreen(offererOptions)
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
@@ -133,7 +128,7 @@ describe('OffererStatsScreen', () => {
     jest
       .spyOn(api, 'getOfferer')
       .mockResolvedValue({ id: 'A1' } as GetOffererResponseModel)
-    renderOffererStatsScreen(offererOptions, store)
+    renderOffererStatsScreen(offererOptions)
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
@@ -142,7 +137,7 @@ describe('OffererStatsScreen', () => {
     expect(venueSelect).not.toBeInTheDocument()
   })
   it('should display venue iframe when selecting a venue', async () => {
-    renderOffererStatsScreen(offererOptions, store)
+    renderOffererStatsScreen(offererOptions)
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
