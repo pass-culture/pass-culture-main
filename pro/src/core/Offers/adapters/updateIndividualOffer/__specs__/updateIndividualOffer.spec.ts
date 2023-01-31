@@ -11,6 +11,7 @@ import { IOfferIndividual } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
 import { updateIndividualOffer } from '..'
+import { serializePatchOffer } from '../serializers'
 
 describe('updateIndividualOffer', () => {
   it('should sent PatchOfferBodyModel to api', async () => {
@@ -91,7 +92,10 @@ describe('updateIndividualOffer', () => {
       .spyOn(api, 'patchOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
 
-    updateIndividualOffer({ offer, formValues })
+    await updateIndividualOffer({
+      serializedOffer: serializePatchOffer({ offer, formValues }),
+      offerId: offer.id,
+    })
     expect(api.patchOffer).toHaveBeenCalledWith(offerId, expectedBody)
   })
 
@@ -164,7 +168,10 @@ describe('updateIndividualOffer', () => {
       .spyOn(api, 'patchOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
 
-    updateIndividualOffer({ offer, formValues })
+    await updateIndividualOffer({
+      serializedOffer: serializePatchOffer({ offer, formValues }),
+      offerId: offer.id,
+    })
     expect(api.patchOffer).toHaveBeenCalledWith(offerId, expectedBody)
   })
 })

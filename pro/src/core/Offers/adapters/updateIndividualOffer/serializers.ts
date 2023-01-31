@@ -1,6 +1,8 @@
 import { PatchOfferBodyModel } from 'apiClient/v1'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
-import { IOfferExtraData } from 'core/Offers/types'
+import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers'
+import { IOfferExtraData, IOfferIndividual } from 'core/Offers/types'
+import { isAllocineOffer } from 'core/Providers/utils/localProvider'
 import { AccessiblityEnum } from 'core/shared'
 
 export const serializeExtraData = (
@@ -39,37 +41,60 @@ export const serializeDurationMinutes = (
 
   return minutes + hours * 60
 }
-
-export const serializePatchOffer = (
+interface ISerializePatchOffer {
+  offer: IOfferIndividual
   formValues: Partial<IOfferIndividualFormValues>
-): PatchOfferBodyModel => ({
-  audioDisabilityCompliant:
-    formValues.accessibility &&
-    formValues.accessibility[AccessiblityEnum.AUDIO],
-  description: formValues.description,
-  extraData: serializeExtraData(formValues),
-  isNational: formValues.isNational,
-  isDuo: !!formValues.isDuo,
-  mentalDisabilityCompliant:
-    formValues.accessibility &&
-    formValues.accessibility[AccessiblityEnum.MENTAL],
-  motorDisabilityCompliant:
-    formValues.accessibility &&
-    formValues.accessibility[AccessiblityEnum.MOTOR],
-  name: formValues.name,
-  withdrawalDelay:
-    formValues.withdrawalDelay === undefined
-      ? null
-      : formValues.withdrawalDelay,
-  withdrawalDetails: formValues.withdrawalDetails || null,
-  visualDisabilityCompliant:
-    formValues.accessibility &&
-    formValues.accessibility[AccessiblityEnum.VISUAL],
-  withdrawalType: formValues.withdrawalType,
-  durationMinutes: serializeDurationMinutes(formValues.durationMinutes || ''),
-  bookingEmail: formValues.receiveNotificationEmails
-    ? formValues.bookingEmail
-    : null,
-  externalTicketOfficeUrl: formValues.externalTicketOfficeUrl || undefined,
-  url: formValues.url || undefined,
-})
+}
+
+export const serializePatchOffer = ({
+  offer,
+  formValues,
+}: ISerializePatchOffer): PatchOfferBodyModel => {
+  let sentValues: Partial<IOfferIndividualFormValues> = formValues
+  if (offer?.lastProvider) {
+    const {
+      ALLOCINE: allocineEditableFields,
+      ALL_PROVIDERS: allProvidersEditableFields,
+    } = SYNCHRONIZED_OFFER_EDITABLE_FIELDS
+
+    const asArray = Object.entries(formValues)
+
+    const editableFields = allProvidersEditableFields
+    if (isAllocineOffer(offer)) {
+      editableFields.push(...allocineEditableFields)
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const filtered = asArray.filter(([key, _]) => editableFields.includes(key))
+
+    sentValues = Object.fromEntries(filtered)
+  }
+
+  return {
+    audioDisabilityCompliant:
+      sentValues.accessibility &&
+      sentValues.accessibility[AccessiblityEnum.AUDIO],
+    description: sentValues.description,
+    extraData: serializeExtraData(sentValues),
+    isNational: sentValues.isNational,
+    isDuo: !!sentValues.isDuo,
+    mentalDisabilityCompliant:
+      sentValues.accessibility &&
+      sentValues.accessibility[AccessiblityEnum.MENTAL],
+    motorDisabilityCompliant:
+      sentValues.accessibility &&
+      sentValues.accessibility[AccessiblityEnum.MOTOR],
+    name: sentValues.name,
+    withdrawalDelay: sentValues.withdrawalDelay || undefined,
+    withdrawalDetails: sentValues.withdrawalDetails || undefined,
+    visualDisabilityCompliant:
+      sentValues.accessibility &&
+      sentValues.accessibility[AccessiblityEnum.VISUAL],
+    withdrawalType: sentValues.withdrawalType,
+    durationMinutes: serializeDurationMinutes(sentValues.durationMinutes || ''),
+    bookingEmail: sentValues.receiveNotificationEmails
+      ? sentValues.bookingEmail
+      : undefined,
+    externalTicketOfficeUrl: sentValues.externalTicketOfficeUrl || undefined,
+    url: sentValues.url || undefined,
+  }
+}
