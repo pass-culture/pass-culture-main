@@ -20,6 +20,7 @@ h4 {
   display: flex;
 
   .right {
+    align-self: baseline;
     margin-left: auto;
   }
 }
