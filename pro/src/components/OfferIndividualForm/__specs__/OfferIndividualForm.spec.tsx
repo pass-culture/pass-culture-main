@@ -1,9 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import {
   IOfferIndividualContext,
@@ -18,8 +16,8 @@ import {
   IOfferSubCategory,
 } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
-import { configureTestStore } from 'store/testUtils'
 import { SubmitButton } from 'ui-kit'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   FORM_DEFAULT_VALUES,
@@ -41,9 +39,9 @@ const renderOfferIndividualForm = ({
   props: IOfferIndividualFormProps
   contextOverride?: Partial<IOfferIndividualContext>
 }) => {
-  const store = configureTestStore({
+  const storeOverrides = {
     user: { currentUser: { publicName: 'François', isAdmin: false } },
-  })
+  }
   const contextValues: IOfferIndividualContext = {
     offerId: null,
     offer: null,
@@ -57,23 +55,21 @@ const renderOfferIndividualForm = ({
     showVenuePopin: {},
     ...contextOverride,
   }
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <OfferIndividualContext.Provider value={contextValues}>
-          <Formik
-            initialValues={initialValues}
-            onSubmit={onSubmit}
-            validationSchema={validationSchema}
-          >
-            <Form>
-              <OfferIndividualForm {...props} />
-              <SubmitButton isLoading={false}>Submit</SubmitButton>
-            </Form>
-          </Formik>
-        </OfferIndividualContext.Provider>
-      </MemoryRouter>
-    </Provider>
+
+  return renderWithProviders(
+    <OfferIndividualContext.Provider value={contextValues}>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={onSubmit}
+        validationSchema={validationSchema}
+      >
+        <Form>
+          <OfferIndividualForm {...props} />
+          <SubmitButton isLoading={false}>Submit</SubmitButton>
+        </Form>
+      </Formik>
+    </OfferIndividualContext.Provider>,
+    { storeOverrides }
   )
 }
 

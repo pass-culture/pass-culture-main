@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferLayout from '../CollectiveOfferLayout'
 
@@ -14,21 +13,16 @@ const renderCollectiveOfferLayout = ({
   isTemplate?: boolean
   title: string
   subTitle?: string
-}) => {
-  const store = configureTestStore()
-
-  render(
-    <Provider store={store}>
-      <CollectiveOfferLayout
-        title={title}
-        subTitle={subTitle}
-        isTemplate={isTemplate}
-      >
-        Test
-      </CollectiveOfferLayout>
-    </Provider>
+}) =>
+  renderWithProviders(
+    <CollectiveOfferLayout
+      title={title}
+      subTitle={subTitle}
+      isTemplate={isTemplate}
+    >
+      Test
+    </CollectiveOfferLayout>
   )
-}
 
 describe('CollectiveOfferLayout', () => {
   let props: { isTemplate?: boolean; title: string; subTitle?: string }

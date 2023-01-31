@@ -1,9 +1,8 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
 
 import Notification from 'components/Notification/Notification'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 jest.mock('core/Notification/constants', () => ({
   NOTIFICATION_TRANSITION_DURATION: 10,
@@ -11,19 +10,12 @@ jest.mock('core/Notification/constants', () => ({
 }))
 
 describe('src | components | layout | Notification', () => {
-  let store
-
-  const renderNotification = sentNotification => {
-    store = configureTestStore({
-      notification: { notification: sentNotification },
+  const renderNotification = sentNotification =>
+    renderWithProviders(<Notification />, {
+      storeOverrides: {
+        notification: { notification: sentNotification },
+      },
     })
-
-    return render(
-      <Provider store={store}>
-        <Notification />
-      </Provider>
-    )
-  }
 
   const notificationTypes = ['', 'success', 'error', 'information', 'pending']
   it.each(notificationTypes)(
