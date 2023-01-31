@@ -25,11 +25,11 @@ SEARCH_PARENT = -1
 
 
 def _build_backoffice_offerer_link(offerer: offerers_models.Offerer) -> str:
-    return urllib.parse.urljoin(BACKOFFICE_URL, f"offerers/{offerer.id}")
+    return urllib.parse.urljoin(BACKOFFICE_URL, f"/pro/offerer/{offerer.id}")
 
 
 def _build_backoffice_venue_link(venue: offerers_models.Venue) -> str:
-    return urllib.parse.urljoin(BACKOFFICE_URL, f"venues/{venue.id}")
+    return urllib.parse.urljoin(BACKOFFICE_URL, f"/pro/venue/{venue.id}")
 
 
 class ZendeskError(Exception):
