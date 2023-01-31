@@ -300,7 +300,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     students: list[StudentLevels]
     offerVenue: CollectiveOfferOfferVenueResponseModel
     contactEmail: str
-    contactPhone: str
+    contactPhone: str | None
     hasBookingLimitDatetimesPassed: bool
     offerId: str | None
     isActive: bool
@@ -398,7 +398,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     students: list[StudentLevels]
     offer_venue: CollectiveOfferVenueBodyModel
     contact_email: EmailStr
-    contact_phone: str
+    contact_phone: str | None
     intervention_area: list[str] | None
     template_id: str | None
     offerer_id: str | None  # FIXME (MathildeDuboille - 24/10/22) prevent bug in production where offererId is sent in params
