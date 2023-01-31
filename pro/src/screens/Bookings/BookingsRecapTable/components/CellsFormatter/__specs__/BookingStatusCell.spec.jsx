@@ -1,23 +1,12 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import BookingStatusCell from '../BookingStatusCell'
 
-const renderBookingStatusCell = props => {
-  const store = configureTestStore()
-
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <BookingStatusCell {...props} />
-      </MemoryRouter>
-    </Provider>
-  )
-}
+const renderBookingStatusCell = props =>
+  renderWithProviders(<BookingStatusCell {...props} />)
 
 describe('bookings | bookingsStatusCell', () => {
   it('should display the status label', () => {

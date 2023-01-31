@@ -1,43 +1,47 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
-import type { Store } from 'redux'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
   ApiError,
   GetOffererResponseModel,
   GetVenueResponseModel,
-  SharedCurrentUserResponseModel,
   VenueProviderResponse,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { IProviders } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import VenueEdition from '../VenueEdition'
 
-const renderVenueEdition = (
-  venueId: string,
-  offererId: string,
-  store: Store
-) => {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter
-        initialEntries={[`/structures/${offererId}/lieux/${venueId}`]}
-      >
-        <Route exact path={'/accueil'}>
-          <h1>Home</h1>
-        </Route>
-        <Route exact path={'/structures/:offererId/lieux/:venueId'}>
-          <VenueEdition />
-        </Route>
-      </MemoryRouter>
-    </Provider>
+const renderVenueEdition = (venueId: string, offererId: string) => {
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser: {
+        id: 'EY',
+        isAdmin: false,
+        publicName: 'USER',
+      },
+    },
+  }
+
+  return renderWithProviders(
+    <>
+      <Route exact path={'/accueil'}>
+        <h1>Home</h1>
+      </Route>
+      <Route exact path={'/structures/:offererId/lieux/:venueId'}>
+        <VenueEdition />
+      </Route>
+    </>,
+    {
+      storeOverrides,
+      initialRouterEntries: [`/structures/${offererId}/lieux/${venueId}`],
+    }
   )
 }
 
@@ -56,20 +60,12 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 describe('route VenueEdition', () => {
-  let currentUser: SharedCurrentUserResponseModel
-  let store: Store
   let venue: GetVenueResponseModel
   let venueProviders: VenueProviderResponse[]
   let providers: IProviders[]
   let offerer: GetOffererResponseModel
 
   beforeEach(() => {
-    currentUser = {
-      id: 'EY',
-      isAdmin: false,
-      publicName: 'USER',
-    } as SharedCurrentUserResponseModel
-
     venue = {
       id: 'AE',
       publicName: 'Cinéma des iles',
@@ -114,12 +110,6 @@ describe('route VenueEdition', () => {
     offerer = {
       id: 'ABCD',
     } as GetOffererResponseModel
-    store = configureTestStore({
-      user: {
-        initialized: true,
-        currentUser,
-      },
-    })
 
     jest.spyOn(api, 'getVenue').mockResolvedValue(venue)
     jest.spyOn(pcapi, 'loadProviders').mockResolvedValue(providers)
@@ -132,7 +122,7 @@ describe('route VenueEdition', () => {
   })
   it('should call getVenue and display Venue Form screen on success', async () => {
     // When
-    renderVenueEdition(venue.id, offerer.id, store)
+    renderVenueEdition(venue.id, offerer.id)
 
     // Then
     const venuePublicName = await screen.findByRole('heading', {
@@ -156,7 +146,7 @@ describe('route VenueEdition', () => {
       )
     )
     // When
-    renderVenueEdition(venue.id, offerer.id, store)
+    renderVenueEdition(venue.id, offerer.id)
 
     // Then
     expect(api.getVenue).toHaveBeenCalledTimes(1)

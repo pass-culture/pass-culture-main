@@ -1,19 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { add } from 'date-fns'
 import React from 'react'
-import { Provider } from 'react-redux'
 
-import { configureTestStore } from 'store/testUtils'
 import { collectiveBookingRecapFactory } from 'utils/collectiveApiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import BookingOfferCell from '../BookingOfferCell'
 
-const renderOfferCell = (props, store) =>
-  render(
-    <Provider store={store}>
-      <BookingOfferCell {...props} />
-    </Provider>
-  )
+const renderOfferCell = props =>
+  renderWithProviders(<BookingOfferCell {...props} />)
 
 jest.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
@@ -22,12 +17,6 @@ jest.mock('hooks/useActiveFeature', () => ({
 
 describe('bookings offer cell', () => {
   describe('should always display', () => {
-    let store
-
-    beforeEach(() => {
-      store = configureTestStore({})
-    })
-
     it('offer name and isbn with a link to the offer when stock is a book', () => {
       // Given
       const props = {
@@ -42,7 +31,7 @@ describe('bookings offer cell', () => {
       }
 
       // When
-      renderOfferCell(props, store)
+      renderOfferCell(props)
 
       // Then
       const isbn = screen.getByText('97834567654')
@@ -66,7 +55,7 @@ describe('bookings offer cell', () => {
       }
 
       // When
-      renderOfferCell(props, store)
+      renderOfferCell(props)
 
       // Then
       const offer_name = screen.getByText('Guitare acoustique')
@@ -89,7 +78,7 @@ describe('bookings offer cell', () => {
       }
 
       // When
-      renderOfferCell(props, store)
+      renderOfferCell(props)
 
       // Then
       expect(screen.getByText('12/05/2020 11:03')).toBeInTheDocument()
@@ -116,14 +105,11 @@ describe('bookings offer cell', () => {
         },
       })
 
-      renderOfferCell(
-        {
-          offer: eventOffer.stock,
-          bookingRecapInfo: { values: eventOffer },
-          isCollective: true,
-        },
-        store
-      )
+      renderOfferCell({
+        offer: eventOffer.stock,
+        bookingRecapInfo: { values: eventOffer },
+        isCollective: true,
+      })
 
       const warningIco = screen.queryByAltText('Attention')
       expect(warningIco).not.toBeNull()
@@ -145,14 +131,11 @@ describe('bookings offer cell', () => {
           offerName: 'ma super offre collective 2',
         },
       })
-      renderOfferCell(
-        {
-          offer: eventOffer.stock,
-          bookingRecapInfo: { values: eventOffer },
-          isCollective: true,
-        },
-        store
-      )
+      renderOfferCell({
+        offer: eventOffer.stock,
+        bookingRecapInfo: { values: eventOffer },
+        isCollective: true,
+      })
 
       const warningIco = screen.queryByAltText('Attention')
       expect(warningIco).toBeNull()

@@ -1,16 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import { Audience } from 'core/shared'
-import { configureTestStore } from 'store/testUtils'
 import { bookingRecapFactory } from 'utils/apiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import FilterByBookingStatus from '../FilterByBookingStatus'
 import { FilterByBookingStatusProps } from '../FilterByBookingStatus/FilterByBookingStatus'
@@ -19,16 +17,7 @@ const renderFilterByBookingStatus = (
   props: FilterByBookingStatusProps<
     BookingRecapResponseModel | CollectiveBookingResponseModel
   >
-) => {
-  const store = configureTestStore()
-  return render(
-    <MemoryRouter>
-      <Provider store={store}>
-        <FilterByBookingStatus {...props} />
-      </Provider>
-    </MemoryRouter>
-  )
-}
+) => renderWithProviders(<FilterByBookingStatus {...props} />)
 
 describe('components | FilterByBookingStatus', () => {
   let props: FilterByBookingStatusProps<
