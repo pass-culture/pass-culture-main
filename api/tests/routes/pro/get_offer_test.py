@@ -242,7 +242,7 @@ class Returns200Test:
                     "remainingQuantity": 1000,
                 }
             ],
-            "priceCategories": [{"label": "Au pied du mur", "price": 10.0}],
+            "priceCategories": [{"label": "Au pied du mur", "price": 10.0, "id": stock.priceCategoryId}],
             "subcategoryId": "SEANCE_CINE",
             "thumbUrl": None,
             "url": None,
