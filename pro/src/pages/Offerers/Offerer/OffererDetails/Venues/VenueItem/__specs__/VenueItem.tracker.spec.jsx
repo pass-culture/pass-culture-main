@@ -1,19 +1,16 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import VenueItem from '../VenueItem'
 
 const mockLogEvent = jest.fn()
 
 const renderItem = () => {
-  const store = configureTestStore({})
   const props = {
     venue: {
       id: 'AAA',
@@ -23,13 +20,7 @@ const renderItem = () => {
     },
   }
 
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <VenueItem {...props} />
-      </MemoryRouter>
-    </Provider>
-  )
+  return renderWithProviders(<VenueItem {...props} />)
 }
 
 describe('venue Item offer link', () => {

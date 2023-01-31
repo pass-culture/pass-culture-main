@@ -1,30 +1,22 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Form } from 'react-final-form'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererCreationForm from '../OffererCreationForm'
 
 describe('src | components | pages | OffererCreationForm', () => {
-  const renderOffererCreationForm = () => {
-    const store = configureTestStore()
-    return render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Form
-            backTo="/accueil"
-            onSubmit={() => {}}
-            component={OffererCreationForm}
-          />
-        </MemoryRouter>
-      </Provider>
+  const renderOffererCreationForm = () =>
+    renderWithProviders(
+      <Form
+        backTo="/accueil"
+        onSubmit={() => {}}
+        component={OffererCreationForm}
+      />
     )
-  }
 
   it('should be clickable when values have been changed and are valid', async () => {
     // given

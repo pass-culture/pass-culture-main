@@ -1,10 +1,8 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import LostPassword from '../LostPassword'
 
@@ -23,19 +21,16 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const renderLostPassword = url => {
-  const store = configureTestStore({
+  const storeOverrides = {
     user: {
       currentUser: { id: 'CMOI' },
     },
-  })
+  }
 
-  render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[url]}>
-        <LostPassword />
-      </MemoryRouter>
-    </Provider>
-  )
+  renderWithProviders(<LostPassword />, {
+    storeOverrides,
+    initialRouterEntries: [url],
+  })
 }
 
 describe('src | components | pages | LostPassword', () => {

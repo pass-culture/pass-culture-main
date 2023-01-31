@@ -1,18 +1,15 @@
 import {
-  render,
   screen,
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Homepage from '../../Homepage'
 
@@ -37,14 +34,8 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderHomePage = async ({ store }) => {
-  const utils = render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <Homepage />
-      </MemoryRouter>
-    </Provider>
-  )
+const renderHomePage = async storeOverrides => {
+  const utils = renderWithProviders(<Homepage />, { storeOverrides })
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
@@ -88,7 +79,7 @@ describe('offererDetailsLegacy', () => {
   let physicalVenueWithPublicName
 
   beforeEach(() => {
-    store = configureTestStore({
+    store = {
       user: {
         currentUser: {
           id: 'fake_id',
@@ -99,7 +90,7 @@ describe('offererDetailsLegacy', () => {
         },
         initialized: true,
       },
-    })
+    }
 
     virtualVenue = {
       id: 'test_venue_id_1',
@@ -211,7 +202,7 @@ describe('offererDetailsLegacy', () => {
   })
 
   it('should display offerer select', async () => {
-    const { waitForElements } = await renderHomePage({ store })
+    const { waitForElements } = await renderHomePage(store)
     const { offerer } = await waitForElements()
     const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
     await userEvent.click(showButton)
@@ -223,7 +214,7 @@ describe('offererDetailsLegacy', () => {
 
   it('should not warn user when offerer is validated', async () => {
     // Given
-    const { waitForElements } = await renderHomePage({ store })
+    const { waitForElements } = await renderHomePage(store)
     const { offerer } = await waitForElements()
     const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
 
@@ -239,7 +230,7 @@ describe('offererDetailsLegacy', () => {
   })
 
   it('should display first offerer informations', async () => {
-    const { waitForElements } = await renderHomePage({ store })
+    const { waitForElements } = await renderHomePage(store)
     const { offerer } = await waitForElements()
     const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
     await userEvent.click(showButton)
@@ -261,7 +252,7 @@ describe('offererDetailsLegacy', () => {
   })
 
   it('should display offerer venues informations', async () => {
-    const { waitForElements } = await renderHomePage({ store })
+    const { waitForElements } = await renderHomePage(store)
     const { offerer } = await waitForElements()
     const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
     await userEvent.click(showButton)
@@ -291,7 +282,7 @@ describe('offererDetailsLegacy', () => {
     await jest
       .spyOn(useNewOfferCreationJourney, 'default')
       .mockReturnValue(true)
-    await renderHomePage({ store })
+    await renderHomePage(store)
 
     const selectedOfferer = firstOffererByAlphabeticalOrder
     const physicalVenueTitle = screen.getByText(
@@ -321,7 +312,7 @@ describe('offererDetailsLegacy', () => {
     api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
     // When
-    const { waitForElements } = await renderHomePage({ store })
+    const { waitForElements } = await renderHomePage(store)
     const { venues } = await waitForElements()
 
     // Then
@@ -333,7 +324,7 @@ describe('offererDetailsLegacy', () => {
 
   describe('when user click on edit button', () => {
     it('should trigger an event when clicking on "Modifier" for offerers', async () => {
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       await waitForElements()
 
       const editButton = screen.getAllByText('Modifier', { exact: false })[0]
@@ -382,7 +373,7 @@ describe('offererDetailsLegacy', () => {
         ],
       }
       api.getOfferer.mockResolvedValue(newSelectedOfferer)
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       const { selectOfferer } = await waitForElements()
 
       await selectOfferer(newSelectedOfferer.name)
@@ -439,7 +430,7 @@ describe('offererDetailsLegacy', () => {
   describe('when selecting "add offerer" option"', () => {
     it('should redirect to offerer creation page', async () => {
       // Given
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       const { selectOfferer } = await waitForElements()
 
       // When
@@ -481,7 +472,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should not display offerer informations', async () => {
       // When
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       const { offerer } = await waitForElements()
 
       // Then
@@ -508,7 +499,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should hide offerer informations on click on hide button', async () => {
       // Given
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       const { offerer } = await waitForElements()
       const hideButton = within(offerer).getByRole('button', {
         name: 'Masquer',
@@ -573,7 +564,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should not display offerer informations', async () => {
       // When
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       const { offerer } = await waitForElements()
 
       // Then
@@ -593,7 +584,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should show offerer informations on click on show button', async () => {
       // Given
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       const { offerer } = await waitForElements()
       const showButton = within(offerer).getByRole('button', {
         name: 'Afficher',
@@ -643,7 +634,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should warn user that offerer is being validated', async () => {
       // When
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       const { offerer } = await waitForElements()
 
       // Then
@@ -656,7 +647,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should allow user to view offerer informations', async () => {
       // When
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       const { offerer } = await waitForElements()
 
       // Then
@@ -667,7 +658,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should allow user to add venue and offer', async () => {
       // When
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       await waitForElements()
 
       // Then
@@ -696,7 +687,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should warn user offerer is being validated', async () => {
       // When
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       await waitForElements()
 
       // Then
@@ -709,7 +700,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should not allow user to view offerer informations', async () => {
       // When
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       await waitForElements()
       // Then
       expect(
@@ -722,7 +713,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should not allow user to update offerer informations', async () => {
       // When
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       await waitForElements()
 
       // Then
@@ -735,7 +726,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should not allow user to add venue and virtual offer', async () => {
       // When
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       await waitForElements()
 
       // Then
@@ -765,7 +756,7 @@ describe('offererDetailsLegacy', () => {
         })
         .mockRejectedValueOnce({ status: 403 })
 
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       await waitForElements()
 
       // When
@@ -792,7 +783,7 @@ describe('offererDetailsLegacy', () => {
 
   describe('when FF new bank informations creation', () => {
     beforeEach(() => {
-      store = configureTestStore({
+      store = {
         user: {
           currentUser: {
             id: 'fake_id',
@@ -804,7 +795,7 @@ describe('offererDetailsLegacy', () => {
           initialized: true,
         },
         app: { logEvent: mockLogEvent },
-      })
+      }
     })
 
     it('should display missing bank information when at least one venue does not have a reimbursement point', async () => {
@@ -823,7 +814,7 @@ describe('offererDetailsLegacy', () => {
       }
       api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       const { offerer } = await waitForElements()
 
       expect(
@@ -852,7 +843,7 @@ describe('offererDetailsLegacy', () => {
       }
       api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
-      const { waitForElements } = await renderHomePage({ store })
+      const { waitForElements } = await renderHomePage(store)
       const { offerer } = await waitForElements()
 
       const displayButton = within(offerer).getByRole('button', {

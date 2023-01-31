@@ -1,14 +1,9 @@
 import { parse } from 'querystring'
 
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryHistory } from 'history'
 import React from 'react'
-import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 import type { Store } from 'redux'
 
@@ -22,13 +17,13 @@ import {
 } from 'core/Offers/constants'
 import { Offer, TSearchFilters } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
-import { configureTestStore } from 'store/testUtils'
 import { collectiveOfferFactory } from 'utils/apiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOffers from '../CollectiveOffers'
 
 const renderOffers = async (
-  store: Store,
+  storeOverrides: Store,
   filters: Partial<TSearchFilters> & {
     page?: number
   } = DEFAULT_SEARCH_FILTERS
@@ -36,12 +31,11 @@ const renderOffers = async (
   const history = createMemoryHistory()
   const route = computeCollectiveOffersUrl(filters)
   history.push(route)
-  render(
-    <Provider store={store}>
-      <Router history={history}>
-        <CollectiveOffers />
-      </Router>
-    </Provider>
+  renderWithProviders(
+    <Router history={history}>
+      <CollectiveOffers />
+    </Router>,
+    { storeOverrides }
   )
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
@@ -123,7 +117,7 @@ describe('route CollectiveOffers', () => {
     name: string
     publicName: string
   }
-  let store: Store
+  let store: any
   let offersRecap: Offer[]
 
   beforeEach(() => {
@@ -133,7 +127,7 @@ describe('route CollectiveOffers', () => {
       name: 'Current User',
       publicName: 'USER',
     }
-    store = configureTestStore({
+    store = {
       user: {
         initialized: true,
         currentUser,
@@ -141,7 +135,7 @@ describe('route CollectiveOffers', () => {
       offers: {
         searchFilters: DEFAULT_SEARCH_FILTERS,
       },
-    })
+    }
     offersRecap = [collectiveOfferFactory({ venue: proVenues[0] })]
     jest
       .spyOn(api, 'getCollectiveOffers')
@@ -227,7 +221,7 @@ describe('route CollectiveOffers', () => {
 
       describe('when user is admin', () => {
         beforeEach(() => {
-          store = configureTestStore({
+          store = {
             user: {
               initialized: true,
               currentUser: { ...currentUser, isAdmin: true },
@@ -235,7 +229,7 @@ describe('route CollectiveOffers', () => {
             offers: {
               searchFilters: DEFAULT_SEARCH_FILTERS,
             },
-          })
+          }
         })
         describe('status filter can only be used with an offerer or a venue filter for performance reasons', () => {
           it('should reset and disable status filter when venue filter is deselected', async () => {

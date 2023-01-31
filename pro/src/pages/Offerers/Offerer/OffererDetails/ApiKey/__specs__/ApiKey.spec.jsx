@@ -1,19 +1,17 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import * as notificationReducer from 'store/reducers/notificationReducer'
-import { configureTestStore } from 'store/testUtils'
 import {
   failToGenerateOffererApiKey,
   generateFakeOffererApiKey,
 } from 'utils/fakeApi'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ApiKey from '../ApiKey'
 
-const store = configureTestStore()
 const defaultProps = {
   maxAllowedApiKeys: 5,
   savedApiKeys: ['key-prefix1'],
@@ -26,18 +24,15 @@ Object.assign(navigator, {
   },
 })
 
-const renderApiKey = (props = defaultProps) => {
-  return render(
-    <Provider store={store}>
-      <ApiKey
-        maxAllowedApiKeys={props.maxAllowedApiKeys}
-        offererId="AE"
-        reloadOfferer={props.reloadOfferer}
-        savedApiKeys={props.savedApiKeys}
-      />
-    </Provider>
+const renderApiKey = (props = defaultProps) =>
+  renderWithProviders(
+    <ApiKey
+      maxAllowedApiKeys={props.maxAllowedApiKeys}
+      offererId="AE"
+      reloadOfferer={props.reloadOfferer}
+      savedApiKeys={props.savedApiKeys}
+    />
   )
-}
 
 Object.defineProperty(navigator, 'clipboard', {
   value: {

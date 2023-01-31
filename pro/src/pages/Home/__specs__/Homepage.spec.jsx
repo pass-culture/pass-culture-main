@@ -1,19 +1,13 @@
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { RemoteContextProvider } from 'context/remoteConfigContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import Homepage from '../Homepage'
@@ -50,15 +44,12 @@ jest.mock('hooks/useNewOfferCreationJourney', () => ({
   default: jest.fn().mockReturnValue(false),
 }))
 
-const renderHomePage = store => {
-  render(
-    <Provider store={store}>
-      <RemoteContextProvider>
-        <MemoryRouter>
-          <Homepage />
-        </MemoryRouter>
-      </RemoteContextProvider>
-    </Provider>
+const renderHomePage = storeOverrides => {
+  renderWithProviders(
+    <RemoteContextProvider>
+      <Homepage />
+    </RemoteContextProvider>,
+    { storeOverrides }
   )
 }
 
@@ -70,7 +61,7 @@ describe('homepage', () => {
   let store
 
   beforeEach(() => {
-    store = configureTestStore({
+    store = {
       user: {
         currentUser: {
           id: 'fake_id',
@@ -81,7 +72,7 @@ describe('homepage', () => {
         },
         initialized: true,
       },
-    })
+    }
     baseOfferers = [
       {
         address: 'LA COULÉE D’OR',
@@ -287,7 +278,7 @@ describe('homepage', () => {
 
     describe('offererStats', () => {
       beforeEach(() => {
-        store = configureTestStore({
+        store = {
           user: {
             currentUser: {
               id: 'fake_id',
@@ -301,7 +292,7 @@ describe('homepage', () => {
           features: {
             list: [{ isActive: true, nameKey: 'ENABLE_OFFERER_STATS' }],
           },
-        })
+        }
       })
       it('should display section when ff is active', async () => {
         renderHomePage(store)

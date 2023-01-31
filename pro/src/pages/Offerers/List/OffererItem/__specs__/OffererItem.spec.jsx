@@ -1,9 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router-dom'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererItem from '../OffererItem'
 
@@ -14,16 +12,8 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
   const parseMock = () => ({ 'mots-cles': null })
   const queryChangeMock = jest.fn()
 
-  const renderOfferItem = (overrideStore = {}) => {
-    const store = configureTestStore(overrideStore)
-    return render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <OffererItem {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
-  }
+  const renderOfferItem = (storeOverrides = {}) =>
+    renderWithProviders(<OffererItem {...props} />, { storeOverrides })
 
   beforeEach(() => {
     props = {
