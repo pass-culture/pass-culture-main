@@ -1,11 +1,8 @@
-// react-testing-library doc: https://testing-library.com/docs/react-testing-library/api
-
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { UserIdentityForm } from '../'
 import { IUserIdentityFormProps } from '../UserIdentityForm'
@@ -13,7 +10,7 @@ import { IUserIdentityFormProps } from '../UserIdentityForm'
 const patchIdentityAdapterMock = jest.fn()
 
 const renderUserIdentityForm = (props: IUserIdentityFormProps) => {
-  const store = configureTestStore({
+  const storeOverrides = {
     user: {
       initialized: true,
       currentUser: {
@@ -24,12 +21,11 @@ const renderUserIdentityForm = (props: IUserIdentityFormProps) => {
         lastName: 'Do',
       },
     },
+  }
+
+  return renderWithProviders(<UserIdentityForm {...props} />, {
+    storeOverrides,
   })
-  return render(
-    <Provider store={store}>
-      <UserIdentityForm {...props} />
-    </Provider>
-  )
 }
 
 describe('components:UserIdentityForm', () => {

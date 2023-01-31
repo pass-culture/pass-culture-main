@@ -1,8 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -12,12 +10,12 @@ import {
 import Notification from 'components/Notification/Notification'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
 import { bookingRecapFactory, venueFactory } from 'utils/apiFactories'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
 } from 'utils/date'
+import { renderWithProviders } from 'utils/renderWithProviders'
 import { getNthCallNthArg } from 'utils/testHelpers'
 
 import BookingsRecapContainer from '../Bookings'
@@ -56,17 +54,16 @@ const NTH_ARGUMENT_GET_BOOKINGS = {
 }
 
 const renderBookingsRecap = async (
-  store: any,
+  storeOverrides: any,
   initialEntries = '/reservations',
   waitDomReady?: boolean
 ) => {
-  const rtlReturn = render(
-    <Provider store={configureTestStore(store)}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <BookingsRecapContainer />
-        <Notification />
-      </MemoryRouter>
-    </Provider>
+  const rtlReturn = renderWithProviders(
+    <>
+      <BookingsRecapContainer />
+      <Notification />
+    </>,
+    { storeOverrides, initialRouterEntries: [initialEntries] }
   )
 
   const { hasBookings } = await api.getUserHasBookings()

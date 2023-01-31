@@ -1,10 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import { IVenue } from 'core/Venue'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveData from '../CollectiveData'
 
@@ -27,8 +26,6 @@ describe('CollectiveData', () => {
       .mockResolvedValue({ partners: [] })
   })
 
-  const store = configureTestStore({})
-
   it('should display title if the value is available', async () => {
     const venue = {
       collectiveDescription: 'une description',
@@ -46,11 +43,7 @@ describe('CollectiveData', () => {
       .spyOn(api, 'getEducationalPartners')
       .mockResolvedValue({ partners: [] })
 
-    render(
-      <Provider store={store}>
-        <CollectiveData venue={venue} />
-      </Provider>
-    )
+    renderWithProviders(<CollectiveData venue={venue} />)
 
     expect(
       await screen.findByText(/Domaines artistiques et culturels/)
@@ -73,11 +66,7 @@ describe('CollectiveData', () => {
       .spyOn(api, 'getEducationalPartners')
       .mockResolvedValue({ partners: [] })
 
-    render(
-      <Provider store={store}>
-        <CollectiveData venue={venue} />
-      </Provider>
-    )
+    renderWithProviders(<CollectiveData venue={venue} />)
 
     expect(screen.queryByText(/Téléphone :/)).not.toBeInTheDocument()
     expect(
@@ -94,11 +83,7 @@ describe('CollectiveData', () => {
       ],
     })
 
-    render(
-      <Provider store={store}>
-        <CollectiveData venue={venue} />
-      </Provider>
-    )
+    renderWithProviders(<CollectiveData venue={venue} />)
 
     expect(await screen.findByText('Libellé 1')).toBeInTheDocument()
     expect(await screen.queryByText('Libellé 2')).not.toBeInTheDocument()

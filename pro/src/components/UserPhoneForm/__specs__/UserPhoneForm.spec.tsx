@@ -1,11 +1,8 @@
-// react-testing-library doc: https://testing-library.com/docs/react-testing-library/api
-
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { UserPhoneForm } from '../'
 import { IUserPhoneFormProps } from '../UserPhoneForm'
@@ -13,7 +10,7 @@ import { IUserPhoneFormProps } from '../UserPhoneForm'
 const patchPhoneAdapterMock = jest.fn()
 
 const renderUserPhoneForm = (props: IUserPhoneFormProps) => {
-  const store = configureTestStore({
+  const storeOverrides = {
     user: {
       initialized: true,
       currentUser: {
@@ -24,12 +21,9 @@ const renderUserPhoneForm = (props: IUserPhoneFormProps) => {
         lastName: 'Do',
       },
     },
-  })
-  return render(
-    <Provider store={store}>
-      <UserPhoneForm {...props} />
-    </Provider>
-  )
+  }
+
+  return renderWithProviders(<UserPhoneForm {...props} />, { storeOverrides })
 }
 
 describe('components:UserPhoneForm', () => {

@@ -1,11 +1,8 @@
-// react-testing-library doc: https://testing-library.com/docs/react-testing-library/api
-
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
 
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { UserEmailForm } from '..'
 import { IUserEmailFormProps } from '../UserEmailForm'
@@ -13,7 +10,7 @@ import { IUserEmailFormProps } from '../UserEmailForm'
 const postEmailAdapterMock = jest.fn()
 
 const renderUserEmailForm = (props: IUserEmailFormProps) => {
-  const store = configureTestStore({
+  const storeOverrides = {
     user: {
       initialized: true,
       currentUser: {
@@ -24,12 +21,9 @@ const renderUserEmailForm = (props: IUserEmailFormProps) => {
         lastName: 'Do',
       },
     },
-  })
-  return render(
-    <Provider store={store}>
-      <UserEmailForm {...props} />
-    </Provider>
-  )
+  }
+
+  return renderWithProviders(<UserEmailForm {...props} />, { storeOverrides })
 }
 
 describe('components:UserEmailForm', () => {

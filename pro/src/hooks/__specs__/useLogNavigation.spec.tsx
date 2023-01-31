@@ -1,13 +1,12 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { Route } from 'react-router'
 import { Link } from 'react-router-dom'
 
 import * as useAnalytics from 'hooks/useAnalytics'
 import useLogNavigation from 'hooks/useLogNavigation'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 const mockLogEvent = jest.fn()
 
@@ -24,21 +23,18 @@ describe('useLogNavigation', () => {
       setLogEvent: null,
     }))
 
-    const store = configureTestStore({})
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <NavigationLogger />
-          <Route path="*">
-            <span>Main page</span>
-            <Link to="/structures">Structures</Link>
-          </Route>
-          <Route path="/structures">
-            <span>Structure page</span>
-            <Link to="/">Accueil</Link>
-          </Route>
-        </MemoryRouter>
-      </Provider>
+    renderWithProviders(
+      <>
+        <NavigationLogger />
+        <Route path="*">
+          <span>Main page</span>
+          <Link to="/structures">Structures</Link>
+        </Route>
+        <Route path="/structures">
+          <span>Structure page</span>
+          <Link to="/">Accueil</Link>
+        </Route>
+      </>
     )
 
     const button = screen.getByRole('link', { name: 'Structures' })
