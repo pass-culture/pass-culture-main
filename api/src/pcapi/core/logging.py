@@ -26,8 +26,7 @@ def _is_within_app_context() -> bool:
         "anything" in flask.g
     except RuntimeError:
         return False
-    else:
-        return True
+    return True
 
 
 def get_or_set_correlation_id() -> str:
@@ -194,12 +193,11 @@ class JsonFormatter(logging.Formatter):
                     extra={"log": str(json_record)},
                 )
                 return ""
-            else:
-                _internal_logger.exception(
-                    "Could not serialize extra log arguments in JSON",
-                    extra={"record": json_record, "extra": str(extra)},
-                )
-                return serialized
+            _internal_logger.exception(
+                "Could not serialize extra log arguments in JSON",
+                extra={"record": json_record, "extra": str(extra)},
+            )
+            return serialized
 
 
 def install_logging() -> None:

@@ -419,8 +419,7 @@ def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
             return None
         new_zendesk_offerer = zendesk_create_offerer(venue.managingOfferer)
         return new_zendesk_offerer["id"]
-    else:
-        return zendesk_offerer["id"]
+    return zendesk_offerer["id"]
 
 
 def zendesk_create_offerer(offerer: offerers_models.Offerer, session: requests.Session | None = None) -> dict:

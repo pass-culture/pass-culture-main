@@ -598,8 +598,7 @@ def attach_image(
     except:
         db.session.rollback()
         raise
-    else:
-        db.session.commit()
+    db.session.commit()
 
 
 # PRIVATE

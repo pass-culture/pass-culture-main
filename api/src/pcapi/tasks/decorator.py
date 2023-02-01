@@ -106,5 +106,4 @@ def _define_handler(f, path, payload_type):  # type: ignore [no-untyped-def]
             )
             raise
 
-        else:
-            logger.info("Successfully executed cloud task %s", path, extra=job_details)
+        logger.info("Successfully executed cloud task %s", path, extra=job_details)

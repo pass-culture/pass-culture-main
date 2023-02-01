@@ -38,8 +38,7 @@ class Permissions(enum.Enum):
             cls[name]
         except KeyError:
             return False
-        else:
-            return True
+        return True
 
 
 def sync_enum_with_db_field(session: sa.orm.Session, py_enum: Type[enum.Enum], db_field: sa.Column) -> None:
