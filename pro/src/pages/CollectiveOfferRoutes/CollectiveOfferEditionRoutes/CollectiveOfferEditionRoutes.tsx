@@ -72,7 +72,6 @@ const CollectiveOfferEditionRoutes = ({
     >
       <Switch>
         <Route path="/offre/:offerId/collectif/edition">
-          <PageTitle title="Détails de l'offre" />
           <CollectiveOfferEdition
             offer={offer}
             setOffer={setOffer}
@@ -80,7 +79,6 @@ const CollectiveOfferEditionRoutes = ({
           />
         </Route>
         <Route path="/offre/:offerId/collectif/recapitulatif">
-          <PageTitle title="Récapitulatif" />
           <CollectiveOfferSummaryEdition
             offer={offer}
             reloadCollectiveOffer={loadCollectiveOffer}
@@ -89,14 +87,12 @@ const CollectiveOfferEditionRoutes = ({
         {!isTemplate && isCollectiveOffer(offer) && (
           <>
             <Route path="/offre/:offerId/collectif/stocks/edition">
-              <PageTitle title="Vos Stocks" />
               <CollectiveOfferStockEdition
                 offer={offer}
                 reloadCollectiveOffer={loadCollectiveOffer}
               />
             </Route>
             <Route path="/offre/:offerId/collectif/visibilite/edition">
-              <PageTitle title="Visibilité" />
               <CollectiveOfferVisibility
                 offer={offer}
                 reloadCollectiveOffer={loadCollectiveOffer}

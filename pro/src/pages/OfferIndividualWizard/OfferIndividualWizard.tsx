@@ -32,7 +32,6 @@ const OfferIndividualWizard = () => {
     >
       <Switch>
         <Route exact path={`/offre/individuelle/creation/informations`}>
-          <PageTitle title="Détails de l'offre" />
           <Offer />
         </Route>
         <Route
@@ -43,7 +42,6 @@ const OfferIndividualWizard = () => {
             `${path}/informations`,
           ]}
         >
-          <PageTitle title="Détails de l'offre" />
           <Offer />
         </Route>
         <Route
@@ -54,7 +52,6 @@ const OfferIndividualWizard = () => {
             `${path}/tarifs`,
           ]}
         >
-          <PageTitle title="Vos tarifs" />
           <PriceCategories />
         </Route>
         <Route
@@ -65,7 +62,6 @@ const OfferIndividualWizard = () => {
             `${path}/stocks`,
           ]}
         >
-          <PageTitle title="Vos stocks" />
           <Stocks />
         </Route>
         <Route
@@ -76,7 +72,6 @@ const OfferIndividualWizard = () => {
             `${path}/recapitulatif`,
           ]}
         >
-          <PageTitle title="Récapitulatif" />
           <Summary />
         </Route>
         <Route
@@ -87,7 +82,6 @@ const OfferIndividualWizard = () => {
             `${path}/confirmation`,
           ]}
         >
-          <PageTitle title="Confirmation" />
           <Confirmation />
         </Route>
       </Switch>

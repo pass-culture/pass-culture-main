@@ -2,21 +2,13 @@ import * as firebaseAnalytics from '@firebase/analytics'
 import * as firebase from '@firebase/app'
 import { render, waitFor } from '@testing-library/react'
 import React from 'react'
-import { MemoryRouter, Route } from 'react-router'
+import { MemoryRouter } from 'react-router'
 
 import { firebaseConfig } from 'config/firebase'
-import { AnalyticsContextProvider } from 'context/analyticsContext'
-import { Events } from 'core/FirebaseEvents/constants'
-import useLogNavigation from 'hooks/useLogNavigation'
 
 import { useConfigureFirebase } from '../useAnalytics'
 
 const mockSetLogEvent = jest.fn()
-
-const NavigationLogger = (): null => {
-  useLogNavigation()
-  return null
-}
 
 jest.mock('@firebase/analytics', () => {
   return {
@@ -83,50 +75,4 @@ test('should set logEvent and userId', async () => {
     expect(mockSetLogEvent).toHaveBeenCalledTimes(1)
     expect(mockSetLogEvent).toHaveBeenNthCalledWith(1, expect.any(Function))
   })
-})
-
-const renderFakeAppWithTrackedLinks = () => {
-  return render(
-    <AnalyticsContextProvider>
-      <MemoryRouter
-        initialEntries={[
-          '/structures?utm_campaign=push_offre_local&utm_medium=batch&utm_source=push',
-        ]}
-      >
-        <NavigationLogger />
-        <FakeAppWithTrackedLinks>
-          <Route path="/structures">
-            <h1>Fake Structure</h1>
-          </Route>
-        </FakeAppWithTrackedLinks>
-      </MemoryRouter>
-    </AnalyticsContextProvider>
-  )
-}
-
-interface IFakeAppProps {
-  children: JSX.Element
-}
-const FakeAppWithTrackedLinks = ({ children }: IFakeAppProps): JSX.Element => {
-  useConfigureFirebase('userId')
-  return children
-}
-
-test('should trigger a logEvent', async () => {
-  await renderFakeAppWithTrackedLinks()
-  await waitFor(() => {
-    expect(firebaseAnalytics.logEvent).toHaveBeenNthCalledWith(
-      1,
-      'getAnalyticsReturn',
-      Events.PAGE_VIEW,
-      {
-        from: '/structures',
-        traffic_campaign: 'push_offre_local',
-        traffic_medium: 'batch',
-        traffic_source: 'push',
-        A: 'true',
-      }
-    )
-  })
-  expect(firebaseAnalytics.logEvent).toHaveBeenCalledTimes(1)
 })

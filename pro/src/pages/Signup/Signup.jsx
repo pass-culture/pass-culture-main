@@ -28,7 +28,6 @@ const Signup = ({ location }) => {
       }}
       className={styles['sign-up']}
     >
-      <PageTitle title="S’inscrire" />
       <div className={styles['logo-side']}>
         <Logo noLink signPage />
       </div>

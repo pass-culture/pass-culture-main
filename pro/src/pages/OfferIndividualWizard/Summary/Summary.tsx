@@ -43,7 +43,6 @@ const Summary = (): JSX.Element | null => {
       title={title}
       withStepper={mode !== OFFER_WIZARD_MODE.EDITION}
     >
-      <PageTitle title="Récapitulatif" />
       <SummaryScreen
         offerId={offer.id}
         nonHumanizedOfferId={offer.nonHumanizedId}

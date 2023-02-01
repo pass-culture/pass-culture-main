@@ -15,7 +15,7 @@ jest.mock('hooks/useAnalytics', () => ({
   useConfigureFirebase: jest.fn(),
 }))
 
-jest.mock('hooks/useLogNavigation', () => jest.fn())
+jest.mock('hooks/useLogPageView', () => jest.fn())
 
 const renderApp = ({ props, store: storeOverride, initialEntries = '/' }) => {
   const store = configureTestStore(storeOverride)

@@ -288,4 +288,102 @@ const routes: IRoute[] = [
   },
 ]
 
+const offerPath = '/offre/individuelle/:offerId'
+export const subRoutesOfferIndividualWizard = [
+  {
+    path: [
+      `${offerPath}/creation/informations`,
+      `${offerPath}/brouillon/informations`,
+      `${offerPath}/informations`,
+    ],
+    title: 'Détails de l’offre',
+  },
+  {
+    path: [
+      `${offerPath}/creation/tarifs`,
+      `${offerPath}/brouillon/tarifs`,
+      `${offerPath}/tarifs`,
+    ],
+    title: 'Vos tarifs',
+  },
+  {
+    path: [
+      `${offerPath}/creation/stocks`,
+      `${offerPath}/brouillon/stocks`,
+      `${offerPath}/stocks`,
+    ],
+    title: 'Vos stocks',
+  },
+  {
+    path: [
+      `${offerPath}/creation/recapitulatif`,
+      `${offerPath}/brouillon/recapitulatif`,
+      `${offerPath}/recapitulatif`,
+    ],
+    title: 'Récapitulatif',
+  },
+  {
+    path: [
+      `${offerPath}/creation/confirmation`,
+      `${offerPath}/brouillon/confirmation`,
+      `${offerPath}/confirmation`,
+    ],
+    title: 'Confirmation',
+  },
+]
+
+export const subRoutesInscription = [
+  { path: '/inscription', title: 'S’inscrire' },
+]
+
+export const subRoutesCollectiveOfferEdition = [
+  { path: '/offre/:offerId/collectif/edition', title: 'Détails de l’offre' },
+  {
+    path: '/offre/:offerId/collectif/recapitulatif',
+    title: 'Récapitulatif',
+  },
+  {
+    path: '/offre/:offerId/collectif/stocks/edition',
+    title: 'Vos Stocks',
+  },
+  {
+    path: '/offre/:offerId/collectif/visibilite/edition',
+    title: 'Visibilité',
+  },
+]
+
+export const subRoutesCollectiveOfferEdition2 = [
+  { path: '/offre/creation/collectif/vitrine', title: 'Détails de l’offre' },
+  {
+    path: '/offre/creation/collectif',
+    title: 'Détails de l’offre',
+  },
+  {
+    path: '/offre/collectif/vitrine/:offerId/creation',
+    title: 'Vos Stocks',
+  },
+  {
+    path: '/offre/:offerId/collectif/stocks',
+    title: 'Vos Stocks',
+  },
+  {
+    path: '/offre/:offerId/collectif/visibilite',
+    title: 'Visibilité',
+  },
+  {
+    path: [
+      '/offre/:offerId/collectif/creation/recapitulatif',
+      '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
+    ],
+    title: 'Récapitulatif',
+  },
+  {
+    path: [
+      '/offre/:offerId/collectif/confirmation',
+      '/offre/:offerId/collectif/vitrine/confirmation',
+    ],
+    title: 'Confirmation',
+  },
+]
+
 export default routes

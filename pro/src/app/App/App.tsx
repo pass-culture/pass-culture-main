@@ -6,7 +6,7 @@ import { useLocation, Redirect } from 'react-router-dom'
 import { RedirectToMaintenance } from 'components/RedirectToMaintenance'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
-import useLogNavigation from 'hooks/useLogNavigation'
+import useLogPageView from 'hooks/useLogPageView'
 import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
 
 import { useIsRoutePublic } from './hooks'
@@ -21,7 +21,7 @@ const App = ({ children }: IAppProps): JSX.Element | null => {
   const isMaintenanceActivated = useSelector(maintenanceSelector)
   const [isRoutePublic, fromUrl] = useIsRoutePublic()
   useConfigureFirebase(currentUser?.nonHumanizedId)
-  useLogNavigation()
+  useLogPageView()
 
   useEffect(() => {
     window.scrollTo(0, 0)
