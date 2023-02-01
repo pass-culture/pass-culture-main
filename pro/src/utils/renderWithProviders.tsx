@@ -3,6 +3,7 @@ import type { LocationDescriptor } from 'history'
 import React, { ReactNode } from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
+import { CompatRouter } from 'react-router-dom-v5-compat'
 
 import { configureTestStore } from 'store/testUtils'
 
@@ -18,7 +19,9 @@ export const renderWithProviders = (
   const { rerender, ...otherRenderResult } = render(
     <Provider store={store}>
       <MemoryRouter initialEntries={overrides?.initialRouterEntries}>
-        {component}
+        {/* Temporary router for react-router v6 migration */}
+        {/* https://www.npmjs.com/package/react-router-dom-v5-compat */}
+        <CompatRouter>{component}</CompatRouter>
       </MemoryRouter>
     </Provider>
   )
