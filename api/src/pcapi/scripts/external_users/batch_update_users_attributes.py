@@ -25,8 +25,7 @@ def get_users(batch_size: int) -> Generator[User, None, None]:
     except Exception as err:
         print("Users fetch failed: %s", err)
         raise
-    else:
-        print("All users fetched")
+    print("All users fetched")
 
 
 def get_users_chunks(chunk_size: int) -> Generator[list[User], None, None]:

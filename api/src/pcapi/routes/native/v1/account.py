@@ -311,8 +311,7 @@ def suspend_account(user: users_models.User) -> None:
         raise api_errors.ResourceGoneError()
     except bookings_exceptions.BookingIsAlreadyRefunded:
         raise api_errors.ForbiddenError()
-    else:
-        transactional_mails.send_user_request_to_delete_account_reception_email(user)
+    transactional_mails.send_user_request_to_delete_account_reception_email(user)
 
 
 @blueprint.native_v1.route("/account/suspension_date", methods=["GET"])

@@ -137,8 +137,7 @@ class SuspensionMixin:
                     return Conflict(description="Impossible d'annuler une des réservations (déjà annulée)")
                 except bookings_exceptions.BookingIsAlreadyRefunded:
                     return Conflict(description="Impossible d'annuler une des réservations (déjà remboursée)")
-                else:
-                    return redirect(self.user_list_url)
+                return redirect(self.user_list_url)
         else:
             form = SuspensionForm()
 

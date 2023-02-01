@@ -163,8 +163,7 @@ def cancel_collective_offer_booking(offer_id: str) -> None:
         raise ApiErrors(
             {"code": "NO_COLLECTIVE_OFFER_FOUND", "message": "No collective offer has been found with this id"}, 404
         )
-    else:
-        check_user_has_access_to_offerer(current_user, offerer.id)
+    check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         educational_api_booking.cancel_collective_offer_booking(dehumanized_offer_id)

@@ -86,13 +86,11 @@ def _set_settings(index: SearchIndex, path: str, dry: bool = True) -> list[str]:
 def get_settings(index_type_name: str) -> None:
     try:
         index_type: IndexTypes = IndexTypes[index_type_name]
-
     except KeyError as err:
         raise AlgoliaIndexError(f"unknown index type '{index_type_name}'") from err
 
-    else:
-        index = _get_index_client(index_type)
-        click.echo("\n".join(_get_settings(index)))
+    index = _get_index_client(index_type)
+    click.echo("\n".join(_get_settings(index)))
 
 
 @blueprint.cli.command("set_algolia_settings")
@@ -112,12 +110,10 @@ def get_settings(index_type_name: str) -> None:
 def set_settings(index_type_name: str, path: str, dry_run: bool = True) -> None:
     try:
         index_type: IndexTypes = IndexTypes[index_type_name]
-
     except KeyError as err:
         raise AlgoliaIndexError(f"unknown index type '{index_type_name}'") from err
 
-    else:
-        index = _get_index_client(index_type)
-        path = path or _get_index_default_file(index_type)
-        _display_dry_warning(dry_run)
-        click.echo("\n".join(_set_settings(index, path, dry_run)))
+    index = _get_index_client(index_type)
+    path = path or _get_index_default_file(index_type)
+    _display_dry_warning(dry_run)
+    click.echo("\n".join(_set_settings(index, path, dry_run)))

@@ -58,9 +58,8 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
             latitude = Decimal(raw_latitude)
         except InvalidOperation:
             raise ValueError("Format incorrect")
-        else:
-            if not -MAX_LATITUDE < latitude < MAX_LATITUDE:
-                raise ValueError("La latitude doit être comprise entre -90.0 et +90.0")
+        if not -MAX_LATITUDE < latitude < MAX_LATITUDE:
+            raise ValueError("La latitude doit être comprise entre -90.0 et +90.0")
         return raw_latitude
 
     @validator("longitude", pre=True)
@@ -69,9 +68,8 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
             longitude = Decimal(raw_longitude)
         except InvalidOperation:
             raise ValueError("Format incorrect")
-        else:
-            if not -MAX_LONGITUDE < longitude < MAX_LONGITUDE:
-                raise ValueError("La longitude doit être comprise entre -180.0 et +180.0")
+        if not -MAX_LONGITUDE < longitude < MAX_LONGITUDE:
+            raise ValueError("La longitude doit être comprise entre -180.0 et +180.0")
         return raw_longitude
 
     @validator("siret", always=True)

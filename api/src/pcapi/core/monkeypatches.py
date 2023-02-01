@@ -35,16 +35,15 @@ def custom_restclient_request(
             },
         )
         raise
-    else:
-        elapsed = time.perf_counter() - start
-        logger.info(
-            "External service called",
-            extra={
-                "url": url,
-                "statusCode": response.status,
-                "duration": elapsed,
-            },
-        )
+    elapsed = time.perf_counter() - start
+    logger.info(
+        "External service called",
+        extra={
+            "url": url,
+            "statusCode": response.status,
+            "duration": elapsed,
+        },
+    )
     return response
 
 

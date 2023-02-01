@@ -56,16 +56,15 @@ def _wrapper(
             logger_method = logger.info
         logger_method("Call to external service failed with %s", exc, extra={"method": method, "url": _redact_url(url)})
         raise exc
-    else:
-        logger.info(
-            "External service called",
-            extra={
-                "url": _redact_url(response.url),
-                "statusCode": response.status_code,
-                "duration": response.elapsed.total_seconds(),
-            },
-        )
 
+    logger.info(
+        "External service called",
+        extra={
+            "url": _redact_url(response.url),
+            "statusCode": response.status_code,
+            "duration": response.elapsed.total_seconds(),
+        },
+    )
     return response
 
 
