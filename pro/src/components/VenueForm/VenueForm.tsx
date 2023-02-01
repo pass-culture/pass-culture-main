@@ -7,11 +7,13 @@ import FormLayout from 'components/FormLayout'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
-import { useScrollToFirstErrorAfterSubmit } from 'hooks'
+import {
+  useNewOfferCreationJourney,
+  useScrollToFirstErrorAfterSubmit,
+} from 'hooks'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { venueSubmitRedirectUrl } from 'screens/VenueForm/utils/venueSubmitRedirectUrl'
 
-import useActiveFeature from '../../hooks/useActiveFeature'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
@@ -73,9 +75,7 @@ const VenueForm = ({
     )
   }, [])
 
-  const isNewOfferCreationJourney = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'
-  )
+  const isNewOfferCreationJourney = useNewOfferCreationJourney()
 
   const shouldBlockNavigation = useCallback(
     (nextLocation: Location): IShouldBlockNavigationReturnValue => {
