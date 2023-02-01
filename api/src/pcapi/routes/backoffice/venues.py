@@ -22,7 +22,6 @@ from . import serialization
 )
 @perm_utils.permission_required(perm_models.Permissions.READ_PRO_ENTITY)
 def get_venue_basic_info(venue_id: int) -> serialization.Response:
-
     venue_basic_info = offerers_api.get_venue_basic_info(venue_id)
 
     if not venue_basic_info:

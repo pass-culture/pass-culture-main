@@ -487,7 +487,6 @@ def _redirect_after_user_offerer_validation_action(offerer_id: int, code: int = 
     dst_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_id, active_tab="users")
 
     if request.referrer:
-
         referrer_path = urlparse(request.referrer).path
         dst_path = urlparse(dst_url).path
 
@@ -592,7 +591,6 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
 def _user_offerer_batch_action(
     api_function: typing.Callable[[offerers_models.UserOfferer, users_models.User, str | None], None]
 ) -> utils.BackofficeResponse:
-
     form = offerer_forms.BatchOptionalCommentForm()
     try:
         user_offerer_ids = [int(id) for id in form.object_ids.data.split(",")]

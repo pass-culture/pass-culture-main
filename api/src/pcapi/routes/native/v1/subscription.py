@@ -102,7 +102,6 @@ def create_honor_statement_fraud_check(user: users_models.User) -> None:
 def start_identification_session(
     user: users_models.User, body: serializers.IdentificationSessionRequest
 ) -> serializers.IdentificationSessionResponse:
-
     if user.eligibility is None:
         raise api_errors.ApiErrors(
             {"code": "IDCHECK_NOT_ELIGIBLE", "message": "Non éligible à un crédit"},

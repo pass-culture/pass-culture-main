@@ -20,7 +20,6 @@ def _get_features(*requested_features: FeatureToggle):  # type: ignore [no-untyp
 @blueprint.native_v1.route("/settings", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.SettingsResponse)
 def get_settings() -> serializers.SettingsResponse:
-
     features = _get_features(
         FeatureToggle.DISPLAY_DMS_REDIRECTION,
         FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING,

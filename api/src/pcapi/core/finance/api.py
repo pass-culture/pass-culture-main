@@ -1022,7 +1022,6 @@ def _write_csv(
     row_formatter: typing.Callable[[typing.Iterable], typing.Iterable] = lambda row: row,
     compress: bool = False,
 ) -> pathlib.Path:
-
     # Store file in a dedicated directory within "/tmp". It's easier
     # to clean files in tests that way.
     path = pathlib.Path(tempfile.mkdtemp()) / f"{filename}.csv"

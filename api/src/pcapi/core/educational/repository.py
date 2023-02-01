@@ -48,7 +48,6 @@ def find_bookings_happening_in_x_days(number_of_days: int) -> list[educational_m
 
 
 def find_bookings_starting_in_interval(start: datetime, end: datetime) -> list[educational_models.CollectiveBooking]:
-
     query = educational_models.CollectiveBooking.query.join(
         educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
     )
@@ -216,7 +215,6 @@ def find_collective_bookings_for_adage(
     year_id: str,
     redactor_email: str | None = None,
 ) -> list[educational_models.CollectiveBooking]:
-
     query = educational_models.CollectiveBooking.query
     query = query.options(
         sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
@@ -712,7 +710,10 @@ def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOf
                 educational_models.CollectiveStock, educational_models.CollectiveStock.collectiveOfferId == offer_id
             )
             .options(
-                sa.orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True,).joinedload(
+                sa.orm.joinedload(
+                    educational_models.CollectiveOffer.venue,
+                    innerjoin=True,
+                ).joinedload(
                     offerers_models.Venue.managingOfferer,
                     innerjoin=True,
                 )
@@ -734,7 +735,10 @@ def get_collective_offer_template_by_id(offer_id: int) -> educational_models.Col
         query = educational_models.CollectiveOfferTemplate.query
         query = query.filter(educational_models.CollectiveOfferTemplate.id == offer_id)
         query = query.options(
-            sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True,).joinedload(
+            sa.orm.joinedload(
+                educational_models.CollectiveOfferTemplate.venue,
+                innerjoin=True,
+            ).joinedload(
                 offerers_models.Venue.managingOfferer,
                 innerjoin=True,
             )

@@ -38,7 +38,7 @@ def create_industrial_bookings(offers_by_name: dict[str, Offer], users_by_name: 
         if offer.venue.managingOfferer.isValidated is True and len(offer.stocks) > 0
     }
 
-    for (user_name, user) in users_by_name.items():
+    for user_name, user in users_by_name.items():
         if (
             user.firstName != "PC Test Jeune"
             or "has-signed-up" in user_name
@@ -68,7 +68,7 @@ def _create_bookings_for_other_beneficiaries(
     user_name: str,
 ) -> int:
     user_should_have_no_more_money = "has-no-more-money" in user.email
-    for (offer_index, (offer_name, offer)) in enumerate(list(offers_by_name.items())):
+    for offer_index, (offer_name, offer) in enumerate(list(offers_by_name.items())):
         # FIXME (viconnex, 2020-12-22) trying to adapt previous code - not sure of the result and intention
         if offer_index % OFFER_WITH_BOOKINGS_RATIO != 0:
             continue
@@ -85,7 +85,7 @@ def _create_bookings_for_other_beneficiaries(
         if user_has_only_activation_booked and not is_activation_offer:
             continue
 
-        for (index, stock) in enumerate(offer.stocks):
+        for index, stock in enumerate(offer.stocks):
             # every STOCK_MODULO RECO will have several stocks
             if index > 0 and offer_index % (OFFER_WITH_SEVERAL_STOCKS_REMOVE_MODULO + index):
                 continue
@@ -133,8 +133,7 @@ def _create_bookings_for_other_beneficiaries(
 def _create_has_booked_some_bookings(
     bookings_by_name: dict[str, Booking], offers_by_name: dict[str, Offer], user: User, user_name: str
 ) -> None:
-
-    for (offer_index, (offer_name, offer)) in enumerate(list(offers_by_name.items())):
+    for offer_index, (offer_name, offer) in enumerate(list(offers_by_name.items())):
         # FIXME (viconnex, 2020-12-22) trying to adapt previous code - not sure of the result and intention
         # FIXME (asaunier, 2021-01-22) UPDATE - We should replace the "ratio" mechanism by a more immutable data
         #  construction. We currently pick among the list of available offers that may change.

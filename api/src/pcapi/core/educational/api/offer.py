@@ -141,7 +141,6 @@ def list_collective_offers_for_pro_user(
 
     # merge two ordered lists to one shorter than OFFERS_RECAP_LIMIT items
     for _ in range(min(OFFERS_RECAP_LIMIT, (len(offers) + len(templates)))):
-
         if offer_index >= len(offers) and template_index >= len(templates):
             # this should never hapen. Only there as defensive mesure.
             break
@@ -497,7 +496,6 @@ def edit_collective_offer_public(
     # This variable is meant for Adage mailing
     updated_fields = []
     for key, value in new_values.items():
-
         updated_fields.append(key)
 
         if key == "subcategoryId":

@@ -68,7 +68,6 @@ def create_collective_stock(
 def edit_collective_stock(
     stock: educational_models.CollectiveStock, stock_data: dict
 ) -> educational_models.CollectiveStock:
-
     beginning = stock_data.get("beginningDatetime")
     beginning = serialization_utils.as_utc_without_timezone(beginning) if beginning else None
     booking_limit = stock_data.get("bookingLimitDatetime")

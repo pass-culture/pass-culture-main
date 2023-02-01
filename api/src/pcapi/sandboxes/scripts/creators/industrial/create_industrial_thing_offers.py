@@ -27,14 +27,12 @@ def create_industrial_thing_offers(
     offer_index = 0
     thing_items = list(thing_products_by_name.items())
     for offerer in offerers_by_name.values():
-
         virtual_venue = [venue for venue in offerer.managedVenues if venue.isVirtual][0]
 
         physical_venue_name = virtual_venue.name.replace(" (Offre numérique)", "")
         physical_venue = venues_by_name.get(physical_venue_name)
 
         for venue_thing_index in range(0, THINGS_PER_OFFERER):
-
             thing_venue = None
             while thing_venue is None:
                 rest_thing_index = (venue_thing_index + thing_index) % len(thing_items)

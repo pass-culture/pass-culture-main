@@ -109,7 +109,6 @@ def start_ubble_workflow(user: users_models.User, first_name: str, last_name: st
 def get_most_relevant_ubble_error(
     reason_codes: list[fraud_models.FraudReasonCode],
 ) -> fraud_models.FraudReasonCode | None:
-
     if fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in reason_codes:
         return fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
 

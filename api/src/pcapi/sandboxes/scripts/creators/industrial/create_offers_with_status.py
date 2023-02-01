@@ -37,7 +37,6 @@ def create_offers_with_status() -> None:
 
 def create_offers_fully_booked(user_bene: User, venue: Venue) -> None:
     for i in range(0, 10):
-
         offer_event = EventOfferFactory(
             name=f"Ciné complétement réservé {i}",
             venue=venue,

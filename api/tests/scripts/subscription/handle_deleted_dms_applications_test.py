@@ -16,7 +16,6 @@ class HandleDeletedDmsApplicationsTest:
     @pytest.mark.usefixtures("db_session")
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_handle_deleted_dms_applications(self, execute_query):
-
         fraud_check_not_to_mark_as_deleted = fraud_factories.BeneficiaryFraudCheckFactory(
             thirdPartyId="1", type=fraud_models.FraudCheckType.DMS
         )

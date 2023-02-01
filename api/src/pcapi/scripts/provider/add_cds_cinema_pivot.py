@@ -29,7 +29,6 @@ def add_all_cinema_pivot_from_file(
 ) -> None:
     cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one_or_none()
     if cds_provider:
-
         if file_ext == "excel":
             print("read excel file")
             wb = openpyxl.load_workbook(file_path)
@@ -102,7 +101,6 @@ def get_cds_cinema_from_csv_row(row: dict) -> CDSCinema:
 def get_all_cinemas_to_add_from_excel(
     sheet: openpyxl.Workbook.active, starting_row_number_to_import: int, ending_row_number_to_import: int
 ) -> list[CDSCinema]:
-
     # Create a dictionary of column names
     column_names = {}
     current_column_index = 0

@@ -17,7 +17,6 @@ def create_industrial_admin_users() -> dict[str, User]:
     users_by_name = {}
 
     for departement_code in departement_codes:
-
         for admin_count in range(ADMINS_COUNT):
             email = "pctest.admin{}.{}@example.com".format(departement_code, admin_count)
             users_by_name["admin{} {}".format(departement_code, admin_count)] = users_factories.AdminFactory(

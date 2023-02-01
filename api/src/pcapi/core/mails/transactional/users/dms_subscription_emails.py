@@ -30,7 +30,6 @@ def send_complete_subscription_after_dms_email(user_email: str) -> bool:
 def send_pre_subscription_from_dms_error_email_to_beneficiary(
     user_email: str, field_errors: list[fraud_models.DmsFieldErrorDetails]
 ) -> bool:
-
     if len(field_errors) == 0:
         return False
     data = models.TransactionalEmailData(template=TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value)

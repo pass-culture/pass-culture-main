@@ -232,12 +232,12 @@ def send_phone_validation_code(user: users_models.User, body: serializers.SendPh
         _log_failure_code(body.phoneNumber, error["code"])
         raise ApiErrors(error, status_code=400)
 
-    except (phone_validation_exceptions.InvalidPhoneNumber):
+    except phone_validation_exceptions.InvalidPhoneNumber:
         error = {"code": "INVALID_PHONE_NUMBER", "message": "Le numéro de téléphone est invalide"}
         _log_failure_code(body.phoneNumber, error["code"])
         raise ApiErrors(error, status_code=400)
 
-    except (phone_validation_exceptions.PhoneAlreadyExists):
+    except phone_validation_exceptions.PhoneAlreadyExists:
         error = {
             "code": "PHONE_ALREADY_EXISTS",
             "message": "Un compte est déjà associé à ce numéro. Renseigne un autre numéro ou connecte-toi au compte existant.",

@@ -890,7 +890,6 @@ def set_offer_status_based_on_fraud_criteria(
 
 
 def update_pending_offer_validation(offer: models.Offer, validation_status: models.OfferValidationStatus) -> bool:
-
     offer = type(offer).query.filter_by(id=offer.id).one()
     if offer.validation != models.OfferValidationStatus.PENDING:
         template = f"{type(offer)} validation status cannot be updated, initial validation status is not PENDING. %s"

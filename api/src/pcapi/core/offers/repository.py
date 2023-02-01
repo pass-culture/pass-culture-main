@@ -449,7 +449,6 @@ def get_offers_map_by_id_at_provider(id_at_provider_list: list[str], venue: Venu
 
 
 def get_offers_map_by_venue_reference(id_at_provider_list: list[str], venue_id: int) -> dict[str, int]:
-
     offers_map = {}
     for offer_id, offer_id_at_provider in (
         db.session.query(models.Offer.id, models.Offer.idAtProvider)
@@ -659,7 +658,10 @@ def get_offer_by_id(offer_id: int) -> models.Offer:
             .options(joinedload(models.Offer.product, innerjoin=True))
             .options(joinedload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel))
             .options(
-                joinedload(models.Offer.venue, innerjoin=True,).joinedload(
+                joinedload(
+                    models.Offer.venue,
+                    innerjoin=True,
+                ).joinedload(
                     Venue.managingOfferer,
                     innerjoin=True,
                 )

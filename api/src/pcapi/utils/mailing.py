@@ -61,7 +61,6 @@ def make_offerer_internal_validation_email(
     user_offerer: offerers_models.UserOfferer,
     siren_info: sirene.SirenInfo | None,
 ) -> mails_models.TransactionalWithoutTemplateEmailData:
-
     offerer_departement_code = postal_code_utils.PostalCode(offerer.postalCode).get_departement_code()
 
     email_html = render_template(

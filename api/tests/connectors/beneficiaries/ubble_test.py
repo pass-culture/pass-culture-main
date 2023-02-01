@@ -14,7 +14,6 @@ from tests.test_utils import json_default
 
 class StartIdentificationTest:
     def test_start_identification(self, ubble_mock, caplog):
-
         with caplog.at_level(logging.INFO):
             response = ubble.start_identification(
                 user_id=123,

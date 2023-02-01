@@ -8,7 +8,6 @@ from pcapi.core.offerers import factories as offerer_factories
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_get_venues_from_siret(self, client) -> None:
-
         venue = offerer_factories.VenueFactory(
             siret="12345678912345",
             audioDisabilityCompliant=None,
@@ -62,7 +61,6 @@ class Returns200Test:
         }
 
     def test_get_venues_from_siret_with_label(self, client) -> None:
-
         venue = offerer_factories.VenueFactory(
             siret="12345678912345",
             audioDisabilityCompliant=None,

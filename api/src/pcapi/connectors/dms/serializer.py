@@ -33,7 +33,6 @@ DMS_ANNOTATION_SLUG = "AN_001"
 def parse_beneficiary_information_graphql(
     application_detail: dms_models.DmsApplicationResponse,
 ) -> fraud_models.DMSContent:
-
     application_number = application_detail.number
     civility = application_detail.applicant.civility
     email = application_detail.profile.email

@@ -134,7 +134,6 @@ class TransactionalEmailWithTemplateTest:
 
 
 class TransactionalEmailWithoutTemplateTest:
-
     data = models.TransactionalWithoutTemplateEmailData(
         subject="test",
         html_content="contenu test",

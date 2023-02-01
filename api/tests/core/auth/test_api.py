@@ -86,7 +86,6 @@ def test_non_passculture_accounts_cannot_get_a_token():
 
         # then
         with pytest.raises(NotAPassCultureTeamAccountError):
-
             # when
             authenticate_with_permissions("random google token id")
 
@@ -98,6 +97,5 @@ def test_unknown_accounts_cannot_get_a_token():
 
         # then
         with pytest.raises(NotAPassCultureTeamAccountError):
-
             # when
             authenticate_with_permissions("random google token id")

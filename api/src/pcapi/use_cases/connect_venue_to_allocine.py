@@ -16,7 +16,6 @@ from pcapi.repository import repository
 def connect_venue_to_allocine(
     venue: Venue, provider_id: int, venue_provider_payload: VenueProviderCreationPayload
 ) -> AllocineVenueProvider:
-
     allocine_venue = AllocineVenue(venue=venue)
 
     if not venue_provider_payload.price:
