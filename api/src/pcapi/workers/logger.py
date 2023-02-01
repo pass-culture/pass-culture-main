@@ -1,7 +1,7 @@
 from rq.job import Job
 
 
-def job_extra_description(job: Job):  # type: ignore [no-untyped-def]
+def job_extra_description(job: Job) -> dict:
     return {
         "job": job.id,
         "function": job.func_name,
