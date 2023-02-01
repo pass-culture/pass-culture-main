@@ -338,6 +338,7 @@ class GetBookingsTest:
         assert len(response.json["ongoing_bookings"]) == 0
         assert len(response.json["ended_bookings"]) == 1
         assert response.json["ended_bookings"][0]["id"] == booking.id
+        assert response.json["ended_bookings"][0]["dateUsed"] != None
 
 
 class CancelBookingTest:

@@ -204,7 +204,10 @@ def is_ended_booking(booking: Booking) -> bool:
     if booking.dateCreated < datetime.utcnow() - timedelta(days=30) and not (
         booking_subcategory.can_expire or booking_subcategory.is_event
     ):
-        # consider digital bookings with no expiration date as ended after 30 days
+        # consider digital bookings with no expiration date as used and ended after 30 days
+        booking.status = BookingStatus.USED
+        booking.dateUsed = datetime.utcnow()
+        repository.save(booking)
         return True
 
     return (
