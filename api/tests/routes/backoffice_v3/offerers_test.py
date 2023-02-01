@@ -24,7 +24,7 @@ from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice_v3 import offerers
 
-from .helpers import comment as comment_helpers
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers import unauthorized as unauthorized_helpers
 
@@ -417,8 +417,9 @@ class GetOffererDetailsTest:
         endpoint_kwargs = {"offerer_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    class CommentButtonTest(comment_helpers.CommentButtonHelper):
+    class CommentButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+        button_label = "Ajouter un commentaire"
 
         @property
         def path(self):

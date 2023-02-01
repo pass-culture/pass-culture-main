@@ -6,6 +6,7 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
+from pcapi.core.users import models as users_models
 from pcapi.utils.human_ids import humanize
 
 
@@ -55,3 +56,7 @@ def build_pc_pro_venue_bookings_link(venue: offerers_models.Venue) -> str:
 
 def build_pc_pro_venue_offers_link(venue: offerers_models.Venue) -> str:
     return f"{settings.PRO_URL}/offres?lieu={humanize(venue.id)}"
+
+
+def build_pc_pro_user_email_validation_link(user: users_models.User) -> str:
+    return f"{settings.PRO_URL}/inscription/validation/{user.validationToken}"

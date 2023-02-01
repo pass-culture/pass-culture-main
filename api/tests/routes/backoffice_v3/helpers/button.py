@@ -13,7 +13,11 @@ pytestmark = [
 ]
 
 
-class CommentButtonHelper:
+class ButtonHelper:
+    @property
+    def button_label(self) -> str:
+        return ""
+
     @property
     def needed_permission(self) -> perm_models.Permissions:
         return perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -32,16 +36,16 @@ class CommentButtonHelper:
 
         return user
 
-    def test_comment_button_when_can_add_one(self, authenticated_client):
+    def test_button_when_can_add_one(self, authenticated_client):
         response = authenticated_client.get(self.path)
         assert response.status_code == 200
 
-        assert "Ajouter un commentaire" in response.data.decode("utf-8")
+        assert self.button_label in response.data.decode("utf-8")
 
-    def test_not_comment_button(self, client, roles_with_permissions):
+    def test_no_button(self, client, roles_with_permissions):
         client = client.with_bo_session_auth(self.unauthorized_user)
 
         response = client.get(self.path)
         assert response.status_code == 200
 
-        assert "Ajouter un commentaire" not in response.data.decode("utf-8")
+        assert self.button_label not in response.data.decode("utf-8")
