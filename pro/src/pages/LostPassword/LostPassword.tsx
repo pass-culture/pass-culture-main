@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import PageTitle from 'components/PageTitle/PageTitle'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Hero from 'ui-kit/Hero'
@@ -73,7 +72,6 @@ const LostPassword = (): JSX.Element => {
 
   return (
     <>
-      <PageTitle title="Mot de passe perdu" />
       <div className="logo-side">
         <Logo noLink signPage />
       </div>

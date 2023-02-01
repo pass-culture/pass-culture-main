@@ -1,7 +1,6 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import React from 'react'
 
-import PageTitle from 'components/PageTitle/PageTitle'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'

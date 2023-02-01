@@ -7,7 +7,6 @@ import {
   useRouteMatch,
 } from 'react-router'
 
-import PageTitle from 'components/PageTitle/PageTitle'
 import { OfferIndividualContextProvider } from 'context/OfferIndividualContext'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { parse } from 'utils/query-string'

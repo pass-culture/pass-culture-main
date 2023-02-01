@@ -90,7 +90,7 @@ export const routesWithoutLayout: IRoute[] = [
     component: CsvTable,
     exact: true,
     path: '/remboursements-details',
-    title: 'Remboursements',
+    title: 'Liste de vos remboursements',
   },
   {
     component: Unavailable,
@@ -109,7 +109,7 @@ const routes: IRoute[] = [
     component: Homepage,
     exact: true,
     path: '/accueil',
-    title: 'Accueil',
+    title: 'Espace acteurs culturels',
   },
   {
     component: Desk,
@@ -121,19 +121,19 @@ const routes: IRoute[] = [
     component: Bookings,
     exact: true,
     path: '/reservations',
-    title: 'Réservations',
+    title: 'Vos réservations',
   },
   {
     component: CollectiveBookings,
     exact: true,
     path: '/reservations/collectives',
-    title: 'Réservations',
+    title: 'Vos réservations d’offres collectives',
   },
   {
     component: SetPassword,
     exact: true,
     path: ['/creation-de-mot-de-passe/:token?'],
-    title: 'Création de mot de passe',
+    title: 'Définition du mot de passe',
     meta: {
       public: true,
       layoutConfig: {
@@ -146,7 +146,7 @@ const routes: IRoute[] = [
     component: SetPasswordConfirm,
     exact: true,
     path: ['/creation-de-mot-de-passe-confirmation'],
-    title: 'Confirmation création de mot de passe',
+    title: 'Confirmation du mot de passe',
     meta: {
       public: true,
       layoutConfig: {
@@ -159,7 +159,7 @@ const routes: IRoute[] = [
     component: SignIn,
     exact: true,
     path: '/connexion',
-    title: 'Connexion',
+    title: 'Se connecter',
     meta: {
       public: true,
       layoutConfig: {
@@ -184,19 +184,19 @@ const routes: IRoute[] = [
     component: Offerers,
     exact: true,
     path: '/structures',
-    title: 'Structures',
+    title: 'Vos structures juridiques',
   },
   {
     component: OffererCreation,
     exact: true,
     path: '/structures/creation',
-    title: 'Structures',
+    title: 'Créer une structure',
   },
   {
     component: OffererDetails,
     exact: true,
     path: '/structures/:offererId([A-Z0-9]+)',
-    title: 'Structures',
+    title: 'Détails de votre structure',
   },
   {
     component: VenueCreation,
@@ -227,13 +227,13 @@ const routes: IRoute[] = [
     component: OffersRoute,
     exact: true,
     path: '/offres',
-    title: 'Offres',
+    title: 'Vos offres',
   },
   {
     component: CollectiveOffers,
     exact: true,
     path: '/offres/collectives',
-    title: 'Offres',
+    title: 'Vos offres collectives',
   },
   {
     component: CollectiveOfferRoutes,
@@ -268,7 +268,7 @@ const routes: IRoute[] = [
   {
     component: Reimbursements,
     path: '/remboursements',
-    title: 'Remboursements',
+    title: 'Vos remboursements',
     meta: {
       layoutConfig: {
         pageName: 'reimbursements',
@@ -287,6 +287,11 @@ const routes: IRoute[] = [
     featureName: 'ENABLE_OFFERER_STATS',
   },
 ]
+
+export const routeNotFound = {
+  path: '*',
+  title: 'Page inaccessible',
+}
 
 const offerPath = '/offre/individuelle/:offerId'
 export const subRoutesOfferIndividualWizard = [

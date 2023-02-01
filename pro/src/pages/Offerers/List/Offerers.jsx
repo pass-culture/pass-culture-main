@@ -6,7 +6,6 @@ import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import PageTitle from 'components/PageTitle/PageTitle'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as AddOffererSvg } from 'icons/ico-plus.svg'
 import { ButtonLink } from 'ui-kit'
@@ -25,7 +24,12 @@ import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 /* eslint-disable */
 function withRouterAndApiSiren(Component) {
   return props => (
-    <Component {...props} history={useHistory()} location={useLocation()} isOffererCreationAvailable={useActiveFeature('API_SIRENE_AVAILABLE')}/>
+    <Component
+      {...props}
+      history={useHistory()}
+      location={useLocation()}
+      isOffererCreationAvailable={useActiveFeature('API_SIRENE_AVAILABLE')}
+    />
   )
 }
 /* eslint-enable */
@@ -200,7 +204,6 @@ class Offerers extends PureComponent {
 
     return (
       <div className="offerers-page">
-        <PageTitle title="Vos structures juridiques" />
         <Titles action={actionLink} title={sectionTitle} />
         <p className="advice">
           Pour présenter vos offres, vous devez d’abord{' '}

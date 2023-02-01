@@ -25,13 +25,12 @@ describe('useLogPageView', () => {
     render(
       <MemoryRouter initialEntries={['/accueil']}>
         <LogPageView />
-        <Route path="*">
+        <Route path="/accueil">
           <span>Main page</span>
           <Link to="/structures">Structures</Link>
         </Route>
         <Route path="/structures">
           <span>Structure page</span>
-          <Link to="/acc">Accueil</Link>
         </Route>
       </MemoryRouter>
     )

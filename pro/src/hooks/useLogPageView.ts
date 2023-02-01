@@ -4,6 +4,7 @@ import { matchPath, useLocation } from 'react-router-dom'
 
 import routes, {
   IRoute,
+  routeNotFound,
   routesWithoutLayout,
   subRoutesOfferIndividualWizard,
   subRoutesInscription,
@@ -26,6 +27,7 @@ const usePageTitle = (): LocationListener | void => {
       ...subRoutesOfferIndividualWizard,
       ...routes,
       ...routesWithoutLayout,
+      routeNotFound,
     ].find(
       (route: Partial<IRoute>) => matchPath(location.pathname, route) !== null
     )

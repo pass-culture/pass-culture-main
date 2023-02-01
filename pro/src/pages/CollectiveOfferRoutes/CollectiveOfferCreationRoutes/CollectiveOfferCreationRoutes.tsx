@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { Route, Switch, useLocation } from 'react-router-dom'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import PageTitle from 'components/PageTitle/PageTitle'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
@@ -66,7 +65,6 @@ const CollectiveOfferCreationRoutes = ({
           '/offre/:offerId/collectif/vitrine/confirmation',
         ]}
       >
-        <PageTitle title="Confirmation" />
         {offer ? <CollectiveOfferConfirmation offer={offer} /> : <Spinner />}
       </Route>
       <Route

@@ -5,7 +5,6 @@ import { useHistory, useRouteMatch } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { isErrorAPIError, getError } from 'apiClient/helpers'
 import LegalInfos from 'components/LegalInfos/LegalInfos'
-import PageTitle from 'components/PageTitle/PageTitle'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import PasswordField from 'ui-kit/form_rff/fields/PasswordField'
@@ -89,7 +88,6 @@ const SetPassword = () => {
 
   return (
     <Fragment>
-      <PageTitle title="Définition du mot de passe" />
       <div className="logo-side">
         <Logo noLink signPage />
       </div>

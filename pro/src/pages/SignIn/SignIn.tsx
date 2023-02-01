@@ -1,6 +1,5 @@
 import React from 'react'
 
-import PageTitle from 'components/PageTitle/PageTitle'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Logo from 'ui-kit/Logo/Logo'
 
@@ -11,7 +10,6 @@ const SignIn = (): JSX.Element => {
 
   return (
     <>
-      <PageTitle title="Se connecter" />
       <div className="logo-side">
         <Logo noLink signPage />
       </div>

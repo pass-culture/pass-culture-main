@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useLocation } from 'react-router-dom'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import PageTitle from 'components/PageTitle/PageTitle'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
