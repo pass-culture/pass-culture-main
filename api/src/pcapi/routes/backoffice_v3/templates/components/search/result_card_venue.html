@@ -1,13 +1,9 @@
+{% from "components/badges.html" import build_venue_badges %}
+
 <div class="card shadow">
     <div class="card-body">
-        <h5 class="card-title mb-3">
-            <span class="me-1 pb-1 badge rounded-pill text-bg-secondary align-middle">
-                {% if row.isPermanent %}
-                    Lieu permanent
-                {% else %}
-                    Lieu
-                {% endif %}
-            </span>
+        <h5 class="mb-3">
+            {{ build_venue_badges(row) }}
         </h5>
 
         <h5 class="card-title">
@@ -23,8 +19,8 @@
         </h6>
 
         <div class="fs-6">
-            <p class="mb-1"><span class="fw-bold">mail:</span> {{ row.contact.email | empty_string_if_null }} </p>
-            <p><span class="fw-bold">tel:</span> {{ row.contact.phone_number | format_phone_number }} </p>
+            <p class="mb-1"><span class="fw-bold">E-mail :</span> {{ row.contact.email | empty_string_if_null }} </p>
+            <p><span class="fw-bold">Tél :</span> {{ row.contact.phone_number | format_phone_number }} </p>
         </div>
 
         <a href="{{ get_link_to_detail(row.id) }}" class="card-link">

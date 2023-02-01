@@ -28,6 +28,13 @@
             Lieu
         {% endif %}
     </span>
+
+    {% if not venue.managingOfferer.isActive %}
+        <span class="me-1 pb-1 badge rounded-pill text-bg-dark">
+            <i class="bi bi-x-circle"></i>
+                Suspendu
+        </span>
+    {% endif %}
 {% endmacro %}
 
 {% macro build_offerer_badges(offerer) %}

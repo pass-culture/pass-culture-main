@@ -887,9 +887,8 @@ def search_offerer(search_query: str, order_by: list[str] | None = None) -> Base
             offerers = offerers.order_by(*db_utils.get_ordering_clauses(models.Offerer, order_by))
         except db_utils.BadSortError as err:
             raise ApiErrors({"sorting": str(err)})
-
-    # At the end, search by id, in case there is no order requested or equal similarity score
     else:
+        # At the end, search by id, in case there is no order requested or equal similarity score
         offerers = offerers.order_by(models.Offerer.id)
 
     return offerers
@@ -901,72 +900,55 @@ def get_offerer_base_query(offerer_id: int) -> BaseQuery:
 
 def search_venue(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
     venues = models.Venue.query.outerjoin(offerers_models.VenueContact)
-    terms = search_query.split()
 
-    filters: list[sa.sql.ColumnElement] = []
-    name_terms: list[str] = []
-
-    if not terms:
+    search_query = search_query.strip()
+    if not search_query:
         return venues.filter(False)
 
-    for term in terms:
-        if not term:
-            continue
-
-        term_filters: list[sa.sql.ColumnElement] = []
-
-        # numeric
-        if term.isnumeric():
-            term_filters.append(models.Venue.id == int(term))
-            if len(term) == 14:
-                term_filters.append(models.Venue.siret == term)
-
+    if search_query.isnumeric():
+        if len(search_query) == 14:
+            venues = venues.filter(sa.or_(models.Venue.id == int(search_query), models.Venue.siret == search_query))
+        else:
+            venues = venues.filter(models.Venue.id == int(search_query))
+    else:
         # email
-        sanitized_term = email_utils.sanitize_email(term)
+        sanitized_term = email_utils.sanitize_email(search_query)
         if email_utils.is_valid_email(sanitized_term):
-            term_filters.append(models.Venue.bookingEmail == sanitized_term)
-            term_filters.append(models.VenueContact.email == sanitized_term)
+            venues = venues.filter(
+                sa.or_(models.Venue.bookingEmail == sanitized_term, models.VenueContact.email == sanitized_term)
+            )
         elif email_utils.is_valid_email_domain(sanitized_term):
             # search for all emails @domain.ext
-            term_filters.append(models.Venue.bookingEmail.like(f"%{sanitized_term}"))
-            term_filters.append(models.VenueContact.email.like(f"%{sanitized_term}"))
-
-        if term_filters:
-            filters.append(sa.or_(*term_filters) if len(term_filters) > 1 else term_filters[0])
+            venues = venues.filter(
+                sa.or_(
+                    models.Venue.bookingEmail.like(f"%{sanitized_term}"),
+                    models.VenueContact.email.like(f"%{sanitized_term}"),
+                )
+            )
         else:
             # non-numeric terms are searched by trigram distance in the name
-            name_terms.append(term)
-
-    name_search = " ".join(name_terms)
-    if name_search:
-        filters.append(
-            sa.or_(
-                sa.func.similarity(models.Venue.name, name_search)
-                > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE,
-                sa.func.similarity(models.Venue.publicName, name_search)
-                > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE,
+            venues = venues.filter(
+                sa.or_(
+                    sa.func.similarity(models.Venue.name, search_query)
+                    > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE,
+                    sa.func.similarity(models.Venue.publicName, search_query)
+                    > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE,
+                )
+            ).order_by(
+                # Always order by similarity when searching by name
+                sa.desc(
+                    sa.func.similarity(models.Venue.name, search_query)
+                    + sa.func.similarity(models.Venue.publicName, search_query)
+                )
             )
-        )
-
-    # each result must match all terms in any column
-    venues = venues.filter(*filters)
 
     if order_by:
         try:
             venues = venues.order_by(*db_utils.get_ordering_clauses(models.Venue, order_by))
         except db_utils.BadSortError as err:
             raise ApiErrors({"sorting": str(err)})
-
-    if name_search:
-        venues = venues.order_by(
-            sa.desc(
-                sa.func.similarity(models.Venue.name, name_search)
-                + sa.func.similarity(models.Venue.publicName, name_search)
-            )
-        )
-
-    # At the end, search by id, in case there is no order requested or equal similarity score
-    if not order_by:
+    else:
+        # At the end, search by id, in case there is no order requested or equal similarity score
         venues = venues.order_by(models.Venue.id)
 
     return venues
