@@ -127,7 +127,7 @@ def book_offer(
 
         if is_external_ticket_applicable:
             if not offers_validation.check_offer_is_from_current_cinema_provider(stock.offer):
-                raise Exception("This offer is from the wrong cinema provider")
+                raise ValueError("This offer is from the wrong cinema provider")
             _book_external_ticket(booking, stock)
 
         repository.save(individual_booking, stock)
@@ -175,10 +175,10 @@ def _book_external_ticket(booking: Booking, stock: Stock) -> None:
                 raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
             show_id = cinema_providers_utils.get_boost_showtime_id_from_uuid(stock.idAtProviders)
         case _:
-            raise Exception(f"Unknown Provider: {venue_provider_name}")
+            raise ValueError(f"Unknown Provider: {venue_provider_name}")
 
     if not show_id:
-        raise Exception("Could not retrieve show_id")
+        raise ValueError("Could not retrieve show_id")
 
     tickets = external_bookings_api.book_ticket(
         venue_id=stock.offer.venueId,
@@ -245,7 +245,7 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
             if not FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
                 raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
         case _:
-            raise Exception(f"Unknown Provider: {venue_provider_name}")
+            raise ValueError(f"Unknown Provider: {venue_provider_name}")
     barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
     external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
 

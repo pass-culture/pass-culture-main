@@ -40,7 +40,7 @@ def _get_external_bookings_client_api(venue_id: int) -> external_bookings_models
         case "BoostStocks":
             return BoostClientAPI(cinema_id)
         case _:
-            raise Exception(f"Unknown Provider: {cinema_venue_provider.provider.localClass}")
+            raise ValueError(f"Unknown Provider: {cinema_venue_provider.provider.localClass}")
 
 
 def get_active_cinema_venue_provider(venue_id: int) -> providers_models.VenueProvider:
@@ -50,5 +50,5 @@ def get_active_cinema_venue_provider(venue_id: int) -> providers_models.VenuePro
         .one_or_none()
     )
     if not cinema_venue_provider:
-        raise Exception(f"No active cinema venue provider found for venue #{venue_id}")
+        raise ValueError(f"No active cinema venue provider found for venue #{venue_id}")
     return cinema_venue_provider

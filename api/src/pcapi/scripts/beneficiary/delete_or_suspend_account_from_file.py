@@ -41,7 +41,7 @@ def _delete_users_and_favorites(user_ids: set) -> None:
         ).all()
         for user_offerer in user_offerers:
             if user_offerer.isValidated and user_offerer.offerer.isValidated:
-                raise Exception("Trying to delete a pro user with a valid offerer")
+                raise ValueError("Trying to delete a pro user with a valid offerer")
             db.session.delete(user_offerer)
         User.query.filter(User.id == user_id).delete()
         db.session.commit()

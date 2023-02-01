@@ -1031,7 +1031,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_place(
                 return
             shows_remaining_places = external_bookings_api.get_boost_movie_stocks(offer.venueId, film_id)
         case _:
-            raise Exception(f"Unknown Provider: {venue_provider.provider.localClass}")
+            raise ValueError(f"Unknown Provider: {venue_provider.provider.localClass}")
 
     for show_id, remaining_places in shows_remaining_places.items():
         stock = next(

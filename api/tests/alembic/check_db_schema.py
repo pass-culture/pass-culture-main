@@ -20,7 +20,7 @@ def check_db_schema_alignment():
         diff = compare_metadata(migration_context, db.metadata)
 
         if len(diff) > 0:
-            raise Exception(
+            raise RuntimeError(
                 f"The database is not aligned with application model, create a migration or change the model to remove the following diff: {diff}"
             )
 
