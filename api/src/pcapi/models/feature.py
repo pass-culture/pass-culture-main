@@ -112,6 +112,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_MULTI_PRICE_STOCKS = "Active la fonctionnalité multi-tarif pour les offres individuelles"
     ENABLE_CGR_INTEGRATION = "Active la synchonisation de stocks et la réservation via CGR"
     WIP_ADD_CLG_6_5_COLLECTIVE_OFFER = "Ouverture des offres collectives au 6ème et 5ème"
+    WIP_ENABLE_LIKE_IN_ADAGE = "Active la possibilité de liker une offre sur adage"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -170,6 +171,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_MULTI_PRICE_STOCKS,
     FeatureToggle.ENABLE_CGR_INTEGRATION,
     FeatureToggle.WIP_ADD_CLG_6_5_COLLECTIVE_OFFER,
+    FeatureToggle.WIP_ENABLE_LIKE_IN_ADAGE,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
