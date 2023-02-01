@@ -45,7 +45,6 @@ class ReportedOfferByUserEmailTest:
         assert mails_testing.outbox[0].sent_data["To"] == settings.REPORT_OFFER_EMAIL_ADDRESS
 
     def test_get_email_metadata(self):
-
         # Given
         user = BeneficiaryGrant18Factory()
         offer = OfferFactory()

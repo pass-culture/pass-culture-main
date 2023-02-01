@@ -27,7 +27,6 @@ def create_industrial_event_offers(
     event_items = list(events_by_name.items())
 
     for offerer in offerers_by_name.values():
-
         event_venues = [venue for venue in offerer.managedVenues if not venue.isVirtual]
 
         if not event_venues:
@@ -36,7 +35,6 @@ def create_industrial_event_offers(
         event_venue = event_venues[0]
 
         for venue_event_index in range(0, EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE):
-
             rest_event_index = (venue_event_index + event_index) % len(event_items)
 
             (event_name, event) = event_items[rest_event_index]

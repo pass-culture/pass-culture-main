@@ -137,7 +137,6 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
     educational_institution_id = collective_booking.educationalInstitutionId
     educational_year_id = collective_booking.educationalYearId
     with transaction():
-
         deposit = educational_repository.get_and_lock_educational_deposit(
             educational_institution_id, educational_year_id
         )
@@ -177,7 +176,6 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
 
 
 def refuse_collective_booking(educational_booking_id: int) -> educational_models.CollectiveBooking:
-
     collective_booking = educational_repository.find_collective_booking_by_id(educational_booking_id)
     if collective_booking is None:
         raise exceptions.EducationalBookingNotFound()
@@ -353,7 +351,7 @@ def _cancel_collective_booking(
 
         try:
             collective_booking.cancel_booking(reason)
-        except (exceptions.CollectiveBookingAlreadyCancelled):
+        except exceptions.CollectiveBookingAlreadyCancelled:
             return
 
         db.session.commit()
@@ -397,7 +395,6 @@ def _cancel_collective_booking_by_offerer(
 def cancel_collective_booking_by_id_from_support(
     collective_booking: educational_models.CollectiveBooking,
 ) -> None:
-
     with transaction():
         educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
         db.session.refresh(collective_booking)

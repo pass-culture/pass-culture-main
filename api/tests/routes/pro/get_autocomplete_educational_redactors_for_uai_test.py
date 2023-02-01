@@ -133,7 +133,6 @@ class Returns400Test:
 @pytest.mark.usefixtures("db_session")
 class Returns401Test:
     def test_user_not_logged_in(self, client):
-
         # When
         response = client.get("/collective/offers/redactors?uai=X&candidate=sklodowska")
 

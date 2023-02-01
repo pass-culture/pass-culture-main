@@ -695,7 +695,6 @@ class EducationalDeposit(PcObject, Base, Model):
 
 
 class EducationalRedactor(PcObject, Base, Model):
-
     __tablename__ = "educational_redactor"
 
     email: str = sa.Column(sa.String(120), nullable=False, unique=True, index=True)

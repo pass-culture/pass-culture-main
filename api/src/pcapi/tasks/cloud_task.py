@@ -36,7 +36,6 @@ def enqueue_task(
     schedule_time: datetime = None,
     task_request_timeout: int | None = None,
 ) -> str | None:
-
     client = get_client()
     parent = client.queue_path(settings.GCP_PROJECT, settings.GCP_REGION_CLOUD_TASK, queue)
 

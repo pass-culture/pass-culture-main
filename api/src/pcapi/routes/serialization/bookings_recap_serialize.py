@@ -79,7 +79,6 @@ class ListBookingsResponseModel(BaseModel):
 def _serialize_booking_status_info(
     booking_status: BookingRecapStatus, booking_status_date: datetime
 ) -> BookingRecapResponseBookingStatusHistoryModel:
-
     serialized_booking_status_date = isoformat(booking_status_date) if booking_status_date else None
 
     return BookingRecapResponseBookingStatusHistoryModel(

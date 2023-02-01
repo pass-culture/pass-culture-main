@@ -41,7 +41,6 @@ class CDSStocks(LocalProvider):
         self.last_offer_id: int | None = None
 
     def __next__(self) -> list[ProvidableInfo]:
-
         movie_infos = next(self.movies)
         if movie_infos:
             self.movie_information = movie_infos

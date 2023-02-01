@@ -472,7 +472,6 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
             last_suspension_action = suspension_action_history[-1]
 
             if last_suspension_action.actionType == history_models.ActionType.USER_SUSPENDED:
-
                 if self.suspension_reason == constants.SuspensionReason.DELETED:
                     return AccountState.DELETED
                 if self.suspension_reason == constants.SuspensionReason.UPON_USER_REQUEST:

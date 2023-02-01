@@ -30,6 +30,7 @@ OFFERERS_WITH_IBAN_REMOVE_MODULO = 2
 USERS_WITH_SEVERAL_OFFERERS_PICK_MODULO = 2
 OFFERERS_WITH_THREE_ATTACHED_USERS_PICK_MODULO = 2
 
+
 # Declare locations in various timezones: metropolitan France
 # (UTC+1/+2), Guyane (UTC-3) and Wallis-et-Futuna (UTC+12).
 @dataclass
@@ -244,11 +245,11 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
     user_items_with_several_offerers = pick_every(users_by_name.items(), USERS_WITH_SEVERAL_OFFERERS_PICK_MODULO)
     user_offerer_index = 0
 
-    for (user_name, pro) in user_items_with_several_offerers:
+    for user_name, pro in user_items_with_several_offerers:
         offerer_items_with_three_attached_users = pick_every(
             offerers_by_name.items(), OFFERERS_WITH_THREE_ATTACHED_USERS_PICK_MODULO
         )
-        for (offerer_name, offerer) in offerer_items_with_three_attached_users:
+        for offerer_name, offerer in offerer_items_with_three_attached_users:
             user_offerer_name = "{} / {}".format(user_name, offerer_name)
 
             if user_offerer_name in user_offerers_by_name:

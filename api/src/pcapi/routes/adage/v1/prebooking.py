@@ -26,7 +26,6 @@ from . import blueprint
 def get_educational_bookings(
     query: prebooking_serialization.GetEducationalBookingsRequest, year_id: str, uai_code: str
 ) -> prebooking_serialization.EducationalBookingsResponse:
-
     educational_bookings = find_collective_bookings_for_adage(
         uai_code=uai_code,
         year_id=year_id,

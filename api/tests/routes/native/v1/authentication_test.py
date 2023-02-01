@@ -132,7 +132,6 @@ def test_unknown_user_logs_in(client):
 
 
 def test_user_logs_in_with_missing_fields(client):
-
     response = client.post("/native/v1/signin", json={})
     assert response.status_code == 400
     assert response.json == {

@@ -30,9 +30,7 @@ def create_industrial_event_products() -> dict[str, offers_models.Product]:
     activation_index = 0
 
     for product_creation_counter in range(0, EVENT_COUNTS_PER_TYPE):
-
-        for (event_subcategories_list_index, event_subcategory) in enumerate(event_subcategories):
-
+        for event_subcategories_list_index, event_subcategory in enumerate(event_subcategories):
             mock_index = (product_creation_counter + event_subcategories_list_index) % len(MOCK_NAMES)
             if event_subcategory == subcategories_v2.ACTIVATION_EVENT:
                 event_name = "{} {}".format(MOCK_ACTIVATION_NAME, activation_index)

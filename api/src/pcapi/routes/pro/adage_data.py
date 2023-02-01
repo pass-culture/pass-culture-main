@@ -28,7 +28,6 @@ logger = logging.getLogger(__name__)
 def get_educational_institutions(
     query: educational_institutions.EducationalInstitutionsQueryModel,
 ) -> educational_institutions.EducationalInstitutionsResponseModel:
-
     institutions, total = educational_api_institution.get_all_educational_institutions(
         page=query.page,
         per_page_limit=query.per_page_limit,

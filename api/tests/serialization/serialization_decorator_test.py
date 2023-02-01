@@ -108,7 +108,6 @@ class SerializationDecoratorTest:
         assert kwargs["resp"].code_models["HTTP_206"] == TestResponseModel
 
     def test_get_with_content_type_but_without_body(self, client):
-
         response = client.get("/test-blueprint/test", headers={"Content-Type": "application/json"})
         assert response.status_code == 204
 

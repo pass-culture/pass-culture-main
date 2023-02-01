@@ -161,7 +161,6 @@ class SharedLoginUserResponseModel(BaseModel):
 
 
 class SharedCurrentUserResponseModel(BaseModel):
-
     activity: str | None
     address: str | None
     city: str | None

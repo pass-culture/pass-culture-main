@@ -294,7 +294,6 @@ def ubble_mocker() -> typing.Callable:
     def ubble_mock(  # pylint: disable=redefined-outer-name
         identification_id: str, response: str, method="get", mocker: requests_mock.Mocker = None
     ) -> None:
-
         url = f"{settings.UBBLE_API_URL}/identifications/{identification_id}/"
 
         if mocker is None:

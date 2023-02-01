@@ -52,7 +52,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
 
     image_venue_counter = 0
 
-    for (offerer_index, (offerer_name, offerer)) in enumerate(offerers_by_name.items()):
+    for offerer_index, (offerer_name, offerer) in enumerate(offerers_by_name.items()):
         geoloc_match = re.match(r"(.*)lat\:(.*) lon\:(.*)", offerer_name)
 
         venue_name = MOCK_NAMES[mock_index % len(MOCK_NAMES)]

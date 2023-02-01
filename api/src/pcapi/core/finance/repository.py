@@ -145,7 +145,6 @@ def find_all_offerers_payments(
     reimbursement_period: tuple[datetime.date, datetime.date],
     venue_id: int | None = None,
 ) -> list[tuple]:
-
     results = []
 
     results.extend(

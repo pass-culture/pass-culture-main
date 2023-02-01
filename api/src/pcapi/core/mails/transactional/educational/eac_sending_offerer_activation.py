@@ -13,7 +13,6 @@ def send_eac_offerer_activation_email(venue: offerers_models.Venue, emails: list
 def get_data_offerer_activation_email(
     venue: offerers_models.Venue,
 ) -> models.TransactionalEmailData:
-
     return models.TransactionalEmailData(
         template=TransactionalEmail.EAC_OFFERER_ACTIVATION_EMAIL.value,
         params={"VENUE_NAME": venue.publicName or venue.name},

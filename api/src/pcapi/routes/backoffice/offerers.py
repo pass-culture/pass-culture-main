@@ -65,7 +65,6 @@ def get_offerer_users(offerer_id: int) -> serialization.OffererAttachedUsersResp
 )
 @perm_utils.permission_required(perm_models.Permissions.READ_PRO_ENTITY)
 def get_offerer_basic_info(offerer_id: int) -> serialization.OffererBasicInfoResponseModel:
-
     offerer_basic_info = offerers_api.get_offerer_basic_info(offerer_id)
 
     if not offerer_basic_info:

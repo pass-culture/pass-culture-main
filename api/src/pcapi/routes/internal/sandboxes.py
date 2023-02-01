@@ -7,7 +7,6 @@ from pcapi.sandboxes.scripts import getters
 
 @private_api.route("/sandboxes/<module_name>/<getter_name>", methods=["GET"])
 def get_sandbox(module_name, getter_name):  # type: ignore [no-untyped-def]
-
     if not hasattr(getters, module_name):
         errors = ApiErrors()
         errors.add_error("module", 'Il n\'existe pas de tel "{}" module de getters pour la sandbox'.format(module_name))

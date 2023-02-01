@@ -155,7 +155,6 @@ def get_user_has_collective_bookings() -> UserHasBookingResponse:
     api=blueprint.pro_private_schema,
 )
 def cancel_collective_offer_booking(offer_id: str) -> None:
-
     dehumanized_offer_id = dehumanize_or_raise(offer_id)
 
     try:

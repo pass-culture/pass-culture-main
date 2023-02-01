@@ -24,7 +24,6 @@ def suspend_fraudulent_beneficiary_users_by_email_providers(
 def suspend_fraudulent_beneficiary_users_by_ids(
     fraudulent_user_ids: list[int], admin_user: User, dry_run: bool = True
 ) -> dict:
-
     fraudulent_users = User.query.filter(User.id.in_(fraudulent_user_ids)).all()
 
     return suspend_fraudulent_beneficiary_users(fraudulent_users, admin_user, dry_run)

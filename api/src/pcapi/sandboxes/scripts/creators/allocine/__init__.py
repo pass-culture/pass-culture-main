@@ -16,7 +16,6 @@ class Sirene:
 
 
 def save_allocine_sandbox() -> None:
-
     sirene = Sirene()
 
     create_industrial_admin_users()

@@ -79,7 +79,6 @@ class DeleteImageFromFileTest:
         assert response.status_code == 401
 
     def test_offer_not_found(self, client):
-
         # given
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
