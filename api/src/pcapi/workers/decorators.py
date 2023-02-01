@@ -59,7 +59,6 @@ def job(queue: Queue) -> typing.Callable:
                 func.__name__,
                 extra={**job_extra_description(current_job), "status": "enqueued"},
             )
-            return job
 
         job_func.delay = delay  # type: ignore [attr-defined]
         return job_func
