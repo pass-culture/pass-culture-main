@@ -101,6 +101,8 @@ def update_venue(
         upsert_venue_contact(venue, contact_data)
 
     if not modifications:
+        # avoid any contact information update loss
+        venue_snapshot.log_update(save=True)
         return venue
 
     if reimbursement_point_id != venue.current_reimbursement_point_id:
