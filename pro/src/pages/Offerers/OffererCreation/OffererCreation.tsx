@@ -24,19 +24,23 @@ const OffererCreation = (): JSX.Element => {
   }
 
   const handleSubmit = async (offerer: CreateOffererQueryModel) => {
-    const { siren } = offerer
+    const { siren, address } = offerer
 
-    await api
-      .createOfferer({
-        ...offerer,
-        siren: siren?.replace(/\s/g, ''),
-      })
-      .then(offerer => {
-        onHandleSuccess(offerer.id)
-      })
-      .catch(() => {
-        onHandleFail()
-      })
+    if (!address) {
+      notification.error('Impossible de vérifier le SIREN saisi.')
+    } else {
+      await api
+        .createOfferer({
+          ...offerer,
+          siren: siren?.replace(/\s/g, ''),
+        })
+        .then(offerer => {
+          onHandleSuccess(offerer.id)
+        })
+        .catch(() => {
+          onHandleFail()
+        })
+    }
   }
 
   const onHandleSuccess = (offererId: string) => {
