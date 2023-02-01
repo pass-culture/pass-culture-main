@@ -12,6 +12,7 @@ from pcapi.core.mails.transactional.users.ubble.reminder_emails import send_remi
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+import pcapi.notifications.push.testing as push_testing
 
 
 def build_user_with_ko_retryable_ubble_fraud_check(
@@ -229,3 +230,24 @@ class SendUbbleKoReminderEmailTest:
             mails_testing.outbox[1].sent_data["template"]
             == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_EXPIRED.value.__dict__
         )
+
+    @override_settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
+    def should_notify_users_after_sending_an_email(self):
+        twenty_one_days_ago = datetime.datetime.utcnow() - relativedelta(days=21)
+        user1 = build_user_with_ko_retryable_ubble_fraud_check(
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED], ubble_date_created=twenty_one_days_ago
+        )
+        user2 = build_user_with_ko_retryable_ubble_fraud_check(
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_EXPIRED], ubble_date_created=twenty_one_days_ago
+        )
+
+        send_reminder_emails()
+
+        assert len(push_testing.requests) == 1
+
+        assert push_testing.requests[0] == {
+            "can_be_asynchronously_retried": True,
+            "event_name": "has_ubble_ko_status",
+            "event_payload": {},
+            "user_ids": [user1.id, user2.id],
+        }
