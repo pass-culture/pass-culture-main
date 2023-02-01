@@ -1,7 +1,7 @@
 from pcapi.models.api_errors import ApiErrors
 
 
-def check_offer_name_length_is_valid(offer_name: str):  # type: ignore [no-untyped-def]
+def check_offer_name_length_is_valid(offer_name: str) -> None:
     max_offer_name_length = 90
     if len(offer_name) > max_offer_name_length:
         api_error = ApiErrors()

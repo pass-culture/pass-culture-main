@@ -45,9 +45,9 @@ class WebhookStoreIdPicturesRequest(pydantic.BaseModel):
     identification_id: str
 
 
-def require_ubble_signature(route_function: Callable[..., Any]):  # type: ignore [no-untyped-def]
+def require_ubble_signature(route_function: Callable[..., Any]) -> Callable:
     @functools.wraps(route_function)
-    def validate_ubble_signature(*args, **kwargs):  # type: ignore [no-untyped-def]
+    def validate_ubble_signature(*args: Any, **kwargs: Any) -> flask.Response:
         error = ForbiddenError(errors={"signature": ["Invalid signature"]})
         signature = getattr(
             UBBLE_SIGNATURE_RE.match(flask.request.headers.get("Ubble-Signature", "")),

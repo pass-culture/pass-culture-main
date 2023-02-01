@@ -23,7 +23,7 @@ class WebhookRequest(pydantic.BaseModel):
     requester_phone: str | None
 
     @pydantic.validator("requester_phone")
-    def check_email_or_phone(cls, requester_phone, values):  # type: ignore [no-untyped-def]
+    def check_email_or_phone(cls, requester_phone: str | None, values: dict) -> str | None:
         if not values.get("requester_email") and not requester_phone:
             raise ValueError("L'email ou le numéro de téléphone est obligatoire")
         return requester_phone
