@@ -16,6 +16,7 @@ jest.mock('hooks/useAnalytics', () => ({
 }))
 
 jest.mock('hooks/useLogPageView', () => jest.fn())
+jest.mock('hooks/usePageTitle', () => jest.fn())
 
 const renderApp = ({ props, store: storeOverride, initialEntries = '/' }) => {
   const store = configureTestStore(storeOverride)

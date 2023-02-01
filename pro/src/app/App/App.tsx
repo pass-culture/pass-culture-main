@@ -7,6 +7,7 @@ import { RedirectToMaintenance } from 'components/RedirectToMaintenance'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useLogPageView from 'hooks/useLogPageView'
+import usePageTitle from 'hooks/usePageTitle'
 import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
 
 import { useIsRoutePublic } from './hooks'
@@ -21,6 +22,7 @@ const App = ({ children }: IAppProps): JSX.Element | null => {
   const isMaintenanceActivated = useSelector(maintenanceSelector)
   const [isRoutePublic, fromUrl] = useIsRoutePublic()
   useConfigureFirebase(currentUser?.nonHumanizedId)
+  usePageTitle()
   useLogPageView()
 
   useEffect(() => {
