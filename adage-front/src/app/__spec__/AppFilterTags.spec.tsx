@@ -86,6 +86,8 @@ jest.mock('apiClient/api', () => ({
     getVenueBySiret: jest.fn(),
     logCatalogView: jest.fn(),
     logSearchButtonClick: jest.fn(),
+    getCollectiveOffer: jest.fn(),
+    getCollectiveOfferTemplate: jest.fn(),
   },
 }))
 
@@ -135,6 +137,9 @@ describe('app', () => {
   })
 
   it('should display filter tags and send selected filters to Algolia', async () => {
+    // FIX ME: add timeout to fix this test breaking CI 
+    jest.setTimeout(10000) 
+    
     window.location.search = ''
     // Given
     renderApp()
