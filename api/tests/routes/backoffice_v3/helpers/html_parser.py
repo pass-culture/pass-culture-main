@@ -60,8 +60,12 @@ def extract_table_rows(html_content: str, parent_id: str | None = None) -> list[
     return rows
 
 
-def count_table_rows(html_content: str) -> int:
+def count_table_rows(html_content: str, parent_id: str | None = None) -> int:
     soup = get_soup(html_content)
+
+    if parent_id:
+        soup = soup.find(id=parent_id)
+        assert soup is not None
 
     tbody = soup.find("tbody")
     if tbody is None:
@@ -96,14 +100,28 @@ def extract_pagination_info(html_content: str) -> tuple[int, int, int]:
     return int(active_page_link.text), len(page_links), total_results
 
 
+def extract(html_content: str, tag: str = "div", class_: str | None = None) -> list[str]:
+    """
+    Extract text from all <div> matching the class, as strings
+    """
+    soup = get_soup(html_content)
+
+    elements = soup.find_all(tag, class_=class_)
+    return [_filter_whitespaces(element.text) for element in elements]
+
+
 def extract_cards_text(html_content: str) -> list[str]:
     """
     Extract text from all cards in the page, as strings
     """
-    soup = get_soup(html_content)
+    return extract(html_content, class_="card")
 
-    cards = soup.find_all("div", class_="card")
-    return [_filter_whitespaces(card.text) for card in cards]
+
+def extract_cards_titles(html_content: str) -> list[str]:
+    """
+    Extract titles from all cards in the page, as strings
+    """
+    return extract(html_content, tag="h5", class_="card-title")
 
 
 def extract_alert(html_content: str) -> str:
@@ -116,8 +134,5 @@ def extract_alert(html_content: str) -> str:
 
 
 def extract_warnings(html_content: str) -> list[str]:
-    soup = get_soup(html_content)
-
     # form validation errors have "text-warning" class
-    warnings = soup.find_all("p", class_="text-warning")
-    return [_filter_whitespaces(p.text) for p in warnings]
+    return extract(html_content, tag="p", class_="text-warning")

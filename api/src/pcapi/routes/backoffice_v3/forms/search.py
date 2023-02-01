@@ -36,6 +36,11 @@ class SearchForm(FlaskForm):
             case _:
                 return "Champ inconnu"
 
+    def validate_terms(self, terms: fields.PCOptSearchField) -> fields.PCOptSearchField:
+        if terms.data and "%" in terms.data:
+            raise wtforms.validators.ValidationError("Le caractère % n'est pas autorisé")
+        return terms
+
 
 class ProSearchForm(SearchForm):
     pro_type = fields.PCSelectField(

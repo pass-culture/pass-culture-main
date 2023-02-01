@@ -48,7 +48,11 @@ class GetProUserTest:
         assert f"Tél : {user.phoneNumber} " in content
         assert f"Code postal : {user.postalCode} " in content
         assert f"Département : {user.departementCode} " in content
-        assert "Pro" in content
+
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert "Pro" in badges
+        assert "Validé" in badges
+        assert "Suspendu" not in badges
 
     def test_get_not_pro_user(self, authenticated_client):  # type: ignore
         user = users_factories.BeneficiaryGrant18Factory()
