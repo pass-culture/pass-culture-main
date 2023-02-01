@@ -1203,7 +1203,6 @@ class CineDigitalServiceBookTicketTest:
 class CineDigitalServiceGetMoviesTest:
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_return_movies_information(self, mocked_get_resource):
-
         # Given
         token = "token_test"
         api_url = "apiUrl_test/"

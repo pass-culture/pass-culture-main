@@ -152,7 +152,6 @@ def test_get_profiling_data_without_correct_session_id(requests_mock):
     USER_PROFILING_ORG_ID="fake-orgid", USER_PROFILING_API_KEY="fake_api_key", USER_PROFILING_URL=USER_PROFILING_URL
 )
 def test_get_profiling_data_empty_fields(requests_mock, empty_field):
-
     user_profiling_response = user_profiling_fixtures.CORRECT_RESPONSE.copy()
     del user_profiling_response[empty_field]
     requests_mock.register_uri("POST", settings.USER_PROFILING_URL, json=user_profiling_response, status_code=200)

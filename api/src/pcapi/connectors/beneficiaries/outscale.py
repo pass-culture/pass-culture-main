@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 
 def upload_file(user_id: str, file_path: str, file_name: str) -> bool:
-
     client = boto3.client(
         "s3",
         aws_access_key_id=settings.OUTSCALE_ACCESS_KEY,

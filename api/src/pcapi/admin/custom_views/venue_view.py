@@ -394,7 +394,6 @@ class VenueView(BaseAdminView):
         url = get_redirect_target() or self.get_url(".index_view")
         change_form = VenueChangeForm(request.form)
         if change_form.validate():
-
             venue_ids: list[int] = list(map(int, change_form.ids.data.split(",")))
             is_permanent: bool = change_form.is_permanent.data
             criteria: list[criteria_models.VenueCriterion] = change_form.data["tags"]

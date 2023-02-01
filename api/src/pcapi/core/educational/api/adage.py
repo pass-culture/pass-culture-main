@@ -56,7 +56,6 @@ def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartnerRes
 def get_venue_by_siret_for_adage_iframe(
     siret: str, search_relative: bool
 ) -> tuple[offerers_models.Venue | None, list[int]]:
-
     relative = []
     venue = None
     if search_relative:

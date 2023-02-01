@@ -57,7 +57,6 @@ def _format_list(raw_list: Iterable[str] | None) -> str | None:
 def update_contact_attributes(
     is_new_ticket: bool, ticket_id: int, zendesk_user_id: int, email: str | None, phone_number: str | None
 ) -> None:
-
     # First search for user by email (unique in "user" table)
     user: users_models.User | None = users_repository.find_user_by_email(email) if email else None
 

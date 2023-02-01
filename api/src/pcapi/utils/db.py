@@ -186,7 +186,6 @@ def get_ordering_clauses_from_json(
             bad_sorts.append("bad sort format")
             continue
         else:
-
             try:
                 field = getattr(model, field_name)
             except AttributeError:

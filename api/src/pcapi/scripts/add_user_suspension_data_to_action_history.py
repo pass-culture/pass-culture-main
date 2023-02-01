@@ -41,7 +41,6 @@ def _add_user_suspension_to_action_history(user_suspension: users_models.UserSus
 
 
 def update_user_suspension_chunk(min_user_id: int, max_user_id: int) -> None:
-
     user_suspension_ids = list(range(min_user_id, max_user_id + 1))
 
     chunk = users_models.UserSuspension.query.filter(users_models.UserSuspension.id.in_(user_suspension_ids)).all()
@@ -53,7 +52,6 @@ def update_user_suspension_chunk(min_user_id: int, max_user_id: int) -> None:
 
 
 def update_user_suspension_loop(chunk_size: int) -> None:
-
     max_id = users_models.UserSuspension.query.order_by(users_models.UserSuspension.id.desc()).first().id
 
     for current_min_id in range(1, max_id + 1, chunk_size):
@@ -61,7 +59,6 @@ def update_user_suspension_loop(chunk_size: int) -> None:
 
 
 if __name__ == "__main__":
-
     from pcapi.flask_app import app
 
     with app.app_context():

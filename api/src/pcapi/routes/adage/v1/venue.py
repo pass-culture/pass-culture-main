@@ -26,7 +26,6 @@ from . import blueprint
 def get_venues_from_siret(
     venues_siret: str, query: venue_serialization.GetRelativeVenuesQueryModel
 ) -> venue_serialization.GetVenuesResponseModel:
-
     if query.getRelative:
         venues = educational_api_venue.get_relative_venues_by_siret(venues_siret)
     else:

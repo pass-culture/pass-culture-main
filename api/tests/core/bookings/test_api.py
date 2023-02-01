@@ -130,7 +130,6 @@ class BookOfferConcurrencyTest:
 class BookOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_create_booking(self, mocked_async_index_offer_ids, app):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
 

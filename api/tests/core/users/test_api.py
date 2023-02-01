@@ -880,7 +880,6 @@ class BeneficiaryInformationUpdateTest:
 
     @override_features(ENABLE_PHONE_VALIDATION=True)
     def test_phone_number_does_not_update(self):
-
         user = users_factories.UserFactory(phoneNumber="+33611111111")
         dms_data = fraud_factories.DMSContentFactory(phoneNumber="+33622222222")
 
@@ -890,7 +889,6 @@ class BeneficiaryInformationUpdateTest:
 
     @override_features(ENABLE_PHONE_VALIDATION=False)
     def test_phone_number_does_not_update_if_not_empty(self):
-
         user = users_factories.UserFactory(phoneNumber="+33611111111")
         dms_data = fraud_factories.DMSContentFactory(phone="+33622222222")
 
@@ -984,7 +982,6 @@ class SkipPhoneValidationTest:
 
         # then
         with pytest.raises(phone_validation_exceptions.UserPhoneNumberAlreadyValidated):
-
             # when
             users_api.skip_phone_validation_step(user)
 

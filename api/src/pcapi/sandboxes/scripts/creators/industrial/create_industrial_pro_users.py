@@ -28,7 +28,6 @@ def create_industrial_pro_users(offerers_by_name: dict) -> dict[str, User]:
     adage_not_eligible_offerers = [offerer for offerer in offerers if offerer.siren != str(MOCK_ADAGE_ELIGIBLE_SIREN)]
 
     for _, pro_user_config in enumerate(pro_users_config):
-
         for pro_count in range(PROS_COUNT):
             departement_code = pro_user_config["departement_code"]
             email = "pctest.pro{}.{}@example.com".format(departement_code, pro_count)

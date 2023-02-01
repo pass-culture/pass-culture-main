@@ -1422,7 +1422,6 @@ class SuspendAccountTest:
 
 
 class ProfilingFraudScoreTest:
-
     USER_PROFILING_URL = "https://example.com/path"
 
     # Remove parametrize() on session_id_key after session_id is removed and only sessionId kept

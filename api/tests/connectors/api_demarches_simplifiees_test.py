@@ -42,7 +42,6 @@ class GraphqlResponseTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_get_single_application_details(self, execute_query):
-
         execute_query.return_value = make_single_application(12, state="accepte")
 
         client = api_dms.DMSGraphQLClient()
@@ -58,7 +57,6 @@ class GraphqlResponseTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_update_annotations(self, execute_query):
-
         execute_query.return_value = {
             "dossierModifierAnnotationText": {"annotation": {"id": "XXXXXXXXX"}, "errors": None}
         }

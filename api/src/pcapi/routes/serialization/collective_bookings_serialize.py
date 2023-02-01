@@ -203,7 +203,6 @@ def build_status_history(
 def _serialize_collective_booking_status_info(
     collective_booking_status: CollectiveBookingRecapStatus, collective_booking_status_date: datetime | None
 ) -> BookingStatusHistoryResponseModel:
-
     serialized_collective_booking_status_date = (
         isoformat(collective_booking_status_date) if collective_booking_status_date else None
     )

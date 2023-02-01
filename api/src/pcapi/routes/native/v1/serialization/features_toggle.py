@@ -7,5 +7,4 @@ class FeatureToggle(BaseModel):
 
 
 class FeaturesToggleRequest(BaseModel):
-
     features: list[FeatureToggle]

@@ -176,7 +176,6 @@ class PaymentFactory(BaseFactory):
         extracted: list[models.PaymentStatus],
         **kwargs: typing.Any,
     ) -> list[models.PaymentStatus] | None:
-
         if not create:
             return None
         if extracted is not None:

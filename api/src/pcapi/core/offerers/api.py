@@ -1523,7 +1523,6 @@ def update_offerer_tag(
     description: str | T_UNCHANGED = UNCHANGED,
     categories: list[models.OffererTagCategory] | T_UNCHANGED = UNCHANGED,
 ) -> None:
-
     if name is not UNCHANGED:
         offerer_tag.name = name
     if label is not UNCHANGED:

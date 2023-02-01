@@ -134,7 +134,6 @@ def test_default_admin_call(app):
 
 @pytest.mark.usefixtures("db_session")
 def test_admin_call_num_queries(app):
-
     admin_user = users_factories.AdminFactory(email="admin.pro@test.com")
 
     user_offerers = offerers_factories.UserOffererFactory.create_batch(3)
@@ -156,7 +155,6 @@ def test_admin_call_num_queries(app):
 
 @pytest.mark.usefixtures("db_session")
 def test_invalid_offerer_id(app):
-
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
     offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)

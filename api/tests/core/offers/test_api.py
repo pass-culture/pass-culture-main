@@ -802,7 +802,6 @@ class CreateOfferTest:
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
         with pytest.raises(exceptions.SubCategoryIsInactive) as error:
-
             api.create_offer(
                 venue=venue,
                 name="An offer he can't refuse",
@@ -1646,7 +1645,6 @@ class ComputeOfferValidationScoreTest:
         assert score == 0.5
 
     def test_offer_validation_with_emails_blacklist(self):
-
         venue = offerers_factories.VenueFactory(siret="12345678912345", bookingEmail="fake@yopmail.com")
         offer = factories.OfferFactory(name="test offer", venue=venue)
         factories.StockFactory(offer=offer, price=15)

@@ -30,7 +30,6 @@ def test_access_granted_with_right_permission(db_session, client):
     auth_token = generate_token(user, [permission])
 
     with current_app.test_request_context("http://any.thing", headers={"Authorization": f"Bearer {auth_token}"}):
-
         # when
         perm_decorator(view_func_stub)("test_arg")
 
@@ -56,7 +55,6 @@ def test_access_denied_without_right_permission(db_session, client):
     with current_app.test_request_context(
         "http://any.thing", headers={"Authorization": f"Bearer {auth_token}"}
     ), pytest.raises(ApiErrors) as exc_info:
-
         # when
         perm_decorator(view_func_stub)("test_arg")
 
@@ -86,7 +84,6 @@ def test_access_denied_with_expired_token(db_session, client):
     with current_app.test_request_context(
         "http://any.thing", headers={"Authorization": f"Bearer {auth_token}"}
     ), pytest.raises(ApiErrors) as exc_info:
-
         # when
         perm_decorator(view_func_stub)("test_arg")
 
@@ -110,7 +107,6 @@ def test_access_denied_as_anonymous(db_session, client):
     )
 
     with current_app.test_request_context("http://any.thing"), pytest.raises(ApiErrors) as exc_info:
-
         # when
         perm_decorator(view_func_stub)("test_arg")
 
@@ -137,7 +133,6 @@ def test_no_need_for_permissions_on_testing_environment(db_session, client):
     auth_token = generate_token(user, [permission])
 
     with current_app.test_request_context("http://any.thing", headers={"Authorization": f"Bearer {auth_token}"}):
-
         # when
         perm_decorator(view_func_stub)("test_arg")
 
@@ -163,7 +158,6 @@ def test_access_denied_when_backoffice_api_disabled(db_session, client):
     with current_app.test_request_context(
         "http://any.thing", headers={"Authorization": f"Bearer {auth_token}"}
     ), pytest.raises(ApiErrors) as exc_info:
-
         # when
         perm_decorator(view_func_stub)("test_arg")
 

@@ -456,7 +456,8 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
             return self.dateCreated
         try:
             registration_datetime = self.source_data().get_registration_datetime()  # type: ignore [union-attr]
-        except ValueError:  # TODO(viconnex) migrate Educonnect fraud checks that do not have registration date in their content
+        except ValueError:
+            # TODO(viconnex) migrate Educonnect fraud checks that do not have registration date in their content
             return self.dateCreated
         if registration_datetime:
             return min(self.dateCreated, registration_datetime)

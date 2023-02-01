@@ -74,7 +74,6 @@ def get_user_has_bookings() -> UserHasBookingResponse:
     },
 )
 def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
-
     return _create_booking_export_file(query, BookingExportType.CSV)
 
 

@@ -65,7 +65,6 @@ class SendinblueBackendTest:
     @override_settings(WHITELISTED_EMAIL_RECIPIENTS=["lucy.ellingson@example.com", "avery.kelly@example.com"])
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_with_no_reply_equal_overrided_by_sender(self, mock_send_transactional_email_secondary_task):
-
         self.data = models.TransactionalEmailData(template=self.mock_template, params=self.params, reply_to=None)
 
         expected_sent_data_no_reply = sendinblue_tasks.SendTransactionalEmailRequest(
@@ -93,7 +92,6 @@ class SendinblueBackendTest:
 
 @pytest.mark.usefixtures("db_session")
 class ToDevSendinblueBackendTest(SendinblueBackendTest):
-
     expected_sent_data_to_dev = sendinblue_tasks.SendTransactionalEmailRequest(
         recipients=["dev@example.com"],
         bcc_recipients=["test@example.com"],

@@ -29,9 +29,7 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
     id_at_providers = 1234
 
     for product_creation_counter in range(0, THINGS_PER_SUBCATEGORY):
-
-        for (thing_subcategories_list_index, thing_subcategory) in enumerate(thing_subcategories):
-
+        for thing_subcategories_list_index, thing_subcategory in enumerate(thing_subcategories):
             mock_index = (product_creation_counter + thing_subcategories_list_index) % len(MOCK_NAMES)
 
             name = "{} / {}".format(thing_subcategory.id, MOCK_NAMES[mock_index])

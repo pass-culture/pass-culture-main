@@ -112,7 +112,6 @@ class PhysicalOffersReimbursementTest:
 
 @pytest.mark.usefixtures("db_session")
 class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000Test:
-
     rule = reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000()
 
     def test_apply(self):
@@ -180,7 +179,6 @@ class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000Test:
 
 @pytest.mark.usefixtures("db_session")
 class ReimbursementRateByVenueBetween20000And40000Test:
-
     rule = reimbursement.ReimbursementRateByVenueBetween20000And40000()
 
     def test_apply(self):
