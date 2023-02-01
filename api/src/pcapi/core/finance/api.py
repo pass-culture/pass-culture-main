@@ -314,12 +314,10 @@ def _booking_comparison_tuple(booking: bookings_models.Booking) -> tuple:
     compared to `_PRICE_BOOKINGS_ORDER_CLAUSE`.
     """
     assert booking.dateUsed is not None  # helps mypy for `max()` below
+    event_date_or_used_date = max(booking.stock.beginningDatetime or booking.dateUsed, booking.dateUsed)
     tupl = (
-        max(
-            _get_pricing_point_link(booking).timespan.lower,
-            max((booking.stock.beginningDatetime or booking.dateUsed, booking.dateUsed)),
-        ),
-        max((booking.stock.beginningDatetime or booking.dateUsed, booking.dateUsed)),
+        max(_get_pricing_point_link(booking).timespan.lower, event_date_or_used_date),
+        event_date_or_used_date,
         booking.dateUsed,
         booking.id,
     )
