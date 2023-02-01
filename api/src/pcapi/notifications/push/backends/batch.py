@@ -143,6 +143,8 @@ class BatchBackend:
     def track_event(
         self, user_id: int, event_name: str, event_payload: dict, can_be_asynchronously_retried: bool = False
     ) -> None:
+        """https://doc.batch.com/api/trigger-events-api/track-events/"""
+
         def make_post_request(api: BatchAPI) -> None:
             self.handle_request(
                 "POST",
@@ -155,6 +157,31 @@ class BatchBackend:
                             "attributes": event_payload,
                         }
                     ]
+                },
+                can_be_asynchronously_retried=can_be_asynchronously_retried,
+            )
+
+        make_post_request(BatchAPI.ANDROID)
+        make_post_request(BatchAPI.IOS)
+
+    def bulk_track_events(
+        self, user_ids: list[int], event_name: str, event_payload: dict, can_be_asynchronously_retried: bool = False
+    ) -> None:
+        """https://doc.batch.com/api/trigger-events-api/track-events/"""
+
+        def make_post_request(api: BatchAPI) -> None:
+            self.handle_request(
+                "POST",
+                f"{API_URL}/1.0/{api.value}/events/users/",
+                api_name="bulk_track_events",
+                payload={
+                    "events": [
+                        {
+                            "name": f"ue.{event_name}",
+                            "attributes": event_payload,
+                        }
+                    ],
+                    "users": [{"id": user_id} for user_id in user_ids],
                 },
                 can_be_asynchronously_retried=can_be_asynchronously_retried,
             )
