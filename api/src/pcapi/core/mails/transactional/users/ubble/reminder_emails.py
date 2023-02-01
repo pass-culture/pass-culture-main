@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.core import mails
+from pcapi.core.external.batch import bulk_track_ubble_ko_events
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.models as mails_models
 import pcapi.core.subscription.api as subscription_api
@@ -36,6 +37,8 @@ def send_reminder_emails() -> None:
         ],
     )
 
+    users_to_notify = []
+
     for user, fraud_check_reason_codes in users_with_quick_actions + users_with_long_actions:
         relevant_reason_code = ubble_subscription.get_most_relevant_ubble_error(fraud_check_reason_codes)
         if not relevant_reason_code:
@@ -50,7 +53,10 @@ def send_reminder_emails() -> None:
             logger.error("Could not find reminder email template for reason code %s", relevant_reason_code)
             continue
 
+        users_to_notify.append(user.id)
         mails.send(recipients=[user.email], data=email_data)
+
+    bulk_track_ubble_ko_events(users_to_notify)
 
 
 def _get_reminder_email_data(code: fraud_models.FraudReasonCode) -> mails_models.TransactionalEmailData | None:
