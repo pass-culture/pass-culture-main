@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from unittest import mock
 from unittest.mock import patch
 
 from flask import g
@@ -71,9 +72,20 @@ class GetVenueTest:
         response_text = html_parser.content_as_text(response.data)
         assert venue.name in response_text
         assert f"Venue ID : {venue.id} " in response_text
+        assert f"SIRET : {venue.siret} " in response_text
+        assert "Région : Île-de-France " in response_text
+        assert f"Ville : {venue.city} " in response_text
+        assert f"Code postal : {venue.postalCode} " in response_text
+        assert f"E-mail : {venue.contact.email} " in response_text
+        assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
         assert "Éligible EAC : Non" in response_text
         assert "ID Adage" not in response_text
         assert f"Site web : {venue.contact.website}" in response_text
+        assert "Pas de dossier DMS" in response_text
+
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert "Lieu" in badges
+        assert "Suspendu" not in badges
 
     def test_get_venue_with_adage_id(self, authenticated_client):
         venue = offerers_factories.VenueFactory(adageId="7122022", contact=None)
@@ -85,6 +97,82 @@ class GetVenueTest:
         response_text = html_parser.content_as_text(response.data)
         assert "Éligible EAC : Oui" in response_text
         assert "ID Adage : 7122022" in response_text
+
+    def test_get_venue_with_no_contact(self, authenticated_client, venue_with_no_contact):
+        # when
+        response = authenticated_client.get(url_for("backoffice_v3_web.venue.get", venue_id=venue_with_no_contact.id))
+
+        # then
+        assert response.status_code == 200
+        response_text = html_parser.content_as_text(response.data)
+        assert "E-mail :" not in response_text
+        assert "Numéro de téléphone :" not in response_text
+
+    def test_get_venue_with_self_reimbursement_point(
+        self, authenticated_client, venue_with_accepted_self_reimbursement_point
+    ):
+        # when
+        response = authenticated_client.get(
+            url_for("backoffice_v3_web.venue.get", venue_id=venue_with_accepted_self_reimbursement_point.id)
+        )
+
+        # then
+        assert response.status_code == 200
+        assert "Présence de CB : Oui" in html_parser.content_as_text(response.data)
+
+    def test_get_venue_with_accepted_reimbursement_point(
+        self, authenticated_client, venue_with_accepted_reimbursement_point
+    ):
+        # when
+        response = authenticated_client.get(
+            url_for("backoffice_v3_web.venue.get", venue_id=venue_with_accepted_reimbursement_point.id)
+        )
+
+        # then
+        assert response.status_code == 200
+        assert "Présence de CB : Oui" in html_parser.content_as_text(response.data)
+
+    def test_get_venue_with_expired_reimbursement_point(
+        self, authenticated_client, venue_with_expired_reimbursement_point
+    ):
+        # when
+        response = authenticated_client.get(
+            url_for("backoffice_v3_web.venue.get", venue_id=venue_with_expired_reimbursement_point.id)
+        )
+
+        # then
+        assert response.status_code == 200
+        assert "Présence de CB : Non" in html_parser.content_as_text(response.data)
+
+    def test_get_venue_dms_stats(self, authenticated_client, venue_with_draft_bank_info):
+        with mock.patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_bank_info_status") as bank_info_mock:
+            bank_info_mock.return_value = {
+                "dossier": {
+                    "state": "en_construction",
+                    "dateDepot": "2022-09-21T16:30:22+02:00",
+                }
+            }
+            # when
+            response = authenticated_client.get(
+                url_for("backoffice_v3_web.venue.get", venue_id=venue_with_draft_bank_info.id)
+            )
+
+        # then
+        assert response.status_code == 200
+        response_text = html_parser.content_as_text(response.data)
+        assert "Statut DMS : en_construction" in response_text
+        assert "Date de dépôt du dossier DMS : 21/09/2022" in response_text
+        assert "ACCÉDER AU DOSSIER DMS" in response_text
+
+    def test_get_venue_none_dms_stats_when_no_application_id(self, authenticated_client, venue_with_accepted_bank_info):
+        # when
+        response = authenticated_client.get(
+            url_for("backoffice_v3_web.venue.get", venue_id=venue_with_accepted_bank_info.id)
+        )
+
+        # then
+        assert response.status_code == 200
+        assert "Pas de dossier DMS" in html_parser.content_as_text(response.data)
 
 
 class GetVenueStatsDataTest:
@@ -127,6 +215,12 @@ class GetVenueStatsDataTest:
 
 
 class GetVenueStatsTest:
+    # get session (1 query)
+    # get user with profile and permissions (1 query)
+    # get total revenue (1 query)
+    # get venue stats (1 query)
+    expected_num_queries = 4
+
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
         endpoint = "backoffice_v3_web.venue.get_stats"
         endpoint_kwargs = {"venue_id": 1}
@@ -136,16 +230,91 @@ class GetVenueStatsTest:
         booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
         url = url_for("backoffice_v3_web.venue.get_stats", venue_id=venue.id)
 
-        # get session (1 query)
-        # get user with profile and permissions (1 query)
-        # get total revenue (1 query)
-        # get venue stats (1 query)
-        with assert_num_queries(4):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
         # cast to integer to avoid errors due to amount formatting
         assert str(int(booking.amount)) in response.data.decode("utf-8")
+
+    def test_venue_total_revenue(
+        self, authenticated_client, venue_with_accepted_bank_info, individual_offerer_bookings, collective_venue_booking
+    ):
+        # when
+        venue_id = venue_with_accepted_bank_info.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_v3_web.venue.get_stats", venue_id=venue_id))
+
+        # then
+        assert response.status_code == 200
+        assert "72,00 € de CA" in html_parser.extract_cards_text(response.data)
+
+    def test_venue_total_revenue_individual_bookings_only(
+        self,
+        authenticated_client,
+        venue_with_accepted_bank_info,
+        individual_offerer_bookings,
+    ):
+        # when
+        venue_id = venue_with_accepted_bank_info.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_v3_web.venue.get_stats", venue_id=venue_id))
+
+        # then
+        assert response.status_code == 200
+        assert "30,00 € de CA" in html_parser.extract_cards_text(response.data)
+
+    def test_venue_total_revenue_collective_bookings_only(
+        self, authenticated_client, venue_with_accepted_bank_info, collective_venue_booking
+    ):
+        # when
+        venue_id = venue_with_accepted_bank_info.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_v3_web.venue.get_stats", venue_id=venue_id))
+
+        # then
+        assert response.status_code == 200
+        assert "42,00 € de CA" in html_parser.extract_cards_text(response.data)
+
+    def test_venue_total_revenue_no_booking(self, authenticated_client, venue_with_accepted_bank_info):
+        # when
+        venue_id = venue_with_accepted_bank_info.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_v3_web.venue.get_stats", venue_id=venue_id))
+
+        # then
+        assert response.status_code == 200
+        assert "0,00 € de CA" in html_parser.extract_cards_text(response.data)
+
+    def test_venue_offers_stats(
+        self,
+        authenticated_client,
+        venue_with_accepted_bank_info,
+        offerer_active_individual_offers,
+        offerer_inactive_individual_offers,
+        offerer_active_collective_offers,
+        offerer_inactive_collective_offers,
+    ):
+        # when
+        venue_id = venue_with_accepted_bank_info.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_v3_web.venue.get_stats", venue_id=venue_id))
+
+        # then
+        assert response.status_code == 200
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert "6 offres actives (2 IND / 4 EAC) 8 offres inactives (3 IND / 5 EAC)" in cards_text
+
+    def test_venue_offers_stats_0_if_no_offer(self, authenticated_client, venue_with_accepted_bank_info):
+        # when
+        venue_id = venue_with_accepted_bank_info.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_v3_web.venue.get_stats", venue_id=venue_id))
+
+        # then
+        assert response.status_code == 200
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert "0 offres actives (0 IND / 0 EAC) 0 offres inactives (0 IND / 0 EAC)" in cards_text
 
 
 class HasReimbursementPointTest:
