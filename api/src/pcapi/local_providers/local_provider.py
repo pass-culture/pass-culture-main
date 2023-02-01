@@ -59,7 +59,7 @@ class LocalProvider(Iterator):
         new_id_at_provider: str,
     ) -> ProvidableInfo:
         if "|" in id_at_providers:
-            raise Exception("Invalid character in idAtProviders field")
+            raise ValueError("Invalid character in idAtProviders field")
         return ProvidableInfo(
             type=pc_object,
             id_at_providers=id_at_providers,

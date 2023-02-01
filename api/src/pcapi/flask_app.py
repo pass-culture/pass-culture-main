@@ -120,7 +120,7 @@ if settings.PROFILE_REQUESTS:
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)  # type: ignore [assignment]
 
 if not settings.JWT_SECRET_KEY:
-    raise Exception("JWT_SECRET_KEY not found in env")
+    raise ValueError("JWT_SECRET_KEY not found in env")
 
 app.secret_key = settings.FLASK_SECRET
 app.json_encoder = EnumJSONEncoder

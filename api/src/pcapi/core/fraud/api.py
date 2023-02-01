@@ -119,7 +119,7 @@ def on_identity_fraud_check_result(
         fraud_items += educonnect_fraud_checks(user, identity_content)
 
     else:
-        raise Exception("The fraud_check type is not known")
+        raise ValueError("The fraud_check type is not known")
 
     content_first_name = identity_content.get_first_name()
     content_last_name = identity_content.get_last_name()

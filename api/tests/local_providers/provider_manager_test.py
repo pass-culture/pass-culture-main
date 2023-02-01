@@ -19,11 +19,11 @@ from tests.local_providers.provider_test_utils import TestLocalProvider
 
 
 def mock_update_objects():
-    raise Exception
+    raise ValueError
 
 
 def mock_init_provider(*arg):
-    raise Exception
+    raise ValueError
 
 
 class SynchronizeVenueProviderTest:

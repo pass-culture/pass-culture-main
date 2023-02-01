@@ -175,7 +175,7 @@ class CDSStocks(LocalProvider):
 
     def _get_cds_internet_sale_gauge(self) -> bool:
         if not self.apiUrl:
-            raise Exception("CDS API URL not configured in this env")
+            raise ValueError("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
             account_id=self.accountId,
@@ -186,7 +186,7 @@ class CDSStocks(LocalProvider):
 
     def _get_cds_movies(self) -> list[Movie]:
         if not self.apiUrl:
-            raise Exception("CDS API URL not configured in this env")
+            raise ValueError("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
             account_id=self.accountId,
@@ -197,7 +197,7 @@ class CDSStocks(LocalProvider):
 
     def _get_cds_movie_poster(self, image_url: str) -> bytes:
         if not self.apiUrl:
-            raise Exception("CDS API URL not configured in this env")
+            raise ValueError("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
             account_id=self.accountId,
@@ -208,7 +208,7 @@ class CDSStocks(LocalProvider):
 
     def _get_cds_shows(self) -> list[dict]:
         if not self.apiUrl:
-            raise Exception("CDS API URL not configured in this env")
+            raise ValueError("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
             account_id=self.accountId,
