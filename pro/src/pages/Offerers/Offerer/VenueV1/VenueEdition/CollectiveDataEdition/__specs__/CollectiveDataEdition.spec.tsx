@@ -85,7 +85,9 @@ const waitForLoader = () =>
   })
 
 const renderCollectiveDataEdition = () =>
-  renderWithProviders(<CollectiveDataEdition />)
+  renderWithProviders(<CollectiveDataEdition />, {
+    TOREFACTOR_doNotUseV6CompatRouter: true,
+  })
 
 describe('CollectiveDataEdition', () => {
   const notifyErrorMock = jest.fn()

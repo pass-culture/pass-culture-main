@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Redirect, Route, Switch, useLocation } from 'react-router'
+import { Redirect, Switch, useLocation } from 'react-router'
+import { CompatRoute } from 'react-router-dom-v5-compat'
 
 import AppLayout from 'app/AppLayout'
 import routes, { routesWithoutLayout } from 'app/AppRouter/routes_map'
@@ -37,12 +38,12 @@ const AppRouter = (): JSX.Element => {
         )
       )}
 
-      <Route exact key="logout" path="/logout">
+      <CompatRoute exact key="logout" path="/logout">
         <Logout />
-      </Route>
+      </CompatRoute>
 
       {activeRoutes.map(route => (
-        <Route
+        <CompatRoute
           exact={route.exact}
           key={Array.isArray(route.path) ? route.path.join('|') : route.path}
           path={route.path}
@@ -50,16 +51,16 @@ const AppRouter = (): JSX.Element => {
           <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
             <route.component />
           </AppLayout>
-        </Route>
+        </CompatRoute>
       ))}
       {activeRoutesWithoutLayout.map(route => (
-        <Route
+        <CompatRoute
           {...route}
           exact={route.exact}
           key={Array.isArray(route.path) ? route.path.join('|') : route.path}
         />
       ))}
-      <Route component={NotFound} />
+      <CompatRoute component={NotFound} />
     </Switch>
   )
 }
