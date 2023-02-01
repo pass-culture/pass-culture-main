@@ -99,7 +99,6 @@ class BookingReponse(BaseModel):
     cancellationReason: bookings_models.BookingCancellationReasons | None
     confirmationDate: datetime | None
     completedUrl: str | None
-    dateCreated: datetime
     dateUsed: datetime | None
     expirationDate: datetime | None
     qrCodeData: str | None

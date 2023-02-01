@@ -175,7 +175,6 @@ def test_public_api(client):
                             "title": "Confirmationdate",
                             "type": "string",
                         },
-                        "dateCreated": {"format": "date-time", "title": "Datecreated", "type": "string"},
                         "dateUsed": {"format": "date-time", "nullable": True, "title": "Dateused", "type": "string"},
                         "expirationDate": {
                             "format": "date-time",
@@ -196,7 +195,7 @@ def test_public_api(client):
                         "token": {"nullable": True, "title": "Token", "type": "string"},
                         "totalAmount": {"title": "Totalamount", "type": "integer"},
                     },
-                    "required": ["id", "dateCreated", "quantity", "stock", "totalAmount"],
+                    "required": ["id", "quantity", "stock", "totalAmount"],
                     "title": "BookingReponse",
                     "type": "object",
                 },

@@ -196,7 +196,6 @@ class GetBookingsTest:
             "cancellationReason": None,
             "confirmationDate": "2021-03-02T00:00:00Z",
             "completedUrl": f"https://demo.pass/some/path?token={used2.token}&email=pascal.ture@example.com&offerId={humanize(used2.stock.offer.id)}",
-            "dateCreated": used2.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "dateUsed": "2021-03-02T00:00:00Z",
             "expirationDate": None,
             "quantity": 1,
@@ -323,21 +322,6 @@ class GetBookingsTest:
             {"barcode": "111111111", "seat": "A_1"},
             {"barcode": "111111112", "seat": "A_2"},
         ]
-
-    def test_digital_bookings_are_considered_used_after_30_days(self, client):
-        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = booking_factories.IndividualBookingFactory(
-            dateCreated=datetime.utcnow() - timedelta(days=30, minutes=1),
-            individualBooking__user=user,
-            stock__offer__subcategoryId=subcategories.ABO_PRESSE_EN_LIGNE.id,
-        )
-
-        response = client.with_token(self.identifier).get("/native/v1/bookings")
-
-        assert response.status_code == 200
-        assert len(response.json["ongoing_bookings"]) == 0
-        assert len(response.json["ended_bookings"]) == 1
-        assert response.json["ended_bookings"][0]["id"] == booking.id
 
 
 class CancelBookingTest:
