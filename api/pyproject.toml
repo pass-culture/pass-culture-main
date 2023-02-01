@@ -123,6 +123,7 @@ disable = [
     "ungrouped-imports",
     "unnecessary-lambda-assignment",
     "unused-argument",
+    "use-dict-literal",
     "useless-return",
     "wrong-import-order",    # we have a custom isort config, which pylint can't grok
     "wrong-import-position",  # same reason
