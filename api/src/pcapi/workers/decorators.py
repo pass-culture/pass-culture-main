@@ -18,12 +18,13 @@ logger = logging.getLogger(__name__)
 def job(queue: Queue) -> typing.Callable:
     def decorator(func: typing.Callable) -> typing.Callable:
         @wraps(func)
-        def job_func(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+        def job_func(*args: typing.Any, **kwargs: typing.Any) -> None:
             current_job = get_current_job()
             if not current_job or IS_RUNNING_TESTS:
                 # in synchronous calls (as wall in TESTS because queued jobs are executed synchronously)
                 # we don't won't to create another session
-                return func(*args, **kwargs)
+                func(*args, **kwargs)
+                return
 
             start = time.perf_counter()
             started_at = current_job.started_at or datetime.utcnow()
@@ -38,7 +39,7 @@ def job(queue: Queue) -> typing.Callable:
             )
 
             with current_app.app_context():
-                result = func(*args, **kwargs)
+                func(*args, **kwargs)
 
             logger.info(
                 "Ended job %s",
@@ -49,7 +50,6 @@ def job(queue: Queue) -> typing.Callable:
                     "duration": round((time.perf_counter() - start) * 1000),
                 },
             )
-            return result
 
         @wraps(job_func)
         def delay(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
