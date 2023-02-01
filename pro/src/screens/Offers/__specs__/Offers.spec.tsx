@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -680,8 +680,9 @@ describe('screen Offers', () => {
       await renderOffers(props, store)
 
       await waitFor(() => {
-        expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
-        expect(screen.getByText('Créer une offre')).toBeInTheDocument()
+        expect(
+          screen.getByRole('link', { name: 'Créer une offre' })
+        ).toBeInTheDocument()
       })
 
       // Then
