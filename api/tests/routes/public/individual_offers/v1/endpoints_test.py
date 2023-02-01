@@ -170,7 +170,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     @freezegun.freeze_time("2022-01-01 12:00:00")
-    def test_offer_creation_with_full_body(self, client, clear_tests_assets_bucket):
+    def test_product_creation_with_full_body(self, client, clear_tests_assets_bucket):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
 
@@ -811,6 +811,7 @@ class PostEventTest:
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Nicolas Jaar dans ton salon",
                 "ticketCollection": {"way": "by_email", "daysBeforeEvent": 1},
+                "priceCategories": [{"price": 2500, "label": "triangle or"}],
             },
         )
 
@@ -846,6 +847,10 @@ class PostEventTest:
             created_offer.image.url
             == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(created_mediation.id)}"
         )
+
+        created_price_category = offers_models.PriceCategory.query.one()
+        assert created_price_category.price == decimal.Decimal("25")
+        assert created_price_category.label == "triangle or"
 
         assert response.json == {
             "accessibility": {
@@ -1100,6 +1105,86 @@ class PostDatesTest:
                         "price": 8899,
                         "quantity": 10,
                     },
+                ],
+            },
+        )
+        assert response.status_code == 404
+        assert response.json == {"event_id": ["The event could not be found"]}
+
+
+@pytest.mark.usefixtures("db_session")
+class PostPriceCategoriesTest:
+    def test_create_price_categories(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=api_key.offerer, lastProvider=individual_offers_api_provider
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            f"/public/offers/v1/events/{event_offer.id}/price_categories",
+            json={
+                "priceCategories": [
+                    {"price": 2500, "label": "carre or"},
+                    {"price": 1500, "label": "triangle argent"},
+                ],
+            },
+        )
+        assert response.status_code == 200
+
+        [triangle_argent_category, carre_or_category] = offers_models.PriceCategory.query.order_by(
+            offers_models.PriceCategory.price
+        ).all()
+        assert carre_or_category.label == "carre or"
+        assert carre_or_category.price == decimal.Decimal("25")
+
+        assert triangle_argent_category.label == "triangle argent"
+        assert triangle_argent_category.price == decimal.Decimal("15")
+
+        assert response.json == {
+            "priceCategories": [
+                {"id": carre_or_category.id, "price": 2500, "label": "carre or"},
+                {"id": triangle_argent_category.id, "price": 1500, "label": "triangle argent"},
+            ],
+        }
+
+    def test_invalid_offer_id(self, client):
+        offerers_factories.ApiKeyFactory()
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events/inexistent_event_id/price_categories",
+            json={
+                "priceCategories": [
+                    {"price": 2500, "label": "carre or"},
+                ],
+            },
+        )
+
+        assert response.status_code == 404
+
+    def test_404_for_other_offerer_offer(self, client):
+        offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory()
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            f"/public/offers/v1/events/{event_offer.id}/price_categories",
+            json={
+                "priceCategories": [
+                    {"price": 2500, "label": "carre or"},
+                ],
+            },
+        )
+        assert response.status_code == 404
+        assert response.json == {"event_id": ["The event could not be found"]}
+
+    def test_404_for_product_offer(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            f"/public/offers/v1/events/{product_offer.id}/price_categories",
+            json={
+                "priceCategories": [
+                    {"price": 2500, "label": "carre or"},
                 ],
             },
         )

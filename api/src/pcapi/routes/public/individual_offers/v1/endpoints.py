@@ -284,6 +284,10 @@ def post_event_offer(
                 withdrawal_type=withdrawal_type,
             )
 
+            for price_category in body.price_categories:
+                euro_price = finance_utils.to_euros(price_category.price)
+                offers_api.create_price_category(created_offer, price_category.label, euro_price)
+
             if body.image:
                 _save_image(body.image, created_offer)
 
@@ -293,6 +297,30 @@ def post_event_offer(
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.EventOfferResponse.build_event_offer(created_offer)
+
+
+@blueprint.v1_blueprint.route("/events/<int:event_id>/price_categories", methods=["POST"])
+@spectree_serialize(
+    api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG], response_model=serialization.PriceCategoriesResponse
+)
+@api_key_required
+def post_event_price_categories(
+    event_id: int, body: serialization.PriceCategoriesCreation
+) -> serialization.PriceCategoriesResponse:
+    """
+    Create price categories for an offer to be linked to dates.
+    """
+    offer = _retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent == True).one_or_none()
+    if not offer:
+        raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
+
+    created_price_categories: list[offers_models.PriceCategory] = []
+    with repository.transaction():
+        for price_category in body.price_categories:
+            euro_price = finance_utils.to_euros(price_category.price)
+            created_price_categories.append(offers_api.create_price_category(offer, price_category.label, euro_price))
+
+    return serialization.PriceCategoriesResponse.build_price_categories(created_price_categories)
 
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates", methods=["POST"])
