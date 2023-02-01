@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
-import { generatePath, Route } from 'react-router'
+import { generatePath } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import {
@@ -154,13 +155,19 @@ const renderOfferIndividualWizardRoute = (
   url = '/offre/v3'
 ) =>
   renderWithProviders(
-    <Route path={['/offre/individuelle/:offerId']}>
-      <OfferIndividualWizard />
-    </Route>,
-    { storeOverrides, initialRouterEntries: [url] }
+    <Routes>
+      <Route
+        path="offre/individuelle/:offerId/*"
+        element={<OfferIndividualWizard />}
+      />
+    </Routes>,
+    {
+      storeOverrides,
+      initialRouterEntries: [url],
+    }
   )
 
-describe('test OfferIndividualWisard', () => {
+describe('OfferIndividualWizard', () => {
   let store: any
 
   beforeEach(() => {

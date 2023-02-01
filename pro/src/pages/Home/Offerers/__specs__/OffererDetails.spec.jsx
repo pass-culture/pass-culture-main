@@ -35,7 +35,10 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const renderHomePage = async storeOverrides => {
-  const utils = renderWithProviders(<Homepage />, { storeOverrides })
+  const utils = renderWithProviders(<Homepage />, {
+    storeOverrides,
+    TOREFACTOR_doNotUseV6CompatRouter: true,
+  })
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 

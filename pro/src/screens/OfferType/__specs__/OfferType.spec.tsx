@@ -15,6 +15,7 @@ const renderOfferTypes = (storeOverrides: any) =>
   renderWithProviders(<OfferType />, {
     storeOverrides,
     initialRouterEntries: ['/creation'],
+    TOREFACTOR_doNotUseV6CompatRouter: true,
   })
 
 const mockHistoryPush = jest.fn()

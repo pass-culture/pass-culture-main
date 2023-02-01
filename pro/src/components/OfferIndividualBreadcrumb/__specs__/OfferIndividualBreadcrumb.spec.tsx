@@ -1,7 +1,8 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { generatePath, Switch, Route } from 'react-router'
+import { generatePath } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import {
   IOfferIndividualContext,
@@ -41,72 +42,51 @@ const renderOfferIndividualBreadcrumb = (
   const rtlReturns = renderWithProviders(
     <OfferIndividualContext.Provider value={contextValues}>
       <OfferIndividualBreadcrumb />
-      <Switch>
-        <Route
-          path={[
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-              mode: OFFER_WIZARD_MODE.EDITION,
-            }),
-          ]}
-        >
-          <div>Informations screen</div>
-        </Route>
-        <Route
-          path={[
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.STOCKS,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.STOCKS,
-              mode: OFFER_WIZARD_MODE.EDITION,
-            }),
-          ]}
-        >
-          <div>Stocks screen</div>
-        </Route>
-        <Route
-          path={[
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.TARIFS,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.TARIFS,
-              mode: OFFER_WIZARD_MODE.EDITION,
-            }),
-          ]}
-        >
-          <div>Tarifs screen</div>
-        </Route>
-        <Route
-          path={[
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-              mode: OFFER_WIZARD_MODE.EDITION,
-            }),
-          ]}
-        >
-          <div>Summary screen</div>
-        </Route>
+      <Routes>
+        {[OFFER_WIZARD_MODE.CREATION, OFFER_WIZARD_MODE.EDITION].map(mode => (
+          <React.Fragment key={mode}>
+            <Route
+              path={getOfferIndividualPath({
+                step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+                mode,
+              })}
+              element={<div>Informations screen</div>}
+            />
+
+            <Route
+              path={getOfferIndividualPath({
+                step: OFFER_WIZARD_STEP_IDS.STOCKS,
+                mode,
+              })}
+              element={<div>Stocks screen</div>}
+            />
+
+            <Route
+              path={getOfferIndividualPath({
+                step: OFFER_WIZARD_STEP_IDS.TARIFS,
+                mode,
+              })}
+              element={<div>Tarifs screen</div>}
+            />
+
+            <Route
+              path={getOfferIndividualPath({
+                step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+                mode,
+              })}
+              element={<div>Summary screen</div>}
+            />
+          </React.Fragment>
+        ))}
+
         <Route
           path={getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
             mode: OFFER_WIZARD_MODE.CREATION,
           })}
-        >
-          <div>Confirmation screen</div>
-        </Route>
-      </Switch>
+          element={<div>Confirmation screen</div>}
+        />
+      </Routes>
     </OfferIndividualContext.Provider>,
     { storeOverrides, initialRouterEntries: [url] }
   )

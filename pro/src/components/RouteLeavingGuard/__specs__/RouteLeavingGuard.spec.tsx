@@ -3,8 +3,9 @@ import userEvent from '@testing-library/user-event'
 import type { History } from 'history'
 import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Route, Router, Switch } from 'react-router'
+import { Router } from 'react-router'
 import { Link } from 'react-router-dom'
+import { Route, Routes, CompatRouter } from 'react-router-dom-v5-compat'
 
 import RouteLeavingGuard, {
   IRouteLeavingGuardProps,
@@ -15,17 +16,11 @@ const MiniAppTest = () => (
     <Link to="/">Home</Link>
     <Link to="/about">About</Link>
     <Link to="/contact">Contact</Link>
-    <Switch>
-      <Route exact path="/">
-        <div>Home page</div>
-      </Route>
-      <Route path="/about">
-        <div>About page</div>
-      </Route>
-      <Route path="/contact">
-        <div>Contact page</div>
-      </Route>
-    </Switch>
+    <Routes>
+      <Route path="/" element={<div>Home page</div>} />
+      <Route path="/about" element={<div>About page</div>} />
+      <Route path="/contact" element={<div>Contact page</div>} />
+    </Routes>
   </div>
 )
 
@@ -35,8 +30,10 @@ const renderRouteLeavingGuard = async (
 ) => {
   render(
     <Router history={history}>
-      <MiniAppTest />
-      <RouteLeavingGuard {...props}>{props.children}</RouteLeavingGuard>
+      <CompatRouter>
+        <MiniAppTest />
+        <RouteLeavingGuard {...props}>{props.children}</RouteLeavingGuard>
+      </CompatRouter>
     </Router>
   )
 }

@@ -1,6 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
-import { generatePath, Route } from 'react-router'
+import { generatePath } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import {
@@ -165,10 +166,14 @@ const renderOfferIndividualWizardRoute = (
 ) =>
   renderWithProviders(
     <>
-      <Route path={['/offre/individuelle/:offerId']}>
-        <OfferIndividualWizard />
-      </Route>
-      <Route path={['/structures', '/accueil']}>Home Page</Route>
+      <Routes>
+        <Route
+          path="offre/individuelle/:offerId/*"
+          element={<OfferIndividualWizard />}
+        />
+        <Route path="/structures" element={<>Home Page</>} />
+        <Route path="/accueil" element={<>Home Page</>} />
+      </Routes>
       <Notification />
     </>,
     { storeOverrides, initialRouterEntries: [url] }

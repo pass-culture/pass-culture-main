@@ -13,15 +13,10 @@ import CollectiveOfferVisibility, {
   CollectiveOfferVisibilityProps,
 } from '../CollectiveOfferVisibility'
 
-const mockHistoryPush = jest.fn()
-
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: () => ({
     offerId: 'BQ',
-  }),
-  useHistory: () => ({
-    push: mockHistoryPush,
   }),
 }))
 
