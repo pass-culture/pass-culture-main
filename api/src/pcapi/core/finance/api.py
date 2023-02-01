@@ -239,12 +239,12 @@ def _get_bookings_to_price(
     bookings_with_right_pricing_point = model.query
     if model == bookings_models.Booking:
         bookings_with_right_pricing_point = bookings_with_right_pricing_point.filter(
-            bookings_models.Booking.status == bookings_models.BookingStatus.USED,
+            model.status == bookings_models.BookingStatus.USED,
         ).outerjoin(models.Pricing, models.Pricing.bookingId == model.id)
     else:
-        bookings_with_right_pricing_point = bookings_with_right_pricing_point.outerjoin(
-            models.Pricing, models.Pricing.collectiveBookingId == model.id
-        )
+        bookings_with_right_pricing_point = bookings_with_right_pricing_point.filter(
+            model.status == educational_models.CollectiveBookingStatus.USED
+        ).outerjoin(models.Pricing, models.Pricing.collectiveBookingId == model.id)
 
     # Select the "right" pricing point link to use for each booking.
     # This is done in a CTE because we must first find those links,
