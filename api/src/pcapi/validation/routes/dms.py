@@ -18,13 +18,13 @@ class DMSWebhookRequest(pydantic.BaseModel):
     updated_at: datetime.datetime
 
     @pydantic.validator("updated_at", pre=True)
-    def validate_udpated_at(cls, value):  # type: ignore [no-untyped-def]
+    def validate_udpated_at(cls, value: str) -> datetime.datetime:
         return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S %z")
 
 
-def require_dms_token(route_function: Callable[..., Any]):  # type: ignore [no-untyped-def]
+def require_dms_token(route_function: Callable[..., Any]) -> Callable:
     @functools.wraps(route_function)
-    def validate_dms_token(*args, **kwargs):  # type: ignore [no-untyped-def]
+    def validate_dms_token(*args: Any, **kwargs: Any) -> flask.Response:
         if flask.request.args.get("token") != settings.DMS_WEBHOOK_TOKEN:
             errors = ForbiddenError()
             errors.add_error("token", "Invalid token")
