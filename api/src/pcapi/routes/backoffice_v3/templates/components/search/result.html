@@ -8,6 +8,30 @@
     {% endif %}
 {% endmacro %}
 
+<form action="{{ dst }}" method="GET">
+    <div class="col-8 row">
+        <div class="col-8">
+            <div class="input-group mb-3">
+                {% for form_field in form %}
+                    {% if form_field.type != 'HiddenField' %}
+                        {{ form_field }}
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% for form_field in form %}
+                {% if form_field.type == 'HiddenField' %}
+                    {{ form_field }}
+                {% endif %}
+            {% endfor %}
+
+        </div>
+        <div class="col-4">
+            <button type="submit" class="btn btn-primary">Chercher</button>
+        </div>
+    </div>
+
+</form>
+
 <div>
     <div>
         <p class="lead">{{ rows.total }} résultats</p>
