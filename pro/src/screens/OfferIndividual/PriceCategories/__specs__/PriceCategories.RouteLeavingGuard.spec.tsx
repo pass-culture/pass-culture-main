@@ -3,7 +3,8 @@ import '@testing-library/jest-dom'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { generatePath, Route } from 'react-router'
+import { generatePath } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
@@ -13,14 +14,6 @@ import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import PriceCategories, { IPriceCategories } from '../PriceCategories'
-
-const mockHistoryPush = jest.fn()
-jest.mock('react-router', () => ({
-  ...jest.requireActual('react-router'),
-  useHistory: () => ({
-    push: mockHistoryPush,
-  }),
-}))
 
 const renderPriceCategories = (
   props: IPriceCategories,
@@ -33,43 +26,72 @@ const renderPriceCategories = (
   )
 ) =>
   renderWithProviders(
-    <>
-      <Route
-        path={Object.values(OFFER_WIZARD_MODE).map(mode =>
-          getOfferIndividualPath({
+    <Routes>
+      {Object.values(OFFER_WIZARD_MODE).map(mode => (
+        <Route
+          key={mode}
+          path={getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.TARIFS,
             mode,
-          })
-        )}
-      >
-        <PriceCategories {...props} />
-        <ButtonLink link={{ to: '/outside', isExternal: false }}>
-          Go outside !
-        </ButtonLink>
-        <ButtonLink
-          link={{
-            to: getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.STOCKS,
-              mode: OFFER_WIZARD_MODE.DRAFT,
-            }),
-            isExternal: false,
-          }}
-        >
-          Go to stocks !
-        </ButtonLink>
-      </Route>
-      <Route path="/outside">
-        <div>This is outside offer creation</div>
-      </Route>
+          })}
+          element={
+            <>
+              <PriceCategories {...props} />
+              <ButtonLink link={{ to: '/outside', isExternal: false }}>
+                Go outside !
+              </ButtonLink>
+              <ButtonLink
+                link={{
+                  to: getOfferIndividualPath({
+                    step: OFFER_WIZARD_STEP_IDS.STOCKS,
+                    mode: OFFER_WIZARD_MODE.DRAFT,
+                  }),
+                  isExternal: false,
+                }}
+              >
+                Go to stocks !
+              </ButtonLink>
+            </>
+          }
+        />
+      ))}
+      <Route
+        path="/outside"
+        element={<div>This is outside offer creation</div>}
+      />
+
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+        element={<div>There is the informations route content</div>}
+      />
+
       <Route
         path={getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.DRAFT,
         })}
-      >
-        <div>There is the stock route content</div>
-      </Route>
-    </>,
+        element={<div>There is the stock route content</div>}
+      />
+
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+        element={<div>There is the stock create route content</div>}
+      />
+
+      <Route
+        path={getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        })}
+        element={<div>There is the summary route content</div>}
+      />
+    </Routes>,
     { initialRouterEntries: [url] }
   )
 
@@ -79,9 +101,9 @@ describe('PriceCategories', () => {
 
     await userEvent.click(screen.getByText('Étape précédente'))
 
-    expect(mockHistoryPush).toHaveBeenCalledWith(
-      '/offre/individuelle/AA/creation/informations'
-    )
+    expect(
+      screen.getByText('There is the informations route content')
+    ).toBeInTheDocument()
   })
 
   it('should let going to stock when form has been filled in creation', async () => {
@@ -94,9 +116,9 @@ describe('PriceCategories', () => {
 
     await userEvent.click(screen.getByText('Étape suivante'))
 
-    expect(mockHistoryPush).toHaveBeenCalledWith(
-      '/offre/individuelle/AA/creation/stocks'
-    )
+    expect(
+      screen.getByText('There is the stock create route content')
+    ).toBeInTheDocument()
   })
 
   it('should let going to stock when form has been filled in draft', async () => {
@@ -119,9 +141,9 @@ describe('PriceCategories', () => {
 
     await userEvent.click(screen.getByText('Étape suivante'))
 
-    expect(mockHistoryPush).toHaveBeenCalledWith(
-      '/offre/individuelle/AA/brouillon/stocks'
-    )
+    expect(
+      screen.getByText('There is the stock route content')
+    ).toBeInTheDocument()
   })
 
   it('should stay on the same page when clicking on "Sauvegarder le brouillon" in draft', async () => {
@@ -143,9 +165,7 @@ describe('PriceCategories', () => {
 
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
-    expect(mockHistoryPush).toHaveBeenCalledWith(
-      '/offre/individuelle/AA/brouillon/tarifs'
-    )
+    expect(screen.getByText('Intitulé du tarif')).toBeInTheDocument()
   })
 
   it('should let going to recap when form has been filled in edition', async () => {
@@ -167,9 +187,9 @@ describe('PriceCategories', () => {
 
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
-    expect(mockHistoryPush).toHaveBeenCalledWith(
-      '/offre/individuelle/AA/recapitulatif'
-    )
+    expect(
+      screen.getByText('There is the summary route content')
+    ).toBeInTheDocument()
   })
 
   it('should let going to outside when form has been filled in draft and clicking from leaving guard', async () => {
