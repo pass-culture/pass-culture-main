@@ -2,6 +2,7 @@ from flask import g
 from flask import url_for
 import pytest
 
+from pcapi import settings
 import pcapi.core.history.factories as history_factories
 import pcapi.core.history.models as history_models
 import pcapi.core.offerers.factories as offerers_factories
@@ -12,7 +13,7 @@ import pcapi.core.users.models as users_models
 from pcapi.routes.backoffice_v3.filters import format_date
 import pcapi.utils.email as email_utils
 
-from .helpers import comment as comment_helpers
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers import unauthorized as unauthorized_helpers
 
@@ -31,6 +32,33 @@ class GetProUserTest:
         endpoint_kwargs = {"user_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
+    class EmailValidationButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+        button_label = "Valider l'email"
+
+        @property
+        def path(self):
+            user = offerers_factories.UserOffererFactory(user__isEmailValidated=False).user
+            return url_for("backoffice_v3_web.pro_user.get", user_id=user.id)
+
+        def test_button_when_can_add_one(self, authenticated_client):
+            user = offerers_factories.UserOffererFactory(user__isEmailValidated=False).user
+            response = authenticated_client.get(url_for("backoffice_v3_web.pro_user.get", user_id=user.id))
+            assert response.status_code == 200
+
+            assert self.button_label in response.data.decode("utf-8")
+            print(response.data)
+            assert f"{settings.PRO_URL}/inscription/validation/{user.validationToken}" in response.data.decode("utf-8")
+
+        def test_no_button_if_validated_email(self, authenticated_client):
+            user = offerers_factories.UserOffererFactory(
+                user__isEmailValidated=True, user__validationToken="AZERTY1234"
+            ).user
+            response = authenticated_client.get(url_for("backoffice_v3_web.pro_user.get", user_id=user.id))
+            assert response.status_code == 200
+
+            assert self.button_label not in response.data.decode("utf-8")
+
     def test_get_pro_user(self, authenticated_client):  # type: ignore
         user = offerers_factories.UserOffererFactory(user__phoneNumber="+33638656565", user__postalCode="29000").user
         url = url_for("backoffice_v3_web.pro_user.get", user_id=user.id)
@@ -48,6 +76,7 @@ class GetProUserTest:
         assert f"Tél : {user.phoneNumber} " in content
         assert f"Code postal : {user.postalCode} " in content
         assert f"Département : {user.departementCode} " in content
+        assert "Email validé : Oui" in content
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Pro" in badges
@@ -131,8 +160,9 @@ class GetProUserHistoryTest:
         endpoint_kwargs = {"user_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    class CommentButtonTest(comment_helpers.CommentButtonHelper):
+    class CommentButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+        button_label = "Ajouter un commentaire"
 
         @property
         def path(self):

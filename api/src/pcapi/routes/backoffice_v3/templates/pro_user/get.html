@@ -84,6 +84,22 @@
                             </p>
                         </div>
                     </div>
+
+                    <div class="col-4">
+                        <div class="fs-6">
+                            <p class="mb-1"><span
+                                    class="fw-bold">Email validé :</span> {{ "Oui" if user.isEmailValidated else "Non" }}
+                            </p>
+                            {% if not user.isEmailValidated and can_edit_user %}
+                                <p class="mb-1">
+                                    <a href="{{ user | pc_pro_user_email_validation_link }}" target="_blank" class="btn btn-outline-primary fw-bold"
+                                        role="button">
+                                        Valider l'email
+                                    </a>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
