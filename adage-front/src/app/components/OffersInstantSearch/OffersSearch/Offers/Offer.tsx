@@ -3,12 +3,15 @@ import cn from 'classnames'
 import React, { useState } from 'react'
 
 import { api } from 'apiClient/api'
+import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
 } from 'app/types/offers'
-import { Tag } from 'app/ui-kit'
+import { ModalLayout, Tag } from 'app/ui-kit'
 import { ReactComponent as ChevronIcon } from 'assets/chevron.svg'
+import { ReactComponent as LikeIcon } from 'assets/like.svg'
+import { ReactComponent as LikedIcon } from 'assets/liked.svg'
 import { ReactComponent as Logo } from 'assets/logo-without-text.svg'
 import { ReactComponent as ImagePlaceholder } from 'assets/offer-image-placeholder.svg'
 import { LOGS_DATA } from 'utils/config'
@@ -32,6 +35,8 @@ export const Offer = ({
   position: number
 }): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(false)
+  const [isModalLikeOpen, setIsModalLikeOpen] = useState(false)
+  const isLikeActive = useActiveFeature('WIP_ENABLE_LIKE_IN_ADAGE')
 
   const openOfferDetails = (
     offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
@@ -42,6 +47,15 @@ export const Offer = ({
         : api.logOfferTemplateDetailsButtonClick({ offerId: offer.id })
     }
     setDisplayDetails(!displayDetails)
+  }
+
+  const handleLikeClick = () => {
+    api.logFavOfferButtonClick({ offerId: offer.id })
+    setIsModalLikeOpen(true)
+  }
+
+  const closeLikeModal = () => {
+    setIsModalLikeOpen(false)
   }
 
   return (
@@ -105,18 +119,37 @@ export const Offer = ({
           <p className="offer-description">
             {formatDescription(offer.description)}
           </p>
-          <button
-            className="offer-see-more"
-            onClick={() => openOfferDetails(offer)}
-            type="button"
-          >
-            <ChevronIcon
-              className={cn('offer-see-more-icon', {
-                'offer-see-more-icon-closed': !displayDetails,
-              })}
-            />
-            en savoir plus
-          </button>
+          <div className="offer-footer">
+            <button
+              className="offer-see-more"
+              onClick={() => openOfferDetails(offer)}
+              type="button"
+            >
+              <ChevronIcon
+                className={cn('offer-see-more-icon', {
+                  'offer-see-more-icon-closed': !displayDetails,
+                })}
+              />
+              en savoir plus
+            </button>
+            {isLikeActive && (
+              <LikeIcon
+                className="offer-like-button"
+                onClick={handleLikeClick}
+              />
+            )}
+            <ModalLayout
+              Icon={LikedIcon}
+              closeModal={closeLikeModal}
+              isOpen={isModalLikeOpen}
+            >
+              <p className="like-modal-text">
+                Lʼéquipe du pass Culture a bien noté votre intérêt pour cette
+                fonctionnalité. Elle arrivera bientôt !
+              </p>
+            </ModalLayout>
+          </div>
+
           {displayDetails && <OfferDetails offer={offer} />}
         </div>
       </div>

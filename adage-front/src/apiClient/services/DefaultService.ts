@@ -189,6 +189,28 @@ export class DefaultService {
   }
 
   /**
+   * log_fav_offer_button_click <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logFavOfferButtonClick(
+    requestBody?: OfferIdBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/fav-offer/',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * log_offer_details_button_click <POST>
    * @param requestBody
    * @returns void

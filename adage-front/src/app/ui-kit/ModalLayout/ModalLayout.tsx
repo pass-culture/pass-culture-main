@@ -54,7 +54,11 @@ const ModalLayout = ({
         },
       }}
     >
-      {Icon ? <Icon className="modal-logo" /> : <Logo className="modal-logo" />}
+      {Icon ? (
+        <Icon className="modal-logo" />
+      ) : (
+        <Logo className="modal-logo" height={48} width={48} />
+      )}
       {children}
       <div className="modal-buttons">
         <Button
