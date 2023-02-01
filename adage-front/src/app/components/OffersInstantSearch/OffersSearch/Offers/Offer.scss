@@ -104,6 +104,13 @@ $offer-image-width: rem(176px);
     margin: 0 0 rem(24px);
     white-space: pre-line;
   }
+  &-footer {
+    display: flex;
+    justify-content: space-between;
+  }
+  .offer-like-button {
+    cursor: pointer;
+  }
 
   &-see-more {
     border: none;
