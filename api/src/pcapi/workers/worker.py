@@ -1,6 +1,7 @@
 import logging
 import time
 from typing import Any
+from typing import Iterable
 from typing import Type
 
 import click
@@ -61,7 +62,7 @@ def log_database_connection_status() -> None:
 
 @blueprint.cli.command("worker")
 @click.argument("queues", nargs=-1)
-def run_worker(queues=None):  # type: ignore [no-untyped-def]
+def run_worker(queues: Iterable = ()) -> None:
     from flask import current_app as app
 
     sentry_sdk.set_tag("pcapi.app_type", "worker")

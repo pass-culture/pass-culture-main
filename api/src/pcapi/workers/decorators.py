@@ -2,6 +2,7 @@ from datetime import datetime
 from functools import wraps
 import logging
 import time
+import typing
 
 from flask import current_app
 from rq.job import get_current_job
@@ -14,10 +15,10 @@ from pcapi.workers.logger import job_extra_description
 logger = logging.getLogger(__name__)
 
 
-def job(queue: Queue):  # type: ignore [no-untyped-def]
-    def decorator(func):  # type: ignore [no-untyped-def]
+def job(queue: Queue) -> typing.Callable:
+    def decorator(func: typing.Callable) -> typing.Callable:
         @wraps(func)
-        def job_func(*args, **kwargs):  # type: ignore [no-untyped-def]
+        def job_func(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
             current_job = get_current_job()
             if not current_job or IS_RUNNING_TESTS:
                 # in synchronous calls (as wall in TESTS because queued jobs are executed synchronously)
@@ -51,7 +52,7 @@ def job(queue: Queue):  # type: ignore [no-untyped-def]
             return result
 
         @wraps(job_func)
-        def delay(*args, **kwargs):  # type: ignore [no-untyped-def]
+        def delay(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
             current_job = queue.enqueue(job_func, *args, **kwargs)
             logger.info(
                 "Enqueue job %s",
@@ -60,7 +61,7 @@ def job(queue: Queue):  # type: ignore [no-untyped-def]
             )
             return job
 
-        job_func.delay = delay
+        job_func.delay = delay  # type: ignore [attr-defined]
         return job_func
 
     return decorator
