@@ -198,3 +198,4 @@ export { ReactComponent as VisualDisabilityIcon } from 'icons/visual-disability.
 export { ReactComponent as WarningGreyIcon } from 'icons/ico-warning-grey.svg'
 export { ReactComponent as WarningStockIcon } from 'icons/ico-warning.svg'
 export { ReactComponent as AddUserIcon } from 'icons/add-user.svg'
+export { ReactComponent as IcoMailOutline } from 'icons/ico-mail-outline.svg'
