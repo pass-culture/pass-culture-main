@@ -77,7 +77,7 @@ def get_collective_booking_by_id(booking_id: str) -> collective_bookings_seriali
     try:
         booking = educational_api_booking.get_collective_booking_by_id(dehumanized_id)
     except collective_exceptions.EducationalBookingNotFound:
-        ApiErrors({"offerer": ["Réservation collective non trouvée."]}, status_code=404)
+        raise ApiErrors({"offerer": ["Réservation collective non trouvée."]}, status_code=404)
     check_user_has_access_to_offerer(current_user, booking.offererId)
     return collective_bookings_serialize.CollectiveBookingByIdResponseModel.from_orm(booking)
 

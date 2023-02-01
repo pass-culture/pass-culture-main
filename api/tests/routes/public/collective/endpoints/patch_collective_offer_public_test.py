@@ -370,7 +370,6 @@ class CollectiveOffersPublicPatchOfferTest:
                 "otherAddress": None,
             },
             "isActive": False,
-            "imageCredit": "a great artist",
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",

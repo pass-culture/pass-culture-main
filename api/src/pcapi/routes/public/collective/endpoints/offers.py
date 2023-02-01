@@ -357,7 +357,7 @@ def patch_collective_offer_public(
     if "imageCredit" in new_values:
         image_credit = new_values["imageCredit"]
         if image_credit is None and (offer.hasImage or new_values.get("imageFile", None)):
-            ApiErrors(
+            raise ApiErrors(
                 errors={
                     "imageCredit": [
                         "Les champs imageFile et imageCredit sont liés, si l'un est rempli l'autre doit l'être aussi"
@@ -366,7 +366,7 @@ def patch_collective_offer_public(
                 status_code=400,
             )
         if image_credit is not None and not offer.hasImage and not new_values.get("imageFile", None):
-            ApiErrors(
+            raise ApiErrors(
                 errors={
                     "imageCredit": [
                         "Les champs imageFile et imageCredit sont liés, si l'un est rempli l'autre doit l'être aussi"
@@ -377,7 +377,7 @@ def patch_collective_offer_public(
 
     if "imageFile" in new_values:
         if offer.imageCredit is None and not new_values.get("imageCredit", None):
-            ApiErrors(
+            raise ApiErrors(
                 errors={
                     "imageFile": [
                         "Les champs imageFile et imageCredit sont liés, si l'un est rempli l'autre doit l'être aussi"
