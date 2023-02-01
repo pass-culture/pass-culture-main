@@ -403,6 +403,43 @@ class UpdateVenueTest:
         assert update_snapshot["address"]["new_info"] == data["address"]
         assert update_snapshot["contact.email"]["new_info"] == data["email"]
 
+    def test_update_venue_contact_only(self, authenticated_client, offerer):
+        website = "update.venue@example.com"
+        social_medias = {"instagram": "https://instagram.com/update.venue"}
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer, contact__website=website, contact__social_medias=social_medias
+        )
+
+        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
+        data = {
+            "siret": venue.siret,
+            "city": venue.city,
+            "postalCode": venue.postalCode,
+            "address": venue.address,
+            "email": venue.contact.email + ".update",
+            "phone_number": "+33102030456",
+            "isPermanent": venue.isPermanent,
+        }
+
+        response = send_request(authenticated_client, venue.id, url, data)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_v3_web.venue.get", venue_id=venue.id, _external=True)
+
+        db.session.refresh(venue)
+
+        assert venue.contact.email == data["email"]
+        assert venue.contact.phone_number == data["phone_number"]
+
+        # should not have been updated or erased
+        assert venue.contact.website == website
+        assert venue.contact.social_medias == social_medias
+
+        assert len(venue.action_history) == 1
+
+        update_snapshot = venue.action_history[0].extraData["modified_info"]
+        assert update_snapshot["contact.email"]["new_info"] == data["email"]
+
     def test_update_virtual_venue(self, authenticated_client, offerer):
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
