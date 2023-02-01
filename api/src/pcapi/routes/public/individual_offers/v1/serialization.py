@@ -1,10 +1,12 @@
 import copy
 import datetime
+import decimal
 import enum
 import logging
 import typing
 
 import pydantic
+from pydantic.utils import GetterDict
 import typing_extensions
 
 from pcapi import settings
@@ -150,6 +152,7 @@ TICKET_COLLECTION_FIELD = pydantic.Field(
     description="How the ticket will be collected. Leave empty if there is no ticket. Only some categories are compatible with tickets.",
     discriminator="way",
 )
+PRICE_CATEGORIES_FIELD = pydantic.Field([], description="Available price categories for dates of this offer")
 EVENT_DATES_FIELD = pydantic.Field(
     description="Dates of the event. If there are different prices for the same date, several date objects are needed",
 )
@@ -381,14 +384,6 @@ class StockEdition(serialization.ConfiguredBaseModel):
         extra = "forbid"
 
 
-class DateCreation(BaseStockCreation):
-    beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
-    booking_limit_datetime: datetime.datetime = BOOKING_LIMIT_DATETIME_FIELD
-
-    _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
-    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
-
-
 ON_SITE_MINUTES_BEFORE_EVENT = typing.Literal[0, 15, 30, 60, 120, 240, 1440, 2880]
 BY_EMAIL_DAYS_BEFORE_EVENT = typing.Literal[1, 2, 3, 4, 5, 6, 7]
 
@@ -423,7 +418,35 @@ class ProductOfferCreation(OfferCreationBase):
         extra = "forbid"
 
 
-class EventOfferCreation(OfferCreationBase):
+class DecimalPriceGetterDict(GetterDict):
+    def get(self, key: str, default: typing.Any = None) -> typing.Any:
+        if key == "price" and isinstance(self._obj.price, decimal.Decimal):
+            return finance_utils.to_eurocents(self._obj.price)
+        return super().get(key, default)
+
+
+class PriceCategoryCreation(serialization.ConfiguredBaseModel):
+    price: pydantic.StrictInt = PRICE_FIELD
+    label: str
+
+    @pydantic.validator("price")
+    def price_must_be_positive(cls, value: int) -> int:
+        if value < 0:
+            raise ValueError("Value must be positive")
+        return value
+
+    class Config:
+        getter_dict = DecimalPriceGetterDict
+
+
+class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
+    price_categories: typing.List[PriceCategoryCreation] = PRICE_CATEGORIES_FIELD
+
+    class Config:
+        extra = "forbid"
+
+
+class EventOfferCreation(OfferCreationBase, PriceCategoriesCreation):
     category_related_fields: event_category_creation_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = TICKET_COLLECTION_FIELD
@@ -471,6 +494,14 @@ class EventOfferEdition(OfferEditionBase):
     )
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = TICKET_COLLECTION_FIELD
+
+
+class DateCreation(BaseStockCreation):
+    beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
+    booking_limit_datetime: datetime.datetime = BOOKING_LIMIT_DATETIME_FIELD
+
+    _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
+    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
 
 
 class DatesCreation(serialization.ConfiguredBaseModel):
@@ -576,6 +607,18 @@ class ProductOfferResponse(OfferResponse):
             stock=BaseStockResponse.build_stock(active_stock) if active_stock else None,
             **base_offer_response.dict(),
         )
+
+
+class PriceCategoryResponse(PriceCategoryCreation):
+    id: int
+
+
+class PriceCategoriesResponse(serialization.ConfiguredBaseModel):
+    price_categories: typing.List[PriceCategoryResponse] = PRICE_CATEGORIES_FIELD
+
+    @classmethod
+    def build_price_categories(cls, price_categories: list[offers_models.PriceCategory]) -> "PriceCategoriesResponse":
+        return cls(price_categories=[PriceCategoryResponse.from_orm(category) for category in price_categories])
 
 
 def _serialize_ticket_collection(

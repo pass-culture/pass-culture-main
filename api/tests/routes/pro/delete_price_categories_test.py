@@ -11,9 +11,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Return200Test:
     def test_delete_price_category(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
-        price_category = offers_factories.PriceCategoryFactory(
-            offer=offer,
-        )
+        price_category = offers_factories.PriceCategoryFactory(offer=offer)
         offers_factories.StockFactory(offer=offer, priceCategory=price_category)
 
         offerer = offerers_factories.UserOffererFactory(
@@ -32,9 +30,7 @@ class Return200Test:
 class Return400Test:
     def test_offer_not_draft(self, client):
         validated_offer = offers_factories.ThingOfferFactory()
-        undeletable_price_category = offers_factories.PriceCategoryFactory(
-            offer=validated_offer,
-        )
+        undeletable_price_category = offers_factories.PriceCategoryFactory(offer=validated_offer)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=validated_offer.venue.managingOfferer,
@@ -49,12 +45,8 @@ class Return400Test:
 
     def test_user_unrelated_to_offer(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
-        price_category = offers_factories.PriceCategoryFactory(
-            offer=offer,
-        )
-        unrelated_offerer = offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-        )
+        price_category = offers_factories.PriceCategoryFactory(offer=offer)
+        unrelated_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
 
         response = client.with_session_auth(unrelated_offerer.user.email).delete(
             f"/offers/{offer.id}/price_categories/{price_category.id}"
