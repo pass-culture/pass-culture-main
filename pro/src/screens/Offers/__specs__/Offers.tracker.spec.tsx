@@ -11,6 +11,7 @@ import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { offererFactory } from 'utils/apiFactories'
+import { individualOfferOffererFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offers, { IOffersProps } from '../Offers'
@@ -54,19 +55,9 @@ describe('tracker screen Offers', () => {
       setLogEvent: null,
     }))
 
+    const individualOffererNames = individualOfferOffererFactory()
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        {
-          id: 'A1',
-          nonHumanizedId: 1,
-          name: 'Mon super cinéma',
-        },
-        {
-          id: 'B1',
-          nonHumanizedId: 1,
-          name: 'Ma super librairie',
-        },
-      ],
+      offerersNames: [individualOffererNames],
     })
 
     // When
