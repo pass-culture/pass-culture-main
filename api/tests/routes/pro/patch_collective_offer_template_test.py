@@ -1,8 +1,10 @@
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.factories import EducationalDomainFactory
+from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
@@ -180,6 +182,27 @@ class Returns404Test:
 
         # then
         assert response.status_code == 404
+
+    def test_patch_collective_offer_replacing_venue_with_same_offerer(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offerer,
+        )
+        offer = CollectiveOfferFactory(venue__managingOfferer=offerer)
+        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        # When
+        data = {"venueId": venue2.id}
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 200
+        updated_offer = CollectiveOffer.query.get(offer.id)
+        assert updated_offer.venueId == venue2.id
 
     def test_patch_offer_with_unknown_educational_domain(self, client):
         # Given

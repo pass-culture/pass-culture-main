@@ -203,6 +203,12 @@ def edit_collective_offer(
         offers_api.update_collective_offer(offer_id=dehumanized_id, new_values=body.dict(exclude_unset=True))
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
+    except offers_exceptions.OfferUsedOrReimbursedCantBeEdit:
+        raise ApiErrors({"offer": "the used or refund offer can't be edited."}, 403)
+    except educational_exceptions.OffererOfVenueDontMatchOfferer:
+        raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
+    except educational_exceptions.VenueIdDontExist:
+        raise ApiErrors({"venueId": "The venue does not exist."}, 404)
     except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not update offer: educational domains not found.",
