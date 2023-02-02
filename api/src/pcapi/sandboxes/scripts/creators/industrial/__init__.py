@@ -41,6 +41,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_offerer_with_several_ven
 from pcapi.sandboxes.scripts.creators.industrial.create_offerer_with_venue_provider_and_external_bookings import (
     create_industrial_provider_external_bookings,
 )
+from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_price_categories import (
+    create_offers_with_price_categories,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_status import create_offers_with_status
 from pcapi.sandboxes.scripts.creators.industrial.create_role_permissions import create_roles_with_permissions
 from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
@@ -121,3 +124,5 @@ def save_industrial_sandbox() -> None:
     create_offer_with_thousand_stocks()
 
     create_offerer_with_several_venues()
+
+    create_offers_with_price_categories()
