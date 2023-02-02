@@ -9,3 +9,10 @@ export const INITIAL_PRICE_CATEGORY: PriceCategoryForm = {
   label: '',
   price: '',
 }
+
+export const UNIQUE_PRICE = 'Tarif unique'
+
+export const FIRST_INITIAL_PRICE_CATEGORY: PriceCategoryForm = {
+  label: UNIQUE_PRICE,
+  price: '',
+}
