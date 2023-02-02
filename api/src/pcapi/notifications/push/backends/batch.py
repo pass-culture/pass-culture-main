@@ -172,7 +172,7 @@ class BatchBackend:
         def make_post_request(api: BatchAPI) -> None:
             self.handle_request(
                 "POST",
-                f"{API_URL}/1.0/{api.value}/events/users/",
+                f"{API_URL}/1.0/{api.value}/events/users",
                 api_name="bulk_track_events",
                 payload={
                     "events": [
