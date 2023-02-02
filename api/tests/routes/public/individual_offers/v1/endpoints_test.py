@@ -880,6 +880,7 @@ class PostEventTest:
             "name": "Nicolas Jaar dans ton salon",
             "status": "SOLD_OUT",
             "ticketCollection": {"daysBeforeEvent": 1, "way": "by_email"},
+            "priceCategories": [{"id": created_price_category.id, "price": 2500, "label": "triangle or"}],
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -1038,7 +1039,7 @@ class PostDatesTest:
                     "bookedQuantity": 0,
                     "bookingLimitDatetime": "2022-01-15T13:00:00",
                     "id": first_stock.id,
-                    "price": 8899,
+                    "priceCategory": {"id": None, "label": None, "price": 8899},
                     "quantity": 10,
                 },
                 {
@@ -1046,7 +1047,7 @@ class PostDatesTest:
                     "bookedQuantity": 0,
                     "bookingLimitDatetime": "2022-01-15T13:00:00",
                     "id": second_stock.id,
-                    "price": 0,
+                    "priceCategory": {"id": None, "label": None, "price": 0},
                     "quantity": "unlimited",
                 },
             ],
@@ -1271,7 +1272,7 @@ class GetProductTest:
         num_query += 1  # retrieve API key
         num_query += 1  # retrieve offer
 
-        with testing.assert_num_queries(3):
+        with testing.assert_num_queries(num_query):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
                 f"/public/offers/v1/products/{product_offer_id}"
             )
@@ -1330,7 +1331,7 @@ class GetEventTest:
         num_query += 1  # retrieve API key
         num_query += 1  # retrieve offer
 
-        with testing.assert_num_queries(3):
+        with testing.assert_num_queries(num_query):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
                 f"/public/offers/v1/events/{event_offer_id}"
             )
@@ -1359,6 +1360,7 @@ class GetEventTest:
             "name": "Vieux motard que jamais",
             "status": "SOLD_OUT",
             "ticketCollection": None,
+            "priceCategories": [],
         }
 
     def test_event_with_not_selectable_category_can_be_retrieved(self, client):
@@ -1464,16 +1466,21 @@ class GetEventDatesTest:
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(venue__managingOfferer=api_key.offerer)
         offers_factories.StockFactory(offer=event_offer, isSoftDeleted=True)
+        price_category = offers_factories.PriceCategoryFactory(
+            offer=event_offer, price=12.34, priceCategoryLabel__label="carre or"
+        )
         bookable_stock = offers_factories.EventStockFactory(
             offer=event_offer,
-            price=12.34,
+            priceCategory=price_category,
             quantity=10,
             bookingLimitDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
             beginningDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
         )
         stock_without_booking = offers_factories.EventStockFactory(
             offer=event_offer,
+            # FIXME (cepehang, 2023-02-02): remove price and None price category after price category generation script
             price=12.34,
+            priceCategory=None,
             quantity=2,
             bookingLimitDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
             beginningDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
@@ -1493,7 +1500,7 @@ class GetEventDatesTest:
                 "bookedQuantity": 1,
                 "bookingLimitDatetime": "2023-01-15T13:00:00Z",
                 "id": bookable_stock.id,
-                "price": 1234,
+                "priceCategory": {"id": price_category.id, "label": "carre or", "price": 1234},
                 "quantity": 10,
             },
             {
@@ -1501,7 +1508,7 @@ class GetEventDatesTest:
                 "bookedQuantity": 0,
                 "bookingLimitDatetime": "2023-01-15T13:00:00Z",
                 "id": stock_without_booking.id,
-                "price": 1234,
+                "priceCategory": {"id": None, "label": None, "price": 1234},
                 "quantity": 2,
             },
         ]

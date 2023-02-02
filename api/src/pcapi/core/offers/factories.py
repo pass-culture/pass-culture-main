@@ -100,9 +100,7 @@ class PriceCategoryFactory(BaseFactory):
         model = models.PriceCategory
 
     price = 10
-    priceCategoryLabel = factory.SubFactory(
-        PriceCategoryLabelFactory,
-    )
+    priceCategoryLabel = factory.SubFactory(PriceCategoryLabelFactory)
 
 
 class StockFactory(BaseFactory):
