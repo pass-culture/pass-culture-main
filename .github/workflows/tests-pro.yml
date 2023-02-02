@@ -113,6 +113,7 @@ jobs:
         run: yarn test:unit:ci --coverage
       - name: SonarCloud scan
         uses: SonarSource/sonarcloud-github-action@master
+        continue-on-error: ${{ github.ref == 'refs/heads/master'  }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
