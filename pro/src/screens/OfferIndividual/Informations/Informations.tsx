@@ -117,20 +117,38 @@ const Informations = ({
     setSubmitAsButton(false)
   }
 
+  const widthdrawalHasChanged = () => {
+    const withdrawalToCheck = [
+      'withdrawalDetails',
+      'withdrawalDelay',
+      'withdrawalType',
+    ]
+
+    return withdrawalToCheck.some(value => {
+      const valueMeta = formik.getFieldMeta(value)
+      if (
+        valueMeta &&
+        valueMeta.touched &&
+        valueMeta.value != valueMeta.initialValue
+      ) {
+        return true
+      }
+      return false
+    })
+  }
+
   const handleWithdrawalDialog = () => {
-    if (
-      !isWithdrawalDialogOpen &&
-      formik.touched.withdrawalDetails &&
-      formik.values.withdrawalDetails != initialValues.withdrawalDetails
-    ) {
+    if (!isWithdrawalDialogOpen && widthdrawalHasChanged()) {
       setSubmitAsButton(true)
       showWithdrawalDialog()
       return true
     }
+
     if (isWithdrawalDialogOpen) {
       handleCloseWidthdrawalDialog()
       return true
     }
+
     return false
   }
 
