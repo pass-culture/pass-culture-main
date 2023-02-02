@@ -6,8 +6,12 @@ import { PriceCategoriesFormValues } from './types'
 export const computeInitialValues = (
   offer: IOfferIndividual
 ): PriceCategoriesFormValues => {
+  const initialPriceCategories =
+    !offer.priceCategories || offer?.priceCategories.length === 0
+      ? [FIRST_INITIAL_PRICE_CATEGORY]
+      : offer.priceCategories
   return {
-    priceCategories: [FIRST_INITIAL_PRICE_CATEGORY],
+    priceCategories: initialPriceCategories,
     isDuo: offer.isDuo,
   }
 }

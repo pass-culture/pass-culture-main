@@ -69,8 +69,8 @@ describe('test updateIndividualOffer::serializers', () => {
         musicType: 'test musicType',
         musicSubType: 'test musicSubType',
         withdrawalDetails: 'test withdrawalDetails',
-        withdrawalDelay: null,
-        withdrawalType: null,
+        withdrawalDelay: undefined,
+        withdrawalType: undefined,
         accessibility: {
           [AccessiblityEnum.AUDIO]: true,
           [AccessiblityEnum.MENTAL]: true,
@@ -103,9 +103,9 @@ describe('test updateIndividualOffer::serializers', () => {
         name: 'test name',
         url: 'http://my.url',
         visualDisabilityCompliant: true,
-        withdrawalDelay: null,
+        withdrawalDelay: undefined,
         withdrawalDetails: 'test withdrawalDetails',
-        withdrawalType: null,
+        withdrawalType: undefined,
         durationMinutes: 120,
         bookingEmail: 'booking@email.org',
         externalTicketOfficeUrl: 'http://external.url',
@@ -127,7 +127,7 @@ describe('test updateIndividualOffer::serializers', () => {
       }
       patchBody = {
         ...patchBody,
-        bookingEmail: null,
+        bookingEmail: undefined,
         durationMinutes: undefined,
         externalTicketOfficeUrl: undefined,
         url: undefined,

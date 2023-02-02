@@ -155,6 +155,7 @@ export const serializeOfferApi = (
     name: apiOffer.name,
     offererId: apiOffer.venue.managingOffererId,
     offererName: apiOffer.venue.managingOfferer.name,
+    priceCategories: apiOffer.priceCategories,
     subcategoryId: apiOffer.subcategoryId,
     url: apiOffer.url || '',
     externalTicketOfficeUrl: apiOffer.externalTicketOfficeUrl || '',

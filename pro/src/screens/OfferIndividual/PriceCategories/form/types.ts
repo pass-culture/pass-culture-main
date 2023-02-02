@@ -5,6 +5,7 @@ import { FormikProps } from 'formik'
 export type PriceCategoryForm = {
   label: string
   price: number | ''
+  id?: number
 }
 
 export type PriceCategoriesFormValues = {
