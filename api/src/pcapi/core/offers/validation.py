@@ -48,7 +48,7 @@ EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER = {
     "visualDisabilityCompliant",
 }
 EDITABLE_FIELDS_FOR_ALLOCINE_OFFER = {"isDuo"} | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
-EDITABLE_FIELDS_FOR_ALLOCINE_STOCK = {"bookingLimitDatetime", "price", "quantity"}
+EDITABLE_FIELDS_FOR_ALLOCINE_STOCK = {"bookingLimitDatetime", "price", "priceCategory", "quantity"}
 EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER = {
     "isActive",
     "isDuo",

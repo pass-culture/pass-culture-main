@@ -80,7 +80,8 @@ class StockEditionBodyModel(BaseModel):
     beginning_datetime: datetime | None
     booking_limit_datetime: datetime | None
     humanized_id: str
-    price: decimal.Decimal
+    price: decimal.Decimal | None
+    price_category_id: int | None
     quantity: int | None
 
     class Config:
