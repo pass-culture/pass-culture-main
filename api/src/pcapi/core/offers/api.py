@@ -1127,8 +1127,9 @@ def edit_price_category(
     price_category: models.PriceCategory,
     label: str | T_UNCHANGED = UNCHANGED,
     price: decimal.Decimal | T_UNCHANGED = UNCHANGED,
+    editing_provider: providers_models.Provider | None = None,
 ) -> models.PriceCategory:
-    validation.check_price_category_is_updatable(price_category)
+    validation.check_price_category_is_updatable(price_category, editing_provider)
 
     if price is not UNCHANGED and price != price_category.price:
         validation.check_stock_price(price, offer)

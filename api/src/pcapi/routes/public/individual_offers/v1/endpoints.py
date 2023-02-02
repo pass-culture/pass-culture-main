@@ -313,7 +313,7 @@ def post_event_price_categories(
     event_id: int, body: serialization.PriceCategoriesCreation
 ) -> serialization.PriceCategoriesResponse:
     """
-    Create price categories for an offer to be linked to dates.
+    Post price categories.
     """
     offer = _retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent == True).one_or_none()
     if not offer:
@@ -700,6 +700,52 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.EventOfferResponse.build_event_offer(offer)
+
+
+@blueprint.v1_blueprint.route("/events/<int:event_id>/price_categories/<int:price_category_id>", methods=["PATCH"])
+@spectree_serialize(
+    api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG], response_model=serialization.PriceCategoriesResponse
+)
+@api_key_required
+@public_utils.individual_offers_api_provider
+def patch_event_price_categories(
+    individual_offers_provider: providers_models.Provider,
+    event_id: int,
+    price_category_id: int,
+    body: serialization.PriceCategoryEdition,
+) -> serialization.PriceCategoryResponse:
+    """
+    Patch price categories.
+    """
+    event_offer = (
+        _retrieve_offer_query(event_id)
+        .filter(offers_models.Offer.isEvent == True)
+        .options(sqla_orm.joinedload(offers_models.Offer.priceCategories))
+        .one_or_none()
+    )
+    if not event_offer:
+        raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
+
+    price_category_to_edit = next(
+        (price_category for price_category in event_offer.priceCategories if price_category.id == price_category_id)
+    )
+    if not price_category_to_edit:
+        raise api_errors.ApiErrors({"price_category_id": ["No price category could be found"]}, status_code=404)
+
+    update_body = body.dict(exclude_unset=True)
+    with repository.transaction():
+        eurocent_price = update_body.get("price", offers_api.UNCHANGED)
+        offers_api.edit_price_category(
+            event_offer,
+            price_category=price_category_to_edit,
+            label=update_body.get("label", offers_api.UNCHANGED),
+            price=finance_utils.to_euros(eurocent_price)
+            if eurocent_price != offers_api.UNCHANGED
+            else offers_api.UNCHANGED,
+            editing_provider=individual_offers_provider,
+        )
+
+    return serialization.PriceCategoryResponse.from_orm(price_category_to_edit)
 
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["PATCH"])
