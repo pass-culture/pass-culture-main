@@ -21,6 +21,7 @@ import {
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { offerFactory, offererFactory } from 'utils/apiFactories'
+import { individualOfferOffererFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
@@ -658,19 +659,9 @@ describe('screen Offers', () => {
     })
 
     it('should be displayed when user is not an admin', async () => {
+      const individualOffererNames = individualOfferOffererFactory()
       jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [
-          {
-            id: 'A1',
-            nonHumanizedId: 1,
-            name: 'Mon super cinéma',
-          },
-          {
-            id: 'B1',
-            nonHumanizedId: 1,
-            name: 'Ma super librairie',
-          },
-        ],
+        offerersNames: [individualOffererNames],
       })
 
       // Given
