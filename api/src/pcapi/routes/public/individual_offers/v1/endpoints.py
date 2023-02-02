@@ -108,6 +108,11 @@ def _retrieve_offer_relations_query(query: sqla_orm.Query) -> sqla_orm.Query:
                 offers_models.Product.id, offers_models.Product.thumbCount
             )
         )
+        .options(
+            sqla_orm.joinedload(offers_models.Offer.priceCategories).joinedload(
+                offers_models.PriceCategory.priceCategoryLabel
+            )
+        )
     )
 
 
@@ -466,6 +471,11 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
 
     stocks = (
         offers_models.Stock.query.filter(offers_models.Stock.id.in_(total_stock_ids[offset : offset + query.limit]))
+        .options(
+            sqla_orm.joinedload(offers_models.Stock.priceCategory).joinedload(
+                offers_models.PriceCategory.priceCategoryLabel
+            )
+        )
         .order_by(offers_models.Stock.id)
         .all()
     )
