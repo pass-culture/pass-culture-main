@@ -114,6 +114,7 @@ src/pcapi/static/object_store_data
 .hypothesis/
 .pytest_cache/
 .mypy_cache/
+.dmypy.json
 
 # env
 dev_env_file

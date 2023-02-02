@@ -18,6 +18,7 @@ scripts/recreate_where_not_first_tuto.py
 
 .pytest_cache/
 .env
+.dmypy.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
