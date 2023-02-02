@@ -40,6 +40,9 @@ const OfferIndividualBreadcrumb = ({
   )
   const mode = useOfferWizardMode()
   const hasOffer = offer !== null
+  const hasPriceCategories = Boolean(
+    offer?.priceCategories && offer?.priceCategories?.length > 0
+  )
   const hasStock = offer !== null && offer.stocks.length > 0
   const { search } = useLocation()
   const offerSubtype = getOfferSubtypeFromParamsOrOffer(search, offer)
@@ -86,7 +89,7 @@ const OfferIndividualBreadcrumb = ({
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
       }[mode],
-      isActive: hasOffer,
+      isActive: isPriceCategoriesActive ? hasPriceCategories : hasOffer,
     },
   ]
 

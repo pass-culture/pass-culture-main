@@ -138,10 +138,10 @@ describe('test OfferIndividualBreadcrumb', () => {
     })
 
     it('should render steps when offer without stock is given', async () => {
-      const offer: Partial<IOfferIndividual> = {
+      const offer: Partial<IOfferIndividual> = individualOfferFactory({
         id: 'AA',
         stocks: [],
-      }
+      })
 
       const contextOverride: Partial<IOfferIndividualContext> = {
         offer: offer as IOfferIndividual,
@@ -165,10 +165,9 @@ describe('test OfferIndividualBreadcrumb', () => {
     })
 
     it('should render steps when offer and stock are given', async () => {
-      const offer: Partial<IOfferIndividual> = {
+      const offer: Partial<IOfferIndividual> = individualOfferFactory({
         id: 'AA',
-        stocks: [{ id: 'STOCK_ID' } as IOfferIndividualStock],
-      }
+      })
 
       const contextOverride: Partial<IOfferIndividualContext> = {
         offer: offer as IOfferIndividual,

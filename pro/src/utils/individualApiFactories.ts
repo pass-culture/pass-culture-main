@@ -1,4 +1,8 @@
-import { SubcategoryIdEnum, WithdrawalTypeEnum } from 'apiClient/v1'
+import {
+  PriceCategoryResponseModel,
+  SubcategoryIdEnum,
+  WithdrawalTypeEnum,
+} from 'apiClient/v1'
 import { OfferStatus } from 'apiClient/v2'
 import {
   IOfferIndividual,
@@ -11,12 +15,16 @@ let offerId = 1
 let stockId = 1
 let venueId = 1
 let offererId = 1
+let priceCategoryId = 1
 
 export const individualOfferFactory = (
   customOffer: Partial<IOfferIndividual> = {},
   customStock: IOfferIndividualStock = individualStockFactory() || null,
-  customVenue: IOfferIndividualVenue = individualOfferVenueFactory()
+  customVenue: IOfferIndividualVenue = individualOfferVenueFactory(),
+  customPriceCatgory: PriceCategoryResponseModel = priceCategoriesFactory() ||
+    null
 ): IOfferIndividual => {
+  const priceCategory = customPriceCatgory === null ? null : customPriceCatgory
   const stock = customStock === null ? null : customStock
   const id = (offerId++).toString()
 
@@ -26,7 +34,7 @@ export const individualOfferFactory = (
     venue: customVenue,
     name: "Un sale quart d'heure en 3 minutes",
     description: 'Ça va faire mal',
-    author: 'Chuck Norris',
+    author: 'priceCategoryIdChuck Norris',
     bookingEmail: 'chuck@nofucks.given',
     musicType: 'douleur',
     musicSubType: 'cassage de genoux',
@@ -64,6 +72,7 @@ export const individualOfferFactory = (
     subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
     venueId: 'VENUE_ID',
     stocks: stock ? [stock] : [],
+    priceCategories: priceCategory ? [priceCategory] : [],
     ...customOffer,
   }
 }
@@ -129,3 +138,12 @@ export const individualOfferOffererFactory = (
     ...customOfferer,
   }
 }
+
+export const priceCategoriesFactory = (
+  customPriceCategories: Partial<PriceCategoryResponseModel> = {}
+): PriceCategoryResponseModel => ({
+  id: priceCategoryId++,
+  label: 'mon label',
+  price: 66.6,
+  ...customPriceCategories,
+})
