@@ -42,7 +42,6 @@ def upgrade() -> None:
     )
     op.add_column("booking", sa.Column("priceCategoryLabel", sa.Text(), nullable=True))
     op.add_column("stock", sa.Column("priceCategoryId", sa.BigInteger(), nullable=True))
-    op.create_foreign_key(None, "stock", "price_category", ["priceCategoryId"], ["id"])
     op.create_check_constraint(
         constraint_name="check_price_is_not_negative",
         table_name="price_category",
@@ -52,7 +51,6 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_constraint("check_price_is_not_negative", "price_category")
-    op.drop_constraint("stock_priceCategoryId_fkey", "stock", type_="foreignkey")
     op.drop_column("stock", "priceCategoryId")
     op.drop_column("booking", "priceCategoryLabel")
     op.drop_index(op.f("ix_price_category_priceCategoryLabelId"), table_name="price_category")
