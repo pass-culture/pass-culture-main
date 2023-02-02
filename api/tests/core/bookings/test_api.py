@@ -494,6 +494,24 @@ class BookOfferTest:
             assert Booking.query.count() == 0
             assert str(exc.value) == "Something wrong happened"
 
+        @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+        def test_book_manual_offer(self):
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+            cds_provider = get_provider_by_local_class("CDSStocks")
+            venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+            providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+            non_synced_offer = offers_factories.EventOfferFactory(
+                name="Séance ciné",
+                venue=venue_provider.venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+            )
+            stock = offers_factories.EventStockFactory(offer=non_synced_offer)
+
+            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+
+            assert booking.token
+            assert len(booking.externalBookings) == 0
+
 
 @pytest.mark.usefixtures("db_session")
 class CancelByBeneficiaryTest:
