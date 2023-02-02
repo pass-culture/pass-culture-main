@@ -483,6 +483,20 @@ class ProductOfferEdition(OfferEditionBase):
         extra = "forbid"
 
 
+class PriceCategoryEdition(serialization.ConfiguredBaseModel):
+    label: str | None
+    price: pydantic.StrictInt | None = PRICE_FIELD
+
+    @pydantic.validator("price")
+    def price_must_be_positive(cls, value: int | None) -> int | None:
+        if value and value < 0:
+            raise ValueError("Value must be positive")
+        return value
+
+    class Config:
+        extra = "forbid"
+
+
 class DateEdition(StockEdition):
     beginning_datetime: datetime.datetime | None = BEGINNING_DATETIME_FIELD
 
