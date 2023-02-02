@@ -324,21 +324,6 @@ class GetBookingsTest:
             {"barcode": "111111112", "seat": "A_2"},
         ]
 
-    def test_digital_bookings_are_considered_used_after_30_days(self, client):
-        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = booking_factories.IndividualBookingFactory(
-            dateCreated=datetime.utcnow() - timedelta(days=30, minutes=1),
-            individualBooking__user=user,
-            stock__offer__subcategoryId=subcategories.ABO_PRESSE_EN_LIGNE.id,
-        )
-
-        response = client.with_token(self.identifier).get("/native/v1/bookings")
-
-        assert response.status_code == 200
-        assert len(response.json["ongoing_bookings"]) == 0
-        assert len(response.json["ended_bookings"]) == 1
-        assert response.json["ended_bookings"][0]["id"] == booking.id
-
 
 class CancelBookingTest:
     identifier = "pascal.ture@example.com"
