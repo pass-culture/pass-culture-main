@@ -426,8 +426,8 @@ class DecimalPriceGetterDict(GetterDict):
 
 
 class PriceCategoryCreation(serialization.ConfiguredBaseModel):
-    price: pydantic.StrictInt = PRICE_FIELD
     label: str
+    price: pydantic.StrictInt = PRICE_FIELD
 
     @pydantic.validator("price")
     def price_must_be_positive(cls, value: int) -> int:
@@ -513,10 +513,21 @@ class DatesCreation(serialization.ConfiguredBaseModel):
         extra = "forbid"
 
 
+class PriceCategoryResponse(PriceCategoryCreation):
+    id: int
+
+
+class PriceCategoriesResponse(serialization.ConfiguredBaseModel):
+    price_categories: typing.List[PriceCategoryResponse] = PRICE_CATEGORIES_FIELD
+
+    @classmethod
+    def build_price_categories(cls, price_categories: list[offers_models.PriceCategory]) -> "PriceCategoriesResponse":
+        return cls(price_categories=[PriceCategoryResponse.from_orm(category) for category in price_categories])
+
+
 class BaseStockResponse(serialization.ConfiguredBaseModel):
     booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
     dnBookedQuantity: int = pydantic.Field(..., description="Number of bookings.", example=0, alias="bookedQuantity")
-    price: pydantic.StrictInt = PRICE_FIELD
     quantity: pydantic.StrictInt | UNLIMITED_LITERAL = QUANTITY_FIELD
 
     class Config:
@@ -527,15 +538,26 @@ class BaseStockResponse(serialization.ConfiguredBaseModel):
         return cls(
             booking_limit_datetime=stock.bookingLimitDatetime,
             dnBookedQuantity=stock.dnBookedQuantity,
-            price=finance_utils.to_eurocents(stock.price),
             quantity=stock.quantity if stock.quantity is not None else "unlimited",
         )
+
+
+# FIXME (cepehang, 2023-02-02): remove after price category generation script
+class PartialPriceCategoryResponse(serialization.ConfiguredBaseModel):
+    id: None = None
+    label: None = None
+    price: pydantic.StrictInt = PRICE_FIELD
+
+    @classmethod
+    def build_partial_price_category(cls, price: decimal.Decimal) -> "PartialPriceCategoryResponse":
+        return cls(price=finance_utils.to_eurocents(price))
 
 
 class DateResponse(BaseStockResponse):
     id: int
     beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
     booking_limit_datetime: datetime.datetime = BOOKING_LIMIT_DATETIME_FIELD
+    price_category: PriceCategoryResponse | PartialPriceCategoryResponse
 
     @classmethod
     def build_date(cls, stock: offers_models.Stock) -> "DateResponse":
@@ -543,6 +565,9 @@ class DateResponse(BaseStockResponse):
         return cls(
             id=stock.id,
             beginning_datetime=stock.beginningDatetime,
+            price_category=PriceCategoryResponse.from_orm(stock.priceCategory)
+            if stock.priceCategory
+            else PartialPriceCategoryResponse.build_partial_price_category(stock.price),
             **stock_response.dict(),
         )
 
@@ -594,9 +619,18 @@ class OfferResponse(serialization.ConfiguredBaseModel):
         )
 
 
+class ProductStockResponse(BaseStockResponse):
+    price: pydantic.StrictInt = PRICE_FIELD
+
+    @classmethod
+    def build_product_stock(cls, stock: offers_models.Stock) -> "ProductStockResponse":
+        stock_response = BaseStockResponse.build_stock(stock)
+        return cls(price=finance_utils.to_eurocents(stock.price), **stock_response.dict())
+
+
 class ProductOfferResponse(OfferResponse):
     category_related_fields: product_category_reading_fields
-    stock: BaseStockResponse | None
+    stock: ProductStockResponse | None
 
     @classmethod
     def build_product_offer(cls, offer: offers_models.Offer) -> "ProductOfferResponse":
@@ -604,21 +638,9 @@ class ProductOfferResponse(OfferResponse):
         active_stock = next((stock for stock in offer.activeStocks), None)
         return cls(
             category_related_fields=serialize_extra_data(offer),
-            stock=BaseStockResponse.build_stock(active_stock) if active_stock else None,
+            stock=ProductStockResponse.build_product_stock(active_stock) if active_stock else None,
             **base_offer_response.dict(),
         )
-
-
-class PriceCategoryResponse(PriceCategoryCreation):
-    id: int
-
-
-class PriceCategoriesResponse(serialization.ConfiguredBaseModel):
-    price_categories: typing.List[PriceCategoryResponse] = PRICE_CATEGORIES_FIELD
-
-    @classmethod
-    def build_price_categories(cls, price_categories: list[offers_models.PriceCategory]) -> "PriceCategoriesResponse":
-        return cls(price_categories=[PriceCategoryResponse.from_orm(category) for category in price_categories])
 
 
 def _serialize_ticket_collection(
@@ -637,7 +659,7 @@ def _serialize_ticket_collection(
     return None
 
 
-class EventOfferResponse(OfferResponse):
+class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
     category_related_fields: event_category_reading_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     ticket_collection: SentByEmailDetailsResponse | OnSiteCollectionDetailsResponse | None = TICKET_COLLECTION_FIELD
@@ -650,6 +672,9 @@ class EventOfferResponse(OfferResponse):
             category_related_fields=serialize_extra_data(offer),
             duration_minutes=offer.durationMinutes,
             ticket_collection=_serialize_ticket_collection(offer),
+            price_categories=[
+                PriceCategoryResponse.from_orm(price_category) for price_category in offer.priceCategories
+            ],
             **base_offer_response.dict(),
         )
 
