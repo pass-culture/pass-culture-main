@@ -140,7 +140,7 @@ describe('updateIndividualOffer', () => {
 
     const expectedBody: PatchOfferBodyModel = {
       audioDisabilityCompliant: true,
-      bookingEmail: null,
+      bookingEmail: undefined,
       description: undefined,
       durationMinutes: undefined,
       externalTicketOfficeUrl: 'https://example.com',
@@ -152,8 +152,8 @@ describe('updateIndividualOffer', () => {
       name: undefined,
       url: undefined,
       visualDisabilityCompliant: true,
-      withdrawalDelay: null,
-      withdrawalDetails: null,
+      withdrawalDelay: undefined,
+      withdrawalDetails: undefined,
       withdrawalType: undefined,
     }
 

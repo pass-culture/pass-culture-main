@@ -9,11 +9,12 @@ import { validationSchema } from './validationSchema'
 
 export const usePriceCategoriesForm = (
   offer: IOfferIndividual,
-  onSubmitCallback: () => void
+  onSubmitCallback: () => void,
+  setOffer: ((offer: IOfferIndividual | null) => void) | null
 ) => {
   const initialValues = computeInitialValues(offer)
   const onSubmitWithCallback = (values: PriceCategoriesFormValues) => {
-    onSubmit(values)
+    onSubmit(values, offer, setOffer)
     onSubmitCallback()
   }
 

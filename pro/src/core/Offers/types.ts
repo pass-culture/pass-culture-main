@@ -3,6 +3,7 @@ import {
   WithdrawalTypeEnum,
   OfferStatus,
   CollectiveOffersBookingResponseModel,
+  PriceCategoryResponseModel,
 } from 'apiClient/v1'
 import { ICropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
@@ -183,6 +184,7 @@ export interface IOfferIndividual {
   offererId: string
   offererName: string
   performer: string
+  priceCategories?: PriceCategoryResponseModel[] | null
   ean: string
   showSubType: string
   showType: string
