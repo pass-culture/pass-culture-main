@@ -13,27 +13,36 @@ import { PriceCategoriesFormValues } from './types'
 export const onSubmit = async (
   values: PriceCategoriesFormValues,
   offer: IOfferIndividual,
-  setOffer: ((offer: IOfferIndividual | null) => void) | null
-) => {
+  setOffer: ((offer: IOfferIndividual | null) => void) | null,
+  notifyError: (msg: string) => void
+): Promise<boolean> => {
   const serializedOffer = serializePatchOffer({
     offer: offer,
     formValues: { isDuo: values.isDuo },
   })
-  const { isOk: isOfferOk } = await updateIndividualOffer({
-    offerId: offer.id,
-    serializedOffer: serializedOffer,
-  })
+  const { isOk: isOfferOk, message: offerMessage } =
+    await updateIndividualOffer({
+      offerId: offer.id,
+      serializedOffer: serializedOffer,
+    })
+  if (!isOfferOk) {
+    notifyError(offerMessage)
+    return false
+  }
 
-  const { isOk: isPriceCategoriesOk } = await postPriceCategoriesAdapter({
-    offerId: offer.nonHumanizedId + '',
-    requestBody: serializePriceCategories(values),
-  })
+  const { isOk: isPriceCategoriesOk, message: priceCategoriesMessage } =
+    await postPriceCategoriesAdapter({
+      offerId: offer.nonHumanizedId + '',
+      requestBody: serializePriceCategories(values),
+    })
 
-  if (!isOfferOk || !isPriceCategoriesOk) {
-    return
+  if (!isPriceCategoriesOk) {
+    notifyError(priceCategoriesMessage)
+    return false
   }
 
   const response = await getOfferIndividualAdapter(offer.id)
-
   setOffer && setOffer(response.payload)
+
+  return true
 }

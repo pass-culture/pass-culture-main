@@ -10,12 +10,21 @@ import { validationSchema } from './validationSchema'
 export const usePriceCategoriesForm = (
   offer: IOfferIndividual,
   onSubmitCallback: () => void,
-  setOffer: ((offer: IOfferIndividual | null) => void) | null
+  setOffer: ((offer: IOfferIndividual | null) => void) | null,
+  notifyError: (msg: string) => void
 ) => {
   const initialValues = computeInitialValues(offer)
-  const onSubmitWithCallback = (values: PriceCategoriesFormValues) => {
-    onSubmit(values, offer, setOffer)
-    onSubmitCallback()
+
+  const onSubmitWithCallback = async (values: PriceCategoriesFormValues) => {
+    const shouldUseCallback = await onSubmit(
+      values,
+      offer,
+      setOffer,
+      notifyError
+    )
+    if (shouldUseCallback) {
+      onSubmitCallback()
+    }
   }
 
   const form = useFormik<PriceCategoriesFormValues>({
