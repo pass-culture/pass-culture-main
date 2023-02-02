@@ -79,8 +79,7 @@ const Offers = ({
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
   const { logEvent } = useAnalytics()
 
-  /* istanbul ignore next: Already tested but coverage doesn't see */
-  const { isAdmin } = currentUser || {}
+  const { isAdmin } = currentUser
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
     currentPageNumber * NUMBER_OF_OFFERS_PER_PAGE
