@@ -1,5 +1,4 @@
 from datetime import datetime
-from datetime import timedelta
 import logging
 
 from sqlalchemy.orm import joinedload
@@ -199,13 +198,6 @@ def is_ended_booking(booking: Booking) -> bool:
         # consider digital bookings as special: is_used should be true anyway so
         # let's use displayAsEnded
         return booking.displayAsEnded  # type: ignore [return-value]
-
-    booking_subcategory = booking.stock.offer.subcategory
-    if booking.dateCreated < datetime.utcnow() - timedelta(days=30) and not (
-        booking_subcategory.can_expire or booking_subcategory.is_event
-    ):
-        # consider digital bookings with no expiration date as ended after 30 days
-        return True
 
     return (
         not booking.stock.offer.isPermanent
