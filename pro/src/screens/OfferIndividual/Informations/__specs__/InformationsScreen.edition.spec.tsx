@@ -392,7 +392,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       url: 'http://offer.example.com',
       visualDisabilityCompliant: true,
       withdrawalDetails: 'Offer withdrawalDetails',
-      withdrawalDelay: null,
+      withdrawalDelay: undefined,
       withdrawalType: undefined,
     })
     expect(api.getOffer).toHaveBeenCalledTimes(1)

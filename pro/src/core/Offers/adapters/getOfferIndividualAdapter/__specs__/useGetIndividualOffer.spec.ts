@@ -205,6 +205,7 @@ describe('useGetOfferIndividual', () => {
       offererId: 'CU',
       offererName: 'Le Petit Rintintin Management 6',
       performer: '',
+      priceCategories: [{ price: 12.2, label: 'Mon premier tariff', id: 1 }],
       ean: '',
       showSubType: '',
       showType: '',

@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
+import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
@@ -19,6 +20,7 @@ export interface IPriceCategories {
 }
 
 const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
+  const { setOffer } = useOfferIndividualContext()
   const [
     isSubmittingFromRouteLeavingGuard,
     setIsSubmittingFromRouteLeavingGuard,
@@ -47,7 +49,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
     setIsClickingDraft(false)
   }
 
-  const formik = usePriceCategoriesForm(offer, afterSubmitCallback)
+  const formik = usePriceCategoriesForm(offer, afterSubmitCallback, setOffer)
 
   const handlePreviousStep = () => {
     navigate(
@@ -61,7 +63,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
 
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
-    () => {
+    async () => {
       setIsClickingFromActionBar(true)
       if (saveDraft) {
         // pass value to submit function
@@ -85,7 +87,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
       }
 
       if (saveDraft) {
-        formik.handleSubmit()
+        await formik.submitForm()
       }
     }
 
