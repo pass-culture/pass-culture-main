@@ -6,6 +6,7 @@ from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import collective_offers_serialize
@@ -125,3 +126,13 @@ def check_user_can_prebook_collective_stock(uai: str, stock: models.CollectiveSt
 def check_institution_id_exists(institution_id: int) -> None:
     if not models.EducationalInstitution.query.get(institution_id):
         raise exceptions.EducationalInstitutionNotFound()
+
+
+def check_if_offer_not_used_or_reimbursed(offer: models.CollectiveOffer) -> None:
+    if offer.collectiveStock:
+        for booking in offer.collectiveStock.collectiveBookings:
+            if (
+                booking.status is models.CollectiveBookingStatus.USED
+                or booking.status is models.CollectiveBookingStatus.REIMBURSED
+            ):
+                raise offers_exceptions.OfferUsedOrReimbursedCantBeEdit()

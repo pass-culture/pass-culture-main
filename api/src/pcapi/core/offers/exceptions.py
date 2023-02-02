@@ -12,6 +12,10 @@ class TooLateToDeleteStock(ClientError):
         )
 
 
+class OfferUsedOrReimbursedCantBeEdit(Exception):
+    pass
+
+
 class ImageValidationError(Exception):
     pass
 

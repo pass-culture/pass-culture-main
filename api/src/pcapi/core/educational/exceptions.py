@@ -95,6 +95,14 @@ class EducationalInstitutionNotFound(Exception):
     pass
 
 
+class OffererOfVenueDontMatchOfferer(Exception):
+    pass
+
+
+class VenueIdDontExist(Exception):
+    pass
+
+
 class EducationalInstitutionIsNotActive(Exception):
     pass
 
