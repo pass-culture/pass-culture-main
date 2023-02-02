@@ -477,7 +477,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
               isDisabled={formik.isSubmitting || isDisabled}
               offerId={offer.id}
               shouldTrack={shouldTrack}
-              isFormEmpty={isFormEmpty()}
+              submitAsButton={isFormEmpty()}
             />
           </form>
         </div>

@@ -26,7 +26,7 @@ export interface IActionBarProps {
   step: OFFER_WIZARD_STEP_IDS
   offerId?: string
   shouldTrack?: boolean
-  isFormEmpty?: boolean
+  submitAsButton?: boolean
 }
 
 const ActionBar = ({
@@ -37,7 +37,7 @@ const ActionBar = ({
   step,
   offerId,
   shouldTrack = true,
-  isFormEmpty = false,
+  submitAsButton = false,
 }: IActionBarProps) => {
   const offersSearchFilters = useSelector(
     (state: RootState) => state.offers.searchFilters

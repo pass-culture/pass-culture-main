@@ -4,30 +4,23 @@ import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { IcoMailOutline } from 'icons'
 
 interface IWithdrawalConfirmDialogProps {
-  saveDraft?: boolean
-  handleConfirm: ({
-    saveDraft,
-    shouldSendMail,
-  }?: {
-    saveDraft?: boolean | undefined
-    shouldSendMail?: boolean | undefined
-  }) => void
+  hideDialog: () => void
+  handleCancel: () => void
+  handleConfirm: () => void
 }
 
 const WithdrawalConfirmDialog = ({
-  saveDraft = false,
+  hideDialog,
+  handleCancel,
   handleConfirm,
 }: IWithdrawalConfirmDialogProps): JSX.Element => {
   return (
     <ConfirmDialog
       cancelText={'Ne pas envoyer'}
       confirmText={'Envoyer un e-mail'}
-      onCancel={() => {
-        handleConfirm({ saveDraft, shouldSendMail: false })
-      }}
-      onConfirm={() => {
-        handleConfirm({ saveDraft, shouldSendMail: true })
-      }}
+      leftButtonAction={handleCancel}
+      onCancel={hideDialog}
+      onConfirm={handleConfirm}
       icon={IcoMailOutline}
       title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
     ></ConfirmDialog>
