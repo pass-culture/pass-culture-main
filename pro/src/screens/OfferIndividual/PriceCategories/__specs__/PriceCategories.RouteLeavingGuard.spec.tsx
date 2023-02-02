@@ -6,6 +6,8 @@ import React from 'react'
 import { generatePath } from 'react-router'
 import { Route, Routes } from 'react-router-dom-v5-compat'
 
+import { api } from 'apiClient/api'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
@@ -96,6 +98,18 @@ const renderPriceCategories = (
   )
 
 describe('PriceCategories', () => {
+  beforeEach(() => {
+    jest
+      .spyOn(api, 'getOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    jest
+      .spyOn(api, 'patchOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    jest
+      .spyOn(api, 'postPriceCategories')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+  })
+
   it('should let going to information when clicking on previous step in creation', async () => {
     renderPriceCategories({ offer: individualOfferFactory({ id: 'AA' }) })
 

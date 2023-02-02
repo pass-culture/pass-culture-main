@@ -9,8 +9,10 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate, useOfferWizardMode } from 'hooks'
+import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
+import { getSuccessMessage } from '../utils'
 
 import { usePriceCategoriesForm } from './form/useForm'
 import { PriceCategoriesForm } from './PriceCategoriesForm'
@@ -30,7 +32,10 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
   const [isClickingDraft, setIsClickingDraft] = useState<boolean>(false)
+  const notify = useNotification()
+
   const afterSubmitCallback = () => {
+    notify.success(getSuccessMessage(mode))
     if (isSubmittingFromRouteLeavingGuard) {
       return
     }
@@ -49,7 +54,12 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
     setIsClickingDraft(false)
   }
 
-  const formik = usePriceCategoriesForm(offer, afterSubmitCallback, setOffer)
+  const formik = usePriceCategoriesForm(
+    offer,
+    afterSubmitCallback,
+    setOffer,
+    notify.error
+  )
 
   const handlePreviousStep = () => {
     navigate(
@@ -73,12 +83,23 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
       const isFormEmpty = formik.values === formik.initialValues
 
       // When saving draft with an empty form
-      // TODO : we display a success notification even if nothing is done
       /* istanbul ignore next: DEBT, TO FIX when we have notification*/
-      if (saveDraft && isFormEmpty) {
+      if ((saveDraft || mode === OFFER_WIZARD_MODE.EDITION) && isFormEmpty) {
         setIsClickingDraft(true)
         setIsClickingFromActionBar(false)
-        return
+        if (saveDraft) {
+          notify.success(getSuccessMessage(OFFER_WIZARD_MODE.DRAFT))
+          return
+        } else {
+          notify.success(getSuccessMessage(OFFER_WIZARD_MODE.EDITION))
+          navigate(
+            getOfferIndividualUrl({
+              offerId: offer.id,
+              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode,
+            })
+          )
+        }
       }
 
       /* istanbul ignore next: DEBT, TO FIX */
