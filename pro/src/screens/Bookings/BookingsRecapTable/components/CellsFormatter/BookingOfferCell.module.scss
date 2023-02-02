@@ -18,10 +18,13 @@
 }
 
 .booking-offer-additional-info {
+    @include fonts.caption;
+
     color: colors.$grey-dark;
-    display: flex;
+    display: flex;   
+    align-items: center;
     font-size: rem.torem(14px);
-    margin-top: rem.torem(5px);
+
 }
 
 .stocks {
