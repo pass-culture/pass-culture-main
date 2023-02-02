@@ -13,6 +13,7 @@ import {
   PRICE_CATEGORY_LABEL_MAX_LENGTH,
   PRICE_CATEGORY_MAX_LENGTH,
   PRICE_CATEGORY_PRICE_MAX,
+  UNIQUE_PRICE,
 } from './form/constants'
 import { PriceCategoriesFormValues } from './form/types'
 import styles from './PriceCategoriesForm.module.scss'
@@ -64,6 +65,7 @@ export const PriceCategoriesForm = (): JSX.Element => {
                   maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
                   countCharacters
                   className={styles['label-input']}
+                  disabled={values.priceCategories.length <= 1}
                   isLabelHidden={index !== 0}
                 />
 
@@ -98,7 +100,12 @@ export const PriceCategoriesForm = (): JSX.Element => {
                     Icon={TrashFilledIcon}
                     iconPosition={IconPositionEnum.CENTER}
                     disabled={values.priceCategories.length <= 1}
-                    onClick={() => arrayHelpers.remove(index)}
+                    onClick={() => {
+                      if (values.priceCategories.length === 2) {
+                        setFieldValue(`priceCategories[0].label`, UNIQUE_PRICE)
+                      }
+                      arrayHelpers.remove(index)
+                    }}
                     hasTooltip
                   >
                     Supprimer le tarif
@@ -110,7 +117,12 @@ export const PriceCategoriesForm = (): JSX.Element => {
             <Button
               variant={ButtonVariant.TERNARY}
               Icon={PlusCircleIcon}
-              onClick={() => arrayHelpers.push(INITIAL_PRICE_CATEGORY)}
+              onClick={() => {
+                arrayHelpers.push(INITIAL_PRICE_CATEGORY)
+                if (values.priceCategories[0].label === UNIQUE_PRICE) {
+                  setFieldValue(`priceCategories[0].label`, '')
+                }
+              }}
               disabled={
                 values.priceCategories.length >= PRICE_CATEGORY_MAX_LENGTH
               }

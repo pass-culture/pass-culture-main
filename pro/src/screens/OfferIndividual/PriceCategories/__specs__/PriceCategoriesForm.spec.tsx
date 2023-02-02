@@ -3,7 +3,10 @@ import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { PRICE_CATEGORY_MAX_LENGTH } from '../form/constants'
+import {
+  FIRST_INITIAL_PRICE_CATEGORY,
+  PRICE_CATEGORY_MAX_LENGTH,
+} from '../form/constants'
 import { priceCategoryFormFactory } from '../form/factories'
 import { PriceCategoriesFormValues } from '../form/types'
 import { PriceCategoriesForm } from '../PriceCategoriesForm'
@@ -109,5 +112,31 @@ describe('PriceCategories', () => {
     expect(
       screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
     ).toBeDisabled()
+  })
+
+  it('should handle unique line label cases', async () => {
+    renderPriceCategoriesForm({
+      priceCategories: [FIRST_INITIAL_PRICE_CATEGORY],
+    })
+
+    // one price category line : label is default and field is disable
+    expect(
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
+    ).toBeDisabled()
+    expect(screen.getByDisplayValue('Tarif unique')).toBeDisabled()
+
+    // I add a price category line
+    await userEvent.click(screen.getByText('Ajouter un tarif'))
+    const nameFields = screen.getAllByLabelText('Intitulé du tarif')
+    expect(nameFields[0]).toHaveValue('')
+    expect(nameFields[0]).not.toBeDisabled()
+
+    // I change the label and remove last line, label is default and field disable
+    await userEvent.type(nameFields[0], 'Tarif Koala')
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[1]
+    )
+    expect(nameFields[0]).toHaveValue('Tarif unique')
+    expect(nameFields[0]).toBeDisabled()
   })
 })
