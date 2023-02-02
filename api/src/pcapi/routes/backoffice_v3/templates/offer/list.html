@@ -40,7 +40,11 @@
                                 </div>
                             </td>
                             <td>{{ offer.id }}</td>
-                            <td>{{ offer.name | escape }}</td>
+                            <td>
+                                <a href="{{ offer | pc_pro_offer_link }}" class="link-primary" target="_blank">
+                                    {{ offer.name | escape }}
+                                </a>
+                            </td>
                             <td>{{ offer.category.pro_label }}</td>
                             <td>{{ offer.subcategory_v2.pro_label }}</td>
                             <td>{{ get_initial_stock(offer) }}</td>
