@@ -89,6 +89,9 @@ class ListCollectiveBookingsTest:
         assert result["Catégorie"] == categories.MUSEE.pro_label
         assert result["Sous-catégorie"] == subcategories_v2.VISITE_GUIDEE.pro_label
         assert result["Statut"] == "Confirmée"
+        assert result["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=3)).strftime(
+            "%d/%m/%Y"
+        )
         assert result["Date de validation"] == (datetime.date.today() - datetime.timedelta(days=1)).strftime("%d/%m/%Y")
         assert not result["Date d'annulation"]
 
@@ -121,6 +124,9 @@ class ListCollectiveBookingsTest:
         assert result["Catégorie"] == categories.CONFERENCE_RENCONTRE.pro_label
         assert result["Sous-catégorie"] == subcategories_v2.DECOUVERTE_METIERS.pro_label
         assert result["Statut"] == "Annulée"
+        assert result["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=2)).strftime(
+            "%d/%m/%Y"
+        )
         assert result["Date d'annulation"] == datetime.date.today().strftime("%d/%m/%Y")
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))

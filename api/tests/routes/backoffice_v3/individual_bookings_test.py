@@ -98,6 +98,9 @@ class ListIndividualBookingsTest:
         assert rows[0]["Sous-catégorie"] == subcategories_v2.LIVRE_PAPIER.pro_label
         assert rows[0]["Stock"] == "212"
         assert rows[0]["Statut"] == "Validée"
+        assert rows[0]["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=4)).strftime(
+            "%d/%m/%Y"
+        )
         assert rows[0]["Date d'utilisation"] == datetime.date.today().strftime("%d/%m/%Y")
         assert not rows[0]["Date d'annulation"]
 
@@ -131,6 +134,9 @@ class ListIndividualBookingsTest:
         assert result["Sous-catégorie"] == subcategories_v2.LIVRE_PAPIER.pro_label
         assert result["Stock"] == "2"
         assert result["Statut"] == "Confirmée"
+        assert result["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=2)).strftime(
+            "%d/%m/%Y"
+        )
         assert not result["Date d'utilisation"]
         assert not result["Date d'annulation"]
 

@@ -25,6 +25,7 @@
                         <th scope="col">Catégorie</th>
                         <th scope="col">Sous-catégorie</th>
                         <th scope="col">Statut</th>
+                        <th scope="col">Date de réservation</th>
                         <th scope="col">Date de validation</th>
                         <th scope="col">Date d'annulation</th>
                     </tr>
@@ -57,6 +58,7 @@
                             <td>{{ collective_offer.subcategory.category.pro_label }}</td>
                             <td>{{ collective_offer.subcategory.pro_label }}</td>
                             <td>{{ collective_booking.status | format_booking_status }}</td>
+                            <td>{{ collective_booking.dateCreated | format_date("%d/%m/%Y") }}</td>
                             <td>{{ collective_booking.confirmationDate | format_date("%d/%m/%Y") }}</td>
                             <td>{{ collective_booking.cancellationDate | format_date("%d/%m/%Y") }}</td>
                         </tr>
