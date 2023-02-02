@@ -88,6 +88,8 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
                     raise ApiErrors(
                         {"stock_id": ["Le stock avec l'id %s n'existe pas" % stock_to_edit.id]}, status_code=400
                     )
+                offers_validation.check_stock_has_price_or_price_category(offer, stock_to_edit, price_categories)
+
                 edited_stock, is_beginning_updated = offers_api.edit_stock(
                     existing_stocks[stock_to_edit.id],
                     price=stock_to_edit.price,
@@ -100,6 +102,7 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
                     )
                     if stock_to_edit.booking_limit_datetime
                     else None,
+                    price_category=price_categories.get(stock_to_edit.price_category_id, None),
                 )
                 upserted_stocks.append(edited_stock)
                 edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))

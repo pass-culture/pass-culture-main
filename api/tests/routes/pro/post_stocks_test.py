@@ -179,7 +179,112 @@ class Returns201Test:
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert len(Stock.query.all()) == 1
+        assert offers_models.PriceCategory.query.count() == 0
+        assert offers_models.PriceCategoryLabel.query.count() == 0
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_edit_one_event_stock_using_price(self, mocked_async_index_offer_ids, client):
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        existing_stock = offers_factories.StockFactory(offer=offer, price=10, priceCategory=None)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        beginning = datetime.utcnow() + relativedelta(days=10)
+
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [
+                {
+                    "humanizedId": humanize(existing_stock.id),
+                    "price": 20,
+                    "beginningDatetime": serialize(beginning),
+                    "bookingLimitDatetime": serialize(beginning),
+                }
+            ],
+        }
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        created_stock = Stock.query.get(dehumanize(response.json["stocks"][0]["id"]))
+        assert offer.id == created_stock.offerId
+        assert created_stock.price == 20
+        assert len(Stock.query.all()) == 1
+        assert offers_models.PriceCategory.query.count() == 1
+        assert offers_models.PriceCategoryLabel.query.count() == 1
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
+    def test_edit_one_event_stock_using_price_category(self, mocked_async_index_offer_ids, client):
+        venue = offerers_factories.VenueFactory()
+        offer = offers_factories.EventOfferFactory(
+            isActive=False, validation=OfferValidationStatus.DRAFT, priceCategories=[], venue=venue
+        )
+        price_category = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel__venue=venue)
+        existing_stock = offers_factories.StockFactory(offer=offer, price=10, priceCategory=None)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        beginning = datetime.utcnow() + relativedelta(days=10)
+
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [
+                {
+                    "humanizedId": humanize(existing_stock.id),
+                    "beginningDatetime": serialize(beginning),
+                    "bookingLimitDatetime": serialize(beginning),
+                    "priceCategoryId": price_category.id,
+                }
+            ],
+        }
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        created_stock = Stock.query.get(dehumanize(response.json["stocks"][0]["id"]))
+        assert offer.id == created_stock.offerId
+        assert price_category.price == created_stock.price
+        assert len(Stock.query.all()) == 1
+        assert offers_models.PriceCategory.query.count() == 1
+        assert offers_models.PriceCategoryLabel.query.count() == 1
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
+    def test_edit_one_event_stock_created_with_price_category(self, mocked_async_index_offer_ids, client):
+        venue = offerers_factories.VenueFactory()
+        offer = offers_factories.EventOfferFactory(
+            isActive=False,
+            validation=OfferValidationStatus.DRAFT,
+            venue=venue,
+        )
+        old_price_category = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel__venue=venue)
+        new_price_category = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel__venue=venue, price=25
+        )
+
+        existing_stock = offers_factories.StockFactory(offer=offer, price=10, priceCategory=old_price_category)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        beginning = datetime.utcnow() + relativedelta(days=10)
+
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [
+                {
+                    "humanizedId": humanize(existing_stock.id),
+                    "beginningDatetime": serialize(beginning),
+                    "bookingLimitDatetime": serialize(beginning),
+                    "priceCategoryId": new_price_category.id,
+                }
+            ],
+        }
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        created_stock = Stock.query.get(dehumanize(response.json["stocks"][0]["id"]))
+        assert offer.id == created_stock.offerId
+        assert len(Stock.query.all()) == 1
+        assert created_stock.priceCategory == new_price_category
+        assert created_stock.price == 25
 
     def test_create_one_stock_with_activation_codes(self, app):
         # Given
@@ -479,6 +584,45 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
         assert response.json == {"humanizedOfferId": ["Ce champ est obligatoire"]}
+
+    def test_update_thing_stock_without_price(self, app):
+        offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        existing_stock = offers_factories.StockFactory(offer=offer)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [{"quantity": 20, "humanizedId": humanize(existing_stock.id)}],
+        }
+
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
+
+        assert response.json["price"] == ["Le prix est obligatoire pour les offres produit"]
+
+    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
+    def test_update_product_stock_without_price_is_forbidden(self, app):
+        offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        existing_stock = offers_factories.StockFactory(offer=offer)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        stock_data = {
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [{"quantity": 20, "humanizedId": humanize(existing_stock.id)}],
+        }
+
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
+
+        assert response.json["price"] == ["Le prix est obligatoire pour les offres produit"]
 
     def when_invalid_quantity_or_price_for_edition_and_creation(self, app):
         # Given
