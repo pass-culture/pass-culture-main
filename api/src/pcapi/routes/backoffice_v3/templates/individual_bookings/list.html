@@ -26,6 +26,7 @@
                         <th scope="col">Sous-catégorie</th>
                         <th scope="col">Stock</th>
                         <th scope="col">Statut</th>
+                        <th scope="col">Date de réservation</th>
                         <th scope="col">Date d'utilisation</th>
                         <th scope="col">Date d'annulation</th>
                     </tr>
@@ -62,6 +63,7 @@
                             <td>{{ offer.subcategory.pro_label }}</td>
                             <td>{{ booking.stock.quantity }}</td>
                             <td>{{ booking.status | format_booking_status }}</td>
+                            <td>{{ booking.dateCreated | format_date("%d/%m/%Y") }}</td>
                             <td>{{ booking.dateUsed | format_date("%d/%m/%Y") }}</td>
                             <td>{{ booking.cancellationDate | format_date("%d/%m/%Y") }}</td>
                         </tr>
