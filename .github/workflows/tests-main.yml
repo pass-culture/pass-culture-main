@@ -75,6 +75,7 @@ jobs:
     with:
       tag: ${{ github.sha }}
       pcapi: true
+      console: true
     secrets: inherit
 
   deploy-to-testing:
