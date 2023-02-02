@@ -422,7 +422,7 @@ const StocksEventEdition = ({
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
               offerId={offer.id}
               shouldTrack={shouldTrack}
-              isFormEmpty={isFormEmpty()}
+              submitAsButton={isFormEmpty()}
             />
           </form>
         </div>

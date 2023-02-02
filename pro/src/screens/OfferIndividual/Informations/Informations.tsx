@@ -14,6 +14,7 @@ import {
   validationSchema,
 } from 'components/OfferIndividualForm'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
+import WithdrawalConfirmDialog from 'components/WithdrawalConfirmDialog'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
@@ -34,6 +35,7 @@ import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
+import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
@@ -101,9 +103,58 @@ const Informations = ({
     isOfferSubtypeEvent(offerSubtype)
   )
 
+  const {
+    visible: isWithdrawalDialogOpen,
+    showModal: showWithdrawalDialog,
+    hideModal: hideWithdrawalDialog,
+  } = useModal()
+
+  const [submitAsButton, setSubmitAsButton] = useState<boolean>(false)
+  const [shouldSendMail, setShouldSendMail] = useState<boolean>(false)
+
+  const handleCloseWidthdrawalDialog = () => {
+    hideWithdrawalDialog()
+    setSubmitAsButton(false)
+  }
+
+  const handleWithdrawalDialog = () => {
+    if (
+      !isWithdrawalDialogOpen &&
+      formik.touched.withdrawalDetails &&
+      formik.values.withdrawalDetails != initialValues.withdrawalDetails
+    ) {
+      setSubmitAsButton(true)
+      showWithdrawalDialog()
+      return true
+    }
+    if (isWithdrawalDialogOpen) {
+      handleCloseWidthdrawalDialog()
+      return true
+    }
+    return false
+  }
+
+  const handleSendMail = async (shouldSendMail: boolean) => {
+    const totalBookingsQuantity =
+      offer?.stocks.reduce((acc, stock) => acc + stock.bookingsQuantity, 0) ?? 0
+
+    if (totalBookingsQuantity > 0 && handleWithdrawalDialog()) {
+      setShouldSendMail(shouldSendMail)
+      setIsClickingFromActionBar(false)
+      if (isWithdrawalDialogOpen) {
+        await formik.submitForm()
+      }
+      return
+    }
+  }
+
   const handleNextStep =
-    ({ saveDraft = false } = {}) =>
+    ({ saveDraft = false, shouldSendMail = false } = {}) =>
     async () => {
+      if (mode === OFFER_WIZARD_MODE.EDITION) {
+        handleSendMail(shouldSendMail)
+      }
+
       setIsClickingFromActionBar(true)
       setIsSubmittingDraft(saveDraft)
       if (Object.keys(formik.errors).length !== 0) {
@@ -254,7 +305,18 @@ const Informations = ({
             }
             offerId={offer?.id}
             shouldTrack={shouldTrack}
+            submitAsButton={submitAsButton}
           />
+          {isWithdrawalDialogOpen && (
+            <WithdrawalConfirmDialog
+              hideDialog={handleCloseWidthdrawalDialog}
+              handleCancel={handleNextStep({ saveDraft: true })}
+              handleConfirm={handleNextStep({
+                saveDraft: true,
+                shouldSendMail: true,
+              })}
+            />
+          )}
         </form>
       </FormLayout>
       <RouteLeavingGuardOfferIndividual
