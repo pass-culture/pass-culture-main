@@ -10,9 +10,10 @@ import {
 } from 'context/OfferIndividualContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
+import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OFFER_WIZARD_STEP_IDS } from '../constants'
@@ -106,10 +107,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
   let offer: Partial<IOfferIndividual>
   let contextOverride: Partial<IOfferIndividualContext>
   beforeEach(() => {
-    offer = {
-      id: 'AA',
-      stocks: [{ id: 'STOCK_ID' } as IOfferIndividualStock],
-    }
+    offer = individualOfferFactory({ id: 'AA' })
 
     contextOverride = {
       offer: offer as IOfferIndividual,
