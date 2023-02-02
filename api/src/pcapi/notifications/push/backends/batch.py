@@ -174,15 +174,18 @@ class BatchBackend:
                 "POST",
                 f"{API_URL}/1.0/{api.value}/events/users",
                 api_name="bulk_track_events",
-                payload={
-                    "events": [
-                        {
-                            "name": f"ue.{event_name}",
-                            "attributes": event_payload,
-                        }
-                    ],
-                    "users": [{"id": user_id} for user_id in user_ids],
-                },
+                payload=[
+                    {
+                        "id": str(user_id),
+                        "events": [
+                            {
+                                "name": f"ue.{event_name}",
+                                "attributes": event_payload,
+                            },
+                        ],
+                    }
+                    for user_id in user_ids
+                ],
                 can_be_asynchronously_retried=can_be_asynchronously_retried,
             )
 
