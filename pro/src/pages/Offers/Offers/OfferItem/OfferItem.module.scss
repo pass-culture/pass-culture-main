@@ -97,8 +97,12 @@
 }
 
 .stocks {
+  @include fonts.caption;
+
+  color: colors.$grey-dark;
   display: flex;
-  margin-top: rem.torem(5px);
+  font-size: rem.torem(14px);
+  align-items: center;
 
   a {
     color: colors.$primary;
