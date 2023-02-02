@@ -21,10 +21,10 @@ export const individualOfferFactory = (
   customOffer: Partial<IOfferIndividual> = {},
   customStock: IOfferIndividualStock = individualStockFactory() || null,
   customVenue: IOfferIndividualVenue = individualOfferVenueFactory(),
-  customPriceCatgory: PriceCategoryResponseModel = priceCategoriesFactory() ||
+  customPriceCatgory: PriceCategoryResponseModel = priceCategoryFactory() ||
     null
 ): IOfferIndividual => {
-  const priceCategory = customPriceCatgory === null ? null : customPriceCatgory
+  const priceCategory = customPriceCatgory ?? null
   const stock = customStock === null ? null : customStock
   const id = (offerId++).toString()
 
@@ -34,7 +34,7 @@ export const individualOfferFactory = (
     venue: customVenue,
     name: "Un sale quart d'heure en 3 minutes",
     description: 'Ça va faire mal',
-    author: 'priceCategoryIdChuck Norris',
+    author: 'Chuck Norris',
     bookingEmail: 'chuck@nofucks.given',
     musicType: 'douleur',
     musicSubType: 'cassage de genoux',
@@ -139,7 +139,7 @@ export const individualOfferOffererFactory = (
   }
 }
 
-export const priceCategoriesFactory = (
+export const priceCategoryFactory = (
   customPriceCategories: Partial<PriceCategoryResponseModel> = {}
 ): PriceCategoryResponseModel => ({
   id: priceCategoryId++,
