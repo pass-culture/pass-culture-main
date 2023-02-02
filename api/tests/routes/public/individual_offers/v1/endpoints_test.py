@@ -1039,7 +1039,11 @@ class PostDatesTest:
                     "bookedQuantity": 0,
                     "bookingLimitDatetime": "2022-01-15T13:00:00",
                     "id": first_stock.id,
-                    "priceCategory": {"id": None, "label": None, "price": 8899},
+                    "priceCategory": {
+                        "id": first_stock.priceCategoryId,
+                        "label": first_stock.priceCategory.label,
+                        "price": 8899,
+                    },
                     "quantity": 10,
                 },
                 {
@@ -1047,7 +1051,11 @@ class PostDatesTest:
                     "bookedQuantity": 0,
                     "bookingLimitDatetime": "2022-01-15T13:00:00",
                     "id": second_stock.id,
-                    "priceCategory": {"id": None, "label": None, "price": 0},
+                    "priceCategory": {
+                        "id": second_stock.priceCategoryId,
+                        "label": second_stock.priceCategory.label,
+                        "price": 0,
+                    },
                     "quantity": "unlimited",
                 },
             ],

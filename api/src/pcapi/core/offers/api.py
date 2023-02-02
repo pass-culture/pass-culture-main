@@ -531,11 +531,12 @@ def create_stock(
 
 def edit_stock(
     stock: models.Stock,
-    price: decimal.Decimal | T_UNCHANGED = UNCHANGED,
+    price: decimal.Decimal | None | T_UNCHANGED = UNCHANGED,
     quantity: int | None | T_UNCHANGED = UNCHANGED,
     beginning_datetime: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
     booking_limit_datetime: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
     editing_provider: providers_models.Provider | None = None,
+    price_category: models.PriceCategory | None | T_UNCHANGED = UNCHANGED,
 ) -> typing.Tuple[models.Stock, bool]:
     validation.check_stock_is_updatable(stock, editing_provider)
 
@@ -549,9 +550,16 @@ def edit_stock(
         validation.check_booking_limit_datetime(stock, changed_beginning, changed_booking_limit)
         validation.check_required_dates_for_stock(stock.offer, changed_beginning, changed_booking_limit)
 
-    if price is not UNCHANGED and price != stock.price:
+    if price is not UNCHANGED and price is not None and price != stock.price:
         modifications["price"] = price
+        if stock.offer.isEvent:
+            price_category = _get_or_create_price_category(price, stock.offer)
+            modifications["priceCategory"] = price_category
         validation.check_stock_price(price, stock.offer)
+
+    if price_category is not UNCHANGED and price_category is not None and price_category is not stock.priceCategory:
+        modifications["priceCategory"] = price_category
+        modifications["price"] = price_category.price
 
     if quantity is not UNCHANGED and quantity != stock.quantity:
         modifications["quantity"] = quantity
