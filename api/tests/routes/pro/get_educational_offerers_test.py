@@ -18,7 +18,7 @@ class GetEducationalOfferersTest:
             collectiveInterventionArea=None,
             collectivePhone="0601020304",
             collectiveEmail="test@example.com",
-            collectiveOfferCategoryId="SPECTACLE_REPRESENTATION",
+            collectiveSubCategoryId="SPECTACLE_REPRESENTATION",
         )
         venue_offerer_2 = offerers_factories.CollectiveVenueFactory(managingOfferer=offerer_2)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_1)
@@ -51,7 +51,7 @@ class GetEducationalOfferersTest:
                             "collectiveInterventionArea": None,
                             "collectivePhone": "0601020304",
                             "collectiveEmail": "test@example.com",
-                            "collectiveOfferCategoryId": venue_offerer_1.collectiveOfferCategoryId,
+                            "collectiveSubCategoryId": venue_offerer_1.collectiveSubCategoryId,
                         }
                     ],
                 },
@@ -74,7 +74,7 @@ class GetEducationalOfferersTest:
                             "collectiveInterventionArea": ["75", "92"],
                             "collectivePhone": None,
                             "collectiveEmail": None,
-                            "collectiveOfferCategoryId": venue_offerer_2.collectiveOfferCategoryId,
+                            "collectiveSubCategoryId": venue_offerer_2.collectiveSubCategoryId,
                         }
                     ],
                 },
@@ -133,7 +133,7 @@ class GetEducationalOfferersTest:
                             "collectiveInterventionArea": ["75", "92"],
                             "collectivePhone": None,
                             "collectiveEmail": None,
-                            "collectiveOfferCategoryId": venue_offerer_2.collectiveOfferCategoryId,
+                            "collectiveSubCategoryId": venue_offerer_2.collectiveSubCategoryId,
                         }
                     ],
                 },

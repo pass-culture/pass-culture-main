@@ -16,6 +16,7 @@ export type GetCollectiveVenueResponseModel = {
   collectiveNetwork?: Array<string> | null;
   collectivePhone?: string | null;
   collectiveStudents?: Array<StudentLevels> | null;
+  collectiveSubCategoryId?: string | null;
   collectiveWebsite?: string | null;
   id: string;
   siret?: string | null;
