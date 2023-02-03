@@ -8,6 +8,7 @@ export type GetEducationalOffererVenueResponseModel = {
   city?: string | null;
   collectiveEmail?: string | null;
   collectiveInterventionArea?: Array<string> | null;
+  collectiveOfferCategoryId?: string | null;
   collectivePhone?: string | null;
   id: string;
   isVirtual: boolean;
