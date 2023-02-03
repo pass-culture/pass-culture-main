@@ -16,14 +16,13 @@ export const usePriceCategoriesForm = (
   const initialValues = computeInitialValues(offer)
 
   const onSubmitWithCallback = async (values: PriceCategoriesFormValues) => {
-    const shouldUseCallback = await onSubmit(
-      values,
-      offer,
-      setOffer,
-      notifyError
-    )
-    if (shouldUseCallback) {
+    try {
+      await onSubmit(values, offer, setOffer)
       onSubmitCallback()
+    } catch (error) {
+      if (error instanceof Error) {
+        notifyError(error?.message)
+      }
     }
   }
 
