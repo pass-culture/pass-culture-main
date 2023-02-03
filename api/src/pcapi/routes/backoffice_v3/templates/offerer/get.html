@@ -21,7 +21,7 @@
                         </span>
                     </div>
                     <div class="col-2">
-                        {% if can_edit_user %}
+                        {% if has_permission("MANAGE_PRO_ENTITY") %}
                             <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
                                     data-bs-target="#edit-offerer-modal" type="button">
                                 Modifier les informations

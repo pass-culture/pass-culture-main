@@ -87,10 +87,7 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
     if not form.validate():
         dst = url_for(".update_pro_user", user_id=user_id)
         flash("Le formulaire n'est pas valide", "warning")
-        return (
-            render_template("pro_user/get.html", form=form, dst=dst, user=user, can_edit_user=True),
-            400,
-        )
+        return render_template("pro_user/get.html", form=form, dst=dst, user=user), 400
 
     snapshot = users_api.update_user_info(
         user,
