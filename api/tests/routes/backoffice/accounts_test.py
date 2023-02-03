@@ -1096,7 +1096,7 @@ class PostManualReviewTest:
             user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.KO
         )
         reviewer = users_factories.UserFactory()
-        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_SUSPEND_USER])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1126,7 +1126,7 @@ class PostManualReviewTest:
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
         reviewer = users_factories.UserFactory()
-        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_SUSPEND_USER])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1158,7 +1158,7 @@ class PostManualReviewTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
         reviewer = users_factories.UserFactory()
-        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_SUSPEND_USER])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1186,7 +1186,7 @@ class PostManualReviewTest:
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
         reviewer = users_factories.UserFactory()
-        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_SUSPEND_USER])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1214,7 +1214,7 @@ class PostManualReviewTest:
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
         reviewer = users_factories.AdminFactory()
-        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_SUSPEND_USER])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1238,7 +1238,7 @@ class PostManualReviewTest:
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
         reviewer = users_factories.UserFactory()
-        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_SUSPEND_USER])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1255,7 +1255,7 @@ class PostManualReviewTest:
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
         reviewer = users_factories.UserFactory()
-        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_SUSPEND_USER])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1288,7 +1288,7 @@ class PostManualReviewTest:
         # given
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
-        auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.REVIEW_PUBLIC_ACCOUNT])
+        auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.REVIEW_SUSPEND_USER])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1311,7 +1311,7 @@ class PostManualReviewTest:
             resultContent=fraud_factories.UbbleContentFactory(birth_date=birth_date_15_yo.date().isoformat()),
         )
         reviewer = users_factories.UserFactory()
-        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_SUSPEND_USER])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1326,7 +1326,7 @@ class PostManualReviewTest:
     def test_cannot_review_unknown_account(self, client):
         # given
         reviewer = users_factories.UserFactory()
-        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_SUSPEND_USER])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1345,7 +1345,7 @@ class PostManualReviewTest:
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
         DepositGrantFactory(user=user)
         reviewer = users_factories.UserFactory()
-        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_SUSPEND_USER])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1362,7 +1362,7 @@ class PostManualReviewTest:
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
         reviewer = users_factories.UserFactory()
-        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_SUSPEND_USER])
 
         # when
         response = client.with_explicit_token(auth_token).post(

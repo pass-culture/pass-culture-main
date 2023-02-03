@@ -1,3 +1,5 @@
+{% from "components/generic_modal.html" import build_modal_form %}
+
 <div class="row row-cols-1 g-4 py-3">
     <div class="col">
         <div class="card">
@@ -37,15 +39,21 @@
                             }} </p>
                     </div>
 
-                    {% if has_permission("MANUAL_REVIEW_PUBLIC_ACCOUNT") %}
+                    {% if has_permission("REVIEW_SUSPEND_USER") %}
                         <div class="col-4">
-
-                            <a href="{{ url_for('.edit_public_account_review', user_id=user.id) }}"
-                               class="card-link btn btn-outline-primary lead fw-bold mt-2">
-
-                                Revue manuelle
-
-                            </a>
+                            <div>
+                                {% if user.isActive %}
+                                    {{ build_modal_form("suspend", suspension_dst, suspension_form, "Suspendre le compte", "Confirmer la suspension") }}
+                                {% else %}
+                                    {{ build_modal_form("unsuspend", suspension_dst, suspension_form, "Réactiver le compte", "Confirmer la réactivation") }}
+                                {% endif %}
+                            </div>
+                            <div>
+                                <a href="{{ url_for('.edit_public_account_review', user_id=user.id) }}"
+                                   class="card-link btn btn-outline-primary lead fw-bold mt-2">
+                                    Revue manuelle
+                                </a>
+                            </div>
                         </div>
                     {% endif %}
                 </div>

@@ -191,6 +191,7 @@ def _assert_user_action_history_as_expected(
     author: users_models.User,
     actionType: history_models.ActionType,
     reason: users_constants.SuspensionReason,
+    comment: str | None = None,
 ):
     assert action.user == user
     assert action.authorUser == author
@@ -199,6 +200,7 @@ def _assert_user_action_history_as_expected(
         assert action.extraData["reason"] == reason.value
     else:
         assert action.extraData == {}
+    assert action.comment == comment
 
 
 @pytest.mark.usefixtures("db_session")
@@ -234,9 +236,10 @@ class SuspendAccountTest:
         used_booking = bookings_factories.UsedBookingFactory(user=user)
         author = users_factories.AdminFactory()
         reason = users_constants.SuspensionReason.FRAUD_SUSPICION
+        comment = "Dossier n°12345"
         old_password_hash = user.password
 
-        users_api.suspend_account(user, reason, author)
+        users_api.suspend_account(user, reason, author, comment=comment)
 
         db.session.refresh(user)
 
@@ -252,7 +255,7 @@ class SuspendAccountTest:
         history = history_models.ActionHistory.query.filter_by(userId=user.id).all()
         assert len(history) == 1
         _assert_user_action_history_as_expected(
-            history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason
+            history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason, comment
         )
 
     def test_suspend_pro(self):
@@ -296,7 +299,8 @@ class UnsuspendAccountTest:
         user = users_factories.UserFactory(isActive=False)
         author = users_factories.AdminFactory()
 
-        users_api.unsuspend_account(user, author)
+        comment = "Confusion avec un homonyme"
+        users_api.unsuspend_account(user, author, comment=comment)
 
         assert not user.suspension_reason
         assert not user.suspension_date
@@ -305,7 +309,7 @@ class UnsuspendAccountTest:
         history = history_models.ActionHistory.query.filter_by(userId=user.id).all()
         assert len(history) == 1
         _assert_user_action_history_as_expected(
-            history[0], user, author, history_models.ActionType.USER_UNSUSPENDED, reason=None
+            history[0], user, author, history_models.ActionType.USER_UNSUSPENDED, reason=None, comment=comment
         )
 
     def test_bulk_unsuspend_account(self):
@@ -1047,12 +1051,12 @@ class PublicAccountHistoryTest:
         assert {
             "action": f"{suspension_action.actionType.value}",
             "datetime": suspension_action.actionDate,
-            "message": f"par {suspension_action.authorUser.full_name} : {users_constants.SUSPENSION_REASON_CHOICES[users_constants.SuspensionReason.FRAUD_SUSPICION]}",
+            "message": f"par {suspension_action.authorUser.full_name} : {users_constants.SUSPENSION_REASON_CHOICES[users_constants.SuspensionReason.FRAUD_SUSPICION]} - Commentaire : {suspension_action.comment}",
         } in history
         assert {
             "action": f"{unsuspension_action.actionType.value}",
             "datetime": unsuspension_action.actionDate,
-            "message": f"par {suspension_action.authorUser.full_name}",
+            "message": f"par {unsuspension_action.authorUser.full_name} - Commentaire : {unsuspension_action.comment}",
         } in history
 
     def test_history_contains_fraud_checks(self):

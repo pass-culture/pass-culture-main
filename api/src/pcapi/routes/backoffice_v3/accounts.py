@@ -35,6 +35,7 @@ from . import utils
 from .forms import account as account_forms
 from .forms import empty as empty_forms
 from .forms import search as search_forms
+from .forms import user as user_forms
 from .serialization import accounts
 from .serialization import search
 
@@ -129,16 +130,19 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
         .order_by(bookings_models.Booking.dateCreated.desc())
     ).all()
 
+    empty_form = empty_forms.EmptyForm()
+
     return render_template(
         "accounts/get.html",
         user=user,
         credit=domains_credit,
         history=history,
         eligibility_history=eligibility_history,
-        resend_email_validation_form=empty_forms.EmptyForm(),
-        send_validation_code_form=empty_forms.EmptyForm(),
-        manual_validation_form=empty_forms.EmptyForm(),
+        resend_email_validation_form=empty_form,
+        send_validation_code_form=empty_form,
+        manual_validation_form=empty_form,
         bookings=bookings,
+        **user_forms.get_toggle_suspension_args(user),
     )
 
 

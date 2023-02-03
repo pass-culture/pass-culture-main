@@ -16,6 +16,7 @@ def install_routes(app: Flask) -> None:
     from . import offers
     from . import pro
     from . import pro_users
+    from . import users
     from . import venues
 
     filters.install_template_filters(app)

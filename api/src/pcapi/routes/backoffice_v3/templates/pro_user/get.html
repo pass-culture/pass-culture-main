@@ -1,4 +1,5 @@
 {% from "components/badges.html" import build_pro_user_badges %}
+{% from "components/generic_modal.html" import build_modal_form %}
 
 {% extends "layouts/pro.html" %}
 
@@ -58,6 +59,13 @@
                                     </div>
                                 </div>
                             </div>
+                        {% endif %}
+                        {% if has_permission("REVIEW_SUSPEND_USER") %}
+                            {% if user.isActive %}
+                                {{ build_modal_form("suspend", suspension_dst, suspension_form, "Suspendre le compte", "Confirmer la suspension") }}
+                            {% else %}
+                                {{ build_modal_form("unsuspend", suspension_dst, suspension_form, "Réactiver le compte", "Confirmer la réactivation") }}
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>

@@ -12,7 +12,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 def test_cors_allowed(client):
     # given
     user = users_factories.UserFactory()
-    auth_token = generate_token(user, [perm_models.Permissions.REVIEW_PUBLIC_ACCOUNT])
+    auth_token = generate_token(user, [perm_models.Permissions.REVIEW_SUSPEND_USER])
 
     # when
     response = client.with_explicit_token(auth_token).options(
@@ -28,7 +28,7 @@ def test_cors_allowed(client):
 def test_cors_disallowed(client):
     # given
     user = users_factories.UserFactory()
-    auth_token = generate_token(user, [perm_models.Permissions.REVIEW_PUBLIC_ACCOUNT])
+    auth_token = generate_token(user, [perm_models.Permissions.REVIEW_SUSPEND_USER])
 
     # when
     response = client.with_explicit_token(auth_token).options(
