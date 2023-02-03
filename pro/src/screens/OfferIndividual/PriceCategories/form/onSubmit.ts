@@ -13,9 +13,8 @@ import { PriceCategoriesFormValues } from './types'
 export const onSubmit = async (
   values: PriceCategoriesFormValues,
   offer: IOfferIndividual,
-  setOffer: ((offer: IOfferIndividual | null) => void) | null,
-  notifyError: (msg: string) => void
-): Promise<boolean> => {
+  setOffer: ((offer: IOfferIndividual | null) => void) | null
+) => {
   const serializedOffer = serializePatchOffer({
     offer: offer,
     formValues: { isDuo: values.isDuo },
@@ -26,8 +25,7 @@ export const onSubmit = async (
       serializedOffer: serializedOffer,
     })
   if (!isOfferOk) {
-    notifyError(offerMessage)
-    return false
+    throw new Error(offerMessage)
   }
 
   const { isOk: isPriceCategoriesOk, message: priceCategoriesMessage } =
@@ -37,12 +35,9 @@ export const onSubmit = async (
     })
 
   if (!isPriceCategoriesOk) {
-    notifyError(priceCategoriesMessage)
-    return false
+    throw new Error(priceCategoriesMessage)
   }
 
   const response = await getOfferIndividualAdapter(offer.id)
   setOffer && setOffer(response.payload)
-
-  return true
 }
