@@ -9,6 +9,11 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { mainlandOptions, domtomOptions } from 'core/shared/interventionOptions'
 import * as useNotification from 'hooks/useNotification'
+import {
+  collectiveCategoryFactory,
+  collectiveSubCategoryFactory,
+  venueCollectiveDataFactory,
+} from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveDataEdition from '../CollectiveDataEdition'
@@ -61,6 +66,7 @@ jest.mock('apiClient/api', () => ({
     getVenueCollectiveData: jest.fn(),
     getEducationalPartner: jest.fn(),
     listEducationalDomains: jest.fn(),
+    getCategories: jest.fn(),
   },
 }))
 
@@ -125,19 +131,18 @@ describe('CollectiveDataEdition', () => {
       close: jest.fn(),
     }))
 
-    jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValue({
-      id: 'A1',
-      collectiveDomains: [],
-      collectiveDescription: '',
-      collectiveEmail: '',
-      collectiveInterventionArea: [],
-      collectiveLegalStatus: null,
-      collectiveNetwork: [],
-      collectivePhone: '',
-      collectiveStudents: [],
-      collectiveWebsite: '',
-      siret: '1234567890',
+    jest.spyOn(api, 'getCategories').mockResolvedValue({
+      categories: [collectiveCategoryFactory(), collectiveCategoryFactory()],
+      subcategories: [
+        collectiveSubCategoryFactory({ categoryId: 'CATEGORY_1' }),
+        collectiveSubCategoryFactory({ categoryId: 'CATEGORY_1' }),
+        collectiveSubCategoryFactory({ categoryId: 'CATEGORY_2' }),
+      ],
     })
+
+    jest
+      .spyOn(api, 'getVenueCollectiveData')
+      .mockResolvedValue(venueCollectiveDataFactory())
 
     jest.spyOn(api, 'getEducationalPartner').mockRejectedValue({})
   })
@@ -381,6 +386,49 @@ describe('CollectiveDataEdition', () => {
     })
   })
 
+  describe('categories', () => {
+    it('should prefill field with selected category and subcategory', async () => {
+      jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValueOnce(
+        venueCollectiveDataFactory({
+          collectiveEmail: 'test@example.com',
+          collectiveSubCategoryId: 'SUB_CATEGORY_1',
+        })
+      )
+      renderCollectiveDataEdition()
+      await waitForLoader()
+
+      const categoryField = screen.getByLabelText(/Catégorie/)
+      const subCategoryField = screen.getByLabelText(/Sous-catégorie/)
+
+      expect(categoryField).toHaveValue('CATEGORY_1')
+      expect(subCategoryField).toHaveValue('SUB_CATEGORY_1')
+    })
+
+    it('should not display subcategory field if no category selected', async () => {
+      jest.spyOn(api, 'getCategories').mockResolvedValueOnce({
+        categories: [],
+        subcategories: [],
+      })
+      renderCollectiveDataEdition()
+      await waitForLoader()
+
+      const subCategoryField = screen.queryByLabelText(/Sous-catégorie/)
+
+      expect(subCategoryField).not.toBeInTheDocument()
+    })
+
+    it('should display subcategory field when category is selected', async () => {
+      renderCollectiveDataEdition()
+      await waitForLoader()
+
+      const categoryField = screen.getByLabelText(/Catégorie/)
+      await userEvent.selectOptions(categoryField, 'CATEGORY_2')
+
+      const subCategoryField = screen.getByLabelText(/Sous-catégorie/)
+      expect(subCategoryField).toBeInTheDocument()
+    })
+  })
+
   describe('submit', () => {
     it('should display error toast when adapter call failed', async () => {
       jest
@@ -476,19 +524,9 @@ describe('CollectiveDataEdition', () => {
         statutId: 2,
         domaineIds: [1, 2],
       })
-      jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValue({
-        id: 'A1',
-        collectiveDomains: [],
-        collectiveDescription: '',
-        collectiveEmail: '',
-        collectiveInterventionArea: [],
-        collectiveLegalStatus: null,
-        collectiveNetwork: [],
-        collectivePhone: '',
-        collectiveStudents: [],
-        collectiveWebsite: '',
-        siret: '1234567890',
-      })
+      jest
+        .spyOn(api, 'getVenueCollectiveData')
+        .mockResolvedValue(venueCollectiveDataFactory())
 
       renderCollectiveDataEdition()
 
@@ -515,19 +553,11 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should not call educational partner if venue has no siret and no collective data', async () => {
-      jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValue({
-        id: 'A1',
-        collectiveDomains: [],
-        collectiveDescription: '',
-        collectiveEmail: '',
-        collectiveInterventionArea: [],
-        collectiveLegalStatus: null,
-        collectiveNetwork: [],
-        collectivePhone: '',
-        collectiveStudents: [],
-        collectiveWebsite: '',
-        siret: undefined,
-      })
+      jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValue(
+        venueCollectiveDataFactory({
+          siret: undefined,
+        })
+      )
 
       renderCollectiveDataEdition()
 
