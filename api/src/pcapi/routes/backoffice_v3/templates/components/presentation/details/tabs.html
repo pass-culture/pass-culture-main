@@ -1,7 +1,7 @@
 {% macro build_details_tab(name, title, is_active=False) %}
     <li class="nav-item" role="presentation">
         <button
-            class="{{ 'nav-link active fw-bolder' if is_active else 'nav-link' }}"
+            class="{{ 'nav-link active fw-bolder' if is_active else 'nav-link fw-bolder' }}"
             id="{{ name ~ '-tab' }}"
             data-bs-toggle="tab"
             data-bs-target="{{ '#' ~ name ~ '-tab-pane' }}"
