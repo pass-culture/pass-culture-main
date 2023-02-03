@@ -13,7 +13,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingEmails: Array<string>;
   contactEmail: string;
-  contactPhone: string;
+  contactPhone?: string | null;
   dateCreated: string;
   description: string;
   domains: Array<OfferDomain>;
