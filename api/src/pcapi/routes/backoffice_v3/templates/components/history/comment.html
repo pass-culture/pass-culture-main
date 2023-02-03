@@ -1,6 +1,6 @@
-{# This macro must be imported with context because of can_user_add_comment() #} 
+{# This macro must be imported with context because of has_permission() #}
 {% macro build_comment_modal(dst, form) %}
-    {% if can_user_add_comment() %}
+    {% if has_permission("MANAGE_PRO_ENTITY") %}
         <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
             data-bs-target="#add-comment-pro-user-modal" type="button">
             Ajouter un commentaire
