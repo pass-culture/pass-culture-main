@@ -5,7 +5,9 @@ FROM python:3.10-slim AS builder
 RUN apt-get update \
 	&& apt-get -y install \
 		gcc \
-		libpq-dev
+		libpq-dev  && \
+        apt-get clean && \
+        rm -rf /var/lib/apt/lists*
 
 RUN useradd -rm -d /home/pcapi -u 1000 pcapi
 
@@ -15,7 +17,9 @@ ENV PYTHONUNBUFFERED 1
 
 COPY ./requirements.txt ./
 
-RUN pip install --user \
+ENV PATH=$PATH:/home/pcapi/.local/bin
+
+RUN pip install --no-cache-dir --user \
 	--requirement ./requirements.txt
 
 ########## SOURCES ##########
@@ -45,7 +49,9 @@ RUN apt-get update \
 		libpangoft2-1.0-0 \
 		libpq5 \
 		libxmlsec1-openssl \
-		xmlsec1
+		xmlsec1 && \
+        apt-get clean && \
+        rm -rf /var/lib/apt/lists*
 
 COPY --from=builder /home/pcapi/.local /home/pcapi/.local
 
@@ -64,11 +70,13 @@ FROM lib AS api-flask
 USER root
 
 RUN apt-get update && \
-    apt-get -y install postgresql-client
+    apt-get --no-install-recommends -y install postgresql-client  && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists*
 
 USER pcapi
 
-RUN pip install --user -e .
+RUN pip install --no-cache-dir --user -e .
 
 ######### PRODUCTION #########
 
@@ -88,16 +96,15 @@ FROM pcapi AS pcapi-console
 
 USER root
 
-RUN apt-get update && \
-    apt-get -y install \
-		curl \
-		less
-
 RUN apt update && \
-	apt install -y wget gnupg2 && \
-	wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
-	echo "deb http://apt.postgresql.org/pub/repos/apt/ `. /etc/os-release && echo $VERSION_CODENAME`-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-	apt update && apt -y install postgresql-client-12
+    apt install --no-install-recommends -y curl less gnupg2 && \
+    curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/pgsql.gpg && \
+    echo "deb [signed-by=/etc/apt/trusted.gpg.d/pgsql.gpg] http://apt.postgresql.org/pub/repos/apt/ `. /etc/os-release && \
+    echo $VERSION_CODENAME`-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+    apt update && \
+    apt --no-install-recommends -y install postgresql-client-12 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists*
 
 USER pcapi
 
@@ -107,7 +114,10 @@ FROM pcapi-console AS pcapi-tests
 
 USER root
 
-RUN apt-get update -y && apt-get install -y git
+RUN apt-get update && \
+    apt-get install -y git --no-install-recommends && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists*
 
 COPY --chown=pcapi:pcapi tests/ tests
 COPY --chown=pcapi:pcapi pyproject.toml .
