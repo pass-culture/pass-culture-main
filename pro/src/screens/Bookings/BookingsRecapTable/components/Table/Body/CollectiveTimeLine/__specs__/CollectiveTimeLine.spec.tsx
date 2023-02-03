@@ -77,6 +77,21 @@ describe('collective timeline', () => {
       screen.getByText('Vous avez annulé la réservation')
     ).toBeInTheDocument()
   })
+  it('should render steps for cancelled booking by fraud', () => {
+    const bookingRecap = collectiveBookingRecapFactory({
+      bookingStatus: BOOKING_STATUS.CANCELLED,
+      bookingConfirmationDate: null,
+      bookingCancellationReason: CollectiveBookingCancellationReasons.FRAUD,
+      bookingStatusHistory: [
+        { date: new Date().toISOString(), status: BOOKING_STATUS.PENDING },
+        { date: new Date().toISOString(), status: BOOKING_STATUS.CANCELLED },
+      ],
+    })
+    renderCollectiveTimeLine(bookingRecap, bookingDetails)
+    expect(
+      screen.getByText('Le pass Culture a annulé la réservation')
+    ).toBeInTheDocument()
+  })
   describe('validated booking', () => {
     it('should render steps for validated booking and accepted bankInformation', () => {
       const bookingRecap = collectiveBookingRecapFactory({
