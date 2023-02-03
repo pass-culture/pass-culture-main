@@ -1,3 +1,5 @@
+import { SubcategoryIdEnum } from 'apiClient/v1'
+import { EducationalCategories } from 'core/OfferEducational'
 import { VenueCollectiveInformation } from 'core/Venue/types'
 
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../initialValues'
@@ -9,6 +11,8 @@ type CollectiveDataFormValuesWithoutSearchField = Omit<
   | 'search-collectiveDomains'
   | 'search-collectiveNetwork'
   | 'search-collectiveInterventionArea'
+  | 'collectiveCategoryId'
+  | 'collectiveSubCategoryId'
 >
 
 const getValue = <T extends keyof CollectiveDataFormValuesWithoutSearchField>(
@@ -30,19 +34,27 @@ const getValue = <T extends keyof CollectiveDataFormValuesWithoutSearchField>(
 }
 
 export const extractInitialValuesFromVenue = (
-  venue: VenueCollectiveInformation
-): CollectiveDataFormValues => ({
-  collectiveDescription: getValue(venue, 'collectiveDescription'),
-  collectiveStudents: getValue(venue, 'collectiveStudents'),
-  collectiveWebsite: getValue(venue, 'collectiveWebsite'),
-  collectivePhone: getValue(venue, 'collectivePhone'),
-  collectiveEmail: getValue(venue, 'collectiveEmail'),
-  collectiveLegalStatus: getValue(venue, 'collectiveLegalStatus'),
-  collectiveDomains: getValue(venue, 'collectiveDomains'),
-  collectiveNetwork: getValue(venue, 'collectiveNetwork'),
-  collectiveInterventionArea: getValue(venue, 'collectiveInterventionArea'),
-  'search-collectiveStudents': '',
-  'search-collectiveDomains': '',
-  'search-collectiveNetwork': '',
-  'search-collectiveInterventionArea': '',
-})
+  venue: VenueCollectiveInformation,
+  categories: EducationalCategories
+): CollectiveDataFormValues => {
+  return {
+    collectiveDescription: getValue(venue, 'collectiveDescription'),
+    collectiveStudents: getValue(venue, 'collectiveStudents'),
+    collectiveWebsite: getValue(venue, 'collectiveWebsite'),
+    collectivePhone: getValue(venue, 'collectivePhone'),
+    collectiveEmail: getValue(venue, 'collectiveEmail'),
+    collectiveLegalStatus: getValue(venue, 'collectiveLegalStatus'),
+    collectiveDomains: getValue(venue, 'collectiveDomains'),
+    collectiveNetwork: getValue(venue, 'collectiveNetwork'),
+    collectiveInterventionArea: getValue(venue, 'collectiveInterventionArea'),
+    collectiveCategoryId:
+      categories.educationalSubCategories.find(
+        ({ id }) => venue.collectiveSubCategoryId === id
+      )?.categoryId ?? '',
+    collectiveSubCategoryId: venue.collectiveSubCategoryId as SubcategoryIdEnum,
+    'search-collectiveStudents': '',
+    'search-collectiveDomains': '',
+    'search-collectiveNetwork': '',
+    'search-collectiveInterventionArea': '',
+  }
+}

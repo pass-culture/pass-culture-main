@@ -1,14 +1,17 @@
 import {
+  CategoryResponseModel,
   CollectiveBookingBankInformationStatus,
   CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
   GetCollectiveOfferCollectiveStockResponseModel,
   GetCollectiveOfferManagingOffererResponseModel,
   GetCollectiveOfferVenueResponseModel,
+  GetCollectiveVenueResponseModel,
   OfferAddressType,
   OfferStatus,
   StudentLevels,
   SubcategoryIdEnum,
+  SubcategoryResponseModel,
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
@@ -19,6 +22,8 @@ let venueId = 1
 let offererId = 1
 let bookingId = 1
 let bookingDetailsId = 1
+let categoryId = 1
+let subCategoryId = 1
 
 const sharedCollectiveOfferData = {
   isActive: true,
@@ -211,5 +216,60 @@ export const collectiveBookingDetailsFactory = (
     venueId: 'V1',
     venuePostalCode: '75000',
     ...customBookingDetails,
+  }
+}
+
+export const venueCollectiveDataFactory = (
+  customCollectiveData: Partial<GetCollectiveVenueResponseModel> = {}
+): GetCollectiveVenueResponseModel => {
+  return {
+    id: 'A1',
+    collectiveDomains: [],
+    collectiveDescription: '',
+    collectiveEmail: '',
+    collectiveInterventionArea: [],
+    collectiveLegalStatus: null,
+    collectiveNetwork: [],
+    collectivePhone: '',
+    collectiveStudents: [],
+    collectiveWebsite: '',
+    collectiveSubCategoryId: '',
+    siret: '1234567890',
+    ...customCollectiveData,
+  }
+}
+
+export const collectiveCategoryFactory = (
+  customCategory?: Partial<CategoryResponseModel>
+) => {
+  const currentCategoryId = categoryId++
+  return {
+    id: `CATEGORY_${currentCategoryId}`,
+    isSelectable: true,
+    proLabel: `Cat numéro ${currentCategoryId}`,
+    ...customCategory,
+  }
+}
+
+export const collectiveSubCategoryFactory = (
+  customSubCategory?: Partial<SubcategoryResponseModel>
+) => {
+  const currentSubCategoryId = subCategoryId++
+  return {
+    appLabel: '',
+    canBeDuo: true,
+    canBeEducational: true,
+    canExpire: true,
+    categoryId: `CATEGORY_${currentSubCategoryId}`,
+    conditionalFields: [],
+    id: `SUB_CATEGORY_${currentSubCategoryId}`,
+    isDigitalDeposit: false,
+    isEvent: true,
+    isPhysicalDeposit: false,
+    isSelectable: true,
+    onlineOfflinePlatform: '',
+    proLabel: `Sous catégorie #${currentSubCategoryId}`,
+    reimbursementRule: '',
+    ...customSubCategory,
   }
 }

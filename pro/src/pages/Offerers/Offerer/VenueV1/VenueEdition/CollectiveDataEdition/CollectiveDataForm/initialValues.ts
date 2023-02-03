@@ -10,6 +10,8 @@ export const COLLECTIVE_DATA_FORM_INITIAL_VALUES: CollectiveDataFormValues = {
   collectiveLegalStatus: '',
   collectiveNetwork: [],
   collectiveInterventionArea: [],
+  collectiveCategoryId: '',
+  collectiveSubCategoryId: '',
   'search-collectiveStudents': '',
   'search-collectiveDomains': '',
   'search-collectiveNetwork': '',

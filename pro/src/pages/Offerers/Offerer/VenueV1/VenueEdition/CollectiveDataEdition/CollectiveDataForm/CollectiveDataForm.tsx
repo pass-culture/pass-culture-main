@@ -1,9 +1,13 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 
 import { GetCollectiveVenueResponseModel, StudentLevels } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
+import {
+  EducationalCategories,
+  IEducationalSubCategory,
+} from 'core/OfferEducational'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { venueInterventionOptions } from 'core/shared/interventionOptions'
 import { SelectOption } from 'custom_types/form'
@@ -47,6 +51,39 @@ type CollectiveDataFormProps = {
   offererId: string
   venueCollectiveData: GetCollectiveVenueResponseModel | null
   adageVenueCollectiveData: GetCollectiveVenueResponseModel | null
+  categories: EducationalCategories
+}
+
+const getCategoriesAndSubcategoriesOptions = (
+  categories: EducationalCategories,
+  availableSubCategories: IEducationalSubCategory[]
+) => {
+  let categoriesOptions = categories.educationalCategories.map(item => ({
+    value: item['id'],
+    label: item['label'],
+  }))
+  if (categoriesOptions.length > 1) {
+    categoriesOptions = [
+      { value: '', label: 'Sélectionner une catégorie' },
+      ...categoriesOptions,
+    ]
+  }
+
+  let subCategoriesOptions = availableSubCategories.map(item => ({
+    value: item['id'],
+    label: item['label'],
+  }))
+
+  if (subCategoriesOptions.length > 1) {
+    subCategoriesOptions = [
+      { value: '', label: 'Sélectionner une sous catégorie' },
+      ...subCategoriesOptions,
+    ]
+  }
+  return {
+    categoriesOptions,
+    subCategoriesOptions,
+  }
 }
 
 const CollectiveDataForm = ({
@@ -57,7 +94,8 @@ const CollectiveDataForm = ({
   offererId,
   venueCollectiveData,
   adageVenueCollectiveData,
-}: CollectiveDataFormProps): JSX.Element => {
+  categories,
+}: CollectiveDataFormProps): JSX.Element | null => {
   const notify = useNotification()
   const history = useHistory()
 
@@ -65,6 +103,20 @@ const CollectiveDataForm = ({
     string[] | null
   >(null)
   const [isLoading, setIsLoading] = useState(false)
+
+  const initialValues = venueCollectiveData
+    ? extractInitialValuesFromVenue(venueCollectiveData, categories)
+    : COLLECTIVE_DATA_FORM_INITIAL_VALUES
+
+  const [availableSubCategories, setAvailableSubCategories] = useState<
+    IEducationalSubCategory[]
+  >(
+    initialValues.collectiveCategoryId
+      ? categories.educationalSubCategories.filter(
+          x => x.categoryId == initialValues.collectiveCategoryId
+        )
+      : []
+  )
 
   const onSubmit = async (values: CollectiveDataFormValues) => {
     setIsLoading(true)
@@ -76,7 +128,7 @@ const CollectiveDataForm = ({
     }
 
     formik.resetForm({
-      values: extractInitialValuesFromVenue(response.payload),
+      values: extractInitialValuesFromVenue(response.payload, categories),
     })
 
     history.push({
@@ -89,27 +141,10 @@ const CollectiveDataForm = ({
   }
 
   const formik = useFormik<CollectiveDataFormValues>({
-    initialValues: venueCollectiveData
-      ? extractInitialValuesFromVenue(venueCollectiveData)
-      : COLLECTIVE_DATA_FORM_INITIAL_VALUES,
+    initialValues: initialValues,
     onSubmit: onSubmit,
     validationSchema,
   })
-
-  useEffect(() => {
-    formik.resetForm({
-      values: venueCollectiveData
-        ? extractInitialValuesFromVenue(venueCollectiveData)
-        : COLLECTIVE_DATA_FORM_INITIAL_VALUES,
-    })
-  }, [venueCollectiveData])
-
-  useEffect(() => {
-    if (adageVenueCollectiveData) {
-      formik.setValues(extractInitialValuesFromVenue(adageVenueCollectiveData))
-    }
-  }, [adageVenueCollectiveData])
-
   useEffect(() => {
     handleAllFranceDepartmentOptions(
       formik.values.collectiveInterventionArea,
@@ -121,6 +156,38 @@ const CollectiveDataForm = ({
     setPreviousInterventionValues(formik.values.collectiveInterventionArea)
   }, [formik.values.collectiveInterventionArea])
 
+  useEffect(() => {
+    formik.resetForm({
+      values: venueCollectiveData
+        ? extractInitialValuesFromVenue(venueCollectiveData, categories)
+        : COLLECTIVE_DATA_FORM_INITIAL_VALUES,
+    })
+  }, [venueCollectiveData])
+
+  useEffect(() => {
+    if (adageVenueCollectiveData && categories) {
+      formik.setValues(
+        extractInitialValuesFromVenue(adageVenueCollectiveData, categories)
+      )
+    }
+  }, [adageVenueCollectiveData, categories])
+
+  const handleCategoryChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const newCategoryId = event.target.value
+
+      setAvailableSubCategories(
+        categories.educationalSubCategories.filter(
+          subCategory => subCategory.categoryId === newCategoryId
+        )
+      )
+    },
+    [categories.educationalSubCategories]
+  )
+
+  const { categoriesOptions, subCategoriesOptions } =
+    getCategoriesAndSubcategoriesOptions(categories, availableSubCategories)
+
   return (
     <>
       <FormikProvider value={formik}>
@@ -129,6 +196,7 @@ const CollectiveDataForm = ({
             <div className={styles.section}>
               Présentation pour les enseignants
             </div>
+
             <FormLayout.Row>
               <TextArea
                 name="collectiveDescription"
@@ -160,6 +228,25 @@ const CollectiveDataForm = ({
               />
             </FormLayout.Row>
             <div className={styles.section}>Informations du lieu</div>
+            <FormLayout.Row>
+              <Select
+                label="Catégorie"
+                name="collectiveCategoryId"
+                options={categoriesOptions}
+                onChange={handleCategoryChange}
+                isOptional={true}
+              />
+            </FormLayout.Row>
+            {availableSubCategories.length > 0 && (
+              <FormLayout.Row>
+                <Select
+                  label="Sous-catégorie"
+                  name="collectiveSubCategoryId"
+                  options={subCategoriesOptions}
+                  isOptional={true}
+                />
+              </FormLayout.Row>
+            )}
             <FormLayout.Row>
               <MultiSelectAutocomplete
                 hideTags
