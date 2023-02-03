@@ -44,7 +44,7 @@ class Returns200Test:
             "venueEducationalStatusId": educational_status.id,
             "collectivePhone": "0600000000",
             "collectiveEmail": "john@doe.com",
-            "collectiveOfferCategoryId": "SPECTACLE_REPRESENTATION",
+            "collectiveSubCategoryId": "SPECTACLE_REPRESENTATION",
         }
 
         response = client.patch(f"/venues/{humanize(venue.id)}/collective-data", json=venue_data)
@@ -61,7 +61,7 @@ class Returns200Test:
         assert venue.venueEducationalStatusId == educational_status.id
         assert venue.collectivePhone == "0600000000"
         assert venue.collectiveEmail == "john@doe.com"
-        assert venue.collectiveOfferCategoryId == "SPECTACLE_REPRESENTATION"
+        assert venue.collectiveSubCategoryId == "SPECTACLE_REPRESENTATION"
 
     def test_should_update_venue_with_empty_data(self, client) -> None:
         # given
@@ -80,7 +80,7 @@ class Returns200Test:
             venueEducationalStatusId=educational_status_1.id,
             collectivePhone="0600000000",
             collectiveEmail="john@doe.com",
-            collectiveOfferCategoryId="SPECTACLE_REPRESENTATION",
+            collectiveSubCategoryId="SPECTACLE_REPRESENTATION",
         )
 
         client = client.with_session_auth(email=user_offerer.user.email)
@@ -97,7 +97,7 @@ class Returns200Test:
             "venueEducationalStatusId": None,
             "collectivePhone": None,
             "collectiveEmail": None,
-            "collectiveOfferCategoryId": None,
+            "collectiveSubCategoryId": None,
         }
 
         response = client.patch(f"/venues/{humanize(venue.id)}/collective-data", json=venue_data)

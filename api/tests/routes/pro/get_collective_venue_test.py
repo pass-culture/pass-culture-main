@@ -22,6 +22,7 @@ class Returns200Test:
             collectivePhone="0199001234",
             collectiveStudents=[educational_models.StudentLevels.COLLEGE3, educational_models.StudentLevels.GENERAL1],
             collectiveWebsite="https://passculture.app",
+            collectiveSubCategoryId="SEANCE_CINE",
         )
         expected_serialized_venue = {
             "id": humanize(venue.id),
@@ -46,6 +47,7 @@ class Returns200Test:
                 educational_models.StudentLevels.GENERAL1.value,
             ],
             "collectiveWebsite": venue.collectiveWebsite,
+            "collectiveSubCategoryId": venue.collectiveSubCategoryId,
             "siret": venue.siret,
         }
 

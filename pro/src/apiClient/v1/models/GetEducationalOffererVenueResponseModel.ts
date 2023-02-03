@@ -8,8 +8,8 @@ export type GetEducationalOffererVenueResponseModel = {
   city?: string | null;
   collectiveEmail?: string | null;
   collectiveInterventionArea?: Array<string> | null;
-  collectiveOfferCategoryId?: string | null;
   collectivePhone?: string | null;
+  collectiveSubCategoryId?: string | null;
   id: string;
   isVirtual: boolean;
   mentalDisabilityCompliant?: boolean | null;
