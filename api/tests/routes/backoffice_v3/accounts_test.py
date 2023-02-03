@@ -20,6 +20,7 @@ from pcapi.notifications.sms import testing as sms_testing
 import pcapi.utils.email as email_utils
 
 from .helpers import accounts as accounts_helpers
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers import search as search_helpers
 from .helpers import unauthorized as unauthorized_helpers
@@ -321,6 +322,24 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         endpoint = "backoffice_v3_web.public_accounts.get_public_account"
         endpoint_kwargs = {"user_id": 1}
         needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
+
+    class SuspendButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.REVIEW_SUSPEND_USER
+        button_label = "Suspendre le compte"
+
+        @property
+        def path(self):
+            user = users_factories.UserFactory()
+            return url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user.id)
+
+    class UnsuspendButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.REVIEW_SUSPEND_USER
+        button_label = "Réactiver le compte"
+
+        @property
+        def path(self):
+            user = users_factories.UserFactory(isActive=False)
+            return url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user.id)
 
     @pytest.mark.parametrize(
         "index,expected_badge",

@@ -19,8 +19,6 @@
                         <a href="{{ url_for("backoffice_v3_web.pro_user.get", user_id=action.userId) }}" class="link-primary">
                             {{ action.user.full_name | empty_string_if_null }} - {{ action.userId }}
                         </a>
-
-                        <p>{{ action.comment | empty_string_if_null | replace("\n", "<br/>"|safe) }}</p>
                     {% elif action.actionType.name == "INFO_MODIFIED" %}
                         <p class="fw-bold">Informations modifiées</p>
                         {% for info_name, modified_info in action.extraData.get('modified_info', {}).items() %}
@@ -31,7 +29,8 @@
                         {% endfor %}
                     {% elif action.actionType.name == "USER_SUSPENDED" %}
                         <p>{{ action.extraData['reason'] | format_reason_label }}</p>
-                    {% else %}
+                    {% endif %}
+                    {% if action.comment %}
                         <p>{{ action.comment | empty_string_if_null | replace("\n", "<br/>"|safe) }}</p>
                     {% endif %}
                 </td>

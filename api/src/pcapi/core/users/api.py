@@ -333,7 +333,9 @@ def check_can_unsuspend(user: models.User) -> None:
         raise exceptions.UnsuspensionTimeLimitExceeded()
 
 
-def suspend_account(user: models.User, reason: constants.SuspensionReason, actor: models.User | None) -> dict[str, int]:
+def suspend_account(
+    user: models.User, reason: constants.SuspensionReason, actor: models.User | None, comment: str | None = None
+) -> dict[str, int]:
     """
     Suspend a user's account:
         * mark as inactive;
@@ -350,15 +352,17 @@ def suspend_account(user: models.User, reason: constants.SuspensionReason, actor
     import pcapi.core.bookings.api as bookings_api  # avoid import loop
 
     user.isActive = False
-    history_api.log_action(
+    user.remove_admin_role()
+    action = history_api.log_action(
         history_models.ActionType.USER_SUSPENDED,
         author=actor,
         user=user,
         reason=reason.value,
+        comment=comment,
+        save=False,
     )
-    user.remove_admin_role()
 
-    repository.save(user)
+    repository.save(user, action)
 
     sessions = models.UserSession.query.filter_by(userId=user.id)
     repository.delete(*sessions)
@@ -400,11 +404,15 @@ def suspend_account(user: models.User, reason: constants.SuspensionReason, actor
     return {"cancelled_bookings": n_bookings}
 
 
-def unsuspend_account(user: models.User, actor: models.User, send_email: bool = False) -> None:
+def unsuspend_account(
+    user: models.User, actor: models.User, comment: str | None = None, send_email: bool = False
+) -> None:
     user.isActive = True
+    action = history_api.log_action(
+        history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user, comment=comment, save=False
+    )
 
-    repository.save(user)
-    history_api.log_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user)
+    repository.save(user, action)
 
     logger.info(
         "Account has been unsuspended",
@@ -1015,6 +1023,8 @@ def get_suspension_message(suspension_action: history_models.ActionHistory) -> s
     if suspension_action.extraData and suspension_action.extraData.get("reason"):
         suspension_reason = users_constants.SuspensionReason(suspension_action.extraData["reason"])
         message += f" : {users_constants.SUSPENSION_REASON_CHOICES[suspension_reason]}"
+    if suspension_action.comment:
+        message += f" - Commentaire : {suspension_action.comment}"
     return message
 
 

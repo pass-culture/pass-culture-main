@@ -191,7 +191,7 @@ def get_user_subscription_history(user_id: int) -> serialization.GetUserSubscrip
     on_success_status=200,
     api=blueprint.api,
 )
-@perm_utils.permission_required(perm_models.Permissions.REVIEW_PUBLIC_ACCOUNT)
+@perm_utils.permission_required(perm_models.Permissions.REVIEW_SUSPEND_USER)
 def review_public_account(
     user_id: int, body: serialization.BeneficiaryReviewRequestModel
 ) -> serialization.BeneficiaryReviewResponseModel:

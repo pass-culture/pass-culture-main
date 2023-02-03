@@ -1,3 +1,5 @@
+import datetime
+
 from flask import g
 from flask import url_for
 import pytest
@@ -8,6 +10,7 @@ import pcapi.core.history.models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
+import pcapi.core.users.constants as users_constants
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.routes.backoffice_v3.filters import format_date
@@ -58,6 +61,24 @@ class GetProUserTest:
             assert response.status_code == 200
 
             assert self.button_label not in response.data.decode("utf-8")
+
+    class SuspendButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.REVIEW_SUSPEND_USER
+        button_label = "Suspendre le compte"
+
+        @property
+        def path(self):
+            user = offerers_factories.UserOffererFactory().user
+            return url_for("backoffice_v3_web.pro_user.get", user_id=user.id)
+
+    class UnsuspendButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.REVIEW_SUSPEND_USER
+        button_label = "Réactiver le compte"
+
+        @property
+        def path(self):
+            user = offerers_factories.UserOffererFactory(user__isActive=False).user
+            return url_for("backoffice_v3_web.pro_user.get", user_id=user.id)
 
     def test_get_pro_user(self, authenticated_client):  # type: ignore
         user = offerers_factories.UserOffererFactory(user__phoneNumber="+33638656565", user__postalCode="29000").user
@@ -170,25 +191,46 @@ class GetProUserHistoryTest:
             return url_for("backoffice_v3_web.pro_user.get_details", user_id=user.id)
 
     def test_get_history(self, authenticated_client, pro_user):
-        action = history_factories.ActionHistoryFactory(user=pro_user)
+        action1 = history_factories.ActionHistoryFactory(
+            user=pro_user, actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+        )
+        action2 = history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=2),
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            user=pro_user,
+            comment="Test de suspension",
+            extraData={"reason": users_constants.SuspensionReason.FRAUD_USURPATION_PRO.value},
+        )
         url = url_for("backoffice_v3_web.pro_user.get_details", user_id=pro_user.id)
 
         with assert_no_duplicated_queries():
             response = authenticated_client.get(url)
+
         assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data, parent_id="history-tab-pane")
+        assert len(rows) == 2
 
-        content = response.data.decode("utf-8")
+        assert rows[0]["Type"] == history_models.ActionType.USER_SUSPENDED.value
+        assert rows[0]["Date/Heure"] == format_date(action2.actionDate, "Le %d/%m/%Y à %Hh%M")
+        assert (
+            rows[0]["Commentaire"]
+            == f"{users_constants.SUSPENSION_REASON_CHOICES[users_constants.SuspensionReason.FRAUD_USURPATION_PRO]} {action2.comment}"
+        )
+        assert rows[0]["Auteur"] == action2.authorUser.full_name
 
-        assert action.comment in content
-        assert action.authorUser.full_name in content
-        assert format_date(action.actionDate, "Le %d/%m/%Y à %Hh%M") in content
+        assert rows[1]["Type"] == history_models.ActionType.COMMENT.value
+        assert rows[1]["Date/Heure"] == format_date(action1.actionDate, "Le %d/%m/%Y à %Hh%M")
+        assert rows[1]["Commentaire"] == action1.comment
+        assert rows[1]["Auteur"] == action1.authorUser.full_name
 
     def test_no_history(self, authenticated_client, pro_user):
         url = url_for("backoffice_v3_web.pro_user.get_details", user_id=pro_user.id)
 
         with assert_no_duplicated_queries():
             response = authenticated_client.get(url)
+
         assert response.status_code == 200
+        assert html_parser.count_table_rows(response.data, parent_id="history-tab-pane") == 0
 
 
 class CommentProUserTest:
