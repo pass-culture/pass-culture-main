@@ -1,4 +1,4 @@
-import { PriceCategoryForm } from './types'
+import { PriceCategoriesFormValues, PriceCategoryForm } from './types'
 
 let priceCategoryFormId = 1
 export const priceCategoryFormFactory = (
@@ -7,4 +7,12 @@ export const priceCategoryFormFactory = (
   label: `Tarif ${priceCategoryFormId++}`,
   price: 20,
   ...customPriceCategory,
+})
+
+export const priceCategoriesFormValuesFactory = (
+  customPriceCategoriesFormValues: Partial<PriceCategoriesFormValues> = {}
+): PriceCategoriesFormValues => ({
+  priceCategories: [priceCategoryFormFactory()],
+  isDuo: false,
+  ...customPriceCategoriesFormValues,
 })
