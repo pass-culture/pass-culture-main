@@ -41,8 +41,8 @@
     </div>
     <div class="row justify-content-evenly g-4">
         {% for idCheckItem in history.idCheckHistory %}
-            <div class="card mx-1 shadow col-auto">
-                <div class="card-header bg-white" id="{{ idCheckItem.thirdPartyId }}">
+            <div class="card mx-1 shadow col-auto" id="{{ idCheckItem.thirdPartyId }}">
+                <div class="card-header bg-white">
                     <h5 class="card-title text-bold fs-3 m-3">
                         {{ idCheckItem.type }}
                     </h5>
@@ -59,6 +59,16 @@
                                 <span class="fs-6">ID Technique</span>
                                 <span class="fs-6">{{ idCheckItem.thirdPartyId }}</span>
                             </p>
+                            {% if idCheckItem | format_fraud_check_url %}
+                                <p class="d-flex justify-content-between">
+                                    <span class="fs-6">Lien du dossier {{ idCheckItem.type }} :</span>
+                                    <span class="fs-6">
+                                        <a href="{{ idCheckItem | format_fraud_check_url }}" target="_blank">
+                                            Accéder au dossier {{ idCheckItem.type }}
+                                        </a>
+                                    </span>
+                                </p>
+                            {% endif %}
                             <p class="d-flex justify-content-between">
                                 <span class="fs-6">Statut</span>
                                 {% if idCheckItem.status == 'ok' %}

@@ -7,6 +7,7 @@ from flask import url_for
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -442,6 +443,59 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
 
         assert not html_parser.extract_table_rows(response.data, parent_id="bookings-tab-pane")
         assert "Aucune réservation à ce jour" in response.data.decode("utf-8")
+
+    def test_fraud_check_link(self, authenticated_client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        # modifiy the date for clearer tests
+        user.beneficiaryFraudChecks[0].dateCreated = datetime.date.today() - datetime.timedelta(days=5)
+
+        old_ubble = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            dateCreated=datetime.date.today() - datetime.timedelta(days=3),
+        )
+        old_dms = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            dateCreated=datetime.date.today() - datetime.timedelta(days=2),
+        )
+
+        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+
+        parsed_html = html_parser.get_soup(response.data)
+        main_dossier_card = str(parsed_html.find(id="main-check-item"))
+        assert (
+            f"https://www.demarches-simplifiees.fr/procedures/{old_dms.source_data().procedure_number}/dossiers/{old_dms.thirdPartyId}"
+            in main_dossier_card
+        )
+
+        old_ubble_card = str(parsed_html.find(id=old_ubble.thirdPartyId))
+        assert f"https://dashboard.ubble.ai/identifications/{old_ubble.thirdPartyId}" in old_ubble_card
+        old_dms_card = str(parsed_html.find(id=old_dms.thirdPartyId))
+        assert (
+            f"https://www.demarches-simplifiees.fr/procedures/{old_dms.source_data().procedure_number}/dossiers/{old_dms.thirdPartyId}"
+            in old_dms_card
+        )
+
+        new_dms = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            dateCreated=datetime.date.today() - datetime.timedelta(days=1),
+        )
+
+        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+
+        parsed_html = html_parser.get_soup(response.data)
+        main_dossier_card = str(parsed_html.find(id="main-check-item"))
+        assert (
+            f"https://www.demarches-simplifiees.fr/procedures/{new_dms.source_data().procedure_number}/dossiers/{new_dms.thirdPartyId}"
+            in main_dossier_card
+        )
+        new_dms_card = str(parsed_html.find(id=new_dms.thirdPartyId))
+        assert (
+            f"https://www.demarches-simplifiees.fr/procedures/{new_dms.source_data().procedure_number}/dossiers/{new_dms.thirdPartyId}"
+            in new_dms_card
+        )
 
 
 class EditPublicAccountTest(accounts_helpers.PageRendersHelper):
