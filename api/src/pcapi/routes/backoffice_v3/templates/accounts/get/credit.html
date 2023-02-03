@@ -74,17 +74,25 @@
     </div>
 
     <div class="col">
-        <div class="card">
+        <div class="card" id="main-check-item">
             <div class="card-body">
-                <h5 class="card-title mb-3">Dossier DMS (ou Ubble) importé le</h5>
+                {% if latest_fraud_check %}
+                    <h5 class="card-title mb-3">Dossier {{ latest_fraud_check.type | upper }} importé le</h5>
 
-                <h6 class="card-subtitle text-muted me-auto">
-                    {{ user.deposit.dateCreated | format_date("%d/%m/%Y à %Hh%M") }}
-                </h6>
-
-                <a href="#" class="card-link btn lead px-0 fw-bold mt-2 " >
-                        Accéder au dossier DMS
-                </a>
+                    <h6 class="card-subtitle text-muted me-auto mb-2">
+                        {{ latest_fraud_check.dateCreated | format_date("%d/%m/%Y à %Hh%M") }}
+                    </h6>
+                    <h6 class="card-subtitle me-auto">
+                        Statut: {{ latest_fraud_check.status | upper }}
+                    </h6>
+                    
+                    <a href="{{ latest_fraud_check | format_fraud_check_url }}" target="_blank" class="card-link btn lead px-0 py-0 fw-bold">
+                        Accéder au dossier {{ latest_fraud_check.type | upper }}
+                    </a>
+                
+                {% else %}
+                    <h5 class="card-title mb-3">Pas de dossier DMS ou Ubble</h5>
+                {% endif %}
             </div>
         </div>
     </div>
