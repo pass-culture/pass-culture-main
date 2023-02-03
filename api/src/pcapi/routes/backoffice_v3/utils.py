@@ -106,7 +106,3 @@ def is_user_offerer_action_type(action: history_models.ActionHistory) -> bool:
         history_models.ActionType.USER_OFFERER_REJECTED,
     }
     return action.actionType in user_offerer_action_types
-
-
-def can_user_add_comment() -> bool:
-    return has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
