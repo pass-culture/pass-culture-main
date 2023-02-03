@@ -12,7 +12,7 @@ from pydantic import root_validator
 from pydantic import validator
 from pydantic.utils import GetterDict
 
-from pcapi.core.bookings.api import compute_cancellation_limit_date
+from pcapi.core.bookings.api import compute_booking_cancellation_limit_date
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
@@ -321,7 +321,7 @@ class GetOfferStockResponseModel(BaseModel):
     def validate_cancellation_limit_date(
         cls, cancellation_limit_date: datetime | None, values: dict
     ) -> datetime | None:
-        return compute_cancellation_limit_date(values.get("beginningDatetime"), datetime.utcnow())
+        return compute_booking_cancellation_limit_date(values.get("beginningDatetime"), datetime.utcnow())
 
     class Config:
         allow_population_by_field_name = True

@@ -2,7 +2,6 @@ import datetime
 import logging
 import typing
 
-import pytz
 import sentry_sdk
 import sqlalchemy as sa
 
@@ -36,6 +35,7 @@ from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository import transaction
+import pcapi.serialization.utils as serialization_utils
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.workers import push_notification_job
 from pcapi.workers import user_emails_job
@@ -112,7 +112,9 @@ def book_offer(
         )
 
         booking.dateCreated = datetime.datetime.utcnow()
-        booking.cancellationLimitDate = compute_cancellation_limit_date(stock.beginningDatetime, booking.dateCreated)
+        booking.cancellationLimitDate = compute_booking_cancellation_limit_date(
+            stock.beginningDatetime, booking.dateCreated
+        )
 
         if is_activation_code_applicable:
             booking.activationCode = offers_repository.get_available_activation_code(stock)  # type: ignore [assignment]
@@ -389,37 +391,37 @@ def get_qr_code_data(booking_token: str) -> str:
     return f"PASSCULTURE:{QR_CODE_PASS_CULTURE_VERSION};TOKEN:{booking_token}"
 
 
-def compute_cancellation_limit_date(
-    event_beginning: datetime.datetime | None, booking_creation_or_event_edition: datetime.datetime
+def compute_booking_cancellation_limit_date(
+    event_beginning: datetime.datetime | None, booking_date: datetime.datetime
 ) -> datetime.datetime | None:
     if event_beginning is None:
         return None
 
-    if event_beginning.tzinfo:
-        tz_naive_event_beginning = event_beginning.astimezone(pytz.utc)
-        tz_naive_event_beginning = tz_naive_event_beginning.replace(tzinfo=None)
-    else:
-        tz_naive_event_beginning = event_beginning
-    before_event_limit = tz_naive_event_beginning - constants.CONFIRM_BOOKING_BEFORE_EVENT_DELAY
-    after_booking_or_event_edition_limit = (
-        booking_creation_or_event_edition + constants.CONFIRM_BOOKING_AFTER_CREATION_DELAY
-    )
-    earliest_cancellation_limit_date = max(
-        booking_creation_or_event_edition,
-        min(after_booking_or_event_edition_limit, before_event_limit),
-    )
-    return earliest_cancellation_limit_date
+    event_beginning = serialization_utils.as_utc_without_timezone(event_beginning)
+    before_event_cancellation_date = event_beginning - constants.CONFIRM_BOOKING_BEFORE_EVENT_DELAY
+    after_booking_cancellation_date = booking_date + constants.CONFIRM_BOOKING_AFTER_CREATION_DELAY
+
+    earliest_cancellation_date = min(before_event_cancellation_date, after_booking_cancellation_date)
+
+    return max(earliest_cancellation_date, booking_date)
 
 
 def update_cancellation_limit_dates(
     bookings_to_update: list[Booking], new_beginning_datetime: datetime.datetime
 ) -> list[Booking]:
     for booking in bookings_to_update:
-        booking.cancellationLimitDate = compute_cancellation_limit_date(
-            event_beginning=new_beginning_datetime, booking_creation_or_event_edition=datetime.datetime.utcnow()
+        booking.cancellationLimitDate = _compute_edition_cancellation_limit_date(
+            event_beginning=new_beginning_datetime, edition_date=datetime.datetime.utcnow()
         )
     repository.save(*bookings_to_update)
     return bookings_to_update
+
+
+def _compute_edition_cancellation_limit_date(
+    event_beginning: datetime.datetime, edition_date: datetime.datetime
+) -> datetime.datetime:
+    after_edition_cancellation_date = edition_date + constants.CONFIRM_BOOKING_AFTER_CREATION_DELAY
+    return min(event_beginning, after_edition_cancellation_date)
 
 
 def recompute_dnBookedQuantity(stock_ids: list[int]) -> None:
