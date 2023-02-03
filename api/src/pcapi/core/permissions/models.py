@@ -23,9 +23,9 @@ class Permissions(enum.Enum):
 
     SEARCH_PUBLIC_ACCOUNT = "rechercher un compte bénéficiaire/grand public"
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
-    REVIEW_PUBLIC_ACCOUNT = "faire une revue manuelle d'un compte bénéficiaire/grand public"
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"
-    MANUAL_REVIEW_PUBLIC_ACCOUNT = "permet la revue manuelle sur le profil jeune"
+
+    REVIEW_SUSPEND_USER = "faire une revue manuelle, suspendre un compte utilisateur"
 
     SEARCH_PRO_ACCOUNT = "rechercher un acteur culturel"
     READ_PRO_ENTITY = "visualiser une structure, un lieu ou un compte pro"

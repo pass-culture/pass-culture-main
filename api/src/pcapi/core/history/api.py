@@ -48,7 +48,7 @@ def log_action(
         user=user,
         offerer=offerer,  # type: ignore
         venue=venue,  # type: ignore
-        comment=comment,
+        comment=comment or None,  # do not store empty string
         extraData=extra_data,
     )
 

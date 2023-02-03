@@ -8,7 +8,7 @@ export enum PublicUserRolesEnum {
 export enum PermissionsEnum {
   managePermissions = 'MANAGE_PERMISSIONS',
   readPublicAccount = 'READ_PUBLIC_ACCOUNT',
-  reviewPublicAccount = 'REVIEW_PUBLIC_ACCOUNT',
+  reviewPublicAccount = 'REVIEW_SUSPEND_USER',
   managePublicAccount = 'MANAGE_PUBLIC_ACCOUNT',
   searchPublicAccount = 'SEARCH_PUBLIC_ACCOUNT',
   searchProAccount = 'SEARCH_PRO_ACCOUNT',

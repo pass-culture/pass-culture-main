@@ -164,7 +164,7 @@ class NewRoleTest:
         permissions = perm_models.Permission.query.filter(
             perm_models.Permission.name.in_(
                 (
-                    perm_models.Permissions.REVIEW_PUBLIC_ACCOUNT.name,
+                    perm_models.Permissions.REVIEW_SUSPEND_USER.name,
                     perm_models.Permissions.READ_PUBLIC_ACCOUNT.name,
                 )
             )

@@ -18,6 +18,7 @@ import pcapi.utils.email as email_utils
 
 from . import utils
 from .forms import pro_user as pro_user_forms
+from .forms import user as user_forms
 
 
 pro_user_blueprint = utils.child_backoffice_blueprint(
@@ -48,7 +49,9 @@ def get(user_id: int) -> utils.BackofficeResponse:
     )
     dst = url_for(".update_pro_user", user_id=user.id)
 
-    return render_template("pro_user/get.html", user=user, form=form, dst=dst)
+    return render_template(
+        "pro_user/get.html", user=user, form=form, dst=dst, **user_forms.get_toggle_suspension_args(user)
+    )
 
 
 @pro_user_blueprint.route("/details", methods=["GET"])
