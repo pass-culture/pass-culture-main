@@ -337,6 +337,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: 140,
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
+      shouldSendMail: false,
     })
     expect(api.getOffer).toHaveBeenCalledTimes(1)
     expect(
@@ -399,6 +400,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: undefined,
       withdrawalType: undefined,
+      shouldSendMail: false,
     })
     expect(api.getOffer).toHaveBeenCalledTimes(1)
     expect(
