@@ -49,6 +49,7 @@ export interface IRoute {
   meta?: IRouteMeta
   featureName?: string
   disabledFeatureName?: string
+  useV6Router?: boolean
 }
 
 const RedirectToConnexionComponent = () => {

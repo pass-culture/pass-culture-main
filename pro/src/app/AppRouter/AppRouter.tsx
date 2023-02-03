@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Redirect, Switch, useLocation } from 'react-router'
+import { Redirect, Switch, useLocation, Route } from 'react-router'
 import { CompatRoute } from 'react-router-dom-v5-compat'
 
 import AppLayout from 'app/AppLayout'
@@ -38,28 +38,49 @@ const AppRouter = (): JSX.Element => {
         )
       )}
 
-      <CompatRoute exact key="logout" path="/logout">
+      <Route exact key="logout" path="/logout">
         <Logout />
-      </CompatRoute>
+      </Route>
 
-      {activeRoutes.map(route => (
-        <CompatRoute
-          exact={route.exact}
-          key={Array.isArray(route.path) ? route.path.join('|') : route.path}
-          path={route.path}
-        >
-          <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
-            <route.component />
-          </AppLayout>
-        </CompatRoute>
-      ))}
-      {activeRoutesWithoutLayout.map(route => (
-        <CompatRoute
-          {...route}
-          exact={route.exact}
-          key={Array.isArray(route.path) ? route.path.join('|') : route.path}
-        />
-      ))}
+      {activeRoutes.map(route =>
+        route.useV6Router ? (
+          <CompatRoute
+            exact={route.exact}
+            key={Array.isArray(route.path) ? route.path.join('|') : route.path}
+            path={route.path}
+          >
+            <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
+              <route.component />
+            </AppLayout>
+          </CompatRoute>
+        ) : (
+          <Route
+            exact={route.exact}
+            key={Array.isArray(route.path) ? route.path.join('|') : route.path}
+            path={route.path}
+          >
+            <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
+              <route.component />
+            </AppLayout>
+          </Route>
+        )
+      )}
+
+      {activeRoutesWithoutLayout.map(route =>
+        route.useV6Router ? (
+          <CompatRoute
+            {...route}
+            exact={route.exact}
+            key={Array.isArray(route.path) ? route.path.join('|') : route.path}
+          />
+        ) : (
+          <Route
+            {...route}
+            exact={route.exact}
+            key={Array.isArray(route.path) ? route.path.join('|') : route.path}
+          />
+        )
+      )}
       <CompatRoute component={NotFound} />
     </Switch>
   )
