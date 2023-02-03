@@ -9,7 +9,7 @@ export type PostCollectiveOfferBodyModel = {
   audioDisabilityCompliant?: boolean;
   bookingEmails: Array<string>;
   contactEmail: string;
-  contactPhone: string;
+  contactPhone?: string | null;
   description: string;
   domains?: Array<number> | null;
   durationMinutes?: number | null;

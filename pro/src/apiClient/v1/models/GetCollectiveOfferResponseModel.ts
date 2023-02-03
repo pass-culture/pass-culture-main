@@ -17,7 +17,7 @@ export type GetCollectiveOfferResponseModel = {
   bookingEmails: Array<string>;
   collectiveStock?: GetCollectiveOfferCollectiveStockResponseModel | null;
   contactEmail: string;
-  contactPhone: string;
+  contactPhone?: string | null;
   dateCreated: string;
   description: string;
   domains: Array<OfferDomain>;
