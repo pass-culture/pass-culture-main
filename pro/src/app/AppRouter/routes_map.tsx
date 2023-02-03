@@ -196,26 +196,26 @@ const routes: IRoute[] = [
   {
     component: OffererDetails,
     exact: true,
-    path: '/structures/:offererId([A-Z0-9]+)',
+    path: '/structures/:offererId',
     title: 'Structures',
   },
   {
     component: VenueCreation,
     exact: true,
-    path: '/structures/:offererId([A-Z0-9]+)/lieux/creation',
+    path: '/structures/:offererId/lieux/creation',
     title: 'Structures',
   },
   {
     component: VenueEdition,
     exact: true,
-    path: '/structures/:offererId([A-Z0-9]+)/lieux/:venueId([A-Z0-9]+)',
+    path: '/structures/:offererId/lieux/:venueId',
     title: 'Structures',
   },
 
   {
     component: CollectiveDataEdition,
     exact: true,
-    path: '/structures/:offererId([A-Z0-9]+)/lieux/:venueId([A-Z0-9]+)/eac',
+    path: '/structures/:offererId/lieux/:venueId/eac',
     title: 'Structures',
   },
   {
