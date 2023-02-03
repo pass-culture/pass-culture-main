@@ -98,7 +98,7 @@ const VenueForm = ({
         return { shouldBlock: true }
       }
     },
-    [location]
+    [location, isNewOfferCreationJourney]
   )
 
   return (
