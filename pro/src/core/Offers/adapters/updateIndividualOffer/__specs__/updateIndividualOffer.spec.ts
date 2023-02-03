@@ -81,6 +81,7 @@ describe('updateIndividualOffer', () => {
       durationMinutes: 140,
       bookingEmail: 'test@email.com',
       externalTicketOfficeUrl: 'https://example.com',
+      shouldSendMail: false,
     }
 
     const offerId = 'AAAA'
@@ -155,6 +156,7 @@ describe('updateIndividualOffer', () => {
       withdrawalDelay: undefined,
       withdrawalDetails: undefined,
       withdrawalType: undefined,
+      shouldSendMail: false,
     }
 
     const offerId = 'AAAA'
