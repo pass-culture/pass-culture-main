@@ -32,7 +32,7 @@ def test_response_serialization(app):
         "id": humanize(venue.id),
         "nonHumanizedId": venue.id,
         "managingOffererId": humanize(venue.managingOffererId),
-        "collectiveOfferCategoryId": venue.collectiveOfferCategoryId,
+        "collectiveSubCategoryId": venue.collectiveSubCategoryId,
         "name": venue.name,
         "offererName": user_offerer.offerer.name,
         "publicName": venue.publicName,
