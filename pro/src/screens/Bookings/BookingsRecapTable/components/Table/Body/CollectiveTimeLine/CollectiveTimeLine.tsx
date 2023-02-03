@@ -36,6 +36,8 @@ const cancellationReasonTitle = (
       return 'Vous avez annulé la réservation'
     case CollectiveBookingCancellationReasons.EXPIRED:
       return 'Annulé automatiquement'
+    case CollectiveBookingCancellationReasons.FRAUD:
+      return 'Le pass Culture a annulé la réservation'
     default:
       throw new Error('Invalid cancellation reason')
   }
@@ -257,9 +259,22 @@ const CollectiveTimeLine = ({
           {bookingRecap.bookingCancellationReason ===
             CollectiveBookingCancellationReasons.EXPIRED &&
             `L’établissement scolaire n’a pas confirmé la préréservation avant la date limite de réservation fixée au ${cancellationLimitDate}.`}
+
           <div>
-            Votre réservation a été annulée. Votre offre est de nouveau visible
-            sur ADAGE.
+            {bookingRecap.bookingCancellationReason !==
+            CollectiveBookingCancellationReasons.FRAUD ? (
+              'Votre réservation a été annulée. Votre offre est de nouveau visible sur ADAGE.'
+            ) : (
+              <>
+                Pour plus d'informations, vous pouvez contacter{' '}
+                <a
+                  className={styles['contact-link']}
+                  href="mailto:support@passculture.app"
+                >
+                  support@passculture.app
+                </a>
+              </>
+            )}
           </div>
         </div>
       </>
