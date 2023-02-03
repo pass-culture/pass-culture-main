@@ -30,6 +30,7 @@ export type VenueCollectiveInformation = Pick<
   | 'collectivePhone'
   | 'collectiveStudents'
   | 'collectiveWebsite'
+  | 'collectiveSubCategoryId'
 >
 
 export interface IVenue {

@@ -4,7 +4,11 @@ import { useParams } from 'react-router-dom'
 import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import GoBackLink from 'components/GoBackLink'
-import { getEducationalDomainsAdapter } from 'core/OfferEducational'
+import {
+  EducationalCategories,
+  getEducationalCategoriesAdapter,
+  getEducationalDomainsAdapter,
+} from 'core/OfferEducational'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
@@ -51,7 +55,7 @@ const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
   }
 }
 
-const CollectiveDataEdition = (): JSX.Element => {
+const CollectiveDataEdition = (): JSX.Element | null => {
   const notify = useNotification()
   const { offererId, venueId } = useParams<{
     offererId: string
@@ -61,6 +65,10 @@ const CollectiveDataEdition = (): JSX.Element => {
   const [domains, setDomains] = useState<SelectOption[]>([])
   const [statuses, setStatuses] = useState<SelectOption[]>([])
   const [culturalPartners, setCulturalPartners] = useState<SelectOption[]>([])
+  const [categories, setCategories] = useState<EducationalCategories>({
+    educationalCategories: [],
+    educationalSubCategories: [],
+  })
   const [isLoading, setIsLoading] = useState(true)
   const [venueCollectiveData, setVenueCollectiveData] =
     useState<GetCollectiveVenueResponseModel | null>(null)
@@ -74,6 +82,7 @@ const CollectiveDataEdition = (): JSX.Element => {
         getVenueEducationalStatusesAdapter(),
         getCulturalPartnersAdapter(),
         getVenueCollectiveDataAdapter(venueId),
+        getEducationalCategoriesAdapter(),
       ])
 
       if (allResponses.some(response => !response.isOk)) {
@@ -85,12 +94,13 @@ const CollectiveDataEdition = (): JSX.Element => {
         statusesResponse,
         culturalPartnersResponse,
         venueResponse,
+        categoriesResponse,
       ] = allResponses
 
       setDomains(domainsResponse.payload)
       setStatuses(statusesResponse.payload)
       setCulturalPartners(culturalPartnersResponse.payload)
-
+      setCategories(categoriesResponse.payload)
       if (venueResponse.isOk) {
         if (venueHasCollectiveInformation(venueResponse.payload)) {
           setVenueCollectiveData(venueResponse.payload)
@@ -142,6 +152,7 @@ const CollectiveDataEdition = (): JSX.Element => {
           offererId={offererId}
           venueCollectiveData={venueCollectiveData}
           adageVenueCollectiveData={adageVenueCollectiveData}
+          categories={categories}
         />
       )}
     </div>
