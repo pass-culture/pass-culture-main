@@ -155,6 +155,9 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
                 duplicate_user = fraud_api.find_duplicate_id_piece_number_user(user.idPieceNumber, user.id)
                 if duplicate_user:
                     duplicate_user_id = duplicate_user.id
+    latest_fraud_check = _get_latest_fraud_check(
+        eligibility_history, [fraud_models.FraudCheckType.UBBLE, fraud_models.FraudCheckType.DMS]
+    )
 
     bookings = (
         bookings_models.Booking.query.filter_by(userId=user.id)
@@ -176,6 +179,7 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
         history=history,
         duplicate_user_id=duplicate_user_id,
         eligibility_history=eligibility_history,
+        latest_fraud_check=latest_fraud_check,
         resend_email_validation_form=empty_form,
         send_validation_code_form=empty_form,
         manual_validation_form=empty_form,
@@ -386,3 +390,19 @@ def get_eligibility_history(user: users_models.User) -> dict[str, accounts.Eligi
         )
 
     return subscriptions
+
+
+def _get_latest_fraud_check(
+    eligibility_history: dict[str, accounts.EligibilitySubscriptionHistoryModel],
+    check_types: list[fraud_models.FraudCheckType],
+) -> accounts.IdCheckItemModel | None:
+    latest_fraud_check = None
+    check_list = []
+    for history in eligibility_history.values():
+        for idCheckItem in history.idCheckHistory:
+            if idCheckItem.type in [check_type.value for check_type in check_types]:
+                check_list.append(idCheckItem)
+    if check_list:
+        check_list = sorted(check_list, key=lambda idCheckItem: idCheckItem.dateCreated, reverse=True)
+        latest_fraud_check = check_list[0]
+    return latest_fraud_check

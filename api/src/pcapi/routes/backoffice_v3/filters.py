@@ -11,10 +11,12 @@ from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.routes.backoffice_v3.serialization import accounts as serialization_accounts
 from pcapi.utils import urls
 
 
@@ -189,6 +191,14 @@ def format_criteria(criteria: list[criteria_models.OfferCriterion]) -> str:
     return ", ".join(criterion.name for criterion in criteria)
 
 
+def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemModel) -> str:
+    if id_check_item.type == fraud_models.FraudCheckType.UBBLE.value:
+        return f"https://dashboard.ubble.ai/identifications/{id_check_item.thirdPartyId}"
+    if id_check_item.type == fraud_models.FraudCheckType.DMS.value and id_check_item.technicalDetails:
+        return f"https://www.demarches-simplifiees.fr/procedures/{id_check_item.technicalDetails['procedure_number']}/dossiers/{id_check_item.thirdPartyId}"
+    return ""
+
+
 def parse_referrer(url: str) -> str:
     """
     Ensure that a relative path is used, which will be understood.
@@ -216,6 +226,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
+    app.jinja_env.filters["format_fraud_check_url"] = format_fraud_check_url
     app.jinja_env.filters["format_phone_number"] = format_phone_number
     app.jinja_env.filters["format_role"] = format_role
     app.jinja_env.filters["format_state"] = format_state

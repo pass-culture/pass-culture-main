@@ -156,7 +156,7 @@ def _get_add_pro_user_form(offerer: offerers_models.Offerer) -> offerer_forms.Ad
     return form
 
 
-@offerer_blueprint.route("", methods=["POST"])
+@offerer_blueprint.route("/update", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
