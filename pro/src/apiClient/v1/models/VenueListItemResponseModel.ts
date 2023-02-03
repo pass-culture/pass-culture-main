@@ -5,6 +5,7 @@
 export type VenueListItemResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingEmail?: string | null;
+  collectiveOfferCategoryId?: string | null;
   hasCreatedOffer: boolean;
   hasMissingReimbursementPoint: boolean;
   id: string;
