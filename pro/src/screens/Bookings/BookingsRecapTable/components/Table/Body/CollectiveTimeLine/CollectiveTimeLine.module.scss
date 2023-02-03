@@ -39,6 +39,19 @@
   }
 }
 
+.contact-link {
+  @include fonts.button;
+
+  color: colors.$black;
+
+  &:hover,
+  &:focus {
+    color: colors.$black;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
 .button-important {
   color: colors.$primary;
 
