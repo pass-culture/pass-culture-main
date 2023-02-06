@@ -3,6 +3,7 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { CheckboxGroup, InfoBox } from 'ui-kit'
 
 import { participantsOptions } from './participantsOptions'
@@ -22,13 +23,17 @@ const FormParticipants = ({
 
   useParicipantUpdates(values.participants, handleParticipantsChange)
 
+  const isCLG6Active = useActiveFeature('WIP_ADD_CLG_6_5_COLLECTIVE_OFFER')
+
   return (
     <FormLayout.Section title="Participants">
       <FormLayout.Row
         sideComponent={
           <InfoBox
             type="info"
-            text="Le pass Culture à destination du public scolaire s’adresse aux élèves de la quatrième à la terminale des établissements publics et privés sous contrat."
+            text={`Le pass Culture à destination du public scolaire s’adresse aux élèves de la ${
+              isCLG6Active ? 'sixième' : 'quatrième'
+            } à la terminale des établissements publics et privés sous contrat.`}
           />
         }
       >
