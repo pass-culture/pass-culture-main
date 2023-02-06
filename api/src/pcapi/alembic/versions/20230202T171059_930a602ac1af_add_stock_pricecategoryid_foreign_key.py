@@ -17,7 +17,8 @@ def upgrade() -> None:
     op.execute("""SET SESSION statement_timeout = '900s'""")
     op.execute(
         """
-        ALTER TABLE stock ADD CONSTRAINT "stock_priceCategoryId_fkey" FOREIGN KEY ("priceCategoryId") REFERENCES "price_category" ("id") NOT VALID
+        ALTER TABLE stock DROP CONSTRAINT IF EXISTS "stock_priceCategoryId_fkey";
+        ALTER TABLE stock ADD CONSTRAINT "stock_priceCategoryId_fkey" FOREIGN KEY ("priceCategoryId") REFERENCES "price_category" ("id") NOT VALID;
         """
     )
     op.execute(f"""SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}""")
