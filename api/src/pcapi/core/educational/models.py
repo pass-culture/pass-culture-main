@@ -42,6 +42,8 @@ if typing.TYPE_CHECKING:
 
 
 class StudentLevels(enum.Enum):
+    COLLEGE6 = "Collège - 6e"
+    COLLEGE5 = "Collège - 5e"
     COLLEGE4 = "Collège - 4e"
     COLLEGE3 = "Collège - 3e"
     CAP1 = "CAP - 1re année"
