@@ -1,14 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-import { Newsletter } from 'components/Newsletter'
-import PageTitle from 'components/PageTitle/PageTitle'
-import useActiveFeature from 'hooks/useActiveFeature'
-
-import { api } from '../../apiClient/api'
+import { api } from 'apiClient/api'
 import {
+  GetOffererResponseModel,
   GetOfferersNamesResponseModel,
   GetOffererVenueResponseModel,
-} from '../../apiClient/v1'
+} from 'apiClient/v1'
+import { Newsletter } from 'components/Newsletter'
+import PageTitle from 'components/PageTitle/PageTitle'
+import { hasStatusCode } from 'core/OfferEducational'
+import useActiveFeature from 'hooks/useActiveFeature'
+import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
+
 import useNewOfferCreationJourney from '../../hooks/useNewOfferCreationJourney'
 
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
@@ -25,6 +28,49 @@ const Homepage = (): JSX.Element => {
     useState<GetOfferersNamesResponseModel | null>(null)
   const [venues, setVenues] = useState<GetOffererVenueResponseModel[]>([])
   const [offererId, setOffererId] = useState('')
+  const [selectedOffererId, setSelectedOffererId] = useState<string | null>(
+    null
+  )
+  const [selectedOfferer, setSelectedOfferer] =
+    useState<GetOffererResponseModel | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
+
+  useEffect(() => {
+    async function loadOfferer(offererId: string) {
+      try {
+        const receivedOfferer = await api.getOfferer(offererId)
+        setSelectedOfferer(receivedOfferer)
+        setIsUserOffererValidated(true)
+      } catch (error) {
+        /* istanbul ignore next: DEBT, TO FIX */
+        if (hasStatusCode(error) && error.status === HTTP_STATUS.FORBIDDEN) {
+          setSelectedOfferer({
+            apiKey: {
+              maxAllowed: 0,
+              prefixes: [],
+            },
+            city: '',
+            dateCreated: '',
+            fieldsUpdated: [],
+            hasAvailablePricingPoints: false,
+            hasDigitalVenueAtLeastOneOffer: false,
+            hasMissingBankInformation: true,
+            id: offererId,
+            isActive: false,
+            isValidated: false,
+            managedVenues: [],
+            name: '',
+            nonHumanizedId: 0,
+            postalCode: '',
+          })
+          setIsUserOffererValidated(false)
+        }
+      }
+      setIsLoading(false)
+    }
+    selectedOffererId && loadOfferer(selectedOffererId)
+  }, [selectedOffererId])
 
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
   const withNewOfferCreationJourney = useNewOfferCreationJourney()
@@ -57,9 +103,17 @@ const Homepage = (): JSX.Element => {
         statsRef={statsRef}
       />
       <section className="h-section">
-        <Offerers receivedOffererNames={receivedOffererNames} />
+        <Offerers
+          selectedOfferer={selectedOfferer}
+          isLoading={isLoading}
+          isUserOffererValidated={isUserOffererValidated}
+          receivedOffererNames={receivedOffererNames}
+          onSelectedOffererChange={setSelectedOffererId}
+          cancelLoading={() => setIsLoading(false)}
+        />
       </section>
-      {withNewOfferCreationJourney &&
+      {isUserOffererValidated &&
+        withNewOfferCreationJourney &&
         receivedOffererNames?.offerersNames.length === 1 &&
         venues.length === 0 && (
           <section className="step-section">

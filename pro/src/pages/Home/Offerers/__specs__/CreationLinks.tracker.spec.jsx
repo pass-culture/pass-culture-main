@@ -11,7 +11,7 @@ import Homepage from '../../Homepage'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getOfferer: jest.fn(),
+    getOfferer: jest.fn().mockResolvedValue({}),
     listOfferersNames: jest.fn(),
     getVenueStats: jest.fn(),
   },
