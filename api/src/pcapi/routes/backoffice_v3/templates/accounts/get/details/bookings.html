@@ -1,67 +1,97 @@
 {% if bookings %}
-  <table class="table mb-4">
-    <thead>
-      <tr>
-        <th scope="col"></th>
-        <th scope="col">Offreur</th>
-        <th scope="col">Nom de l'offre</th>
-        <th scope="col">Prix</th>
-        <th scope="col">Date de résa</th>
-        <th scope="col">État</th>
-        <th scope="col">Contremarque</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for booking in bookings %}
+    <table class="table mb-4">
+        <thead>
         <tr>
-          <th scope="row" data-bs-toggle="collapse" data-bs-target="#b{{ booking.id }}">
-            <i class="bi bi-chevron-down"></i>
-          </th>
-          <td>{{ booking.offerer.name | escape }}</td>
-          <td>
-            <a href="{{ booking.stock.offer | pc_pro_offer_link }}" target="_blank" class="link-primary">
-              {{ booking.stock.offer.name | escape }}
-            </a>
-          </td>
-          <td>
-            {{ booking.amount | format_amount }}
-            {% if booking.stock.offer.isDuo %}(Duo){% endif %}
-          </td>
-          <td>{{ booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
-          <td>{{ booking.status | format_booking_status_long }}</td>
-          <td>{{ booking.token | empty_string_if_null }}</td>
+            <th scope="col"></th>
+            <th scope="col">Offreur</th>
+            <th scope="col">Nom de l'offre</th>
+            <th scope="col">Prix</th>
+            <th scope="col">Date de résa</th>
+            <th scope="col">État</th>
+            <th scope="col">Contremarque</th>
         </tr>
-        <tr class="collapse accordion-collapse" id="b{{ booking.id }}" data-bs-parent=".table">
-          <td colspan="7">
-            <div class="card shadow-sm p-3">
-              {% if booking.is_used_or_reimbursed %}
-                <p class="mb-1">
-                  <span class="fw-bold">Utilisée le :</span>
-                  {{ booking.dateUsed | format_date("%d/%m/%Y à %Hh%M") }}
-                </p>
-              {% elif booking.is_cancelled %}
-                <p class="mb-1">
-                  <span class="fw-bold">Annulée le :</span>
-                  {{ booking.cancellationDate | format_date("%d/%m/%Y à %Hh%M") }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Motif d'annulation :</span>
-                  {{ booking.cancellationReason | format_booking_cancellation_reason }}
-                </p>
-              {% endif %}
-              <p class="mb-1">
-                <span class="fw-bold">Type d'offre :</span>
-                {% if booking.stock.offer.isDigital %}Numérique{% else %}Physique{% endif %}
-              </p>
-              <p class="mb-1">
-                <span class="fw-bold">Catégorie :</span>
-                {{ booking.stock.offer.subcategoryId | format_offer_category }}
-              </p>
-            </div>
-          </td>
-        </tr>
-      {% endfor %}
-  </table>
+        </thead>
+        <tbody>
+        {% for booking in bookings %}
+            <tr>
+                <th scope="row">
+                    <button class="btn btn-sm btn-outline-primary " data-bs-toggle="collapse"
+                            data-bs-target="#b{{ booking.id }}"><i
+                            class="bi bi-chevron-right"
+                            id="#icn-{{ booking.id }}"></i>
+                    </button>
+                </th>
+                <td>{{ booking.offerer.name | escape }}</td>
+                <td>
+                    <a href="{{ booking.stock.offer | pc_pro_offer_link }}" target="_blank" class="link-primary">
+                        {{ booking.stock.offer.name | escape }}
+                    </a>
+                </td>
+                <td>
+                    {{ booking.amount | format_amount }}
+                    {% if booking.stock.offer.isDuo %}(Duo){% endif %}
+                </td>
+                <td>{{ booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
+                <td>{{ booking.status | format_booking_status_long | safe }}</td>
+                <td>{{ booking.token | empty_string_if_null }}</td>
+            </tr>
+            <tr class="collapse accordion-collapse" id="b{{ booking.id }}" data-bs-parent=".table">
+                <td colspan="7">
+                    <div class="card shadow-sm p-3">
+                        {% if booking.stock.beginningDatetime %}
+                            <p class="mb-1">
+                                <span class="fw-bold">Date de l'évènement :</span>
+                                {{ booking.stock.beginningDatetime | format_date("%d/%m/%Y à %Hh%M") }}
+                            </p>
+                        {% endif %}
+                        {% if booking.is_used_or_reimbursed %}
+                            <p class="mb-1">
+                                <span class="fw-bold">Utilisée le :</span>
+                                {{ booking.dateUsed | format_date("%d/%m/%Y à %Hh%M") }}
+                            </p>
+                        {% elif booking.is_cancelled %}
+                            <p class="mb-1">
+                                <span class="fw-bold">Annulée le :</span>
+                                {{ booking.cancellationDate | format_date("%d/%m/%Y à %Hh%M") }}
+                            </p>
+                            <p class="mb-1">
+                                <span class="fw-bold">Motif d'annulation :</span>
+                                {{ booking.cancellationReason | format_booking_cancellation_reason }}
+                            </p>
+                        {% endif %}
+                        <p class="mb-1">
+                            <span class="fw-bold">Type d'offre :</span>
+                            {% if booking.stock.offer.isDigital %}Numérique{% else %}Physique{% endif %}
+                        </p>
+                        <p class="mb-1">
+                            <span class="fw-bold">Catégorie :</span>
+                            {{ booking.stock.offer.subcategoryId | format_offer_category }}
+                        </p>
+                        <p class="mb-1">
+                            <span class="fw-bold">Crédit utilisé par le jeune :</span>
+                            {{ booking.deposit.type | format_deposit_type | safe }}
+                        </p>
+
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
 {% else %}
-  <p class="m-5">Aucune réservation à ce jour</p>
+    <p class="m-5">Aucune réservation à ce jour</p>
 {% endif %}
+
+{% block scripts %}
+    <script>
+        document.querySelectorAll("[data-bs-toggle= 'collapse']").forEach((el) => {
+            el.addEventListener('click', (event) => {
+                //**
+                // check if the event target is `<button> <i></i> </button>` or is simply `<i></i>`
+                // */
+                var icon = event.target.children[0] ? event.target.children[0] : event.target
+                icon.classList.toggle("bi-chevron-down")
+                icon.classList.toggle("bi-chevron-right")
+            })
+        });
+    </script>
+{% endblock %}
