@@ -1,18 +1,12 @@
-import { IOfferAppPreviewProps } from 'components/OfferAppPreview'
 import {
   musicOptionsTree,
   showOptionsTree,
 } from 'core/Offers/categoriesSubTypes'
 import {
-  IOfferCategory,
-  IOfferSubCategory,
   IOfferIndividual,
+  IOfferSubCategory,
+  IOfferCategory,
 } from 'core/Offers/types'
-import {
-  IOfferSectionProps,
-  IStockEventItemProps,
-  IStockThingSectionProps,
-} from 'screens/OfferIndividual/Summary'
 
 const serializerOfferSubCategoryFields = (
   offer: IOfferIndividual,
@@ -77,11 +71,11 @@ const serializerOfferSubCategoryFields = (
   }
 }
 
-const serializerOfferSectionProps = (
+export const serializeOfferSectionData = (
   offer: IOfferIndividual,
   categories: IOfferCategory[],
   subCategories: IOfferSubCategory[]
-): IOfferSectionProps => {
+) => {
   const offerSubCategory = subCategories.find(s => s.id === offer.subcategoryId)
   const offerCategory = categories.find(
     c => c.id === offerSubCategory?.categoryId
@@ -118,90 +112,5 @@ const serializerOfferSectionProps = (
   return {
     ...baseOffer,
     ...subCategoryData,
-  }
-}
-
-const serializerStockThingSectionProps = (
-  offer: IOfferIndividual
-): IStockThingSectionProps | undefined => {
-  if (offer.isEvent || offer.stocks.length === 0) {
-    return undefined
-  }
-
-  const stock = offer.stocks[0]
-  return {
-    quantity: stock.quantity,
-    price: stock.price,
-    bookingLimitDatetime: stock.bookingLimitDatetime,
-  }
-}
-
-const serializerStockEventSectionProps = (
-  offer: IOfferIndividual
-): IStockEventItemProps[] | undefined => {
-  if (!offer.isEvent || offer.stocks.length === 0) {
-    return undefined
-  }
-  return offer.stocks
-    .sort((a, b) => {
-      const aDate =
-        a.beginningDatetime !== null
-          ? new Date(a.beginningDatetime)
-          : a.dateCreated
-      const bDate =
-        b.beginningDatetime !== null
-          ? new Date(b.beginningDatetime)
-          : b.dateCreated
-      return aDate < bDate ? 1 : -1
-    })
-    .map(stock => ({
-      quantity: stock.quantity,
-      price: stock.price,
-      bookingLimitDatetime: stock.bookingLimitDatetime,
-      beginningDatetime: stock.beginningDatetime,
-      departmentCode: offer.venue.departmentCode,
-    }))
-}
-
-const serializerPreviewProps = (
-  offer: IOfferIndividual
-): IOfferAppPreviewProps => {
-  return {
-    imageSrc: offer.image?.url,
-    offerData: {
-      name: offer.name,
-      description: offer.description,
-      isEvent: offer.isEvent,
-      isDuo: offer.isDuo,
-    },
-    venueData: {
-      isVirtual: offer.venue.isVirtual,
-      name: offer.venue.name,
-      publicName: offer.venue.publicName,
-      address: offer.venue.address,
-      postalCode: offer.venue.postalCode,
-      city: offer.venue.city,
-      withdrawalDetails: offer.withdrawalDetails || '',
-    },
-  }
-}
-
-export const serializePropsFromOfferIndividual = (
-  offer: IOfferIndividual,
-  categories: IOfferCategory[],
-  subCategories: IOfferSubCategory[]
-): {
-  providerName: string | null
-  offer: IOfferSectionProps
-  stockThing?: IStockThingSectionProps
-  stockEventList?: IStockEventItemProps[]
-  preview: IOfferAppPreviewProps
-} => {
-  return {
-    providerName: offer.lastProviderName,
-    offer: serializerOfferSectionProps(offer, categories, subCategories),
-    stockThing: serializerStockThingSectionProps(offer),
-    stockEventList: serializerStockEventSectionProps(offer),
-    preview: serializerPreviewProps(offer),
   }
 }
