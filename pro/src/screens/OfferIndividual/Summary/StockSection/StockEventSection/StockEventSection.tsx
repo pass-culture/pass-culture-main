@@ -21,15 +21,10 @@ const StockEventSection = ({
   stocks,
 }: IStockEventSectionProps): JSX.Element => {
   const [showAllStocks, setShowAllStocks] = useState(false)
-  const [displayedStocks, setDisplayedStocks] = useState(
-    stocks.slice(0, NB_UNFOLDED_STOCK)
-  )
 
-  useEffect(() => {
-    setDisplayedStocks(
-      showAllStocks ? [...stocks] : stocks.slice(0, NB_UNFOLDED_STOCK)
-    )
-  }, [showAllStocks])
+  const displayedStocks = showAllStocks
+    ? [...stocks]
+    : stocks.slice(0, NB_UNFOLDED_STOCK)
 
   return (
     <>
