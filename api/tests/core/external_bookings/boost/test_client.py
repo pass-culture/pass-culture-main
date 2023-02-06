@@ -1,7 +1,9 @@
+from decimal import Decimal
+
 import pytest
 
 from pcapi.connectors.serialization import boost_serializers
-from pcapi.core.external_bookings.boost.client import BoostClientAPI
+from pcapi.core.external_bookings.boost import client as boost_client
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
@@ -11,6 +13,35 @@ from tests.local_providers.cinema_providers.boost import fixtures
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
+
+
+class GetPcuPricingIfExistsTest:
+    FULL_PRICING = boost_serializers.ShowtimePricing(id=1, pricingCode="PLE", amountTaxesIncluded=Decimal(20))
+    PCU_PRICING = boost_serializers.ShowtimePricing(id=2, pricingCode="PCU", amountTaxesIncluded=Decimal(5.5))
+    PC2_PRICING = boost_serializers.ShowtimePricing(id=3, pricingCode="PC2", amountTaxesIncluded=Decimal(18))
+    PC3_PRICING = boost_serializers.ShowtimePricing(id=4, pricingCode="PC3", amountTaxesIncluded=Decimal(8.5))
+
+    def test_no_valid_pricing(self):
+        showtime_pricing_list = [self.FULL_PRICING]
+
+        assert not boost_client.get_pcu_pricing_if_exists(showtime_pricing_list)
+
+    def test_one_valid_pricing(self):
+        showtime_pricing_list = [self.FULL_PRICING, self.PCU_PRICING]
+
+        assert boost_client.get_pcu_pricing_if_exists(showtime_pricing_list) == self.PCU_PRICING
+
+    def test_two_pass_culture_pricings(self, caplog):
+        showtime_pricing_list = [self.FULL_PRICING, self.PC2_PRICING, self.PC3_PRICING]
+
+        assert boost_client.get_pcu_pricing_if_exists(showtime_pricing_list) == self.PC2_PRICING
+        assert caplog.records[0].message == "There are several pass Culture Pricings for this Showtime, we will use PC2"
+
+    def test_three_pass_culture_pricings(self, caplog):
+        showtime_pricing_list = [self.FULL_PRICING, self.PC2_PRICING, self.PC3_PRICING, self.PCU_PRICING]
+
+        assert boost_client.get_pcu_pricing_if_exists(showtime_pricing_list) == self.PCU_PRICING
+        assert caplog.records[0].message == "There are several pass Culture Pricings for this Showtime, we will use PCU"
 
 
 class GetShowtimesTest:
@@ -25,7 +56,7 @@ class GetShowtimesTest:
             "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?page=2&per_page=2",
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
         )
-        boost = BoostClientAPI(cinema_str_id)
+        boost = boost_client.BoostClientAPI(cinema_str_id)
         showtimes = boost.get_showtimes(per_page=2, start_date=date.date(2022, 10, 10), interval_days=10)
         assert showtimes == [
             boost_serializers.ShowTime4(id=36683, numberSeatsRemaining=96),
@@ -40,7 +71,7 @@ class GetShowtimesTest:
             "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?film=207&page=1&per_page=2",
             json=fixtures.ShowtimesWithFilmIdEndpointResponse.PAGE_1_JSON_DATA,
         )
-        boost = BoostClientAPI(cinema_str_id)
+        boost = boost_client.BoostClientAPI(cinema_str_id)
         showtimes = boost.get_showtimes(per_page=2, start_date=date.date(2022, 10, 10), interval_days=10, film=207)
 
         assert showtimes == [
@@ -54,12 +85,12 @@ class GetShowtimeRemainingSeatsTest:
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/35278",
+            "https://cinema-0.example.com/api/showtimes/36683",
             json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36683_DATA,
         )
-        boost = BoostClientAPI(cinema_str_id)
+        boost = boost_client.BoostClientAPI(cinema_str_id)
 
-        nb_remaining_online_seats = boost.get_showtime_remaining_online_seats(35278)
+        nb_remaining_online_seats = boost.get_showtime_remaining_online_seats(36683)
 
         assert nb_remaining_online_seats == 96
 
@@ -78,7 +109,7 @@ class BookTicketTest:
             headers={"Content-Type": "application/json"},
         )
 
-        boost = BoostClientAPI(cinema_str_id)
+        boost = boost_client.BoostClientAPI(cinema_str_id)
         tickets = boost.book_ticket(show_id=36683, quantity=2)
 
         assert len(tickets) == 2
@@ -97,7 +128,7 @@ class CancelBookingTest:
             json=fixtures.CANCEL_ORDER_SALE_90577,
             headers={"Content-Type": "application/json"},
         )
-        boost = BoostClientAPI(cinema_str_id)
+        boost = boost_client.BoostClientAPI(cinema_str_id)
 
         try:
             boost.cancel_booking(barcodes=["90577"])
@@ -114,7 +145,7 @@ class CancelBookingTest:
             reason="Not found",
             status_code=404,
         )
-        boost = BoostClientAPI(cinema_str_id)
+        boost = boost_client.BoostClientAPI(cinema_str_id)
 
         with pytest.raises(boost_exceptions.BoostAPIException) as exception:
             boost.cancel_booking(barcodes=["55555"])
