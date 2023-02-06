@@ -194,7 +194,7 @@ describe('PriceCategories', () => {
 
     expect(
       screen.getByText(
-        'Une erreur est survenue lors de la mise à jours de votre tarif'
+        'Une erreur est survenue lors de la mise à jour de votre tarif'
       )
     ).toBeInTheDocument()
   })

@@ -116,7 +116,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
     <FormikProvider value={formik}>
       <FormLayout small>
         <form onSubmit={formik.handleSubmit}>
-          <PriceCategoriesForm />
+          <PriceCategoriesForm offerId={offer.nonHumanizedId.toString()} />
 
           <ActionBar
             onClickPrevious={handlePreviousStep}

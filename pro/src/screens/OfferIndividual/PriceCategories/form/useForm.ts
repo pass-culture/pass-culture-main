@@ -17,7 +17,7 @@ export const usePriceCategoriesForm = (
 
   const onSubmitWithCallback = async (values: PriceCategoriesFormValues) => {
     try {
-      await onSubmit(values, offer, setOffer)
+      await onSubmit(values, offer, setOffer, form.resetForm)
       onSubmitCallback()
     } catch (error) {
       if (error instanceof Error) {

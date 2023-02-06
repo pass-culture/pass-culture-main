@@ -1,27 +1,26 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
-import { PriceCategoryBody } from 'apiClient/v1'
 
 type TSuccessPayload = Record<string, unknown>
 type TFailurePayload = { errors: Record<string, string>[] }
-export type TPostPriceCategoriesAdapter = Adapter<
+export type TDeletePriceCategoryAdapter = Adapter<
   {
     offerId: string
-    requestBody?: PriceCategoryBody
+    priceCategoryId: string
   },
   TSuccessPayload,
   TFailurePayload
 >
 
-const postPriceCategoriesAdapter: TPostPriceCategoriesAdapter = async ({
+const deletePriceCategoryAdapter: TDeletePriceCategoryAdapter = async ({
   offerId,
-  requestBody,
+  priceCategoryId,
 }) => {
   try {
-    await api.postPriceCategories(offerId, requestBody)
+    await api.deletePriceCategory(offerId, priceCategoryId)
     return {
       isOk: true,
-      message: 'Vos modifications ont bien été prises en compte',
+      message: 'Le tarif a été supprimé.',
       payload: {},
     }
   } catch (error) {
@@ -33,11 +32,11 @@ const postPriceCategoriesAdapter: TPostPriceCategoriesAdapter = async ({
 
     return {
       isOk: false,
-      message: 'Une erreur est survenue lors de la mise à jours de votre tarif',
+      message: 'Une erreur est survenue lors de la suppression de votre tarif',
       payload: {
         errors: formErrors,
       },
     }
   }
 }
-export default postPriceCategoriesAdapter
+export default deletePriceCategoryAdapter
