@@ -17,6 +17,12 @@ const initialValues = {
   },
 }
 
+// TO FIX : remove when WIP_ADD_CLG_6_5_COLLECTIVE_OFFER is active in prod
+jest.mock('hooks/useActiveFeature', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue(false),
+}))
+
 describe('FormParticipants', () => {
   it('should render all options with default value', async () => {
     render(
