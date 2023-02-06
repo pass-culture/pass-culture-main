@@ -10,6 +10,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
+from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -41,6 +42,16 @@ def format_role(role: str | None) -> str:
             return "Pass 18"
         case users_models.UserRole.UNDERAGE_BENEFICIARY:
             return "Pass 15-17"
+        case _:
+            return "Aucune information"
+
+
+def format_deposit_type(deposit_type: finance_models.DepositType) -> str:
+    match deposit_type:
+        case finance_models.DepositType.GRANT_18:
+            return "<span class='badge text-bg-secondary'>Pass 18</span>"
+        case finance_models.DepositType.GRANT_15_17:
+            return "<span class='badge text-bg-secondary'>Pass 15-17</span>"
         case _:
             return "Aucune information"
 
@@ -111,13 +122,13 @@ def format_booking_cancellation_reason(reason: bookings_models.BookingCancellati
 def format_booking_status_long(status: bookings_models.BookingStatus) -> str:
     match status:
         case bookings_models.BookingStatus.CONFIRMED:
-            return "Réservation confirmée"
+            return "<span class='badge text-bg-success'>Réservation confirmée</span>"
         case bookings_models.BookingStatus.USED:
             return "Le jeune a consommé l'offre"
         case bookings_models.BookingStatus.CANCELLED:
-            return "L'offre n'a pas eu lieu"
+            return "<span class='badge text-bg-danger'>L'offre n'a pas eu lieu</span>"
         case bookings_models.BookingStatus.REIMBURSED:
-            return "AC remboursé"
+            return "<span class='badge text-bg-success'>AC remboursé</span>"
         case _:
             return status.value
 
@@ -192,6 +203,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_bool"] = format_bool
     app.jinja_env.filters["format_string_list"] = format_string_list
     app.jinja_env.filters["format_date"] = format_date
+    app.jinja_env.filters["format_deposit_type"] = format_deposit_type
     app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_criteria"] = format_criteria
