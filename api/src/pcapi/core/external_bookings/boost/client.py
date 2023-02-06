@@ -18,14 +18,25 @@ logger = logging.getLogger(__name__)
 def get_pcu_pricing_if_exists(
     showtime_pricing_list: list[boost_serializers.ShowtimePricing],
 ) -> boost_serializers.ShowtimePricing | None:
-    return next(
-        (
-            pricing
-            for pricing in showtime_pricing_list
-            if pricing.pricingCode == constants.BOOST_PASS_CULTURE_PRICING_CODE
-        ),
-        None,
+    pcu_pricings = [
+        pricing
+        for pricing in showtime_pricing_list
+        if pricing.pricingCode in constants.BOOST_PASS_CULTURE_PRICING_CODES
+    ]
+    if len(pcu_pricings) == 0:
+        return None
+
+    pcu_pricings_sorted_by_code = sorted(
+        pcu_pricings, key=lambda p: constants.BOOST_PASS_CULTURE_PRICING_CODES.index(p.pricingCode)
     )
+    first_pcu_pricing = pcu_pricings_sorted_by_code[0]
+
+    if len(pcu_pricings) > 1:
+        logger.warning(
+            "There are several pass Culture Pricings for this Showtime, we will use %s", first_pcu_pricing.pricingCode
+        )
+
+    return first_pcu_pricing
 
 
 class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
@@ -45,7 +56,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         sale_cancel_items = []
         for barcode in barcodes:
             sale_cancel_item = boost_serializers.SaleCancelItem(
-                code=constants.BOOST_SALE_PREFIX + barcode, refundType=constants.BOOST_PASS_CULTURE_PRICING_CODE
+                code=constants.BOOST_SALE_PREFIX + barcode, refundType=constants.BOOST_PASS_CULTURE_REFUND_TYPE
             )
             sale_cancel_items.append(sale_cancel_item)
 
@@ -145,7 +156,8 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         json_data = boost.get_resource(
             self.cinema_str_id,
             boost.ResourceBoost.SHOWTIME,
-            params={"filter_payment_method": "external:credit:passculture"},
+            # TODO(fseguin, 2022-02-06): filter again when BB API is ready
+            # params={"filter_payment_method": constants.BOOST_PASS_CULTURE_PAYMENT_METHOD},
             pattern_values={"id": showtime_id},
         )
         showtime_details = parse_obj_as(boost_serializers.ShowTimeDetails, json_data)
