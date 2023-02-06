@@ -14,6 +14,7 @@ from pcapi.core.educational.models import StudentLevels
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
@@ -185,6 +186,25 @@ class Returns200Test:
         assert template.domains == [domain]
         assert template.interventionArea == ["01", "2A"]
 
+    @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
+    def test_patch_collective_offer_update_student_level_college_6(self, client):
+        # Given
+        offer = CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        # When
+        data = {"students": ["Collège - 6e"]}
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 200
+        assert len(offer.students) == 1
+        assert offer.students[0].value == "Collège - 6e"
+
 
 class Returns400Test:
     def test_patch_non_approved_offer_fails(self, app, client):
@@ -353,6 +373,22 @@ class Returns400Test:
         data = {
             "description": None,
         }
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 400
+
+    def test_patch_collective_offer_update_student_level_college_6(self, client):
+        # Given
+        offer = CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        # When
+        data = {"students": ["Collège - 6e"]}
         response = client.with_session_auth("user@example.com").patch(
             f"/collective/offers/{humanize(offer.id)}", json=data
         )
