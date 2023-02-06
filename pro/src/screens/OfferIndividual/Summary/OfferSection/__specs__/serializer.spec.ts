@@ -8,7 +8,7 @@ import {
 } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
-import { serializePropsFromOfferIndividual } from '../serializer'
+import { serializeOfferSectionData } from '../serializer'
 
 describe('routes::Summary::serializers', () => {
   let offer: IOfferIndividual
@@ -139,15 +139,12 @@ describe('routes::Summary::serializers', () => {
   })
 
   it('should serialize data with event stock', () => {
-    const {
-      providerName: providerNameSerialized,
-      offer: offerSerialized,
-      stockThing: stockThingSerialized,
-      stockEventList: stockEventListSerialized,
-      preview: previewSerialized,
-    } = serializePropsFromOfferIndividual(offer, categories, subCategoryList)
+    const offerSerialized = serializeOfferSectionData(
+      offer,
+      categories,
+      subCategoryList
+    )
 
-    expect(providerNameSerialized).toEqual('Last Provider Name')
     expect(offerSerialized).toEqual({
       id: 'AA',
       nonHumanizedId: 12,
@@ -190,92 +187,20 @@ describe('routes::Summary::serializers', () => {
       durationMinutes: '140',
       status: OfferStatus.ACTIVE,
     })
-    expect(stockThingSerialized).toEqual(undefined)
-    expect(stockEventListSerialized).toEqual([
-      {
-        quantity: 10,
-        price: 12,
-        bookingLimitDatetime: '01-01-2023',
-        beginningDatetime: '01-12-2023',
-        departmentCode: '75',
-      },
-      {
-        quantity: 10,
-        price: 12,
-        bookingLimitDatetime: '01-01-2022',
-        beginningDatetime: '01-12-2022',
-        departmentCode: '75',
-      },
-
-      {
-        quantity: 10,
-        price: 12,
-        bookingLimitDatetime: '01-01-2021',
-        beginningDatetime: null,
-        departmentCode: '75',
-      },
-
-      {
-        quantity: 10,
-        price: 12,
-        bookingLimitDatetime: '01-01-2024',
-        beginningDatetime: null,
-        departmentCode: '75',
-      },
-    ])
-    expect(previewSerialized).toEqual({
-      imageSrc: 'http://image.url.test',
-      offerData: {
-        name: 'Offer name',
-        description: 'Offer description',
-        isEvent: true,
-        isDuo: false,
-      },
-      venueData: {
-        name: 'Venue name',
-        publicName: 'Venue publicName',
-        isVirtual: false,
-        address: '15 rue de la corniche',
-        postalCode: '75001',
-        city: 'Paris',
-        withdrawalDetails: 'Offer withdrawalDetails',
-      },
-    })
   })
+
   it('should serialize data with showType', () => {
     offer = {
       ...offer,
       showType: '400',
       showSubType: '401',
     }
-    const { offer: offerSerialized } = serializePropsFromOfferIndividual(
+    const offerSerialized = serializeOfferSectionData(
       offer,
       categories,
       subCategoryList
     )
     expect(offerSerialized.showTypeName).toEqual('Humour / Café-théâtre')
     expect(offerSerialized.showSubTypeName).toEqual('Café Théâtre')
-  })
-  it('should serialize data with thing stock', () => {
-    offer = {
-      ...offer,
-      isEvent: false,
-      stocks: [
-        {
-          quantity: 10,
-          price: 12,
-        } as IOfferIndividualStock,
-      ],
-    }
-    const {
-      stockThing: stockThingSerialized,
-      stockEventList: stockEventListSerialized,
-    } = serializePropsFromOfferIndividual(offer, categories, subCategoryList)
-    expect(stockEventListSerialized).toEqual(undefined)
-    expect(stockThingSerialized).toEqual({
-      quantity: 10,
-      price: 12,
-      bookingLimitDatetime: undefined,
-    })
   })
 })

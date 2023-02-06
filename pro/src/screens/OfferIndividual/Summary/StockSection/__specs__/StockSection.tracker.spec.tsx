@@ -6,6 +6,10 @@ import { Route } from 'react-router'
 import { OfferStatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import {
+  individualOfferFactory,
+  individualStockFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StockSection, { IStockSection } from '../StockSection'
@@ -33,13 +37,17 @@ describe('Summary stock section trackers', () => {
 
   beforeEach(() => {
     props = {
-      stockThing: {
-        quantity: 10,
-        price: 20,
-        bookingLimitDatetime: null,
-      },
-      offerId: 'TEST_OFFER_ID',
-      offerStatus: OfferStatus.ACTIVE,
+      offer: individualOfferFactory(
+        {
+          id: 'TEST_OFFER_ID',
+          status: OfferStatus.ACTIVE,
+        },
+        individualStockFactory({
+          quantity: 10,
+          price: 20,
+          bookingLimitDatetime: null,
+        })
+      ),
     }
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,

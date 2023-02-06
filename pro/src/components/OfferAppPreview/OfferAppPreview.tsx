@@ -1,31 +1,18 @@
 import React from 'react'
 
+import { IOfferIndividual } from 'core/Offers/types'
+
 import style from './OfferAppPreview.module.scss'
 import { OptionsIcons } from './OptionsIcons'
-import { IVenueDetailsProps, VenueDetails } from './VenueDetails'
+import { VenueDetails } from './VenueDetails'
 
-interface IOfferPreviewVenueData extends IVenueDetailsProps {
-  isVirtual: boolean
+interface IOfferAppPreviewProps {
+  offer: IOfferIndividual
 }
 
-interface IOfferPreviewOfferData {
-  name: string
-  description: string
-  isEvent: boolean
-  isDuo: boolean
-}
+const OfferAppPreview = ({ offer }: IOfferAppPreviewProps): JSX.Element => {
+  const { venue } = offer
 
-export interface IOfferAppPreviewProps {
-  imageSrc?: string
-  offerData: IOfferPreviewOfferData
-  venueData?: IOfferPreviewVenueData
-}
-
-const OfferAppPreview = ({
-  imageSrc,
-  offerData,
-  venueData,
-}: IOfferAppPreviewProps): JSX.Element => {
   const cropPreviewText = (text: string, maxLength = 300): string => {
     if (text.trim().length > maxLength) {
       return `${text.slice(0, maxLength)}...`
@@ -36,10 +23,10 @@ const OfferAppPreview = ({
   return (
     <div className={style['offer-preview-container']}>
       <div className={style['offer-img-container']}>
-        {imageSrc ? (
+        {offer.image ? (
           <img
             className={style['offer-img']}
-            src={imageSrc}
+            src={offer.image?.url}
             alt="Image de l’offre"
           />
         ) : (
@@ -48,34 +35,34 @@ const OfferAppPreview = ({
       </div>
 
       <div className={style['offer-data-container']}>
-        {offerData.name && (
+        {offer.name && (
           <h2 className={style['offer-title']}>
-            {cropPreviewText(offerData.name, 90)}
+            {cropPreviewText(offer.name, 90)}
           </h2>
         )}
 
         <OptionsIcons
           className={style['offer-options']}
-          isEvent={offerData.isEvent}
-          isDuo={offerData.isDuo}
+          isEvent={offer.isEvent}
+          isDuo={offer.isDuo}
         />
 
-        {offerData.description && (
+        {offer.description && (
           <div className={style['offer-description']}>
-            {cropPreviewText(offerData.description)}
+            {cropPreviewText(offer.description)}
           </div>
         )}
 
-        {venueData && !venueData.isVirtual && (
+        {!venue.isVirtual && (
           <VenueDetails
-            name={venueData.name}
-            publicName={venueData.publicName}
-            address={venueData.address}
-            postalCode={venueData.postalCode}
-            city={venueData.city}
+            name={venue.name}
+            publicName={venue.publicName}
+            address={venue.address}
+            postalCode={venue.postalCode}
+            city={venue.city}
             withdrawalDetails={
-              venueData.withdrawalDetails
-                ? cropPreviewText(venueData.withdrawalDetails)
+              offer.withdrawalDetails
+                ? cropPreviewText(offer.withdrawalDetails)
                 : undefined
             }
           />

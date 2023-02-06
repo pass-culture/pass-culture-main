@@ -4,7 +4,8 @@ import { SummaryLayout } from 'components/SummaryLayout'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'utils/date'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
-export interface IStockEventItemProps {
+interface IStockEventItemProps {
+  id?: string
   className?: string
   beginningDatetime: string | Date | null
   price: number
