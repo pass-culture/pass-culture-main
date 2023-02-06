@@ -1210,3 +1210,4 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
     """
     validation.check_price_categories_deletable(offer)
     db.session.delete(price_category)
+    db.session.commit()
