@@ -81,7 +81,8 @@ const OfferEducational = ({
       ? applyVenueDefaultsToFormValues(
           baseInitialValues,
           userOfferers,
-          isOfferCreated
+          isOfferCreated,
+          categories
         )
       : baseInitialValues
 

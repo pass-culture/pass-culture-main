@@ -5,6 +5,7 @@ import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import {
   applyVenueDefaultsToFormValues,
+  EducationalCategories,
   IOfferEducationalFormValues,
   Mode,
 } from 'core/OfferEducational'
@@ -18,6 +19,7 @@ interface IFormVenueProps {
   isEligible: boolean | undefined
   mode: Mode
   isOfferCreated: boolean
+  categories: EducationalCategories
 }
 
 const FormVenue = ({
@@ -26,6 +28,7 @@ const FormVenue = ({
   isEligible,
   mode,
   isOfferCreated,
+  categories,
 }: IFormVenueProps): JSX.Element => {
   const disableForm = mode !== Mode.CREATION || isOfferCreated
 
@@ -95,7 +98,8 @@ const FormVenue = ({
                   applyVenueDefaultsToFormValues(
                     { ...values, venueId: event.target.value },
                     userOfferers,
-                    isOfferCreated
+                    isOfferCreated,
+                    categories
                   )
                 )
               }
