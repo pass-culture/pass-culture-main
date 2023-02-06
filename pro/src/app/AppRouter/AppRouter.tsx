@@ -81,7 +81,7 @@ const AppRouter = (): JSX.Element => {
           />
         )
       )}
-      <CompatRoute component={NotFound} />
+      <Route component={NotFound} />
     </Switch>
   )
 }

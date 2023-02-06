@@ -262,9 +262,9 @@ const routes: IRoute[] = [
   },
   {
     component: OfferIndividualWizard,
-    exact: false,
     path: ['/offre/individuelle/:offerId'],
     title: 'Offre étape par étape',
+    useV6Router: true,
   },
   {
     component: Reimbursements,
