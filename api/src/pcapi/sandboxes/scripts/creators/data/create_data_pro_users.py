@@ -18,8 +18,8 @@ pro_users_config = [
 ]
 
 
-def create_industrial_pro_users(offerers_by_name: dict) -> dict[str, User]:
-    logger.info("create_industrial_pro_users")
+def create_data_pro_users(offerers_by_name: dict) -> dict[str, User]:
+    logger.info("create_data_pro_users")
 
     users_by_name = {}
 

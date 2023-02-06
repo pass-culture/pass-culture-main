@@ -43,11 +43,11 @@ GRANT_18_DEPOSIT_VERSIONS = [1, 2]
 DATA_USERS=15
 DATA_UNDERAGE_USERS=5
 
-def create_industrial_app_users() -> dict[str, User]:
-    beneficiaries = create_industrial_app_beneficiaries()
-    underage_beneficiaries_data = create_industrial_app_underage_beneficiaries_data()
-    other_users = create_industrial_app_other_users()
-    general_public_users = create_industrial_app_general_public_users()
+def create_data_app_users() -> dict[str, User]:
+    beneficiaries = create_data_app_beneficiaries()
+    underage_beneficiaries_data = create_data_app_underage_beneficiaries_data()
+    other_users = create_data_app_other_users()
+    general_public_users = create_data_app_general_public_users()
     short_email_users = create_short_email_beneficiaries()
 
     app_users = dict(
@@ -55,19 +55,19 @@ def create_industrial_app_users() -> dict[str, User]:
     )
     return app_users
 
-def create_industrial_app_users_data() -> dict[str, User]:
-    beneficiaries_data=create_industrial_app_beneficiaries_data()
-    underage_beneficiaries_data = create_industrial_app_underage_beneficiaries_data()
-    other_users = create_industrial_app_other_users()
-    general_public_users = create_industrial_app_general_public_users()
+def create_data_app_users_data() -> dict[str, User]:
+    beneficiaries_data=create_data_app_beneficiaries_data()
+    underage_beneficiaries_data = create_data_app_underage_beneficiaries_data()
+    other_users = create_data_app_other_users()
+    general_public_users = create_data_app_general_public_users()
     short_email_users = create_short_email_beneficiaries()
     app_users = dict(
         beneficiaries_data,  **underage_beneficiaries_data, **other_users, **general_public_users, **short_email_users)
     return app_users
 
 
-def create_industrial_app_beneficiaries_data() -> dict[str, User]:
-    logger.info("create_industrial_app_beneficiaries_data")
+def create_data_app_beneficiaries_data() -> dict[str, User]:
+    logger.info("create_data_app_beneficiaries_data")
 
     users_by_name = {}
 
@@ -104,8 +104,8 @@ def create_industrial_app_beneficiaries_data() -> dict[str, User]:
 
     return users_by_name
 
-def create_industrial_app_underage_beneficiaries_data() -> dict[str, User]:
-    logger.info("create_industrial_app_underage_beneficiaries_data")
+def create_data_app_underage_beneficiaries_data() -> dict[str, User]:
+    logger.info("create_data_app_underage_beneficiaries_data")
 
     users_by_name = {}
 
@@ -145,8 +145,8 @@ def create_industrial_app_underage_beneficiaries_data() -> dict[str, User]:
 
     return users_by_name
 
-def create_industrial_app_beneficiaries() -> dict[str, User]:
-    logger.info("create_industrial_app_beneficiaries")
+def create_data_app_beneficiaries() -> dict[str, User]:
+    logger.info("create_data_app_beneficiaries")
 
     users_by_name = {}
 
@@ -181,8 +181,8 @@ def create_industrial_app_beneficiaries() -> dict[str, User]:
     return users_by_name
 
 
-def create_industrial_app_underage_beneficiaries() -> dict[str, User]:
-    logger.info("create_industrial_app_underage_beneficiaries")
+def create_data_app_underage_beneficiaries() -> dict[str, User]:
+    logger.info("create_data_app_underage_beneficiaries")
 
     users_by_name = {}
 
@@ -222,8 +222,8 @@ def create_industrial_app_underage_beneficiaries() -> dict[str, User]:
     return users_by_name
 
 
-def create_industrial_app_other_users() -> dict[str, User]:
-    logger.info("create_industrial_app_other_users")
+def create_data_app_other_users() -> dict[str, User]:
+    logger.info("create_data_app_other_users")
 
     users_by_name = {}
 
@@ -274,8 +274,8 @@ def create_industrial_app_other_users() -> dict[str, User]:
     return users_by_name
 
 
-def create_industrial_app_general_public_users() -> dict[str, User]:
-    logger.info("create_industrial_app_general_public_users")
+def create_data_app_general_public_users() -> dict[str, User]:
+    logger.info("create_data_app_general_public_users")
 
     users_by_name = {}
 

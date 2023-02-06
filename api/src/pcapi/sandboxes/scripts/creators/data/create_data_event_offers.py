@@ -11,11 +11,11 @@ logger = logging.getLogger(__name__)
 
 EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE = 5
 
-def create_industrial_event_offers(
+def create_data_event_offers(
     events_by_name: dict[str, offers_models.Product],
     offerers_by_name: dict[str, offerers_models.Offerer],
 ) -> dict[str, offers_models.Offer]:
-    logger.info("create_industrial_event_offers_data")
+    logger.info("create_data_event_offers_data")
 
     event_offers_by_name = {}
 

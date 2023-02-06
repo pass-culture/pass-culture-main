@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 
 EVENT_COUNTS_PER_TYPE_DATA = 2
 
-def create_industrial_event_products() -> dict[str, offers_models.Product]:
-    logger.info("create_industrial_event_products_data")
+def create_data_event_products() -> dict[str, offers_models.Product]:
+    logger.info("create_data_event_products_data")
 
     event_products_by_name = {}
 

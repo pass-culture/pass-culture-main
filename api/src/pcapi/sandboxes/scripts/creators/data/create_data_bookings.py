@@ -23,8 +23,8 @@ OFFER_WITH_SEVERAL_STOCKS_REMOVE_MODULO = 1
 BOOKINGS_USED_REMOVE_MODULO = 1
 
 
-def create_industrial_bookings(offers_by_name: dict[str, Offer], users_by_name: dict[str, User]) -> None:
-    logger.info("create_industrial_bookings_data")
+def create_data_bookings(offers_by_name: dict[str, Offer], users_by_name: dict[str, User]) -> None:
+    logger.info("create_data_bookings_data")
     bookings_by_name: dict[str, Booking] = {}
     for (user_name, user) in users_by_name.items():
         if (

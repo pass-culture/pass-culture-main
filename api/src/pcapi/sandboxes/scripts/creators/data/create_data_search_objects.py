@@ -10,9 +10,9 @@ from pcapi.core.offers.models import Offer
 logger = logging.getLogger(__name__)
 
 
-def create_industrial_search_indexed_objects() -> None:
+def create_data_search_indexed_objects() -> None:
     if settings.ALGOLIA_TRIGGER_INDEXATION:
-        logger.info("create_industrial_algolia_objects")
+        logger.info("create_data_algolia_objects")
         offer_ids = [offer_id for offer_id, in Offer.query.with_entities(Offer.id)]
         search.unindex_all_offers()
         search.reindex_offer_ids(offer_ids)

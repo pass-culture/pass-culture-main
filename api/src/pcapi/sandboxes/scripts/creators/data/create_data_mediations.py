@@ -40,8 +40,8 @@ def prepare_mediations_folders() -> None:
         )
 
 
-def create_industrial_mediations(offers_by_name: dict[str, Offer]) -> None:
-    logger.info("create_industrial_mediations")
+def create_data_mediations(offers_by_name: dict[str, Offer]) -> None:
+    logger.info("create_data_mediations")
 
     mediations_with_asset = {}
     mediations_by_name = {}

@@ -5,7 +5,6 @@ import logging
 
 from pcapi.core.offers.models import Offer
 from pcapi.models.event_occurence import EventOccurrence
-from pcapi.sandboxes.scripts.utils.select import remove_every
 import pcapi.utils.date as date_utils
 
 
@@ -21,8 +20,8 @@ EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
 
 EVENT_OFFERS_WITH_OCCURRENCES_REMOVE_MODULO = 3
 
-def create_industrial_event_occurrences(event_offers_by_name: dict[str, Offer]) -> dict[str, EventOccurrence]:
-    logger.info("create_industrial_event_occurrences_data")
+def create_data_event_occurrences(event_offers_by_name: dict[str, Offer]) -> dict[str, EventOccurrence]:
+    logger.info("create_data_event_occurrences_data")
 
     event_occurrences_by_name = {}
 

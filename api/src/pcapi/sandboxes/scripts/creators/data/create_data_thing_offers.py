@@ -11,12 +11,12 @@ logger = logging.getLogger(__name__)
 
 
 
-def create_industrial_thing_offers(
+def create_data_thing_offers(
     thing_products_by_name: dict[str, offers_models.Product],
     offerers_by_name: dict[str, offerers_models.Offerer],
     venues_by_name: dict[str, offerers_models.Venue],
 ) -> dict[str, offers_models.Offer]:
-    logger.info("create_industrial_thing_offers_data")
+    logger.info("create_data_thing_offers_data")
     THINGS_PER_OFFERER = (len(thing_products_by_name))//(len(offerers_by_name))
     logger.info("THINGS_PER_OFFERER %d",THINGS_PER_OFFERER)
     thing_offers_by_name: dict[str, offers_models.Offer] = {}

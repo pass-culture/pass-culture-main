@@ -4,8 +4,7 @@ import logging
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.repository import repository
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import EventOccurrence
-from pcapi.sandboxes.scripts.utils.select import remove_every
+from pcapi.sandboxes.scripts.creators.data.create_data_event_occurrences import EventOccurrence
 
 from .utils import get_occurrence_short_name
 from .utils import get_price_by_short_name
@@ -16,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 EVENT_OCCURRENCES_WITH_STOCKS_REMOVE_MODULO = 4
 
-def create_industrial_event_stocks(event_occurrences_by_name: dict[str, EventOccurrence]) -> None:
-    logger.info("create_industrial_event_stocks_data")
+def create_data_event_stocks(event_occurrences_by_name: dict[str, EventOccurrence]) -> None:
+    logger.info("create_data_event_stocks_data")
 
     event_stocks_by_name = {}
     short_names_to_increase_price: list[str] = []

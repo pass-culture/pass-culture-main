@@ -36,8 +36,8 @@ def add_default_image_to_venue(image_venue_counter: int, offerer: Offerer, venue
         )
 
 
-def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType]) -> dict[str, Venue]:
-    logger.info("create_industrial_venues")
+def create_data_venues(offerers_by_name: dict, venue_types: list[VenueType]) -> dict[str, Venue]:
+    logger.info("create_data_venues")
 
     venue_by_name = {}
     mock_index = 0
@@ -152,8 +152,8 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
 
     return venue_by_name
 
-def create_industrial_venues_data(offerers_by_name: dict, venue_types: list[VenueType]) -> dict[str, Venue]:
-    logger.info("create_industrial_venues")
+def create_data_venues_data(offerers_by_name: dict, venue_types: list[VenueType]) -> dict[str, Venue]:
+    logger.info("create_data_venues")
 
     venue_by_name = {}
     mock_index = 0

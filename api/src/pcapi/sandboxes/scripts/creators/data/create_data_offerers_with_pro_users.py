@@ -83,8 +83,8 @@ OFFERER_LOCATIONS_DATA= [
     Location(address="RT3 DATA", city="Lille", latitude=50.631108, longitude=3.0715963, postalCode="59000"),
 ]
 
-def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str, User]]:
-    logger.info("create_industrial_offerers_with_pro_users_data")
+def create_data_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str, User]]:
+    logger.info("create_data_offerers_with_pro_users_data")
 
     offerers_by_name = {}
     users_by_name = {}

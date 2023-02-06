@@ -8,8 +8,8 @@ from pcapi.core.offers.models import Offer
 logger = logging.getLogger(__name__)
 
 
-def create_industrial_criteria() -> dict[str, Criterion]:
-    logger.info("create_industrial_criteria")
+def create_data_criteria() -> dict[str, Criterion]:
+    logger.info("create_data_criteria")
 
     criterion1 = criteria_factories.CriterionFactory(
         name="Bonne offre d’appel",

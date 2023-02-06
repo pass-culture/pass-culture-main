@@ -11,8 +11,8 @@ ADMINS_COUNT = 1
 departement_codes = ["93", "97"]
 
 
-def create_industrial_admin_users() -> dict[str, User]:
-    logger.info("create_industrial_admin_users")
+def create_data_admin_users() -> dict[str, User]:
+    logger.info("create_data_admin_users")
 
     users_by_name = {}
 

@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 
 THINGS_PER_SUBCATEGORY = 2
 
-def create_industrial_thing_products() -> dict[str, offers_models.Product]:
-    logger.info("create_industrial_thing_products_data")
+def create_data_thing_products() -> dict[str, offers_models.Product]:
+    logger.info("create_data_thing_products_data")
 
     thing_products_by_name = {}
     

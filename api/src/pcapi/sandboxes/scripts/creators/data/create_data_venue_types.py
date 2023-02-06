@@ -8,8 +8,8 @@ from pcapi.core.offerers.models import VenueTypeCode
 logger = logging.getLogger(__name__)
 
 
-def create_industrial_venue_types() -> list[VenueType]:
-    logger.info("create_industrial_venue_types")
+def create_data_venue_types() -> list[VenueType]:
+    logger.info("create_data_venue_types")
 
     labels = [venue_type.value for venue_type in VenueTypeCode]
     venue_types = [VenueTypeFactory(label=label) for label in labels]

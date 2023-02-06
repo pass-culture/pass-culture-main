@@ -15,8 +15,8 @@ from decimal import Decimal
 
 STOCK_QUANTITY_DATA=100
 
-def create_industrial_thing_stocks(thing_offers_by_name: dict[str, Offer]) -> None:
-    logger.info("create_industrial_thing_stocks_data")
+def create_data_thing_stocks(thing_offers_by_name: dict[str, Offer]) -> None:
+    logger.info("create_data_thing_stocks_data")
 
     thing_stocks_by_name = {}
 
