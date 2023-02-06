@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import { api } from 'apiClient/api'
 import {
   GetOffererResponseModel,
   GetOfferersNamesResponseModel,
@@ -24,11 +23,8 @@ import {
   INITIAL_VIRTUAL_VENUE,
 } from 'pages/Home/Offerers/_constants'
 import { VenueList } from 'pages/Home/Venues'
-import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByDisplayName } from 'utils/strings'
-
-import { hasStatusCode } from '../../../core/OfferEducational'
 
 import OffererCreationLinks from './OffererCreationLinks'
 import OffererDetails from './OffererDetails'
@@ -38,20 +34,26 @@ export const CREATE_OFFERER_SELECT_ID = 'creation'
 
 interface IOfferersProps {
   receivedOffererNames?: GetOfferersNamesResponseModel | null
+  onSelectedOffererChange: (offererId: string) => void
+  cancelLoading: () => void
+  selectedOfferer?: GetOffererResponseModel | null
+  isLoading: boolean
+  isUserOffererValidated: boolean
 }
-const Offerers = ({ receivedOffererNames }: IOfferersProps) => {
+const Offerers = ({
+  receivedOffererNames,
+  onSelectedOffererChange,
+  cancelLoading,
+  selectedOfferer,
+  isLoading,
+  isUserOffererValidated,
+}: IOfferersProps) => {
   const [offererOptions, setOffererOptions] = useState<SelectOptionsRFF>([])
-  const [selectedOffererId, setSelectedOffererId] = useState<string | null>(
-    null
-  )
-  const [selectedOfferer, setSelectedOfferer] =
-    useState<GetOffererResponseModel | null>(null)
+  const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
   const [physicalVenues, setPhysicalVenues] = useState(INITIAL_PHYSICAL_VENUES)
   const [virtualVenue, setVirtualVenue] =
     useState<GetOffererVenueResponseModel | null>(INITIAL_VIRTUAL_VENUE)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
-  const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
+
   const location = useLocation()
   const history = useHistory()
 
@@ -76,7 +78,7 @@ const Offerers = ({ receivedOffererNames }: IOfferersProps) => {
             displayName: item['name'],
           }))
         )
-        setSelectedOffererId(offererId ?? initialOffererOptions[0].id)
+        onSelectedOffererChange(offererId ?? initialOffererOptions[0].id)
         setOffererOptions([
           ...initialOffererOptions,
           {
@@ -85,7 +87,7 @@ const Offerers = ({ receivedOffererNames }: IOfferersProps) => {
           },
         ])
       } else {
-        setIsLoading(false)
+        cancelLoading()
       }
     }
   }, [offererId, receivedOffererNames])
@@ -97,51 +99,18 @@ const Offerers = ({ receivedOffererNames }: IOfferersProps) => {
   }, [hasNewOfferCreationJourney])
 
   useEffect(() => {
-    async function loadOfferer(offererId: string) {
-      try {
-        const receivedOfferer = await api.getOfferer(offererId)
-        setSelectedOfferer(receivedOfferer)
-        setPhysicalVenues(
-          receivedOfferer.managedVenues
-            ? receivedOfferer.managedVenues.filter(venue => !venue.isVirtual)
-            : []
-        )
-        const virtualVenue = receivedOfferer.managedVenues?.find(
-          venue => venue.isVirtual
-        )
-        setVirtualVenue(virtualVenue ?? null)
-        setIsUserOffererValidated(true)
-      } catch (error) {
-        /* istanbul ignore next: DEBT, TO FIX */
-        if (hasStatusCode(error) && error.status === HTTP_STATUS.FORBIDDEN) {
-          setSelectedOfferer({
-            apiKey: {
-              maxAllowed: 0,
-              prefixes: [],
-            },
-            city: '',
-            dateCreated: '',
-            fieldsUpdated: [],
-            hasAvailablePricingPoints: false,
-            hasDigitalVenueAtLeastOneOffer: false,
-            hasMissingBankInformation: true,
-            id: offererId,
-            isActive: false,
-            isValidated: false,
-            managedVenues: [],
-            name: '',
-            nonHumanizedId: 0,
-            postalCode: '',
-          })
-          setPhysicalVenues(INITIAL_PHYSICAL_VENUES)
-          setVirtualVenue(INITIAL_VIRTUAL_VENUE)
-          setIsUserOffererValidated(false)
-        }
-      }
-      setIsLoading(false)
+    if (selectedOfferer) {
+      setPhysicalVenues(
+        selectedOfferer.managedVenues
+          ? selectedOfferer.managedVenues.filter(venue => !venue.isVirtual)
+          : []
+      )
+      const virtualVenue = selectedOfferer.managedVenues?.find(
+        venue => venue.isVirtual
+      )
+      setVirtualVenue(virtualVenue ?? null)
     }
-    selectedOffererId && loadOfferer(selectedOffererId)
-  }, [selectedOffererId])
+  }, [selectedOfferer])
 
   const handleChangeOfferer = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -149,7 +118,7 @@ const Offerers = ({ receivedOffererNames }: IOfferersProps) => {
       if (newOffererId === CREATE_OFFERER_SELECT_ID) {
         history.push('/structures/creation')
       } else if (newOffererId !== selectedOfferer?.id) {
-        setSelectedOffererId(newOffererId)
+        onSelectedOffererChange(newOffererId)
         setQuery(newOffererId)
       }
     },
