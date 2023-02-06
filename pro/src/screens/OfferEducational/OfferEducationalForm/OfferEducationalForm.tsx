@@ -130,6 +130,7 @@ const OfferEducationalForm = ({
         isOfferCreated={isOfferCreated}
         userOfferers={userOfferers}
         venuesOptions={venuesOptions}
+        categories={categories}
       />
       {isEligible && values.offererId && values.venueId ? (
         <>
