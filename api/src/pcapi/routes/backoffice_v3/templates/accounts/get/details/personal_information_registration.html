@@ -70,7 +70,7 @@
                                     <span class="fs-6 badge rounded-pill text-bg-warning align-middle px-3 py-2 fs-5">
                                         <i class="bi bi-shield-shaded"></i> {{ idCheckItem.status.upper() }}
                                     </span>
-                                {% else %}
+                                {% elif idCheckItem.status %}
                                     <span class="fs-6 badge rounded-pill text-bg-warning align-middle px-3 py-2 fs-5">
                                         <i class="bi bi-exclamation-circle"></i> {{ idCheckItem.status.upper() }}
                                     </span>
