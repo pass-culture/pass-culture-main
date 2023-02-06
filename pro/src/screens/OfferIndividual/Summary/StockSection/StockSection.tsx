@@ -8,27 +8,20 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 
-import { IStockEventItemProps, StockEventSection } from './StockEventSection'
+import { StockEventSection } from './StockEventSection'
 import styles from './StockSection.module.scss'
-import { IStockThingSectionProps, StockThingSection } from './StockThingSection'
+import { StockThingSection } from './StockThingSection'
 
 export interface IStockSection {
-  stockThing?: IStockThingSectionProps
-  stockEventList?: IStockEventItemProps[]
-  offerId: string
-  offerStatus: OfferStatus
+  offer: IOfferIndividual
 }
 
-const StockSection = ({
-  stockThing,
-  stockEventList,
-  offerId,
-  offerStatus,
-}: IStockSection): JSX.Element => {
+const StockSection = ({ offer }: IStockSection): JSX.Element => {
   const mode = useOfferWizardMode()
   const { logEvent } = useAnalytics()
 
@@ -40,17 +33,17 @@ const StockSection = ({
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offerId,
+      offerId: offer.id,
     })
   }
 
   const editLink = getOfferIndividualUrl({
-    offerId,
+    offerId: offer.id,
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
     mode,
   })
 
-  const hasNoStock = !stockThing && !stockEventList?.length
+  const hasNoStock = offer.stocks.length === 0
 
   const stockWarningText = hasNoStock
     ? 'Vous n’avez aucun stock renseigné.'
@@ -58,7 +51,7 @@ const StockSection = ({
       {
         [OfferStatus.SOLD_OUT]: 'Votre stock est épuisé.',
         [OfferStatus.EXPIRED]: 'Votre stock est expiré.',
-      }[offerStatus]
+      }[offer.status]
 
   return (
     <>
@@ -74,8 +67,12 @@ const StockSection = ({
             description={stockWarningText}
           />
         )}
-        {stockThing && <StockThingSection {...stockThing} />}
-        {stockEventList && <StockEventSection stocks={stockEventList} />}
+        {!offer.isEvent && offer.stocks.length > 0 && (
+          <StockThingSection offer={offer} />
+        )}
+        {offer.isEvent && offer.stocks.length > 0 && (
+          <StockEventSection offer={offer} />
+        )}
       </SummaryLayout.Section>
     </>
   )

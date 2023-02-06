@@ -2,10 +2,7 @@ import React, { useState } from 'react'
 
 import { BannerSummary } from 'components/Banner'
 import RedirectDialog from 'components/Dialog/RedirectDialog'
-import {
-  IOfferAppPreviewProps,
-  OfferAppPreview,
-} from 'components/OfferAppPreview'
+import { OfferAppPreview } from 'components/OfferAppPreview'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { SummaryLayout } from 'components/SummaryLayout'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
@@ -18,7 +15,6 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOffer'
-import { IOfferSubCategory } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate, useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
@@ -33,49 +29,33 @@ import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 import { ActionBar } from '../ActionBar'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 
-import { IOfferSectionProps, OfferSection } from './OfferSection'
+import { OfferSection } from './OfferSection'
 import { StockSection } from './StockSection'
-import { IStockEventItemProps } from './StockSection/StockEventSection'
-import { IStockThingSectionProps } from './StockSection/StockThingSection'
 import styles from './Summary.module.scss'
 
-export interface ISummaryProps {
-  offerId: string
-  nonHumanizedOfferId: number
-  providerName: string | null
-  offer: IOfferSectionProps
-  stockThing?: IStockThingSectionProps
-  stockEventList?: IStockEventItemProps[]
-  subCategories: IOfferSubCategory[]
-  preview: IOfferAppPreviewProps
-}
-
-const Summary = (
-  /* istanbul ignore next: DEBT, TO FIX */
-  {
-    providerName,
-    offerId,
-    nonHumanizedOfferId,
-    offer,
-    stockThing,
-    stockEventList,
-    subCategories,
-    preview,
-  }: ISummaryProps
-): JSX.Element => {
+const Summary = () => {
   const [isDisabled, setIsDisabled] = useState(false)
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
-  const { setOffer, venueId, offerOfferer, showVenuePopin } =
-    useOfferIndividualContext()
+  const {
+    setOffer,
+    venueId,
+    offerOfferer,
+    showVenuePopin,
+    offer,
+    subCategories,
+  } = useOfferIndividualContext()
   const newOfferCreation = useNewOfferCreationJourney()
-
   const { logEvent } = useAnalytics()
 
+  if (offer === null) {
+    return null
+  }
+
   const offerConfirmationStepUrl = getOfferIndividualUrl({
-    offerId,
+    offerId: offer.id,
     step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
     mode,
   })
@@ -89,10 +69,10 @@ const Summary = (
 
     setIsDisabled(true)
     const response = await publishIndividualOffer({
-      offerId: nonHumanizedOfferId,
+      offerId: offer.nonHumanizedId,
     })
     if (response.isOk) {
-      const response = await getOfferIndividualAdapter(offerId)
+      const response = await getOfferIndividualAdapter(offer.id)
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }
@@ -102,7 +82,7 @@ const Summary = (
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: true,
-        offerId: offerId,
+        offerId: offer.id,
       })
       if (newOfferCreation && showVenuePopin[venueId || '']) {
         setDisplayRedirectDialog(true)
@@ -123,12 +103,12 @@ const Summary = (
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offerId,
+      offerId: offer.id,
     })
 
     navigate(
       getOfferIndividualUrl({
-        offerId,
+        offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         mode,
       })
@@ -140,7 +120,7 @@ const Summary = (
     offerSubCategory,
     isUserAdmin: false,
     receiveNotificationEmails: true,
-    isVenueVirtual: offer.isVenueVirtual,
+    isVenueVirtual: offer.venue.isVirtual,
   })
   const subCategoryConditionalFields = offerSubCategory
     ? offerSubCategory.conditionalFields
@@ -152,12 +132,15 @@ const Summary = (
 
   return (
     <>
-      {(mode !== OFFER_WIZARD_MODE.EDITION || providerName !== null) && (
+      {(mode !== OFFER_WIZARD_MODE.EDITION ||
+        offer.lastProviderName !== null) && (
         <div className={styles['offer-preview-banners']}>
           {mode !== OFFER_WIZARD_MODE.EDITION && <BannerSummary mode={mode} />}
-          {providerName !== null && (
+          {offer.lastProviderName !== null && (
             <div className={styles['offer-preview-banner']}>
-              <SynchronizedProviderInformation providerName={providerName} />
+              <SynchronizedProviderInformation
+                providerName={offer.lastProviderName}
+              />
             </div>
           )}
         </div>
@@ -165,18 +148,15 @@ const Summary = (
       <SummaryLayout>
         <SummaryLayout.Content>
           <OfferSection conditionalFields={conditionalFields} offer={offer} />
-          <StockSection
-            stockThing={stockThing}
-            stockEventList={stockEventList}
-            offerId={offerId}
-            offerStatus={offer.status}
-          />
+
+          <StockSection offer={offer} />
+
           <ActionBar
             onClickNext={publishOffer}
             onClickPrevious={handlePreviousStep}
             step={OFFER_WIZARD_STEP_IDS.SUMMARY}
             isDisabled={isDisabled}
-            offerId={offerId}
+            offerId={offer.id}
           />
         </SummaryLayout.Content>
 
@@ -185,7 +165,9 @@ const Summary = (
             <PhoneInfo />
             <span>Aperçu dans l'app</span>
           </div>
-          <OfferAppPreview {...preview} />
+
+          <OfferAppPreview offer={offer} />
+
           {mode === OFFER_WIZARD_MODE.EDITION && (
             <div className={styles['offer-preview-app-link']}>
               <DisplayOfferInAppLink
@@ -201,7 +183,7 @@ const Summary = (
                         used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
                         isEdition: true,
                         isDraft: false,
-                        offerId: offerId,
+                        offerId: offer.id,
                       }),
                 }}
                 variant={ButtonVariant.SECONDARY}

@@ -3,11 +3,11 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
-import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useOfferWizardMode from 'hooks/useOfferWizardMode'
+import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { api } from '../../../../apiClient/api'
@@ -16,7 +16,7 @@ import {
   OfferIndividualContext,
 } from '../../../../context/OfferIndividualContext'
 import * as useNewOfferCreationJourney from '../../../../hooks/useNewOfferCreationJourney'
-import Summary, { ISummaryProps } from '../Summary'
+import Summary from '../Summary'
 
 const mockLogEvent = jest.fn()
 window.open = jest.fn()
@@ -39,10 +39,13 @@ const defaultContext: IOfferIndividualContext = {
 }
 
 const renderSummary = (
-  props: ISummaryProps,
-  context: IOfferIndividualContext = defaultContext,
+  customContext: Partial<IOfferIndividualContext> = {},
   customOverrides?: any
 ) => {
+  const context = {
+    ...defaultContext,
+    ...customContext,
+  }
   const storeOverrides = {
     user: {
       initialized: true,
@@ -57,115 +60,18 @@ const renderSummary = (
 
   return renderWithProviders(
     <OfferIndividualContext.Provider value={context}>
-      <Summary {...props} />
+      <Summary />
     </OfferIndividualContext.Provider>,
     { storeOverrides }
   )
 }
 
 describe('Summary trackers', () => {
-  let props: ISummaryProps
+  let customContext: Partial<IOfferIndividualContext>
 
   beforeEach(() => {
-    const categories = [
-      {
-        id: 'A',
-        proLabel: 'Catégorie A',
-        isSelectable: true,
-      },
-    ]
-    const subCategories = [
-      {
-        id: 'A-A',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie online de A',
-        isEvent: false,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-      {
-        id: 'A-B',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie offline de A',
-        isEvent: false,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-    ]
-
-    const venue = {
-      name: 'ma venue',
-      publicName: 'ma venue (nom public)',
-      isVirtual: false,
-    }
-
-    const stock = {
-      quantity: null,
-      price: 0,
-      bookingLimitDatetime: null,
-    }
-
-    const offer = {
-      id: 'AB',
-      nonHumanizedId: 1,
-      name: 'mon offre',
-      description: 'ma description',
-      categoryName: categories[0].proLabel,
-      subCategoryName: subCategories[0].proLabel,
-      subcategoryId: subCategories[0].id,
-      accessibility: {
-        visual: false,
-        audio: false,
-        motor: false,
-        mental: false,
-        none: true,
-      },
-      isDuo: false,
-      author: 'jean-mich',
-      stageDirector: 'jean-mich',
-      speaker: 'jean-mich',
-      visa: '0123',
-      performer: 'jean-mich',
-      isbn: '0123',
-      durationMinutes: '01:00',
-      url: '',
-      externalTicketOfficeUrl: '',
-      venueName: venue.name,
-      venuePublicName: venue.publicName,
-      isVenueVirtual: venue.isVirtual,
-      offererName: 'mon offerer',
-      bookingEmail: 'booking@example.com',
-      withdrawalDetails: 'détails de retrait',
-      withdrawalType: null,
-      withdrawalDelay: null,
-      status: OfferStatus.ACTIVE,
-    }
-    const preview = {
-      offerData: {
-        name: offer.name,
-        description: offer.description,
-        isEvent: false,
-        isDuo: offer.isDuo,
-      },
-    }
-
-    props = {
-      offerId: offer.id,
-      nonHumanizedOfferId: offer.nonHumanizedId,
-      providerName: null,
-      offer: offer,
-      stockThing: stock,
-      stockEventList: undefined,
-      subCategories: subCategories,
-      preview: preview,
+    customContext = {
+      offer: individualOfferFactory({ id: 'AB' }),
     }
 
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -180,7 +86,7 @@ describe('Summary trackers', () => {
   describe('On edition', () => {
     it('should track when clicking on "Modifier" on offer section', async () => {
       // given
-      renderSummary(props)
+      renderSummary(customContext)
 
       // when
       await userEvent.click(screen.getAllByText('Modifier')[0])
@@ -203,7 +109,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on "Modifier" on stock section', async () => {
       // given
-      renderSummary(props)
+      renderSummary(customContext)
 
       // when
       await userEvent.click(screen.getAllByText('Modifier')[1])
@@ -226,7 +132,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on return to offers button', async () => {
       // given
-      renderSummary(props)
+      renderSummary(customContext)
 
       // when
       await userEvent.click(
@@ -251,7 +157,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on see preview link', async () => {
       // given
-      renderSummary(props)
+      renderSummary(customContext)
 
       // when
       await userEvent.click(await screen.findByText('Visualiser dans l’app'))
@@ -275,7 +181,10 @@ describe('Summary trackers', () => {
 
   describe('On Creation', () => {
     beforeEach(() => {
-      props.offer.status = OfferStatus.DRAFT
+      customContext.offer = individualOfferFactory({
+        id: 'AB',
+        status: OfferStatus.DRAFT,
+      })
       jest
         .spyOn(useOfferWizardMode, 'default')
         .mockImplementation(() => OFFER_WIZARD_MODE.CREATION)
@@ -283,7 +192,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on "Modifier" on offer section', async () => {
       // given
-      renderSummary(props)
+      renderSummary(customContext)
 
       // when
       await userEvent.click(screen.getAllByText('Modifier')[0])
@@ -306,7 +215,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on "Modifier" on stock section', async () => {
       // given
-      renderSummary(props)
+      renderSummary(customContext)
 
       // when
       await userEvent.click(screen.getAllByText('Modifier')[1])
@@ -330,7 +239,7 @@ describe('Summary trackers', () => {
     describe('When it is form v2', () => {
       it('should track when clicking on return to previous step button', async () => {
         // given
-        renderSummary(props)
+        renderSummary(customContext)
 
         // when
         await userEvent.click(await screen.findByText('Étape précédente'))
@@ -353,7 +262,7 @@ describe('Summary trackers', () => {
 
       it('should track when clicking on return to publish offer button', async () => {
         // given
-        renderSummary(props)
+        renderSummary(customContext)
 
         // when
         await userEvent.click(await screen.findByText('Publier l’offre'))
@@ -377,7 +286,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on return to previous step button', async () => {
       // given
-      renderSummary(props)
+      renderSummary(customContext)
 
       // when
       await userEvent.click(await screen.findByText('Étape précédente'))
@@ -400,7 +309,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on publish button', async () => {
       // given
-      renderSummary(props)
+      renderSummary(customContext)
 
       // when
       await userEvent.click(await screen.findByText('Publier l’offre'))
@@ -424,7 +333,10 @@ describe('Summary trackers', () => {
 
   describe('For Draft offers', () => {
     beforeEach(() => {
-      props.offer.status = OfferStatus.DRAFT
+      customContext.offer = individualOfferFactory({
+        id: 'AB',
+        status: OfferStatus.DRAFT,
+      })
       jest
         .spyOn(useOfferWizardMode, 'default')
         .mockImplementation(() => OFFER_WIZARD_MODE.DRAFT)
@@ -432,7 +344,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on "Modifier" on offer section', async () => {
       // given
-      renderSummary(props)
+      renderSummary(customContext)
 
       // when
       await userEvent.click(screen.getAllByText('Modifier')[0])
@@ -455,7 +367,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on "Modifier" on stock section', async () => {
       // given
-      renderSummary(props)
+      renderSummary(customContext)
 
       // when
       await userEvent.click(screen.getAllByText('Modifier')[1])
@@ -478,7 +390,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on return to previous step button', async () => {
       // given
-      renderSummary(props)
+      renderSummary(customContext)
 
       // when
       await userEvent.click(await screen.findByText('Étape précédente'))
@@ -501,7 +413,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on return to publish offer button', async () => {
       // given
-      renderSummary(props)
+      renderSummary(customContext)
 
       // when
       await userEvent.click(await screen.findByText('Publier l’offre'))
@@ -524,7 +436,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on return to save draft button', async () => {
       // given
-      renderSummary(props)
+      renderSummary(customContext)
 
       // when
       await userEvent.click(
@@ -550,7 +462,6 @@ describe('Summary trackers', () => {
 
   describe('First offer Pop in', () => {
     beforeEach(async () => {
-      props.offer.status = OfferStatus.DRAFT
       jest
         .spyOn(useOfferWizardMode, 'default')
         .mockImplementation(() => OFFER_WIZARD_MODE.CREATION)
@@ -558,11 +469,18 @@ describe('Summary trackers', () => {
       jest.spyOn(useNewOfferCreationJourney, 'default').mockReturnValue(true)
       jest.spyOn(api, 'patchPublishOffer').mockResolvedValue()
 
-      const context = defaultContext
-      context.venueId = 'AB'
-      context.showVenuePopin = {
-        AB: true,
+      const context = {
+        ...defaultContext,
+        offer: individualOfferFactory({
+          id: 'AB',
+          status: OfferStatus.DRAFT,
+        }),
+        venueId: 'AB',
+        showVenuePopin: {
+          AB: true,
+        },
       }
+
       const overrideStore = {
         features: {
           initialized: true,
@@ -575,7 +493,7 @@ describe('Summary trackers', () => {
         },
       }
 
-      renderSummary(props, context, overrideStore)
+      renderSummary(context, overrideStore)
 
       await userEvent.click(
         screen.getByRole('button', { name: /Publier l’offre/ })

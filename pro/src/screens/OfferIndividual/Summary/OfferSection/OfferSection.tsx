@@ -1,73 +1,39 @@
 import React from 'react'
 
-import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
 import AccessibilitySummarySection from 'components/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { SummaryLayout } from 'components/SummaryLayout'
+import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WITHDRAWAL_TYPE_LABELS, OFFER_WIZARD_MODE } from 'core/Offers'
+import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
-import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
+import { AccessiblityEnum } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 
+import { serializeOfferSectionData } from './serializer'
 import humanizeDelay from './utils'
 
-export interface IOfferSectionProps {
-  id: string
-  nonHumanizedId: number
-  name: string
-  description: string
-  categoryName: string
-  subCategoryName: string
-  subcategoryId: string
-
-  musicTypeName?: string
-  musicSubTypeName?: string
-  showTypeName?: string
-  showSubTypeName?: string
-
-  accessibility: IAccessibiltyFormValues
-
-  isDuo: boolean
-  author: string
-  stageDirector: string
-  speaker: string
-  visa: string
-  performer: string
-  isbn: string
-  durationMinutes: string
-  url: string
-  externalTicketOfficeUrl: string
-
-  venueName: string
-  venuePublicName: string
-  isVenueVirtual: boolean
-  offererName: string
-  bookingEmail: string
-  withdrawalDetails: string
-  withdrawalType: WithdrawalTypeEnum | null
-  withdrawalDelay: number | null
-  status: OfferStatus
-}
-
 interface IOfferSummaryProps {
-  offer: IOfferSectionProps
+  offer: IOfferIndividual
   conditionalFields: string[]
 }
 
 const OfferSummary = ({
-  offer,
   conditionalFields,
+  offer,
 }: IOfferSummaryProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const { logEvent } = useAnalytics()
+  const { categories, subCategories } = useOfferIndividualContext()
+  const offerData = serializeOfferSectionData(offer, categories, subCategories)
 
   const editLink = getOfferIndividualUrl({
-    offerId: offer.id,
+    offerId: offerData.id,
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
     mode,
   })
@@ -78,7 +44,7 @@ const OfferSummary = ({
       to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offer.id,
+      offerId: offerData.id,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
     })
   }
@@ -91,10 +57,13 @@ const OfferSummary = ({
       aria-label="Modifier détails de l’offre"
     >
       <SummaryLayout.SubSection title="Type d’offre">
-        <SummaryLayout.Row title="Catégorie" description={offer.categoryName} />
+        <SummaryLayout.Row
+          title="Catégorie"
+          description={offerData.categoryName}
+        />
         <SummaryLayout.Row
           title="Sous-catégorie"
-          description={offer.subCategoryName}
+          description={offerData.subCategoryName}
         />
 
         {conditionalFields.includes('musicType') && (
@@ -102,14 +71,14 @@ const OfferSummary = ({
             title="Genre musical"
             description={
               /* istanbul ignore next: DEBT, TO FIX */
-              offer.musicTypeName || '-'
+              offerData.musicTypeName || '-'
             }
           />
         )}
-        {offer.musicSubTypeName && (
+        {offerData.musicSubTypeName && (
           <SummaryLayout.Row
             title="Sous-genre"
-            description={offer.musicSubTypeName}
+            description={offerData.musicSubTypeName}
           />
         )}
         {
@@ -119,29 +88,32 @@ const OfferSummary = ({
               title="Type de spéctacle"
               description={
                 /* istanbul ignore next: DEBT, TO FIX */
-                offer.showTypeName || '-'
+                offerData.showTypeName || '-'
               }
             />
           )
         }
         {
           /* istanbul ignore next: DEBT, TO FIX */
-          offer.showSubTypeName && (
+          offerData.showSubTypeName && (
             <SummaryLayout.Row
               title="Sous-type"
-              description={offer.showSubTypeName}
+              description={offerData.showSubTypeName}
             />
           )
         }
       </SummaryLayout.SubSection>
 
       <SummaryLayout.SubSection title="Informations artistiques">
-        <SummaryLayout.Row title="Titre de l’offre" description={offer.name} />
+        <SummaryLayout.Row
+          title="Titre de l’offre"
+          description={offerData.name}
+        />
         <SummaryLayout.Row
           title="Description"
           description={
             /* istanbul ignore next: DEBT, TO FIX */
-            offer.description || ' - '
+            offerData.description || ' - '
           }
         />
 
@@ -150,14 +122,14 @@ const OfferSummary = ({
           conditionalFields.includes('speaker') && (
             <SummaryLayout.Row
               title="Intervenant"
-              description={offer.speaker}
+              description={offerData.speaker}
             />
           )
         }
         {
           /* istanbul ignore next: DEBT, TO FIX */
           conditionalFields.includes('author') && (
-            <SummaryLayout.Row title="Auteur" description={offer.author} />
+            <SummaryLayout.Row title="Auteur" description={offerData.author} />
           )
         }
         {
@@ -165,14 +137,14 @@ const OfferSummary = ({
           conditionalFields.includes('visa') && (
             <SummaryLayout.Row
               title="Visa d’exploitation"
-              description={offer.visa}
+              description={offerData.visa}
             />
           )
         }
         {
           /* istanbul ignore next: DEBT, TO FIX */
           conditionalFields.includes('isbn') && (
-            <SummaryLayout.Row title="ISBN" description={offer.isbn} />
+            <SummaryLayout.Row title="ISBN" description={offerData.isbn} />
           )
         }
         {
@@ -180,7 +152,7 @@ const OfferSummary = ({
           conditionalFields.includes('stageDirector') && (
             <SummaryLayout.Row
               title="Metteur en scène"
-              description={offer.stageDirector}
+              description={offerData.stageDirector}
             />
           )
         }
@@ -189,7 +161,7 @@ const OfferSummary = ({
           conditionalFields.includes('performer') && (
             <SummaryLayout.Row
               title="Interprète"
-              description={offer.performer}
+              description={offerData.performer}
             />
           )
         }
@@ -199,7 +171,9 @@ const OfferSummary = ({
             <SummaryLayout.Row
               title="Durée"
               description={
-                offer.durationMinutes ? `${offer.durationMinutes} min` : '-'
+                offerData.durationMinutes
+                  ? `${offerData.durationMinutes} min`
+                  : '-'
               }
             />
           )
@@ -207,31 +181,36 @@ const OfferSummary = ({
       </SummaryLayout.SubSection>
 
       <SummaryLayout.SubSection title="Informations pratiques">
-        <SummaryLayout.Row title="Structure" description={offer.offererName} />
+        <SummaryLayout.Row
+          title="Structure"
+          description={offerData.offererName}
+        />
         <SummaryLayout.Row
           title="Lieu"
           description={
-            /* istanbul ignore next: DEBT, TO FIX */ offer.venuePublicName ||
-            offer.venueName
+            /* istanbul ignore next: DEBT, TO FIX */ offerData.venuePublicName ||
+            offerData.venueName
           }
         />
         {
           /* istanbul ignore next: DEBT, TO FIX */
-          offer.withdrawalType && (
+          offerData.withdrawalType && (
             <SummaryLayout.Row
               title="Comment les billets, places seront-ils transmis ?"
-              description={OFFER_WITHDRAWAL_TYPE_LABELS[offer.withdrawalType]}
+              description={
+                OFFER_WITHDRAWAL_TYPE_LABELS[offerData.withdrawalType]
+              }
             />
           )
         }
 
         {
           /* istanbul ignore next: DEBT, TO FIX */
-          offer.withdrawalDelay && (
+          offerData.withdrawalDelay && (
             <SummaryLayout.Row
               title="Heure de retrait"
               description={`${humanizeDelay(
-                offer.withdrawalDelay
+                offerData.withdrawalDelay
               )} avant le début de l’évènement`}
             />
           )
@@ -241,7 +220,7 @@ const OfferSummary = ({
           title="Informations de retrait"
           description={
             /* istanbul ignore next: DEBT, TO FIX */
-            offer.withdrawalDetails || ' - '
+            offerData.withdrawalDetails || ' - '
           }
         />
 
@@ -250,18 +229,26 @@ const OfferSummary = ({
             title="URL d’accès à l’offre"
             description={
               /* istanbul ignore next: DEBT, TO FIX */
-              offer.url || ' - '
+              offerData.url || ' - '
             }
           />
         )}
       </SummaryLayout.SubSection>
 
       <AccessibilitySummarySection
-        noDisabilityCompliance={offer.accessibility[AccessiblityEnum.NONE]}
-        visualDisabilityCompliant={offer.accessibility[AccessiblityEnum.VISUAL]}
-        mentalDisabilityCompliant={offer.accessibility[AccessiblityEnum.MENTAL]}
-        motorDisabilityCompliant={offer.accessibility[AccessiblityEnum.MOTOR]}
-        audioDisabilityCompliant={offer.accessibility[AccessiblityEnum.AUDIO]}
+        noDisabilityCompliance={offerData.accessibility[AccessiblityEnum.NONE]}
+        visualDisabilityCompliant={
+          offerData.accessibility[AccessiblityEnum.VISUAL]
+        }
+        mentalDisabilityCompliant={
+          offerData.accessibility[AccessiblityEnum.MENTAL]
+        }
+        motorDisabilityCompliant={
+          offerData.accessibility[AccessiblityEnum.MOTOR]
+        }
+        audioDisabilityCompliant={
+          offerData.accessibility[AccessiblityEnum.AUDIO]
+        }
       />
 
       {conditionalFields.includes('isDuo') && (
@@ -269,7 +256,7 @@ const OfferSummary = ({
           <SummaryLayout.Row
             description={
               /* istanbul ignore next: DEBT, TO FIX */
-              offer.isDuo === true
+              offerData.isDuo === true
                 ? 'Accepter les réservations "Duo"'
                 : 'Refuser les réservations "Duo"'
             }
@@ -282,7 +269,7 @@ const OfferSummary = ({
           title="URL de votre site ou billetterie"
           description={
             /* istanbul ignore next: DEBT, TO FIX */
-            offer.externalTicketOfficeUrl || ' - '
+            offerData.externalTicketOfficeUrl || ' - '
           }
         />
       </SummaryLayout.SubSection>
@@ -292,7 +279,7 @@ const OfferSummary = ({
           title="E-mail auquel envoyer les notifications"
           description={
             /* istanbul ignore next: DEBT, TO FIX */
-            offer.bookingEmail || ' - '
+            offerData.bookingEmail || ' - '
           }
         />
       </SummaryLayout.SubSection>

@@ -1,5 +1,1 @@
 export { default as Summary } from './Summary'
-export type { ISummaryProps } from './Summary'
-export type { IStockEventItemProps } from './StockSection/StockEventSection'
-export type { IStockThingSectionProps } from './StockSection/StockThingSection'
-export type { IOfferSectionProps } from './OfferSection'
