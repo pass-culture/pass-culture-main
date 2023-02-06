@@ -1,7 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
+
+import { api } from 'apiClient/api'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   FIRST_INITIAL_PRICE_CATEGORY,
@@ -24,9 +27,9 @@ const renderPriceCategoriesForm = (
   customValues?: Partial<PriceCategoriesFormValues>
 ) => {
   const values = { ...defaultValues, ...customValues }
-  return render(
+  return renderWithProviders(
     <Formik initialValues={values} onSubmit={jest.fn()}>
-      <PriceCategoriesForm />
+      <PriceCategoriesForm offerId="42" />
     </Formik>
   )
 }
@@ -48,11 +51,7 @@ describe('PriceCategories', () => {
       isDuo: false,
     }
 
-    render(
-      <Formik initialValues={values} onSubmit={jest.fn()}>
-        <PriceCategoriesForm />
-      </Formik>
-    )
+    renderPriceCategoriesForm(values)
 
     const freeCheckboxes = screen.getAllByLabelText('Gratuit')
 
@@ -98,6 +97,8 @@ describe('PriceCategories', () => {
   })
 
   it('should remove price categories on trash button click', async () => {
+    jest.spyOn(api, 'deletePriceCategory').mockResolvedValue()
+
     renderPriceCategoriesForm()
 
     expect(
@@ -112,6 +113,25 @@ describe('PriceCategories', () => {
     expect(
       screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
     ).toBeDisabled()
+    expect(api.deletePriceCategory).not.toHaveBeenCalled()
+  })
+
+  it('should remove price categories on trash button click', async () => {
+    jest.spyOn(api, 'deletePriceCategory').mockResolvedValue()
+    const values: PriceCategoriesFormValues = {
+      priceCategories: [
+        priceCategoryFormFactory({ id: 66 }),
+        priceCategoryFormFactory({ id: 2 }),
+      ],
+      isDuo: false,
+    }
+
+    renderPriceCategoriesForm(values)
+
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
+    )
+    expect(api.deletePriceCategory).toHaveBeenNthCalledWith(1, '42', '66')
   })
 
   it('should handle unique line label cases', async () => {

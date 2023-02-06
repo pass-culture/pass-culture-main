@@ -44,7 +44,7 @@ const upsertStocksEventAdapter: TUpdateStocksAdapter = async ({
     }
     return {
       isOk: false,
-      message: 'Une erreur est survenue lors de la mise à jours de votre stock',
+      message: 'Une erreur est survenue lors de la mise à jour de votre stock',
       payload: {
         errors: formErrors,
       },
