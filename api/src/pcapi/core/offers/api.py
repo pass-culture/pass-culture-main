@@ -27,7 +27,7 @@ import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import validation as educational_validation
-from pcapi.core.educational.api import offer as educational_offers_api
+from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.external.attributes.api import update_external_pro
 import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.finance.conf as finance_conf
@@ -35,9 +35,6 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers import offer_validation
-from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers import validation
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
 from pcapi.core.users.models import ExpenseDomain
@@ -56,6 +53,9 @@ from pcapi.workers import push_notification_job
 
 from . import exceptions
 from . import models
+from . import offer_validation
+from . import repository as offers_repository
+from . import validation
 
 
 logger = logging.getLogger(__name__)
@@ -295,7 +295,7 @@ def update_collective_offer(
 
     search.async_index_collective_offer_ids([offer_to_update.id])
 
-    educational_offers_api.notify_educational_redactor_on_collective_offer_or_stock_edit(
+    educational_api_offer.notify_educational_redactor_on_collective_offer_or_stock_edit(
         offer_to_update.id,
         updated_fields,
     )
@@ -333,7 +333,7 @@ def _update_collective_offer(
             continue
 
         if key == "domains":
-            domains = educational_offers_api.get_educational_domains_from_ids(value)
+            domains = educational_api_offer.get_educational_domains_from_ids(value)
             offer.domains = domains
             continue
 
@@ -666,7 +666,7 @@ def create_mediation(
         image_as_bytes, min_width=min_width, min_height=min_height, max_width=max_width, max_height=max_height
     )
 
-    mediation = models.Mediation(author=user, offer=offer, credit=credit) 
+    mediation = models.Mediation(author=user, offer=offer, credit=credit)
 
     repository.add_to_session(mediation)
     db.session.flush()  # `create_thumb()` requires the object to have an id, so we must flush now.
