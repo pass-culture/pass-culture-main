@@ -42,15 +42,16 @@ class BoostStocksTest:
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683?filter_payment_method=external:credit:passculture",
+            # TODO(fseguin, 2023-02-06): add  ?filter_payment_method=external:credit:passculture when BB API is updated
+            "https://cinema-0.example.com/api/showtimes/36683",
             json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36683_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36848?filter_payment_method=external:credit:passculture",
+            "https://cinema-0.example.com/api/showtimes/36848",
             json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36848_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36932?filter_payment_method=external:credit:passculture",
+            "https://cinema-0.example.com/api/showtimes/36932",
             json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36932_DATA_NO_PC_PRICING,
         )
         boost_stocks = BoostStocks(venue_provider=venue_provider)
@@ -90,15 +91,15 @@ class BoostStocksTest:
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683?filter_payment_method=external:credit:passculture",
+            "https://cinema-0.example.com/api/showtimes/36683",
             json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36683_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36848?filter_payment_method=external:credit:passculture",
+            "https://cinema-0.example.com/api/showtimes/36848",
             json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36848_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36932?filter_payment_method=external:credit:passculture",
+            "https://cinema-0.example.com/api/showtimes/36932",
             json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36932_DATA_NO_PC_PRICING,
         )
         boost_stocks = BoostStocks(venue_provider=venue_provider)
@@ -165,7 +166,7 @@ class BoostStocksTest:
             json=fixtures.ShowtimesEndpointResponse.NO_PC_PRICING_JSON_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36932?filter_payment_method=external:credit:passculture",
+            "https://cinema-0.example.com/api/showtimes/36932",
             json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36932_DATA_NO_PC_PRICING,
         )
         boost_stocks = BoostStocks(venue_provider=venue_provider)
@@ -192,7 +193,7 @@ class BoostStocksTest:
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683?filter_payment_method=external:credit:passculture",
+            "https://cinema-0.example.com/api/showtimes/36683",
             json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36683_DATA,
         )
         boost_stocks = BoostStocks(venue_provider=venue_provider)
@@ -227,7 +228,7 @@ class BoostStocksTest:
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683?filter_payment_method=external:credit:passculture",
+            "https://cinema-0.example.com/api/showtimes/36683",
             json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36683_DATA,
         )
         file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
