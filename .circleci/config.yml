@@ -859,61 +859,6 @@ jobs:
             - notify-slack:
                 channel: dev
 
-  tests-backoffice-front-unit-tests:
-    docker:
-      - image: cimg/node:14.18
-    working_directory: ~/pass-culture
-    steps:
-      - checkout
-      - skip_unchanged:
-          paths: backoffice
-      - unless:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - restore_cache:
-                name: Restore Yarn Package Cache
-                key: << pipeline.parameters.backoffice-front_cache_key >>
-      - run:
-          name: Install packages
-          command: yarn install
-          working_directory: backoffice
-      - restore_cache:
-          name: Restore Jest Cache
-          key: node-14.18-jest-cache-
-      - when:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - run:
-                name: Run Unit Test BACKOFFICE
-                command: yarn test:unit:ci
-                working_directory: backoffice
-      - run:
-          name: Unit Test FRONT BACKOFFICE
-          command: yarn test:unit:ci --changedSince=master
-          working_directory: backoffice
-      - unless:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - save_cache:
-                name: Save Yarn Package Cache
-                key: << pipeline.parameters.backoffice-front_cache_key >>
-                paths:
-                  - ~/pass-culture/backoffice/node_modules
-      - save_cache:
-          name: Save Jest Package Cache
-          key: node-14.18-jest-cache-{{ epoch }}
-          paths:
-            - ~/pass-culture/backoffice/.jest_cache
-      - when:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - notify-slack:
-                channel: dev
-
   build-and-push-image:
     executor: gcp-sdk-alpine
     environment:
@@ -1370,15 +1315,6 @@ workflows:
          context: Slack
          requires:
            - type-checking-pro
-      - tests-backoffice-front-unit-tests:
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-               - docs
-         context: Slack
 #      - generate-pcapi-helm-values-files:
 #          filters:
 #            branches:
@@ -1445,7 +1381,6 @@ workflows:
 #             only:
 #               - master
 #         requires:
-#           - tests-backoffice-front-unit-tests
 #           - restart-pcapi
 #         context:
 #           - GCP
@@ -1471,7 +1406,6 @@ workflows:
 #           - tests-adage-front
 #           - tests-pro-unit-tests
 #           - tests-pro-e2e-tests
-#           - tests-backoffice-front-unit-tests
 #         context:
 #           - CI_MEASURE
   gcp-ehp:
