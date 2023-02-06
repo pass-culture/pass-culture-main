@@ -1,13 +1,16 @@
 import cn from 'classnames'
 import { FieldArray, useFormikContext } from 'formik'
+import type { FieldArrayRenderProps } from 'formik'
 import React, { useState } from 'react'
 
 import FormLayout from 'components/FormLayout'
+import useNotification from 'hooks/useNotification'
 import { EuroIcon, PlusCircleIcon, TrashFilledIcon } from 'icons'
 import { Button, Checkbox, InfoBox, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { BaseCheckbox } from 'ui-kit/form/shared'
 
+import deletePriceCategoryAdapter from './adapters/deletePriceCategoryAdapter'
 import {
   INITIAL_PRICE_CATEGORY,
   PRICE_CATEGORY_LABEL_MAX_LENGTH,
@@ -18,9 +21,16 @@ import {
 import { PriceCategoriesFormValues } from './form/types'
 import styles from './PriceCategoriesForm.module.scss'
 
-export const PriceCategoriesForm = (): JSX.Element => {
+interface IPriceCategoriesForm {
+  offerId: string
+}
+
+export const PriceCategoriesForm = ({
+  offerId,
+}: IPriceCategoriesForm): JSX.Element => {
   const { setFieldValue, handleChange, values } =
     useFormikContext<PriceCategoriesFormValues>()
+  const notify = useNotification()
 
   const [isFreeCheckboxSelectedArray, setIsFreeCheckboxSelectedArray] =
     useState(
@@ -46,6 +56,30 @@ export const PriceCategoriesForm = (): JSX.Element => {
       setIsFreeCheckboxSelectedArray(newCheckboxArray)
       handleChange(e)
     }
+
+  const onDeletePriceCategory = async (
+    index: number,
+    arrayHelpers: FieldArrayRenderProps,
+    priceCategoryId?: number
+  ) => {
+    if (priceCategoryId) {
+      const { isOk, message } = await deletePriceCategoryAdapter({
+        offerId,
+        priceCategoryId: priceCategoryId.toString(),
+      })
+      if (isOk) {
+        arrayHelpers.remove(index)
+        notify.success(message)
+      } else {
+        notify.error(message)
+      }
+    } else {
+      arrayHelpers.remove(index)
+    }
+    if (values.priceCategories.length === 2) {
+      setFieldValue(`priceCategories[0].label`, UNIQUE_PRICE)
+    }
+  }
 
   return (
     <>
@@ -100,12 +134,13 @@ export const PriceCategoriesForm = (): JSX.Element => {
                     Icon={TrashFilledIcon}
                     iconPosition={IconPositionEnum.CENTER}
                     disabled={values.priceCategories.length <= 1}
-                    onClick={() => {
-                      if (values.priceCategories.length === 2) {
-                        setFieldValue(`priceCategories[0].label`, UNIQUE_PRICE)
-                      }
-                      arrayHelpers.remove(index)
-                    }}
+                    onClick={() =>
+                      onDeletePriceCategory(
+                        index,
+                        arrayHelpers,
+                        values.priceCategories[index].id
+                      )
+                    }
                     hasTooltip
                   >
                     Supprimer le tarif

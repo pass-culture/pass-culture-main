@@ -1,3 +1,5 @@
+import type { FormikState } from 'formik'
+
 import {
   getOfferIndividualAdapter,
   updateIndividualOffer,
@@ -5,15 +7,19 @@ import {
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
 import { IOfferIndividual } from 'core/Offers/types'
 
-import postPriceCategoriesAdapter from '../adapter/postPriceCategoriesAdapter'
-import { serializePriceCategories } from '../adapter/serializePriceCategories'
+import postPriceCategoriesAdapter from '../adapters/postPriceCategoriesAdapter'
+import { serializePriceCategories } from '../adapters/serializePriceCategories'
 
+import { computeInitialValues } from './computeInitialValues'
 import { PriceCategoriesFormValues } from './types'
 
 export const onSubmit = async (
   values: PriceCategoriesFormValues,
   offer: IOfferIndividual,
-  setOffer: ((offer: IOfferIndividual | null) => void) | null
+  setOffer: ((offer: IOfferIndividual | null) => void) | null,
+  resetForm: (
+    nextState?: Partial<FormikState<PriceCategoriesFormValues>> | undefined
+  ) => void
 ) => {
   const serializedOffer = serializePatchOffer({
     offer: offer,
@@ -39,5 +45,12 @@ export const onSubmit = async (
   }
 
   const response = await getOfferIndividualAdapter(offer.id)
-  setOffer && setOffer(response.payload)
+  if (response.isOk) {
+    /* istanbul ignore next */
+    const updatedOffer = response.payload
+    setOffer && setOffer(updatedOffer)
+    resetForm({
+      values: computeInitialValues(updatedOffer),
+    })
+  }
 }

@@ -60,7 +60,7 @@ describe('Signup', () => {
     Element.prototype.scrollIntoView = jest.fn()
   })
 
-  it.only('should redirect to accueil page if the user is logged in', async () => {
+  it('should redirect to accueil page if the user is logged in', async () => {
     // when the user is logged in and lands on signup validation page
     store.user = {
       currentUser: {
