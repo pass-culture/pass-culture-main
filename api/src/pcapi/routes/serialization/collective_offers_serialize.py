@@ -615,6 +615,7 @@ class PatchAllCollectiveOffersActiveStatusBodyModel(BaseModel):
 
 class PatchCollectiveOfferEducationalInstitution(BaseModel):
     educational_institution_id: int | None
+    teacher_email: str | None
 
     class Config:
         alias_generator = to_camel

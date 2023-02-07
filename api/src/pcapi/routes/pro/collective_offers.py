@@ -378,15 +378,20 @@ def patch_collective_offers_educational_institution(
         offer = educational_api_offer.update_collective_offer_educational_institution(
             offer_id=dehumanized_id,
             educational_institution_id=body.educational_institution_id,
-            user=current_user,
+            teacher_email=body.teacher_email,
         )
     except educational_exceptions.EducationalInstitutionNotFound:
         raise ApiErrors({"educationalInstitution": ["Aucune institution trouvée à partir de cet id"]}, status_code=404)
     except educational_exceptions.EducationalInstitutionIsNotActive:
         raise ApiErrors({"educationalInstitution": ["l'institution n'est pas active"]}, status_code=403)
-
     except educational_exceptions.CollectiveOfferNotEditable:
         raise ApiErrors({"offer": ["L'offre n'est plus modifiable"]}, status_code=403)
+    except educational_exceptions.EducationalRedactorNotFound:
+        raise ApiErrors({"teacherEmail": ["L'enseignant n'à pas été trouvé dans cet établissement."]}, status_code=404)
+    except educational_exceptions.EducationalRedcatorCannotBeLinked:
+        raise ApiErrors(
+            {"teacherEmail": ["L’enseignant ne peut pas être lié à une offre sans établissement."]}, status_code=400
+        )
 
     return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
 

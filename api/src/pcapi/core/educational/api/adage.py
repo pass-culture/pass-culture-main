@@ -161,7 +161,7 @@ def autocomplete_educational_redactor_for_uai(
         if unaccented_candidate in f'{redactor["prenom"]} {redactor["nom"]}'.upper():
             result.append(redactor)
             continue
-        if use_email and unaccented_candidate in redactor["email"].upper():
+        if use_email and unaccented_candidate in redactor["mail"].upper():
             result.append(redactor)
             continue
     return result
