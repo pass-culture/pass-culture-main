@@ -181,16 +181,18 @@ def upsert_venue_contact(venue: models.Venue, contact_data: serialize_base.Venue
     """
     venue_contact = venue.contact
     if not venue_contact:
-        venue_contact = models.VenueContact(venue=venue)
+        venue_contact = models.VenueContact()
 
     modifications = {
         field: value
         for field, value in contact_data.dict().items()
         if venue_contact.field_exists_and_has_changed(field, value)
     }
+
     if not modifications:
         return venue
 
+    venue_contact.venue = venue
     venue_contact.email = contact_data.email
     venue_contact.website = contact_data.website
     venue_contact.phone_number = contact_data.phone_number
