@@ -38,10 +38,31 @@ class Returns200Test:
         assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/offre-assoc"
 
+    def test_create_offer_institution_link_to_teacher(self, client) -> None:
+        # Given
+        institution = EducationalInstitutionFactory(institutionId="0470009E")
+        stock = CollectiveStockFactory()
+        offer = stock.collectiveOffer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
+
+        # When
+        client = client.with_session_auth("pro@example.com")
+        data = {"educationalInstitutionId": institution.id, "teacherEmail": "maria.sklodowska@example.com"}
+        response = client.patch(f"/collective/offers/{humanize(offer.id)}/educational_institution", json=data)
+
+        # Then
+        assert response.status_code == 200
+        offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+        assert offer_db.institution == institution
+        assert offer_db.teacherEmail == "maria.sklodowska@example.com"
+
     def test_change_offer_institution_link(self, client: Any) -> None:
         # Given
         institution1 = EducationalInstitutionFactory()
-        stock = CollectiveStockFactory(collectiveOffer__institution=institution1)
+        stock = CollectiveStockFactory(
+            collectiveOffer__institution=institution1,
+            collectiveOffer__teacherEmail="pouet",
+        )
         offer = stock.collectiveOffer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
         institution2 = EducationalInstitutionFactory()
@@ -55,11 +76,15 @@ class Returns200Test:
         assert response.status_code == 200
         offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution2
+        assert offer_db.teacherEmail is None
 
     def test_delete_offer_institution_link(self, client: Any) -> None:
         # Given
         institution = EducationalInstitutionFactory()
-        stock = CollectiveStockFactory(collectiveOffer__institution=institution)
+        stock = CollectiveStockFactory(
+            collectiveOffer__institution=institution,
+            collectiveOffer__teacherEmail="pouet",
+        )
         offer = stock.collectiveOffer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
@@ -72,6 +97,7 @@ class Returns200Test:
         assert response.status_code == 200
         offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
         assert offer_db.institution is None
+        assert offer_db.teacherEmail is None
 
         assert len(adage_api_testing.adage_requests) == 0
 
