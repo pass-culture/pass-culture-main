@@ -6,6 +6,8 @@
  * An enumeration.
  */
 export enum StudentLevels {
+  COLL_GE_6E = 'Collège - 6e',
+  COLL_GE_5E = 'Collège - 5e',
   COLL_GE_4E = 'Collège - 4e',
   COLL_GE_3E = 'Collège - 3e',
   CAP_1RE_ANN_E = 'CAP - 1re année',
