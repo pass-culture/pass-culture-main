@@ -45,6 +45,7 @@ from pcapi.models.feature import Feature
 from . import base_configuration
 from . import templating
 from .custom_views.boost_pivot_view import BoostPivotView
+from .custom_views.cgr_pivot_view import CGRPivotView
 from .custom_views.cine_office_pivot_view import CineOfficePivotView
 from .custom_views.suspend_fraudulent_users_by_ids import SuspendFraudulentUsersByUserIdsView
 
@@ -204,6 +205,15 @@ def install_views(admin: Admin, session: Session) -> None:
             session,
             name="Pivot Boost",
             endpoint="boost",
+            category=Category.OFFRES_STRUCTURES_LIEUX,
+        )
+    )
+    admin.add_view(
+        CGRPivotView(
+            providers_models.CGRCinemaDetails,
+            session,
+            name="Pivot CGR",
+            endpoint="cgr",
             category=Category.OFFRES_STRUCTURES_LIEUX,
         )
     )
