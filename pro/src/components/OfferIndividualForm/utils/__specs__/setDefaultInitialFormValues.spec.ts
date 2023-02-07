@@ -45,6 +45,7 @@ describe('setDefaultInitialFormValues', () => {
           none: true,
         },
         hasMissingReimbursementPoint: false,
+        hasCreatedOffer: true,
       },
     ]
   })

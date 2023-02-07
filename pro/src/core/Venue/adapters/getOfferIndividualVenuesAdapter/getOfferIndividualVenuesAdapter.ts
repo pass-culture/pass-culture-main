@@ -41,6 +41,7 @@ const getOfferIndividualVenuesAdapter: TGetOfferIndividualVenuesAdapter =
           },
           bookingEmail: venue.bookingEmail || null,
           hasMissingReimbursementPoint: venue.hasMissingReimbursementPoint,
+          hasCreatedOffer: venue.hasCreatedOffer,
         }
       }
 
