@@ -27,6 +27,7 @@ def create_industrial_provider_external_bookings() -> None:
     logger.info("create_industrial_cinema_external_bookings")
     create_offerer_with_cds_venue_provider_and_external_bookings()
     create_offerer_with_boost_venue_provider_and_external_bookings()
+    create_offerer_with_cgr_provider_and_external_bookings()
     create_offerer_with_allocine_venue_provider_and_external_bookings()
     logger.info("create_industrial_titelive_external_bookings")
     create_offerer_with_titelive_venue_provider_and_external_bookings()
@@ -129,6 +130,19 @@ def create_offerer_with_boost_venue_provider_and_external_bookings() -> None:
     providers_factories.BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
     providers_factories.VenueProviderFactory(venue=venue, provider=boost_provider)
     logger.info("created ExternalBookings for Boost-synced offers")
+
+
+def create_offerer_with_cgr_provider_and_external_bookings() -> None:
+    logger.info("create_offerer_with_cgr_venue_provider_and_external_bookings")
+    cgr_provider = get_provider_by_local_class("CGRStocks")
+    provider_name = "CGR"
+    venue = _create_offers(provider_name, cgr_provider)
+    cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+        venue=venue, provider=cgr_provider, idAtProvider="passculture"
+    )
+    providers_factories.CGRCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+    providers_factories.VenueProviderFactory(venue=venue, provider=cgr_provider)
+    logger.info("created ExternalBookings for CGR-synced offers")
 
 
 def create_offerer_with_allocine_venue_provider_and_external_bookings() -> None:
