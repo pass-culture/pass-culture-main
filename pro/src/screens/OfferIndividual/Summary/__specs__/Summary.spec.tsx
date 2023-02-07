@@ -18,14 +18,15 @@ import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import {
+  individualOfferCategoryFactory,
   individualOfferFactory,
   individualOfferOffererFactory,
+  individualOfferSubCategoryFactory,
   individualOfferVenueFactory,
   individualStockFactory,
 } from 'utils/individualApiFactories'
@@ -147,38 +148,11 @@ jest.mock('hooks/useNewOfferCreationJourney', () => ({
   default: jest.fn().mockReturnValue(false),
 }))
 
-const categories = [
-  {
-    id: 'A',
-    proLabel: 'Catégorie A',
-    isSelectable: true,
-  },
-]
+const categories = [individualOfferCategoryFactory({ id: 'A' })]
+
 const subCategories = [
-  {
-    id: 'A-A',
-    categoryId: 'A',
-    proLabel: 'Sous catégorie online de A',
-    isEvent: false,
-    conditionalFields: [],
-    canBeDuo: false,
-    canBeEducational: false,
-    onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-    reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-    isSelectable: true,
-  },
-  {
-    id: 'A-B',
-    categoryId: 'A',
-    proLabel: 'Sous catégorie offline de A',
-    isEvent: false,
-    conditionalFields: [],
-    canBeDuo: false,
-    canBeEducational: false,
-    onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-    reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-    isSelectable: true,
-  },
+  individualOfferSubCategoryFactory({ categoryId: 'A' }),
+  individualOfferSubCategoryFactory({ categoryId: 'A' }),
 ]
 
 describe('Summary', () => {
