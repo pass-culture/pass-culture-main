@@ -1,6 +1,7 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
+import { StudentLevels } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -25,6 +26,14 @@ const FormParticipants = ({
 
   const isCLG6Active = useActiveFeature('WIP_ADD_CLG_6_5_COLLECTIVE_OFFER')
 
+  const filteredParticipantsOptions = isCLG6Active
+    ? participantsOptions
+    : participantsOptions.filter(
+        x =>
+          x.label !== StudentLevels.COLL_GE_6E &&
+          x.label !== StudentLevels.COLL_GE_5E
+      )
+
   return (
     <FormLayout.Section title="Participants">
       <FormLayout.Row
@@ -38,7 +47,7 @@ const FormParticipants = ({
         }
       >
         <CheckboxGroup
-          group={participantsOptions}
+          group={filteredParticipantsOptions}
           groupName="participants"
           legend="Cette offre s'adresse aux élèves de :"
           disabled={disableForm}
