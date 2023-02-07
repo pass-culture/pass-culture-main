@@ -153,6 +153,7 @@ describe('screens:OfferIndividual::Informations', () => {
         none: true,
       },
       hasMissingReimbursementPoint: false,
+      hasCreatedOffer: true,
     }
     props.venueId = venue.id
     contextValue.venueList = [
@@ -171,6 +172,7 @@ describe('screens:OfferIndividual::Informations', () => {
           none: true,
         },
         hasMissingReimbursementPoint: false,
+        hasCreatedOffer: true,
       },
     ]
 
@@ -200,6 +202,7 @@ describe('screens:OfferIndividual::Informations', () => {
           none: true,
         },
         hasMissingReimbursementPoint: false,
+        hasCreatedOffer: true,
       }
       props.venueId = venue.id
       contextValue.venueList = [
@@ -218,6 +221,7 @@ describe('screens:OfferIndividual::Informations', () => {
             none: true,
           },
           hasMissingReimbursementPoint: false,
+          hasCreatedOffer: true,
         },
       ]
     })

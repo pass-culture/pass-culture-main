@@ -70,6 +70,7 @@ describe('OfferIndividual section: venue', () => {
           none: true,
         },
         hasMissingReimbursementPoint: false,
+        hasCreatedOffer: true,
       },
       {
         id: 'BBAA',
@@ -85,6 +86,7 @@ describe('OfferIndividual section: venue', () => {
           none: true,
         },
         hasMissingReimbursementPoint: false,
+        hasCreatedOffer: true,
       },
       {
         id: 'CCAA',
@@ -100,6 +102,7 @@ describe('OfferIndividual section: venue', () => {
           none: true,
         },
         hasMissingReimbursementPoint: false,
+        hasCreatedOffer: true,
       },
       {
         id: 'CCBB',
@@ -115,6 +118,7 @@ describe('OfferIndividual section: venue', () => {
           none: true,
         },
         hasMissingReimbursementPoint: false,
+        hasCreatedOffer: true,
       },
     ]
 

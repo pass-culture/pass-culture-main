@@ -119,6 +119,7 @@ describe('OfferIndividualForm', () => {
           none: true,
         },
         hasMissingReimbursementPoint: false,
+        hasCreatedOffer: true,
       },
       {
         id: 'virtual',
@@ -134,6 +135,7 @@ describe('OfferIndividualForm', () => {
           none: true,
         },
         hasMissingReimbursementPoint: false,
+        hasCreatedOffer: true,
       },
     ]
     props = {
@@ -165,6 +167,7 @@ describe('OfferIndividualForm', () => {
             none: true,
           },
           hasMissingReimbursementPoint: false,
+          hasCreatedOffer: true,
         },
       ]
       props = { ...props, venueList: onlyVirtualVenueList }
@@ -199,6 +202,7 @@ describe('OfferIndividualForm', () => {
             none: true,
           },
           hasMissingReimbursementPoint: false,
+          hasCreatedOffer: true,
         },
       ]
       props = { ...props, venueList: onlyVirtualVenueList }

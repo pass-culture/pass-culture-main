@@ -26,6 +26,7 @@ describe('useFilteredVenueList', () => {
         none: true,
       },
       hasMissingReimbursementPoint: false,
+      hasCreatedOffer: true,
     }
     const venueList = [
       {
@@ -42,6 +43,7 @@ describe('useFilteredVenueList', () => {
           none: true,
         },
         hasMissingReimbursementPoint: false,
+        hasCreatedOffer: true,
       },
       {
         id: 'BB',
@@ -57,6 +59,7 @@ describe('useFilteredVenueList', () => {
           none: true,
         },
         hasMissingReimbursementPoint: false,
+        hasCreatedOffer: true,
       },
     ]
     const subCategories = [

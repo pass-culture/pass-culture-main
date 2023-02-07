@@ -159,6 +159,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       managingOffererId: 'OFID',
       withdrawalDetails: '',
       hasMissingReimbursementPoint: false,
+      hasCreatedOffer: true,
     }
 
     offer = {
@@ -249,6 +250,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
             none: true,
           },
           hasMissingReimbursementPoint: false,
+          hasCreatedOffer: true,
         },
       ],
       offererNames: [{ id: 'OFID', nonHumanizedId: 1, name: 'Offerer name' }],

@@ -68,6 +68,7 @@ describe('useGetOfferIndividualVenues', () => {
             none: true,
           },
           hasMissingReimbursementPoint: false,
+          hasCreatedOffer: true,
         },
       ]
       jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [apiVenue] })

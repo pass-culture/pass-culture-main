@@ -52,6 +52,7 @@ const getOfferIndividualVenuesAdapter = (
                 !Object.values(baseAccessibility).includes(true),
             },
             hasMissingReimbursementPoint: false,
+            hasCreatedOffer: true,
           }
         }
 
