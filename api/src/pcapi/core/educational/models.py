@@ -269,6 +269,7 @@ class CollectiveOffer(
     )
 
     isPublicApi: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False)
+    teacherEmail: str | None = sa.Column(sa.Text, nullable=True)
 
     @property
     def isEducational(self) -> bool:

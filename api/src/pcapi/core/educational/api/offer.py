@@ -13,6 +13,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
+from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.models import HasImageMixin
 from pcapi.core.offerers import api as offerers_api
@@ -361,7 +362,7 @@ def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: ty
 
 
 def update_collective_offer_educational_institution(
-    offer_id: int, educational_institution_id: int | None, user: User
+    offer_id: int, educational_institution_id: int | None, teacher_email: str | None
 ) -> educational_models.CollectiveOffer:
     offer = educational_repository.get_collective_offer_by_id(offer_id)
     if educational_institution_id is not None:
@@ -369,13 +370,30 @@ def update_collective_offer_educational_institution(
 
     if offer.collectiveStock and not offer.collectiveStock.isEditable:
         raise exceptions.CollectiveOfferNotEditable()
+
     offer.institutionId = educational_institution_id
+    offer.teacherEmail = None
 
     if offer.institutionId is not None:
         if not offer.institution.isActive:
             raise exceptions.EducationalInstitutionIsNotActive()
-    db.session.commit()
+    elif teacher_email is not None:
+        raise exceptions.EducationalRedcatorCannotBeLinked()
 
+    if offer.institutionId is not None and teacher_email:
+        possible_teachers = educational_api_adage.autocomplete_educational_redactor_for_uai(
+            uai=offer.institution.institutionId,
+            candidate=teacher_email,
+            use_email=True,
+        )
+        for teacher in possible_teachers:
+            if teacher["mail"] == teacher_email:
+                offer.teacherEmail = teacher_email
+                break
+        else:
+            raise exceptions.EducationalRedactorNotFound()
+
+    db.session.commit()
     search.async_index_collective_offer_ids([offer_id])
 
     if educational_institution_id is not None and offer.validation == offer_mixin.OfferValidationStatus.APPROVED:
