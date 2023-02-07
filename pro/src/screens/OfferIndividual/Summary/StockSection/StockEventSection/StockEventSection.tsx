@@ -41,17 +41,24 @@ const StockEventSection = ({ offer }: IStockEventSectionProps) => {
 
   return (
     <>
-      {displayedStocks.map(stock => (
-        <StockEventItem
-          key={`stock-${stock.id}`}
-          className={styles['stock-event-item']}
-          beginningDatetime={stock.beginningDatetime}
-          price={stock.price}
-          quantity={stock.quantity}
-          bookingLimitDatetime={stock.bookingLimitDatetime}
-          departmentCode={offer.venue.departmentCode}
-        />
-      ))}
+      {displayedStocks.map(stock => {
+        const priceCategory = offer.priceCategories?.find(
+          priceCategory => priceCategory.id === stock.priceCategoryId
+        )
+
+        return (
+          <StockEventItem
+            key={`stock-${stock.id}`}
+            className={styles['stock-event-item']}
+            beginningDatetime={stock.beginningDatetime}
+            price={stock.price}
+            priceCategory={priceCategory}
+            quantity={stock.quantity}
+            bookingLimitDatetime={stock.bookingLimitDatetime}
+            departmentCode={offer.venue.departmentCode}
+          />
+        )
+      })}
 
       {sortedStocks.length > NB_UNFOLDED_STOCK && (
         <Button

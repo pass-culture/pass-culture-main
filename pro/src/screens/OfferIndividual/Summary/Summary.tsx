@@ -17,6 +17,7 @@ import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOffer'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate, useOfferWizardMode } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import useNotification from 'hooks/useNotification'
@@ -30,6 +31,7 @@ import { ActionBar } from '../ActionBar'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 
 import { OfferSection } from './OfferSection'
+import { PriceCategoriesSection } from './PriceCategoriesSection/PriceCategoriesSection'
 import { StockSection } from './StockSection'
 import styles from './Summary.module.scss'
 
@@ -49,6 +51,9 @@ const Summary = () => {
   } = useOfferIndividualContext()
   const newOfferCreation = useNewOfferCreationJourney()
   const { logEvent } = useAnalytics()
+  const isPriceCategoriesActive = useActiveFeature(
+    'WIP_ENABLE_MULTI_PRICE_STOCKS'
+  )
 
   if (offer === null) {
     return null
@@ -145,9 +150,14 @@ const Summary = () => {
           )}
         </div>
       )}
+
       <SummaryLayout>
         <SummaryLayout.Content>
           <OfferSection conditionalFields={conditionalFields} offer={offer} />
+
+          {isPriceCategoriesActive && offer.isEvent && (
+            <PriceCategoriesSection offer={offer} />
+          )}
 
           <StockSection offer={offer} />
 
@@ -192,6 +202,7 @@ const Summary = () => {
           )}
         </SummaryLayout.Side>
       </SummaryLayout>
+
       {newOfferCreation && displayRedirectDialog && (
         <RedirectDialog
           icon={PartyIcon}

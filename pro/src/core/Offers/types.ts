@@ -105,6 +105,7 @@ export interface IOfferIndividualStock {
   isSoftDeleted: boolean
   offerId: string
   price: number
+  priceCategoryId?: number | null
   quantity?: number | null
   remainingQuantity: number | string
   activationCodesExpirationDatetime: Date | null

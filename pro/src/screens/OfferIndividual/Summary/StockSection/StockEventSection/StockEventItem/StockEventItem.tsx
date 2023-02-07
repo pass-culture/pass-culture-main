@@ -1,7 +1,10 @@
 import React from 'react'
 
+import { PriceCategoryResponseModel } from 'apiClient/v1'
 import { SummaryLayout } from 'components/SummaryLayout'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'utils/date'
+import { formatPrice } from 'utils/formatPrice'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 interface IStockEventItemProps {
@@ -13,6 +16,7 @@ interface IStockEventItemProps {
   bookingLimitDatetime: string | Date | null
   activationCodesExpirationDatetime?: Date | null
   departmentCode: string
+  priceCategory?: PriceCategoryResponseModel
 }
 
 const StockEventItem = ({
@@ -22,7 +26,12 @@ const StockEventItem = ({
   quantity,
   bookingLimitDatetime,
   departmentCode,
+  priceCategory,
 }: IStockEventItemProps): JSX.Element => {
+  const isPriceCategoriesActive = useActiveFeature(
+    'WIP_ENABLE_MULTI_PRICE_STOCKS'
+  )
+
   return (
     <div className={className}>
       {beginningDatetime && (
@@ -35,6 +44,7 @@ const StockEventItem = ({
           )}
         />
       )}
+
       {beginningDatetime && (
         <SummaryLayout.Row
           title="Horaire"
@@ -45,10 +55,18 @@ const StockEventItem = ({
           )}
         />
       )}
-      <SummaryLayout.Row
-        title="Prix"
-        description={`${price.toString().replace('.', ',')} €`}
-      />
+
+      {isPriceCategoriesActive && priceCategory ? (
+        <SummaryLayout.Row
+          title="Tarif"
+          description={`${priceCategory.price
+            .toString()
+            .replace('.', ',')} € - ${priceCategory.label}`}
+        />
+      ) : (
+        <SummaryLayout.Row title="Prix" description={formatPrice(price)} />
+      )}
+
       {bookingLimitDatetime !== null && (
         <SummaryLayout.Row
           title="Date limite de réservation"
@@ -59,6 +77,7 @@ const StockEventItem = ({
           )}
         />
       )}
+
       <SummaryLayout.Row
         title="Quantité"
         description={quantity ?? 'Illimité'}
