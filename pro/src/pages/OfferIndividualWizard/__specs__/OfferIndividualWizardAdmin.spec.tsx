@@ -16,7 +16,7 @@ import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { configureTestStore } from 'store/testUtils'
 
-import { OfferIndividualWizard } from '..'
+import OfferIndividualWizard from '../OfferIndividualWizard'
 
 const apiOffer: GetIndividualOfferResponseModel = {
   activeMediation: null,

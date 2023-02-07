@@ -25,7 +25,7 @@ import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { configureTestStore } from 'store/testUtils'
 
-import { OfferIndividualWizard } from '..'
+import OfferIndividualWizard from '../OfferIndividualWizard'
 
 jest.mock('core/Notification/constants', () => ({
   NOTIFICATION_TRANSITION_DURATION: 10,

@@ -3,13 +3,12 @@ import React, { useEffect } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
+import { subRoutesInscription } from 'app/AppRouter/routes_map'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 import Logo from 'ui-kit/Logo/Logo'
 
 import styles from './Signup.module.scss'
-import SignupConfirmation from './SignupConfirmation/SignupConfirmation'
-import SignupContainer from './SignupContainer/SignupContainer'
 import SignupUnavailable from './SignupUnavailable/SignupUnavailable'
 
 const Signup = ({ location }) => {
@@ -32,11 +31,17 @@ const Signup = ({ location }) => {
       </div>
       {isProAccountCreationEnabled ? (
         <Switch location={location}>
-          <Route component={SignupContainer} exact path="/inscription" />
-          <Route
-            component={SignupConfirmation}
-            path="/inscription/confirmation"
-          />
+          {subRoutesInscription.map(route => (
+            <Route
+              exact={route.exact}
+              key={
+                Array.isArray(route.path) ? route.path.join('|') : route.path
+              }
+              path={route.path}
+            >
+              <route.component />
+            </Route>
+          ))}
         </Switch>
       ) : (
         <SignupUnavailable />

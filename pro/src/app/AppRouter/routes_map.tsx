@@ -18,6 +18,11 @@ import CollectiveDataEdition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/C
 import OffererCreation from 'pages/Offerers/OffererCreation'
 import { OffererStats } from 'pages/OffererStats'
 import { OfferIndividualWizard } from 'pages/OfferIndividualWizard'
+import { Stocks } from 'pages/OfferIndividualWizard//Stocks'
+import { Confirmation } from 'pages/OfferIndividualWizard/Confirmation'
+import { Offer } from 'pages/OfferIndividualWizard/Offer'
+import { PriceCategories } from 'pages/OfferIndividualWizard/PriceCategories'
+import { Summary } from 'pages/OfferIndividualWizard/Summary'
 import OffersRoute from 'pages/Offers'
 import OfferType from 'pages/OfferType'
 import Reimbursements from 'pages/Reimbursements'
@@ -25,6 +30,8 @@ import SetPassword from 'pages/SetPassword/SetPassword'
 import SetPasswordConfirm from 'pages/SetPasswordConfirm/SetPasswordConfirm'
 import SignIn from 'pages/SignIn/SignIn'
 import Signup from 'pages/Signup/Signup'
+import SignupConfirmation from 'pages/Signup/SignupConfirmation/SignupConfirmation'
+import SignupContainer from 'pages/Signup/SignupContainer/SignupContainer'
 import SignUpValidation from 'pages/SignUpValidation'
 import { UserProfile } from 'pages/User'
 import { VenueCreation } from 'pages/VenueCreation'
@@ -297,11 +304,14 @@ const offerPath = '/offre/individuelle/:offerId'
 export const subRoutesOfferIndividualWizard = [
   {
     path: [
+      `/offre/individuelle/creation/informations`,
       `${offerPath}/creation/informations`,
       `${offerPath}/brouillon/informations`,
       `${offerPath}/informations`,
     ],
     title: 'Détails de l’offre',
+    component: Offer,
+    exact: true,
   },
   {
     path: [
@@ -310,6 +320,8 @@ export const subRoutesOfferIndividualWizard = [
       `${offerPath}/tarifs`,
     ],
     title: 'Vos tarifs',
+    component: PriceCategories,
+    exact: true,
   },
   {
     path: [
@@ -318,6 +330,8 @@ export const subRoutesOfferIndividualWizard = [
       `${offerPath}/stocks`,
     ],
     title: 'Vos stocks',
+    component: Stocks,
+    exact: true,
   },
   {
     path: [
@@ -326,6 +340,8 @@ export const subRoutesOfferIndividualWizard = [
       `${offerPath}/recapitulatif`,
     ],
     title: 'Récapitulatif',
+    component: Summary,
+    exact: true,
   },
   {
     path: [
@@ -334,11 +350,24 @@ export const subRoutesOfferIndividualWizard = [
       `${offerPath}/confirmation`,
     ],
     title: 'Confirmation',
+    component: Confirmation,
+    exact: true,
   },
 ]
 
 export const subRoutesInscription = [
-  { path: '/inscription', title: 'S’inscrire' },
+  {
+    path: '/inscription',
+    title: 'S’inscrire',
+    component: SignupContainer,
+    exact: true,
+  },
+  {
+    path: '/inscription/confirmation',
+    title: 'S’inscrire',
+    component: SignupConfirmation,
+    exact: false,
+  },
 ]
 
 export const subRoutesCollectiveOfferEdition = [
