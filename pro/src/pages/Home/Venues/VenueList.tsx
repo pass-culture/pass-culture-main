@@ -37,6 +37,7 @@ const VenueList = ({
           initialOpenState={
             hasNewOfferCreationJourney ? !virtualVenue.hasCreatedOffer : false
           }
+          hasCreatedOffer={virtualVenue.hasCreatedOffer}
         />
       )}
 
