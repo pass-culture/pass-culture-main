@@ -89,7 +89,9 @@ const OfferIndividualBreadcrumb = ({
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
       }[mode],
-      isActive: isPriceCategoriesActive ? hasPriceCategories : hasOffer,
+      isActive: isPriceCategoriesActive
+        ? (isEvent && hasPriceCategories) || (!isEvent && hasOffer)
+        : hasOffer,
     },
   ]
 
