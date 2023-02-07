@@ -29,7 +29,6 @@ def upgrade() -> None:
         sa.Column("offerId", sa.BigInteger(), nullable=False),
         sa.Column("price", sa.Numeric(precision=10, scale=2), nullable=False),
         sa.Column("priceCategoryLabelId", sa.BigInteger(), nullable=False),
-        sa.ForeignKeyConstraint(["offerId"], ["offer.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(
             ["priceCategoryLabelId"],
             ["price_category_label.id"],
