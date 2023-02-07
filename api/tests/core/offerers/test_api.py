@@ -299,7 +299,7 @@ class EditVenueTest:
         user_offerer = offerers_factories.UserOffererFactory(
             user__email="user.pro@test.com",
         )
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, contact=None)
 
         contact_data = serialize_base.VenueContactModel(email="other.contact@venue.com", phone_number="0788888888")
 
@@ -309,6 +309,17 @@ class EditVenueTest:
         assert venue.contact
         assert venue.contact.phone_number == contact_data.phone_number
         assert venue.contact.email == contact_data.email
+
+    def test_no_venue_contact_created_if_no_data(self, app):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__email="user.pro@test.com",
+        )
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, contact=None)
+        empty_contact_data = serialize_base.VenueContactModel()
+
+        offerers_api.update_venue(venue, contact_data=empty_contact_data, author=user_offerer.user)
+
+        assert offerers_models.VenueContact.query.count() == 0
 
     def test_cannot_update_virtual_venue_name(self):
         user = users_factories.UserFactory()
