@@ -229,6 +229,7 @@ class Returns200Test:
                     "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
                     "fieldsUpdated": [],
                     "hasActivationCode": False,
+                    "priceCategoryId": stock.priceCategoryId,
                     "id": humanize(stock.id),
                     "idAtProviders": None,
                     "isBookable": True,

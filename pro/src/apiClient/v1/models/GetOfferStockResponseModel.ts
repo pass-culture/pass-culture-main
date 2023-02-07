@@ -22,6 +22,7 @@ export type GetOfferStockResponseModel = {
   lastProviderId?: string | null;
   offerId: string;
   price: number;
+  priceCategoryId?: number | null;
   quantity?: number | null;
   remainingQuantity?: (number | string) | null;
 };
