@@ -274,14 +274,14 @@ class GetOfferProductResponseModel(BaseModel):
 
 
 class GetOfferStockResponseModel(BaseModel):
-    beginningDatetime: datetime | None
     activationCodesExpirationDatetime: datetime | None
+    beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
-    dnBookedQuantity: int = Field(alias="bookingsQuantity")
     cancellationLimitDate: datetime | None
     dateCreated: datetime
     dateModified: datetime
     dateModifiedAtLastProvider: datetime | None
+    dnBookedQuantity: int = Field(alias="bookingsQuantity")
     fieldsUpdated: list[str]
     hasActivationCode: bool
     id: str
@@ -293,6 +293,7 @@ class GetOfferStockResponseModel(BaseModel):
     lastProviderId: str | None
     offerId: str
     price: float
+    priceCategoryId: int | None
     quantity: int | None
     remainingQuantity: int | str | None
 
