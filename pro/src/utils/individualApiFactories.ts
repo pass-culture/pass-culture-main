@@ -4,11 +4,15 @@ import {
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { OfferStatus } from 'apiClient/v2'
+import { REIMBURSEMENT_RULES } from 'core/Finances'
+import { CATEGORY_STATUS } from 'core/Offers'
 import {
+  IOfferCategory,
   IOfferIndividual,
   IOfferIndividualOfferer,
   IOfferIndividualStock,
   IOfferIndividualVenue,
+  IOfferSubCategory,
 } from 'core/Offers/types'
 
 let offerId = 1
@@ -16,6 +20,8 @@ let stockId = 1
 let venueId = 1
 let offererId = 1
 let priceCategoryId = 1
+let offerCategoryId = 1
+let offerSubCategoryId = 1
 
 export const individualOfferFactory = (
   customOffer: Partial<IOfferIndividual> = {},
@@ -146,4 +152,29 @@ export const priceCategoryFactory = (
   label: 'mon label',
   price: 66.6,
   ...customPriceCategories,
+})
+
+export const individualOfferCategoryFactory = (
+  customOfferCategory: Partial<IOfferCategory> = {}
+): IOfferCategory => ({
+  id: String(offerCategoryId++),
+  proLabel: `catégorie ${offerCategoryId}`,
+  isSelectable: true,
+  ...customOfferCategory,
+})
+
+export const individualOfferSubCategoryFactory = (
+  customOfferSubCategory: Partial<IOfferSubCategory> = {}
+): IOfferSubCategory => ({
+  id: String(offerSubCategoryId++),
+  categoryId: 'A',
+  proLabel: `sous catégorie ${offerSubCategoryId}`,
+  isEvent: false,
+  conditionalFields: [],
+  canBeDuo: false,
+  canBeEducational: false,
+  onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
+  reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
+  isSelectable: true,
+  ...customOfferSubCategory,
 })
