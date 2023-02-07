@@ -17,6 +17,7 @@ export type TOfferIndividualVenue = {
   accessibility: IAccessibiltyFormValues
   bookingEmail?: string | null
   hasMissingReimbursementPoint: boolean
+  hasCreatedOffer: boolean
 }
 
 export type VenueCollectiveInformation = Pick<

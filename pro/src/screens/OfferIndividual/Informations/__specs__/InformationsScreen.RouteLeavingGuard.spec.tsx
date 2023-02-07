@@ -259,6 +259,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         none: true,
       },
       hasMissingReimbursementPoint: false,
+      hasCreatedOffer: true,
     }
 
     contextOverride = {
@@ -278,6 +279,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
             none: true,
           },
           hasMissingReimbursementPoint: false,
+          hasCreatedOffer: true,
         },
       ],
       offererNames: [{ id: 'A', nonHumanizedId: 1, name: 'mon offerer A' }],

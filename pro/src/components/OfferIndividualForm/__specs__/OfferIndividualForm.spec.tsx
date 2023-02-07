@@ -149,6 +149,7 @@ describe('OfferIndividualForm', () => {
           none: true,
         },
         hasMissingReimbursementPoint: false,
+        hasCreatedOffer: true,
       },
       {
         id: 'virtual',
@@ -164,6 +165,7 @@ describe('OfferIndividualForm', () => {
           none: true,
         },
         hasMissingReimbursementPoint: false,
+        hasCreatedOffer: true,
       },
     ]
     props = {
