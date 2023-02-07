@@ -38,14 +38,8 @@ import pcapi.core.educational.models as educational_models
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
-from pcapi.core.offers.models import OfferValidationConfig
-from pcapi.core.providers.models import AllocinePivot
-from pcapi.core.providers.models import BoostCinemaDetails
-from pcapi.core.providers.models import CDSCinemaDetails
-from pcapi.core.providers.models import Provider
-from pcapi.core.providers.models import VenueProvider
-from pcapi.core.users.models import User
-from pcapi.core.users.models import UserEmailHistory
+import pcapi.core.providers.models as providers_models
+import pcapi.core.users.models as users_models
 from pcapi.models.feature import Feature
 
 from . import base_configuration
@@ -82,7 +76,7 @@ def install_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         view.BeneficiaryView(
-            User, session, name="Bénéficiaires", endpoint="support_beneficiary", category=Category.SUPPORT
+            users_models.User, session, name="Bénéficiaires", endpoint="support_beneficiary", category=Category.SUPPORT
         )
     )
     admin.add_view(
@@ -136,7 +130,7 @@ def install_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         ProUserView(
-            User,
+            users_models.User,
             session,
             name="Comptes Pros",
             category=Category.USERS,
@@ -145,7 +139,7 @@ def install_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         VenueProviderView(
-            VenueProvider,
+            providers_models.VenueProvider,
             session,
             name="Imports automatiques",
             endpoint="venue_providers",
@@ -154,7 +148,7 @@ def install_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         AdminUserView(
-            User,
+            users_models.User,
             session,
             name="Comptes admin",
             category=Category.USERS,
@@ -163,7 +157,7 @@ def install_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         BeneficiaryUserView(
-            User,
+            users_models.User,
             session,
             name="Comptes Bénéficiaires",
             category=Category.USERS,
@@ -172,14 +166,18 @@ def install_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         PartnerUserView(
-            User, session, name="Comptes Jeune et Grand Public", category=Category.USERS, endpoint="partner_users"
+            users_models.User,
+            session,
+            name="Comptes Jeune et Grand Public",
+            category=Category.USERS,
+            endpoint="partner_users",
         )
     )
     admin.add_view(FeatureView(Feature, session, name="Feature Flipping", category=None))
     admin.add_view(ApiKeyView(offerers_models.ApiKey, session, name="Clés API", category=Category.USERS))
     admin.add_view(
         UserEmailHistoryView(
-            UserEmailHistory,
+            users_models.UserEmailHistory,
             session,
             name="Historique des modifications emails",
             category=Category.USERS,
@@ -187,11 +185,13 @@ def install_views(admin: Admin, session: Session) -> None:
         )
     )
     admin.add_view(
-        AllocinePivotView(AllocinePivot, session, name="Pivot Allocine", category=Category.OFFRES_STRUCTURES_LIEUX)
+        AllocinePivotView(
+            providers_models.AllocinePivot, session, name="Pivot Allocine", category=Category.OFFRES_STRUCTURES_LIEUX
+        )
     )
     admin.add_view(
         CineOfficePivotView(
-            CDSCinemaDetails,
+            providers_models.CDSCinemaDetails,
             session,
             name="Pivot Ciné Office",
             endpoint="cine-office",
@@ -200,7 +200,7 @@ def install_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         BoostPivotView(
-            BoostCinemaDetails,
+            providers_models.BoostCinemaDetails,
             session,
             name="Pivot Boost",
             endpoint="boost",
@@ -209,7 +209,7 @@ def install_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         ProviderView(
-            Provider,
+            providers_models.Provider,
             session,
             name="Fournisseurs d'import",
             endpoint="providers",
@@ -268,7 +268,7 @@ def install_views(admin: Admin, session: Session) -> None:
 
     admin.add_view(
         offer_view.ImportConfigValidationOfferView(
-            OfferValidationConfig,
+            offers_models.OfferValidationConfig,
             session,
             name="Configuration des règles de fraude",
             endpoint="fraud_rules_configuration",
