@@ -38,7 +38,7 @@ const VenueList = ({
       {physicalVenues?.map(venue => (
         <Venue
           id={venue.id}
-          key={venue.id}
+          key={selectedOffererId + '-' + venue.id}
           name={venue.name}
           offererId={selectedOffererId}
           publicName={venue.publicName}
