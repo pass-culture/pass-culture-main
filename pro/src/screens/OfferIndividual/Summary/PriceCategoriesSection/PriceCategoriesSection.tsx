@@ -1,3 +1,5 @@
+import React from 'react'
+
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { SummaryLayout } from 'components/SummaryLayout'
 import {
@@ -43,7 +45,7 @@ export const PriceCategoriesSection = ({ offer }: Props) => {
       title="Tarifs"
       editLink={editLink}
       onLinkClick={logEditEvent}
-      aria-label="Modifier détails de l’offre"
+      aria-label="Modifier les tarifs de l’offre"
     >
       {offer.priceCategories?.map(priceCategory => (
         <div key={priceCategory.id} className={styles['price-category']}>

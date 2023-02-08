@@ -54,6 +54,7 @@ describe('Summary stock section trackers', () => {
       setLogEvent: null,
     }))
   })
+
   it('should track creation summary (v2)', async () => {
     renderStockSection(props, '/creation/recapitulatif')
 

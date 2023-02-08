@@ -1,3 +1,4 @@
+/* istanbul ignore file: Those are test helpers, their coverage is not relevant */
 import { render } from '@testing-library/react'
 import type { LocationDescriptor } from 'history'
 import React, { ReactNode } from 'react'

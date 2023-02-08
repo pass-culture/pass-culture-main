@@ -1,3 +1,4 @@
+/* istanbul ignore file: Those are test helpers, their coverage is not relevant */
 import {
   PriceCategoryResponseModel,
   SubcategoryIdEnum,
