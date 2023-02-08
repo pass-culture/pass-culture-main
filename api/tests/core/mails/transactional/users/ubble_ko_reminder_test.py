@@ -245,9 +245,7 @@ class SendUbbleKoReminderEmailTest:
 
         assert len(push_testing.requests) == 1
 
-        assert push_testing.requests[0] == {
-            "can_be_asynchronously_retried": True,
-            "event_name": "has_ubble_ko_status",
-            "event_payload": {},
-            "user_ids": [user1.id, user2.id],
-        }
+        assert push_testing.requests[0]["can_be_asynchronously_retried"] is True
+        assert push_testing.requests[0]["event_name"] == "has_ubble_ko_status"
+        assert push_testing.requests[0]["event_payload"] == {}
+        assert set(push_testing.requests[0]["user_ids"]) == {user1.id, user2.id}
