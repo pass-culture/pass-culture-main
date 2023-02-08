@@ -4,5 +4,6 @@
 
 export type PatchCollectiveOfferEducationalInstitution = {
   educationalInstitutionId?: number | null;
+  teacherEmail?: string | null;
 };
 
