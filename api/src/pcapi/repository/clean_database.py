@@ -59,6 +59,8 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     educational_models.CollectiveOffer.query.delete()
     educational_models.CollectiveOfferTemplate.query.delete()
     offers_models.Offer.query.delete()
+    offers_models.PriceCategory.query.delete()
+    offers_models.PriceCategoryLabel.query.delete()
     offers_models.Product.query.delete()
     # Handle relationship loop: Venue->BusinessUnit->BankInformation->Venue.
     offerers_models.Venue.query.update({"businessUnitId": None}, synchronize_session=False)
