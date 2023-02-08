@@ -84,6 +84,13 @@ def format_amount(amount: float | None) -> str:
     return f"{amount:,.2f} €".replace(",", "\u202f").replace(".", ",")
 
 
+def format_cents(amount_in_cents: float | None) -> str:
+    if amount_in_cents is None:
+        amount_in_cents = 0.0
+
+    return format_amount(amount_in_cents / 100)
+
+
 def format_bool(data: bool | None) -> str:
     if data is None:
         return ""
@@ -201,6 +208,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_booking_status"] = format_booking_status
     app.jinja_env.filters["format_booking_status_long"] = format_booking_status_long
     app.jinja_env.filters["format_bool"] = format_bool
+    app.jinja_env.filters["format_cents"] = format_cents
     app.jinja_env.filters["format_string_list"] = format_string_list
     app.jinja_env.filters["format_date"] = format_date
     app.jinja_env.filters["format_deposit_type"] = format_deposit_type

@@ -8,6 +8,7 @@ import sqlalchemy as sa
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2
+from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
@@ -45,6 +46,22 @@ def _get_individual_bookings(form: individual_booking_forms.GetIndividualBooking
             sa.orm.joinedload(bookings_models.Booking.user).load_only(
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName
             ),
+            sa.orm.joinedload(bookings_models.Booking.offerer).load_only(
+                offerers_models.Offerer.id, offerers_models.Offerer.name
+            ),
+            sa.orm.joinedload(bookings_models.Booking.venue).load_only(
+                # for name and link (build_pc_pro_venue_link)
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.isVirtual,
+                offerers_models.Venue.managingOffererId,
+            ),
+            sa.orm.joinedload(bookings_models.Booking.pricings)
+            .load_only(finance_models.Pricing.amount)
+            .joinedload(finance_models.Pricing.cashflows)
+            .load_only(finance_models.Cashflow.batchId)
+            .joinedload(finance_models.Cashflow.batch)
+            .load_only(finance_models.CashflowBatch.label),
         )
     )
 
