@@ -55,7 +55,13 @@ const serializer = {
   // Unchanged keys
   // Need to put them here for ts not to raise an error
   offererId: (payload: PatchCollectiveOfferBodyModel) => payload,
-  venueId: (payload: PatchCollectiveOfferBodyModel) => payload,
+  venueId: (
+    payload: PatchCollectiveOfferBodyModel,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    venueId: offer.venueId,
+  }),
   category: (payload: PatchCollectiveOfferBodyModel) => payload,
   eventAddress: (
     payload: PatchCollectiveOfferBodyModel,
