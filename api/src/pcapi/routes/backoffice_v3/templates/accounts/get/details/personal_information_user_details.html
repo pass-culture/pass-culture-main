@@ -1,113 +1,103 @@
-<div class="card my-4" id="user-details">
-    <div class="card-body">
+<div class="card my-2 shadow-sm" id="user-details">
+    <div class="card-header bg-white">
         <h5 class="card-title text-bold fs-2 m-3">
             Détails utilisateur
         </h5>
+    </div>
 
-        <div class="card-body">
+    <div class="card-body">
 
-            <div class="row py-3">
+        <div class="row">
+            <div class="col-4">
+                <div class="vstack gap-1">
+                    <div class="row justify-content-start">
+                        <div class="col">
+                            <h6 class="fs-6 fw-bold">Nom </h6>
+                            <p>{{ user.lastName | upper | escape }} </p>
+                        </div>
+                        <div class="col">
+                            <h6 class="fs-6 fw-bold">Prénom </h6>
+                            <p>{{ user.firstName | escape }} </p>
+                        </div>
+                    </div>
+                    <div>
+                        <h6 class="fs-6 fw-bold">Date de naissance </h6>
+                        {% if user.birth_date %}
+                            <p>{{ user.birth_date | format_date }} ({{ user.age | empty_string_if_null }} ans) </p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h6 class="fs-6 fw-bold">Date de création du compte </h6>
+                        <p>{{ user.dateCreated | format_date }} </p>
+                    </div>
 
-                <div class="col-4">
-                    <h6 class="fs-6 fw-bold">Nom </h6>
-                    <p>{{ user.lastName | upper | escape }} </p>
                 </div>
+            </div>
+            <div class="col-4">
+                <div class="vstack gap-3">
+                    <div>
+                        <h6 class="fs-6 fw-bold">Email </h6>
+                        <span>{{ user.email | escape }} </span>
+                        {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
+                            <form action="{{ url_for('.resend_validation_email', user_id=user.id) }}" method="POST">
+                                {{ resend_email_validation_form.csrf_token }}
 
-                <div class="col-4">
-                    <h6 class="fs-6 fw-bold">Prénom </h6>
-                    <p>{{ user.firstName | escape }} </p>
-                </div>
+                                <button class="btn btn-outline-primary btn-sm fw-bold mt-1">
+                                    Renvoyer l'email de validation
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h6 class="fs-6 fw-bold">Numéro de téléphone </h6>
+                        <span>{{ user.phoneNumber | format_phone_number | escape }} </span>
+                        {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
 
-                <div class="col-4">
-                    <h6 class="fs-6 fw-bold">Email </h6>
-                    <p>{{ user.email | escape }} </p>
-                    {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
-                        <form action="{{ url_for('.resend_validation_email', user_id=user.id) }}" method="POST">
-                            {{ resend_email_validation_form.csrf_token }}
+                            <form action="{{ url_for('.send_validation_code', user_id=user.id) }}" method="POST">
+                                {{ send_validation_code_form.csrf_token }}
 
-                            <button class="btn btn-outline-primary lead fw-bold mt-2">
-                                Renvoyer l'email de validation
-                            </button>
-                        </form>
-                    {% endif %}
+                                <button class="btn btn-outline-primary btn-sm fw-bold mt-1">
+                                    Envoyer un code de validation
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+
                 </div>
 
             </div>
+            <div class="col-4">
+                <div class="vstack gap-3">
+                    <div>
+                        <h6 class="fs-6 fw-bold">Numéro de la pièce d'identité</h6>
+                        <p>{{ user.idPieceNumber | empty_string_if_null }} </p>
+                    </div>
+                    <div>
+                        <h6 class="fs-6 fw-bold">Adresse</h6>
+                        <p>{{ user.address }}</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-3"><h6 class="fs-6 fw-bold">Code postal</h6>
+                            <p>{{ user.postalCode | empty_string_if_null }}</p></div>
+                        <div class="col"><h6 class="fs-6 fw-bold">Ville</h6>
+                            <p>{{ user.city | empty_string_if_null }}</p></div>
+                    </div>
 
-            <div class="row py-3">
-
-                <div class="col-4">
-                    <h6 class="fs-6 fw-bold">Numéro de téléphone </h6>
-                    <p>{{ user.phoneNumber | format_phone_number | escape }} </p>
-                    {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
-
-                        <form action="{{ url_for('.send_validation_code', user_id=user.id) }}" method="POST">
-                            {{ send_validation_code_form.csrf_token }}
-
-                            <button class="btn btn-outline-primary lead fw-bold mt-2">
-                                Envoyer un code de validation
-                            </button>
-                        </form>
-                    {% endif %}
                 </div>
-
-                <div class="col-4">
-                    <h6 class="fs-6 fw-bold">Date de naissance </h6>
-                    {% if user.birth_date %}
-                        <p>{{ user.birth_date | format_date }}  ({{ user.age | empty_string_if_null }} ans) </p>
-                    {% endif %}
-                </div>
-
-                <div class="col-4">
-                    <h6 class="fs-6 fw-bold">Date de création du compte </h6>
-                    <p>{{ user.dateCreated | format_date }} </p>
-                </div>
-
             </div>
-
-            <div class="row py-3">
-
-                <div class="col-3">
-                    <h6 class="fs-6 fw-bold">Numéro de la pièce d'identité</h6>
-                    <p>{{ user.idPieceNumber | empty_string_if_null }} </p>
-                </div>
-
-                <div class="col-3">
-                    <h6 class="fs-6 fw-bold">Adresse</h6>
-                    <p>{{ user.address }}</p>
-                </div>
-
-                <div class="col-3">
-                    <h6 class="fs-6 fw-bold">Code postal</h6>
-                    <p>{{ user.postalCode | empty_string_if_null }}</p>
-                </div>
-
-                <div class="col-3">
-                    <h6 class="fs-6 fw-bold">Ville</h6>
-                    <p>{{ user.city | empty_string_if_null }}</p>
-                </div>
-
-            </div>
-
-            <div class="row py-3">
-
-                <div class="col-4">
-                </div>
-
-                <div class="col-4">
-                </div>
-
-                <div class="col-4">
-                    {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
-                        <a href="{{ url_for('.edit_public_account', user_id=user.id) }}"
-                           class="btn btn-outline-primary lead fw-bold mt-2">
-                            Modifier les informations
-                        </a>
-                    {% endif %}
-                </div>
-
-            </div>
-
         </div>
     </div>
+    {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
+        <div class="card-footer bg-white">
+            <div class="mx-auto p-3">
+                <div class="text-center">
+                    <a href="{{ url_for('.edit_public_account', user_id=user.id) }}"
+                       class="btn btn-outline-primary lead fw-bold mt-2">
+                        Modifier les informations
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    {% endif %}
 </div>
