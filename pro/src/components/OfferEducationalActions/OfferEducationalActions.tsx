@@ -15,6 +15,7 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
+  toDateStrippedOfTimezone,
 } from 'utils/date'
 
 import CancelCollectiveBookingModal from '../CancelCollectiveBookingModal'
@@ -45,11 +46,11 @@ const OfferEducationalActions = ({
   const lastBookingStatus = isCollectiveOffer(offer)
     ? offer.lastBookingStatus
     : null
+  const offerEventDate =
+    isCollectiveOffer(offer) && offer.collectiveStock
+      ? offer.collectiveStock.beginningDatetime
+      : null
   const getBookingLink = () => {
-    const offerEventDate =
-      isCollectiveOffer(offer) && offer.collectiveStock
-        ? offer.collectiveStock.beginningDatetime
-        : null
     if (offerEventDate && lastBookingId) {
       const eventDateFormated = formatBrowserTimezonedDateAsUTC(
         new Date(offerEventDate),
@@ -123,7 +124,11 @@ const OfferEducationalActions = ({
                 <div className={style.separator} />{' '}
               </>
             )}
-            {getCollectiveStatusLabel(offer?.status, lastBookingStatus || '')}
+            {getCollectiveStatusLabel(
+              offer?.status,
+              offerEventDate ? toDateStrippedOfTimezone(offerEventDate) : null,
+              lastBookingStatus || ''
+            )}
           </>
         )}
       </div>

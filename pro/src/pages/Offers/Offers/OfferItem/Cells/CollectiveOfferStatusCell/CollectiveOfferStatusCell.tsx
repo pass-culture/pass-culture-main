@@ -11,13 +11,38 @@ import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.
 import { ReactComponent as StatusPendingIcon } from 'icons/ico-status-pending.svg'
 import { ReactComponent as StatusRejectedIcon } from 'icons/ico-status-rejected.svg'
 import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
+import { getToday } from 'utils/date'
 
 import styles from '../../OfferItem.module.scss'
 
 import style from './CollectiveOfferStatusCell.module.scss'
 
+export const getSoldOutStatusLabel = (lastBookingStatus?: string) => {
+  return lastBookingStatus == 'PENDING' ? (
+    <CollectiveStatusLabel
+      className={style['status-pre-booked']}
+      icon={
+        <StatusPreBookedIcon
+          className={cn(
+            style['status-label-icon'],
+            style['status-pre-booked-icon']
+          )}
+        />
+      }
+      label="préréservée"
+    />
+  ) : (
+    <CollectiveStatusLabel
+      className={style['status-booked']}
+      icon={<StatusValidatedIcon className={style['status-label-icon']} />}
+      label="réservée"
+    />
+  )
+}
+
 export const getCollectiveStatusLabel = (
   offerStatus: OfferStatus,
+  offerEventDate?: Date | null,
   lastBookingStatus?: string
 ) => {
   switch (offerStatus) {
@@ -55,27 +80,21 @@ export const getCollectiveStatusLabel = (
         />
       )
     case OfferStatus.SOLD_OUT:
-      return lastBookingStatus == 'PENDING' ? (
-        <CollectiveStatusLabel
-          className={style['status-pre-booked']}
-          icon={
-            <StatusPreBookedIcon
-              className={cn(
-                style['status-label-icon'],
-                style['status-pre-booked-icon']
-              )}
-            />
-          }
-          label="préréservée"
-        />
-      ) : (
-        <CollectiveStatusLabel
-          className={style['status-booked']}
-          icon={<StatusValidatedIcon className={style['status-label-icon']} />}
-          label="réservée"
-        />
-      )
+      return getSoldOutStatusLabel(lastBookingStatus)
     case OfferStatus.EXPIRED:
+      if (offerEventDate && offerEventDate > getToday()) {
+        return lastBookingStatus ? (
+          getSoldOutStatusLabel(lastBookingStatus)
+        ) : (
+          <CollectiveStatusLabel
+            className={style['status-active']}
+            icon={
+              <StatusValidatedIcon className={style['status-label-icon']} />
+            }
+            label="publiée"
+          />
+        )
+      }
       return lastBookingStatus ? (
         <CollectiveStatusLabel
           className={style['status-ended']}
@@ -98,6 +117,7 @@ const CollectiveOfferStatusCell = ({ offer }: { offer: Offer }) => (
   <td className={styles['status-column']}>
     {getCollectiveStatusLabel(
       offer.status,
+      offer.stocks[0] ? offer.stocks[0].beginningDatetime : null,
       offer.educationalBooking?.booking_status
     )}
   </td>
