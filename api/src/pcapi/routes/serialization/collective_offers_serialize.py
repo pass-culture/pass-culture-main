@@ -499,7 +499,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     subcategoryId: SubcategoryIdEnum | None
     domains: list[int] | None
     interventionArea: list[str] | None
-    venueId: int | None
+    venueId: str | None
 
     @validator("name", allow_reuse=True)
     def validate_name(cls, name: str | None) -> str | None:
@@ -550,7 +550,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         return booking_emails
 
     @validator("venueId", allow_reuse=True)
-    def validate_venue_id(cls, venue_id: int | None) -> int | None:
+    def validate_venue_id(cls, venue_id: str | None) -> str | None:
         if venue_id is None:
             raise ValueError("venue_id cannot be NULL.")
         return venue_id

@@ -192,9 +192,9 @@ class Returns404Test:
         )
         offer = CollectiveOfferFactory(venue__managingOfferer=offerer)
         venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
-
         # When
-        data = {"venueId": venue2.id}
+        humanized_venue = humanize(venue2.id)
+        data = {"venueId": humanized_venue}
         response = client.with_session_auth("user@example.com").patch(
             f"/collective/offers/{humanize(offer.id)}", json=data
         )
