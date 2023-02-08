@@ -331,7 +331,9 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     if (!formik.dirty) {
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.STOCKS,
-        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        to: isPriceCategoriesActive
+          ? OFFER_WIZARD_STEP_IDS.TARIFS
+          : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,

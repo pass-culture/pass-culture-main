@@ -5,14 +5,21 @@ import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+  OFFER_FORM_NAVIGATION_OUT,
+} from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate, useOfferWizardMode } from 'hooks'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
 import { getSuccessMessage } from '../utils'
+import { logTo } from '../utils/logTo'
 
 import { usePriceCategoriesForm } from './form/useForm'
 import { PriceCategoriesForm } from './PriceCategoriesForm'
@@ -23,6 +30,7 @@ export interface IPriceCategories {
 
 const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
   const { setOffer } = useOfferIndividualContext()
+  const { logEvent } = useAnalytics()
   const [
     isSubmittingFromRouteLeavingGuard,
     setIsSubmittingFromRouteLeavingGuard,
@@ -39,18 +47,31 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
     if (isSubmittingFromRouteLeavingGuard) {
       return
     }
-    navigate(
-      getOfferIndividualUrl({
-        offerId: offer.id,
-        step:
-          mode === OFFER_WIZARD_MODE.EDITION
-            ? OFFER_WIZARD_STEP_IDS.SUMMARY
-            : isClickingDraft
-            ? OFFER_WIZARD_STEP_IDS.TARIFS
-            : OFFER_WIZARD_STEP_IDS.STOCKS,
-        mode,
-      })
-    )
+    const afterSubmitUrl = getOfferIndividualUrl({
+      offerId: offer.id,
+      step:
+        mode === OFFER_WIZARD_MODE.EDITION
+          ? OFFER_WIZARD_STEP_IDS.SUMMARY
+          : isClickingDraft
+          ? OFFER_WIZARD_STEP_IDS.TARIFS
+          : OFFER_WIZARD_STEP_IDS.STOCKS,
+      mode,
+    })
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OFFER_WIZARD_STEP_IDS.TARIFS,
+      to: isClickingDraft
+        ? OFFER_WIZARD_STEP_IDS.TARIFS
+        : mode === OFFER_WIZARD_MODE.EDITION
+        ? OFFER_WIZARD_STEP_IDS.SUMMARY
+        : OFFER_WIZARD_STEP_IDS.STOCKS,
+      used: isClickingDraft
+        ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
+        : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      offerId: offer.id,
+    })
+    navigate(afterSubmitUrl)
     setIsClickingDraft(false)
   }
 
@@ -62,6 +83,16 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
   )
 
   const handlePreviousStep = () => {
+    if (!formik.dirty) {
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.TARIFS,
+        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        offerId: offer.id,
+      })
+    }
     navigate(
       getOfferIndividualUrl({
         offerId: offer.id,
@@ -122,7 +153,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
             onClickPrevious={handlePreviousStep}
             onClickNext={handleNextStep()}
             onClickSaveDraft={handleNextStep({ saveDraft: true })}
-            step={OFFER_WIZARD_STEP_IDS.STOCKS}
+            step={OFFER_WIZARD_STEP_IDS.TARIFS}
             isDisabled={formik.isSubmitting}
             offerId={offer.id}
           />
@@ -137,6 +168,16 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
         mode={mode}
         isFormValid={formik.isValid}
         hasOfferBeenCreated
+        tracking={nextLocation =>
+          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            from: OFFER_WIZARD_STEP_IDS.TARIFS,
+            to: logTo(nextLocation),
+            used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
+            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+            isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+            offerId: offer?.id,
+          })
+        }
       />
     </FormikProvider>
   )
