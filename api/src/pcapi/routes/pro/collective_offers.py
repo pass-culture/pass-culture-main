@@ -284,8 +284,16 @@ def edit_collective_offer_template(
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
+    new_values = body.dict(exclude_unset=True)
+    if "venueId" in new_values:
+        new_values["venueId"] = dehumanize_or_raise(new_values["venueId"])
+
     try:
-        offers_api.update_collective_offer_template(offer_id=dehumanized_id, new_values=body.dict(exclude_unset=True))
+        offers_api.update_collective_offer_template(offer_id=dehumanized_id, new_values=new_values)
+    except educational_exceptions.VenueIdDontExist:
+        raise ApiErrors({"venueId": "The venue does not exist."}, 404)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
     except educational_exceptions.EducationalDomainsNotFound:
