@@ -884,7 +884,7 @@ class PostEventTest:
         }
 
     @pytest.mark.usefixtures("db_session")
-    def test_other_music_type_serlialization(self, client):
+    def test_other_music_type_serialization(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
 
