@@ -22,7 +22,7 @@ educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8
 class Returns200Test:
     def test_get_collective_offer(self, client):
         # Given
-        institution = educational_factories.EducationalInstitutionFactory()
+        institution = educational_factories.EducationalInstitutionFactory(institutionId="12890AI")
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 5, 15),
             collectiveOffer__name="offer name",
@@ -31,9 +31,13 @@ class Returns200Test:
             collectiveOffer__students=[StudentLevels.GENERAL2],
             collectiveOffer__educational_domains=[educational_factories.EducationalDomainFactory()],
             collectiveOffer__institution=institution,
+            collectiveOffer__teacherEmail="teacher@example.com",
         )
 
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
+            email="toto@mail.com",
+            uai=institution.institutionId,
+        )
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
         offer_id = stock.collectiveOffer.id
 
@@ -100,11 +104,12 @@ class Returns200Test:
             "interventionArea": ["93", "94", "95"],
             "imageCredit": None,
             "imageUrl": None,
+            "teacherEmail": stock.collectiveOffer.teacherEmail,
         }
 
     def test_get_collective_offer_with_offer_venue(self, client):
         # Given
-        institution = educational_factories.EducationalInstitutionFactory()
+        institution = educational_factories.EducationalInstitutionFactory(institutionId="pouet")
         venue = offerers_factories.VenueFactory()
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 5, 15),
@@ -119,9 +124,13 @@ class Returns200Test:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
+            collectiveOffer__teacherEmail="teacher@example.com",
         )
 
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
+            email="toto@mail.com",
+            uai="autre",
+        )
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
         offer_id = stock.collectiveOffer.id
 
@@ -188,6 +197,7 @@ class Returns200Test:
             "interventionArea": ["93", "94", "95"],
             "imageCredit": None,
             "imageUrl": None,
+            "teacherEmail": None,
         }
 
 
