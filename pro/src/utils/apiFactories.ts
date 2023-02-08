@@ -1,5 +1,13 @@
 /* istanbul ignore file */
-import { OfferStatus } from 'apiClient/v1'
+import {
+  GetIndividualOfferResponseModel,
+  GetOfferManagingOffererResponseModel,
+  GetOfferStockResponseModel,
+  GetOfferVenueResponseModel,
+  OfferStatus,
+  SubcategoryIdEnum,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import { BookingRecapStatus } from 'apiClient/v1/models/BookingRecapStatus'
 
 let offerId = 1
@@ -11,7 +19,7 @@ let bookingId = 1
 export const collectiveOfferFactory = (
   customCollectiveOffer = {},
   customStock = collectiveStockFactory() || null,
-  customVenue = venueFactory()
+  customVenue = getOfferVenueFactory()
 ) => {
   const stocks = customStock === null ? [] : [customStock]
   const currentOfferId = offerId++
@@ -48,11 +56,11 @@ export const collectiveStockFactory = (customStock = {}) => {
   }
 }
 
-export const offerFactory = (
+export const GetIndividualOfferFactory = (
   customOffer = {},
   customStock = stockFactory() || null,
-  customVenue = venueFactory()
-) => {
+  customVenue = getOfferVenueFactory()
+): GetIndividualOfferResponseModel => {
   const stocks = customStock === null ? [] : [customStock]
   const currentOfferId = offerId++
 
@@ -62,7 +70,6 @@ export const offerFactory = (
     isActive: true,
     isEditable: true,
     isEvent: false,
-    isFullyBooked: false,
     isThing: true,
     nonHumanizedId: currentOfferId,
     status: OfferStatus.ACTIVE,
@@ -70,59 +77,115 @@ export const offerFactory = (
     venue: customVenue,
     hasBookingLimitDatetimesPassed: false,
     isEducational: false,
+    dateCreated: '2020-04-12T19:31:12Z',
+    fieldsUpdated: [],
+    isBookable: true,
+    isDigital: false,
+    isDuo: true,
+    isNational: true,
+    mediaUrls: [],
+    mediations: [],
+    product: {
+      fieldsUpdated: [],
+      id: 'AA',
+      isGcuCompatible: true,
+      isNational: true,
+      mediaUrls: [],
+      name: 'nom du produit',
+      thumbCount: 1,
+    },
+    productId: 'AA',
+    subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+    venueId: 'AA',
     ...customOffer,
   }
 }
 
-export const venueFactory = (
+export const getOfferVenueFactory = (
   customVenue = {},
   customOfferer = offererFactory()
-) => {
+): GetOfferVenueResponseModel => {
   const currentVenueId = venueId++
   return {
     address: 'Ma Rue',
     city: 'Ma Ville',
     id: `VENUE${currentVenueId}`,
-    nonHumanizedId: currentVenueId,
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
     managingOfferer: customOfferer,
     managingOffererId: customOfferer.id,
     postalCode: '11100',
     publicName: 'Mon Lieu',
-    offererName: 'Ma structure',
     departementCode: '973',
-    hasMissingReimbursementPoint: false,
-    hasCreatedOffer: false,
+    fieldsUpdated: [],
+    thumbCount: 1,
     ...customVenue,
   }
 }
 
-export const offererFactory = (customOfferer = {}) => {
+export const getVenueListItemFactory = (
+  customVenue = {},
+  customOfferer = offererFactory()
+): VenueListItemResponseModel => {
+  const currentVenueId = venueId++
+  return {
+    id: `VENUE${currentVenueId}`,
+    isVirtual: false,
+    name: `Le nom du lieu ${currentVenueId}`,
+    managingOffererId: customOfferer.id,
+    publicName: 'Mon Lieu',
+    hasCreatedOffer: true,
+    hasMissingReimbursementPoint: true,
+    nonHumanizedId: 1,
+    offererName: 'offerer',
+    ...customVenue,
+  }
+}
+
+export const offererFactory = (
+  customOfferer = {}
+): GetOfferManagingOffererResponseModel => {
   const currentOffererId = offererId++
   return {
     id: `OFFERER${currentOffererId}`,
     name: `La nom de la structure ${currentOffererId}`,
+    city: 'Paris',
+    dateCreated: '2020-04-12T19:31:12Z',
+    fieldsUpdated: [],
+    isActive: true,
+    isValidated: true,
+    nonHumanizedId: 3,
+    postalCode: '75001',
+    thumbCount: 1,
     ...customOfferer,
   }
 }
 
-export const stockFactory = (customStock = {}) => {
+export const stockFactory = (customStock = {}): GetOfferStockResponseModel => {
   return {
     bookingsQuantity: 0,
     id: `STOCK${stockId++}`,
     offerId: `OFFER${offerId}`,
     price: 10,
     quantity: null,
-    activationCodes: [],
     remainingQuantity: 2,
-    isbn: '9787605639121',
+    dateCreated: '2020-04-12T19:31:12Z',
+    dateModified: '2020-04-12T19:31:12Z',
+    fieldsUpdated: [],
+    hasActivationCode: false,
+    isBookable: true,
+    isEventDeletable: true,
+    isEventExpired: false,
+    isSoftDeleted: false,
     ...customStock,
   }
 }
 
-export const bookingRecapFactory = (customBookingRecap = {}) => {
-  const offer = offerFactory()
+export const bookingRecapFactory = (
+  customBookingRecap = {},
+  customOffer = {}
+) => {
+  const offer = GetIndividualOfferFactory(customOffer)
 
   return {
     beneficiary: {
@@ -149,7 +212,7 @@ export const bookingRecapFactory = (customBookingRecap = {}) => {
       offerName: offer.name,
       offerIsEducational: false,
       stockIdentifier: offer.stocks[0].id,
-      offerIsbn: offer.stocks[0].isbn,
+      offerIsbn: '123456789',
     },
     ...customBookingRecap,
   }

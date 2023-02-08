@@ -17,10 +17,10 @@ import {
 } from 'core/Offers/constants'
 import { Offer, TSearchFilters } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
-import { collectiveOfferFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOffers from '../CollectiveOffers'
+import { collectiveOfferFactory } from '../utils/collectiveOffersFactories'
 
 const renderOffers = async (
   storeOverrides: Store,
@@ -136,7 +136,7 @@ describe('route CollectiveOffers', () => {
         searchFilters: DEFAULT_SEARCH_FILTERS,
       },
     }
-    offersRecap = [collectiveOfferFactory({ venue: proVenues[0] })]
+    offersRecap = [collectiveOfferFactory()]
     jest
       .spyOn(api, 'getCollectiveOffers')
       // @ts-expect-error FIX ME

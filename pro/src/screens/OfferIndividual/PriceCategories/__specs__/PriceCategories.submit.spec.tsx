@@ -12,6 +12,7 @@ import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -48,9 +49,7 @@ const renderPriceCategories = (
 
 describe('PriceCategories', () => {
   beforeEach(() => {
-    jest
-      .spyOn(api, 'getOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    jest.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
     jest
       .spyOn(api, 'patchOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)

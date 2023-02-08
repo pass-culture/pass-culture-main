@@ -20,12 +20,13 @@ import {
 } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
-import { offerFactory, offererFactory } from 'utils/apiFactories'
+import { offererFactory } from 'utils/apiFactories'
 import { individualOfferOffererFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import Offers, { IOffersProps } from '../Offers'
+import { individualOfferFactory } from '../utils/individualOffersFactories'
 
 const renderOffers = (props: IOffersProps, storeOverrides: any) => {
   renderWithProviders(<Offers {...props} />, { storeOverrides })
@@ -107,7 +108,7 @@ describe('screen Offers', () => {
         searchFilters: DEFAULT_SEARCH_FILTERS,
       },
     }
-    offersRecap = [offerFactory({ venue: proVenues[0] })]
+    offersRecap = [individualOfferFactory()]
 
     props = {
       currentPageNumber: 1,
@@ -160,8 +161,8 @@ describe('screen Offers', () => {
 
     it('should render as much offers as returned by the api', async () => {
       // Given
-      const firstOffer = offerFactory()
-      const secondOffer = offerFactory()
+      const firstOffer = individualOfferFactory()
+      const secondOffer = individualOfferFactory()
 
       // When
       renderOffers(
@@ -180,8 +181,8 @@ describe('screen Offers', () => {
 
     it('should display an unchecked by default checkbox to select all offers when user is not admin', async () => {
       // Given
-      const firstOffer = offerFactory()
-      const secondOffer = offerFactory()
+      const firstOffer = individualOfferFactory()
+      const secondOffer = individualOfferFactory()
 
       // When
       renderOffers(
@@ -208,7 +209,7 @@ describe('screen Offers', () => {
         renderOffers(
           {
             ...props,
-            offers: [...offersRecap, offerFactory()],
+            offers: [...offersRecap, individualOfferFactory()],
           },
           store
         )
@@ -229,7 +230,9 @@ describe('screen Offers', () => {
 
       it('should display 500+ for total number of offers if more than 500 offers are fetched', async () => {
         // Given
-        offersRecap = Array.from({ length: 501 }, () => offerFactory())
+        offersRecap = Array.from({ length: 501 }, () =>
+          individualOfferFactory()
+        )
 
         // When
         renderOffers({ ...props, offers: offersRecap }, store)
@@ -593,15 +596,15 @@ describe('screen Offers', () => {
         // Given
         props.currentUser.isAdmin = false
         const offers = [
-          offerFactory({
+          individualOfferFactory({
             isActive: false,
             status: 'REJECTED',
           }),
-          offerFactory({
+          individualOfferFactory({
             isActive: true,
             status: 'PENDING',
           }),
-          offerFactory({
+          individualOfferFactory({
             isActive: true,
             status: 'ACTIVE',
           }),
@@ -742,15 +745,15 @@ describe('screen Offers', () => {
       it('should check all validated offers checkboxes', async () => {
         // Given
         const offers = [
-          offerFactory(),
-          offerFactory({
+          individualOfferFactory(),
+          individualOfferFactory({
             isFullyBooked: true,
           }),
-          offerFactory({
+          individualOfferFactory({
             isActive: false,
             status: 'REJECTED',
           }),
-          offerFactory({
+          individualOfferFactory({
             status: 'PENDING',
           }),
         ]

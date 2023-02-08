@@ -158,10 +158,12 @@ describe('filterBookingsRecap', () => {
   describe('by ISBN', () => {
     it('should return list containing only BookingRecap matching ISBN keywords', () => {
       // given
-      const bookingRecap1 = bookingRecapFactory({ stock_type: 'book' })
+      const bookingRecap1 = bookingRecapFactory({
+        stock_type: 'book',
+      })
 
       const bookingsRecap = [bookingRecap1]
-      const filters = filtersBuilder({ offerISBN: '9787605639121' })
+      const filters = filtersBuilder({ offerISBN: '123456789' })
 
       // when
       const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
@@ -175,7 +177,7 @@ describe('filterBookingsRecap', () => {
       const bookingRecap1 = bookingRecapFactory({ stock_type: 'book' })
 
       const bookingsRecap = [bookingRecap1]
-      const filters = filtersBuilder({ offerISBN: '9787605639121  ' })
+      const filters = filtersBuilder({ offerISBN: '123456789  ' })
 
       // when
       const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)

@@ -1,7 +1,7 @@
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
-import { offerFactory } from 'utils/apiFactories'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
 
 import { filterCategories } from '..'
 import { getOfferSubtypeFromParamsOrOffer } from '../filterCategories'
@@ -21,7 +21,7 @@ describe('getOfferSubtypeFromParamsOrOffer', () => {
         getOfferSubtypeFromParamsOrOffer(
           `offer-type=${offerSubtype}`,
           // @ts-expect-error we need to fix the Offer types and factories by having only one type/factory
-          offerFactory()
+          GetIndividualOfferFactory()
         )
       ).toBe(offerSubtype)
     }
