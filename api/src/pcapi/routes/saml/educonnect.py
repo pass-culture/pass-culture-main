@@ -1,3 +1,4 @@
+import datetime
 import logging
 from urllib.parse import urlencode
 
@@ -14,10 +15,13 @@ from pcapi.core import logging as core_logging
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
 from pcapi.core.subscription.educonnect import exceptions as educonnect_subscription_exceptions
+from pcapi.core.users import constants
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
-from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.routes.native.security import authenticated_and_active_user_required
+import pcapi.routes.serialization.educonnect as educonnect_serializers
+from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
 
@@ -57,6 +61,31 @@ def login_educonnect(user: users_models.User) -> Response:
     response.headers["Pragma"] = "no-cache"
 
     return response
+
+
+@blueprint.saml_blueprint.route("educonnect/login/e2e", methods=["POST"])
+@spectree_serialize(json_format=False)
+@authenticated_and_active_user_required
+def login_educonnect_e2e(user: users_models.User, body: educonnect_serializers.EduconnectUserE2ERequest) -> Response:
+    if not settings.IS_E2E_TESTS:
+        return redirect(ERROR_PAGE_URL, code=302)
+
+    mocked_saml_request_id = f"saml-request-id_e2e-test_{user.id}"
+    key = educonnect_connector.build_saml_request_id_key(mocked_saml_request_id)
+    app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)  # type: ignore [attr-defined]
+
+    educonnect_user = users_factories.EduconnectUserFactory(
+        birth_date=body.birthDate,
+        civility=users_models.GenderEnum.F,
+        connection_datetime=datetime.datetime.utcnow(),
+        educonnect_id=f"educonnect-id_e2e-test_{user.id}",
+        first_name=body.firstName,
+        ine_hash=f"inehash_e2e-test_{user.id}",
+        last_name=body.lastName,
+        saml_request_id=mocked_saml_request_id,
+    )
+
+    return _get_educonnect_user_response(user, educonnect_user)
 
 
 @blueprint.saml_blueprint.route("acs", methods=["POST"])
@@ -117,21 +146,7 @@ def on_educonnect_authentication_response() -> Response:
         },
     )
 
-    try:
-        error_codes = educonnect_subscription_api.handle_educonnect_authentication(user, educonnect_user)
-    except educonnect_subscription_exceptions.EduconnectSubscriptionException:
-        return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
-
-    if error_codes:
-        return _on_educonnect_authentication_errors(error_codes, educonnect_user, base_query_param)
-
-    success_query_params = {
-        "firstName": educonnect_user.first_name,
-        "lastName": educonnect_user.last_name,
-        "dateOfBirth": educonnect_user.birth_date,
-    } | base_query_param
-
-    return redirect(SUCCESS_PAGE_URL + urlencode(success_query_params), code=302)
+    return _get_educonnect_user_response(user, educonnect_user, base_query_param)
 
 
 def _user_id_from_saml_request_id(saml_request_id: str) -> int | None:
@@ -151,9 +166,31 @@ def _on_educonnect_authentication_errors(
     elif fraud_models.FraudReasonCode.DUPLICATE_INE in error_codes:
         error_query_param |= {"code": "DuplicateINE"}
     elif fraud_models.FraudReasonCode.AGE_NOT_VALID or fraud_models.FraudReasonCode.NOT_ELIGIBLE in error_codes:
-        if users_utils.get_age_from_birth_date(educonnect_user.birth_date) == ELIGIBILITY_AGE_18:
+        if users_utils.get_age_from_birth_date(educonnect_user.birth_date) == constants.ELIGIBILITY_AGE_18:
             error_query_param |= {"code": "UserAgeNotValid18YearsOld"}
         else:
             error_query_param |= {"code": "UserAgeNotValid"}
 
     return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
+
+
+def _get_educonnect_user_response(
+    user: users_models.User, educonnect_user: educonnect_models.EduconnectUser, base_query_param: dict | None = None
+) -> Response:
+    base_query_param = base_query_param or {"logoutUrl": educonnect_user.logout_url}
+
+    try:
+        error_codes = educonnect_subscription_api.handle_educonnect_authentication(user, educonnect_user)
+    except educonnect_subscription_exceptions.EduconnectSubscriptionException:
+        return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
+
+    if error_codes:
+        return _on_educonnect_authentication_errors(error_codes, educonnect_user, base_query_param)
+
+    success_query_params = {
+        "firstName": educonnect_user.first_name,
+        "lastName": educonnect_user.last_name,
+        "dateOfBirth": educonnect_user.birth_date,
+    } | base_query_param
+
+    return redirect(SUCCESS_PAGE_URL + urlencode(success_query_params), code=302)

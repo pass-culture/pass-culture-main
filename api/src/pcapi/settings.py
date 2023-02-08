@@ -22,6 +22,7 @@ IS_PROD = ENV == "production"
 IS_TESTING = ENV == "testing"
 IS_RUNNING_TESTS = os.environ.get("RUN_ENV") == "tests"
 IS_PERFORMANCE_TESTS = bool(os.environ.get("IS_PERFORMANCE_TESTS", False))
+IS_E2E_TESTS = bool(os.environ.get("IS_E2E_TESTS", False))
 assert not (IS_PROD and IS_PERFORMANCE_TESTS)
 
 # Load configuration files
