@@ -9,6 +9,7 @@ from pcapi.core.offerers.factories import VirtualVenueFactory
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
+from pcapi.core.offers.factories import PriceCategoryFactory
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
@@ -58,11 +59,13 @@ def create_offers_fully_booked(user_bene: User, venue: Venue) -> None:
             venue=venue,
             subcategoryId=subcategories.SEANCE_CINE.id,
         )
-        EventStockFactory(offer=offer_with_past_stock)
+        price_category = PriceCategoryFactory(offer=offer_with_past_stock)
+        EventStockFactory(offer=offer_with_past_stock, priceCategory=price_category)
         stock_past = EventStockFactory(
             offer=offer_with_past_stock,
             beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0) - datetime.timedelta(days=5),
             quantity=1,
+            priceCategory=price_category,
         )
         BookingFactory(quantity=1, stock=stock_past, user=user_bene)
 

@@ -7,6 +7,7 @@ from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offerers.factories import VirtualVenueFactory
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
+from pcapi.core.offers.factories import PriceCategoryFactory
 
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,7 @@ def create_offer_with_thousand_stocks() -> None:
         venue=venue,
         subcategoryId=subcategories.SEANCE_CINE.id,
     )
+    price_category = PriceCategoryFactory(offer=offer_event)
     for i in range(0, 1000):
         EventStockFactory(
             offer=offer_event,
@@ -32,6 +34,7 @@ def create_offer_with_thousand_stocks() -> None:
             beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0)
             - datetime.timedelta(days=100)
             + datetime.timedelta(days=i),
+            priceCategory=price_category,
         )
 
     logger.info("create_offer with 1000 stocks")
