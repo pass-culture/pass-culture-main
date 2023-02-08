@@ -48,11 +48,10 @@ const FormVenue = ({
   ]
   const disableVenueSelection =
     mode === Mode.READ_ONLY ||
-    (lastBookingStatus &&
+    (lastBookingStatus !== undefined &&
+      lastBookingStatus !== null &&
       disableOfferSelection &&
       disabledBookingStatus.includes(lastBookingStatus))
-      ? true
-      : false
 
   let offerersOptions = userOfferers.map(item => ({
     value: item['id'] as string,
