@@ -3,7 +3,7 @@ import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { Offer } from 'core/Offers/types'
-import { collectiveOfferFactory } from 'utils/apiFactories'
+import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 
 import CollectiveOfferStatusCell from '..'
 

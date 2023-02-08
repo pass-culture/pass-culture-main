@@ -46,7 +46,6 @@ export const onSubmit = async (
 
   const response = await getOfferIndividualAdapter(offer.id)
   if (response.isOk) {
-    /* istanbul ignore next */
     const updatedOffer = response.payload
     setOffer && setOffer(updatedOffer)
     resetForm({

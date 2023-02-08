@@ -10,7 +10,10 @@ import {
 import Notification from 'components/Notification/Notification'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { bookingRecapFactory, venueFactory } from 'utils/apiFactories'
+import {
+  bookingRecapFactory,
+  getVenueListItemFactory,
+} from 'utils/apiFactories'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
@@ -120,7 +123,7 @@ describe('components | BookingsRecap | Pro user', () => {
       },
     }
     jest.spyOn(api, 'getProfile').mockResolvedValue(user)
-    venue = venueFactory()
+    venue = getVenueListItemFactory({})
     jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [venue] })
     jest
       .spyOn(api, 'getUserHasBookings')
@@ -647,7 +650,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // Given
     const booking = bookingRecapFactory()
     const otherVenueBooking = bookingRecapFactory()
-    const otherVenue = venueFactory()
+    const otherVenue = getVenueListItemFactory()
     jest
       .spyOn(api, 'getVenues')
       .mockResolvedValue({ venues: [venue, otherVenue] })
