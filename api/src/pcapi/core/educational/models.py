@@ -1,4 +1,5 @@
 from datetime import datetime
+import decimal
 from decimal import Decimal
 import enum
 import random
@@ -22,6 +23,7 @@ from sqlalchemy.sql.sqltypes import Numeric
 from pcapi import settings
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import subcategories
+import pcapi.core.finance.models as finance_models
 from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 from pcapi.models import Base
@@ -925,6 +927,14 @@ class CollectiveBooking(PcObject, Base, Model):
     def is_used_or_reimbursed(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.status.in_([CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED])
 
+    @hybrid_property
+    def isReimbursed(self) -> bool:
+        return self.status == CollectiveBookingStatus.REIMBURSED
+
+    @isReimbursed.expression  # type: ignore [no-redef]
+    def isReimbursed(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.status == CollectiveBookingStatus.REIMBURSED
+
     @property
     def userName(self) -> str | None:
         return f"{self.educationalRedactor.firstName} {self.educationalRedactor.lastName}"
@@ -956,6 +966,45 @@ class CollectiveBooking(PcObject, Base, Model):
             CollectiveBookingStatus.REIMBURSED,
             CollectiveBookingStatus.CANCELLED,
         )
+
+    @property
+    def pricing(self) -> finance_models.Pricing | None:
+        processed_pricings = [
+            pricing for pricing in self.pricings if pricing.status == finance_models.PricingStatus.PROCESSED
+        ]
+
+        pricings = sorted(processed_pricings, key=lambda x: x.creationDate, reverse=True)
+        if pricings:
+            return pricings[0]
+
+        return None
+
+    @property
+    def cashflow_batch(self) -> finance_models.CashflowBatch | None:
+        if not self.pricing:
+            return None
+
+        cashflow = self.pricing.cashflow
+        if not cashflow:
+            return None
+
+        return cashflow.batch
+
+    @property
+    def reimbursement_rate(self) -> int | None:
+        if not self.pricing:
+            return None
+
+        try:
+            # pricing.amount is in cents, amount in euros
+            # -> the result is a percentage
+            return int(-self.pricing.amount / self.amount)
+        except decimal.DivisionByZero:
+            return None
+
+    @property
+    def total_amount(self) -> Decimal:
+        return Decimal(self.collectiveStock.price * self.collectiveStock.numberOfTickets)
 
 
 class CollectiveOfferTemplateDomain(Base, Model):

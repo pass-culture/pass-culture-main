@@ -1,3 +1,6 @@
+{% from "components/bookings/reimbursed.html" import build_reimbursed_td_content with context %}
+{% from "components/bookings/reimbursed.html" import build_reimbursed_extra_tr with context %}
+
 {% extends "layouts/connected.html" %}
 
 {% block page %}
@@ -62,11 +65,14 @@
                             <td>{{ offer.category.pro_label }}</td>
                             <td>{{ offer.subcategory.pro_label }}</td>
                             <td>{{ booking.stock.quantity }}</td>
-                            <td>{{ booking.status | format_booking_status }}</td>
+                            <td>{{ build_reimbursed_td_content(booking) }}</td>
                             <td>{{ booking.dateCreated | format_date("%d/%m/%Y") }}</td>
                             <td>{{ booking.dateUsed | format_date("%d/%m/%Y") }}</td>
                             <td>{{ booking.cancellationDate | format_date("%d/%m/%Y") }}</td>
                         </tr>
+
+						{{ build_reimbursed_extra_tr(booking) }}
+
                     {% endfor %}
                     </tbody>
                 </table>

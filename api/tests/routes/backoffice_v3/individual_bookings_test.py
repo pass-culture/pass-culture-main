@@ -9,6 +9,7 @@ from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 
 from .helpers import html_parser
@@ -168,7 +169,12 @@ class ListIndividualBookingsTest:
 
     def test_list_bookings_by_category(self, authenticated_client, bookings):
         # when
-        with assert_no_duplicated_queries():
+
+        # fetch session (1 query)
+        # fetch user (1 query)
+        # fetch individual bookings with extra data (1 query)
+        # count for pagination (1 pagination)
+        with assert_num_queries(4):
             response = authenticated_client.get(url_for(self.endpoint, category=categories.SPECTACLE.id))
 
         # then

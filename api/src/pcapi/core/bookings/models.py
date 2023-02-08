@@ -1,4 +1,5 @@
 from datetime import datetime
+import decimal
 from decimal import Decimal
 import enum
 from typing import TYPE_CHECKING
@@ -31,6 +32,7 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.categories import subcategories
+import pcapi.core.finance.models as finance_models
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -227,6 +229,14 @@ class Booking(PcObject, Base, Model):
         return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])
 
     @hybrid_property
+    def isReimbursed(self) -> bool:
+        return self.status == BookingStatus.REIMBURSED
+
+    @isReimbursed.expression  # type: ignore [no-redef]
+    def isReimbursed(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.status == BookingStatus.REIMBURSED
+
+    @hybrid_property
     def is_cancelled(self) -> bool:
         return self.status == BookingStatus.CANCELLED
 
@@ -264,6 +274,41 @@ class Booking(PcObject, Base, Model):
                 ).label("isExternal")
             ]
         ).label("number_of_externalBookings")
+
+    @property
+    def pricing(self) -> finance_models.Pricing | None:
+        processed_pricings = [
+            pricing for pricing in self.pricings if pricing.status == finance_models.PricingStatus.PROCESSED
+        ]
+
+        pricings = sorted(processed_pricings, key=lambda x: x.creationDate, reverse=True)
+        if pricings:
+            return pricings[0]
+
+        return None
+
+    @property
+    def cashflow_batch(self) -> finance_models.CashflowBatch | None:
+        if not self.pricing:
+            return None
+
+        cashflow = self.pricing.cashflow
+        if not cashflow:
+            return None
+
+        return cashflow.batch
+
+    @property
+    def reimbursement_rate(self) -> int | None:
+        if not self.pricing:
+            return None
+
+        try:
+            # pricing.amount is in cents, amount in euros
+            # -> the result is a percentage
+            return int(-self.pricing.amount / self.amount)
+        except decimal.DivisionByZero:
+            return None
 
 
 Booking.trig_ddl = f"""
