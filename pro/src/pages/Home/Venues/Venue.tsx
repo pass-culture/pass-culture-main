@@ -280,46 +280,50 @@ const Venue = ({
           </div>
           {isStatOpen && (
             <>
-              {hasNewOfferCreationJourney && !hasCreatedOffer && (
-                <VenueOfferSteps
-                  venueId={id}
-                  hasVenue={true}
-                  offererId={offererId}
-                  hasMissingReimbursementPoint={hasMissingReimbursementPoint}
-                />
-              )}
               {isStatLoaded ? (
-                <div className="venue-stats">
-                  {venueStatData.map(stat => (
-                    <Fragment key={stat.label}>
-                      <VenueStat {...stat} />
-                    </Fragment>
-                  ))}
-                  <div className="h-card-col v-add-offer-link">
-                    <ButtonLink
-                      variant={ButtonVariant.TERNARY}
-                      link={{
-                        to: venueCreateOfferLink(offererId, id, isVirtual),
-                        isExternal: false,
-                      }}
-                      Icon={IcoPlus}
-                      onClick={() =>
-                        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                          from: OFFER_FORM_NAVIGATION_IN.HOME,
-                          to: OFFER_FORM_HOMEPAGE,
-                          used: isVirtual
-                            ? OFFER_FORM_NAVIGATION_MEDIUM.HOME_VIRTUAL_LINK
-                            : OFFER_FORM_NAVIGATION_MEDIUM.HOME_LINK,
-                          isEdition: false,
-                        })
+                <>
+                  {hasNewOfferCreationJourney && !hasCreatedOffer && (
+                    <VenueOfferSteps
+                      venueId={id}
+                      hasVenue={true}
+                      offererId={offererId}
+                      hasMissingReimbursementPoint={
+                        hasMissingReimbursementPoint
                       }
-                    >
-                      {isVirtual
-                        ? 'Créer une nouvelle offre numérique'
-                        : 'Créer une nouvelle offre'}
-                    </ButtonLink>
+                    />
+                  )}
+                  <div className="venue-stats">
+                    {venueStatData.map(stat => (
+                      <Fragment key={stat.label}>
+                        <VenueStat {...stat} />
+                      </Fragment>
+                    ))}
+                    <div className="h-card-col v-add-offer-link">
+                      <ButtonLink
+                        variant={ButtonVariant.TERNARY}
+                        link={{
+                          to: venueCreateOfferLink(offererId, id, isVirtual),
+                          isExternal: false,
+                        }}
+                        Icon={IcoPlus}
+                        onClick={() =>
+                          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                            from: OFFER_FORM_NAVIGATION_IN.HOME,
+                            to: OFFER_FORM_HOMEPAGE,
+                            used: isVirtual
+                              ? OFFER_FORM_NAVIGATION_MEDIUM.HOME_VIRTUAL_LINK
+                              : OFFER_FORM_NAVIGATION_MEDIUM.HOME_LINK,
+                            isEdition: false,
+                          })
+                        }
+                      >
+                        {isVirtual
+                          ? 'Créer une nouvelle offre numérique'
+                          : 'Créer une nouvelle offre'}
+                      </ButtonLink>
+                    </div>
                   </div>
-                </div>
+                </>
               ) : (
                 <Spinner />
               )}
