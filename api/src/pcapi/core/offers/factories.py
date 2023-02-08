@@ -90,8 +90,9 @@ class DigitalOfferFactory(OfferFactory):
 class PriceCategoryLabelFactory(BaseFactory):
     class Meta:
         model = models.PriceCategoryLabel
+        sqlalchemy_get_or_create = ("label",)
 
-    label = factory.Sequence("Tariff {}".format)
+    label = "Tarif unique"
     venue = factory.SubFactory(offerers_factories.VenueFactory)
 
 
@@ -100,7 +101,8 @@ class PriceCategoryFactory(BaseFactory):
         model = models.PriceCategory
 
     price = 10
-    priceCategoryLabel = factory.SubFactory(PriceCategoryLabelFactory)
+    offer = factory.SubFactory(EventOfferFactory)
+    priceCategoryLabel = factory.SubFactory(PriceCategoryLabelFactory, venue=factory.SelfAttribute("..offer.venue"))
 
 
 class StockFactory(BaseFactory):
@@ -110,11 +112,6 @@ class StockFactory(BaseFactory):
     offer = factory.SubFactory(OfferFactory)
     price = 10
     quantity = 1000
-    priceCategory = factory.SubFactory(
-        PriceCategoryFactory,
-        offer=factory.SelfAttribute("..offer"),
-        priceCategoryLabel__venue=factory.SelfAttribute("..offer.venue"),
-    )
 
     beginningDatetime = factory.Maybe(
         "offer.isEvent",
@@ -136,10 +133,14 @@ class EventStockFactory(StockFactory):
     offer = factory.SubFactory(EventOfferFactory)
     beginningDatetime = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=30))
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
+    priceCategory = factory.SubFactory(
+        PriceCategoryFactory,
+        offer=factory.SelfAttribute("..offer"),
+        priceCategoryLabel__venue=factory.SelfAttribute("..offer.venue"),
+    )
 
 
-class CinemaStockProviderFactory(StockFactory):
-    offer = factory.SubFactory(EventOfferFactory)
+class CinemaStockProviderFactory(EventStockFactory):
     beginningDatetime = factory.LazyFunction(
         lambda: datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
     )
