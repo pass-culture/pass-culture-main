@@ -4,7 +4,6 @@ import { useHistory, useLocation } from 'react-router-dom'
 import {
   GetOffererResponseModel,
   GetOfferersNamesResponseModel,
-  GetOffererVenueResponseModel,
 } from 'apiClient/v1'
 import RedirectDialog from 'components/Dialog/RedirectDialog'
 import SoftDeletedOffererWarning from 'components/SoftDeletedOffererWarning'
@@ -18,6 +17,7 @@ import { useNewOfferCreationJourney } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as StatusPendingFullIcon } from 'icons/ico-status-pending-full.svg'
 import { ReactComponent as SuccessIcon } from 'icons/ico-success.svg'
+import { OffererVenues } from 'pages/Home/OffererVenues'
 import { VenueList } from 'pages/Home/Venues'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByDisplayName } from 'utils/strings'
@@ -35,8 +35,7 @@ interface IOfferersProps {
   selectedOfferer?: GetOffererResponseModel | null
   isLoading: boolean
   isUserOffererValidated: boolean
-  physicalVenues: GetOffererVenueResponseModel[]
-  virtualVenue: GetOffererVenueResponseModel | null
+  venues: OffererVenues
 }
 const Offerers = ({
   receivedOffererNames,
@@ -45,8 +44,7 @@ const Offerers = ({
   selectedOfferer,
   isLoading,
   isUserOffererValidated,
-  physicalVenues,
-  virtualVenue,
+  venues,
 }: IOfferersProps) => {
   const [offererOptions, setOffererOptions] = useState<SelectOptionsRFF>([])
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
@@ -134,11 +132,11 @@ const Offerers = ({
     selectedOfferer && selectedOfferer.isActive === false
   const userHasOfferers = offererOptions.length > 0
   const creationLinkCondition =
-    (hasNewOfferCreationJourney && physicalVenues.length > 0) ||
+    (hasNewOfferCreationJourney && venues.physicalVenues.length > 0) ||
     (!hasNewOfferCreationJourney &&
       isUserOffererValidated &&
       !isOffererSoftDeleted &&
-      physicalVenues.length > 0)
+      venues.physicalVenues.length > 0)
   return (
     <>
       {userHasOfferers && selectedOfferer && (
@@ -189,11 +187,11 @@ const Offerers = ({
 
           {!isOffererSoftDeleted && (
             <VenueList
-              physicalVenues={physicalVenues}
+              physicalVenues={venues.physicalVenues}
               selectedOffererId={selectedOfferer.id}
               virtualVenue={
                 selectedOfferer.hasDigitalVenueAtLeastOneOffer
-                  ? virtualVenue
+                  ? venues.virtualVenue
                   : null
               }
             />
@@ -207,9 +205,9 @@ const Offerers = ({
       {!userHasOfferers && <OffererCreationLinks />}
       {creationLinkCondition && (
         <VenueCreationLinks
-          hasPhysicalVenue={physicalVenues.length > 0}
+          hasPhysicalVenue={venues.physicalVenues.length > 0}
           hasVirtualOffers={
-            Boolean(virtualVenue) &&
+            Boolean(venues.virtualVenue) &&
             Boolean(selectedOfferer?.hasDigitalVenueAtLeastOneOffer)
           }
           offererId={

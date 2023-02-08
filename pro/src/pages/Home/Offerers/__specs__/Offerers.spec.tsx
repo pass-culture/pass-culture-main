@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
+import { INITIAL_OFFERER_VENUES } from 'pages/Home/OffererVenues'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offerers from '../Offerers'
@@ -44,8 +45,7 @@ const renderOfferers = async (userOffererValidated: boolean) => {
       selectedOfferer={selectedOfferer}
       isLoading={false}
       isUserOffererValidated={userOffererValidated}
-      physicalVenues={[]}
-      virtualVenue={null}
+      venues={INITIAL_OFFERER_VENUES}
     />
   )
 }

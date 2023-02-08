@@ -4,17 +4,13 @@ import { api } from 'apiClient/api'
 import {
   GetOffererResponseModel,
   GetOfferersNamesResponseModel,
-  GetOffererVenueResponseModel,
 } from 'apiClient/v1'
 import { Newsletter } from 'components/Newsletter'
 import PageTitle from 'components/PageTitle/PageTitle'
 import { hasStatusCode } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
-import {
-  INITIAL_PHYSICAL_VENUES,
-  INITIAL_VIRTUAL_VENUE,
-} from 'pages/Home/Offerers/_constants'
+import { INITIAL_OFFERER_VENUES } from 'pages/Home/OffererVenues'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
 import useNewOfferCreationJourney from '../../hooks/useNewOfferCreationJourney'
@@ -37,9 +33,7 @@ const Homepage = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(true)
   const [hasNoVenueVisible, setHasNoVenueVisible] = useState(false)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
-  const [physicalVenues, setPhysicalVenues] = useState(INITIAL_PHYSICAL_VENUES)
-  const [virtualVenue, setVirtualVenue] =
-    useState<GetOffererVenueResponseModel | null>(INITIAL_VIRTUAL_VENUE)
+  const [venues, setVenues] = useState(INITIAL_OFFERER_VENUES)
 
   const { currentUser } = useCurrentUser()
 
@@ -47,6 +41,17 @@ const Homepage = (): JSX.Element => {
     async function loadOfferer(offererId: string) {
       try {
         const receivedOfferer = await api.getOfferer(offererId)
+        const offererPhysicalVenues =
+          receivedOfferer.managedVenues?.filter(venue => !venue.isVirtual) ?? []
+        const virtualVenue =
+          receivedOfferer.managedVenues?.find(venue => venue.isVirtual) ?? null
+        setHasNoVenueVisible(
+          offererPhysicalVenues?.length === 0 && !virtualVenue?.hasCreatedOffer
+        )
+        setVenues({
+          physicalVenues: offererPhysicalVenues,
+          virtualVenue: virtualVenue,
+        })
         setSelectedOfferer(receivedOfferer)
         setIsUserOffererValidated(true)
       } catch (error) {
@@ -82,23 +87,6 @@ const Homepage = (): JSX.Element => {
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
   const withNewOfferCreationJourney = useNewOfferCreationJourney()
 
-  const handleOffererChange = async (offererId: string) => {
-    const offerer = receivedOffererNames?.offerersNames.find(
-      offerer => offerer.id === offererId
-    )?.id
-    const receivedOfferer = await api.getOfferer(offerer || '')
-    const offererPhysicalVenues =
-      receivedOfferer.managedVenues?.filter(venue => !venue.isVirtual) ?? null
-    const virtualVenue =
-      receivedOfferer.managedVenues?.find(venue => venue.isVirtual) ?? null
-    setHasNoVenueVisible(
-      offererPhysicalVenues?.length === 0 && !virtualVenue?.hasCreatedOffer
-    )
-    setPhysicalVenues(offererPhysicalVenues ?? [])
-    setVirtualVenue(virtualVenue)
-    setSelectedOffererId(offererId)
-  }
-
   useEffect(function fetchData() {
     api.listOfferersNames().then(async offererNames => {
       setReceivedOffererNames(offererNames)
@@ -121,10 +109,9 @@ const Homepage = (): JSX.Element => {
           isLoading={isLoading}
           isUserOffererValidated={isUserOffererValidated}
           receivedOffererNames={receivedOffererNames}
-          onSelectedOffererChange={handleOffererChange}
+          onSelectedOffererChange={setSelectedOffererId}
           cancelLoading={() => setIsLoading(false)}
-          physicalVenues={physicalVenues}
-          virtualVenue={virtualVenue}
+          venues={venues}
         />
       </section>
       {isUserOffererValidated &&
