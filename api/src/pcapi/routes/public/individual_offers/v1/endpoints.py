@@ -289,7 +289,8 @@ def post_event_offer(
                 withdrawal_type=withdrawal_type,
             )
 
-            for price_category in body.price_categories:
+            price_categories = body.price_categories or []
+            for price_category in price_categories:
                 euro_price = finance_utils.to_euros(price_category.price)
                 offers_api.create_price_category(created_offer, price_category.label, euro_price)
 

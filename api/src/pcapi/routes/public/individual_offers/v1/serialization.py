@@ -152,7 +152,8 @@ TICKET_COLLECTION_FIELD = pydantic.Field(
     description="How the ticket will be collected. Leave empty if there is no ticket. Only some categories are compatible with tickets.",
     discriminator="way",
 )
-PRICE_CATEGORIES_FIELD = pydantic.Field([], description="Available price categories for dates of this offer")
+PRICE_CATEGORY_LABEL_FIELD = pydantic.Field(description="Price category label", example="Carré or")
+PRICE_CATEGORIES_FIELD = pydantic.Field(description="Available price categories for dates of this offer")
 EVENT_DATES_FIELD = pydantic.Field(
     description="Dates of the event. If there are different prices for the same date, several date objects are needed",
 )
@@ -426,7 +427,7 @@ class DecimalPriceGetterDict(GetterDict):
 
 
 class PriceCategoryCreation(serialization.ConfiguredBaseModel):
-    label: str
+    label: str = PRICE_CATEGORY_LABEL_FIELD
     price: pydantic.StrictInt = PRICE_FIELD
 
     @pydantic.validator("price")
@@ -446,10 +447,11 @@ class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
         extra = "forbid"
 
 
-class EventOfferCreation(OfferCreationBase, PriceCategoriesCreation):
+class EventOfferCreation(OfferCreationBase):
     category_related_fields: event_category_creation_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = TICKET_COLLECTION_FIELD
+    price_categories: typing.List[PriceCategoryCreation] | None = PRICE_CATEGORIES_FIELD
 
     class Config:
         extra = "forbid"
@@ -484,7 +486,7 @@ class ProductOfferEdition(OfferEditionBase):
 
 
 class PriceCategoryEdition(serialization.ConfiguredBaseModel):
-    label: str | None
+    label: str | None = PRICE_CATEGORY_LABEL_FIELD
     price: pydantic.StrictInt | None = PRICE_FIELD
 
     @pydantic.validator("price")
