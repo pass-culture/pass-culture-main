@@ -221,3 +221,45 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
         assert response.json["code"] == "EDUCATIONAL_DOMAIN_NOT_FOUND"
+
+    def test_patch_collective_offer_template_replacing_by_unknown_venue(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offerer,
+        )
+        offer = CollectiveOfferTemplateFactory(venue__managingOfferer=offerer)
+
+        # When
+        humanized_venue = humanize(0)
+        data = {"venueId": humanized_venue}
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers-template/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 404
+        assert response.json["venueId"] == "The venue does not exist."
+
+    def test_patch_collective_offer_replacing_venue_with_different_offerer(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerer2 = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offerer,
+        )
+        offer = CollectiveOfferTemplateFactory(venue__managingOfferer=offerer)
+        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer2)
+
+        # When
+        humanized_venue = humanize(venue2.id)
+        data = {"venueId": humanized_venue}
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers-template/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 403
+        assert response.json == {"venueId": "New venue needs to have the same offerer"}
