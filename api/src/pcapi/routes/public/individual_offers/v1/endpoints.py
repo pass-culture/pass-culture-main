@@ -705,7 +705,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/price_categories/<int:price_category_id>", methods=["PATCH"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG], response_model=serialization.PriceCategoriesResponse
+    api=blueprint.v1_schema, tags=[EVENT_OFFERS_TAG], response_model=serialization.PriceCategoryResponse
 )
 @api_key_required
 @public_utils.individual_offers_api_provider
