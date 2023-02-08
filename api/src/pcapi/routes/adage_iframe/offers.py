@@ -53,7 +53,11 @@ def get_collective_offer(
     else:
         offer_venue = None
 
-    return serializers.CollectiveOfferResponseModel.from_orm(offer, offer_venue)
+    return serializers.CollectiveOfferResponseModel.from_orm(
+        offer=offer,
+        offerVenue=offer_venue,
+        uai=authenticated_information.uai,
+    )
 
 
 @blueprint.adage_iframe.route("/collective/offers-template/<int:offer_id>", methods=["GET"])
