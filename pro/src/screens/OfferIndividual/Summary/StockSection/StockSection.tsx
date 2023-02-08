@@ -67,11 +67,11 @@ const StockSection = ({ offer }: IStockSection): JSX.Element => {
             description={stockWarningText}
           />
         )}
-        {!offer.isEvent && offer.stocks.length > 0 && (
-          <StockThingSection offer={offer} />
-        )}
-        {offer.isEvent && offer.stocks.length > 0 && (
+
+        {offer.isEvent ? (
           <StockEventSection offer={offer} />
+        ) : (
+          <StockThingSection offer={offer} />
         )}
       </SummaryLayout.Section>
     </>
