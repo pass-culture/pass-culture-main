@@ -153,10 +153,14 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     interventionArea: list[str]
     imageCredit: str | None
     imageUrl: str | None
+    teacherEmail: str | None
 
     @classmethod
     def from_orm(
-        cls, offer: educational_models.CollectiveOffer, offerVenue: offerers_models.Venue | None = None
+        cls,
+        offer: educational_models.CollectiveOffer,
+        offerVenue: offerers_models.Venue | None = None,
+        uai: str | None = None,
     ) -> "CollectiveOfferResponseModel":
         offer.subcategoryLabel = offer.subcategory.app_label
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
@@ -173,6 +177,9 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
             city=offerVenue.city if offerVenue else None,
             **offer.offerVenue,
         )
+        if (uai and uai != offer.institution.institutionId) or not uai:
+            result.teacherEmail = None
+
         return result
 
     class Config:
