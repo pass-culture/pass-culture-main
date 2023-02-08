@@ -1,4 +1,3 @@
-/* istanbul ignore file: DEBT, TO FIX */
 import cn from 'classnames'
 import React, { useState } from 'react'
 
@@ -65,13 +64,10 @@ const StockEventSection = ({ offer }: IStockEventSectionProps) => {
           className={styles['stock-event-item-display-more']}
           Icon={() => (
             <ArrowIcon
-              className={
-                /* istanbul ignore next: DEBT, TO FIX */
-                cn(styles['stock-event-item-display-more-icon'], {
-                  [styles['stock-event-item-display-more-icon-down']]:
-                    !showAllStocks,
-                })
-              }
+              className={cn(styles['stock-event-item-display-more-icon'], {
+                [styles['stock-event-item-display-more-icon-down']]:
+                  !showAllStocks,
+              })}
             />
           )}
           variant={ButtonVariant.TERNARY}

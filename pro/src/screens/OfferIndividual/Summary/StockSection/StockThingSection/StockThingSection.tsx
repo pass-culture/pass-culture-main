@@ -20,6 +20,7 @@ const StockThingSection = ({ offer }: IStockThingSectionProps) => {
   return (
     <>
       <SummaryLayout.Row title="Prix" description={formatPrice(stock.price)} />
+
       {stock.bookingLimitDatetime !== null && (
         <SummaryLayout.Row
           title="Date limite de réservation"
@@ -29,6 +30,7 @@ const StockThingSection = ({ offer }: IStockThingSectionProps) => {
           )}
         />
       )}
+
       <SummaryLayout.Row
         title="Quantité"
         description={stock.quantity ?? 'Illimité'}
