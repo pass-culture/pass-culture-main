@@ -11,14 +11,7 @@ import { Offer } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as SearchIco } from 'icons/search-ico.svg'
 import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
-import {
-  Button,
-  RadioButton,
-  SubmitButton,
-  TextInput,
-  Thumb,
-  Title,
-} from 'ui-kit'
+import { RadioButton, SubmitButton, TextInput, Thumb, Title } from 'ui-kit'
 import Icon from 'ui-kit/Icon/Icon'
 import Titles from 'ui-kit/Titles/Titles'
 import { pluralize } from 'utils/pluralize'
@@ -38,8 +31,12 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const [showAll, setShowAll] = useState(true)
   const notify = useNotification()
   const history = useHistory()
-  const formik = useFormik({
-    initialValues: { searchFilter: '', templateOfferId: '' },
+  const formikSearch = useFormik({
+    initialValues: { searchFilter: '' },
+    onSubmit: formValues => filterTemplateOfferByName(formValues.searchFilter),
+  })
+  const formikSelection = useFormik({
+    initialValues: { templateOfferId: '' },
     onSubmit: () => handleOnSubmit(),
   })
 
@@ -72,11 +69,11 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   )
 
   useEffect(() => {
-    filterTemplateOfferByName(formik.initialValues.searchFilter)
-  }, [formik.initialValues.searchFilter])
+    filterTemplateOfferByName(formikSearch.initialValues.searchFilter)
+  }, [formikSearch.initialValues.searchFilter])
 
   const handleOnSubmit = () => {
-    const templateOfferId = formik.values.templateOfferId
+    const templateOfferId = formikSelection.values.templateOfferId
     if (templateOfferId === '') {
       return notify.error(
         'Vous devez séléctionner une offre vitrine à dupliquer'
@@ -92,26 +89,28 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
       <Title as="h3" className="sub-title" level={4}>
         Séléctionner l’offre vitrine à dupliquer
       </Title>
-      <FormikProvider value={formik}>
-        <Form>
-          <div className={styles['search-container']}>
+
+      <div className={styles['search-container']}>
+        <FormikProvider value={formikSearch}>
+          <Form>
             <TextInput
               label="Offre vitrine à dupliquer"
               isLabelHidden
               name="searchFilter"
               placeholder="Rechercher une offre vitrine"
             />
-            <Button
-              onClick={() =>
-                filterTemplateOfferByName(formik.values.searchFilter)
-              }
-              isLoading={isLoading}
+            <SubmitButton
               className={styles['search-button']}
+              isLoading={isLoading}
               aria-label="Button de recherche"
               Icon={SearchIco}
             >
               Rechercher
-            </Button>
+            </SubmitButton>
+          </Form>
+        </FormikProvider>
+        <FormikProvider value={formikSelection}>
+          <Form>
             <p className={styles['offer-info']}>
               {showAll
                 ? 'Les dernières offres vitrines créées'
@@ -122,7 +121,7 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 key={offer.id}
                 className={cn(styles['offer-selection'], {
                   [styles['offer-selected']]:
-                    formik.values.templateOfferId === offer.id,
+                    formikSelection.values.templateOfferId === offer.id,
                 })}
               >
                 <RadioButton
@@ -168,9 +167,9 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 </SubmitButton>
               </ActionsBarSticky.Right>
             </ActionsBarSticky>
-          </div>
-        </Form>
-      </FormikProvider>
+          </Form>
+        </FormikProvider>
+      </div>
     </div>
   )
 }
