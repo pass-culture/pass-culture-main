@@ -19,7 +19,8 @@ import {
 import { Offer, TSearchFilters } from 'core/Offers/types'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
-import { offerFactory } from 'utils/apiFactories'
+import { individualOfferFactory } from 'screens/Offers/utils/individualOffersFactories'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffersRoute from '../../../pages/Offers/OffersRoute'
@@ -123,7 +124,7 @@ describe('route Offers', () => {
         searchFilters: DEFAULT_SEARCH_FILTERS,
       },
     }
-    offersRecap = [offerFactory({ venue: proVenues[0] })]
+    offersRecap = [individualOfferFactory()]
     // @ts-expect-error FIX ME
     jest.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
   })
@@ -537,7 +538,9 @@ describe('route Offers', () => {
   describe('url query params', () => {
     it('should have page value when page value is not first page', async () => {
       // Given
-      const offersRecap = Array.from({ length: 11 }, () => offerFactory())
+      const offersRecap = Array.from({ length: 11 }, () =>
+        individualOfferFactory()
+      )
       // @ts-expect-error FIX ME
       jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
       const { history } = await renderOffers(store)
@@ -654,13 +657,13 @@ describe('route Offers', () => {
 
       jest.spyOn(api, 'listOffers').mockResolvedValueOnce([
         // @ts-expect-error FIX ME
-        offerFactory(
+        GetIndividualOfferFactory(
           {
             id: 'KE',
             availabilityMessage: 'Pas de stock',
             status: OfferStatus.ACTIVE,
           },
-          // @ts-expect-error offerFactory is not typed and null throws an error but is accepted by the function
+          // @ts-expect-error individualOfferFactory is not typed and null throws an error but is accepted by the function
           null
         ),
       ])
@@ -682,13 +685,13 @@ describe('route Offers', () => {
       // Given
       jest.spyOn(api, 'listOffers').mockResolvedValueOnce([
         // @ts-expect-error FIX ME
-        offerFactory(
+        GetIndividualOfferFactory(
           {
             id: 'KE',
             availabilityMessage: 'Pas de stock',
             status: OfferStatus.ACTIVE,
           },
-          // @ts-expect-error offerFactory is not typed and null throws an error but is accepted by the function
+          // @ts-expect-error individualOfferFactory is not typed and null throws an error but is accepted by the function
           null
         ),
       ])
@@ -785,7 +788,9 @@ describe('route Offers', () => {
 
     it('should display next page when clicking on right arrow', async () => {
       // Given
-      const offers = Array.from({ length: 11 }, () => offerFactory())
+      const offers = Array.from({ length: 11 }, () =>
+        GetIndividualOfferFactory()
+      )
       // @ts-expect-error FIX ME
       jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
       await renderOffers(store)
@@ -800,7 +805,9 @@ describe('route Offers', () => {
 
     it('should display previous page when clicking on left arrow', async () => {
       // Given
-      const offers = Array.from({ length: 11 }, () => offerFactory())
+      const offers = Array.from({ length: 11 }, () =>
+        GetIndividualOfferFactory()
+      )
       // @ts-expect-error FIX ME
       jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
       await renderOffers(store)
@@ -817,7 +824,9 @@ describe('route Offers', () => {
 
     describe('when 501 offers are fetched', () => {
       beforeEach(() => {
-        offersRecap = Array.from({ length: 501 }, () => offerFactory())
+        offersRecap = Array.from({ length: 501 }, () =>
+          individualOfferFactory()
+        )
       })
 
       it('should have max number page of 50', async () => {

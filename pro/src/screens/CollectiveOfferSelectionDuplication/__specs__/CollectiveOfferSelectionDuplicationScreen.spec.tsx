@@ -10,8 +10,8 @@ import { api } from 'apiClient/api'
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { Offer } from 'core/Offers/types'
 import * as useNotification from 'hooks/useNotification'
+import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 import { configureTestStore } from 'store/testUtils'
-import { collectiveOfferFactory } from 'utils/apiFactories'
 
 import CollectiveOfferSelectionDuplication from '../CollectiveOfferSelectionDuplicationScreen'
 
@@ -86,7 +86,7 @@ describe('CollectiveOfferConfirmation', () => {
     expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
 
     await waitFor(() =>
-      expect(screen.getByText('Le nom de l’offre 1')).toBeInTheDocument()
+      expect(screen.getByText('offer name 2')).toBeInTheDocument()
     )
   })
 

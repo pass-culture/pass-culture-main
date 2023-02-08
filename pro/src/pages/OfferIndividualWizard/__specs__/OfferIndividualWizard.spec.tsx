@@ -6,7 +6,6 @@ import { Route, Routes } from 'react-router-dom-v5-compat'
 import { api } from 'apiClient/api'
 import {
   GetIndividualOfferResponseModel,
-  OfferStatus,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
@@ -17,6 +16,7 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OfferIndividualWizard } from '..'
@@ -26,139 +26,7 @@ jest.mock('core/Notification/constants', () => ({
   NOTIFICATION_SHOW_DURATION: 10,
 }))
 
-const apiOffer: GetIndividualOfferResponseModel = {
-  activeMediation: null,
-  ageMax: null,
-  ageMin: null,
-  bookingEmail: null,
-  conditions: null,
-  dateCreated: '2022-05-18T08:25:30.991476Z',
-  dateModifiedAtLastProvider: '2022-05-18T08:25:30.991481Z',
-  description: 'A passionate description of product 80',
-  durationMinutes: null,
-  extraData: null,
-  fieldsUpdated: [],
-  hasBookingLimitDatetimesPassed: true,
-  id: 'YA',
-  isActive: true,
-  isBookable: false,
-  isDigital: false,
-  isDuo: false,
-  isEditable: true,
-  isEducational: false,
-  isEvent: true,
-  isNational: false,
-  isThing: false,
-  audioDisabilityCompliant: false,
-  mentalDisabilityCompliant: false,
-  motorDisabilityCompliant: false,
-  nonHumanizedId: 192,
-  visualDisabilityCompliant: false,
-  lastProvider: null,
-  lastProviderId: null,
-  mediaUrls: [],
-  mediations: [],
-  name: 'Séance ciné duo',
-  product: {
-    ageMax: null,
-    ageMin: null,
-    conditions: null,
-    dateModifiedAtLastProvider: '2022-05-18T08:25:30.980975Z',
-    description: 'A passionate description of product 80',
-    durationMinutes: null,
-    extraData: null,
-    fieldsUpdated: [],
-    id: 'AJFA',
-    idAtProviders: null,
-    isGcuCompatible: true,
-    isNational: false,
-    lastProviderId: null,
-    mediaUrls: [],
-    name: 'Product 80',
-    owningOffererId: null,
-    thumbCount: 0,
-    url: null,
-  },
-  productId: 'AJFA',
-  priceCategories: [{ price: 12.2, label: 'Mon premier tariff', id: 1 }],
-  stocks: [
-    {
-      beginningDatetime: '2022-05-23T08:25:31.009799Z',
-      bookingLimitDatetime: '2022-05-23T07:25:31.009799Z',
-      bookingsQuantity: 2,
-      cancellationLimitDate: '2022-06-01T12:15:12.343431Z',
-      dateCreated: '2022-05-18T08:25:31.015652Z',
-      dateModified: '2022-05-18T08:25:31.015655Z',
-      dateModifiedAtLastProvider: '2022-05-18T08:25:31.015643Z',
-      fieldsUpdated: [],
-      hasActivationCode: false,
-      id: 'YE',
-      idAtProviders: null,
-      isBookable: false,
-      isEventDeletable: false,
-      isEventExpired: true,
-      isSoftDeleted: false,
-      lastProviderId: null,
-      offerId: 'YA',
-      price: 10,
-      quantity: 1000,
-      remainingQuantity: 998,
-    },
-  ],
-  subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
-  thumbUrl: null,
-  externalTicketOfficeUrl: null,
-  url: null,
-  venue: {
-    address: '1 boulevard Poissonnière',
-    bookingEmail: 'venue29@example.net',
-    city: 'Paris',
-    comment: null,
-    dateCreated: '2022-05-18T08:25:30.929961Z',
-    dateModifiedAtLastProvider: '2022-05-18T08:25:30.929955Z',
-    departementCode: '75',
-    fieldsUpdated: [],
-    id: 'DY',
-    idAtProviders: null,
-    isVirtual: false,
-    lastProviderId: null,
-    latitude: 48.87004,
-    longitude: 2.3785,
-    managingOfferer: {
-      nonHumanizedId: 1,
-      address: '1 boulevard Poissonnière',
-      city: 'Paris',
-      dateCreated: '2022-05-18T08:25:30.891369Z',
-      dateModifiedAtLastProvider: '2022-05-18T08:25:30.891364Z',
-      fieldsUpdated: [],
-      id: 'CU',
-      idAtProviders: null,
-      isActive: true,
-      isValidated: true,
-      lastProviderId: null,
-      name: 'Le Petit Rintintin Management 6',
-      postalCode: '75000',
-      siren: '000000006',
-      thumbCount: 0,
-    },
-    managingOffererId: 'CU',
-    name: 'Cinéma synchro avec booking provider',
-    postalCode: '75000',
-    publicName: 'Cinéma synchro avec booking provider',
-    siret: '00000000600029',
-    thumbCount: 0,
-    venueLabelId: null,
-    audioDisabilityCompliant: false,
-    mentalDisabilityCompliant: false,
-    motorDisabilityCompliant: false,
-    visualDisabilityCompliant: false,
-  },
-  venueId: 'DY',
-  withdrawalDetails: null,
-  status: OfferStatus.EXPIRED,
-  withdrawalType: null,
-  withdrawalDelay: null,
-}
+const apiOffer: GetIndividualOfferResponseModel = GetIndividualOfferFactory()
 
 const renderOfferIndividualWizardRoute = (
   storeOverrides: any,
@@ -384,7 +252,7 @@ describe('test OfferIndividualWisard', () => {
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
         { offerId }
-      ) + '?structure=CU'
+      ) + `?structure=${apiOffer.venue.managingOfferer.id}`
     )
     expect(
       await screen.findByRole('heading', { name: 'Modifier l’offre' })
