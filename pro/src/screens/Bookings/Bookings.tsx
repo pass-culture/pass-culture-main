@@ -92,8 +92,8 @@ const Bookings = <
 
   const resetAndApplyPreFilters = useCallback(() => {
     resetPreFilters()
-    updateUrl(appliedPreFilters)
-  }, [appliedPreFilters])
+    updateUrl({ ...DEFAULT_PRE_FILTERS })
+  }, [resetPreFilters])
 
   const applyPreFilters = (filters: TPreFilters) => {
     setAppliedPreFilters(filters)
