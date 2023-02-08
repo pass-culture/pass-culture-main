@@ -449,7 +449,8 @@ class Returns403Test:
         offer = CollectiveOfferFactory(venue__managingOfferer=offerer)
 
         # When
-        data = {"venueId": 0}
+        humanized_venue = humanize(0)
+        data = {"venueId": humanized_venue}
         response = client.with_session_auth("user@example.com").patch(
             f"/collective/offers/{humanize(offer.id)}", json=data
         )
@@ -470,7 +471,8 @@ class Returns403Test:
         venue2 = offerers_factories.VenueFactory(managingOfferer=offerer2)
 
         # When
-        data = {"venueId": venue2.id}
+        humanized_venue = humanize(venue2.id)
+        data = {"venueId": humanized_venue}
         response = client.with_session_auth("user@example.com").patch(
             f"/collective/offers/{humanize(offer.id)}", json=data
         )
