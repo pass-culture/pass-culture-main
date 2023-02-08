@@ -10,6 +10,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 
 from .helpers import html_parser
 from .helpers import unauthorized as unauthorized_helpers
@@ -192,7 +193,12 @@ class ListCollectiveBookingsTest:
     )
     def test_list_bookings_by_status(self, authenticated_client, collective_bookings, status, expected_idx):
         # when
-        with assert_no_duplicated_queries():
+
+        # fetch session (1 query)
+        # fetch user (1 query)
+        # fetch individual bookings with extra data (1 query)
+        # count for pagination (1 pagination)
+        with assert_num_queries(4):
             response = authenticated_client.get(url_for(self.endpoint, status=status))
 
         # then

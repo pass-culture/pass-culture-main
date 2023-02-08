@@ -256,13 +256,13 @@ class Pricing(Base, Model):
     status: PricingStatus = sqla.Column(db_utils.MagicEnum(PricingStatus), index=True, nullable=False)
 
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
-    booking: "bookings_models.Booking | None" = sqla_orm.relationship(
+    booking: sqla_orm.Mapped["bookings_models.Booking | None"] = sqla_orm.relationship(
         "Booking", foreign_keys=[bookingId], backref="pricings"
     )
     collectiveBookingId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
     )
-    collectiveBooking: "educational_models.CollectiveBooking | None" = sqla_orm.relationship(
+    collectiveBooking: sqla_orm.Mapped["educational_models.CollectiveBooking | None"] = sqla_orm.relationship(
         "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="pricings"
     )
     # FIXME (dbaty 2022-08-03): make NOT NULLable once we have populated all rows.
@@ -333,6 +333,18 @@ class Pricing(Base, Model):
             name="reimbursement_rule_constraint_check",
         ),
     )
+
+    @property
+    def cashflow(self) -> "Cashflow | None":
+        """
+        The Pricing-Cashflow relation is implemented as a
+        many-to-many one but for now a Pricing can only have one
+        cashflow.
+        """
+        if not self.cashflows:
+            return None
+
+        return self.cashflows[0]
 
 
 class PricingLine(Base, Model):
