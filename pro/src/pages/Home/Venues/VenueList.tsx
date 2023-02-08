@@ -6,13 +6,7 @@ import { useNewOfferCreationJourney } from 'hooks'
 import Venue from './Venue'
 
 interface IVenueListProps {
-  physicalVenues: {
-    id: string
-    name: string
-    publicName?: string
-    hasMissingReimbursementPoint: boolean
-    hasCreatedOffer: boolean
-  }[]
+  physicalVenues: GetOffererVenueResponseModel[]
   selectedOffererId: string
   virtualVenue: GetOffererVenueResponseModel | null
 }
