@@ -71,7 +71,8 @@ class Returns200Test:
     def test_edit_part_of_price_category(self, client):
         offer = offers_factories.OfferFactory()
         price_category = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change")
+            offer=offer,
+            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change", venue=offer.venue),
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -160,7 +161,8 @@ class Returns400Test:
     def test_update_price_category_not_found(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         price_category = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change")
+            offer=offer,
+            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change", venue=offer.venue),
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -183,7 +185,8 @@ class Returns400Test:
     def test_update_unreachable_price_category(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change")
+            offer=offer,
+            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change", venue=offer.venue),
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
