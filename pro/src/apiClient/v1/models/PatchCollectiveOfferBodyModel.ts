@@ -21,7 +21,7 @@ export type PatchCollectiveOfferBodyModel = {
   offerVenue?: CollectiveOfferVenueBodyModel | null;
   students?: Array<StudentLevels> | null;
   subcategoryId?: SubcategoryIdEnum | null;
-  venueId?: number | null;
+  venueId?: string | null;
   visualDisabilityCompliant?: boolean | null;
 };
 
