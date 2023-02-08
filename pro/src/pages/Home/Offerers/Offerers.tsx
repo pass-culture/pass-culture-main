@@ -18,10 +18,6 @@ import { useNewOfferCreationJourney } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as StatusPendingFullIcon } from 'icons/ico-status-pending-full.svg'
 import { ReactComponent as SuccessIcon } from 'icons/ico-success.svg'
-import {
-  INITIAL_PHYSICAL_VENUES,
-  INITIAL_VIRTUAL_VENUE,
-} from 'pages/Home/Offerers/_constants'
 import { VenueList } from 'pages/Home/Venues'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByDisplayName } from 'utils/strings'
@@ -39,6 +35,8 @@ interface IOfferersProps {
   selectedOfferer?: GetOffererResponseModel | null
   isLoading: boolean
   isUserOffererValidated: boolean
+  physicalVenues: GetOffererVenueResponseModel[]
+  virtualVenue: GetOffererVenueResponseModel | null
 }
 const Offerers = ({
   receivedOffererNames,
@@ -47,12 +45,11 @@ const Offerers = ({
   selectedOfferer,
   isLoading,
   isUserOffererValidated,
+  physicalVenues,
+  virtualVenue,
 }: IOfferersProps) => {
   const [offererOptions, setOffererOptions] = useState<SelectOptionsRFF>([])
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
-  const [physicalVenues, setPhysicalVenues] = useState(INITIAL_PHYSICAL_VENUES)
-  const [virtualVenue, setVirtualVenue] =
-    useState<GetOffererVenueResponseModel | null>(INITIAL_VIRTUAL_VENUE)
 
   const location = useLocation()
   const history = useHistory()
@@ -97,20 +94,6 @@ const Offerers = ({
       location.search === '?success' && setOpenSuccessDialog(true)
     }
   }, [hasNewOfferCreationJourney])
-
-  useEffect(() => {
-    if (selectedOfferer) {
-      setPhysicalVenues(
-        selectedOfferer.managedVenues
-          ? selectedOfferer.managedVenues.filter(venue => !venue.isVirtual)
-          : []
-      )
-      const virtualVenue = selectedOfferer.managedVenues?.find(
-        venue => venue.isVirtual
-      )
-      setVirtualVenue(virtualVenue ?? null)
-    }
-  }, [selectedOfferer])
 
   const handleChangeOfferer = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {

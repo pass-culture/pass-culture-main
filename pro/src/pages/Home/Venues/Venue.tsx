@@ -34,7 +34,7 @@ export interface IVenueProps {
   initialOpenState?: boolean
   name: string
   offererId: string
-  publicName?: string
+  publicName?: string | null
   hasCreatedOffer?: boolean
 }
 

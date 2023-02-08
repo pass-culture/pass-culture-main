@@ -10,6 +10,11 @@ import { Newsletter } from 'components/Newsletter'
 import PageTitle from 'components/PageTitle/PageTitle'
 import { hasStatusCode } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
+import useCurrentUser from 'hooks/useCurrentUser'
+import {
+  INITIAL_PHYSICAL_VENUES,
+  INITIAL_VIRTUAL_VENUE,
+} from 'pages/Home/Offerers/_constants'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
 import useNewOfferCreationJourney from '../../hooks/useNewOfferCreationJourney'
@@ -26,15 +31,17 @@ const Homepage = (): JSX.Element => {
 
   const [receivedOffererNames, setReceivedOffererNames] =
     useState<GetOfferersNamesResponseModel | null>(null)
-  const [venues, setVenues] = useState<GetOffererVenueResponseModel[]>([])
-  const [offererId, setOffererId] = useState('')
-  const [selectedOffererId, setSelectedOffererId] = useState<string | null>(
-    null
-  )
+  const [selectedOffererId, setSelectedOffererId] = useState<string>('')
   const [selectedOfferer, setSelectedOfferer] =
     useState<GetOffererResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [hasNoVenueVisible, setHasNoVenueVisible] = useState(false)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
+  const [physicalVenues, setPhysicalVenues] = useState(INITIAL_PHYSICAL_VENUES)
+  const [virtualVenue, setVirtualVenue] =
+    useState<GetOffererVenueResponseModel | null>(INITIAL_VIRTUAL_VENUE)
+
+  const { currentUser } = useCurrentUser()
 
   useEffect(() => {
     async function loadOfferer(offererId: string) {
@@ -75,20 +82,26 @@ const Homepage = (): JSX.Element => {
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
   const withNewOfferCreationJourney = useNewOfferCreationJourney()
 
+  const handleOffererChange = async (offererId: string) => {
+    const offerer = receivedOffererNames?.offerersNames.find(
+      offerer => offerer.id === offererId
+    )?.id
+    const receivedOfferer = await api.getOfferer(offerer || '')
+    const offererPhysicalVenues =
+      receivedOfferer.managedVenues?.filter(venue => !venue.isVirtual) ?? null
+    const virtualVenue =
+      receivedOfferer.managedVenues?.find(venue => venue.isVirtual) ?? null
+    setHasNoVenueVisible(
+      offererPhysicalVenues?.length === 0 && !virtualVenue?.hasCreatedOffer
+    )
+    setPhysicalVenues(offererPhysicalVenues ?? [])
+    setVirtualVenue(virtualVenue)
+    setSelectedOffererId(offererId)
+  }
+
   useEffect(function fetchData() {
     api.listOfferersNames().then(async offererNames => {
       setReceivedOffererNames(offererNames)
-      if (offererNames.offerersNames.length === 1) {
-        const offerer = offererNames.offerersNames[0].id
-        setOffererId(offerer)
-        const receivedOfferer = await api.getOfferer(offerer)
-        setVenues(
-          /* istanbul ignore next: DEBT, TO FIX */
-          receivedOfferer.managedVenues
-            ? receivedOfferer.managedVenues.filter(venue => !venue.isVirtual)
-            : []
-        )
-      }
     })
   }, [])
 
@@ -108,18 +121,20 @@ const Homepage = (): JSX.Element => {
           isLoading={isLoading}
           isUserOffererValidated={isUserOffererValidated}
           receivedOffererNames={receivedOffererNames}
-          onSelectedOffererChange={setSelectedOffererId}
+          onSelectedOffererChange={handleOffererChange}
           cancelLoading={() => setIsLoading(false)}
+          physicalVenues={physicalVenues}
+          virtualVenue={virtualVenue}
         />
       </section>
       {isUserOffererValidated &&
         withNewOfferCreationJourney &&
-        receivedOffererNames?.offerersNames.length === 1 &&
-        venues.length === 0 && (
+        !currentUser.isAdmin &&
+        hasNoVenueVisible && (
           <section className="step-section">
             <VenueOfferSteps
-              hasVenue={venues.length > 0}
-              offererId={offererId}
+              hasVenue={!hasNoVenueVisible}
+              offererId={selectedOffererId}
             />
           </section>
         )}

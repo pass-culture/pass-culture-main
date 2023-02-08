@@ -44,6 +44,8 @@ const renderOfferers = async (userOffererValidated: boolean) => {
       selectedOfferer={selectedOfferer}
       isLoading={false}
       isUserOffererValidated={userOffererValidated}
+      physicalVenues={[]}
+      virtualVenue={null}
     />
   )
 }
