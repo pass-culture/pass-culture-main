@@ -30,7 +30,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "fraude-conformite": [
         perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
-        perm_models.Permissions.REVIEW_SUSPEND_USER,
+        perm_models.Permissions.REVIEW_PUBLIC_ACCOUNT,
+        perm_models.Permissions.SUSPEND_USER,
         perm_models.Permissions.SEARCH_PRO_ACCOUNT,
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.VALIDATE_OFFERER,

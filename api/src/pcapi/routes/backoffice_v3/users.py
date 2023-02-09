@@ -19,7 +19,7 @@ users_blueprint = utils.child_backoffice_blueprint(
     "users",
     __name__,
     url_prefix="/users/<int:user_id>",
-    permission=perm_models.Permissions.REVIEW_SUSPEND_USER,
+    permission=perm_models.Permissions.SUSPEND_USER,
 )
 
 
