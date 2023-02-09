@@ -214,3 +214,25 @@ class ListIndividualBookingsTest:
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(row["Contremarque"] for row in rows) == {"CNCL02", "ELBEIT"}
+
+    def test_list_bookings_by_offerer(self, authenticated_client, bookings):
+        # when
+        offerer_id = bookings[1].offererId
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url_for(self.endpoint, offerer=offerer_id))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["Contremarque"] == bookings[1].token
+
+    def test_list_bookings_by_venue(self, authenticated_client, bookings):
+        # when
+        venue_ids = [bookings[0].venueId, bookings[2].venueId]
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url_for(self.endpoint, venue=venue_ids))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(row["Contremarque"] for row in rows) == {bookings[0].token, bookings[2].token}

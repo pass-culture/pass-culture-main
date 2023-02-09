@@ -2,6 +2,7 @@ from functools import partial
 import typing
 
 from flask import render_template
+from flask import url_for
 import wtforms
 from wtforms import validators
 import wtforms_sqlalchemy.fields
@@ -105,6 +106,14 @@ class PCSelectWithPlaceholderValueField(wtforms.SelectField):
 class PCSelectMultipleField(wtforms.SelectMultipleField):
     widget = partial(widget, template="components/forms/select_multiple_field.html")
     validators = [validators.Optional()]
+
+
+class PCAutocompleteSelectMultipleField(PCSelectMultipleField):
+    widget = partial(widget, template="components/forms/select_multiple_field_autocomplete.html")
+
+    def __init__(self, label: str, endpoint: str, **kwargs: typing.Any):
+        super().__init__(label, **kwargs)
+        self.autocomplete_url = url_for(endpoint)
 
 
 class PCQuerySelectMultipleField(wtforms_sqlalchemy.fields.QuerySelectMultipleField):

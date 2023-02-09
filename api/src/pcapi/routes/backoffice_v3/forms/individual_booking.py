@@ -14,6 +14,12 @@ class GetIndividualBookingListForm(FlaskForm):
         csrf = False
 
     q = fields.PCOptSearchField("Code contremarque, ID offre, Nom ou ID du bénéficiaire")
+    offerer = fields.PCAutocompleteSelectMultipleField(
+        "Structures", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_offerers"
+    )
+    venue = fields.PCAutocompleteSelectMultipleField(
+        "Lieux", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_venues"
+    )
     category = fields.PCSelectMultipleField(
         "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
     )
@@ -34,3 +40,16 @@ class GetIndividualBookingListForm(FlaskForm):
         if q.data:
             q.data = q.data.strip()
         return q
+
+    def is_empty(self) -> bool:
+        return not any(
+            (
+                self.q.data,
+                self.offerer.data,
+                self.venue.data,
+                self.category.data,
+                self.status.data,
+                self.from_date.data,
+                self.to_date.data,
+            )
+        )

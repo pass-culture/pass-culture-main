@@ -8,6 +8,7 @@ import sqlalchemy as sa
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
@@ -77,6 +78,12 @@ def _get_individual_bookings(form: individual_booking_forms.GetIndividualBooking
         to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time())
         query = query.filter(bookings_models.Booking.dateCreated <= to_datetime)
 
+    if form.offerer.data:
+        query = query.filter(bookings_models.Booking.offererId.in_(form.offerer.data))
+
+    if form.venue.data:
+        query = query.filter(bookings_models.Booking.venueId.in_(form.venue.data))
+
     if form.category.data:
         query = query.filter(
             offers_models.Offer.subcategoryId.in_(
@@ -98,13 +105,7 @@ def list_individual_bookings() -> utils.BackofficeResponse:
     if not form.validate():
         return render_template("individual_bookings/list.html", rows=[], form=form), 400
 
-    if (
-        not form.q.data
-        and not form.category.data
-        and not form.status.data
-        and not form.from_date.data
-        and not form.to_date.data
-    ):
+    if form.is_empty():
         # Empty results when no filter is set
         return render_template("individual_bookings/list.html", rows=[], form=form)
 
@@ -119,6 +120,30 @@ def list_individual_bookings() -> utils.BackofficeResponse:
     next_pages_urls = search_utils.pagination_links(next_page, int(form.data["page"]), paginated_bookings.pages)
 
     form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
+
+    if form.offerer.data:
+        offerers = (
+            offerers_models.Offerer.query.filter(offerers_models.Offerer.id.in_(form.offerer.data))
+            .order_by(offerers_models.Offerer.name)
+            .with_entities(
+                offerers_models.Offerer.id,
+                offerers_models.Offerer.name,
+                offerers_models.Offerer.siren,
+            )
+        )
+        form.offerer.choices = [(offerer_id, f"{name} ({siren})") for offerer_id, name, siren in offerers]
+
+    if form.venue.data:
+        venues = (
+            offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(form.venue.data))
+            .order_by(offerers_models.Venue.name)
+            .with_entities(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.siret,
+            )
+        )
+        form.venue.choices = [(venue_id, f"{name} ({siret or 'Pas de SIRET'})") for venue_id, name, siret in venues]
 
     return render_template(
         "individual_bookings/list.html",
