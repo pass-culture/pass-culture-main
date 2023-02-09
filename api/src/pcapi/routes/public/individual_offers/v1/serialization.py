@@ -335,14 +335,7 @@ UNLIMITED_LITERAL = typing.Literal["unlimited"]
 
 
 class BaseStockCreation(serialization.ConfiguredBaseModel):
-    price: pydantic.StrictInt = PRICE_FIELD
     quantity: pydantic.StrictInt | UNLIMITED_LITERAL = QUANTITY_FIELD
-
-    @pydantic.validator("price")
-    def price_must_be_positive(cls, value: int) -> int:
-        if value < 0:
-            raise ValueError("Value must be positive")
-        return value
 
     @pydantic.validator("quantity")
     def quantity_must_be_positive(cls, quantity: int | str) -> int | str:
@@ -358,21 +351,21 @@ def deserialize_quantity(quantity: int | UNLIMITED_LITERAL | None) -> int | None
 
 
 class StockCreation(BaseStockCreation):
+    price: pydantic.StrictInt = PRICE_FIELD
     booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
 
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
 
-
-class StockEdition(serialization.ConfiguredBaseModel):
-    booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
-    price: pydantic.StrictInt | None = PRICE_FIELD
-    quantity: pydantic.StrictInt | UNLIMITED_LITERAL | None = QUANTITY_FIELD
-
     @pydantic.validator("price")
-    def price_must_be_positive(cls, value: int | None) -> int | None:
-        if value and value < 0:
+    def price_must_be_positive(cls, value: int) -> int:
+        if value < 0:
             raise ValueError("Value must be positive")
         return value
+
+
+class BaseStockEdition(serialization.ConfiguredBaseModel):
+    booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
+    quantity: pydantic.StrictInt | UNLIMITED_LITERAL | None = QUANTITY_FIELD
 
     @pydantic.validator("quantity")
     def quantity_must_be_positive(cls, quantity: int | str | None) -> int | str | None:
@@ -382,6 +375,16 @@ class StockEdition(serialization.ConfiguredBaseModel):
 
     class Config:
         extra = "forbid"
+
+
+class StockEdition(BaseStockEdition):
+    price: pydantic.StrictInt | None = PRICE_FIELD
+
+    @pydantic.validator("price")
+    def price_must_be_positive(cls, value: int | None) -> int | None:
+        if value and value < 0:
+            raise ValueError("Value must be positive")
+        return value
 
 
 ON_SITE_MINUTES_BEFORE_EVENT = typing.Literal[0, 15, 30, 60, 120, 240, 1440, 2880]
@@ -497,8 +500,9 @@ class PriceCategoryEdition(serialization.ConfiguredBaseModel):
         extra = "forbid"
 
 
-class DateEdition(StockEdition):
+class DateEdition(BaseStockEdition):
     beginning_datetime: datetime.datetime | None = BEGINNING_DATETIME_FIELD
+    price_category_id: int | None
 
 
 class EventOfferEdition(OfferEditionBase):
@@ -513,6 +517,7 @@ class EventOfferEdition(OfferEditionBase):
 class DateCreation(BaseStockCreation):
     beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
     booking_limit_datetime: datetime.datetime = BOOKING_LIMIT_DATETIME_FIELD
+    price_category_id: int
 
     _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")

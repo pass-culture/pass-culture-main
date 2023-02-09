@@ -997,6 +997,15 @@ class PostDatesTest:
         event_offer = offers_factories.EventOfferFactory(
             venue__managingOfferer=api_key.offerer, lastProvider=individual_offers_api_provider
         )
+        carre_or_category_label = offers_factories.PriceCategoryLabelFactory(label="carre or", venue=event_offer.venue)
+        carre_or_price_category = offers_factories.PriceCategoryFactory(
+            offer=event_offer, price=decimal.Decimal("88.99"), priceCategoryLabel=carre_or_category_label
+        )
+
+        free_category_label = offers_factories.PriceCategoryLabelFactory(label="gratuit", venue=event_offer.venue)
+        free_price_category = offers_factories.PriceCategoryFactory(
+            offer=event_offer, price=decimal.Decimal("0"), priceCategoryLabel=free_category_label
+        )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             f"/public/offers/v1/events/{event_offer.id}/dates",
@@ -1005,13 +1014,13 @@ class PostDatesTest:
                     {
                         "beginningDatetime": "2022-02-01T12:00:00+02:00",
                         "bookingLimitDatetime": "2022-01-15T13:00:00Z",
-                        "price": 8899,
+                        "price_category_id": carre_or_price_category.id,
                         "quantity": 10,
                     },
                     {
                         "beginningDatetime": "2022-03-01T12:00:00+02:00",
                         "bookingLimitDatetime": "2022-01-15T13:00:00Z",
-                        "price": 0,
+                        "price_category_id": free_price_category.id,
                         "quantity": "unlimited",
                     },
                 ],
@@ -1067,11 +1076,33 @@ class PostDatesTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events/quinze/dates",
             json={
-                "additionalDates": [
+                "dates": [
                     {
                         "beginningDatetime": "2022-02-01T12:00:00+02:00",
                         "bookingLimitDatetime": "2022-01-15T13:00:00Z",
-                        "price": 8899,
+                        "priceCategoryId": 0,
+                        "quantity": 10,
+                    }
+                ]
+            },
+        )
+
+        assert response.status_code == 404
+
+    def test_404_price_category_id(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=api_key.offerer, lastProvider=individual_offers_api_provider
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            f"/public/offers/v1/events/{event_offer.id}/dates",
+            json={
+                "dates": [
+                    {
+                        "beginningDatetime": "2022-02-01T12:00:00+02:00",
+                        "bookingLimitDatetime": "2022-01-15T13:00:00Z",
+                        "priceCategoryId": 0,
                         "quantity": 10,
                     }
                 ]
@@ -1091,12 +1122,13 @@ class PostDatesTest:
                     {
                         "beginningDatetime": "2022-02-01T12:00:00+02:00",
                         "bookingLimitDatetime": "2022-01-15T13:00:00Z",
-                        "price": 8899,
+                        "priceCategoryId": 0,
                         "quantity": 10,
                     },
                 ],
             },
         )
+
         assert response.status_code == 404
         assert response.json == {"event_id": ["The event could not be found"]}
 
@@ -1111,12 +1143,13 @@ class PostDatesTest:
                     {
                         "beginningDatetime": "2022-02-01T12:00:00+02:00",
                         "bookingLimitDatetime": "2022-01-15T13:00:00Z",
-                        "price": 8899,
+                        "priceCategoryId": 0,
                         "quantity": 10,
                     },
                 ],
             },
         )
+
         assert response.status_code == 404
         assert response.json == {"event_id": ["The event could not be found"]}
 
@@ -2203,54 +2236,113 @@ class PatchDateTest:
         assert response.status_code == 404
         assert response.json == {"date_id": ["No date could be found"]}
 
-    @freezegun.freeze_time("2022-01-01 12:00:00")
-    def test_update_all_fields_dates(self, individual_offers_api_provider, client):
+    def test_find_no_price_category_returns_404(self, individual_offers_api_provider, client):
         api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=api_key.offerer, lastProvider=individual_offers_api_provider
+        )
+        event_stock = offers_factories.EventStockFactory(offer=event_offer, priceCategory=None)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_offer.id}/dates/{event_stock.id}",
+            json={"priceCategoryId": 0},
+        )
+
+        assert response.status_code == 404
+
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_update_all_fields_on_date_with_price(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=api_key.offerer, lastProvider=individual_offers_api_provider
+        )
         event_stock = offers_factories.EventStockFactory(
-            offer__venue__managingOfferer=api_key.offerer,
-            offer__lastProvider=individual_offers_api_provider,
+            offer=event_offer,
             quantity=10,
             price=12,
+            priceCategory=None,
             bookingLimitDatetime=datetime.datetime(2022, 1, 7),
             beginningDatetime=datetime.datetime(2022, 1, 12),
         )
+        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
+
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
             json={
                 "beginningDatetime": "2022-02-01T15:00:00+02:00",
                 "bookingLimitDatetime": "2022-01-20T12:00:00+02:00",
-                "price": 2012,
+                "priceCategoryId": price_category.id,
                 "quantity": 24,
             },
         )
         assert response.status_code == 200
         assert event_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 20, 10)
         assert event_stock.beginningDatetime == datetime.datetime(2022, 2, 1, 13)
-        assert event_stock.price == decimal.Decimal("20.12")
+        assert event_stock.price == price_category.price
+        assert event_stock.priceCategory == price_category
+        assert event_stock.quantity == 24
+
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_update_all_fields_on_date_with_price_category(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=api_key.offerer, lastProvider=individual_offers_api_provider
+        )
+        old_price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
+        event_stock = offers_factories.EventStockFactory(
+            offer=event_offer,
+            quantity=10,
+            priceCategory=old_price_category,
+            bookingLimitDatetime=datetime.datetime(2022, 1, 7),
+            beginningDatetime=datetime.datetime(2022, 1, 12),
+        )
+        new_price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
+            json={
+                "beginningDatetime": "2022-02-01T15:00:00+02:00",
+                "bookingLimitDatetime": "2022-01-20T12:00:00+02:00",
+                "priceCategoryId": new_price_category.id,
+                "quantity": 24,
+            },
+        )
+
+        assert response.status_code == 200
+        assert event_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 20, 10)
+        assert event_stock.beginningDatetime == datetime.datetime(2022, 2, 1, 13)
+        assert event_stock.price == new_price_category.price
+        assert event_stock.priceCategory == new_price_category
         assert event_stock.quantity == 24
 
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_only_one_field(self, individual_offers_api_provider, client):
         api_key = offerers_factories.ApiKeyFactory()
+        event_offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=api_key.offerer, lastProvider=individual_offers_api_provider
+        )
+        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
         event_stock = offers_factories.EventStockFactory(
-            offer__venue__managingOfferer=api_key.offerer,
-            offer__lastProvider=individual_offers_api_provider,
+            offer=event_offer,
             quantity=10,
-            price=12,
+            priceCategory=price_category,
             bookingLimitDatetime=datetime.datetime(2022, 1, 7),
             beginningDatetime=datetime.datetime(2022, 1, 12),
         )
+
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
             json={
                 "bookingLimitDatetime": "2022-01-09T12:00:00+02:00",
             },
         )
+
         assert response.status_code == 200
         assert event_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 9, 10)
         assert event_stock.beginningDatetime == datetime.datetime(2022, 1, 12)
-        assert event_stock.price == decimal.Decimal("12")
+        assert event_stock.price == price_category.price
         assert event_stock.quantity == 10
+        assert event_stock.priceCategory == price_category
 
     def test_update_with_error(self, individual_offers_api_provider, client):
         api_key = offerers_factories.ApiKeyFactory()
