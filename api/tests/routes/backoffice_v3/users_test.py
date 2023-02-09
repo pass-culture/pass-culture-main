@@ -21,7 +21,7 @@ pytestmark = [
 class PostUserTestHelper(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
     endpoint_kwargs = {"user_id": 1}
-    needed_permission = perm_models.Permissions.REVIEW_SUSPEND_USER
+    needed_permission = perm_models.Permissions.SUSPEND_USER
 
     def _post_request(self, authenticated_client, user_id, form):
         # generate csrf token before request

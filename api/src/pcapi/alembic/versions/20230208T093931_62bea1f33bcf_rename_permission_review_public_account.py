@@ -1,7 +1,5 @@
 """Rename_permission_REVIEW_PUBLIC_ACCOUNT
 """
-from alembic import op
-
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.
@@ -12,8 +10,10 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.execute("UPDATE permission SET name = 'REVIEW_SUSPEND_USER' WHERE name = 'REVIEW_PUBLIC_ACCOUNT'")
+    # migration reverted
+    pass
 
 
 def downgrade() -> None:
-    op.execute("UPDATE permission SET name = 'REVIEW_PUBLIC_ACCOUNT' WHERE name = 'REVIEW_SUSPEND_USER'")
+    # migration reverted
+    pass
