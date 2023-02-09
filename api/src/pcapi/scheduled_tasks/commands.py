@@ -92,6 +92,16 @@ def synchronize_boost_stocks() -> None:
     synchronize_venue_providers(venue_providers)
 
 
+@blueprint.cli.command("synchronize_cgr_stocks")
+@log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_CGR_INTEGRATION)
+def synchronize_cgr_stocks() -> None:
+    """Launch CGR synchronization."""
+    cgr_stocks_provider_id = get_provider_by_local_class("CGRStocks").id
+    venue_providers = providers_repository.get_active_venue_providers_by_provider(cgr_stocks_provider_id)
+    synchronize_venue_providers(venue_providers)
+
+
 @blueprint.cli.command("import_beneficiaries_from_dms_v4")
 @log_cron_with_transaction
 def import_beneficiaries_from_dms_legacy() -> None:
