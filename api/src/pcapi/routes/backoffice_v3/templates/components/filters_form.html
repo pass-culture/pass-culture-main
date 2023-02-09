@@ -5,13 +5,13 @@
             {% for form_field in form %}
                 {% if form_field.type == "HiddenField" %}
                     {{ form_field }}
-                {% elif form_field.type == 'PCSelectMultipleField' or form_field.type == "PCQuerySelectMultipleField" %}
+                {% elif form_field.type in ('PCSelectMultipleField', "PCQuerySelectMultipleField", "PCAutocompleteSelectMultipleField") %}
                     {% set _ = select_multiple.append(form_field) %}
                 {% endif %}
             {% endfor %}
             <div class="input-group mb-3 px-1">
                 {% for form_field in form %}
-                    {% if form_field.type != "HiddenField" and form_field.type != "PCSelectMultipleField" and form_field.type != "PCQuerySelectMultipleField" %}
+                    {% if form_field.type not in ("HiddenField", "PCSelectMultipleField", "PCQuerySelectMultipleField", "PCAutocompleteSelectMultipleField") %}
                         {{ form_field }}
                     {% endif %}
                 {% endfor %}
