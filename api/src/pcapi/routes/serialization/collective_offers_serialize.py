@@ -345,6 +345,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     templateId: str | None
     lastBookingStatus: CollectiveBookingStatus | None
     lastBookingId: int | None
+    teacherEmail: str | None
 
 
 class CollectiveOfferResponseIdModel(BaseModel):
