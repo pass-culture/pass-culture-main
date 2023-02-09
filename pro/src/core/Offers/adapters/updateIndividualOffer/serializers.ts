@@ -44,11 +44,13 @@ export const serializeDurationMinutes = (
 interface ISerializePatchOffer {
   offer: IOfferIndividual
   formValues: Partial<IOfferIndividualFormValues>
+  shouldSendMail?: boolean
 }
 
 export const serializePatchOffer = ({
   offer,
   formValues,
+  shouldSendMail = false,
 }: ISerializePatchOffer): PatchOfferBodyModel => {
   let sentValues: Partial<IOfferIndividualFormValues> = formValues
   if (offer?.lastProvider) {
@@ -96,5 +98,6 @@ export const serializePatchOffer = ({
       : null,
     externalTicketOfficeUrl: sentValues.externalTicketOfficeUrl || undefined,
     url: sentValues.url || undefined,
+    shouldSendMail,
   }
 }
