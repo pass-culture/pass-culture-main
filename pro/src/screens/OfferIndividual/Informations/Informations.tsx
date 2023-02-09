@@ -153,15 +153,18 @@ const Informations = ({
   }
 
   const handleSendMail = async (shouldSendMail: boolean) => {
-    const totalBookingsQuantity =
-      offer?.stocks.reduce((acc, stock) => acc + stock.bookingsQuantity, 0) ?? 0
+    const totalBookingsQuantity = offer?.stocks.reduce(
+      (acc, stock) => acc + stock.bookingsQuantity,
+      0
+    )
 
-    if (totalBookingsQuantity > 0 && handleWithdrawalDialog()) {
+    if (
+      totalBookingsQuantity &&
+      totalBookingsQuantity > 0 &&
+      handleWithdrawalDialog()
+    ) {
       setShouldSendMail(shouldSendMail)
       setIsClickingFromActionBar(false)
-      if (isWithdrawalDialogOpen) {
-        await formik.submitForm()
-      }
       return
     }
   }
@@ -170,7 +173,7 @@ const Informations = ({
     ({ saveDraft = false, shouldSendMail = false } = {}) =>
     async () => {
       if (mode === OFFER_WIZARD_MODE.EDITION) {
-        handleSendMail(shouldSendMail)
+        await handleSendMail(shouldSendMail)
       }
 
       setIsClickingFromActionBar(true)
@@ -178,6 +181,7 @@ const Informations = ({
       if (Object.keys(formik.errors).length !== 0) {
         /* istanbul ignore next: DEBT, TO FIX */
         setIsClickingFromActionBar(false)
+        /* istanbul ignore next: DEBT, TO FIX */
         if (saveDraft) {
           notify.error(
             'Des informations sont nécessaires pour sauvegarder le brouillon'
@@ -194,6 +198,10 @@ const Informations = ({
   const onSubmitOffer = async (
     formValues: IOfferIndividualFormValues
   ): Promise<void> => {
+    if (isWithdrawalDialogOpen) {
+      return
+    }
+
     const { isOk, payload } = !offer
       ? await createIndividualOffer(formValues)
       : await updateIndividualOffer({
@@ -323,24 +331,25 @@ const Informations = ({
             step={OFFER_WIZARD_STEP_IDS.INFORMATIONS}
             isDisabled={
               formik.isSubmitting ||
-              Boolean(offer && isOfferDisabled(offer.status))
+              Boolean(offer && isOfferDisabled(offer.status)) ||
+              isWithdrawalDialogOpen
             }
             offerId={offer?.id}
             shouldTrack={shouldTrack}
             submitAsButton={submitAsButton}
           />
-          {isWithdrawalDialogOpen && (
-            <WithdrawalConfirmDialog
-              hideDialog={handleCloseWidthdrawalDialog}
-              handleCancel={handleNextStep({ saveDraft: true })}
-              handleConfirm={handleNextStep({
-                saveDraft: true,
-                shouldSendMail: true,
-              })}
-            />
-          )}
         </form>
       </FormLayout>
+      {isWithdrawalDialogOpen && (
+        <WithdrawalConfirmDialog
+          hideDialog={handleCloseWidthdrawalDialog}
+          handleCancel={handleNextStep({ saveDraft: true })}
+          handleConfirm={handleNextStep({
+            saveDraft: true,
+            shouldSendMail: true,
+          })}
+        />
+      )}
       <RouteLeavingGuardOfferIndividual
         when={formik.dirty && !isClickingFromActionBar}
         tracking={nextLocation =>
