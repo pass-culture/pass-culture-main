@@ -11,7 +11,7 @@ class CollectiveOfferNotAssociatedToInstitution(Exception):
 
 class AdageCollectiveOfferContact(AdageBaseResponseModel):
     email: str
-    phone: str
+    phone: str | None
 
 
 class AdageCollectiveOffer(AdageBaseResponseModel):
