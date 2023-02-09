@@ -3,6 +3,7 @@ import {
   IStockEventFormValues,
   STOCK_EVENT_FORM_DEFAULT_VALUES,
 } from 'components/StockEventForm'
+import { stockEventFactory } from 'components/StockEventForm/stockEventFactory'
 
 import { serializeStockEventList } from '../serializers'
 
@@ -19,7 +20,7 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
 
   beforeEach(() => {
     formValuesList = [
-      {
+      stockEventFactory({
         beginningDate: new Date('2022-10-26T00:00:00.0200'),
         beginningTime: new Date('2022-10-26T15:00:00.0200'),
         remainingQuantity: STOCK_EVENT_FORM_DEFAULT_VALUES.remainingQuantity,
@@ -29,7 +30,8 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
         price: 10,
         isDeletable: true,
         readOnlyFields: [],
-      },
+        stockId: undefined,
+      }),
     ]
     departementCode = '75'
   })

@@ -1,10 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
 import { SubmitButton } from 'ui-kit'
 import { getToday } from 'utils/date'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../constants'
 import StockEventForm, { IStockEventFormProps } from '../StockEventForm'
@@ -33,8 +34,13 @@ const renderStockEventForm = ({
   initialValues?: IStockEventFormValues
   onSubmit?: () => void
 } = {}) => {
-  const props: IStockEventFormProps = { today, stockIndex: 0 }
-  return render(
+  const props: IStockEventFormProps = {
+    today,
+    stockIndex: 0,
+    priceCategoriesOptions: [],
+  }
+
+  return renderWithProviders(
     <Formik
       initialValues={{
         stocks: [initialValues],
