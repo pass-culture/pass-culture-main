@@ -86,7 +86,7 @@ export const serializePatchOffer = ({
       sentValues.accessibility &&
       sentValues.accessibility[AccessiblityEnum.MOTOR],
     name: sentValues.name,
-    withdrawalDelay: sentValues.withdrawalDelay || undefined,
+    withdrawalDelay: Number(sentValues.withdrawalDelay) || undefined,
     withdrawalDetails: sentValues.withdrawalDetails || undefined,
     visualDisabilityCompliant:
       sentValues.accessibility &&
@@ -98,6 +98,6 @@ export const serializePatchOffer = ({
       : null,
     externalTicketOfficeUrl: sentValues.externalTicketOfficeUrl || undefined,
     url: sentValues.url || undefined,
-    shouldSendMail,
+    shouldSendMail: shouldSendMail,
   }
 }
