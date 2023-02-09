@@ -21,12 +21,14 @@ import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
+import { SelectOption } from 'custom_types/form'
 import { useNavigate, useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { getToday } from 'utils/date'
+import { formatPrice } from 'utils/formatPrice'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
@@ -236,6 +238,14 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     getToday(),
     offer.venue.departmentCode
   )
+  const priceCategoriesOptions =
+    offer.priceCategories?.map(
+      (priceCategory): SelectOption => ({
+        label: `${formatPrice(priceCategory.price)} - ${priceCategory.label}`,
+        value: priceCategory.id,
+      })
+    ) ?? []
+
   const initialValues = buildInitialValues({
     departmentCode: offer.venue.departmentCode,
     offerStocks: offer.stocks,
@@ -247,7 +257,10 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const formik = useFormik<{ stocks: IStockEventFormValues[] }>({
     initialValues,
     onSubmit,
-    validationSchema: getValidationSchema(),
+    validationSchema: getValidationSchema(
+      priceCategoriesOptions,
+      isPriceCategoriesActive
+    ),
   })
 
   const isFormEmpty = () => {
@@ -369,7 +382,13 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
               links={links}
               isBanner
             />
-            <StockFormList offer={offer} onDeleteStock={onDeleteStock} />
+
+            <StockFormList
+              offer={offer}
+              onDeleteStock={onDeleteStock}
+              priceCategoriesOptions={priceCategoriesOptions}
+            />
+
             <ActionBar
               isDisabled={formik.isSubmitting || isOfferDisabled(offer.status)}
               onClickNext={handleNextStep()}

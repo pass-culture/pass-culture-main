@@ -67,6 +67,7 @@ export const serializeStockApi = (
     isSoftDeleted: apiStock.isSoftDeleted,
     offerId: apiStock.offerId,
     price: apiStock.price,
+    priceCategoryId: apiStock.priceCategoryId,
     quantity: apiStock.quantity,
     remainingQuantity: remainingQuantity,
     activationCodesExpirationDatetime:

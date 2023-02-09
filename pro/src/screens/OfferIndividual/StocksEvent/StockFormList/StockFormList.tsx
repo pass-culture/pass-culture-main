@@ -19,7 +19,6 @@ import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Pagination } from 'ui-kit/Pagination'
 import { getToday } from 'utils/date'
-import { formatPrice } from 'utils/formatPrice'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import styles from './StockFormList.module.scss'
@@ -30,11 +29,16 @@ interface IStockFormListProps {
     stockValues: IStockEventFormValues,
     stockIndex: number
   ) => Promise<void>
+  priceCategoriesOptions: SelectOption[]
 }
 
 export const STOCKS_PER_PAGE = 20
 
-const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
+const StockFormList = ({
+  offer,
+  onDeleteStock,
+  priceCategoriesOptions,
+}: IStockFormListProps) => {
   const {
     visible: deleteConfirmVisible,
     showModal: deleteConfirmShow,
@@ -62,14 +66,6 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
     (page - 1) * STOCKS_PER_PAGE,
     page * STOCKS_PER_PAGE
   )
-
-  const priceCategoriesOptions =
-    offer.priceCategories?.map(
-      (priceCategory): SelectOption => ({
-        label: `${formatPrice(priceCategory.price)} - ${priceCategory.label}`,
-        value: priceCategory.id,
-      })
-    ) ?? []
 
   return (
     <FieldArray
