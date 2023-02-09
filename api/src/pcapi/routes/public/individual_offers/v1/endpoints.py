@@ -337,8 +337,14 @@ def post_event_dates(
 ) -> serialization.PostDatesResponse:
     """
     Add dates to an event offer.
+    Each date is attached to a price category so if there are several prices categories, several dates must be added.
     """
-    offer = _retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent == True).one_or_none()
+    offer = (
+        _retrieve_offer_query(event_id)
+        .options(sqla_orm.joinedload(offers_models.Offer.priceCategories))
+        .filter(offers_models.Offer.isEvent == True)
+        .one_or_none()
+    )
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
 
@@ -346,10 +352,16 @@ def post_event_dates(
     try:
         with repository.transaction():
             for date in body.dates:
+                price_category = next((c for c in offer.priceCategories if c.id == date.price_category_id), None)
+                if not price_category:
+                    raise api_errors.ApiErrors(
+                        {"price_category_id": ["The price category could not be found"]}, status_code=404
+                    )
+
                 new_dates.append(
                     offers_api.create_stock(
                         offer=offer,
-                        price=finance_utils.to_euros(date.price),
+                        price_category=price_category,
                         quantity=serialization.deserialize_quantity(date.quantity),
                         beginning_datetime=date.beginning_datetime,
                         booking_limit_datetime=date.booking_limit_datetime,
@@ -773,12 +785,22 @@ def patch_event_date(
     update_body = body.dict(exclude_unset=True)
     try:
         with repository.transaction():
-            price = update_body.get("price", offers_api.UNCHANGED)
+            price_category_id = update_body.get("price_category_id", None)
+            price_category = (
+                next((c for c in offer.priceCategories if c.id == price_category_id), None)
+                if price_category_id is not None
+                else offers_api.UNCHANGED
+            )
+            if not price_category:
+                raise api_errors.ApiErrors(
+                    {"price_category_id": ["The price category could not be found"]}, status_code=404
+                )
+
             quantity = update_body.get("quantity", offers_api.UNCHANGED)
             edited_date, _ = offers_api.edit_stock(
                 stock_to_edit,
                 quantity=serialization.deserialize_quantity(quantity),
-                price=finance_utils.to_euros(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,
+                price_category=price_category,
                 booking_limit_datetime=update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
                 beginning_datetime=update_body.get("beginning_datetime", offers_api.UNCHANGED),
                 editing_provider=individual_offers_provider,

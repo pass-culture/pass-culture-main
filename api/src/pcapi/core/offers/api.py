@@ -463,13 +463,13 @@ def _get_or_create_price_category(price: decimal.Decimal, offer: models.Offer) -
 
 def create_stock(
     offer: models.Offer,
-    price: decimal.Decimal | None,
     quantity: int | None,
     activation_codes: list[str] | None = None,
     activation_codes_expiration_datetime: datetime.datetime | None = None,
     beginning_datetime: datetime.datetime | None = None,
     booking_limit_datetime: datetime.datetime | None = None,
     creating_provider: providers_models.Provider | None = None,
+    price: decimal.Decimal | None = None,
     price_category: models.PriceCategory | None = None,
 ) -> models.Stock:
     validation.check_booking_limit_datetime(None, beginning_datetime, booking_limit_datetime)
