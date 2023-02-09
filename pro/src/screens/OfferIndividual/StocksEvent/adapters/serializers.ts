@@ -77,7 +77,11 @@ export const serializeStockEvent = (
           departementCode
         )
       : serializedbeginningDatetime,
-    price: formValues.price || 0,
+    price: formValues.priceCategoryId === '' ? formValues.price || 0 : null,
+    priceCategoryId:
+      formValues.priceCategoryId !== ''
+        ? parseInt(formValues.priceCategoryId)
+        : null,
     quantity:
       formValues.quantity === null || formValues.quantity === ''
         ? null

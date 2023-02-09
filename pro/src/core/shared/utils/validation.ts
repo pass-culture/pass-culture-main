@@ -1,3 +1,7 @@
+import { StringSchema } from 'yup'
+
+import { SelectOption } from 'custom_types/form'
+
 import { parseAndValidateFrenchPhoneNumber } from './parseAndValidateFrenchPhoneNumber'
 
 export const isPhoneValid = (phone: string | undefined): boolean => {
@@ -71,3 +75,12 @@ export const passwordValidationStatus = (
   }
   return errors
 }
+
+export const oneOfSelectOption = (
+  field: StringSchema,
+  options: SelectOption[]
+) =>
+  field.oneOf(
+    options.map(({ value }) => String(value)).concat(['']),
+    ({ value }) => `"${String(value)} " n'est pas une valeur valide de la liste`
+  )

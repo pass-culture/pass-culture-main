@@ -122,7 +122,6 @@ const StockEventForm = ({
             value: '',
           }}
           disabled={priceCategoriesOptions.length === 1}
-          hideFooter
         />
       ) : (
         <TextInput
