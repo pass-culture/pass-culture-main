@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
@@ -7,6 +7,7 @@ import { api } from 'apiClient/api'
 import {
   GetIndividualOfferResponseModel,
   OfferStatus,
+  PatchOfferBodyModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
@@ -25,6 +26,7 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
+import { individualStockFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { IInformationsProps, Informations as InformationsScreen } from '..'
@@ -353,7 +355,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       venueId: 'VID virtual',
       subcategoryId: 'SCID virtual',
       isEvent: false,
-      withdrawalDelay: null,
+      withdrawalDelay: undefined,
       withdrawalType: null,
     }
     props = {
@@ -517,6 +519,384 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         offerId: 'AA',
         to: 'Offers',
         used: 'StickyButtons',
+      }
+    )
+  })
+
+  describe('send mail on withdrawal changes', () => {
+    let expectedBody: PatchOfferBodyModel
+
+    beforeEach(() => {
+      expectedBody = {
+        audioDisabilityCompliant: true,
+        bookingEmail: 'booking@email.com',
+        description: 'Offer description',
+        durationMinutes: 140,
+        externalTicketOfficeUrl: 'http://external.example.com',
+        extraData: {
+          author: 'Offer author',
+          isbn: '',
+          musicSubType: '',
+          musicType: '',
+          performer: 'Offer performer',
+          ean: '',
+          showSubType: '',
+          showType: '',
+          speaker: 'Offer speaker',
+          stageDirector: 'Offer stageDirector',
+          visa: '',
+        },
+        isDuo: false,
+        isNational: false,
+        mentalDisabilityCompliant: true,
+        motorDisabilityCompliant: true,
+        name: 'Le nom de mon offre édité',
+        url: 'http://offer.example.com',
+        visualDisabilityCompliant: true,
+        withdrawalDetails: 'Offer withdrawalDetails',
+        withdrawalDelay: undefined,
+        withdrawalType: undefined,
+        shouldSendMail: false,
+      }
+    })
+
+    it('should submit when user click onCancel button, but should not send mail', async () => {
+      const individualStock = individualStockFactory({ offerId: 'AA' })
+      contextOverride.offer = {
+        ...offer,
+        venueId: 'VID virtual',
+        subcategoryId: 'SCID virtual',
+        isEvent: false,
+        stocks: [individualStock],
+      }
+      props = {
+        venueId: offer.venue.id,
+        offererId: offer.venue.offerer.id,
+      }
+      expectedBody.withdrawalDelay = 140
+      expectedBody.withdrawalType = WithdrawalTypeEnum.ON_SITE
+
+      await renderInformationsScreen(props, contextOverride)
+
+      const nameField = screen.getByLabelText('Titre de l’offre')
+      await userEvent.clear(nameField)
+      await userEvent.type(nameField, 'Le nom de mon offre édité')
+
+      const withdrawalDetailsField = await screen.getByDisplayValue(
+        'Offer withdrawalDetails'
+      )
+      await userEvent.click(withdrawalDetailsField)
+      await userEvent.clear(withdrawalDetailsField)
+      await userEvent.type(
+        withdrawalDetailsField,
+        'Nouvelle information de retrait'
+      )
+      expectedBody.withdrawalDetails = 'Nouvelle information de retrait'
+      await waitFor(() => {
+        expect(screen.getByText('Nouvelle information de retrait'))
+      })
+      const submitButton = await screen.findByText(
+        'Enregistrer les modifications'
+      )
+
+      await userEvent.click(submitButton)
+
+      await expect(
+        await screen.findByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).toBeInTheDocument()
+
+      await expect(api.patchOffer).toHaveBeenCalledTimes(0)
+      await expect(api.getOffer).toHaveBeenCalledTimes(0)
+      await expect(
+        await screen.queryByText('There is the summary route content')
+      ).not.toBeInTheDocument()
+
+      await expect(
+        await screen.findByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).toBeInTheDocument()
+
+      const cancelSendMailButton = await screen.findByText('Ne pas envoyer')
+      await userEvent.click(cancelSendMailButton)
+
+      await expect(
+        await screen.queryByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).not.toBeInTheDocument()
+
+      await expect(api.patchOffer).toHaveBeenCalledTimes(1)
+      await expect(api.patchOffer).toHaveBeenCalledWith('AA', expectedBody)
+      await expect(api.getOffer).toHaveBeenCalledTimes(1)
+      await expect(
+        await screen.findByText('There is the summary route content')
+      ).toBeInTheDocument()
+    })
+
+    it('should not submit when user click on close withdrawal dialog button', async () => {
+      const individualStock = individualStockFactory({ offerId: 'AA' })
+      contextOverride.offer = {
+        ...offer,
+        venueId: 'VID virtual',
+        subcategoryId: 'SCID virtual',
+        isEvent: false,
+        stocks: [individualStock],
+      }
+      props = {
+        venueId: offer.venue.id,
+        offererId: offer.venue.offerer.id,
+      }
+
+      await renderInformationsScreen(props, contextOverride)
+
+      const nameField = screen.getByLabelText('Titre de l’offre')
+      await userEvent.clear(nameField)
+      await userEvent.type(nameField, 'Le nom de mon offre édité')
+
+      const withdrawalDetailsField = await screen.getByDisplayValue(
+        'Offer withdrawalDetails'
+      )
+      await userEvent.click(withdrawalDetailsField)
+      await userEvent.clear(withdrawalDetailsField)
+      await userEvent.type(
+        withdrawalDetailsField,
+        'Nouvelle information de retrait'
+      )
+
+      await waitFor(() => {
+        expect(screen.getByText('Nouvelle information de retrait'))
+      })
+
+      const submitButton = await screen.findByText(
+        'Enregistrer les modifications'
+      )
+
+      await userEvent.click(submitButton)
+
+      await expect(
+        await screen.findByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).toBeInTheDocument()
+
+      const closewithdrawalDialogButton = await screen.getByRole('button', {
+        name: 'Fermer la modale',
+      })
+      await userEvent.click(closewithdrawalDialogButton)
+
+      await expect(
+        await screen.queryByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).not.toBeInTheDocument()
+
+      await expect(api.patchOffer).toHaveBeenCalledTimes(0)
+      await expect(api.getOffer).toHaveBeenCalledTimes(0)
+      await expect(screen.getByText('Titre de l’offre')).toBeInTheDocument()
+    })
+
+    /**
+     * In Order:
+     *  - No change on widthdrawal and bookingsQuantity
+     *  - change but no bookingsQuantity
+     *  - No change and no bookingsQuantity
+     */
+    const shouldNotOpenConditions = [
+      {
+        modifyWithdrawailDetails: false,
+        hasBookingQuantity: true,
+      },
+      {
+        modifyWithdrawailDetails: true,
+        hasBookingQuantity: false,
+      },
+      {
+        modifyWithdrawailDetails: false,
+        hasBookingQuantity: false,
+      },
+    ]
+    it.each(shouldNotOpenConditions)(
+      "should not open widthdrawal send mail modal when user doesn't change withdrawal and stocks has bookingQuantity and submit form",
+      async condition => {
+        const individualStock = individualStockFactory({ offerId: 'AA' })
+        if (!condition.hasBookingQuantity) {
+          individualStock.bookingsQuantity = 0
+        }
+        contextOverride.offer = {
+          ...offer,
+          venueId: 'VID virtual',
+          subcategoryId: 'SCID virtual',
+          isEvent: true,
+          withdrawalDelay: undefined,
+          withdrawalType: null,
+          stocks: [individualStock],
+        }
+        props = {
+          venueId: offer.venue.id,
+          offererId: offer.venue.offerer.id,
+        }
+        await renderInformationsScreen(props, contextOverride)
+
+        const nameField = screen.getByLabelText('Titre de l’offre')
+        await userEvent.clear(nameField)
+        await userEvent.type(nameField, 'Le nom de mon offre édité')
+
+        if (condition.modifyWithdrawailDetails) {
+          const withdrawalDetailsField = await screen.getByDisplayValue(
+            'Offer withdrawalDetails'
+          )
+          await userEvent.click(withdrawalDetailsField)
+          await userEvent.clear(withdrawalDetailsField)
+          await userEvent.type(
+            withdrawalDetailsField,
+            'Nouvelle information de retrait'
+          )
+          expectedBody.withdrawalDetails = 'Nouvelle information de retrait'
+          await waitFor(() => {
+            expect(screen.getByText('Nouvelle information de retrait'))
+          })
+        }
+
+        const submitButton = await screen.findByText(
+          'Enregistrer les modifications'
+        )
+
+        await userEvent.click(submitButton)
+
+        await expect(
+          await screen.queryByText(
+            'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+          )
+        ).not.toBeInTheDocument()
+
+        expect(api.patchOffer).toHaveBeenCalledTimes(1)
+        expect(api.patchOffer).toHaveBeenCalledWith('AA', expectedBody)
+        expect(api.getOffer).toHaveBeenCalledTimes(1)
+        expect(
+          await screen.findByText('There is the summary route content')
+        ).toBeInTheDocument()
+      }
+    )
+
+    const withdrawalChanges = [
+      {
+        withdrawalDetails: true,
+        withdrawalDelay: false,
+        withdrawalType: false,
+      },
+      {
+        withdrawalDetails: false,
+        withdrawalDelay: true,
+        withdrawalType: false,
+      },
+      {
+        withdrawalDetails: false,
+        withdrawalDelay: false,
+        withdrawalType: true,
+      },
+    ]
+    it.each(withdrawalChanges)(
+      'should open widthdrawal send mail modal when user change withdrawal information and submit',
+      async withdrawalInformations => {
+        const individualStock = individualStockFactory({ offerId: 'AA' })
+        contextOverride.offer = {
+          ...offer,
+          venueId: 'VID virtual',
+          subcategoryId: 'SCID virtual',
+          isEvent: false,
+          withdrawalType: WithdrawalTypeEnum.ON_SITE,
+          withdrawalDelay: 0,
+          stocks: [individualStock],
+        }
+        if (contextOverride.subCategories) {
+          contextOverride.subCategories[0].conditionalFields = [
+            'withdrawalDelay',
+            'withdrawalType',
+          ]
+        }
+
+        expectedBody.withdrawalDelay = undefined
+        expectedBody.withdrawalType = WithdrawalTypeEnum.ON_SITE
+        expectedBody.shouldSendMail = true
+
+        props = {
+          venueId: offer.venue.id,
+          offererId: offer.venue.offerer.id,
+        }
+        await renderInformationsScreen(props, contextOverride)
+
+        const nameField = screen.getByLabelText('Titre de l’offre')
+        await userEvent.clear(nameField)
+        await userEvent.type(nameField, 'Le nom de mon offre édité')
+
+        if (withdrawalInformations.withdrawalDetails) {
+          const withdrawalDetailsField = await screen.getByDisplayValue(
+            'Offer withdrawalDetails'
+          )
+          await userEvent.click(withdrawalDetailsField)
+          await userEvent.clear(withdrawalDetailsField)
+          await userEvent.type(
+            withdrawalDetailsField,
+            'Nouvelle information de retrait'
+          )
+          expectedBody.withdrawalDetails = 'Nouvelle information de retrait'
+          await waitFor(() => {
+            expect(screen.getByText('Nouvelle information de retrait'))
+          })
+        }
+
+        if (withdrawalInformations.withdrawalDelay) {
+          const withdrawalDelayField = await screen.findByLabelText(
+            'Heure de retrait'
+          )
+          await userEvent.selectOptions(withdrawalDelayField, '1 heure')
+          expectedBody.withdrawalDelay = 3600
+        }
+
+        if (withdrawalInformations.withdrawalType) {
+          const withdrawalTypeField = await screen.findByLabelText(
+            'Envoi par e-mail'
+          )
+          await userEvent.click(withdrawalTypeField)
+          expectedBody.withdrawalType = WithdrawalTypeEnum.BY_EMAIL
+        }
+
+        const submitButton = await screen.findByText(
+          'Enregistrer les modifications'
+        )
+
+        await userEvent.click(submitButton)
+
+        await expect(
+          await screen.findByText(
+            'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+          )
+        ).toBeInTheDocument()
+
+        await expect(api.patchOffer).toHaveBeenCalledTimes(0)
+        await expect(api.getOffer).toHaveBeenCalledTimes(0)
+        await expect(
+          await screen.queryByText('There is the summary route content')
+        ).not.toBeInTheDocument()
+
+        const sendMailButton = await screen.findByText('Envoyer un e-mail')
+        await userEvent.click(sendMailButton)
+
+        await expect(
+          await screen.queryByText(
+            'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+          )
+        ).not.toBeInTheDocument()
+
+        await expect(api.patchOffer).toHaveBeenCalledTimes(1)
+        await expect(api.patchOffer).toHaveBeenCalledWith('AA', expectedBody)
+        await expect(api.getOffer).toHaveBeenCalledTimes(1)
+        await expect(
+          await screen.findByText('There is the summary route content')
+        ).toBeInTheDocument()
       }
     )
   })

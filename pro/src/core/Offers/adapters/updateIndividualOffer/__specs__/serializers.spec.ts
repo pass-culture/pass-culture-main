@@ -109,6 +109,7 @@ describe('test updateIndividualOffer::serializers', () => {
         durationMinutes: 120,
         bookingEmail: 'booking@email.org',
         externalTicketOfficeUrl: 'http://external.url',
+        shouldSendMail: false,
       }
     })
 
