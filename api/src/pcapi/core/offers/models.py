@@ -28,8 +28,8 @@ from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.models.offer_mixin import StatusMixin
 from pcapi.models.offer_mixin import ValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
@@ -355,7 +355,7 @@ class WithdrawalTypeEnum(enum.Enum):
     ON_SITE = "on_site"
 
 
-class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, AccessibilityMixin, StatusMixin):
+class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, AccessibilityMixin):
     __tablename__ = "offer"
 
     ageMin = sa.Column(sa.Integer, nullable=True)
@@ -617,6 +617,42 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             return max(stock.price for stock in self.stocks if not stock.isSoftDeleted)
         except ValueError:  # if no non-deleted stocks
             return 0
+
+    @sa.ext.hybrid.hybrid_property
+    def status(self) -> OfferStatus:
+        if self.validation == OfferValidationStatus.REJECTED:
+            return OfferStatus.REJECTED
+
+        if self.validation == OfferValidationStatus.PENDING:
+            return OfferStatus.PENDING
+
+        if self.validation == OfferValidationStatus.DRAFT:
+            return OfferStatus.DRAFT
+
+        if not self.isActive:
+            return OfferStatus.INACTIVE
+
+        if self.validation == OfferValidationStatus.APPROVED:
+            if self.hasBookingLimitDatetimesPassed:  # pylint: disable=using-constant-test
+                return OfferStatus.EXPIRED
+            if self.isSoldOut:  # pylint: disable=using-constant-test
+                return OfferStatus.SOLD_OUT
+
+        return OfferStatus.ACTIVE
+
+    @status.expression  # type: ignore [no-redef]
+    def status(cls) -> Case:  # pylint: disable=no-self-argument
+        return sa.case(
+            [
+                (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
+                (cls.validation == OfferValidationStatus.PENDING.name, OfferStatus.PENDING.name),
+                (cls.validation == OfferValidationStatus.DRAFT.name, OfferStatus.DRAFT.name),
+                (cls.isActive.is_(False), OfferStatus.INACTIVE.name),
+                (cls.hasBookingLimitDatetimesPassed.is_(True), OfferStatus.EXPIRED.name),
+                (cls.isSoldOut.is_(True), OfferStatus.SOLD_OUT.name),
+            ],
+            else_=OfferStatus.ACTIVE.name,
+        )
 
 
 class ActivationCode(PcObject, Base, Model):

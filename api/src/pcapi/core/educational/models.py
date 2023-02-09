@@ -197,8 +197,53 @@ class HasImageMixin:
         self.imageId = None
 
 
+@sa.orm.declarative_mixin
+class StatusMixin:
+    @hybrid_property
+    def status(self) -> offer_mixin.OfferStatus:
+        if self.validation == offer_mixin.OfferValidationStatus.REJECTED:
+            return offer_mixin.OfferStatus.REJECTED
+
+        if self.validation == offer_mixin.OfferValidationStatus.PENDING:
+            return offer_mixin.OfferStatus.PENDING
+
+        if self.validation == offer_mixin.OfferValidationStatus.DRAFT:
+            return offer_mixin.OfferStatus.DRAFT
+
+        if not self.isActive:
+            return offer_mixin.OfferStatus.INACTIVE
+
+        if self.validation == offer_mixin.OfferValidationStatus.APPROVED:
+            if self.hasBeginningDatetimePassed:
+                return offer_mixin.OfferStatus.EXPIRED
+            if self.isSoldOut:
+                return offer_mixin.OfferStatus.SOLD_OUT
+
+        return offer_mixin.OfferStatus.ACTIVE
+
+    @status.expression  # type: ignore [no-redef]
+    def status(cls) -> sa.sql.elements.Case:  # pylint: disable=no-self-argument
+        return sa.case(
+            [
+                (
+                    cls.validation == offer_mixin.OfferValidationStatus.REJECTED.name,
+                    offer_mixin.OfferStatus.REJECTED.name,
+                ),
+                (
+                    cls.validation == offer_mixin.OfferValidationStatus.PENDING.name,
+                    offer_mixin.OfferStatus.PENDING.name,
+                ),
+                (cls.validation == offer_mixin.OfferValidationStatus.DRAFT.name, offer_mixin.OfferStatus.DRAFT.name),
+                (cls.isActive.is_(False), offer_mixin.OfferStatus.INACTIVE.name),
+                (cls.hasBeginningDatetimePassed.is_(True), offer_mixin.OfferStatus.EXPIRED.name),
+                (cls.isSoldOut.is_(True), offer_mixin.OfferStatus.SOLD_OUT.name),
+            ],
+            else_=offer_mixin.OfferStatus.ACTIVE.name,
+        )
+
+
 class CollectiveOffer(
-    PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, HasImageMixin, Model
+    PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, StatusMixin, HasImageMixin, Model
 ):
     __tablename__ = "collective_offer"
 
@@ -340,6 +385,20 @@ class CollectiveOffer(
             .where(CollectiveStock.hasBookingLimitDatetimePassed.is_(True))
         )
 
+    @sa.ext.hybrid.hybrid_property
+    def hasBeginningDatetimePassed(self) -> bool:
+        if not self.collectiveStock:
+            return False
+        return self.collectiveStock.hasBeginningDatetimePassed
+
+    @hasBeginningDatetimePassed.expression  # type: ignore[no-redef]
+    def hasBeginningDatetimePassed(cls) -> Exists:  # pylint: disable=no-self-argument
+        return (
+            sa.exists()
+            .where(CollectiveStock.collectiveOfferId == cls.id)
+            .where(CollectiveStock.hasBeginningDatetimePassed.is_(True))
+        )
+
     @property
     def subcategory(self) -> subcategories.Subcategory:
         if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
@@ -381,7 +440,7 @@ class CollectiveOffer(
 
 
 class CollectiveOfferTemplate(
-    PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, HasImageMixin, Base, Model
+    PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, StatusMixin, HasImageMixin, Base, Model
 ):
     __tablename__ = "collective_offer_template"
 
@@ -453,6 +512,16 @@ class CollectiveOfferTemplate(
 
     @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
     def hasBookingLimitDatetimesPassed(cls) -> False_:  # pylint: disable=no-self-argument
+        # this property is here for compatibility reasons
+        return sa.sql.expression.false()
+
+    @sa.ext.hybrid.hybrid_property
+    def hasBeginningDatetimePassed(self) -> bool:
+        # this property is here for compatibility reasons
+        return False
+
+    @hasBeginningDatetimePassed.expression  # type: ignore[no-redef]
+    def hasBeginningDatetimePassed(cls) -> False_:  # pylint: disable=no-self-argument
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -586,6 +655,14 @@ class CollectiveStock(PcObject, Base, Model):
     @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
     def hasBookingLimitDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.bookingLimitDatetime <= sa.func.now()
+
+    @sa.ext.hybrid.hybrid_property
+    def hasBeginningDatetimePassed(self) -> bool:
+        return self.beginningDatetime <= datetime.utcnow()
+
+    @hasBeginningDatetimePassed.expression  # type: ignore[no-redef]
+    def hasBeginningDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        return cls.beginningDatetime <= sa.func.now()
 
     @sa.ext.hybrid.hybrid_property
     def isEventExpired(self) -> bool:  # todo rewrite
