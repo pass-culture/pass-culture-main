@@ -197,7 +197,11 @@ const Informations = ({
     const { isOk, payload } = !offer
       ? await createIndividualOffer(formValues)
       : await updateIndividualOffer({
-          serializedOffer: serializePatchOffer({ offer, formValues }),
+          serializedOffer: serializePatchOffer({
+            offer,
+            formValues,
+            shouldSendMail,
+          }),
           offerId: offer.id,
         })
 
