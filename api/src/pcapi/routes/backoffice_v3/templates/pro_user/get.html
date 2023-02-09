@@ -60,7 +60,7 @@
                                 </div>
                             </div>
                         {% endif %}
-                        {% if has_permission("REVIEW_SUSPEND_USER") %}
+                        {% if has_permission("SUSPEND_USER") %}
                             {% if user.isActive %}
                                 {{ build_modal_form("suspend", suspension_dst, suspension_form, "Suspendre le compte", "Confirmer la suspension") }}
                             {% else %}
