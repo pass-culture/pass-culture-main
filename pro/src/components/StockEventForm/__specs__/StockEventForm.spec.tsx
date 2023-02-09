@@ -1,7 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
+
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../constants'
 import StockEventForm, { IStockEventFormProps } from '../StockEventForm'
@@ -17,7 +19,7 @@ const renderStockEventForm = (
   props: IStockEventFormProps,
   initialStock = STOCK_EVENT_FORM_DEFAULT_VALUES
 ) => {
-  return render(
+  return renderWithProviders(
     <Formik initialValues={{ stocks: [initialStock] }} onSubmit={() => {}}>
       <Form>
         <StockEventForm {...props} />
@@ -33,6 +35,7 @@ describe('StockEventForm', () => {
     props = {
       today: new Date(),
       stockIndex: 0,
+      priceCategoriesOptions: [],
     }
   })
 
@@ -108,6 +111,7 @@ describe('StockEventForm', () => {
       quantity: 12,
       bookingLimitDatetime: new Date('2022-12-28T00:00:00Z'),
       price: 10,
+      priceCategoryId: '' as const,
       isDeletable: true,
       readOnlyFields: [],
     }

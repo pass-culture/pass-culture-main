@@ -9,6 +9,7 @@ import {
 import { StockEventFormRow } from 'components/StockEventFormRow'
 import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
+import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
 import { useModal } from 'hooks/useModal'
 import { PlusCircleIcon } from 'icons'
@@ -18,6 +19,7 @@ import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Pagination } from 'ui-kit/Pagination'
 import { getToday } from 'utils/date'
+import { formatPrice } from 'utils/formatPrice'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import styles from './StockFormList.module.scss'
@@ -60,6 +62,14 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
     (page - 1) * STOCKS_PER_PAGE,
     page * STOCKS_PER_PAGE
   )
+
+  const priceCategoriesOptions =
+    offer.priceCategories?.map(
+      (priceCategory): SelectOption => ({
+        label: `${formatPrice(priceCategory.price)} - ${priceCategory.label}`,
+        value: priceCategory.id,
+      })
+    ) ?? []
 
   return (
     <FieldArray
@@ -131,6 +141,7 @@ const StockFormList = ({ offer, onDeleteStock }: IStockFormListProps) => {
                       today={today}
                       stockIndex={index}
                       disableAllStockFields={disableAllStockFields}
+                      priceCategoriesOptions={priceCategoriesOptions}
                     />
                   </StockEventFormRow>
                 )
