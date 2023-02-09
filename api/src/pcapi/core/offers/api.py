@@ -306,7 +306,7 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
         new_venue = offerers_api.get_venue_by_id(new_values["venueId"])
         if not new_venue:
             raise educational_exceptions.VenueIdDontExist()
-        offerer = offerers_repository.get_by_collective_offer_id(offer_to_update.id)
+        offerer = offerers_repository.get_by_collective_offer_template_id(offer_to_update.id)
         if new_venue.managingOffererId != offerer.id:
             raise educational_exceptions.OffererOfVenueDontMatchOfferer()
     _update_collective_offer(offer=offer_to_update, new_values=new_values)
