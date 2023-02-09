@@ -32,6 +32,7 @@ export type CollectiveOfferResponseModel = {
   stock: OfferStockResponse;
   students: Array<StudentLevels>;
   subcategoryLabel: string;
+  teacherEmail?: string | null;
   venue: OfferVenueResponse;
   visualDisabilityCompliant: boolean;
 };
