@@ -7,6 +7,7 @@ from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.offerers import factories as offerers_factories
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 
@@ -25,11 +26,13 @@ def collective_bookings_fixture() -> tuple:
     institution1 = educational_factories.EducationalInstitutionFactory(name="Collège Pépin le Bref")
     institution2 = educational_factories.EducationalInstitutionFactory(name="Collège Bertrade de Laon")
     institution3 = educational_factories.EducationalInstitutionFactory(name="Lycée Charlemagne")
+    venue = offerers_factories.VenueFactory()  # same venue and offerer for 2 bookings
     # 0
     pending = educational_factories.PendingCollectiveBookingFactory(
         educationalInstitution=institution2,
         collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.EVENEMENT_PATRIMOINE.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+        venue=venue,
     )
     # 1
     confirmed = educational_factories.CollectiveBookingFactory(
@@ -43,6 +46,7 @@ def collective_bookings_fixture() -> tuple:
         educationalInstitution=institution2,
         collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.DECOUVERTE_METIERS.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+        venue=venue,
     )
     # 3
     used = educational_factories.UsedCollectiveBookingFactory(
@@ -211,3 +215,25 @@ class ListCollectiveBookingsTest:
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[1].id, collective_bookings[2].id}
+
+    def test_list_bookings_by_offerer(self, authenticated_client, collective_bookings):
+        # when
+        offerer_ids = [collective_bookings[1].offererId, collective_bookings[3].offererId]
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url_for(self.endpoint, offerer=offerer_ids))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[1].id, collective_bookings[3].id}
+
+    def test_list_bookings_by_venue(self, authenticated_client, collective_bookings):
+        # when
+        venue_id = collective_bookings[0].venueId
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[0].id, collective_bookings[2].id}
