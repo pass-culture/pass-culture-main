@@ -1056,7 +1056,7 @@ def report_offer(user: users_models.User, offer: models.Offer, reason: str, cust
         logger.warning("Could not send email reported offer by user", extra={"user_id": user.id})
 
 
-def update_stock_quantity_to_match_cinema_venue_provider_remaining_place(
+def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(
     offer: models.Offer, venue_provider: providers_models.VenueProvider
 ) -> None:
     sentry_sdk.set_tag("cinema-venue-provider", venue_provider.provider.localClass)
@@ -1064,7 +1064,8 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_place(
         "Getting up-to-date show stock from booking provider on offer view",
         extra={"offer": offer.id, "venue_provider": venue_provider.id},
     )
-    shows_remaining_places = {}
+    offer_current_stocks = offer.activeStocks
+
     match venue_provider.provider.localClass:
         case "CDSStocks":
             if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
@@ -1088,18 +1089,24 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_place(
         case _:
             raise ValueError(f"Unknown Provider: {venue_provider.provider.localClass}")
 
-    for show_id, remaining_places in shows_remaining_places.items():
-        stock = next(
-            (
-                s
-                for s in offer.activeStocks
-                if cinema_providers_utils.get_showtime_id_from_uuid(s.idAtProviders, venue_provider.provider.localClass)
-                == show_id
-            ),
-            None,
+    offer_has_new_sold_out_stock = False
+    for stock in offer_current_stocks:
+        showtime_id = cinema_providers_utils.get_showtime_id_from_uuid(
+            stock.idAtProviders, venue_provider.provider.localClass
         )
-        if stock and remaining_places <= 0:
+        assert showtime_id
+        remaining_places = shows_remaining_places.pop(showtime_id, None)
+        # make this stock sold out, instead of soft-deleting it (don't update its bookings)
+        if remaining_places is None or remaining_places <= 0:
             offers_repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
+            offer_has_new_sold_out_stock = True
+        # to prevent a duo booking to fail
+        if remaining_places == 1:
+            stock.quantity = stock.dnBookedQuantity + 1
+            repository.save(stock)
+
+    if offer_has_new_sold_out_stock:
+        search.async_index_offer_ids([offer.id])
 
 
 def delete_unwanted_existing_product(isbn: str) -> None:
