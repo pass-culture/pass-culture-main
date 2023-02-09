@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
@@ -7,6 +7,7 @@ import {
   StockEventForm,
   STOCK_EVENT_FORM_DEFAULT_VALUES,
 } from 'components/StockEventForm'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StockFormRow, { IStockEventFormRowProps } from '../StockEventFormRow'
 
@@ -18,11 +19,15 @@ const renderStockFormRow = ({
   props,
   initialValues,
 }: IRenderStockFormRowArgs) => {
-  return render(
+  return renderWithProviders(
     <Formik initialValues={{ stocks: [initialValues] }} onSubmit={() => {}}>
       <Form>
         <StockFormRow {...props}>
-          <StockEventForm today={new Date()} stockIndex={0} />
+          <StockEventForm
+            today={new Date()}
+            stockIndex={0}
+            priceCategoriesOptions={[]}
+          />
         </StockFormRow>
       </Form>
     </Formik>

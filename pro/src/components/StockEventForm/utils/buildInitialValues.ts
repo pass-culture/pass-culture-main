@@ -58,6 +58,7 @@ export const buildSingleInitialValues = ({
         )
       : null,
     price: stock.price ?? '',
+    priceCategoryId: stock.priceCategoryId ?? '',
   }
 }
 

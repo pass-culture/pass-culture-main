@@ -4,8 +4,10 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import formRowStyles from 'components/StockEventFormRow/SharedStockEventFormRow.module.scss'
+import { SelectOption } from 'custom_types/form'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { EuroIcon } from 'icons'
-import { DatePicker, TextInput, TimePicker } from 'ui-kit'
+import { DatePicker, TextInput, TimePicker, Select } from 'ui-kit'
 
 import { STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS } from './constants'
 import styles from './StockEventForm.module.scss'
@@ -15,16 +17,21 @@ export interface IStockEventFormProps {
   today: Date
   stockIndex: number
   disableAllStockFields?: boolean
+  priceCategoriesOptions: SelectOption[]
 }
 
 const StockEventForm = ({
   today,
   stockIndex,
   disableAllStockFields = false,
+  priceCategoriesOptions,
 }: IStockEventFormProps): JSX.Element => {
   const { values, setFieldValue, setTouched } = useFormikContext<{
     stocks: IStockEventFormValues[]
   }>()
+  const isPriceCategoriesActive = useActiveFeature(
+    'WIP_ENABLE_MULTI_PRICE_STOCKS'
+  )
 
   const stockFormValues = values.stocks[stockIndex]
 
@@ -81,6 +88,7 @@ const StockEventForm = ({
         onChange={onChangeBeginningDate}
         hideHiddenFooter={true}
       />
+
       <TimePicker
         smallLabel
         label="Horaire"
@@ -95,21 +103,48 @@ const StockEventForm = ({
         disabled={readOnlyFields.includes('beginningTime')}
         hideHiddenFooter={true}
       />
-      <TextInput
-        smallLabel
-        name={`stocks[${stockIndex}]price`}
-        label="Tarif"
-        isLabelHidden={stockIndex !== 0}
-        className={cn(styles['input-price'], styles['field-layout-align-self'])}
-        classNameLabel={formRowStyles['field-layout-label']}
-        classNameFooter={styles['field-layout-footer']}
-        disabled={readOnlyFields.includes('price')}
-        rightIcon={() => <EuroIcon />}
-        type="number"
-        step="0.01"
-        hideHiddenFooter={true}
-        data-testid="input-price"
-      />
+
+      {isPriceCategoriesActive ? (
+        <Select
+          name={`stocks[${stockIndex}]priceCategoryId`}
+          options={priceCategoriesOptions}
+          smallLabel
+          label="Tarif"
+          isLabelHidden={stockIndex !== 0}
+          className={cn(
+            styles['input-price-category'],
+            styles['field-layout-align-self']
+          )}
+          classNameLabel={formRowStyles['field-layout-label']}
+          classNameFooter={styles['field-layout-footer']}
+          defaultOption={{
+            label: 'Séléctionner un tarif',
+            value: '',
+          }}
+          disabled={priceCategoriesOptions.length === 1}
+          hideFooter
+        />
+      ) : (
+        <TextInput
+          smallLabel
+          name={`stocks[${stockIndex}]price`}
+          label="Tarif"
+          isLabelHidden={stockIndex !== 0}
+          className={cn(
+            styles['input-price'],
+            styles['field-layout-align-self']
+          )}
+          classNameLabel={formRowStyles['field-layout-label']}
+          classNameFooter={styles['field-layout-footer']}
+          disabled={readOnlyFields.includes('price')}
+          rightIcon={() => <EuroIcon />}
+          type="number"
+          step="0.01"
+          hideHiddenFooter={true}
+          data-testid="input-price"
+        />
+      )}
+
       <DatePicker
         smallLabel
         name={`stocks[${stockIndex}]bookingLimitDatetime`}
@@ -127,6 +162,7 @@ const StockEventForm = ({
         disabled={readOnlyFields.includes('bookingLimitDatetime')}
         hideHiddenFooter={true}
       />
+
       <TextInput
         smallLabel
         name={`stocks[${stockIndex}]quantity`}

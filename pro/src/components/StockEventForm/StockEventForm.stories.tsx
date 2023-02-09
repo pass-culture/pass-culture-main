@@ -86,6 +86,7 @@ const TemplateWithInitialValues: ComponentStory<typeof StockEventForm> =
       quantity: 10,
       isDeletable: true,
       readOnlyFields: [],
+      priceCategoryId: '',
     },
   })
 
@@ -116,6 +117,7 @@ const TemplateDisabled: ComponentStory<typeof StockEventForm> =
         'bookingLimitDatetime',
         'quantity',
       ],
+      priceCategoryId: '',
     },
   })
 export const Disabled = TemplateDisabled.bind({})
