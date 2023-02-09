@@ -41,6 +41,7 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
       beginningDatetime: '2022-10-26T13:00:00Z',
       bookingLimitDatetime: '2022-10-26T13:00:00Z',
       price: 10,
+      priceCategoryId: null,
       quantity: 12,
     }
 
@@ -56,6 +57,7 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
       beginningDatetime: '2022-10-26T13:00:00Z',
       bookingLimitDatetime: '2022-10-26T13:00:00Z',
       price: 10,
+      priceCategoryId: null,
       quantity: 12,
     }
 
@@ -76,7 +78,8 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
       humanizedId: 'STOCK_ID',
       beginningDatetime: '2022-10-11T13:00:00Z',
       bookingLimitDatetime: '2022-10-10T21:59:59Z',
-      price: 10,
+      price: null,
+      priceCategoryId: 1,
       quantity: 12,
     }
 
@@ -88,6 +91,8 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
           beginningDate: new Date('2022-10-11T00:00:00.0200'),
           beginningTime: new Date('2022-10-11T15:00:00.0200'),
           bookingLimitDatetime: new Date('2022-10-10T00:00:00'),
+          price: '' as const,
+          priceCategoryId: '1',
         })),
       ],
       departementCode

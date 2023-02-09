@@ -1,5 +1,7 @@
 import * as yup from 'yup'
 
+import { oneOfSelectOption } from 'core/shared/utils/validation'
+import { SelectOption } from 'custom_types/form'
 import { getToday, removeTime } from 'utils/date'
 
 const isBeforeBeginningDate = (
@@ -16,60 +18,79 @@ const isBeforeBeginningDate = (
   return bookingLimitDatetime <= context.parent.beginningDate
 }
 
-const getSingleValidationSchema = () => {
-  const validationSchema = {
-    beginningDate: yup
-      .date()
-      .nullable()
-      .required('Veuillez renseigner une date')
-      .when(['readOnlyFields'], (readOnlyFields, schema) => {
-        /* istanbul ignore next: DEBT, TO FIX */
-        if (readOnlyFields.includes('beginningDate')) {
-          return schema
-        }
-        return schema.min(
-          removeTime(getToday()),
-          "L'évènement doit être à venir"
-        )
-      }),
-    beginningTime: yup
-      .string()
-      .nullable()
-      .required('Veuillez renseigner un horaire'),
-    price: yup
-      .number()
-      .typeError('Doit être un nombre')
-      .min(0, 'Doit être positif')
-      .max(300, 'Veuillez renseigner un prix inférieur à 300€')
-      .required('Veuillez renseigner un prix'),
-    bookingLimitDatetime: yup.date().nullable().test({
-      name: 'bookingLimitDatetime-before-beginningDate',
-      message:
-        'Veuillez renseigner une date antérieure à la date de l’évènement',
-      test: isBeforeBeginningDate,
-    }),
-    bookingsQuantity: yup.number(),
-    quantity: yup
-      .number()
-      .nullable()
-      .typeError('Doit être un nombre')
-      .min(0, 'Doit être positif')
-      .when(['bookingsQuantity'], (bookingsQuantity, schema) => {
-        const bookingQuantityNumber = parseInt(bookingsQuantity, 10)
-        if (!isNaN(bookingQuantityNumber)) {
-          return schema.min(bookingQuantityNumber, 'Quantité trop faible')
-        }
+const getSingleValidationSchema = (
+  priceCategoriesOptions?: SelectOption[],
+  isPriceCategoriesActive?: boolean
+) => ({
+  beginningDate: yup
+    .date()
+    .nullable()
+    .required('Veuillez renseigner une date')
+    .when(['readOnlyFields'], (readOnlyFields, schema) => {
+      /* istanbul ignore next: DEBT, TO FIX */
+      if (readOnlyFields.includes('beginningDate')) {
         return schema
+      }
+      return schema.min(removeTime(getToday()), "L'évènement doit être à venir")
+    }),
+  beginningTime: yup
+    .string()
+    .nullable()
+    .required('Veuillez renseigner un horaire'),
+  // To update when WIP_ENABLE_MULTI_PRICE_STOCKS is removed
+  ...(isPriceCategoriesActive
+    ? {
+        priceCategoryId: oneOfSelectOption(
+          yup.string(),
+          priceCategoriesOptions ?? []
+        )
+          .typeError('Doit être un nombre')
+          .required('Veuillez renseigner un tarif'),
+      }
+    : {
+        price: yup
+          .number()
+          .typeError('Doit être un nombre')
+          .min(0, 'Doit être positif')
+          .max(300, 'Veuillez renseigner un prix inférieur à 300€')
+          .required('Veuillez renseigner un prix'),
       }),
-  }
 
-  return validationSchema
-}
+  bookingLimitDatetime: yup.date().nullable().test({
+    name: 'bookingLimitDatetime-before-beginningDate',
+    message: 'Veuillez renseigner une date antérieure à la date de l’évènement',
+    test: isBeforeBeginningDate,
+  }),
+  bookingsQuantity: yup.number(),
+  quantity: yup
+    .number()
+    .nullable()
+    .typeError('Doit être un nombre')
+    .min(0, 'Doit être positif')
+    .when(['bookingsQuantity'], (bookingsQuantity, schema) => {
+      const bookingQuantityNumber = parseInt(bookingsQuantity, 10)
+      if (!isNaN(bookingQuantityNumber)) {
+        return schema.min(bookingQuantityNumber, 'Quantité trop faible')
+      }
+      return schema
+    }),
+})
 
-export const getValidationSchema = () => {
-  const validationSchema = {
-    stocks: yup.array().of(yup.object().shape(getSingleValidationSchema())),
-  }
-
-  return yup.object().shape(validationSchema)
-}
+export const getValidationSchema = (
+  priceCategoriesOptions?: SelectOption[],
+  isPriceCategoriesActive?: boolean
+) =>
+  yup.object().shape({
+    stocks: yup
+      .array()
+      .of(
+        yup
+          .object()
+          .shape(
+            getSingleValidationSchema(
+              priceCategoriesOptions,
+              isPriceCategoriesActive
+            )
+          )
+      ),
+  })

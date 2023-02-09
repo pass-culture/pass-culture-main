@@ -10,7 +10,7 @@ export interface IStockEventFormValues extends IStockEventFormHiddenValues {
   quantity: number | '' | null
   bookingLimitDatetime: Date | null
   price: number | ''
-  priceCategoryId: number | ''
+  priceCategoryId: string | ''
   beginningDate: Date | '' | null
   beginningTime: Date | '' | null
 }

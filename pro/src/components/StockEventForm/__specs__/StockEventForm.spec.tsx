@@ -35,7 +35,10 @@ describe('StockEventForm', () => {
     props = {
       today: new Date(),
       stockIndex: 0,
-      priceCategoriesOptions: [],
+      priceCategoriesOptions: [
+        { label: 'Tarif 1', value: '1' },
+        { label: 'Tarif 2', value: '2' },
+      ],
     }
   })
 
