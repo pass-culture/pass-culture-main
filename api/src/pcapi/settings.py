@@ -327,7 +327,7 @@ RATE_LIMIT_SIRENE_API = os.environ.get("RATE_LIMIT_SIRENE_API", "5/minute")
 
 
 # DEBUG
-DEBUG_ACTIVATED = os.environ.get("DEBUG_ACTIVATED") == "True"
+DEBUG_ACTIVATED = bool(os.environ.get("DEBUG_ACTIVATED"))
 
 
 # PHONE NUMBERS
@@ -364,6 +364,7 @@ API_URL_FOR_EDUCONNECT = os.environ.get(
 )  # must match the url specified in the metadata file provided to educonnect
 EDUCONNECT_SP_CERTIFICATE = secrets_utils.get("EDUCONNECT_SP_CERTIFICATE", PUBLIC_CERTIFICATE_EXAMPLE)
 EDUCONNECT_SP_PRIVATE_KEY = secrets_utils.get("EDUCONNECT_SP_PRIVATE_KEY", PRIVATE_KEY_EXAMPLE)
+EDUCONNECT_METADATA_FILE = os.environ.get("EDUCONNECT_METADATA_FILE", "educonnect.pr4.metadata.xml")
 
 # PERMISSIONS
 PERMISSIONS = base64.b64decode(secrets_utils.get("PERMISSIONS", "")).decode("utf-8")
