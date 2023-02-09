@@ -1,9 +1,7 @@
 import enum
 
 import sqlalchemy as sa
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import declarative_mixin
-from sqlalchemy.sql.elements import Case
 
 
 class OfferStatus(str, enum.Enum):
@@ -32,45 +30,6 @@ class OfferValidationType(enum.Enum):
     AUTO = "AUTO"
     MANUAL = "MANUAL"
     CGU_INCOMPATIBLE_PRODUCT = "CGU_INCOMPATIBLE_PRODUCT"
-
-
-@declarative_mixin
-class StatusMixin:
-    @hybrid_property
-    def status(self) -> OfferStatus:
-        if self.validation == OfferValidationStatus.REJECTED:
-            return OfferStatus.REJECTED
-
-        if self.validation == OfferValidationStatus.PENDING:
-            return OfferStatus.PENDING
-
-        if self.validation == OfferValidationStatus.DRAFT:
-            return OfferStatus.DRAFT
-
-        if not self.isActive:
-            return OfferStatus.INACTIVE
-
-        if self.validation == OfferValidationStatus.APPROVED:
-            if self.hasBookingLimitDatetimesPassed:
-                return OfferStatus.EXPIRED
-            if self.isSoldOut:
-                return OfferStatus.SOLD_OUT
-
-        return OfferStatus.ACTIVE
-
-    @status.expression  # type: ignore [no-redef]
-    def status(cls) -> Case:  # pylint: disable=no-self-argument
-        return sa.case(
-            [
-                (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
-                (cls.validation == OfferValidationStatus.PENDING.name, OfferStatus.PENDING.name),
-                (cls.validation == OfferValidationStatus.DRAFT.name, OfferStatus.DRAFT.name),
-                (cls.isActive.is_(False), OfferStatus.INACTIVE.name),
-                (cls.hasBookingLimitDatetimesPassed.is_(True), OfferStatus.EXPIRED.name),
-                (cls.isSoldOut.is_(True), OfferStatus.SOLD_OUT.name),
-            ],
-            else_=OfferStatus.ACTIVE.name,
-        )
 
 
 @declarative_mixin
