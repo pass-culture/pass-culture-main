@@ -87,8 +87,8 @@ def synchronize_cine_office_stocks() -> None:
 @cron_require_feature(FeatureToggle.ENABLE_BOOST_API_INTEGRATION)
 def synchronize_boost_stocks() -> None:
     """Launch Boost synchronization."""
-    cine_office_stocks_provider_id = get_provider_by_local_class("BoostStocks").id
-    venue_providers = providers_repository.get_active_venue_providers_by_provider(cine_office_stocks_provider_id)
+    boost_stocks_provider_id = get_provider_by_local_class("BoostStocks").id
+    venue_providers = providers_repository.get_active_venue_providers_by_provider(boost_stocks_provider_id)
     synchronize_venue_providers(venue_providers)
 
 
