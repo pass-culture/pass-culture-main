@@ -13,7 +13,7 @@ class Returns200Test:
     def test_basics(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory()
-        offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
+        offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock, teacherEmail="teacher@example.com")
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         # When
@@ -36,6 +36,7 @@ class Returns200Test:
         assert response_json["nonHumanizedId"] == offer.id
         assert response_json["lastBookingStatus"] is None
         assert response_json["lastBookingId"] is None
+        assert response_json["teacherEmail"] == offer.teacherEmail
 
     def test_sold_out(self, client):
         # Given
