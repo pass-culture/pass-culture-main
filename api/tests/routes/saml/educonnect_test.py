@@ -64,8 +64,8 @@ class EduconnectTest:
         assert response.headers["educonnect-redirect"].startswith("https://pr4.educonnect.phm.education.gouv.fr/idp")
         assert response.headers["Access-Control-Expose-Headers"] == "educonnect-redirect"
 
-    @override_settings(IS_PROD=True)
     @override_settings(API_URL_FOR_EDUCONNECT="https://backend.passculture.app")
+    @override_settings(EDUCONNECT_METADATA_FILE="educonnect.production.metadata.xml")
     def test_get_educonnect_login_production(self, client, app):
         user = users_factories.UserFactory(email=self.email)
         access_token = create_access_token(identity=self.email)
