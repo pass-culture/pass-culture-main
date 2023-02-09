@@ -5,6 +5,7 @@ import logging
 import os
 import pathlib
 from unittest import mock
+from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
@@ -24,6 +25,7 @@ from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import offer_validation
 import pcapi.core.providers.factories as providers_factories
+import pcapi.core.providers.repository as providers_repository
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -1857,3 +1859,89 @@ class FormatExtraDataTest:
             "musicType": "1",
             "musicSubType": "100",
         }
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
+    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @pytest.mark.parametrize(
+        "show_id, api_return_value, expected_remaining_quantity",
+        [
+            (888, {888: 10}, 10),
+            (888, {888: 5}, 10),
+            (888, {888: 1}, 1),
+            (888, {888: 0}, 0),
+            (123, {888: 0}, 0),
+        ],
+    )
+    @patch("pcapi.core.search.async_index_offer_ids")
+    @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
+    def test_cds(
+        self,
+        mocked_get_shows_stock,
+        mocked_async_index_offer_ids,
+        show_id,
+        api_return_value,
+        expected_remaining_quantity,
+    ):
+        cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+        movie_id = 456
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venue.siret}%CDS"
+        offer = factories.EventOfferFactory(venue=venue_provider.venue, idAtProvider=offer_id_at_provider)
+        showtime = "2023-02-08"
+        stock = factories.EventStockFactory(
+            offer=offer,
+            quantity=10,
+            idAtProviders=f"{offer_id_at_provider}#{show_id}/{showtime}",
+        )
+
+        mocked_get_shows_stock.return_value = api_return_value
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer, venue_provider)
+
+        assert stock.remainingQuantity == expected_remaining_quantity
+        if expected_remaining_quantity == 0:
+            mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+        else:
+            mocked_async_index_offer_ids.assert_not_called()
+
+    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @pytest.mark.parametrize(
+        "show_id, api_return_value, expected_remaining_quantity",
+        [
+            (888, {888: 10}, 10),
+            (888, {888: 5}, 10),
+            (888, {888: 1}, 1),
+            (888, {888: 0}, 0),
+            (123, {888: 0}, 0),
+        ],
+    )
+    @patch("pcapi.core.search.async_index_offer_ids")
+    @patch("pcapi.core.offers.api.external_bookings_api.get_boost_movie_stocks")
+    def test_boost(
+        self,
+        mocked_get_boost_movie_shows_stock,
+        mocked_async_index_offer_ids,
+        show_id,
+        api_return_value,
+        expected_remaining_quantity,
+    ):
+        boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
+        movie_id = 456
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%Boost"
+        offer = factories.EventOfferFactory(venue=venue_provider.venue, idAtProvider=offer_id_at_provider)
+        stock = factories.EventStockFactory(
+            offer=offer,
+            quantity=10,
+            idAtProviders=f"{offer_id_at_provider}#{show_id}",
+        )
+
+        mocked_get_boost_movie_shows_stock.return_value = api_return_value
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer, venue_provider)
+
+        assert stock.remainingQuantity == expected_remaining_quantity
+        if expected_remaining_quantity == 0:
+            mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+        else:
+            mocked_async_index_offer_ids.assert_not_called()
