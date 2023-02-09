@@ -44,7 +44,7 @@ def get_saml_client() -> Saml2Client:
             "local": [
                 path.join(
                     BASEDIR,
-                    f"{FILES_DIR}/educonnect-metadata/educonnect.{'production' if settings.IS_PROD else 'pr4'}.metadata.xml",
+                    f"{FILES_DIR}/educonnect-metadata/{settings.EDUCONNECT_METADATA_FILE}",
                 )
             ],
         },
