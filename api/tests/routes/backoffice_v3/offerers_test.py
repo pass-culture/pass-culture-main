@@ -690,6 +690,9 @@ class GetOffererDetailsTest:
         rows = html_parser.extract_table_rows(response.data, "managed-venues-tab-pane")
         assert len(rows) == 2
 
+        # Sort before checking rows data to avoid flaky test
+        rows = sorted(rows, key=lambda row: int(row["ID"]))
+
         assert rows[0]["ID"] == str(venue_1.id)
         assert rows[0]["SIRET"] == venue_1.siret
         assert rows[0]["Nom"] == venue_1.name
@@ -2183,7 +2186,7 @@ class BatchOffererAttachmentRejectTest:
         users_offerers = offerers_models.UserOfferer.query.all()
         assert len(users_offerers) == 0
 
-        for index, user_offerer in enumerate(user_offerers):
+        for user_offerer in user_offerers:
             action = history_models.ActionHistory.query.filter(
                 history_models.ActionHistory.offererId == user_offerer.offererId,
                 history_models.ActionHistory.userId == user_offerer.userId,
@@ -2195,13 +2198,17 @@ class BatchOffererAttachmentRejectTest:
             assert action.offererId == user_offerer.offerer.id
             assert action.venueId is None
 
-            assert mails_testing.outbox[index].sent_data["To"] == user_offerer.user.email
+        assert len(mails_testing.outbox) == len(user_offerers)
+
+        # emails are not sorted by user_offerers
+        assert {mail.sent_data["To"] for mail in mails_testing.outbox} == {
+            user_offerer.user.email for user_offerer in user_offerers
+        }
+        for mail in mails_testing.outbox:
             assert (
-                mails_testing.outbox[index].sent_data["template"]
+                mail.sent_data["template"]
                 == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_REJECTION.value.__dict__
             )
-
-        assert len(mails_testing.outbox) == len(user_offerers)
 
 
 def send_request(authenticated_client, offerer_id, url, form_data=None):
