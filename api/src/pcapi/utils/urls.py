@@ -1,3 +1,4 @@
+import re
 from urllib.parse import urlencode
 
 from pcapi import settings
@@ -60,3 +61,15 @@ def build_pc_pro_venue_offers_link(venue: offerers_models.Venue) -> str:
 
 def build_pc_pro_user_email_validation_link(user: users_models.User) -> str:
     return f"{settings.PRO_URL}/inscription/validation/{user.validationToken}"
+
+
+def build_backoffice_public_account_link(user_id: int) -> str:
+    return f"{settings.BACKOFFICE_URL}/public-accounts/{user_id}"
+
+
+def substitute_id_by_url_public_account(found_id: str) -> str:
+    return f'<a class="link-primary" href="{build_backoffice_public_account_link(int(found_id))}" target="_blank">{found_id}</a>'
+
+
+def build_backoffice_public_account_link_in_comment(comment: str) -> str:
+    return re.sub(r"(\d+)$", lambda m: substitute_id_by_url_public_account(m.group(1)), comment)

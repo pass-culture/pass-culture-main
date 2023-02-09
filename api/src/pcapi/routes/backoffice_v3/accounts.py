@@ -1,3 +1,4 @@
+import datetime
 from functools import partial
 import typing
 
@@ -18,6 +19,7 @@ import pcapi.core.fraud.models as fraud_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.subscription import models as subscription_models
 import pcapi.core.subscription.api as subscription_api
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
@@ -117,7 +119,42 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
     domains_credit = users_api.get_domains_credit(user) if user.is_beneficiary else None
     history = users_api.public_account_history(user)
+    duplicate_user_id = None
     eligibility_history = get_eligibility_history(user)
+    user_current_eligibility = users_api.get_eligibility_at_date(user.birth_date, datetime.datetime.utcnow())
+
+    if (
+        user_current_eligibility is not None and user_current_eligibility.value in eligibility_history
+    ):  # get_eligibility_at_date might return None
+        subscription_items = [
+            item
+            for item in eligibility_history[user_current_eligibility.value].subscriptionItems
+            if item.type == subscription_models.SubscriptionStep.IDENTITY_CHECK.value
+            and item.status != subscription_models.SubscriptionItemStatus.OK.value
+        ]
+
+        if len(subscription_items) > 0:
+            last_check_history = sorted(
+                eligibility_history[user_current_eligibility.value].idCheckHistory,
+                key=lambda item: item.dateCreated,
+                reverse=True,
+            )[0]
+            if (
+                last_check_history.reasonCodes
+                and fraud_models.FraudReasonCode.DUPLICATE_USER.value in last_check_history.reasonCodes
+            ):
+                duplicate_user = fraud_api.find_duplicate_beneficiary(
+                    user.firstName, user.lastName, user.married_name, user.birth_date, user.id
+                )
+                if duplicate_user:
+                    duplicate_user_id = duplicate_user.id
+            elif (
+                last_check_history.reasonCodes
+                and fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER.value in last_check_history.reasonCodes
+            ):
+                duplicate_user = fraud_api.find_duplicate_id_piece_number_user(user.idPieceNumber, user.id)
+                if duplicate_user:
+                    duplicate_user_id = duplicate_user.id
 
     bookings = (
         bookings_models.Booking.query.filter_by(userId=user.id)
@@ -137,6 +174,7 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
         user=user,
         credit=domains_credit,
         history=history,
+        duplicate_user_id=duplicate_user_id,
         eligibility_history=eligibility_history,
         resend_email_validation_form=empty_form,
         send_validation_code_form=empty_form,

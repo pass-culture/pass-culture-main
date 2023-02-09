@@ -81,7 +81,7 @@
                             </p>
                             <p class="d-flex justify-content-between">
                                 <span class="fs-6">Explication</span>
-                                <span class="fs-6">{{ idCheckItem.reason | empty_string_if_null }}</span>
+                                <span class="fs-6">{{ idCheckItem.reason | empty_string_if_null | pc_backoffice_public_account_link_in_comment | safe }}</span>
                             </p>
                             <p class="d-flex justify-content-between">
                                 <span class="fs-6">Codes d'erreur</span>
