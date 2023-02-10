@@ -53,8 +53,7 @@ describe('OfferIndividual::ActionBar', () => {
 
       renderActionBar({ props })
 
-      const buttonCancel = screen.getByText('Annuler et quitter')
-      expect(buttonCancel).toHaveAttribute('href', '/offres')
+      expect(screen.getByText('Étape précédente')).toBeInTheDocument()
       const buttonSaveDraft = screen.getByText('Sauvegarder le brouillon')
       await userEvent.click(buttonSaveDraft)
       expect(onClickSaveDraftMock).toHaveBeenCalled()

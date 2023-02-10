@@ -76,26 +76,14 @@ const ActionBar = ({
   const Left = (): JSX.Element => {
     if (mode !== OFFER_WIZARD_MODE.EDITION) {
       return (
-        <>
-          {step === OFFER_WIZARD_STEP_IDS.INFORMATIONS ? (
-            <ButtonLink
-              link={{ to: '/offres', isExternal: false }}
-              variant={ButtonVariant.SECONDARY}
-              onClick={logCancel}
-            >
-              Annuler et quitter
-            </ButtonLink>
-          ) : (
-            <Button
-              Icon={IcoMiniArrowLeft}
-              onClick={onClickPrevious}
-              variant={ButtonVariant.SECONDARY}
-              disabled={isDisabled}
-            >
-              Étape précédente
-            </Button>
-          )}
-        </>
+        <Button
+          Icon={IcoMiniArrowLeft}
+          onClick={onClickPrevious}
+          variant={ButtonVariant.SECONDARY}
+          disabled={isDisabled}
+        >
+          Étape précédente
+        </Button>
       )
     }
     return (
