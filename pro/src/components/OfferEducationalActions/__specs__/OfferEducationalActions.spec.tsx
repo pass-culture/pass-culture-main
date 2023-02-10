@@ -77,6 +77,22 @@ describe('OfferEducationalActions', () => {
     )
     expect(screen.getByText('réservée')).toBeInTheDocument()
   })
+  it('should display booking link for used booking', () => {
+    props.offer = collectiveOfferFactory({
+      status: OfferStatus.EXPIRED,
+      lastBookingId: 1,
+      lastBookingStatus: CollectiveBookingStatus.USED,
+    })
+    const storeOverride = {}
+    renderOfferEducationalActions(props, storeOverride)
+    expect(
+      screen.getByRole('link', { name: 'Voir la réservation' })
+    ).toHaveAttribute(
+      'href',
+      '/reservations/collectives?page=1&offerEventDate=2021-10-15&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=1'
+    )
+    expect(screen.getByText('terminée')).toBeInTheDocument()
+  })
   it('should display cancel booking button if offer is cancelable', () => {
     const storeOverride = {
       features: {

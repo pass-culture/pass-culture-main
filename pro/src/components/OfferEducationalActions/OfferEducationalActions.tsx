@@ -102,7 +102,8 @@ const OfferEducationalActions = ({
           )}
         {isImproveCollectiveStatusActive &&
           lastBookingId &&
-          lastBookingStatus != CollectiveBookingStatus.CANCELLED && (
+          (lastBookingStatus != CollectiveBookingStatus.CANCELLED ||
+            offer?.status == OfferStatus.EXPIRED) && (
             <ButtonLink
               variant={ButtonVariant.TERNARY}
               className={style['button-link']}
