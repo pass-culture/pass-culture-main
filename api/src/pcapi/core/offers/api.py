@@ -1207,6 +1207,10 @@ def edit_price_category(
 
     repository.add_to_session(price_category)
 
+    stocks_to_edit = [stock for stock in offer.stocks if stock.priceCategoryId == price_category.id]
+    for stock in stocks_to_edit:
+        edit_stock(stock, price=price_category.price, editing_provider=editing_provider)
+
     return price_category
 
 

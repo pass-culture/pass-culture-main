@@ -2445,3 +2445,23 @@ class PatchPriceCategoryTest:
         )
         assert response.status_code == 400
         assert response.json == {"unrecognized_key": ["Vous ne pouvez pas changer cette information"]}
+
+    def test_stock_price_update(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=api_key.offerer, lastProvider=individual_offers_api_provider
+        )
+        price_category = offers_factories.PriceCategoryFactory(
+            offer=offer,
+            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Already exists", venue=offer.venue),
+        )
+        offers_factories.EventStockFactory(offer=offer, priceCategory=price_category)
+        offers_factories.EventStockFactory(offer=offer, priceCategory=price_category)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{offer.id}/price_categories/{price_category.id}",
+            json={"price": 25},
+        )
+
+        assert response.status_code == 200
+        assert all((stock.price == decimal.Decimal("0.25") for stock in offer.stocks))
