@@ -21,9 +21,10 @@ export const createOfferFromTemplate = async (
   if (!offerTemplateResponse.isOk) {
     return notify.error(offerTemplateResponse.message)
   }
+  const offererId = offerTemplateResponse.payload.venue.managingOffererId
 
   const result = await getCollectiveOfferFormDataApdater({
-    offererId: offerTemplateResponse.payload.venue.managingOffererId,
+    offererId: offererId,
     offer: offerTemplateResponse.payload,
   })
 
@@ -68,5 +69,5 @@ export const createOfferFromTemplate = async (
       cropParams: { x: 0, y: 0, width: 1, height: 1 },
     })
   }
-  history.push(`/offre/collectif/${payload.id}/creation`)
+  history.push(`/offre/collectif/${payload.id}/creation?structure=${offererId}`)
 }
