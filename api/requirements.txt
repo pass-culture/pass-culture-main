@@ -1,5 +1,6 @@
 alembic==1.8.0
 algoliasearch==2.4.0
+amplitude-analytics
 Authlib==0.15.5
 attrs==22.1.0
 Babel==2.9.1
