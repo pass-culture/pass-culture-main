@@ -82,5 +82,5 @@ export const oneOfSelectOption = (
 ) =>
   field.oneOf(
     options.map(({ value }) => String(value)).concat(['']),
-    ({ value }) => `"${String(value)} " n'est pas une valeur valide de la liste`
+    ({ value }) => `"${String(value)} " n’est pas une valeur valide de la liste`
   )

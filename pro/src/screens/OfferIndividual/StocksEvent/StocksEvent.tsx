@@ -111,6 +111,13 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const isPriceCategoriesActive = useActiveFeature(
     'WIP_ENABLE_MULTI_PRICE_STOCKS'
   )
+  const priceCategoriesOptions =
+    offer.priceCategories?.map(
+      (priceCategory): SelectOption => ({
+        label: `${formatPrice(priceCategory.price)} - ${priceCategory.label}`,
+        value: priceCategory.id,
+      })
+    ) ?? []
 
   let description
   let links
@@ -166,6 +173,8 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
             today,
             lastProviderName: updatedOffer.lastProviderName,
             offerStatus: updatedOffer.status,
+            priceCategoriesOptions,
+            isPriceCategoriesActive,
           }),
         })
       }
@@ -238,13 +247,6 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     getToday(),
     offer.venue.departmentCode
   )
-  const priceCategoriesOptions =
-    offer.priceCategories?.map(
-      (priceCategory): SelectOption => ({
-        label: `${formatPrice(priceCategory.price)} - ${priceCategory.label}`,
-        value: priceCategory.id,
-      })
-    ) ?? []
 
   const initialValues = buildInitialValues({
     departmentCode: offer.venue.departmentCode,
@@ -252,6 +254,8 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
     today,
     lastProviderName: offer.lastProviderName,
     offerStatus: offer.status,
+    priceCategoriesOptions,
+    isPriceCategoriesActive,
   })
 
   const formik = useFormik<{ stocks: IStockEventFormValues[] }>({

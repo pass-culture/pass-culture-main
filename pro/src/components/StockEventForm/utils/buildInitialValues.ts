@@ -1,17 +1,24 @@
 import { OfferStatus } from 'apiClient/v1'
 import { IOfferIndividualStock } from 'core/Offers/types'
+import { SelectOption } from 'custom_types/form'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../constants'
 import { IStockEventFormValues } from '../types'
 import { setFormReadOnlyFields } from '../utils'
 
-interface IBuildSingleInitialValuesArgs {
+interface BuildInitialValuesCommonArgs {
   departmentCode: string
-  stock: IOfferIndividualStock
   today: Date
   lastProviderName: string | null
   offerStatus: OfferStatus
+  priceCategoriesOptions: SelectOption[]
+  // TODO remove when WIP_ENABLE_MULTI_PRICE_STOCKS is removed
+  isPriceCategoriesActive: boolean
+}
+
+interface IBuildSingleInitialValuesArgs extends BuildInitialValuesCommonArgs {
+  stock: IOfferIndividualStock
 }
 
 export const buildSingleInitialValues = ({
@@ -20,6 +27,8 @@ export const buildSingleInitialValues = ({
   today,
   lastProviderName,
   offerStatus,
+  priceCategoriesOptions,
+  isPriceCategoriesActive,
 }: IBuildSingleInitialValuesArgs): IStockEventFormValues => {
   const hiddenValues = {
     stockId: stock.id,
@@ -33,6 +42,8 @@ export const buildSingleInitialValues = ({
       offerStatus,
     }),
   }
+  const defaultPriceCategoryOption =
+    priceCategoriesOptions.length === 1 ? priceCategoriesOptions[0] : null
 
   return {
     ...hiddenValues,
@@ -57,17 +68,17 @@ export const buildSingleInitialValues = ({
           departmentCode
         )
       : null,
-    price: stock.price ?? '',
-    priceCategoryId: stock.priceCategoryId ? String(stock.priceCategoryId) : '',
+    price: isPriceCategoriesActive ? '' : stock.price ?? '',
+    priceCategoryId: isPriceCategoriesActive
+      ? stock.priceCategoryId
+        ? String(stock.priceCategoryId) ?? defaultPriceCategoryOption
+        : ''
+      : '',
   }
 }
 
-export interface IBuildInitialValuesArgs {
-  departmentCode: string
+interface IBuildInitialValuesArgs extends BuildInitialValuesCommonArgs {
   offerStocks: IOfferIndividualStock[]
-  today: Date
-  lastProviderName: string | null
-  offerStatus: OfferStatus
 }
 
 export const buildInitialValues = ({
@@ -76,11 +87,11 @@ export const buildInitialValues = ({
   today,
   lastProviderName,
   offerStatus,
+  priceCategoriesOptions,
+  isPriceCategoriesActive,
 }: IBuildInitialValuesArgs): { stocks: IStockEventFormValues[] } => {
   if (offerStocks.length === 0) {
-    return {
-      stocks: [STOCK_EVENT_FORM_DEFAULT_VALUES],
-    }
+    return { stocks: [STOCK_EVENT_FORM_DEFAULT_VALUES] }
   }
 
   return {
@@ -92,6 +103,8 @@ export const buildInitialValues = ({
           today,
           lastProviderName,
           offerStatus,
+          priceCategoriesOptions,
+          isPriceCategoriesActive,
         })
       )
       .sort(

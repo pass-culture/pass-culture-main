@@ -27,17 +27,18 @@ tomorrow.setDate(tomorrow.getDate() + 1)
 yesterday.setDate(yesterday.getDate() - 1)
 oneWeekLater.setDate(oneWeekLater.getDate() + 7)
 
-const renderStockEventForm = ({
-  initialValues = STOCK_EVENT_FORM_DEFAULT_VALUES,
-  onSubmit = jest.fn(),
-}: {
-  initialValues?: IStockEventFormValues
-  onSubmit?: () => void
-} = {}) => {
+const renderStockEventForm = (
+  initialValues: IStockEventFormValues = STOCK_EVENT_FORM_DEFAULT_VALUES,
+  // TODO remove when WIP_ENABLE_MULTI_PRICE_STOCKS is removed
+  isPriceCategoriesActive = false
+) => {
   const props: IStockEventFormProps = {
     today,
     stockIndex: 0,
-    priceCategoriesOptions: [],
+    priceCategoriesOptions: [
+      { label: 'Tarif 1', value: '1' },
+      { label: 'Tarif 2', value: '2' },
+    ],
   }
 
   return renderWithProviders(
@@ -45,8 +46,11 @@ const renderStockEventForm = ({
       initialValues={{
         stocks: [initialValues],
       }}
-      onSubmit={onSubmit}
-      validationSchema={getValidationSchema()}
+      onSubmit={jest.fn()}
+      validationSchema={getValidationSchema(
+        props.priceCategoriesOptions,
+        isPriceCategoriesActive
+      )}
     >
       {({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>
@@ -54,12 +58,25 @@ const renderStockEventForm = ({
           <SubmitButton>Submit</SubmitButton>
         </form>
       )}
-    </Formik>
+    </Formik>,
+    {
+      storeOverrides: {
+        features: {
+          list: [
+            {
+              isActive: isPriceCategoriesActive,
+              nameKey: 'WIP_ENABLE_MULTI_PRICE_STOCKS',
+            },
+          ],
+        },
+      },
+    }
   )
 }
 
 describe('StockEventForm:validationSchema', () => {
-  it('test required fields', async () => {
+  // TODO remove when WIP_ENABLE_MULTI_PRICE_STOCKS is removed
+  it('test required fields (old)', async () => {
     renderStockEventForm()
 
     await userEvent.click(screen.getByRole('button', { name: 'Submit' }))
@@ -82,6 +99,33 @@ describe('StockEventForm:validationSchema', () => {
       'Veuillez renseigner un horaire'
     )
     expect(errorPrice).toHaveTextContent('Veuillez renseigner un prix')
+  })
+
+  it.only('shoudld validate required fields', async () => {
+    renderStockEventForm(undefined, true)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Submit' }))
+    const errorBeginningDate = screen.getByTestId(
+      'error-stocks[0]beginningDate'
+    )
+    const errorBeginningTime = screen.getByTestId(
+      'error-stocks[0]beginningTime'
+    )
+    const errorPriceCategory = screen.getByTestId(
+      'error-stocks[0]priceCategoryId'
+    )
+    expect(errorBeginningDate).toBeInTheDocument()
+    expect(errorBeginningTime).toBeInTheDocument()
+    expect(errorPriceCategory).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('error-stocks[0]quantity')
+    ).not.toBeInTheDocument()
+
+    expect(errorBeginningDate).toHaveTextContent('Veuillez renseigner une date')
+    expect(errorBeginningTime).toHaveTextContent(
+      'Veuillez renseigner un horaire'
+    )
+    expect(errorPriceCategory).toHaveTextContent('Veuillez renseigner un tarif')
   })
 
   const dataSetbeginningDate: Array<number> = [
@@ -127,10 +171,8 @@ describe('StockEventForm:validationSchema', () => {
 
   it('should display quantity error when min quantity is given', async () => {
     renderStockEventForm({
-      initialValues: {
-        ...STOCK_EVENT_FORM_DEFAULT_VALUES,
-        bookingsQuantity: '10',
-      },
+      ...STOCK_EVENT_FORM_DEFAULT_VALUES,
+      bookingsQuantity: '10',
     })
 
     const inputQuantity = screen.getByLabelText('Quantité')
