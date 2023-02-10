@@ -31,7 +31,7 @@ const getSingleValidationSchema = (
       if (readOnlyFields.includes('beginningDate')) {
         return schema
       }
-      return schema.min(removeTime(getToday()), "L'évènement doit être à venir")
+      return schema.min(removeTime(getToday()), 'L’évènement doit être à venir')
     }),
   beginningTime: yup
     .string()
@@ -41,11 +41,9 @@ const getSingleValidationSchema = (
   ...(isPriceCategoriesActive
     ? {
         priceCategoryId: oneOfSelectOption(
-          yup.string(),
+          yup.string().required('Veuillez renseigner un tarif'),
           priceCategoriesOptions ?? []
-        )
-          .typeError('Doit être un nombre')
-          .required('Veuillez renseigner un tarif'),
+        ),
       }
     : {
         price: yup

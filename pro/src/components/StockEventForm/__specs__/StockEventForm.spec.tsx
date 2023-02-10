@@ -6,6 +6,7 @@ import React from 'react'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../constants'
+import { stockEventFactory } from '../stockEventFactory'
 import StockEventForm, { IStockEventFormProps } from '../StockEventForm'
 
 jest.mock('utils/date', () => ({
@@ -17,16 +18,29 @@ jest.mock('utils/date', () => ({
 
 const renderStockEventForm = (
   props: IStockEventFormProps,
-  initialStock = STOCK_EVENT_FORM_DEFAULT_VALUES
-) => {
-  return renderWithProviders(
+  initialStock = STOCK_EVENT_FORM_DEFAULT_VALUES,
+  // TODO remove when WIP_ENABLE_MULTI_PRICE_STOCKS is removed
+  isPriceCategoriesActive = false
+) =>
+  renderWithProviders(
     <Formik initialValues={{ stocks: [initialStock] }} onSubmit={() => {}}>
       <Form>
         <StockEventForm {...props} />
       </Form>
-    </Formik>
+    </Formik>,
+    {
+      storeOverrides: {
+        features: {
+          list: [
+            {
+              isActive: isPriceCategoriesActive,
+              nameKey: 'WIP_ENABLE_MULTI_PRICE_STOCKS',
+            },
+          ],
+        },
+      },
+    }
   )
-}
 
 describe('StockEventForm', () => {
   let props: IStockEventFormProps
@@ -42,8 +56,29 @@ describe('StockEventForm', () => {
     }
   })
 
-  it('render StockEventForm', () => {
+  // TODO delete when WIP_ENABLE_MULTI_PRICE_STOCKS is removed
+  it('render StockEventForm (old)', () => {
     renderStockEventForm(props)
+
+    expect(screen.getByLabelText('Date', { exact: true })).toBeInTheDocument()
+    expect(screen.getByLabelText('Horaire')).toBeInTheDocument()
+    expect(screen.getByLabelText('Tarif')).toBeInTheDocument()
+    expect(
+      screen.getByLabelText('Date limite de réservation')
+    ).toBeInTheDocument()
+    expect(screen.getByLabelText('Quantité')).toBeInTheDocument()
+
+    expect(screen.getByLabelText('Date', { exact: true })).not.toBeDisabled()
+    expect(screen.getByLabelText('Horaire')).not.toBeDisabled()
+    expect(screen.getByLabelText('Tarif')).not.toBeDisabled()
+    expect(
+      screen.getByLabelText('Date limite de réservation')
+    ).not.toBeDisabled()
+    expect(screen.getByLabelText('Quantité')).not.toBeDisabled()
+  })
+
+  it('render StockEventForm', () => {
+    renderStockEventForm(props, undefined, true)
 
     expect(screen.getByLabelText('Date', { exact: true })).toBeInTheDocument()
     expect(screen.getByLabelText('Horaire')).toBeInTheDocument()
@@ -64,9 +99,7 @@ describe('StockEventForm', () => {
 
   it('should render disabled fields for empty form with synchronized offer in edition mode', () => {
     props.disableAllStockFields = true
-    renderStockEventForm(props, {
-      ...STOCK_EVENT_FORM_DEFAULT_VALUES,
-    })
+    renderStockEventForm(props, { ...STOCK_EVENT_FORM_DEFAULT_VALUES })
     expect(screen.getByLabelText('Date', { exact: true })).toBeDisabled()
     expect(screen.getByLabelText('Horaire')).toBeDisabled()
     expect(screen.getByLabelText('Tarif')).toBeDisabled()
@@ -75,9 +108,7 @@ describe('StockEventForm', () => {
   })
 
   it('should not render disabled fields for empty form in edition mode for not synchronized offer', () => {
-    renderStockEventForm(props, {
-      ...STOCK_EVENT_FORM_DEFAULT_VALUES,
-    })
+    renderStockEventForm(props, { ...STOCK_EVENT_FORM_DEFAULT_VALUES })
     expect(screen.getByLabelText('Date', { exact: true })).not.toBeDisabled()
     expect(screen.getByLabelText('Horaire')).not.toBeDisabled()
     expect(screen.getByLabelText('Tarif')).not.toBeDisabled()
@@ -106,7 +137,7 @@ describe('StockEventForm', () => {
     expect(screen.getByLabelText('Quantité')).toBeDisabled()
   })
   it('should set stockBookingLimitDatetime at event date if date changed before stockBookingLimitDatetime', async () => {
-    const initialStock = {
+    const initialStock = stockEventFactory({
       beginningDate: new Date('2022-12-29T00:00:00Z'),
       beginningTime: new Date('2022-12-29T00:00:00Z'),
       remainingQuantity: '11',
@@ -114,10 +145,7 @@ describe('StockEventForm', () => {
       quantity: 12,
       bookingLimitDatetime: new Date('2022-12-28T00:00:00Z'),
       price: 10,
-      priceCategoryId: '' as const,
-      isDeletable: true,
-      readOnlyFields: [],
-    }
+    })
 
     renderStockEventForm(props, initialStock)
 
