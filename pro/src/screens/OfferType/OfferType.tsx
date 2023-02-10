@@ -239,7 +239,10 @@ const OfferType = (): JSX.Element => {
                       COLLECTIVE_OFFER_SUBTYPE.TEMPLATE
                     }
                     label="Une offre vitrine"
-                    description="Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée."
+                    description={`Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée.${
+                      isDuplicateOfferSelectionActive &&
+                      ' Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.'
+                    }`}
                     onChange={handleCollectiveOfferSubtypeChange}
                     value={COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
                   />

@@ -149,7 +149,7 @@ describe('screens:OfferIndividual::OfferType', () => {
 
     await userEvent.click(
       screen.getByRole('radio', {
-        name: 'Une offre vitrine Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée.',
+        name: 'Une offre vitrine Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.',
       })
     )
     await userEvent.click(
