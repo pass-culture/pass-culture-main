@@ -369,7 +369,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
   it('should track when cancelling draft edition', async () => {
     renderInformationsScreen(props, contextOverride)
 
-    await userEvent.click(await screen.findByText('Annuler et quitter'))
+    await userEvent.click(await screen.findByText('Étape précédente'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
@@ -380,7 +380,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
         isDraft: true,
         isEdition: true,
         offerId: 'AA',
-        to: 'Offers',
+        to: 'OfferFormHomepage',
         used: 'StickyButtons',
       }
     )
