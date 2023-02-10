@@ -138,15 +138,21 @@ def ratelimit_handler(error: Exception) -> ApiErrorResponse:
 
 @app.errorhandler(DatabaseError)
 def database_error_handler(error: DatabaseError) -> ApiErrorResponse:
+    if error.statement:
+        try:
+            sql_info_extra = {"sql_query": error.statement % format_sql_statement_params(error.params)}
+        except Exception:  # pylint: disable=broad-except
+            # `format_sql_statement_params()` cannot handle `params`
+            # when it's a list, which happens when `executemany()` is
+            # used.
+            sql_info_extra = {"sql_query": error.statement, "sql_params": error.params}
+    else:
+        sql_info_extra = {}
     logger.info(
         "Database error with the following query on method=%s url=%s. 🚨🚨🚨🚨🚨 BEFORE COPYING THE QUERY MAKE SURE THERE IS NO SQL INJECTION 🚨🚨🚨🚨🚨🚨",
         request.method,
         request.url,
-        extra={
-            "sql_query": error.statement % format_sql_statement_params(error.params)
-            if error.statement is not None
-            else None
-        },
+        extra=sql_info_extra,
     )
     logger.exception("Unexpected database error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
