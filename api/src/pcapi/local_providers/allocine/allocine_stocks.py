@@ -9,9 +9,7 @@ from sqlalchemy import Sequence
 from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Product
-from pcapi.core.offers.models import Stock
+import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
@@ -69,14 +67,17 @@ class AllocineStocks(LocalProvider):
         showtimes_number = len(self.filtered_movie_showtimes)
         providable_information_list = [
             self.create_providable_info(
-                Product, self.movie_information["id"], datetime.utcnow(), self.movie_information["id"]
+                offers_models.Product, self.movie_information["id"], datetime.utcnow(), self.movie_information["id"]
             )
         ]
 
         if _has_original_version_product(self.filtered_movie_showtimes):
             venue_movie_original_version_unique_id = _build_original_movie_uuid(self.movie_information, self.venue)
             original_version_offer_providable_information = self.create_providable_info(
-                Offer, venue_movie_original_version_unique_id, datetime.utcnow(), venue_movie_original_version_unique_id
+                offers_models.Offer,
+                venue_movie_original_version_unique_id,
+                datetime.utcnow(),
+                venue_movie_original_version_unique_id,
             )
 
             providable_information_list.append(original_version_offer_providable_information)
@@ -84,7 +85,10 @@ class AllocineStocks(LocalProvider):
         if _has_french_version_product(self.filtered_movie_showtimes):
             venue_movie_french_version_unique_id = _build_french_movie_uuid(self.movie_information, self.venue)
             french_version_offer_providable_information = self.create_providable_info(
-                Offer, venue_movie_french_version_unique_id, datetime.utcnow(), venue_movie_french_version_unique_id
+                offers_models.Offer,
+                venue_movie_french_version_unique_id,
+                datetime.utcnow(),
+                venue_movie_french_version_unique_id,
             )
             providable_information_list.append(french_version_offer_providable_information)
 
@@ -93,23 +97,23 @@ class AllocineStocks(LocalProvider):
             id_at_providers = _build_stock_uuid(self.movie_information, self.venue, showtime)
 
             stock_providable_information = self.create_providable_info(
-                Stock, id_at_providers, datetime.utcnow(), id_at_providers
+                offers_models.Stock, id_at_providers, datetime.utcnow(), id_at_providers
             )
             providable_information_list.append(stock_providable_information)
 
         return providable_information_list
 
     def fill_object_attributes(self, pc_object: Model) -> None:
-        if isinstance(pc_object, Product):
+        if isinstance(pc_object, offers_models.Product):
             self.fill_product_attributes(pc_object)
 
-        if isinstance(pc_object, Offer):
+        if isinstance(pc_object, offers_models.Offer):
             self.fill_offer_attributes(pc_object)
 
-        if isinstance(pc_object, Stock):
+        if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
-    def update_from_movie_information(self, obj: Offer | Product, movie_information: dict):  # type: ignore [no-untyped-def]
+    def update_from_movie_information(self, obj: offers_models.Offer | offers_models.Product, movie_information: dict):  # type: ignore [no-untyped-def]
         if self.movie_information and "description" in self.movie_information:
             obj.description = movie_information["description"]
         if self.movie_information and "duration" in self.movie_information:
@@ -129,7 +133,7 @@ class AllocineStocks(LocalProvider):
             if field in movie_information:
                 obj.extraData[field] = movie_information[field]  # type: ignore [literal-required]
 
-    def fill_product_attributes(self, allocine_product: Product) -> None:
+    def fill_product_attributes(self, allocine_product: offers_models.Product) -> None:
         allocine_product.name = self.movie_information["title"]  # type: ignore [index]
         allocine_product.subcategoryId = subcategories.SEANCE_CINE.id
         allocine_product.thumbCount = 0
@@ -142,7 +146,7 @@ class AllocineStocks(LocalProvider):
             allocine_product.id = get_next_product_id_from_database()
         self.last_product_id = allocine_product.id
 
-    def fill_offer_attributes(self, allocine_offer: Offer) -> None:
+    def fill_offer_attributes(self, allocine_offer: offers_models.Offer) -> None:
         allocine_offer.venueId = self.venue.id
         allocine_offer.bookingEmail = self.venue.bookingEmail
         allocine_offer.withdrawalDetails = self.venue.withdrawalDetails
@@ -183,7 +187,7 @@ class AllocineStocks(LocalProvider):
         else:
             self.last_vf_offer_id = allocine_offer.id
 
-    def fill_stock_attributes(self, allocine_stock: Stock):  # type: ignore [no-untyped-def]
+    def fill_stock_attributes(self, allocine_stock: offers_models.Stock):  # type: ignore [no-untyped-def]
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)  # type: ignore [arg-type]
         showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)  # type: ignore [arg-type]
 
@@ -211,7 +215,7 @@ class AllocineStocks(LocalProvider):
         if "price" not in allocine_stock.fieldsUpdated:
             allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)
 
-    def apply_allocine_price_rule(self, allocine_stock: Stock) -> decimal.Decimal:
+    def apply_allocine_price_rule(self, allocine_stock: offers_models.Stock) -> decimal.Decimal:
         for price_rule in self.venue_provider.priceRules:
             if price_rule.priceRule(allocine_stock):
                 return price_rule.price
