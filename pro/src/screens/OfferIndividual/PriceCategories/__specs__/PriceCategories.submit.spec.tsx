@@ -13,7 +13,11 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
-import { individualOfferFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferFactory,
+  individualStockFactory,
+  priceCategoryFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import PriceCategories, { IPriceCategories } from '../PriceCategories'
@@ -140,6 +144,44 @@ describe('PriceCategories', () => {
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
+    expect(api.patchOffer).toHaveBeenCalled()
+    expect(api.postPriceCategories).toHaveBeenCalled()
+  })
+
+  it('should display price modification popin', async () => {
+    renderPriceCategories(
+      {
+        offer: individualOfferFactory(
+          { id: 'AA' },
+          individualStockFactory({ priceCategoryId: 666 }),
+          undefined,
+          priceCategoryFactory({ id: 666 })
+        ),
+      },
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        }),
+        { offerId: 'AA' }
+      )
+    )
+    await userEvent.type(
+      screen.getByLabelText('Intitulé du tarif'),
+      'Mon tarif'
+    )
+    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+
+    await userEvent.click(screen.getByText('Étape suivante'))
+
+    expect(
+      screen.getByText(
+        'Cette modification de tarif s’appliquera à l’ensemble des occurrences qui y sont associées.'
+      )
+    ).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Confirmer la modification'))
+
     expect(api.patchOffer).toHaveBeenCalled()
     expect(api.postPriceCategories).toHaveBeenCalled()
   })

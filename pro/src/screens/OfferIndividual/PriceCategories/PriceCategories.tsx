@@ -1,6 +1,7 @@
-import { FormikProvider } from 'formik'
+import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
+import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
@@ -11,7 +12,7 @@ import {
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual } from 'core/Offers/types'
+import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate, useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
@@ -21,11 +22,54 @@ import { ActionBar } from '../ActionBar'
 import { getSuccessMessage } from '../utils'
 import { logTo } from '../utils/logTo'
 
-import { usePriceCategoriesForm } from './form/useForm'
+import { computeInitialValues } from './form/computeInitialValues'
+import { onSubmit } from './form/onSubmit'
+import { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
+import { validationSchema } from './form/validationSchema'
 import { PriceCategoriesForm } from './PriceCategoriesForm'
 
 export interface IPriceCategories {
   offer: IOfferIndividual
+}
+
+export const shouldDisplayConfirmChangeOnPrice = (
+  stocks: IOfferIndividualStock[],
+  initialValues: PriceCategoriesFormValues,
+  values: PriceCategoriesFormValues
+) => {
+  const initialPriceCategories: Record<
+    string,
+    Partial<PriceCategoryForm>
+  > = initialValues.priceCategories.reduce(
+    (dict: Record<string, Partial<PriceCategoryForm>>, priceCategory) => {
+      dict[priceCategory.id || 'new'] = {
+        id: priceCategory.id,
+        label: priceCategory.label,
+        price: priceCategory.price,
+      }
+      return dict
+    },
+    {}
+  )
+  const stockPriceCategoryIds = stocks.map(stock => stock.priceCategoryId)
+
+  return values.priceCategories.some(priceCategory => {
+    // if no id, it is new and has no stocks
+    if (!priceCategory.id) {
+      return false
+    }
+
+    // have fields which trigger warning been edited ?
+    const initialpriceCategory = initialPriceCategories[priceCategory.id]
+    if (initialpriceCategory['price'] !== priceCategory['price']) {
+      // does it match a stock ?
+      return stockPriceCategoryIds.some(
+        stockPriceCategoryId => stockPriceCategoryId === priceCategory.id
+      )
+    } else {
+      return false
+    }
+  })
 }
 
 const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
@@ -41,6 +85,34 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
   const mode = useOfferWizardMode()
   const [isClickingDraft, setIsClickingDraft] = useState<boolean>(false)
   const notify = useNotification()
+  const [showConfirmChangeOnPrice, setShowConfirmChangeOnPrice] =
+    useState(false)
+
+  const onSubmitWithCallback = async (values: PriceCategoriesFormValues) => {
+    if (
+      mode !== OFFER_WIZARD_MODE.EDITION &&
+      !showConfirmChangeOnPrice &&
+      shouldDisplayConfirmChangeOnPrice(
+        offer.stocks,
+        formik.initialValues,
+        values
+      )
+    ) {
+      setShowConfirmChangeOnPrice(true)
+      return
+    } else {
+      setShowConfirmChangeOnPrice(false)
+    }
+
+    try {
+      await onSubmit(values, offer, setOffer, formik.resetForm)
+      afterSubmitCallback()
+    } catch (error) {
+      if (error instanceof Error) {
+        notify.error(error?.message)
+      }
+    }
+  }
 
   const afterSubmitCallback = () => {
     notify.success(getSuccessMessage(mode))
@@ -75,12 +147,13 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
     setIsClickingDraft(false)
   }
 
-  const formik = usePriceCategoriesForm(
-    offer,
-    afterSubmitCallback,
-    setOffer,
-    notify.error
-  )
+  const initialValues = computeInitialValues(offer)
+
+  const formik = useFormik<PriceCategoriesFormValues>({
+    initialValues,
+    validationSchema,
+    onSubmit: onSubmitWithCallback,
+  })
 
   const handlePreviousStep = () => {
     if (!formik.dirty) {
@@ -145,6 +218,15 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
 
   return (
     <FormikProvider value={formik}>
+      {showConfirmChangeOnPrice && (
+        <ConfirmDialog
+          onCancel={() => setShowConfirmChangeOnPrice(false)}
+          onConfirm={formik.submitForm}
+          title="Cette modification de tarif s’appliquera à l’ensemble des occurrences qui y sont associées."
+          confirmText="Confirmer la modification"
+          cancelText="Annuler"
+        />
+      )}
       <FormLayout small>
         <form onSubmit={formik.handleSubmit}>
           <PriceCategoriesForm offerId={offer.nonHumanizedId.toString()} />
