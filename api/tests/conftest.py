@@ -23,6 +23,7 @@ from requests.exceptions import ConnectionError as RequestConnectionError
 import requests_mock
 
 from pcapi import settings
+from pcapi.analytics.amplitude import testing as amplitude_testing
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
@@ -151,6 +152,7 @@ def clear_outboxes():
         users_testing.reset_zendesk_requests()
         users_testing.reset_zendesk_sell_requests()
         adage_api_testing.reset_requests()
+        amplitude_testing.reset_requests()
 
 
 @pytest.fixture(autouse=True)
