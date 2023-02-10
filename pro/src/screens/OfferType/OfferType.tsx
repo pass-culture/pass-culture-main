@@ -56,11 +56,15 @@ const OfferType = (): JSX.Element => {
   )
   const [hasCollectiveTemplateOffer, setHasCollectiveTemplateOffer] =
     useState(false)
-
+  const queryParams = new URLSearchParams(location.search)
+  const queryOffererId = queryParams.get('structure')
+  const queryVenueId = queryParams.get('lieu')
   const getTemplateCollectiveOffers = useCallback(async () => {
     const apiFilters = {
       ...DEFAULT_SEARCH_FILTERS,
       collectiveOfferType: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE.toLowerCase(),
+      offererId: queryOffererId ?? 'all',
+      venueId: queryVenueId ?? 'all',
     }
     const { isOk, message, payload } = await getFilteredCollectiveOffersAdapter(
       apiFilters
@@ -118,8 +122,7 @@ const OfferType = (): JSX.Element => {
   const checkOffererEligibility = async () => {
     setIsLoadingEligibility(true)
     const offererNames = await api.listOfferersNames()
-    const queryParams = new URLSearchParams(location.search)
-    const queryOffererId = queryParams.get('structure')
+
     const offererId = currentUser.isAdmin
       ? queryOffererId
       : offererNames.offerersNames[0].id

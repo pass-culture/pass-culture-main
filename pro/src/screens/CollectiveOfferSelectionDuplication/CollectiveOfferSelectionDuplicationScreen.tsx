@@ -42,6 +42,9 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     initialValues: { searchFilter: '', templateOfferId: '' },
     onSubmit: () => handleOnSubmit(),
   })
+  const queryParams = new URLSearchParams(location.search)
+  const queryOffererId = queryParams.get('structure')
+  const queryVenueId = queryParams.get('lieu')
 
   const filterTemplateOfferByName = useCallback(
     async (offerName: string) => {
@@ -50,6 +53,8 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         ...DEFAULT_SEARCH_FILTERS,
         nameOrIsbn: offerName,
         collectiveOfferType: 'template',
+        offererId: queryOffererId ?? 'all',
+        venueId: queryVenueId ?? 'all',
       }
       const { isOk, message, payload } =
         await getFilteredCollectiveOffersAdapter(apiFilters)
