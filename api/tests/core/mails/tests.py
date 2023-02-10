@@ -153,8 +153,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         assert list(task_param.recipients) == [recipient]
         assert result.successful
 
-    @override_settings(IS_STAGING=True)
-    @override_settings(END_TO_END_TESTS_EMAIL_ADDRESS="qa-test@passculture.app")
+    @override_settings(IS_STAGING=True, IS_E2E_TESTS=True, END_TO_END_TESTS_EMAIL_ADDRESS="qa-test@passculture.app")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_whitelisted_qa_staging(self, mock_send_transactional_email_secondary_task):
         recipient = "qa-test+123@passculture.app"
@@ -168,8 +167,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         assert list(task_param.recipients) == [recipient]
         assert result.successful
 
-    @override_settings(IS_TESTING=True)
-    @override_settings(END_TO_END_TESTS_EMAIL_ADDRESS="qa-test@passculture.app")
+    @override_settings(IS_TESTING=True, IS_E2E_TESTS=True, END_TO_END_TESTS_EMAIL_ADDRESS="qa-test@passculture.app")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_whitelisted_qa_testing(
         self, mock_send_transactional_email_secondary_task, recipient="qa-test+123@passculture.app"
