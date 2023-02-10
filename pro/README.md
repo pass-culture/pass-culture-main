@@ -56,43 +56,6 @@ Vous trouverez une documentation générale ainsi que des liens vers les différ
 
 ## Dette technique
 
-Nous utilisons une bibliotèque faite sur-mesure pour monitorer la dette technique.
+Nous utilisons SonarCloud pour monitorer la dette technique.
 
-voir la documentation ici : https://github.com/gael-boyenval/debt-collector
-
-4 commandes pré-établies sont à disposition :
-
-```
-yarn debt:check:changed
-yarn debt:check:all
-yarn debt:compare
-yarn debt:walk
-```
-
-Pour plus de details sur sont utilisations sur le portail-pro, vous pouvez consulter la section [debt-collector](./.debt-collector/README.md).
-
-### 1) yarn debt:check:changed
-
-Produit un rapport pour chaque fichiers modifiés depuis master Il est nécéssaire d'avoir master à jour.
-
-### 2) yarn debt:check:all
-
-Produit un rapport pour l'ensemble des fichiers.
-
-### 3) yarn debt:compare
-
-Produit un rapport comparant master à la branche courante en détaillant les fichiers pour lesquels la dette à augmenté, baissé ou stagné.
-
-### 4) yarn debt:walk
-
-Vérifie chaque tag de release, et produit un rapport html complet avec un historique, et divers options de filtrage.
-
-### options
-
-De nombreuse options de filtrages sont disponible en ligne de commande. référez-vous à la [documentation](https://github.com/gael-boyenval/debt-collector) de l'outil pour cela, ou à l'aide du CLI :
-
-```
-yarn debt-collector check --help
-yarn debt-collector compare --help
-yarn debt-collector walk --help
-```
+[Lien vers le projet Portail Pro sur SonarCloud](https://sonarcloud.io/project/overview?id=pass-culture_pass-culture-main)

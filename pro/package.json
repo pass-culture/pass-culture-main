@@ -34,10 +34,6 @@
     "testcafe-chromium:debug": "NODE_ENV=test testcafe --assertion-timeout 1000 --selector-timeout 5000 -s path=testcafe_screenshots,takeOnFails=true 'chromium' --live --sf",
     "storybook": "yarn copy-assets && NODE_PATH=src start-storybook -p 6006",
     "build-storybook": "yarn copy-assets && NODE_PATH=src build-storybook -o docs-build",
-    "debt:check:changed": "debt-collector check -c ./.debt-collector/config.js -s master",
-    "debt:check:all": "debt-collector check -c ./.debt-collector/config.js",
-    "debt:compare": "debt-collector compare -c ./.debt-collector/config.js --revision master --output-html",
-    "debt:walk": "debt-collector walk -c ./.debt-collector/config.js -n 10",
     "new:component": "hygen new component",
     "copy-assets": "cp ./src/icons/*.svg ./public/icons/"
   },
@@ -127,7 +123,6 @@
     "babel-loader": "^9.0.0",
     "babel-plugin-typescript-to-proptypes": "^2.0.0",
     "count-lines-in-file": "^1.1.0",
-    "debt-collector": "gael-boyenval/debt-collector#v1.1.6-alpha",
     "eslint-config-prettier": "^8.4.0",
     "eslint-plugin-import": "^2.26.0",
     "history": "^4.7.2",
