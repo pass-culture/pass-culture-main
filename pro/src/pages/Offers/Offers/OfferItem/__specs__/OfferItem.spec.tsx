@@ -9,6 +9,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
+import { getToday } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferItem, { OfferItemProps } from '../OfferItem'
@@ -30,7 +31,19 @@ const renderOfferItem = (props: OfferItemProps) =>
         </tbody>
       </table>
       <Notification />
-    </>
+    </>,
+    {
+      storeOverrides: {
+        features: {
+          list: [
+            {
+              isActive: true,
+              nameKey: 'WIP_IMPROVE_COLLECTIVE_STATUS',
+            },
+          ],
+        },
+      },
+    }
   )
 
 describe('src | components | pages | Offers | OfferItem', () => {
@@ -549,7 +562,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.audience = Audience.COLLECTIVE
         props.offer.isShowcase = true
         Storage.prototype.getItem = jest.fn(() => 'true')
-
         renderOfferItem(props)
 
         const duplicateButton = screen.getByRole('button', {
@@ -562,6 +574,46 @@ describe('src | components | pages | Offers | OfferItem', () => {
         )
         expect(modalTitle).not.toBeInTheDocument()
       })
+
+      it('should display booking link for sold out offer with pending booking', () => {
+        props.audience = Audience.COLLECTIVE
+        props.offer.status = OfferStatus.SOLD_OUT
+        props.offer.stocks = [
+          { remainingQuantity: 0, beginningDatetime: getToday() },
+        ]
+        props.offer.educationalBooking = {
+          id: 'A1',
+          booking_status: 'PENDING',
+        }
+
+        renderOfferItem(props)
+
+        const bookingLink = screen.getByRole('link', {
+          name: 'Voir la préréservation',
+        })
+
+        expect(bookingLink).toBeInTheDocument()
+      })
+    })
+
+    it('should display booking link for expired offer with booking', () => {
+      props.audience = Audience.COLLECTIVE
+      props.offer.status = OfferStatus.EXPIRED
+      props.offer.stocks = [
+        { remainingQuantity: 0, beginningDatetime: getToday() },
+      ]
+      props.offer.educationalBooking = {
+        id: 'A1',
+        booking_status: 'USED',
+      }
+
+      renderOfferItem(props)
+
+      const bookingLink = screen.getByRole('link', {
+        name: 'Voir la réservation',
+      })
+
+      expect(bookingLink).toBeInTheDocument()
     })
   })
 })
