@@ -9,12 +9,8 @@ import pytest
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offers.factories import OfferFactory
 import pcapi.core.offers.models as offers_models
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
-from pcapi.core.providers.factories import AllocineVenueProviderFactory
-from pcapi.core.providers.factories import AllocineVenueProviderPriceRuleFactory
+import pcapi.core.providers.factories as providers_factories
 from pcapi.local_providers import AllocineStocks
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
@@ -98,7 +94,9 @@ class AllocineStocksTest:
             venue = offerers_factories.VenueFactory(
                 managingOfferer__siren="775671464", name="Cinéma Allociné", siret="77567146400110"
             )
-            allocine_venue_provider = AllocineVenueProviderFactory(venue=venue, venueIdAtOfferProvider=theater_token)
+            allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
+                venue=venue, venueIdAtOfferProvider=theater_token
+            )
 
             # When
             AllocineStocks(allocine_venue_provider)
@@ -138,7 +136,7 @@ class AllocineStocksTest:
                 bookingEmail="toto@example.com",
             )
 
-            allocine_venue_provider = AllocineVenueProviderFactory(venue=venue)
+            allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
 
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
@@ -157,12 +155,12 @@ class AllocineStocksTest:
             assert product_providable_info.new_id_at_provider == "TW92aWU6Mzc4MzI="
             assert product_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
 
-            assert offer_providable_info.type == Offer
+            assert offer_providable_info.type == offers_models.Offer
             assert offer_providable_info.id_at_providers == "TW92aWU6Mzc4MzI=%77567146400110-VF"
             assert offer_providable_info.new_id_at_provider == "TW92aWU6Mzc4MzI=%77567146400110-VF"
             assert offer_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
 
-            assert stock_providable_info.type == Stock
+            assert stock_providable_info.type == offers_models.Stock
             assert stock_providable_info.id_at_providers == "TW92aWU6Mzc4MzI=%77567146400110#DUBBED/2019-10-29T10:30:00"
             assert (
                 stock_providable_info.new_id_at_provider == "TW92aWU6Mzc4MzI=%77567146400110#DUBBED/2019-10-29T10:30:00"
@@ -205,8 +203,10 @@ class UpdateObjectsTest:
             withdrawalDetails="Modalités",
         )
 
-        allocine_venue_provider = AllocineVenueProviderFactory(venue=venue, internalId="PXXXXX", isDuo=False)
-        AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
+            venue=venue, internalId="PXXXXX", isDuo=False
+        )
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
@@ -214,7 +214,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_offer = Offer.query.one()
+        created_offer = offers_models.Offer.query.one()
         created_product = offers_models.Product.query.one()
 
         assert created_offer.bookingEmail == "toto@example.com"
@@ -318,8 +318,8 @@ class UpdateObjectsTest:
             bookingEmail="toto@example.com",
         )
 
-        allocine_venue_provider = AllocineVenueProviderFactory(venue=venue, isDuo=False)
-        AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, isDuo=False)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
@@ -327,7 +327,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_offers = Offer.query.order_by("id").all()
+        created_offers = offers_models.Offer.query.order_by("id").all()
         created_products = offers_models.Product.query.order_by("id").all()
 
         assert len(created_offers) == 2
@@ -402,8 +402,8 @@ class UpdateObjectsTest:
             bookingEmail="toto@example.com",
         )
 
-        allocine_venue_provider = AllocineVenueProviderFactory(venue=venue)
-        AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
@@ -411,7 +411,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_offers = Offer.query.all()
+        created_offers = offers_models.Offer.query.all()
         created_products = offers_models.Product.query.all()
 
         assert len(created_offers) == 1
@@ -464,7 +464,7 @@ class UpdateObjectsTest:
         )
 
         # offer VO
-        OfferFactory(
+        offers_factories.OfferFactory(
             product=product,
             name="Test event",
             subcategoryId=subcategories.SEANCE_CINE.id,
@@ -474,7 +474,7 @@ class UpdateObjectsTest:
         )
 
         # offer VF
-        OfferFactory(
+        offers_factories.OfferFactory(
             product=product,
             name="Test event",
             subcategoryId=subcategories.SEANCE_CINE.id,
@@ -483,8 +483,8 @@ class UpdateObjectsTest:
             venue=venue,
         )
 
-        allocine_venue_provider = AllocineVenueProviderFactory(venue=venue)
-        AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
@@ -492,7 +492,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        existing_offers = Offer.query.order_by("id").all()
+        existing_offers = offers_models.Offer.query.order_by("id").all()
         existing_product = offers_models.Product.query.one()
 
         assert len(existing_offers) == 2
@@ -540,8 +540,8 @@ class UpdateObjectsTest:
             bookingEmail="toto@example.com",
         )
 
-        allocine_venue_provider = AllocineVenueProviderFactory(venue=venue)
-        AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
@@ -549,7 +549,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_offer = Offer.query.one()
+        created_offer = offers_models.Offer.query.one()
         existing_product = offers_models.Product.query.one()
 
         assert existing_product.durationMinutes == 46
@@ -588,8 +588,8 @@ class UpdateObjectsTest:
             bookingEmail="toto@example.com",
         )
 
-        allocine_venue_provider = AllocineVenueProviderFactory(venue=venue, internalId="P12345")
-        AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, internalId="P12345")
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
@@ -597,7 +597,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_offer = Offer.query.one()
+        created_offer = offers_models.Offer.query.one()
         created_product = offers_models.Product.query.one()
 
         assert created_product.durationMinutes == 46
@@ -664,8 +664,8 @@ class UpdateObjectsTest:
 
         venue = offerers_factories.VenueFactory()
 
-        allocine_venue_provider = AllocineVenueProviderFactory(venue=venue)
-        AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
@@ -673,7 +673,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        assert Offer.query.count() == 0
+        assert offers_models.Offer.query.count() == 0
         assert offers_models.Product.query.count() == 0
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
@@ -721,8 +721,8 @@ class UpdateObjectsTest:
             bookingEmail="toto@example.com",
         )
 
-        allocine_venue_provider = AllocineVenueProviderFactory(venue=venue)
-        AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
@@ -780,8 +780,8 @@ class UpdateObjectsTest:
             bookingEmail="toto@example.com",
         )
 
-        allocine_venue_provider = AllocineVenueProviderFactory(venue=venue)
-        AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
@@ -838,8 +838,10 @@ class UpdateObjectsTest:
             bookingEmail="toto@example.com",
         )
 
-        allocine_venue_provider = AllocineVenueProviderFactory(venue=venue, quantity=None)
-        AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider, price=10)
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, quantity=None)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(
+            allocineVenueProvider=allocine_venue_provider, price=10
+        )
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
@@ -848,8 +850,8 @@ class UpdateObjectsTest:
 
         # Then
         created_product = offers_models.Product.query.all()
-        created_offer = Offer.query.all()
-        created_stock = Stock.query.order_by("id").all()
+        created_offer = offers_models.Offer.query.all()
+        created_stock = offers_models.Stock.query.order_by("id").all()
 
         first_stock = created_stock[0]
         second_stock = created_stock[1]
@@ -858,7 +860,7 @@ class UpdateObjectsTest:
         assert len(created_offer) == 1
         assert len(created_stock) == 2
 
-        vf_offer = Offer.query.filter(Offer.name.contains("VF")).one()
+        vf_offer = offers_models.Offer.query.filter(offers_models.Offer.name.contains("VF")).one()
 
         assert vf_offer is not None
         assert vf_offer.name == "Les Contes de la mère poule - VF"
@@ -932,8 +934,10 @@ class UpdateObjectsTest:
             bookingEmail="toto@example.com",
         )
 
-        allocine_venue_provider = AllocineVenueProviderFactory(venue=venue, quantity=None)
-        AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider, price=10)
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, quantity=None)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(
+            allocineVenueProvider=allocine_venue_provider, price=10
+        )
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
@@ -942,8 +946,8 @@ class UpdateObjectsTest:
 
         # Then
         created_product = offers_models.Product.query.all()
-        created_offer = Offer.query.order_by("id").all()
-        created_stock = Stock.query.order_by("id").all()
+        created_offer = offers_models.Offer.query.order_by("id").all()
+        created_stock = offers_models.Stock.query.order_by("id").all()
 
         vo_offer = created_offer[0]
         vf_offer = created_offer[1]
@@ -1037,8 +1041,8 @@ class UpdateObjectsTest:
                 bookingEmail="toto@example.com",
             )
 
-            allocine_venue_provider = AllocineVenueProviderFactory(venue=venue)
-            AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+            allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+            providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
             # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
@@ -1048,8 +1052,8 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            created_stock = Stock.query.order_by(Stock.beginningDatetime).all()
-            vf_offer = Offer.query.first()
+            created_stock = offers_models.Stock.query.order_by(offers_models.Stock.beginningDatetime).all()
+            vf_offer = offers_models.Offer.query.first()
 
             first_stock = created_stock[0]
             second_stock = created_stock[1]
@@ -1102,14 +1106,14 @@ class UpdateObjectsTest:
                 bookingEmail="toto2@example.com",
             )
 
-            venue_provider1 = AllocineVenueProviderFactory(
+            venue_provider1 = providers_factories.AllocineVenueProviderFactory(
                 venue=venue1, internalId="P12345", venueIdAtOfferProvider=theater_token1
             )
-            AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider1)
-            venue_provider2 = AllocineVenueProviderFactory(
+            providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider1)
+            venue_provider2 = providers_factories.AllocineVenueProviderFactory(
                 venue=venue2, internalId="C12345", venueIdAtOfferProvider=theater_token2
             )
-            AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider2)
+            providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider2)
 
             allocine_stocks_provider1 = AllocineStocks(venue_provider1)
             allocine_stocks_provider1.updateObjects()
@@ -1120,14 +1124,14 @@ class UpdateObjectsTest:
 
             # Then
             created_product = offers_models.Product.query.all()
-            created_offer = Offer.query.all()
-            created_stock = Stock.query.all()
+            created_offer = offers_models.Offer.query.all()
+            created_stock = offers_models.Stock.query.all()
 
             assert mock_poster_get_allocine.call_count == 1
             assert len(created_product) == 1
             assert len(created_offer) == 2
-            assert Offer.query.filter(Offer.venueId == venue1.id).count() == 1
-            assert Offer.query.filter(Offer.venueId == venue2.id).count() == 1
+            assert offers_models.Offer.query.filter(offers_models.Offer.venueId == venue1.id).count() == 1
+            assert offers_models.Offer.query.filter(offers_models.Offer.venueId == venue2.id).count() == 1
             assert len(created_stock) == 2
 
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
@@ -1195,13 +1199,15 @@ class UpdateObjectsTest:
                 bookingEmail="toto@example.com",
             )
 
-            allocine_venue_provider = AllocineVenueProviderFactory(venue=venue, quantity=None)
-            AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider, price=10)
+            allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, quantity=None)
+            providers_factories.AllocineVenueProviderPriceRuleFactory(
+                allocineVenueProvider=allocine_venue_provider, price=10
+            )
 
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
-            created_stocks = Stock.query.order_by(Stock.beginningDatetime).all()
+            created_stocks = offers_models.Stock.query.order_by(offers_models.Stock.beginningDatetime).all()
 
             first_stock = created_stocks[0]
             first_stock.fieldsUpdated = ["quantity", "price"]
@@ -1292,13 +1298,13 @@ class UpdateObjectsTest:
                 bookingEmail="toto@example.com",
             )
 
-            allocine_venue_provider = AllocineVenueProviderFactory(venue=venue)
-            AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+            allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+            providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
-            created_offer = Offer.query.one()
+            created_offer = offers_models.Offer.query.one()
             created_offer.isDuo = True
             created_offer.fieldsUpdated = ["isDuo"]
             repository.save(created_offer)
@@ -1308,7 +1314,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            created_offer = Offer.query.one()
+            created_offer = offers_models.Offer.query.one()
             assert created_offer.isDuo is True
 
     class WhenStockHasBeenManuallyDeletedTest:
@@ -1360,13 +1366,13 @@ class UpdateObjectsTest:
                 managingOfferer__siren="775671464", name="Cinema Allocine", siret="77567146400110"
             )
 
-            allocine_venue_provider = AllocineVenueProviderFactory(venue=venue)
-            AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+            allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+            providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
-            created_stock = Stock.query.one()
+            created_stock = offers_models.Stock.query.one()
             created_stock.isSoftDeleted = True
 
             # When
@@ -1374,7 +1380,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            created_stock = Stock.query.one()
+            created_stock = offers_models.Stock.query.one()
             assert created_stock.isSoftDeleted is True
 
     class WhenSettingDefaultValuesAtImportTest:
@@ -1441,15 +1447,15 @@ class UpdateObjectsTest:
                 bookingEmail="toto@example.com",
             )
 
-            allocine_venue_provider = AllocineVenueProviderFactory(venue=venue)
-            AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+            allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+            providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
             # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
             # Then
-            created_offer = Offer.query.one()
+            created_offer = offers_models.Offer.query.one()
             assert created_offer.isDuo
 
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
@@ -1486,15 +1492,15 @@ class UpdateObjectsTest:
                 bookingEmail="toto@example.com",
             )
 
-            allocine_venue_provider = AllocineVenueProviderFactory(venue=venue, quantity=50)
-            AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+            allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, quantity=50)
+            providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
             # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
             # Then
-            stock = Stock.query.one()
+            stock = offers_models.Stock.query.one()
             assert stock.quantity == 50
 
 
@@ -1506,7 +1512,7 @@ class GetObjectThumbTest:
     def test_should_get_movie_poster_if_poster_url_exist(self, mock_poster_get_allocine, mock_call_allocine_api, app):
         # Given
         mock_poster_get_allocine.return_value = "poster_thumb"
-        allocine_venue_provider = AllocineVenueProviderFactory()
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
         allocine_stocks_provider.movie_information = {"poster_url": "http://url.example.com"}
@@ -1527,7 +1533,7 @@ class GetObjectThumbTest:
     ):
         # Given
         mock_poster_get_allocine.return_value = "poster_thumb"
-        allocine_venue_provider = AllocineVenueProviderFactory()
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
         allocine_stocks_provider.movie_information = {}
