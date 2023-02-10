@@ -325,20 +325,20 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
     )
 
 
-def _get_existing_price_categories(
-    offer_id: int, price_category_payload: list[offers_serialize.EditPriceCategoryModel]
-) -> dict[int, models.PriceCategory]:
-    existing_price_categories = (
-        models.PriceCategory.query.filter(
-            models.PriceCategory.offerId == offer_id,
-            models.PriceCategory.id.in_([price_category.id for price_category in price_category_payload]),
+def _get_offer_for_price_categories_upsert(
+    offer_id: int, price_category_edition_payload: list[offers_serialize.EditPriceCategoryModel]
+) -> models.Offer:
+    return (
+        models.Offer.query.options(sqla_orm.joinedload(models.Offer.stocks))
+        .outerjoin(
+            models.Offer.priceCategories.and_(
+                models.PriceCategory.id.in_([price_category.id for price_category in price_category_edition_payload])
+            )
         )
-        .options(sqla_orm.joinedload(models.PriceCategory.priceCategoryLabel))
-        .all()
+        .outerjoin(models.PriceCategoryLabel, models.PriceCategory.priceCategoryLabel)
+        .filter(models.Offer.id == offer_id)
+        .first_or_404()
     )
-    return {
-        existing_price_category.id: existing_price_category for existing_price_category in existing_price_categories
-    }
 
 
 @private_api.route("/offers/<offer_id>/price_categories", methods=["POST"])
@@ -350,8 +350,6 @@ def _get_existing_price_categories(
 def post_price_categories(
     offer_id: int, body: offers_serialize.PriceCategoryBody
 ) -> offers_serialize.GetIndividualOfferResponseModel:
-    offer = models.Offer.query.get_or_404(offer_id)
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     price_categories_to_create = [
         price_category
         for price_category in body.price_categories
@@ -362,16 +360,17 @@ def post_price_categories(
         for price_category in body.price_categories
         if isinstance(price_category, offers_serialize.EditPriceCategoryModel)
     ]
+    offer = _get_offer_for_price_categories_upsert(offer_id, price_categories_to_edit)
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    if price_categories_to_edit:
-        existing_price_categories = _get_existing_price_categories(offer_id, price_categories_to_edit)
+    existing_price_categories_by_id = {category.id: category for category in offer.priceCategories}
 
     with repository.transaction():
         for price_category_to_create in price_categories_to_create:
             offers_api.create_price_category(offer, price_category_to_create.label, price_category_to_create.price)
 
         for price_category_to_edit in price_categories_to_edit:
-            if price_category_to_edit.id not in existing_price_categories:
+            if price_category_to_edit.id not in existing_price_categories_by_id:
                 raise ApiErrors(
                     {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % price_category_to_edit.id]},
                     status_code=400,
@@ -379,7 +378,7 @@ def post_price_categories(
             data = price_category_to_edit.dict(exclude_unset=True)
             offers_api.edit_price_category(
                 offer,
-                price_category=existing_price_categories[data["id"]],
+                price_category=existing_price_categories_by_id[data["id"]],
                 label=data.get("label", offers_api.UNCHANGED),
                 price=data.get("price", offers_api.UNCHANGED),
             )

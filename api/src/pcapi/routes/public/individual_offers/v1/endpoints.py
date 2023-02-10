@@ -734,6 +734,7 @@ def patch_event_price_categories(
         _retrieve_offer_query(event_id)
         .filter(offers_models.Offer.isEvent == True)
         .options(sqla_orm.joinedload(offers_models.Offer.priceCategories))
+        .options(sqla_orm.joinedload(offers_models.Offer.stocks))
         .one_or_none()
     )
     if not event_offer:
