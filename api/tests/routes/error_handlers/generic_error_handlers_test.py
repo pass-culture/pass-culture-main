@@ -1,8 +1,10 @@
 from datetime import datetime
 import io
+import logging
 import pathlib
 
 import pytest
+import sqlalchemy as sqla
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_settings
@@ -63,3 +65,21 @@ class ImageRatioErrorTest:
 
             assert response.status_code == 400
             assert response.json["code"] == "BAD_IMAGE_RATIO"
+
+
+class DatabaseErrorHandlerTest:
+    def test_basics(self, caplog):
+        # `generic_error_handlers` module expects an app to be
+        # available, this is why we import here and not at
+        # module-scope.
+        from pcapi.routes.error_handlers import generic_error_handlers
+
+        error = sqla.exc.DatabaseError(
+            statement="SELECT 1 from unknown_table",
+            params={},
+            orig="whatever",
+        )
+        with caplog.at_level(logging.INFO):
+            _response, code = generic_error_handlers.database_error_handler(error)
+        assert code == 500
+        assert caplog.records[0].extra["sql_query"] == "SELECT 1 from unknown_table"
