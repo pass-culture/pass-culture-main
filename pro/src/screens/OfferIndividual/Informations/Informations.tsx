@@ -17,6 +17,7 @@ import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOf
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
+  OFFER_FORM_HOMEPAGE,
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
@@ -221,6 +222,21 @@ const Informations = ({
     setShouldTrack(!formik.dirty)
   }, [formik.dirty])
 
+  const handlePreviousStep = () => {
+    if (!formik.dirty) {
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        to: OFFER_FORM_HOMEPAGE,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        offerId: offer?.id,
+      })
+    }
+    /* istanbul ignore next: DEBT, TO FIX */
+    navigate('/offre/creation')
+  }
+
   return (
     <FormikProvider value={formik}>
       <FormLayout small>
@@ -237,6 +253,7 @@ const Informations = ({
             offerSubtype={offerSubtype}
           />
           <ActionBar
+            onClickPrevious={handlePreviousStep}
             onClickNext={handleNextStep()}
             onClickSaveDraft={handleNextStep({ saveDraft: true })}
             step={OFFER_WIZARD_STEP_IDS.INFORMATIONS}
