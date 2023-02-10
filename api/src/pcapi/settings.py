@@ -428,6 +428,7 @@ METABASE_DASHBOARD_ID = int(os.environ.get("METABASE_DASHBOARD_ID", 438))
 
 # AMPLITUDE
 AMPLITUDE_API_PUBLIC_KEY = os.environ.get("AMPLITUDE_API_PUBLIC_KEY", "")
+AMPLITUDE_BACKEND = os.environ.get("AMPLITUDE_BACKEND", "pcapi.analytics.amplitude.backends.TestingBackend")
 
 # NATIONAL PARTNERS
 NATIONAL_PARTNERS_EMAIL_DOMAINS = secrets_utils.get("NATIONAL_PARTNERS_EMAIL_DOMAINS", "impossible_email_domain.fr")
