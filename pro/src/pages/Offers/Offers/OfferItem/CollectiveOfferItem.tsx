@@ -70,7 +70,8 @@ const CollectiveOfferItem = ({
       )}
 
       {isImproveCollectiveStatusActive &&
-        offer.status == OfferStatus.SOLD_OUT &&
+        (offer.status == OfferStatus.SOLD_OUT ||
+          offer.status == OfferStatus.EXPIRED) &&
         offer.educationalBooking && (
           <BookingLinkCell
             bookingId={offer.educationalBooking?.id}
