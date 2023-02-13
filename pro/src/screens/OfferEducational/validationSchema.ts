@@ -124,7 +124,7 @@ export const validationSchema = yup.object().shape({
           interventionArea.length === 0
         )
       },
-      then: schema => schema.required(''),
+      then: yup.string().required(),
       otherwise: schema => schema,
     }),
   priceDetail: yup.string().max(MAX_DETAILS_LENGTH),
