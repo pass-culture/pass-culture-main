@@ -1,43 +1,68 @@
 import cn from 'classnames'
 import React from 'react'
+import { useLocation, useParams } from 'react-router-dom'
 
-import CollectiveOfferBreadcrumb, {
-  CollectiveOfferBreadcrumbStep,
-} from 'components/CollectiveOfferBreadcrumb'
+import CollectiveOfferBreadcrumb from 'components/CollectiveOfferBreadcrumb'
 import HelpLink from 'components/HelpLink'
+import useCollectiveOfferRoute from 'hooks/useCollectiveOfferRoute'
+import { getActiveStep } from 'pages/CollectiveOfferRoutes/utils/getActiveStep'
 import { Tag, Title } from 'ui-kit'
 
 import styles from './CollectiveOfferLayout.module.scss'
 
-interface IBreadcrumbProps {
-  activeStep: CollectiveOfferBreadcrumbStep
-  isCreatingOffer: boolean
-  offerId?: string
-}
 interface ICollectiveOfferLayout {
   children: React.ReactNode | React.ReactNode[]
-  breadCrumpProps?: IBreadcrumbProps
-  isTemplate?: boolean
-  title: string
   subTitle?: string
+  isFromTemplate?: boolean
   haveStock?: boolean
 }
 
 const CollectiveOfferLayout = ({
   children,
-  breadCrumpProps,
-  isTemplate = false,
-  title,
   subTitle,
+  isFromTemplate = false,
   haveStock = false,
 }: ICollectiveOfferLayout): JSX.Element => {
+  const location = useLocation()
+  const isSummaryPage = location.pathname.includes('recapitulatif')
+  const { offerId: offerIdFromParams } = useParams<{
+    offerId: string
+  }>()
+  const { isCreation, isTemplate } = useCollectiveOfferRoute(
+    location.pathname,
+    offerIdFromParams
+  )
+  let title = ''
+  if (isCreation) {
+    if (isFromTemplate) {
+      title = 'Créer une offre pour un établissement scolaire'
+    } else {
+      title = 'Créer une nouvelle offre collective'
+    }
+  } else {
+    if (isSummaryPage) {
+      title = 'Récapitulatif'
+    } else {
+      title = 'Éditer une offre collective'
+    }
+  }
+
+  const breadCrumpProps = isSummaryPage
+    ? undefined
+    : {
+        activeStep: getActiveStep(location.pathname),
+        offerId: offerIdFromParams,
+        isCreatingOffer: isCreation,
+      }
   return (
     <div className={styles['eac-layout']}>
       <div className={styles['eac-layout-headings']}>
         {isTemplate && (
           <Tag label="Offre vitrine" className={styles['eac-layout-tag']} />
         )}
+        {}
         <Title level={1}>{title}</Title>
+
         {subTitle && (
           <Title level={4} className={styles['eac-layout-sub-heading']}>
             {subTitle}
