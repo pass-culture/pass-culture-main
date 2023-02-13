@@ -14,8 +14,6 @@ const CollectiveOfferRoutes = (): JSX.Element => {
   const { offerId, isTemplate } =
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
 
-  const formattedOfferId = offerId !== 'creation' ? offerId : undefined
-
   return (
     <Switch>
       <Route
@@ -31,9 +29,14 @@ const CollectiveOfferRoutes = (): JSX.Element => {
           isTemplate={isTemplate}
         />
       </Route>
+      <Route path={['/offre/creation/collectif']}>
+        <CollectiveOfferCreationRoutes
+          offerId={undefined}
+          isTemplate={isTemplate}
+        />
+      </Route>
       <Route
         path={[
-          '/offre/creation/collectif',
           '/offre/collectif/:offerId/creation',
           '/offre/collectif/vitrine/:offerId/creation',
           '/offre/:offerId/collectif/stocks',
@@ -45,7 +48,7 @@ const CollectiveOfferRoutes = (): JSX.Element => {
         ]}
       >
         <CollectiveOfferCreationRoutes
-          offerId={formattedOfferId}
+          offerId={offerId}
           isTemplate={isTemplate}
         />
       </Route>
