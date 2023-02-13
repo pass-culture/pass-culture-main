@@ -20,6 +20,7 @@ import SignUpValidation from '../SignUpValidation'
 jest.mock('repository/pcapi/pcapi')
 jest.mock('hooks/useCurrentUser')
 jest.mock('hooks/useNotification')
+jest.mock('tracking/mediaCampaignsTracking')
 
 describe('src | components | pages | Signup | validation', () => {
   let history: History
