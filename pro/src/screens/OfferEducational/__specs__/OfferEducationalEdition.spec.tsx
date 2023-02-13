@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 
 import { Mode } from 'core/OfferEducational'
 import { RootState } from 'store/reducers'
@@ -85,8 +85,9 @@ describe('screens | OfferEducational', () => {
     const submitButton = await screen.getByRole('button', {
       name: 'Enregistrer',
     })
-
-    inputs.forEach(input => expect(input).toBeDisabled())
+    await waitFor(() => {
+      inputs.forEach(input => expect(input).toBeDisabled())
+    })
     expect(submitButton).toBeDisabled()
   })
 })
