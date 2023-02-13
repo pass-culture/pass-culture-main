@@ -34,7 +34,7 @@ describe('SelectAutocomplete', () => {
     ],
     pluralLabel: 'Départements',
   }
-  const initialValues = { departement: '01' }
+  const initialValues = { departement: '01', 'search-departement': '' }
 
   it('should display field', () => {
     render(
@@ -96,7 +96,10 @@ describe('SelectAutocomplete', () => {
       it('should display the number of selected options', async () => {
         render(
           <Formik
-            initialValues={{ departement: ['01', '02'] }}
+            initialValues={{
+              departement: ['01', '02'],
+              'search-departement': '',
+            }}
             onSubmit={jest.fn()}
           >
             <SelectAutocomplete {...{ ...props, multi: true }} />
@@ -107,7 +110,10 @@ describe('SelectAutocomplete', () => {
       it('should select several options', async () => {
         render(
           <Formik
-            initialValues={{ departement: ['01', '02'] }}
+            initialValues={{
+              departement: ['01', '02'],
+              'search-departement': '',
+            }}
             onSubmit={jest.fn()}
           >
             <SelectAutocomplete {...{ ...props, multi: true }} />
@@ -128,7 +134,10 @@ describe('SelectAutocomplete', () => {
       it('should unselect options', async () => {
         render(
           <Formik
-            initialValues={{ departement: ['01', '02'] }}
+            initialValues={{
+              departement: ['01', '02'],
+              'search-departement': '',
+            }}
             onSubmit={jest.fn()}
           >
             <SelectAutocomplete {...{ ...props, multi: true }} />
@@ -209,7 +218,10 @@ describe('SelectAutocomplete', () => {
     it('should display tags when the user selects options', async () => {
       render(
         <Formik
-          initialValues={{ departement: ['01', '02'] }}
+          initialValues={{
+            departement: ['01', '02'],
+            'search-departement': '',
+          }}
           onSubmit={jest.fn()}
         >
           <SelectAutocomplete {...{ ...props, multi: true }} />
@@ -230,7 +242,10 @@ describe('SelectAutocomplete', () => {
     it('should not display associated tags when tags are hidden and the user selects options', async () => {
       render(
         <Formik
-          initialValues={{ departement: ['01', '02'] }}
+          initialValues={{
+            departement: ['01', '02'],
+            'search-departement': '',
+          }}
           onSubmit={jest.fn()}
         >
           <SelectAutocomplete {...{ ...props, multi: true }} hideTags />
@@ -251,7 +266,10 @@ describe('SelectAutocomplete', () => {
     it('should remove a tag when the user closes the tag', async () => {
       render(
         <Formik
-          initialValues={{ departement: ['01', '02'] }}
+          initialValues={{
+            departement: ['01', '02'],
+            'search-departement': '',
+          }}
           onSubmit={jest.fn()}
         >
           <SelectAutocomplete {...{ ...props, multi: true }} />
@@ -266,7 +284,10 @@ describe('SelectAutocomplete', () => {
     it('should unselect option when the user removes a tag', async () => {
       render(
         <Formik
-          initialValues={{ departement: ['01', '02'] }}
+          initialValues={{
+            departement: ['01', '02'],
+            'search-departement': '',
+          }}
           onSubmit={jest.fn()}
         >
           <SelectAutocomplete {...{ ...props, multi: true }} />
@@ -288,7 +309,7 @@ describe('SelectAutocomplete', () => {
     })
     render(
       <Formik
-        initialValues={{ departement: ['01', '02'] }}
+        initialValues={{ departement: ['01', '02'], 'search-departement': '' }}
         onSubmit={() => {}}
         validationSchema={validationSchema}
       >

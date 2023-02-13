@@ -177,5 +177,7 @@ export const computeInitialValuesFromOffer = (
         : DEFAULT_EAC_FORM_VALUES.priceDetail,
     imageUrl: offer.imageUrl || DEFAULT_EAC_FORM_VALUES.imageUrl,
     imageCredit: offer.imageCredit || DEFAULT_EAC_FORM_VALUES.imageCredit,
+    'search-domains': '',
+    'search-interventionArea': '',
   }
 }
