@@ -299,6 +299,9 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       .spyOn(api, 'postOffer')
       .mockResolvedValue({ id: 'AA' } as GetIndividualOfferResponseModel)
     jest
+      .spyOn(api, 'patchOffer')
+      .mockResolvedValue({ id: 'AA' } as GetIndividualOfferResponseModel)
+    jest
       .spyOn(utils, 'filterCategories')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((c, s, _v) => [c, s])
@@ -650,15 +653,31 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
+    // first tracking on saving draft
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
+    // FIX ME: this test seems strange why is patched called and not post ?
+    expect(api.patchOffer).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'informations',
+        isDraft: true,
+        isEdition: false,
+        offerId: 'AA',
+        to: 'informations',
+        used: 'DraftButtons',
+      }
+    )
     await userEvent.type(nameField, 'new name')
 
     await userEvent.click(screen.getByText('Go outside !'))
     await userEvent.click(screen.getByText('Quitter sans enregistrer'))
 
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    // second tracking when quitting
+    expect(mockLogEvent).toHaveBeenCalledTimes(2)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
+      2,
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
         from: 'informations',

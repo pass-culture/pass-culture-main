@@ -1,8 +1,16 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import fetchMock from 'jest-fetch-mock'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import {
+  CategoriesResponseModel,
+  CollectiveOfferResponseIdModel,
+  EducationalDomainsResponseModel,
+  GetEducationalOfferersResponseModel,
+  GetVenueResponseModel,
+} from 'apiClient/v1'
 import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
@@ -73,6 +81,22 @@ describe('CollectiveOfferSummary', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+    jest.spyOn(api, 'getVenue').mockResolvedValue({} as GetVenueResponseModel)
+    jest.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
+    jest
+      .spyOn(api, 'getCategories')
+      .mockResolvedValue({} as CategoriesResponseModel)
+    jest
+      .spyOn(api, 'listEducationalOfferers')
+      .mockResolvedValue({} as GetEducationalOfferersResponseModel)
+    jest
+      .spyOn(api, 'listEducationalDomains')
+      .mockResolvedValue({} as EducationalDomainsResponseModel)
+
+    jest
+      .spyOn(api, 'createCollectiveOffer')
+      .mockResolvedValue({} as CollectiveOfferResponseIdModel)
+    fetchMock.mockIf(/image.jpg/, 'some response')
   })
 
   it('should display desactive offer option when offer is active and not booked', () => {
