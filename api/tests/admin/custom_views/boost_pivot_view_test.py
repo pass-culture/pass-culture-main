@@ -21,7 +21,7 @@ class CreateBoostPivotTest:
         AdminFactory(email="admin@example.fr")
         venue = offerers_factories.VenueFactory()
         requests_mock.post(
-            "https://test.com/api/vendors/login?ignore_device=False",
+            "https://test.com/api/vendors/login?ignore_device=True",
             json={"message": "Login successful", "token": "jwt-token"},
         )
 
@@ -55,7 +55,7 @@ class CreateBoostPivotTest:
         AdminFactory(email="admin@example.fr")
         venue = offerers_factories.VenueFactory()
         requests_mock.post(
-            "https://test.com/api/vendors/login?ignore_device=False",
+            "https://test.com/api/vendors/login?ignore_device=True",
             status_code=401,
             json={"message": "Login fail"},
         )
@@ -152,7 +152,7 @@ class EditBoostPivotTest:
             token=None,
         )
         requests_mock.post(
-            "https://new-url.com/api/vendors/login?ignore_device=False",
+            "https://new-url.com/api/vendors/login?ignore_device=True",
             json={"message": "Login successful", "token": "jwt-token"},
         )
 
@@ -192,7 +192,7 @@ class EditBoostPivotTest:
             password="password_test",
         )
         requests_mock.post(
-            "https://example.com/api/vendors/login?ignore_device=False",
+            "https://example.com/api/vendors/login?ignore_device=True",
             json={"message": "Login successful", "token": "jwt-token"},
         )
 
@@ -230,7 +230,7 @@ class EditBoostPivotTest:
             password="password_test",
         )
         requests_mock.post(
-            "https://example.com/api/vendors/login?ignore_device=False",
+            "https://example.com/api/vendors/login?ignore_device=True",
             status_code=401,
             json={"message": "Login fail"},
         )
