@@ -1,6 +1,6 @@
 /* istanbul ignore file: DEBT, TO FIX*/
 import React, { useCallback, useEffect, useState } from 'react'
-import { Route, Switch, useLocation } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
@@ -11,14 +11,11 @@ import {
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
-import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import CollectiveOfferEdition from 'pages/CollectiveOfferEdition'
 import CollectiveOfferStockEdition from 'pages/CollectiveOfferStockEdition'
 import CollectiveOfferSummaryEdition from 'pages/CollectiveOfferSummaryEdition'
 import CollectiveOfferVisibility from 'pages/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
 import Spinner from 'ui-kit/Spinner/Spinner'
-
-import { getActiveStep } from '../utils/getActiveStep'
 
 interface CollectiveOfferEditionRoutesProps {
   offerId: string
@@ -29,8 +26,6 @@ const CollectiveOfferEditionRoutes = ({
   offerId,
   isTemplate,
 }: CollectiveOfferEditionRoutesProps): JSX.Element => {
-  const location = useLocation()
-
   const [offer, setOffer] = useState<
     CollectiveOffer | CollectiveOfferTemplate
   >()
@@ -53,23 +48,8 @@ const CollectiveOfferEditionRoutes = ({
     return <Spinner />
   }
 
-  const isSummaryPage = location.pathname.includes('recapitulatif')
-
   return (
-    <CollectiveOfferLayout
-      isTemplate={isTemplate}
-      title={isSummaryPage ? 'Récapitulatif' : 'Éditer une offre collective'}
-      subTitle={offer.name}
-      breadCrumpProps={
-        isSummaryPage
-          ? undefined
-          : {
-              activeStep: getActiveStep(location.pathname),
-              offerId: computeURLCollectiveOfferId(offerId, isTemplate),
-              isCreatingOffer: false,
-            }
-      }
-    >
+    <CollectiveOfferLayout subTitle={offer.name}>
       <Switch>
         <Route path="/offre/:offerId/collectif/edition">
           <PageTitle title="Détails de l'offre" />

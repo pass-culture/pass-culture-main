@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react'
 import { Route, Switch, useLocation } from 'react-router-dom'
 
-import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
 import {
   CollectiveOffer,
@@ -18,8 +17,6 @@ import CollectiveOfferSummaryCreation from 'pages/CollectiveOfferSummaryCreation
 import CollectiveOfferVisibilityCreation from 'pages/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
 import CollectiveOfferSelectionDuplication from 'screens/CollectiveOfferSelectionDuplication'
 import Spinner from 'ui-kit/Spinner/Spinner'
-
-import { getActiveStep } from '../utils/getActiveStep'
 
 interface CollectiveOfferCreationRoutesProps {
   offerId?: string
@@ -57,8 +54,6 @@ const CollectiveOfferCreationRoutes = ({
     loadCollectiveOffer(offerId)
   }, [offerId])
 
-  const activeStep = getActiveStep(location.pathname)
-
   return (
     <Switch>
       <Route
@@ -84,90 +79,71 @@ const CollectiveOfferCreationRoutes = ({
         exact={false}
       >
         <PageTitle title="Détails de l'offre" />
-        <CollectiveOfferLayout
-          title={
-            isCollectiveOffer(offer) && offer?.templateId
-              ? 'Créer une offre pour un établissement scolaire'
-              : 'Créer une nouvelle offre collective'
-          }
-          subTitle={offer?.name}
-          breadCrumpProps={{
-            activeStep: activeStep,
-            isCreatingOffer: true,
-            offerId,
-          }}
-          isTemplate={shouldRenderTemplateOffer}
-          haveStock={isCollectiveOffer(offer) && Boolean(offer.collectiveStock)}
-        >
-          <Switch>
-            <Route path="/offre/creation/collectif/vitrine">
+        <Switch>
+          <Route path="/offre/creation/collectif/vitrine">
+            <CollectiveOfferCreation
+              offer={offer}
+              setOffer={setOffer}
+              isTemplate
+            />
+          </Route>
+          <Route path="/offre/creation/collectif">
+            <CollectiveOfferCreation offer={offer} setOffer={setOffer} />
+          </Route>
+          <Route path="/offre/collectif/:offerId/creation">
+            {offer ? (
+              <CollectiveOfferCreation offer={offer} setOffer={setOffer} />
+            ) : (
+              <Spinner />
+            )}
+          </Route>
+          <Route path="/offre/collectif/vitrine/:offerId/creation">
+            {offer ? (
               <CollectiveOfferCreation
                 offer={offer}
                 setOffer={setOffer}
                 isTemplate
               />
-            </Route>
-            <Route path="/offre/creation/collectif">
-              <CollectiveOfferCreation offer={offer} setOffer={setOffer} />
-            </Route>
-            <Route path="/offre/collectif/:offerId/creation">
-              {offer ? (
-                <CollectiveOfferCreation offer={offer} setOffer={setOffer} />
-              ) : (
-                <Spinner />
-              )}
-            </Route>
-            <Route path="/offre/collectif/vitrine/:offerId/creation">
-              {offer ? (
-                <CollectiveOfferCreation
-                  offer={offer}
-                  setOffer={setOffer}
-                  isTemplate
-                />
-              ) : (
-                <Spinner />
-              )}
-            </Route>
-            <Route path="/offre/:offerId/collectif/stocks">
-              <PageTitle title="Date et prix" />
-              {offer && isCollectiveOffer(offer) ? (
-                <CollectiveOfferStockCreation
-                  offer={offer}
-                  setOffer={setOffer}
-                />
-              ) : (
-                <Spinner />
-              )}
-            </Route>
-            <Route path="/offre/:offerId/collectif/visibilite">
-              <PageTitle title="Visibilité" />
-              {offer && isCollectiveOffer(offer) ? (
-                <CollectiveOfferVisibilityCreation
-                  offer={offer}
-                  setOffer={setOffer}
-                />
-              ) : (
-                <Spinner />
-              )}
-            </Route>
-            <Route
-              path={[
-                '/offre/:offerId/collectif/creation/recapitulatif',
-                '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
-              ]}
-            >
-              <PageTitle title="Récapitulatif" />
-              {offer ? (
-                <CollectiveOfferSummaryCreation
-                  offer={offer}
-                  setOffer={setOffer}
-                />
-              ) : (
-                <Spinner />
-              )}
-            </Route>
-          </Switch>
-        </CollectiveOfferLayout>
+            ) : (
+              <Spinner />
+            )}
+          </Route>
+          <Route path="/offre/:offerId/collectif/stocks">
+            <PageTitle title="Date et prix" />
+            {offer && isCollectiveOffer(offer) ? (
+              <CollectiveOfferStockCreation offer={offer} setOffer={setOffer} />
+            ) : (
+              <Spinner />
+            )}
+          </Route>
+          <Route path="/offre/:offerId/collectif/visibilite">
+            <PageTitle title="Visibilité" />
+            {offer && isCollectiveOffer(offer) ? (
+              <CollectiveOfferVisibilityCreation
+                offer={offer}
+                setOffer={setOffer}
+              />
+            ) : (
+              <Spinner />
+            )}
+          </Route>
+          <Route
+            path={[
+              '/offre/:offerId/collectif/creation/recapitulatif',
+              '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
+            ]}
+          >
+            <PageTitle title="Récapitulatif" />
+            {offer ? (
+              <CollectiveOfferSummaryCreation
+                offer={offer}
+                setOffer={setOffer}
+              />
+            ) : (
+              <Spinner />
+            )}
+          </Route>
+        </Switch>
       </Route>
     </Switch>
   )

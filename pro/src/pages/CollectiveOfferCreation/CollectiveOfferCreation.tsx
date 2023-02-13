@@ -1,11 +1,13 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
+import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   Mode,
+  isCollectiveOffer,
 } from 'core/OfferEducational'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
@@ -36,7 +38,10 @@ const CollectiveOfferCreation = ({
   }
 
   return (
-    <>
+    <CollectiveOfferLayout
+      subTitle={offer?.name}
+      isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+    >
       <OfferEducationalScreen
         categories={offerEducationalFormData.categories}
         userOfferers={offerEducationalFormData.offerers}
@@ -48,7 +53,7 @@ const CollectiveOfferCreation = ({
         isTemplate={isTemplate}
       />
       <RouteLeavingGuardCollectiveOfferCreation />
-    </>
+    </CollectiveOfferLayout>
   )
 }
 
