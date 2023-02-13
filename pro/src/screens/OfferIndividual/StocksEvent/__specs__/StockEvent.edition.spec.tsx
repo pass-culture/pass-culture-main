@@ -9,6 +9,7 @@ import {
   GetIndividualOfferResponseModel,
   OfferStatus,
   StockResponseModel,
+  StocksResponseModel,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
@@ -244,7 +245,7 @@ describe('screens:StocksEvent:Edition', () => {
     jest
       .spyOn(api, 'listOfferersNames')
       .mockResolvedValue({ offerersNames: [] })
-    jest.spyOn(api, 'upsertStocks')
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({} as StocksResponseModel)
     jest.spyOn(api, 'listOffers').mockResolvedValue([
       {
         id: 'id',

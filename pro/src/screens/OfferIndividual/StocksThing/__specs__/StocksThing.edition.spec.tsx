@@ -287,7 +287,7 @@ describe('screens:StocksThing', () => {
         venueId: 'venueid',
       },
     ])
-    jest.spyOn(api, 'upsertStocks')
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
   })
 
   it('should allow user to delete a stock', async () => {

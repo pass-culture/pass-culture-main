@@ -101,7 +101,7 @@ describe('StockEventForm:validationSchema', () => {
     expect(errorPrice).toHaveTextContent('Veuillez renseigner un prix')
   })
 
-  it('shoudld validate required fields', async () => {
+  it('should validate required fields', async () => {
     renderStockEventForm(undefined, true)
 
     await userEvent.click(screen.getByRole('button', { name: 'Submit' }))
