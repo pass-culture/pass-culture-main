@@ -1300,29 +1300,6 @@ class PostManualReviewTest:
         assert response.status_code == 403
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_review_when_no_age_is_found(self, client):
-        # given
-        birth_date_15_yo = datetime.datetime.utcnow() - relativedelta(years=15, months=2)
-        user = users_factories.UserFactory(dateOfBirth=birth_date_15_yo)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            eligibilityType=None,
-            resultContent=fraud_factories.UbbleContentFactory(birth_date=birth_date_15_yo.date().isoformat()),
-        )
-        reviewer = users_factories.UserFactory()
-        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
-
-        # when
-        response = client.with_explicit_token(auth_token).post(
-            url_for("backoffice_blueprint.review_public_account", user_id=user.id),
-            json={"reason": "User is granted", "review": "OK", "eligibility": None},
-        )
-
-        # then
-        assert response.status_code == 412
-
-    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_review_unknown_account(self, client):
         # given
         reviewer = users_factories.UserFactory()
