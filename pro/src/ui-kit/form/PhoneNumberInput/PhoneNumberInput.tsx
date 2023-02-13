@@ -28,7 +28,7 @@ const PhoneNumberInput = ({
   const [countryCode, setCountryCode] = useState<CountryCode>(
     PHONE_CODE_COUNTRY_CODE_OPTIONS[0].value
   )
-  const [phoneInutValue, setPhoneInputValue] = useState<string>()
+  const [phoneInutValue, setPhoneInputValue] = useState<string>('')
 
   const validatePhoneNumber = (
     phoneNumberInputValue: string
@@ -75,7 +75,7 @@ const PhoneNumberInput = ({
       helpers.setTouched(true, false)
     }
 
-    const phoneNumberInputValue = validatePhoneNumber(event.target.value)
+    const phoneNumberInputValue = validatePhoneNumber(event.target.value) ?? ''
     setPhoneInputValue(phoneNumberInputValue)
   }
 
