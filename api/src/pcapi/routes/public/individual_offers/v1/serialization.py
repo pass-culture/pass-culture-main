@@ -430,7 +430,10 @@ class DecimalPriceGetterDict(GetterDict):
 
 
 class PriceCategoryCreation(serialization.ConfiguredBaseModel):
-    label: str = PRICE_CATEGORY_LABEL_FIELD
+    if typing.TYPE_CHECKING:
+        label: str = PRICE_CATEGORY_LABEL_FIELD
+    else:
+        label: pydantic.constr(min_length=1, max_length=50) = PRICE_CATEGORY_LABEL_FIELD
     price: pydantic.StrictInt = PRICE_FIELD
 
     @pydantic.validator("price")
@@ -489,7 +492,10 @@ class ProductOfferEdition(OfferEditionBase):
 
 
 class PriceCategoryEdition(serialization.ConfiguredBaseModel):
-    label: str | None = PRICE_CATEGORY_LABEL_FIELD
+    if typing.TYPE_CHECKING:
+        label: str = PRICE_CATEGORY_LABEL_FIELD
+    else:
+        label: pydantic.constr(min_length=1, max_length=50) | None = PRICE_CATEGORY_LABEL_FIELD
     price: pydantic.StrictInt | None = PRICE_FIELD
 
     @pydantic.validator("price")
