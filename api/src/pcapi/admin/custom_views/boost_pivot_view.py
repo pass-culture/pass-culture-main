@@ -89,7 +89,7 @@ class BoostPivotView(BaseAdminView):
 
     def check_if_api_call_is_ok(self, boost_cinema_details: providers_models.BoostCinemaDetails) -> None:
         try:
-            boost.login(boost_cinema_details)
+            boost.login(boost_cinema_details, ignore_device=True)
             flask.flash("Connexion à l'API OK.")
             return
         except boost_exceptions.BoostAPIException as exc:
