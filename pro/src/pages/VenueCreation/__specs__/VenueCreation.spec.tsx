@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Route } from 'react-router'
 
@@ -47,6 +48,10 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
+Element.prototype.scrollIntoView = jest.fn()
+
+window.matchMedia = jest.fn().mockReturnValue({ matches: true })
+
 describe('route VenueCreation', () => {
   let offerer: GetOffererResponseModel
 
@@ -72,14 +77,14 @@ describe('route VenueCreation', () => {
     await renderVenueCreation(offerer.id)
     // Then
     const homeNavBarButton = await screen.findByText('Accueil')
-    await homeNavBarButton.click()
+    await userEvent.click(homeNavBarButton)
     const modal = await screen.findByText(
       'Voulez-vous quitter la création de lieu ?'
     )
     expect(modal).toBeInTheDocument()
 
     const cancelModalButton = await screen.findByText('Annuler')
-    await cancelModalButton.click()
+    await userEvent.click(cancelModalButton)
     expect(modal).not.toBeInTheDocument()
   })
   it('should display modal when user cancel venue creation', async () => {
@@ -87,14 +92,14 @@ describe('route VenueCreation', () => {
     await renderVenueCreation(offerer.id)
     // Then
     const cancelFormButton = await screen.findByText('Annuler et quitter')
-    await cancelFormButton.click()
+    await userEvent.click(cancelFormButton)
     const modal = await screen.findByText(
       'Voulez-vous quitter la création de lieu ?'
     )
     expect(modal).toBeInTheDocument()
 
     const cancelButton = await screen.findByText('Annuler')
-    await cancelButton.click()
+    await userEvent.click(cancelButton)
     expect(modal).not.toBeInTheDocument()
   })
   it('should not display modal when user submit venue creation', async () => {
@@ -102,7 +107,7 @@ describe('route VenueCreation', () => {
     await renderVenueCreation(offerer.id)
     // Then
     const homeNavBarButton = await screen.findByText('Enregistrer et continuer')
-    await homeNavBarButton.click()
+    await userEvent.click(homeNavBarButton)
     const modal = await screen.queryByText(
       'Voulez-vous quitter la création de lieu ?'
     )
