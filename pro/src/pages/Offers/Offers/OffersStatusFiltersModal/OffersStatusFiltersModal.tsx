@@ -116,6 +116,7 @@ export const OffersStatusFiltersModal = ({
             name="status"
             onChange={handleStatusFilterChange}
             value={value}
+            key={value}
           />
         ))}
       </>
