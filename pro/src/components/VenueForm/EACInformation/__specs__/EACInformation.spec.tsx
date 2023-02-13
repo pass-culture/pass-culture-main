@@ -1,6 +1,8 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
+import { api } from 'apiClient/api'
+import { AdageCulturalPartnersResponseModel } from 'apiClient/v1'
 import { IVenue } from 'core/Venue'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -18,6 +20,12 @@ const renderEACInformation = async ({
   )
 
 describe('components | EACInformation', () => {
+  beforeEach(() => {
+    jest
+      .spyOn(api, 'getEducationalPartners')
+      .mockResolvedValue({} as AdageCulturalPartnersResponseModel)
+  })
+
   it('should not be able to access information page when creating a venue', async () => {
     await renderEACInformation({
       isCreatingVenue: true,
