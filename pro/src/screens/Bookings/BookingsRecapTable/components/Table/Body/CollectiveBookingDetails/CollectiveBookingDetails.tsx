@@ -2,7 +2,7 @@ import React from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
-import { InfoPhoneIcon, LocationIcon, MailIcon, User2Icon } from 'icons'
+import Icon from 'ui-kit/Icon/Icon'
 
 import CollectiveActionButtons from '../CollectiveActionButtons'
 import CollectiveTimeLine from '../CollectiveTimeLine'
@@ -32,46 +32,67 @@ const CollectiveBookingDetails = ({
           />
         </div>
         <div className={styles['details-column']}>
-          <div className={styles['contact-details']}>
-            <div className={styles['contact-details-title']}>
-              Contact de l’établissement scolaire
-            </div>
-
-            <div className={styles['contact-detail']}>
-              <div className={styles['contact-detail-icon']}>
-                <LocationIcon />
-              </div>
-              {`${educationalInstitution.institutionType} ${educationalInstitution.name}`.trim()}
-            </div>
-
-            <div className={styles['contact-detail']}>
-              <div className={styles['contact-detail-icon']}>
-                <InfoPhoneIcon />
-              </div>
-              {educationalInstitution.phoneNumber}
-            </div>
-
-            <div className={styles['contact-detail']}>
-              <div className={styles['contact-detail-icon']}>
-                <User2Icon />
-              </div>
-              {`${educationalRedactor.firstName} ${educationalRedactor.lastName}`}
-            </div>
-
-            <div className={styles['contact-detail']}>
-              <div className={styles['contact-detail-icon']}>
-                <MailIcon />
-              </div>
-              <a
-                className={styles['link-ternary']}
-                href={`mailto:${educationalRedactor.email}`}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {educationalRedactor.email}
-              </a>
-            </div>
+          <div className={styles['contact-details-title']}>
+            Contact de l’établissement scolaire
           </div>
+          <dl className={styles['contact-details']}>
+            <div className={styles['contact-detail']}>
+              <dt className={styles['contact-detail-location-icon']}>
+                <Icon
+                  className={styles['contact-detail-icon']}
+                  alt="Adresse de l’établissement"
+                  svg="location"
+                />
+              </dt>
+              <dd>
+                {`${educationalInstitution.institutionType} ${educationalInstitution.name}`.trim()}
+                <br />
+                {`${educationalInstitution.postalCode} ${educationalInstitution.city}`}
+              </dd>
+            </div>
+
+            <div className={styles['contact-detail']}>
+              <dt>
+                <Icon
+                  className={styles['contact-detail-icon']}
+                  alt="Téléphone"
+                  svg="info-phone"
+                />
+              </dt>
+              <dd>{educationalInstitution.phoneNumber}</dd>
+            </div>
+
+            <div className={styles['contact-detail']}>
+              <dt>
+                <Icon
+                  className={styles['contact-detail-icon']}
+                  alt="Nom"
+                  svg="ico-user"
+                />
+              </dt>
+              <dd>{`${educationalRedactor.firstName} ${educationalRedactor.lastName}`}</dd>
+            </div>
+
+            <div className={styles['contact-detail']}>
+              <dt>
+                <Icon
+                  className={styles['contact-detail-icon']}
+                  alt="E-Mail"
+                  svg="ico-mail"
+                />
+              </dt>
+              <dd>
+                <a
+                  className={styles['link-ternary']}
+                  href={`mailto:${educationalRedactor.email}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {educationalRedactor.email}
+                </a>
+              </dd>
+            </div>
+          </dl>
         </div>
       </div>
       <CollectiveActionButtons
