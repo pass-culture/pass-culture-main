@@ -97,7 +97,9 @@ def update_venue(
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
 
     if contact_data:
-        venue_snapshot.trace_update(contact_data.dict(), target=venue.contact, field_name_template="contact.{}")
+        # target must not be None, otherwise contact_data fields will be compared to fields in Venue, which do not exist
+        target = venue.contact if venue.contact is not None else offerers_models.VenueContact()
+        venue_snapshot.trace_update(contact_data.dict(), target=target, field_name_template="contact.{}")
         upsert_venue_contact(venue, contact_data)
 
     if not modifications:
