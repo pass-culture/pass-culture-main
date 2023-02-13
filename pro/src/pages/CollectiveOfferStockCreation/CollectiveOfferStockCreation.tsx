@@ -1,11 +1,13 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
+import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   CollectiveOffer,
   EducationalOfferType,
   extractInitialStockValues,
+  isCollectiveOffer,
   Mode,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
@@ -96,7 +98,10 @@ const CollectiveOfferStockCreation = ({
   }
 
   return (
-    <>
+    <CollectiveOfferLayout
+      subTitle={offer?.name}
+      isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+    >
       <OfferEducationalStockScreen
         initialValues={initialValues}
         mode={Mode.CREATION}
@@ -104,7 +109,7 @@ const CollectiveOfferStockCreation = ({
         onSubmit={handleSubmitStock}
       />
       <RouteLeavingGuardCollectiveOfferCreation />
-    </>
+    </CollectiveOfferLayout>
   )
 }
 

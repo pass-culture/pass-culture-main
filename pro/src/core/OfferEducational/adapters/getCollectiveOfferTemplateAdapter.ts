@@ -3,7 +3,7 @@ import { api } from 'apiClient/api'
 import { CollectiveOfferTemplate } from '../types'
 
 type IPayloadFailure = null
-type GetCollectiveOfferTemplateAdapter = Adapter<
+export type GetCollectiveOfferTemplateAdapter = Adapter<
   string,
   CollectiveOfferTemplate,
   IPayloadFailure

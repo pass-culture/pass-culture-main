@@ -1,10 +1,12 @@
 import React from 'react'
 
+import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   getEducationalCategoriesAdapter,
   CollectiveOffer,
   CollectiveOfferTemplate,
+  isCollectiveOffer,
 } from 'core/OfferEducational'
 import { useAdapter } from 'hooks'
 import useNotification from 'hooks/useNotification'
@@ -36,14 +38,17 @@ const CollectiveOfferSummaryCreation = ({
   return isLoading ? (
     <Spinner />
   ) : (
-    <>
+    <CollectiveOfferLayout
+      subTitle={offer?.name}
+      isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+    >
       <CollectiveOfferSummaryCreationScreen
         offer={offer}
         categories={categories}
         setOffer={setOffer}
       />
       <RouteLeavingGuardCollectiveOfferCreation />
-    </>
+    </CollectiveOfferLayout>
   )
 }
 

@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   CollectiveOffer,
   DEFAULT_VISIBILITY_FORM_VALUES,
   Mode,
+  isCollectiveOffer,
 } from 'core/OfferEducational'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
@@ -54,7 +56,10 @@ const CollectiveOfferVisibility = ({
     ? extractInitialVisibilityValues(offer.institution)
     : DEFAULT_VISIBILITY_FORM_VALUES
   return (
-    <>
+    <CollectiveOfferLayout
+      subTitle={offer?.name}
+      isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+    >
       <CollectiveOfferVisibilityScreen
         mode={Mode.CREATION}
         patchInstitution={patchEducationalInstitutionAdapter}
@@ -64,7 +69,7 @@ const CollectiveOfferVisibility = ({
         isLoadingInstitutions={isLoadingInstitutions}
       />
       <RouteLeavingGuardCollectiveOfferCreation />
-    </>
+    </CollectiveOfferLayout>
   )
 }
 
