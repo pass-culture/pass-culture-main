@@ -507,7 +507,7 @@ class CreatePriceCategoryModel(BaseModel):
     if typing.TYPE_CHECKING:
         label: str
     else:
-        label: constr(min_length=1, max_length=20)
+        label: constr(min_length=1, max_length=50)
     price: decimal.Decimal
 
     class Config:
@@ -519,7 +519,7 @@ class EditPriceCategoryModel(BaseModel):
     if typing.TYPE_CHECKING:
         label: str | None
     else:
-        label: constr(min_length=1, max_length=20) | None
+        label: constr(min_length=1, max_length=50) | None
     price: decimal.Decimal | None
 
     class Config:
