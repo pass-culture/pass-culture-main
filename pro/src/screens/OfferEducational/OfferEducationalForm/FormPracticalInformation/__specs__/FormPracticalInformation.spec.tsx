@@ -33,7 +33,11 @@ describe('FormPracticalInformation', () => {
   let props: IFormPracticalInformationProps
   let initialValues: Pick<
     IOfferEducationalFormValues,
-    'eventAddress' | 'priceDetail' | 'interventionArea'
+    | 'eventAddress'
+    | 'priceDetail'
+    | 'interventionArea'
+    | 'search-domains'
+    | 'search-interventionArea'
   >
 
   beforeAll(() => {
@@ -68,6 +72,8 @@ describe('FormPracticalInformation', () => {
         otherAddress: '',
       },
       interventionArea: [],
+      'search-domains': '',
+      'search-interventionArea': '',
     }
   })
 
