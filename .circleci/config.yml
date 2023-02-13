@@ -271,6 +271,8 @@ commands:
           command: git clone git@github.com:pass-culture/pass-culture-deployment.git ~/pass-culture-deployment
 
   setup_sentry:
+    # FIXME (dbaty, 2023-02-13): when this block is deleted, remove SENTRY_AUTH_TOKEN
+    # environment variable from CircleCI project settings.
     description: Setup sentry credentials for Backoffice
     steps:
       - run:
