@@ -8,7 +8,15 @@ import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveO
 import CollectiveOfferStatusCell from '..'
 
 const renderCollectiveStatusLabel = (offer: Offer) => {
-  return render(<CollectiveOfferStatusCell offer={offer} />)
+  return render(
+    <table>
+      <tbody>
+        <tr>
+          <CollectiveOfferStatusCell offer={offer} />
+        </tr>
+      </tbody>
+    </table>
+  )
 }
 
 interface ITestCaseProps {
