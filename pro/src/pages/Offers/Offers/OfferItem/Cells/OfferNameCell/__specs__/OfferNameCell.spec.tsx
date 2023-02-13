@@ -10,9 +10,18 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import OfferNameCell, { OfferNameCellProps } from '../OfferNameCell'
 
 const renderOfferNameCell = (props: OfferNameCellProps) =>
-  renderWithProviders(<OfferNameCell {...props} />, {
-    initialRouterEntries: ['/offres'],
-  })
+  renderWithProviders(
+    <table>
+      <tbody>
+        <tr>
+          <OfferNameCell {...props} />
+        </tr>
+      </tbody>
+    </table>,
+    {
+      initialRouterEntries: ['/offres'],
+    }
+  )
 
 jest.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
