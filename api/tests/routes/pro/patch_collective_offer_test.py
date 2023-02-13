@@ -205,6 +205,25 @@ class Returns200Test:
         assert len(offer.students) == 1
         assert offer.students[0].value == "Collège - 6e"
 
+    @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=False)
+    def test_patch_collective_offer_update_student_level_college_6_no_ff(self, client):
+        # Given
+        offer = CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        # When
+        data = {"students": ["Collège - 6e", "Collège - 4e"]}
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 200
+        assert len(offer.students) == 1
+        assert offer.students[0].value == "Collège - 4e"
+
 
 class Returns400Test:
     def test_patch_non_approved_offer_fails(self, app, client):
@@ -373,22 +392,6 @@ class Returns400Test:
         data = {
             "description": None,
         }
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
-
-        # Then
-        assert response.status_code == 400
-
-    def test_patch_collective_offer_update_student_level_college_6(self, client):
-        # Given
-        offer = CollectiveOfferFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-        # When
-        data = {"students": ["Collège - 6e"]}
         response = client.with_session_auth("user@example.com").patch(
             f"/collective/offers/{humanize(offer.id)}", json=data
         )
