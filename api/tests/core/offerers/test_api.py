@@ -335,6 +335,57 @@ class EditVenueTest:
 
         assert venue.publicName == "Nouveau nom"
 
+    def test_no_venue_contact_no_modification(self, app) -> None:
+        # given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(contact=None)
+
+        # when
+        venue_data = {
+            "departementCode": venue.departementCode,
+            "city": venue.city,
+        }
+        # same behavior as when update_venue() is called from PC Pro API
+        contact_data = serialize_base.VenueContactModel(email=None, phone_number=None, social_medias=None, website=None)
+
+        offerers_api.update_venue(venue, contact_data=contact_data, author=user, **venue_data)
+
+        # then
+        # nothing has changed => nothing to save nor update
+        assert history_models.ActionHistory.query.count() == 0
+
+    def test_no_venue_contact_add_contact(self, app) -> None:
+        # given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(contact=None)
+
+        # when
+        venue_data = {
+            "departementCode": venue.departementCode,
+            "city": venue.city,
+        }
+        # same behavior as when update_venue() is called from PC Pro API
+        contact_data = serialize_base.VenueContactModel(
+            email="added@venue.com", phone_number=None, social_medias=None, website="https://www.venue.com"
+        )
+
+        offerers_api.update_venue(venue, contact_data=contact_data, author=user, **venue_data)
+
+        # then
+        assert venue.contact
+        assert venue.contact.email == contact_data.email
+        assert venue.contact.website == contact_data.website
+
+        # contact info added => an action should be logged in history
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.authorUserId == user.id
+        assert action.venueId == venue.id
+        assert action.extraData["modified_info"] == {
+            "contact.email": {"new_info": contact_data.email, "old_info": "None"},
+            "contact.website": {"new_info": contact_data.website, "old_info": "None"},
+        }
+
 
 class EditVenueContactTest:
     def test_create_venue_contact(self, app):
