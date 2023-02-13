@@ -414,9 +414,14 @@ class PostCollectiveOfferBodyModel(BaseModel):
     def validate_students(cls, students: list[StudentLevels]) -> list[StudentLevels]:
         # FIXME (rpa - 06/02/23) remove this validator when removing the Feature Flag
         if not FeatureToggle.WIP_ADD_CLG_6_5_COLLECTIVE_OFFER.is_active():
+            results = []
             for student in students:
                 if student in (StudentLevels.COLLEGE5, StudentLevels.COLLEGE6):
-                    raise ValueError("Educational offers are not open to COLLEGE5 or COLLEGE6 yet.")
+                    continue
+                results.append(student)
+            if not results:
+                raise ValueError("Les offres EAC ne sont pas encore ouvertes aux 6eme et 5eme.")
+            return results
         return students
 
     @root_validator
@@ -512,9 +517,14 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     def validate_students(cls, students: list[StudentLevels]) -> list[StudentLevels]:
         # FIXME (rpa - 06/02/23) remove this validator when removing the Feature Flag
         if students and not FeatureToggle.WIP_ADD_CLG_6_5_COLLECTIVE_OFFER.is_active():
+            results = []
             for student in students:
                 if student in (StudentLevels.COLLEGE5, StudentLevels.COLLEGE6):
-                    raise ValueError("Educational offers are not open to COLLEGE5 or COLLEGE6 yet.")
+                    continue
+                results.append(student)
+            if not results:
+                raise ValueError("Les offres EAC ne sont pas encore ouvertes aux 6eme et 5eme.")
+            return results
         return students
 
     @validator("description", allow_reuse=True)
