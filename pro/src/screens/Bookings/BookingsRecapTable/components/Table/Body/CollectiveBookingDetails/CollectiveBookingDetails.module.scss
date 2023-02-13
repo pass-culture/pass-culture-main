@@ -38,17 +38,17 @@
 .contact-detail {
   display: flex;
   gap: rem.torem(8px);
+  align-items: center;
 
   &-icon {
-    display: inline-flex;
-    align-self: center;
-    align-items: center;
+    display: flex;
     height: rem.torem(16px);
     width: rem.torem(16px);
+    color: colors.$black;
+  }
 
-    path {
-      fill: colors.$black;
-    }
+  &-location-icon {
+    align-self: flex-start;
   }
 
   .link-ternary {
