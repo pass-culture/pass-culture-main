@@ -500,6 +500,28 @@ class CreateBeneficiaryTest:
         assert trigger_event_log["event_name"] == "user_deposit_activated"
         assert trigger_event_log["event_payload"] == {"deposit_type": "GRANT_18", "deposit_amount": 300}
 
+    @freeze_time("2020-03-01")
+    def test_15yo_that_started_at_14_is_activated(self):
+        fifteen_years_and_one_week_ago = datetime.datetime(2005, 2, 22)
+        one_month_ago = datetime.datetime(2020, 2, 1)
+
+        fifteen_year_old = users_factories.UserFactory(validatedBirthDate=fifteen_years_and_one_week_ago)
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=fifteen_year_old,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=one_month_ago),
+        )
+
+        subscription_api.activate_beneficiary_for_eligibility(
+            fifteen_year_old, "test", users_models.EligibilityType.UNDERAGE
+        )
+
+        assert fifteen_year_old.is_beneficiary
+        assert fifteen_year_old.deposit.amount == 20
+
 
 class FulfillBeneficiaryDataTest:
     AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=18, months=4)

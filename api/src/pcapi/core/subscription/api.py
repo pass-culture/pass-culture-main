@@ -40,10 +40,20 @@ USER_PROFILING_BLOCKING_STATUS = fraud_models.FraudCheckStatus.KO
 
 
 def _get_age_at_first_registration(user: users_models.User, eligibility: users_models.EligibilityType) -> int | None:
-    first_registration_date = get_first_registration_date(user, user.birth_date, eligibility)
-    if not first_registration_date or not user.birth_date:
+    if not user.birth_date:
         return None
-    return users_utils.get_age_at_date(user.birth_date, first_registration_date)
+
+    first_registration_date = get_first_registration_date(user, user.birth_date, eligibility)
+    if not first_registration_date:
+        return user.age
+
+    age_at_registration = users_utils.get_age_at_date(user.birth_date, first_registration_date)
+    if (
+        eligibility == users_models.EligibilityType.UNDERAGE
+        and age_at_registration not in users_constants.ELIGIBILITY_UNDERAGE_RANGE
+    ):
+        return None
+    return age_at_registration
 
 
 def activate_beneficiary_for_eligibility(
