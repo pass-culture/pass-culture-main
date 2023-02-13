@@ -93,13 +93,10 @@ const FilterByOmniSearch = ({
         disabled={isDisabled}
         onBlur={handleOmniSearchCriteriaChange}
         onChange={handleOmniSearchCriteriaChange}
+        value={selectedOmniSearchCriteria}
       >
         {omnisearchFilters.map(selectOption => (
-          <option
-            key={selectOption.id}
-            selected={selectOption.id === selectedOmniSearchCriteria}
-            value={selectOption.id}
-          >
+          <option key={selectOption.id} value={selectOption.id}>
             {selectOption.selectOptionText}
           </option>
         ))}
