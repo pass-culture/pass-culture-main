@@ -18,7 +18,7 @@ import {
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual } from 'core/Offers/types'
+import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
@@ -206,7 +206,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         isSelectable: true,
       },
     ]
-    const subCategories = [
+    const subCategories: IOfferSubCategory[] = [
       {
         id: 'virtual',
         categoryId: 'A',
@@ -215,6 +215,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         conditionalFields: [],
         canBeDuo: false,
         canBeEducational: false,
+        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
@@ -227,6 +228,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         conditionalFields: [],
         canBeDuo: true,
         canBeEducational: false,
+        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
@@ -239,6 +241,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         conditionalFields: [],
         canBeDuo: true,
         canBeEducational: false,
+        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,

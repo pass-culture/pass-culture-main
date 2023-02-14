@@ -174,6 +174,7 @@ export const individualOfferSubCategoryFactory = (
   conditionalFields: [],
   canBeDuo: false,
   canBeEducational: false,
+  canBeWithdrawable: false,
   onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
   reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
   isSelectable: true,

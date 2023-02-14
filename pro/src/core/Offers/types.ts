@@ -91,6 +91,7 @@ export interface IOfferSubCategory {
   onlineOfflinePlatform: CATEGORY_STATUS
   reimbursementRule: string
   isSelectable: boolean
+  canBeWithdrawable: boolean
 }
 
 export interface IOfferIndividualStock {

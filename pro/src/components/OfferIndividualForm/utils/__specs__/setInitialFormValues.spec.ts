@@ -87,6 +87,7 @@ describe('setFormReadOnlyFields', () => {
         conditionalFields: ['stageDirector', 'speaker', 'author', 'performer'],
         canBeDuo: true,
         canBeEducational: false,
+        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
         reimbursementRule: 'sub-category reimbursementRule',
         isSelectable: true,

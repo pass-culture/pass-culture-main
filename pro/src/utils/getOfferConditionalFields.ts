@@ -1,4 +1,3 @@
-import { WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE } from 'core/Offers'
 import { IOfferSubCategory } from 'core/Offers/types'
 
 interface IGetOfferConditionalFieldsProps {
@@ -44,10 +43,7 @@ export const getOfferConditionalFields = ({
     offerConditionalFields.push('url')
   }
 
-  if (
-    offerSubCategory &&
-    WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(offerSubCategory.id)
-  ) {
+  if (offerSubCategory?.canBeWithdrawable) {
     offerConditionalFields.push('withdrawalType')
     offerConditionalFields.push('withdrawalDelay')
   }
