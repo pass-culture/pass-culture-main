@@ -3,7 +3,7 @@ import type { Row } from 'react-table'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
-import { Events } from 'core/FirebaseEvents/constants'
+import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { RowExpandedContext } from 'screens/Bookings/BookingsRecapTable/BookingsRecapTable'
@@ -52,7 +52,9 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
   }, [row.isExpanded])
 
   const onRowClick = () => {
-    logEvent?.(Events.CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS)
+    logEvent?.(
+      CollectiveBookingsEvents.CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS
+    )
     row.toggleRowExpanded()
   }
 
