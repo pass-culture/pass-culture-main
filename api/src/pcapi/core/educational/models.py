@@ -957,6 +957,15 @@ class CollectiveBooking(PcObject, Base, Model):
             CollectiveBookingStatus.CANCELLED,
         )
 
+    def is_status_confirmed(self) -> bool:
+        return self.status == CollectiveBookingStatus.CONFIRMED
+
+    def is_status_cancelled(self) -> bool:
+        return self.status == CollectiveBookingStatus.CANCELLED
+
+    def is__status_reimbursed(self) -> bool:
+        return self.status == CollectiveBookingStatus.REIMBURSED
+
 
 class CollectiveOfferTemplateDomain(Base, Model):
     """An association table between CollectiveOfferTemplate and

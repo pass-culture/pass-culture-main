@@ -117,10 +117,10 @@ def book_collective_offer(
 def confirm_collective_booking(educational_booking_id: int) -> educational_models.CollectiveBooking:
     collective_booking = educational_repository.find_collective_booking_by_id(educational_booking_id)
 
-    if collective_booking is None:
+    if not collective_booking:
         raise exceptions.EducationalBookingNotFound()
 
-    if collective_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED:
+    if collective_booking.is_status_confirmed():
         return collective_booking
 
     educational_utils.log_information_for_data_purpose(
@@ -177,10 +177,10 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
 
 def refuse_collective_booking(educational_booking_id: int) -> educational_models.CollectiveBooking:
     collective_booking = educational_repository.find_collective_booking_by_id(educational_booking_id)
-    if collective_booking is None:
+    if not collective_booking:
         raise exceptions.EducationalBookingNotFound()
 
-    if collective_booking.status == educational_models.CollectiveBookingStatus.CANCELLED:
+    if collective_booking.is_status_cancelled():
         return collective_booking
 
     with transaction():
@@ -266,10 +266,10 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
         .first()
     )
 
-    if collective_offer is None:
+    if not collective_offer:
         raise exceptions.CollectiveOfferNotFound()
 
-    if collective_offer.collectiveStock is None:
+    if not collective_offer.collectiveStock:
         raise exceptions.CollectiveStockNotFound()
 
     collective_stock = collective_offer.collectiveStock
@@ -398,7 +398,7 @@ def cancel_collective_booking_by_id_from_support(
     with transaction():
         educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
         db.session.refresh(collective_booking)
-        if collective_booking.status == educational_models.CollectiveBookingStatus.REIMBURSED:
+        if collective_booking.is__status_reimbursed():
             raise exceptions.BookingIsAlreadyRefunded()
         if finance_repository.has_reimbursement(collective_booking):
             raise exceptions.BookingIsAlreadyRefunded()
