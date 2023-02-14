@@ -23,6 +23,7 @@ class AutocompleteOffererTest:
             ("789", set()),
             ("100200301", set()),
             ("ciné", {"Le Cinéma (123456789)", "Cinéma concurrent (561234789)"}),
+            ("cinema", {"Le Cinéma (123456789)", "Cinéma concurrent (561234789)"}),
             ("ciné théâtre", set()),
         ],
     )
@@ -62,6 +63,7 @@ class AutocompleteVenueTest:
             ("789", set()),
             ("100200301", set()),
             ("ciné", {"Le Cinéma (12345678900018)", "Cinéma concurrent (56123478900023)"}),
+            ("cinema", {"Le Cinéma (12345678900018)", "Cinéma concurrent (56123478900023)"}),
             ("ciné théâtre", set()),
         ],
     )
