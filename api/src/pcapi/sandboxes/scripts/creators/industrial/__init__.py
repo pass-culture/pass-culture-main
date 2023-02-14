@@ -51,7 +51,6 @@ def save_industrial_sandbox() -> None:
     app_users_by_name = create_industrial_app_users()
 
     users_by_name = dict(dict(admin_users_by_name, **pro_users_by_name), **app_users_by_name)
-
     venues_by_name = create_industrial_venues(offerers_by_name, venue_types)
 
     event_products_by_name = create_industrial_event_products()
