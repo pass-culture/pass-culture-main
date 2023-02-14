@@ -11,6 +11,13 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
             city="BOURG-EN-BRESSE",
             postalCode="01000",
         ),
+        educational_factories.EducationalInstitutionFactory(
+            institutionId="0470009E",
+            name="LYC LES BONS UAI",
+            institutionType="LYCEE",
+            city="BOURG-EN-BRESSE",
+            postalCode="01000",
+        ),
         educational_factories.EducationalInstitutionFactory(institutionId="0780032L"),
         educational_factories.EducationalInstitutionFactory(institutionId="0752525M"),
         educational_factories.EducationalInstitutionFactory(institutionId="0760100W"),
