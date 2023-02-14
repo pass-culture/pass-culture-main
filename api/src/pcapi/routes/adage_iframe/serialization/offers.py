@@ -177,7 +177,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
             city=offerVenue.city if offerVenue else None,
             **offer.offerVenue,
         )
-        if (uai and uai != offer.institution.institutionId) or not uai:
+        if (uai and offer.institution and uai != offer.institution.institutionId) or not uai:
             result.teacherEmail = None
 
         return result
