@@ -1863,15 +1863,19 @@ class FormatExtraDataTest:
 
 @pytest.mark.usefixtures("db_session")
 class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
+    DATETIME_10_DAYS_AFTER = datetime.today() + timedelta(days=10)
+    DATETIME_10_DAYS_AGO = datetime.today() - timedelta(days=10)
+
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     @pytest.mark.parametrize(
-        "show_id, api_return_value, expected_remaining_quantity",
+        "show_id, show_beginning_datetime, api_return_value, expected_remaining_quantity",
         [
-            (888, {888: 10}, 10),
-            (888, {888: 5}, 10),
-            (888, {888: 1}, 1),
-            (888, {888: 0}, 0),
-            (123, {888: 0}, 0),
+            (888, DATETIME_10_DAYS_AFTER, {888: 10}, 10),
+            (888, DATETIME_10_DAYS_AFTER, {888: 5}, 10),
+            (888, DATETIME_10_DAYS_AFTER, {888: 1}, 1),
+            (888, DATETIME_10_DAYS_AFTER, {888: 0}, 0),
+            (123, DATETIME_10_DAYS_AFTER, {888: 0}, 0),
+            (888, DATETIME_10_DAYS_AGO, None, 10),
         ],
     )
     @patch("pcapi.core.search.async_index_offer_ids")
@@ -1881,6 +1885,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         mocked_get_shows_stock,
         mocked_async_index_offer_ids,
         show_id,
+        show_beginning_datetime,
         api_return_value,
         expected_remaining_quantity,
     ):
@@ -1894,6 +1899,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             offer=offer,
             quantity=10,
             idAtProviders=f"{offer_id_at_provider}#{show_id}/{showtime}",
+            beginningDatetime=show_beginning_datetime,
         )
 
         mocked_get_shows_stock.return_value = api_return_value
@@ -1907,13 +1913,14 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
 
     @override_features(ENABLE_BOOST_API_INTEGRATION=True)
     @pytest.mark.parametrize(
-        "show_id, api_return_value, expected_remaining_quantity",
+        "show_id, show_beginning_datetime, api_return_value, expected_remaining_quantity",
         [
-            (888, {888: 10}, 10),
-            (888, {888: 5}, 10),
-            (888, {888: 1}, 1),
-            (888, {888: 0}, 0),
-            (123, {888: 0}, 0),
+            (888, DATETIME_10_DAYS_AFTER, {888: 10}, 10),
+            (888, DATETIME_10_DAYS_AFTER, {888: 5}, 10),
+            (888, DATETIME_10_DAYS_AFTER, {888: 1}, 1),
+            (888, DATETIME_10_DAYS_AFTER, {888: 0}, 0),
+            (123, DATETIME_10_DAYS_AFTER, {888: 0}, 0),
+            (888, DATETIME_10_DAYS_AGO, None, 10),
         ],
     )
     @patch("pcapi.core.search.async_index_offer_ids")
@@ -1923,6 +1930,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         mocked_get_boost_movie_shows_stock,
         mocked_async_index_offer_ids,
         show_id,
+        show_beginning_datetime,
         api_return_value,
         expected_remaining_quantity,
     ):
@@ -1935,6 +1943,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             offer=offer,
             quantity=10,
             idAtProviders=f"{offer_id_at_provider}#{show_id}",
+            beginningDatetime=show_beginning_datetime,
         )
 
         mocked_get_boost_movie_shows_stock.return_value = api_return_value
