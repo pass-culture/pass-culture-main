@@ -1064,7 +1064,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(
         "Getting up-to-date show stock from booking provider on offer view",
         extra={"offer": offer.id, "venue_provider": venue_provider.id},
     )
-    offer_current_stocks = offer.activeStocks
+    offer_current_stocks = offer.bookableStocks
 
     match venue_provider.provider.localClass:
         case "CDSStocks":
@@ -1072,7 +1072,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(
                 raise feature.DisabledFeatureError("ENABLE_CDS_IMPLEMENTATION is inactive")
             show_ids = [
                 cinema_providers_utils.get_cds_show_id_from_uuid(stock.idAtProviders)
-                for stock in offer.activeStocks
+                for stock in offer.bookableStocks
                 if stock.idAtProviders
             ]
             cleaned_show_ids = [s for s in show_ids if s is not None]
