@@ -1,5 +1,6 @@
 import datetime
 
+from flask import g
 from flask import url_for
 import pytest
 
@@ -11,6 +12,7 @@ import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 
 from .helpers import html_parser
 from .helpers import unauthorized as unauthorized_helpers
@@ -55,14 +57,14 @@ def bookings_fixture() -> tuple:
         stock__offer__product__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
     )
-    bookings_factories.ReimbursedBookingFactory(
+    reimbursed = bookings_factories.ReimbursedBookingFactory(
         user=user3,
         token="REIMB3",
         stock__offer__product__subcategoryId=subcategories_v2.SPECTACLE_REPRESENTATION.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
     )
 
-    return used, cancelled, confirmed
+    return used, cancelled, confirmed, reimbursed
 
 
 class ListIndividualBookingsTest:
@@ -71,7 +73,7 @@ class ListIndividualBookingsTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
         endpoint = "backoffice_v3_web.individual_bookings.list_individual_bookings"
         endpoint_kwargs = {"offerer_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+        needed_permission = perm_models.Permissions.READ_BOOKINGS
 
     def test_list_bookings_without_filter(self, authenticated_client, bookings):
         # when
@@ -242,3 +244,125 @@ class ListIndividualBookingsTest:
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(row["Contremarque"] for row in rows) == {bookings[0].token, bookings[2].token}
+
+
+def send_request(authenticated_client, url, form_data=None):
+    # generate and fetch (inside g) csrf token
+    booking_list_url = url_for("backoffice_v3_web.individual_bookings.list_individual_bookings")
+    authenticated_client.get(booking_list_url)
+
+    form_data = form_data if form_data else {}
+    form = {"csrf_token": g.get("csrf_token", ""), **form_data}
+
+    return authenticated_client.post(url, form=form)
+
+
+class MarkBookingAsUsedTest:
+    class MarkBookingAsUsedUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.individual_bookings.mark_booking_as_used"
+        endpoint_kwargs = {"booking_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+    def test_uncancel_and_mark_as_used(self, authenticated_client, bookings):
+        # give
+        cancelled = bookings[1]
+
+        # when
+        url = url_for("backoffice_v3_web.individual_bookings.mark_booking_as_used", booking_id=cancelled.id)
+        response = send_request(authenticated_client, url)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(cancelled)
+        assert cancelled.status is bookings_models.BookingStatus.USED
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert f"La réservation {cancelled.token} a été validée" in html_parser.extract_alert(redirected_response.data)
+
+    def test_uncancel_non_cancelled_booking(self, authenticated_client, bookings):
+        # give
+        non_cancelled = bookings[2]
+        old_status = non_cancelled.status
+
+        # when
+        url = url_for("backoffice_v3_web.individual_bookings.mark_booking_as_used", booking_id=non_cancelled.id)
+        response = send_request(authenticated_client, url)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(non_cancelled)
+        assert non_cancelled.status == old_status
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert "Impossible de valider une réservation qui n'est pas annulée" in html_parser.extract_alert(
+            redirected_response.data
+        )
+
+
+class CancelBookingTest:
+    class CancelBookingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.individual_bookings.mark_booking_as_cancelled"
+        endpoint_kwargs = {"booking_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+    def test_cancel_booking(self, authenticated_client, bookings):
+        # give
+        confirmed = bookings[2]
+
+        # when
+        url = url_for("backoffice_v3_web.individual_bookings.mark_booking_as_cancelled", booking_id=confirmed.id)
+        response = send_request(authenticated_client, url)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(confirmed)
+        assert confirmed.status is bookings_models.BookingStatus.CANCELLED
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert f"La réservation {confirmed.token} a été annulée" in html_parser.extract_alert(redirected_response.data)
+
+    def test_cant_cancel_reimbursed_booking(self, authenticated_client, bookings):
+        # give
+        reimbursed = bookings[3]
+        old_status = reimbursed.status
+
+        # when
+        url = url_for("backoffice_v3_web.individual_bookings.mark_booking_as_cancelled", booking_id=reimbursed.id)
+        response = send_request(authenticated_client, url)
+        print(response.data.decode("utf8"))
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(reimbursed)
+        assert reimbursed.status == old_status
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert "Impossible d'annuler une réservation déjà utilisée" in html_parser.extract_alert(
+            redirected_response.data
+        )
+
+    def test_cant_cancel_cancelled_booking(self, authenticated_client, bookings):
+        # give
+        cancelled = bookings[1]
+        old_status = cancelled.status
+
+        # when
+        url = url_for("backoffice_v3_web.individual_bookings.mark_booking_as_cancelled", booking_id=cancelled.id)
+        response = send_request(authenticated_client, url)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(cancelled)
+        assert cancelled.status == old_status
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        print(html_parser.extract_alert(redirected_response.data))
+        assert "Impossible d'annuler une réservation déjà annulée" in html_parser.extract_alert(
+            redirected_response.data
+        )
