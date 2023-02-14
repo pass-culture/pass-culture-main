@@ -8,7 +8,7 @@ from pcapi.models import db
 
 
 def insert_chunk(chunk_to_insert: dict[str, Model]) -> None:
-    db.session.bulk_save_objects(chunk_to_insert.values(), return_defaults=False)
+    db.session.add_all(chunk_to_insert.values())
     db.session.commit()
 
 
