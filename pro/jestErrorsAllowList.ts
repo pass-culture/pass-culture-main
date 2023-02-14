@@ -19,11 +19,6 @@ export default [
     files: ['app/App/App.tsx', ''],
   },
   {
-    error:
-      "Error: Uncaught 'Warning: A component is changing an uncontrolled input to be controlled. This is likely caused by the value changing from undefined to a defined value, which should not happen. Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://reactjs.org/link/controlled-components%s'",
-    files: [''],
-  },
-  {
     error: "Error: Uncaught [Error: Le statut de l'offre n'est pas valide]",
     files: [''],
   },
@@ -34,11 +29,6 @@ export default [
   {
     error: 'Error: Uncaught [Error: Unsupported step type: UNKNOWN]',
     files: [''],
-  },
-  {
-    error:
-      'Warning: A component is changing an uncontrolled input to be controlled. This is likely caused by the value changing from undefined to a defined value, which should not happen. Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://reactjs.org/link/controlled-components%s',
-    files: ['ui-kit/form/shared/BaseInput/BaseInput.tsx', ''],
   },
   {
     error:
@@ -64,25 +54,7 @@ export default [
   },
   {
     error:
-      'Warning: Use the `defaultValue` or `value` props on <select> instead of setting `selected` on <option>.%s',
-    files: [
-      'screens/Bookings/BookingsRecapTable/components/Filters/FilterByOmniSearch/FilterByOmniSearch.tsx',
-      '',
-    ],
-  },
-  {
-    error:
       'Warning: You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one. ',
     files: [''],
-  },
-  {
-    error:
-      'Warning: validateDOMNesting(...): %s cannot appear as a child of <%s>.%s%s%s',
-    files: [
-      'pages/Offers/Offers/OfferItem/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell.tsx',
-      'pages/Offers/Offers/OfferItem/Cells/OfferNameCell/OfferNameCell.tsx',
-      'ui-kit/Divider/Divider.tsx',
-      '',
-    ],
   },
 ]
