@@ -207,10 +207,11 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["siret"] == venue.siret
 
-    def test_add_reimbursement_point(self, client) -> None:
+    @pytest.mark.parametrize("venue_factory", [offerers_factories.VenueFactory, offerers_factories.VirtualVenueFactory])
+    def test_add_reimbursement_point(self, venue_factory, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, pricing_point="self")
-
+        pricing_point = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = venue_factory(managingOfferer=user_offerer.offerer, pricing_point=pricing_point)
         new_reimbursement_point = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
         )
@@ -227,13 +228,19 @@ class Returns200Test:
         assert response.json["reimbursementPointId"] == new_reimbursement_point.id
         assert len(external_testing.sendinblue_requests) == 1
 
-    def test_remove_reimbursement_point_id(self, client) -> None:
+    @pytest.mark.parametrize("venue_factory", [offerers_factories.VenueFactory, offerers_factories.VirtualVenueFactory])
+    def test_remove_reimbursement_point_id(self, venue_factory, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, pricing_point="self")
-        current_reimbursement_point = offerers_factories.VenueFactory()
+        pricing_point = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        current_reimbursement_point = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = venue_factory(
+            managingOfferer=user_offerer.offerer,
+            pricing_point=pricing_point,
+        )
         offerers_factories.VenueReimbursementPointLinkFactory(
             venue=venue, reimbursementPoint=current_reimbursement_point
         )
+        assert venue.current_reimbursement_point_id
 
         venue_data = populate_missing_data_from_venue(
             {"reimbursementPointId": None},
@@ -243,6 +250,7 @@ class Returns200Test:
             f"/venues/{humanize(venue.id)}", json=venue_data
         )
 
+        assert not venue.current_reimbursement_point_id
         assert response.status_code == 200
         assert response.json["reimbursementPointId"] is None
         assert len(external_testing.sendinblue_requests) == 1
