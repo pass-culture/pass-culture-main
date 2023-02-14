@@ -186,3 +186,107 @@ junit_family = "xunit1"
 markers = [
     "backoffice_v3"
 ]
+
+[tool.poetry]
+name = "pcapi"
+version = "0.0.0"
+description = "The backend of the pass Culture"
+license = "MPL-2.0"
+authors = ["Equipe pass Culture <contact@passculture.app>"]
+
+[tool.poetry.dependencies]
+python = "3.10.*"
+alembic = "==1.8.0"
+algoliasearch = "==2.4.0"
+attrs = "==22.1.0"
+authlib = "==0.15.5"
+babel = "==2.9.1"
+basecrm = "==1.2.9"
+bcrypt = "==4.0.1"
+beautifulsoup4 = "==4.11.2"
+black = "*"
+# `sentry_sdk.init()` uses `flask.signals`, which requires `blinker`
+blinker = "==1.4"
+boto3 = "==1.21.9"
+click-option-group = "==0.5.5"
+factory-boy = "*"
+flask = "==2.0.*"
+flask-admin = "==1.6.0"
+flask-cors = "==3.0.10"
+flask-jwt-extended = "==4.3.1"
+flask-limiter = "==1.4"
+flask-login = "==0.5.0"
+flask-shell-ipython = "*"
+flask-sqlalchemy = "==2.5.*"
+flask-wtf = "==1.0.1"
+freezegun = "==1.2.2"
+google-api-python-client = "==2.41.0"
+google-auth = "==2.6.2"
+google-cloud-bigquery = "==3.4.2"
+google-cloud-storage = "==2.2.1"
+google-cloud-tasks = "==2.8.1"
+gql = {extras = ["requests"], version = "*"}
+gunicorn = "==20.0.4"
+ipaddress = "*"
+# XXX: Flask dependency
+itsdangerous = "==2.0.1"
+# XXX: Flask dependency
+jinja2 = "==3.0.3"
+# XXX: Flask dependency
+markupsafe = "==2.0.1"
+notion-client = "==1.0.0"
+openpyxl = "*"
+phonenumberslite = "==8.12.*"
+# a tool not used in code. There is no point in pinning its version
+pgcli = "*"
+pillow = ">=8.1.1"
+psycopg2 = "*"
+pydantic = {version = "==1.10.2", extras = ["email"]}
+pyjwt = {version = "==2.6.0", extras = ["crypto"]}
+pysaml2 = "*"
+python-dotenv = "==0.21.1"
+pyyaml = "==6.0"
+requests = "==2.28.2"
+rq = "==1.12.0"
+schwifty = "==2022.9.0"
+semver = "==2.13.0"
+sentry-sdk = "==1.8.0"
+sib-api-v3-sdk = "*"
+slack-sdk = "==3.13.0"
+spectree = "==0.7.2"
+# FIXME (dbaty, 2023-01-04): do not use 1.4.46 that has a new
+# deprecation warning for which we're not ready
+# (https://docs.sqlalchemy.org/en/20/changelog/changelog_14.html#change-e67bfa1efbe52ae40aa842124bc40c51).
+sqlalchemy = {version = "==1.4.45", extras = ["mypy"]}
+# Pin weasyprint to keep new versions from changing how our PDF files look.
+weasyprint = "==56.1"
+# XXX: Flask dependency
+werkzeug = "==2.0.3"
+# XXX: Flask dependency
+wtforms = "==3.0.1"
+# XXX: Flask dependency
+wtforms-sqlalchemy = "==0.3"
+xlsxwriter = "*"
+zeep = "==4.1.0"
+
+[tool.poetry.group.dev.dependencies]
+debugpy = "*"
+isort = "*"
+mypy = "*"
+pylint = "*"
+pylint-pydantic = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-dotenv = "*"
+pytest-flask = "*"
+pytest-flask-sqlalchemy = "*"
+pytest-mock = "*"
+pytest-socket = "*"
+requests-mock = "*"
+types-freezegun = "*"
+types-python-dateutil = "*"
+types-pytz = "*"
+types-pyyaml = "*"
+types-redis = "*"
+types-requests = "*"
+types-urllib3 = "*"
