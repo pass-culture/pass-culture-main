@@ -6,6 +6,7 @@ import { api } from 'apiClient/api'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
+import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -342,5 +343,46 @@ describe('screens:OfferIndividual::OfferType', () => {
       pathname: '/offre/creation/collectif/selection',
       search: '',
     })
+  })
+
+  it('should display error message if trying to duplicate without template offer', async () => {
+    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        { id: 'A1', nonHumanizedId: 1, name: 'Ma super structure' },
+      ],
+    })
+    jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
+    jest.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
+    const notifyError = jest.fn()
+    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      ...jest.requireActual('hooks/useNotification'),
+      error: notifyError,
+    }))
+
+    renderOfferTypes(store)
+
+    await userEvent.click(
+      screen.getByRole('radio', { name: 'À un groupe scolaire' })
+    )
+
+    await userEvent.click(
+      screen.getByRole('radio', {
+        name: 'Une offre réservable Cette offre a une date et un prix. Vous pouvez choisir de la rendre visible par tous les établissements scolaires ou par un seul.',
+      })
+    )
+
+    await userEvent.click(
+      screen.getByRole('radio', {
+        name: 'Dupliquer les informations d’une d’offre vitrine Créez une offre réservable en dupliquant les informations d’une offre vitrine existante.',
+      })
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+
+    expect(notifyError).toHaveBeenCalledWith(
+      'Vous devez créer une offre vitrine avant de pouvoir utiliser cette fonctionnalité'
+    )
   })
 })
