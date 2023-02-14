@@ -4,6 +4,8 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { individualStockFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -29,7 +31,11 @@ const renderPriceCategoriesForm = (
   const values = { ...defaultValues, ...customValues }
   return renderWithProviders(
     <Formik initialValues={values} onSubmit={jest.fn()}>
-      <PriceCategoriesForm offerId="42" />
+      <PriceCategoriesForm
+        offerId="42"
+        mode={OFFER_WIZARD_MODE.DRAFT}
+        stocks={[individualStockFactory({ priceCategoryId: 144 })]}
+      />
     </Formik>
   )
 }
@@ -132,6 +138,33 @@ describe('PriceCategories', () => {
       screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
     )
     expect(api.deletePriceCategory).toHaveBeenNthCalledWith(1, '42', '66')
+  })
+
+  it('should display delete banner when stock is linked', async () => {
+    jest.spyOn(api, 'deletePriceCategory').mockResolvedValue()
+    const values: PriceCategoriesFormValues = {
+      priceCategories: [
+        priceCategoryFormFactory({ id: 144 }),
+        priceCategoryFormFactory({ id: 2 }),
+      ],
+      isDuo: false,
+    }
+
+    renderPriceCategoriesForm(values)
+
+    // I can cancel
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
+    )
+    await userEvent.click(screen.getByText('Annuler'))
+    expect(api.deletePriceCategory).not.toHaveBeenCalled()
+
+    // I can delete
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
+    )
+    await userEvent.click(screen.getByText('Confirmer la supression'))
+    expect(api.deletePriceCategory).toHaveBeenNthCalledWith(1, '42', '144')
   })
 
   it('should handle unique line label cases', async () => {
