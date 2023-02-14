@@ -133,6 +133,7 @@ class CDSStocks(LocalProvider):
         local_tz = utils_date.get_department_timezone(self.venue.departementCode)
         datetime_in_utc = utils_date.local_datetime_to_default_timezone(show.showtime, local_tz)
         cds_stock.beginningDatetime = datetime_in_utc
+        cds_stock.bookingLimitDatetime = datetime_in_utc
         is_internet_sale_gauge_active = self._get_cds_internet_sale_gauge()
 
         is_new_stock_to_insert = cds_stock.id is None
