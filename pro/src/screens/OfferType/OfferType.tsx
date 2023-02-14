@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { FormEvent, useCallback, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -83,7 +83,7 @@ const OfferType = (): JSX.Element => {
   const [isEligible, setIsEligible] = useState(false)
   const { currentUser } = useCurrentUser()
 
-  const getNextPageHref = () => {
+  const getNextPageHref = (event: FormEvent<HTMLFormElement>) => {
     if (offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
       /* istanbul ignore next: condition will be removed when FF active in prod */
       return history.push({
@@ -96,23 +96,29 @@ const OfferType = (): JSX.Element => {
         }offer-type=${individualOfferSubtype}`,
       })
     }
-
     // Offer type is EDUCATIONAL
-    if (
-      collectiveOfferSubtypeDuplicate ===
-      COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
-    ) {
-      return history.push({
-        pathname: '/offre/creation/collectif/selection',
-        search: location.search,
-      })
-    }
     if (collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.TEMPLATE) {
       return history.push({
         pathname: '/offre/creation/collectif/vitrine',
         search: location.search,
       })
     }
+    if (
+      collectiveOfferSubtypeDuplicate ===
+      COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
+    ) {
+      if (!hasCollectiveTemplateOffer) {
+        event.preventDefault()
+        return notify.error(
+          'Vous devez créer une offre vitrine avant de pouvoir utiliser cette fonctionnalité'
+        )
+      }
+      return history.push({
+        pathname: '/offre/creation/collectif/selection',
+        search: location.search,
+      })
+    }
+
     return history.push({
       pathname: '/offre/creation/collectif',
       search: location.search,
@@ -327,8 +333,7 @@ const OfferType = (): JSX.Element => {
           {isDuplicateOfferSelectionActive &&
             isEligible &&
             !isLoadingEligibility &&
-            collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE &&
-            hasCollectiveTemplateOffer && (
+            collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
               <FormLayout.Section
                 title="Créer une nouvelle offre ou dupliquer une offre ?"
                 className={styles['subtype-section']}
