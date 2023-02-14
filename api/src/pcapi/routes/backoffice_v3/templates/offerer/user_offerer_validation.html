@@ -192,32 +192,35 @@
 
           bindEvents = () => {
             this.$batchPendingButton.addEventListener('click', () => {
-              this.onModalOpen({
+              this.onBatchButtonClick({
                 url: "{{ url_for("backoffice_v3_web.validation.batch_set_user_offerer_pending") }}",
                 title: "Mettre en attente le(s) rattachement(s)",
                 divId: "pending-modal",
                 buttonText: "Mettre en attente",
+                useConfirmationModal: true,
               })
             })
             this.$batchValidationButton.addEventListener('click', () => {
-              this.onModalOpen({
+              this.onBatchButtonClick({
                 url: "{{ url_for("backoffice_v3_web.validation.batch_validate_user_offerer") }}",
                 title: "Valider le(s) rattachement(s)",
                 divId: "validating-modal",
-                buttonText: "Valider"
+                buttonText: "Valider",
+                useConfirmationModal: false,
               })
             })
             this.$batchRejectingButton.addEventListener('click', () => {
-              this.onModalOpen({
+              this.onBatchButtonClick({
                 url: "{{ url_for("backoffice_v3_web.validation.batch_reject_user_offerer") }}",
                 title: "Rejeter le(s) rattachement(s)",
                 divId: "rejecting-modal",
                 buttonText: "Rejeter",
+                useConfirmationModal: true,
               })
             })
           }
 
-          onModalOpen = ({ url, title, divId, buttonText }) => {
+          onBatchButtonClick = ({ url, title, divId, buttonText, useConfirmationModal }) => {
             const csrfToken = '{{ csrf_token }}'
             this.$modalContent.innerHTML = `
             <form action="${url}" method="POST" class="modal-content" id="${divId}-form" data-turbo="false" name="user-offerer-validation-form-modal">
@@ -241,7 +244,11 @@
                 </div>
             </form>`
 
-            this.modal.show()
+            if (useConfirmationModal) {
+              this.modal.show()
+              return
+            }
+            this.$modalContent.querySelector('form').submit()
           }
         }
 
