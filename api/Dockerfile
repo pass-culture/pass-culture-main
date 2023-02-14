@@ -15,12 +15,32 @@ USER pcapi
 
 ENV PYTHONUNBUFFERED 1
 
-COPY ./requirements.txt ./
-
 ENV PATH=$PATH:/home/pcapi/.local/bin
+ENV PATH=$PATH:/usr
+# Configure Poetry
+ENV POETRY_VERSION=1.3.2
+ENV POETRY_HOME=/home/pcapi/
+ENV POETRY_VENV=/home/pcapi/poetry-venv
+ENV POETRY_CACHE_DIR=/home/pcapi/.cache
 
-RUN pip install --no-cache-dir --user \
-	--requirement ./requirements.txt
+# Install poetry separated from system interpreter
+RUN python3 -m venv $POETRY_VENV \
+    && $POETRY_VENV/bin/pip install -U pip setuptools \
+    && $POETRY_VENV/bin/pip install poetry==${POETRY_VERSION} psycopg2
+
+# Add `poetry` to PATH
+ENV PATH="${PATH}:${POETRY_VENV}/bin"
+
+COPY poetry.lock pyproject.toml ./
+
+# Install dependencies
+# FIXME: don't install dev dependencies
+RUN python3 -m venv $POETRY_VENV \
+    && poetry install
+
+USER pcapi
+
+WORKDIR /usr/src/app
 
 ########## SOURCES ##########
 
@@ -32,7 +52,7 @@ WORKDIR /tmp/src
 
 COPY . .
 
-RUN rm -rf tests/ pyproject.toml
+RUN rm -rf tests/
 
 ######### LIB ##########
 
@@ -55,6 +75,7 @@ RUN apt-get update \
 
 COPY --from=builder /home/pcapi/.local /home/pcapi/.local
 
+
 WORKDIR /usr/src/app
 
 COPY --from=sources /tmp/src .
@@ -76,7 +97,7 @@ RUN apt-get update && \
 
 USER pcapi
 
-RUN pip install --no-cache-dir --user -e .
+RUN poetry install
 
 ######### PRODUCTION #########
 
@@ -84,9 +105,10 @@ FROM lib AS pcapi
 
 WORKDIR /usr/src/app
 
-RUN pip install \
-		--no-cache-dir \
-		--editable .
+COPY --chown=pcapi:pcapi --from=builder /home/pcapi/poetry-venv/ /home/pcapi/poetry-venv/
+
+USER pcapi
+RUN . /home/pcapi/poetry-venv/bin/activate && poetry install
 
 ENTRYPOINT exec ./entrypoint.sh
 
