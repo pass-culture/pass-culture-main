@@ -37,11 +37,9 @@ export enum Events {
   CLICKED_TOGGLE_HIDE_OFFERER_NAME = 'hasClickedToggleHideOffererName',
   CLICKED_VIEW_OFFERER_STATS = 'hasClickedViewOffererStats',
   CLICKED_VIEW_ALL_OFFERER_STATS = 'hasClickedViewAllOffererStats',
-  CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS = 'hasClickedExpandCollectiveBookingDetails',
   CLICKED_DUPLICATE_TEMPLATE_OFFER = 'hasClickedDuplicateTemplateOffer',
   CLICKED_BEST_PRACTICES_STUDIES = 'hasClickedBestPracticesAndStudies',
   CLICKED_HELP_LINK = 'hasClickedHelpLink',
-  CLICKED_DETAILS_BUTTON_CELL = 'hasClickedDetailsButtonCell',
   CLICKED_RESET_FILTERS = 'hasClickedResetFilter',
   CLICKED_SHOW_STATUS_FILTER = 'hasClickedShowStatusFilter',
   CLICKED_OMNI_SEARCH_CRITERIA = 'hasClickedOmniSearchCriteria',
@@ -62,6 +60,12 @@ export enum VenueEvents {
   CLICKED_VENUE_ACTIVE_BOOKINGS_LINK = 'hasClickedVenueActiveBookingsLink',
   CLICKED_VENUE_VALIDATED_RESERVATIONS_LINK = 'hasClickedVenueValidatedReservationsLink',
   CLICKED_VENUE_EMPTY_STOCK_LINK = 'hasClickedVenueEmptyStockLink',
+}
+
+export enum CollectiveBookingsEvents {
+  CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS = 'hasClickedExpandCollectiveBookingDetails',
+  CLICKED_DETAILS_BUTTON_CELL = 'hasClickedDetailsButtonCell',
+  CLICKED_MODIFY_BOOKING_LIMIT_DATE = 'hasClickedModifyBookingLimitDate',
 }
 
 export enum OFFER_FORM_NAVIGATION_MEDIUM {

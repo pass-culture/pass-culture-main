@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import {
@@ -8,6 +9,8 @@ import {
 } from 'apiClient/v1'
 import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
 import { BOOKING_STATUS } from 'core/Bookings'
+import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import {
   collectiveBookingDetailsFactory,
   collectiveBookingRecapFactory,
@@ -91,6 +94,31 @@ describe('collective timeline', () => {
     expect(
       screen.getByText('Le pass Culture a annulé la réservation')
     ).toBeInTheDocument()
+  })
+
+  it('should log event when clicking modify booking limit date', async () => {
+    const mockLogEvent = jest.fn()
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      ...jest.requireActual('hooks/useAnalytics'),
+      logEvent: mockLogEvent,
+    }))
+    const bookingRecap = collectiveBookingRecapFactory({
+      bookingStatus: BOOKING_STATUS.PENDING,
+    })
+    renderCollectiveTimeLine(bookingRecap, bookingDetails)
+    const modifyLink = screen.getByRole('link', {
+      name: 'Modifier la date limite de réservation',
+    })
+    await userEvent.click(modifyLink)
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      CollectiveBookingsEvents.CLICKED_MODIFY_BOOKING_LIMIT_DATE,
+      {
+        from: '/',
+      }
+    )
   })
   describe('validated booking', () => {
     it('should render steps for validated booking and accepted bankInformation', () => {
