@@ -277,11 +277,19 @@ def link_venue_to_reimbursement_point(
             timestamp,
         )
         db.session.add(current_link)
+        logger.info(
+            "VenueReimbursementPointLink has ended",
+            extra={"venue_id:": venue.id, "former_reimbursement_point_id": current_link.reimbursementPointId},
+        )
     if reimbursement_point_id:
         new_link = models.VenueReimbursementPointLink(
             reimbursementPointId=reimbursement_point_id, venueId=venue.id, timespan=(timestamp, None)
         )
         db.session.add(new_link)
+        logger.info(
+            "VenueReimbursementPointLink has been created",
+            extra={"venue_id:": venue.id, "new_reimbursement_point_id": new_link.reimbursementPointId},
+        )
     db.session.commit()
 
 
