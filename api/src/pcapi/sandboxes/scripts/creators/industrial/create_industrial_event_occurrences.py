@@ -64,7 +64,7 @@ def create_industrial_event_occurrences(
                 price_category = offers_factories.PriceCategoryFactory(
                     offer=event_offer_with_occurrences,
                     price=price,
-                    priceCategoryLabel=offers_api._get_or_create_label(
+                    priceCategoryLabel=offers_api.get_or_create_label(
                         f"Tarif {index}", event_offer_with_occurrences.venue
                     ),
                 )

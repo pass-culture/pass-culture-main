@@ -25,7 +25,7 @@ def get_event_offers() -> typing.Generator[offers_models.Offer, None, None]:
     logger.info("Event Count : %s", event_count)
     logger.info("Chunks Count : %s", max_chunk)
     for chunk in range(max_chunk):
-        logger.info("Chunk %s", (chunk + 1) / max_chunk)
+        logger.info("Chunk %s/max_chunk", (chunk + 1) / max_chunk)
         for offer in query.offset(chunk * CHUNK_SIZE).limit(CHUNK_SIZE):
             yield offer
         db.session.commit()
@@ -50,7 +50,7 @@ def populate_event_stock_price_categories() -> None:
     for offer in event_offers_query:
         stock_prices = {stock.price for stock in offer.activeStocks}
         if len(stock_prices) == 1:
-            price_category_label = offers_api._get_or_create_label("Tarif unique", offer.venue)
+            price_category_label = offers_api.get_or_create_label("Tarif unique", offer.venue)
             price_category = _get_or_create_price_category(price_category_label, stock_prices.pop(), offer)
             for stock in offer.activeStocks:
                 stock.priceCategory = price_category
@@ -58,7 +58,7 @@ def populate_event_stock_price_categories() -> None:
         else:
             sorted_stocks = sorted(offer.activeStocks, key=lambda d: d.price)
             for index, (price, stocks) in enumerate(groupby(sorted_stocks, key=lambda d: d.price), start=1):
-                price_category_label = offers_api._get_or_create_label(f"Tarif {index}", offer.venue)
+                price_category_label = offers_api.get_or_create_label(f"Tarif {index}", offer.venue)
                 price_category = _get_or_create_price_category(price_category_label, price, offer)
                 for stock in stocks:
                     stock.priceCategory = price_category

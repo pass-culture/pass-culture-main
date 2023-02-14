@@ -9,6 +9,7 @@ from sqlalchemy import Sequence
 from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 from pcapi.domain.allocine import get_movie_poster
@@ -49,6 +50,8 @@ class AllocineStocks(LocalProvider):
         self.last_product_id: int | None = None
         self.last_vf_offer_id: int | None = None
         self.last_vo_offer_id: int | None = None
+        self.label: offers_models.PriceCategoryLabel | None = None
+        self.price_category_by_offer_id: dict[int, offers_models.PriceCategory] = {}
 
     def __next__(self) -> list[ProvidableInfo]:
         raw_movie_information = next(self.movies_showtimes)  # type: ignore [var-annotated]
@@ -213,7 +216,28 @@ class AllocineStocks(LocalProvider):
             allocine_stock.quantity = self.quantity
 
         if "price" not in allocine_stock.fieldsUpdated:
-            allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)
+            price = self.apply_allocine_price_rule(allocine_stock)
+            allocine_stock.price = price
+            if not allocine_stock.priceCategory:
+                if allocine_stock.offerId in self.price_category_by_offer_id:
+                    allocine_stock.priceCategory = self.price_category_by_offer_id[allocine_stock.offerId]
+                else:
+                    price_category = self.get_or_create_allocine_price_category(price, allocine_stock.offerId)
+                    allocine_stock.priceCategory = price_category
+                    self.price_category_by_offer_id[allocine_stock.offerId] = price_category
+            else:
+                allocine_stock.priceCategory.price = price
+
+    def get_or_create_allocine_price_category(
+        self, price: decimal.Decimal, offer_id: int
+    ) -> offers_models.PriceCategory:
+        price_category = offers_models.PriceCategory.query.filter_by(price=price, offerId=offer_id).one_or_none()
+        if price_category:
+            return price_category
+        if not self.label:
+            self.label = offers_api.get_or_create_label("Tarif unique", self.venue)
+            self.label.id = get_next_label_id_from_database()
+        return offers_models.PriceCategory(priceCategoryLabelId=self.label.id, price=price, offerId=offer_id)
 
     def apply_allocine_price_rule(self, allocine_stock: offers_models.Stock) -> decimal.Decimal:
         for price_rule in self.venue_provider.priceRules:
@@ -238,6 +262,11 @@ def get_next_product_id_from_database() -> int:
 
 def get_next_offer_id_from_database() -> int:
     sequence: Sequence = Sequence("offer_id_seq")
+    return db.session.execute(sequence)
+
+
+def get_next_label_id_from_database() -> int:
+    sequence: Sequence = Sequence("price_category_label_id_seq")
     return db.session.execute(sequence)
 
 
