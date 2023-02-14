@@ -84,7 +84,7 @@ def update_venue(
     **attrs: typing.Any,
 ) -> models.Venue:
     validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))  # type: ignore [arg-type]
-    reimbursement_point_id = attrs.pop("reimbursementPointId", None)
+    reimbursement_point_id = attrs.pop("reimbursementPointId", UNCHANGED)
 
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
 
@@ -102,12 +102,12 @@ def update_venue(
         venue_snapshot.trace_update(contact_data.dict(), target=target, field_name_template="contact.{}")
         upsert_venue_contact(venue, contact_data)
 
-    if not modifications:
+    if not modifications and reimbursement_point_id == UNCHANGED:
         # avoid any contact information update loss
         venue_snapshot.log_update(save=True)
         return venue
 
-    if reimbursement_point_id != venue.current_reimbursement_point_id:
+    if reimbursement_point_id not in (UNCHANGED, venue.current_reimbursement_point_id):
         link_venue_to_reimbursement_point(venue, reimbursement_point_id)
 
     old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
