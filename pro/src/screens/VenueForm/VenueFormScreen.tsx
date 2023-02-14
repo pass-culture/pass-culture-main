@@ -122,9 +122,13 @@ const VenueFormScreen = ({
       : api.editVenue(
           /* istanbul ignore next: there will always be a venue id on update screen */
           venue?.id || '',
-          serializeEditVenueBodyModel(value, {
-            hideSiret: venue?.siret.length === 0,
-          })
+          serializeEditVenueBodyModel(
+            value,
+            {
+              hideSiret: venue?.siret.length === 0,
+            },
+            shouldSendMail
+          )
         )
 
     let savedSuccess: boolean
