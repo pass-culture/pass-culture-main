@@ -2,24 +2,20 @@
 @use "styles/variables/_colors.scss" as colors;
 
 .search-container {
-    position: relative;
-    margin: rem.torem(16px) 0;
-  }
+  position: relative;
+  margin: rem.torem(16px) 0;
+}
 
 .search-button {
-    position: absolute;
-    right: rem.torem(4px);
-    top: rem.torem(4px);
-    height: rem.torem(32px);
+  position: absolute;
+  right: rem.torem(4px);
+  top: rem.torem(4px);
+  height: rem.torem(32px);
 }
 
 .offer-info {
   font-size: rem.torem(12px);
   font-weight: 600;
-}
-
-.offer-selected {
-  background-color: colors.$light-lavender;
 }
 
 .offer-selection {
@@ -38,21 +34,21 @@
 }
 
 .icon-button {
-    margin-right: rem.torem(8px);
+  margin-right: rem.torem(8px);
 }
 
 .search-no-results {
-    color: colors.$grey-dark;
-    text-align: center;
-  
-    &-icon {
-      margin: rem.torem(10px) 0 rem.torem(30px);
-    }
-  
-    &-text {
-      margin-bottom: rem.torem(20px);
-    }
+  color: colors.$grey-dark;
+  text-align: center;
+
+  &-icon {
+    margin: rem.torem(10px) 0 rem.torem(30px);
   }
+
+  &-text {
+    margin-bottom: rem.torem(20px);
+  }
+}
 
 .img-offer {
   margin-left: rem.torem(16px);
