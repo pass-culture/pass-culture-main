@@ -34,25 +34,46 @@
         crossorigin="anonymous"></script>
 <script>
 
-    document.querySelectorAll('.pc-select').forEach((el)=> {
-        var settings = {
-            	plugins: ['dropdown_input', 'clear_button', 'checkbox_options'],
-                persist: false,
-	            create: false,
+  class BackofficeApp {
+    constructor() {
+      this.bindEvents()
+      this.initializePcSelects()
+    }
+
+    get $pcSelects() {
+      return document.querySelectorAll('.pc-select')
+    }
+
+    get $forms() {
+      return document.getElementsByName('form')
+    }
+
+    bindEvents = () => {
+      this.$forms.forEach(($form) => {
+        $form.addEventListener("submit", (event) => {
+          event.preventDefault();
+          const form = event.target;
+          if (form.checkValidity()) {
+            form.submit();
+          }
+        }, false);
+      })
+    }
+
+    initializePcSelects = () => {
+      this.$pcSelects.forEach(($pcSelect) => {
+        const settings = {
+          plugins: ['dropdown_input', 'clear_button', 'checkbox_options'],
+          persist: false,
+          create: false,
 
         };
-        new TomSelect(el, settings);
-    })
+        new TomSelect($pcSelect, settings);
+      })
+    }
+  }
 
-    document.getElementsByName("form").forEach((el) => {
-        el.addEventListener("submit", (event) => {
-            event.preventDefault();
-            const form = event.target;
-            if (form.checkValidity()) {
-                form.submit();
-            }
-        }, false);
-    })
+  new BackofficeApp()
 </script>
 <!-- Useful for local script modification per-view -->
 {% block scripts %}{% endblock %}
