@@ -8,6 +8,7 @@ import {
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
+import { IOfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -69,7 +70,7 @@ describe('screens:OfferIndividual::Informations', () => {
         isSelectable: true,
       },
     ]
-    const subCategories = [
+    const subCategories: IOfferSubCategory[] = [
       {
         id: 'virtual',
         categoryId: 'A',
@@ -78,6 +79,7 @@ describe('screens:OfferIndividual::Informations', () => {
         conditionalFields: [],
         canBeDuo: false,
         canBeEducational: false,
+        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
@@ -90,6 +92,7 @@ describe('screens:OfferIndividual::Informations', () => {
         conditionalFields: [],
         canBeDuo: true,
         canBeEducational: false,
+        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,

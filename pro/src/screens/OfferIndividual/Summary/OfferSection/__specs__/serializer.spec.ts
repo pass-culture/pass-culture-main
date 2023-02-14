@@ -133,6 +133,7 @@ describe('routes::Summary::serializers', () => {
         canBeEducational: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
         reimbursementRule: 'sub-category reimbursementRule',
+        canBeWithdrawable: false,
         isSelectable: true,
       },
     ]

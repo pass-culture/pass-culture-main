@@ -6,6 +6,7 @@ export type SubcategoryResponseModel = {
   appLabel: string;
   canBeDuo: boolean;
   canBeEducational: boolean;
+  canBeWithdrawable: boolean;
   canExpire: boolean;
   categoryId: string;
   conditionalFields: Array<string>;

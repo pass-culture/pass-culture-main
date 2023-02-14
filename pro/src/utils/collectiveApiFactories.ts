@@ -254,7 +254,7 @@ export const collectiveCategoryFactory = (
 
 export const collectiveSubCategoryFactory = (
   customSubCategory?: Partial<SubcategoryResponseModel>
-) => {
+): SubcategoryResponseModel => {
   const currentSubCategoryId = subCategoryId++
   return {
     appLabel: '',
@@ -269,6 +269,7 @@ export const collectiveSubCategoryFactory = (
     isPhysicalDeposit: false,
     isSelectable: true,
     onlineOfflinePlatform: '',
+    canBeWithdrawable: false,
     proLabel: `Sous catégorie #${currentSubCategoryId}`,
     reimbursementRule: '',
     ...customSubCategory,

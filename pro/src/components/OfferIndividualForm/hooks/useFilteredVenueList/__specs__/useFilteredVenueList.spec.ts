@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react-hooks'
 
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
+import { IOfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
 import { useFilteredVenueList } from '../'
@@ -62,7 +63,7 @@ describe('useFilteredVenueList', () => {
         hasCreatedOffer: true,
       },
     ]
-    const subCategories = [
+    const subCategories: IOfferSubCategory[] = [
       {
         id: 'A-A',
         categoryId: 'A',
@@ -71,6 +72,7 @@ describe('useFilteredVenueList', () => {
         conditionalFields: [],
         canBeDuo: false,
         canBeEducational: false,
+        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
@@ -83,6 +85,7 @@ describe('useFilteredVenueList', () => {
         conditionalFields: [],
         canBeDuo: false,
         canBeEducational: false,
+        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
@@ -95,6 +98,7 @@ describe('useFilteredVenueList', () => {
         conditionalFields: [],
         canBeDuo: false,
         canBeEducational: false,
+        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
