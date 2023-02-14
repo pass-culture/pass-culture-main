@@ -73,7 +73,8 @@ export const serializePostVenueBodyModel = (
 
 export const serializeEditVenueBodyModel = (
   formValues: IVenueFormValues,
-  { hideSiret }: HideSiretParam
+  { hideSiret }: HideSiretParam,
+  shouldSendMail?: boolean
 ): EditVenueBodyModel | EditVirtualVenueBodyModel => {
   if (formValues.isVenueVirtual) {
     return {
@@ -89,6 +90,7 @@ export const serializeEditVenueBodyModel = (
       venueLabelId: !formValues.venueLabel ? null : formValues.venueLabel,
       isEmailAppliedOnAllOffers: true,
       reimbursementPointId: formValues.reimbursementPointId,
+      shouldSendMail: shouldSendMail,
     }
   }
 }
