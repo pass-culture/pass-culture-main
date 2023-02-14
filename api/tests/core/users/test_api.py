@@ -9,6 +9,7 @@ import requests_mock
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
@@ -201,6 +202,72 @@ def _assert_user_action_history_as_expected(
     else:
         assert action.extraData == {}
     assert action.comment == comment
+
+
+@pytest.mark.usefixtures("db_session")
+class CancelBeneficiaryBookingsOnSuspendAccountTest:
+    def should_cancel_booking_when_the_offer_is_a_thing(self):
+        booking_thing = bookings_factories.BookingFactory(
+            stock__offer__subcategoryId=subcategories_v2.CARTE_CINE_ILLIMITE.id,
+            status=BookingStatus.CONFIRMED,
+        )
+
+        author = users_factories.AdminFactory()
+        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
+
+        users_api.suspend_account(booking_thing.user, reason, author)
+
+        assert booking_thing.status is BookingStatus.CANCELLED
+
+    def should_cancel_booking_when_event_is_still_cancellable(self):
+        """
+        ---[        cancellable       ][         not cancellable        ]-->
+        ---|---------------------------|--------------------------------|-->
+        booking date         date cancellation limit                event date
+
+        -----------------|------------------------------------------------->
+                        now
+        """
+        in_the_past = datetime.datetime.utcnow() - relativedelta(days=1)
+        in_the_future = datetime.datetime.utcnow() + relativedelta(days=1)
+        booking_event = bookings_factories.BookingFactory(
+            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            status=BookingStatus.CONFIRMED,
+            dateCreated=in_the_past,
+            cancellationLimitDate=in_the_future,
+        )
+
+        author = users_factories.AdminFactory()
+        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
+
+        users_api.suspend_account(booking_event.user, reason, author)
+
+        assert booking_event.status is BookingStatus.CANCELLED
+
+    def should_cancel_event_when_cancellation_limit_date_is_past(self):
+        """
+        ---[        cancellable       ][         not cancellable        ]-->
+        ---|---------------------------|--------------------------------|-->
+        booking date         date cancellation limit                event date
+
+        -------------------------------------------------|----------------->
+                                                        now
+        """
+        in_the_past = datetime.datetime.utcnow() - relativedelta(seconds=1)
+        further_in_the_past = datetime.datetime.utcnow() - relativedelta(days=3)
+        booking_event = bookings_factories.BookingFactory(
+            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            status=BookingStatus.CONFIRMED,
+            dateCreated=further_in_the_past,
+            cancellationLimitDate=in_the_past,
+        )
+
+        author = users_factories.AdminFactory()
+        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
+
+        users_api.suspend_account(booking_event.user, reason, author)
+
+        assert booking_event.status is BookingStatus.CANCELLED
 
 
 @pytest.mark.usefixtures("db_session")
