@@ -1,4 +1,3 @@
-import { WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE } from 'core/Offers'
 import { IOfferSubCategory } from 'core/Offers/types'
 
 const buildSubCategoryFields = (
@@ -17,7 +16,7 @@ const buildSubCategoryFields = (
   isEvent && subCategoryFields.push('durationMinutes')
   subCategory?.canBeDuo && subCategoryFields.push('isDuo')
 
-  WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(subCategoryId) &&
+  subCategory?.canBeWithdrawable &&
     subCategoryFields.push('withdrawalType') &&
     subCategoryFields.push('withdrawalDelay')
 

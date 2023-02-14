@@ -238,6 +238,7 @@ describe('test OfferIndividualWisard', () => {
           isDigitalDeposit: false,
           isEvent: true,
           isPhysicalDeposit: true,
+          canBeWithdrawable: false,
           onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
           reimbursementRule: '',
         },

@@ -44,6 +44,7 @@ const serializeSubCategory = (
     onlineOfflinePlatform: s.onlineOfflinePlatform as CATEGORY_STATUS,
     reimbursementRule: s.reimbursementRule,
     isSelectable: s.isSelectable,
+    canBeWithdrawable: s.canBeWithdrawable,
   }
 }
 
