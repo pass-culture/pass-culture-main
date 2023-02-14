@@ -386,6 +386,18 @@ class EditVenueTest:
             "contact.website": {"new_info": contact_data.website, "old_info": "None"},
         }
 
+    def test_edit_reimbursement_point_id(self):
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        reimbursement_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        finance_factories.BankInformationFactory(venue=reimbursement_point)
+        venue_data = {
+            "reimbursementPointId": reimbursement_point.id,
+        }
+        offerers_api.update_venue(venue, author=user, **venue_data)
+
+        assert venue.current_reimbursement_point_id == reimbursement_point.id
+
 
 class EditVenueContactTest:
     def test_create_venue_contact(self, app):
