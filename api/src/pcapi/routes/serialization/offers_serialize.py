@@ -54,6 +54,7 @@ class SubcategoryResponseModel(BaseModel):
     is_physical_deposit: bool
     reimbursement_rule: str
     is_selectable: bool
+    can_be_withdrawable: bool
 
     class Config:
         alias_generator = to_camel
