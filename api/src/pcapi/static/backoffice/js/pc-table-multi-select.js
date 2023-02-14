@@ -1,69 +1,127 @@
-const allIds = []
-const allValidationsId = 'all-validations'
-const allCheckboxes = document.querySelectorAll("input[name^='check-']")
+9
+/**
+ * @summary Add select all rows features to a table
+ * @description Add select all rows feature to a table.
+ * You must import this source within your html using a <script> tag to use it,
+ * and use a predefined html markup, see example below.
+ *
+ * @example
+ * ```html
+ * <div class="my-table-container">
+ *   <table>
+ *     <tr>
+ *       <th><input class="pctms-check-all" type="checkbox" name="pctms-check-all"></th>
+ *       <th>Description</th>
+ *     </tr>
+ *     <tr>
+ *       <td>
+ *         <input type="checkbox" name="pctms-check-example1">
+ *       </td>
+ *       <td>
+ *         Example 1
+ *       </td>
+ *       <td>
+ *         <input type="checkbox" name="pctms-check-example2">
+ *       </td>
+ *       <td>
+ *         Example 2
+ *       </td>
+ *     </tr>
+ *   </table>
+ * </div>
+ * <script>
+ * const table = new TableMultiSelect(document.querySelector('.my-table-container'))
+ * </script>
+ * ```
+ */
+class TableMultiSelect {
+    rowsIds = []
+    selectedRowsIds = []
+    $container = undefined
 
-var idValidations = [] //rows selected
-
-function popAtIndex(array, element) { //Delete from array
-    const index = array.indexOf(element);
-    if (index > -1) {
-        array.splice(index, 1)
+    constructor($container) {
+        this.$container = $container
+        this.initialize()
+        this.bindEvents()
     }
-}
-function selectAll() {
-    allCheckboxes.forEach(el => {
-        el.checked = true
-        if (el.id !== allValidationsId) {
-            idValidations.push(el.id)
+
+    get $checkboxes() {
+        return this.$container.querySelectorAll("input[name^='pctms-check-']")
+    }
+
+    get $batchButtons() {
+        return this.$container.querySelectorAll('.pctms-batch-button-group > button')
+    }
+
+    get $checkboxAll() {
+        return this.$container.querySelector('.pctms-check-all')
+    }
+
+    initialize = () => {
+        if (this.selectedRowsIds.length === 0) {
+            this.disableToolbar(true)
         }
-    })
-}
-
-function unselectAll() {
-    allCheckboxes.forEach(el => {
-        el.checked = false
-    })
-}
-
-function disableToolbar(disable) {
-    Array.from(document.getElementById("batch-buttons").children).forEach(el => {
-        el.disabled = disable
-    })
-}
-
-if (idValidations.length === 0) {
-    disableToolbar(true)
-}
-
-
-allCheckboxes.forEach((el) => {
-    //Initialize the array of id of all rows
-    if (el.id !== allValidationsId) {
-        allIds.push(el.id)
-    }
-    //Manage the checkbox click
-    el.addEventListener("click", () => {
-        if (el.checked) {
-            disableToolbar(false)
-            if (el.id === allValidationsId) {
-                idValidations = []
-                selectAll()
-            } else {
-                idValidations.push(el.id)
+        this.$checkboxes.forEach(($el) => {
+            if ($el.id !== this.selectedRowsIds) {
+                this.rowsIds.push($el.id)
             }
-        } else {
-            if (el.id === allValidationsId) {
-                unselectAll()
-                idValidations = []
-                disableToolbar(true)
-            } else {
-                popAtIndex(idValidations, el.id)
-                if (idValidations.length === 0) {
-                    disableToolbar(true)
+        })
+    }
+
+    bindEvents = () => {
+        this.$checkboxes.forEach(($checkbox) => {
+            $checkbox.addEventListener("click", (event) => {
+                if ($checkbox.checked) {
+                    this.disableToolbar(false)
+                    if (event.currentTarget.name === this.$checkboxAll.name) {
+                        this.selectedRowsIds = []
+                        this.selectAll()
+                    } else {
+                        this.selectedRowsIds.push($checkbox.dataset.id)
+                    }
+                } else {
+                    if (event.currentTarget.name === this.$checkboxAll.name) {
+                        this.unselectAll()
+                        this.selectedRowsIds = []
+                        this.disableToolbar(true)
+                    } else {
+                        this.popAtIndex(this.selectedRowsIds, $checkbox.dataset.id)
+                        if (this.selectedRowsIds.length === 0) {
+                            this.disableToolbar(true)
+                        }
+                    }
                 }
-            }
+
+                // Manage The indeterminate state of select-all checkbox
+                this.$checkboxAll.indeterminate = (this.selectedRowsIds.length < this.rowsIds.length && this.selectedRowsIds.length > 0)
+            })
+        });
+    }
+
+    popAtIndex = (array, element) => {
+        const index = array.indexOf(element);
+        if (index > -1) {
+            array.splice(index, 1)
         }
-        //Manage The indeterminate state of select-all checkbox
-        document.getElementById(allValidationsId).indeterminate = (idValidations.length < allIds.length && idValidations.length > 0)
-    })
-});
+    }
+    selectAll = () => {
+        this.$checkboxes.forEach(($checkbox) => {
+            $checkbox.checked = true
+            if (!this.selectedRowsIds.includes($checkbox.dataset.id)) {
+                this.selectedRowsIds.push($checkbox.dataset.id)
+            }
+        })
+    }
+
+    unselectAll = () => {
+        this.$checkboxes.forEach(($checkbox) => {
+            $checkbox.checked = false
+        })
+    }
+
+    disableToolbar = (disable) => {
+        this.$batchButtons.forEach(($el) => {
+            $el.disabled = disable
+        })
+    }
+}

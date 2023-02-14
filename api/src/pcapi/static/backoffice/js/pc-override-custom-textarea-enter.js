@@ -21,3 +21,5 @@ function manageReturnButton(event) {
     textarea.setSelectionRange(start + 1, start + 1)
     textarea.focus()
 }
+
+class PcOverrideCustomTextareaEnter{}
