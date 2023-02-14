@@ -46,7 +46,7 @@
     "oidc-client": "^1.11.5",
     "ra-language-french": "^4.0.0",
     "react": "^18.0.0",
-    "react-admin": "^4.0.0",
+    "react-admin": "^4.7.6",
     "react-dom": "^18.0.0",
     "react-scripts": "5.0.1",
     "typescript": "^4.6.3",
