@@ -852,6 +852,8 @@ class UpdateObjectsTest:
         created_product = offers_models.Product.query.all()
         created_offer = offers_models.Offer.query.all()
         created_stock = offers_models.Stock.query.order_by("id").all()
+        created_price_category = offers_models.PriceCategory.query.one()
+        created_price_category_label = offers_models.PriceCategoryLabel.query.one()
 
         first_stock = created_stock[0]
         second_stock = created_stock[1]
@@ -870,12 +872,21 @@ class UpdateObjectsTest:
         assert first_stock.price == 10
         assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
         assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
+        assert first_stock.priceCategory == created_price_category
 
         assert second_stock.offerId == vf_offer.id
         assert second_stock.quantity is None
         assert second_stock.price == 10
         assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 0)
         assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
+        assert second_stock.priceCategory == created_price_category
+
+        assert created_price_category.price == 10
+        assert created_price_category.priceCategoryLabel == created_price_category_label
+        assert created_price_category.offer == vf_offer
+
+        assert created_price_category_label.venue == venue
+        assert created_price_category_label.label == "Tarif unique"
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
@@ -946,19 +957,26 @@ class UpdateObjectsTest:
 
         # Then
         created_product = offers_models.Product.query.all()
-        created_offer = offers_models.Offer.query.order_by("id").all()
-        created_stock = offers_models.Stock.query.order_by("id").all()
+        created_offer = offers_models.Offer.query.order_by("name").all()
+        created_stock = offers_models.Stock.query.order_by("beginningDatetime").all()
+        created_price_category = offers_models.PriceCategory.query.all()
+        created_price_category_label = offers_models.PriceCategoryLabel.query.one()
 
-        vo_offer = created_offer[0]
-        vf_offer = created_offer[1]
+        vf_offer = created_offer[0]
+        vo_offer = created_offer[1]
 
         first_stock = created_stock[0]
         second_stock = created_stock[1]
         third_stock = created_stock[2]
 
+        first_price_category = created_price_category[0]
+        second_price_category = created_price_category[1]
+
         assert len(created_product) == 1
         assert len(created_offer) == 2
         assert len(created_stock) == 3
+
+        assert len(created_price_category) == 2
 
         assert vo_offer.name == "Les Contes de la mère poule - VO"
         assert vf_offer.name == "Les Contes de la mère poule - VF"
@@ -968,20 +986,31 @@ class UpdateObjectsTest:
         assert first_stock.offerId == vf_offer.id
         assert first_stock.quantity is None
         assert first_stock.price == 10
+        assert first_stock.priceCategory == first_price_category
         assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
         assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
 
         assert second_stock.offerId == vo_offer.id
         assert second_stock.quantity is None
         assert second_stock.price == 10
+        assert second_stock.priceCategory == second_price_category
         assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 0)
         assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
 
         assert third_stock.offerId == vf_offer.id
         assert third_stock.quantity is None
         assert third_stock.price == 10
+        assert third_stock.priceCategory == first_price_category
         assert third_stock.beginningDatetime == datetime(2019, 12, 3, 19, 0)
         assert third_stock.bookingLimitDatetime == datetime(2019, 12, 3, 19, 0)
+
+        assert first_price_category.offerId == vf_offer.id
+        assert first_price_category.price == 10
+        assert first_price_category.priceCategoryLabel == created_price_category_label
+
+        assert second_price_category.offerId == vo_offer.id
+        assert second_price_category.price == 10
+        assert second_price_category.priceCategoryLabel == created_price_category_label
 
     class WhenAllocineStockAreSynchronizedTwiceTest:
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
@@ -1126,10 +1155,14 @@ class UpdateObjectsTest:
             created_product = offers_models.Product.query.all()
             created_offer = offers_models.Offer.query.all()
             created_stock = offers_models.Stock.query.all()
+            created_price_categories = offers_models.PriceCategory.query.all()
+            created_price_categories_labels = offers_models.PriceCategoryLabel.query.all()
 
             assert mock_poster_get_allocine.call_count == 1
             assert len(created_product) == 1
             assert len(created_offer) == 2
+            assert len(created_price_categories) == 2
+            assert len(created_price_categories_labels) == 2
             assert offers_models.Offer.query.filter(offers_models.Offer.venueId == venue1.id).count() == 1
             assert offers_models.Offer.query.filter(offers_models.Offer.venueId == venue2.id).count() == 1
             assert len(created_stock) == 2
@@ -1213,6 +1246,9 @@ class UpdateObjectsTest:
             first_stock.fieldsUpdated = ["quantity", "price"]
             first_stock.quantity = 100
             first_stock.price = 20
+            first_stock.priceCategory = offers_models.PriceCategory(
+                price=20, offer=first_stock.offer, priceCategoryLabel=first_stock.priceCategory.priceCategoryLabel
+            )
 
             second_stock = created_stocks[1]
             second_stock.fieldsUpdated = ["bookingLimitDatetime"]
@@ -1226,12 +1262,17 @@ class UpdateObjectsTest:
 
             # Then
             assert len(created_stocks) == 2
+            assert len(offers_models.PriceCategory.query.all()) == 2
             assert first_stock.quantity == 100
             assert first_stock.price == 20
+            assert first_stock.priceCategory.price == 20
+            assert first_stock.priceCategory.label == "Tarif unique"
             assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
 
             assert second_stock.quantity is None
             assert second_stock.price == 10
+            assert second_stock.priceCategory.price == 10
+            assert second_stock.priceCategory.label == "Tarif unique"
             assert second_stock.bookingLimitDatetime == datetime(2019, 12, 4, 15, 0)
 
     class WhenOfferHasBeenManuallyUpdatedTest:
