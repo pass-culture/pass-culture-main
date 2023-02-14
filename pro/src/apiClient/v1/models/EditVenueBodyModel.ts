@@ -29,5 +29,5 @@ export type EditVenueBodyModel = {
   venueTypeCode?: string | null;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;
+  shouldSendMail?: boolean
 };
-
