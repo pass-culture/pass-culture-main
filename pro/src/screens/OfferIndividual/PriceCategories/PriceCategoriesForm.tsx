@@ -3,7 +3,10 @@ import { FieldArray, useFormikContext } from 'formik'
 import type { FieldArrayRenderProps } from 'formik'
 import React, { useState } from 'react'
 
+import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import FormLayout from 'components/FormLayout'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { IOfferIndividualStock } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import { EuroIcon, PlusCircleIcon, TrashFilledIcon } from 'icons'
 import { Button, Checkbox, InfoBox, TextInput } from 'ui-kit'
@@ -23,14 +26,21 @@ import styles from './PriceCategoriesForm.module.scss'
 
 interface IPriceCategoriesForm {
   offerId: string
+  stocks: IOfferIndividualStock[]
+  mode: OFFER_WIZARD_MODE
 }
 
 export const PriceCategoriesForm = ({
   offerId,
+  stocks,
+  mode,
 }: IPriceCategoriesForm): JSX.Element => {
   const { setFieldValue, handleChange, values } =
     useFormikContext<PriceCategoriesFormValues>()
   const notify = useNotification()
+
+  const [showConfirmDeletePriceCategory, setShowConfirmDeletePriceCategory] =
+    useState(false)
 
   const [isFreeCheckboxSelectedArray, setIsFreeCheckboxSelectedArray] =
     useState(
@@ -63,6 +73,18 @@ export const PriceCategoriesForm = ({
     priceCategoryId?: number
   ) => {
     if (priceCategoryId) {
+      const shouldDisplayConfirmDeletePriceCategory = stocks.some(
+        stock => stock.priceCategoryId === priceCategoryId
+      )
+      if (
+        !showConfirmDeletePriceCategory &&
+        shouldDisplayConfirmDeletePriceCategory
+      ) {
+        setShowConfirmDeletePriceCategory(true)
+        return
+      } else {
+        setShowConfirmDeletePriceCategory(false)
+      }
       const { isOk, message } = await deletePriceCategoryAdapter({
         offerId,
         priceCategoryId: priceCategoryId.toString(),
@@ -84,13 +106,27 @@ export const PriceCategoriesForm = ({
   return (
     <>
       <FormLayout.MandatoryInfo />
-
       <FieldArray
         name="priceCategories"
         render={arrayHelpers => (
           <FormLayout.Section title="Tarifs">
             {values.priceCategories.map((priceCategory, index) => (
               <FormLayout.Row key={index} inline>
+                {showConfirmDeletePriceCategory && index === 0 && (
+                  <ConfirmDialog
+                    onCancel={() => setShowConfirmDeletePriceCategory(false)}
+                    onConfirm={() =>
+                      onDeletePriceCategory(
+                        index,
+                        arrayHelpers,
+                        values.priceCategories[index].id
+                      )
+                    }
+                    title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des occurrences qui lui sont associées."
+                    confirmText="Confirmer la supression"
+                    cancelText="Annuler"
+                  />
+                )}
                 <TextInput
                   smallLabel
                   name={`priceCategories[${index}].label`}
@@ -128,23 +164,24 @@ export const PriceCategoriesForm = ({
                     name={`priceCategories[${index}].free`}
                     onChange={onChangeFree(index)}
                   />
-
-                  <Button
-                    variant={ButtonVariant.TERNARY}
-                    Icon={TrashFilledIcon}
-                    iconPosition={IconPositionEnum.CENTER}
-                    disabled={values.priceCategories.length <= 1}
-                    onClick={() =>
-                      onDeletePriceCategory(
-                        index,
-                        arrayHelpers,
-                        values.priceCategories[index].id
-                      )
-                    }
-                    hasTooltip
-                  >
-                    Supprimer le tarif
-                  </Button>
+                  {mode !== OFFER_WIZARD_MODE.EDITION && (
+                    <Button
+                      variant={ButtonVariant.TERNARY}
+                      Icon={TrashFilledIcon}
+                      iconPosition={IconPositionEnum.CENTER}
+                      disabled={values.priceCategories.length <= 1}
+                      onClick={() =>
+                        onDeletePriceCategory(
+                          index,
+                          arrayHelpers,
+                          values.priceCategories[index].id
+                        )
+                      }
+                      hasTooltip
+                    >
+                      Supprimer le tarif
+                    </Button>
+                  )}
                 </div>
               </FormLayout.Row>
             ))}
