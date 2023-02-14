@@ -348,7 +348,7 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
         offerers_api.validate_offerer(offerer, current_user)
     except offerers_exceptions.OffererAlreadyValidatedException:
         flash(f"La structure {offerer.name} est déjà validée", "warning")
-        return _redirect_after_offerer_validation_action(code=400)
+        return _redirect_after_offerer_validation_action()
 
     flash(f"La structure {offerer.name} a été validée", "success")
     return _redirect_after_offerer_validation_action()
@@ -361,13 +361,13 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
         flash("Les données envoyées comportent des erreurs", "warning")
-        return _redirect_after_offerer_validation_action(code=400)
+        return _redirect_after_offerer_validation_action()
 
     try:
         offerers_api.reject_offerer(offerer, current_user, comment=form.comment.data)
     except offerers_exceptions.OffererAlreadyRejectedException:
         flash(f"La structure {offerer.name} est déjà rejetée", "warning")
-        return _redirect_after_offerer_validation_action(code=400)
+        return _redirect_after_offerer_validation_action()
 
     flash(f"La structure {offerer.name} a été rejetée", "success")
     return _redirect_after_offerer_validation_action()
@@ -380,7 +380,7 @@ def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
         flash("Les données envoyées comportent des erreurs", "warning")
-        return _redirect_after_offerer_validation_action(code=400)
+        return _redirect_after_offerer_validation_action()
 
     offerers_api.set_offerer_pending(offerer, current_user, comment=form.comment.data)
 
@@ -396,12 +396,12 @@ def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
         tag = offerers_models.OffererTag.query.filter(offerers_models.OffererTag.name == "top-acteur").one()
     except sa.exc.NoResultFound:
         flash("Le tag top-acteur n'existe pas", "warning")
-        return _redirect_after_offerer_validation_action(code=400)
+        return _redirect_after_offerer_validation_action()
 
     form = offerer_forms.TopActorForm()
     if not form.validate():
         flash("Les données envoyées comportent des erreurs", "warning")
-        return _redirect_after_offerer_validation_action(code=400)
+        return _redirect_after_offerer_validation_action()
 
     if form.is_top_actor.data and form.is_top_actor.data == "on":
         # Associate the tag with offerer

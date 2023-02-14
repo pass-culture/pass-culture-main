@@ -1286,7 +1286,7 @@ class ValidateOffererTest:
         response = send_request(authenticated_client, user_offerer.offererId, url)
 
         # then
-        assert response.status_code == 400
+        assert response.status_code == 303
 
         redirected_response = authenticated_client.get(response.headers["location"])
         assert "est déjà validée" in redirected_response.data.decode("utf8")
@@ -1344,7 +1344,7 @@ class RejectOffererTest:
         response = send_request(authenticated_client, offerer.id, url)
 
         # then
-        assert response.status_code == 400
+        assert response.status_code == 303
 
         redirected_response = authenticated_client.get(response.headers["location"])
         assert "est déjà rejetée" in redirected_response.data.decode("utf8")

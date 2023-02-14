@@ -1,5 +1,6 @@
 import datetime
 
+from flask import g
 from flask import url_for
 import pytest
 
@@ -11,6 +12,7 @@ from pcapi.core.offerers import factories as offerers_factories
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 
 from .helpers import html_parser
 from .helpers import unauthorized as unauthorized_helpers
@@ -55,8 +57,14 @@ def collective_bookings_fixture() -> tuple:
         collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.CONFERENCE.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
     )
+    # 4
+    reimbursed = educational_factories.ReimbursedCollectiveBookingFactory(
+        educationalInstitution=institution3,
+        collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.VISITE_GUIDEE.id,
+        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+    )
 
-    return pending, confirmed, cancelled, used
+    return pending, confirmed, cancelled, used, reimbursed
 
 
 class ListCollectiveBookingsTest:
@@ -65,7 +73,7 @@ class ListCollectiveBookingsTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
         endpoint = "backoffice_v3_web.collective_bookings.list_collective_bookings"
         endpoint_kwargs = {"offerer_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+        needed_permission = perm_models.Permissions.READ_BOOKINGS
 
     def test_list_bookings_without_filter(self, authenticated_client, collective_bookings):
         # when
@@ -150,7 +158,18 @@ class ListCollectiveBookingsTest:
         assert str(collective_bookings[1].id) in set(row["ID résa"] for row in rows)
 
     @pytest.mark.parametrize(
-        "search_query, expected_idx", [("Collège", (0, 1, 2)), ("Bref", (1,)), ("lycee charlemagne", (3,))]
+        "search_query, expected_idx",
+        [
+            ("Collège", (0, 1, 2)),
+            ("Bref", (1,)),
+            (
+                "lycee charlemagne",
+                (
+                    3,
+                    4,
+                ),
+            ),
+        ],
     )
     def test_list_bookings_by_institution_name(
         self, authenticated_client, collective_bookings, search_query, expected_idx
@@ -181,7 +200,7 @@ class ListCollectiveBookingsTest:
             ([educational_models.CollectiveBookingStatus.CONFIRMED.name], (1,)),
             ([educational_models.CollectiveBookingStatus.CANCELLED.name], (2,)),
             ([educational_models.CollectiveBookingStatus.USED.name], (3,)),
-            ([educational_models.CollectiveBookingStatus.REIMBURSED.name], ()),
+            ([educational_models.CollectiveBookingStatus.REIMBURSED.name], (4,)),
             (
                 [
                     educational_models.CollectiveBookingStatus.CONFIRMED.name,
@@ -196,7 +215,7 @@ class ListCollectiveBookingsTest:
 
         # fetch session (1 query)
         # fetch user (1 query)
-        # fetch individual bookings with extra data (1 query)
+        # fetch collective bookings with extra data (1 query)
         # count for pagination (1 pagination)
         with assert_num_queries(4):
             response = authenticated_client.get(url_for(self.endpoint, status=status))
@@ -243,3 +262,131 @@ class ListCollectiveBookingsTest:
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[0].id, collective_bookings[2].id}
+
+
+def send_request(authenticated_client, url, form_data=None):
+    # generate and fetch (inside g) csrf token
+    booking_list_url = url_for("backoffice_v3_web.collective_bookings.list_collective_bookings")
+    authenticated_client.get(booking_list_url)
+
+    form_data = form_data if form_data else {}
+    form = {"csrf_token": g.get("csrf_token", ""), **form_data}
+
+    return authenticated_client.post(url, form=form)
+
+
+class MarkCollectiveBookingAsUsedTest:
+    class MarkCollectiveBookingAsUsedUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.collective_bookings.mark_booking_as_used"
+        endpoint_kwargs = {"collective_booking_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+    def test_uncancel_and_mark_as_used(self, authenticated_client, collective_bookings):
+        # give
+        cancelled = collective_bookings[2]
+
+        # when
+        url = url_for("backoffice_v3_web.collective_bookings.mark_booking_as_used", collective_booking_id=cancelled.id)
+        response = send_request(authenticated_client, url)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(cancelled)
+        assert cancelled.status is educational_models.CollectiveBookingStatus.USED
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert f"La réservation {cancelled.id} a été validée" in html_parser.extract_alert(redirected_response.data)
+
+    def test_uncancel_non_cancelled_booking(self, authenticated_client, collective_bookings):
+        # give
+        non_cancelled = collective_bookings[3]
+        old_status = non_cancelled.status
+
+        # when
+        url = url_for(
+            "backoffice_v3_web.collective_bookings.mark_booking_as_used", collective_booking_id=non_cancelled.id
+        )
+        response = send_request(authenticated_client, url)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(non_cancelled)
+        assert non_cancelled.status == old_status
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert "Impossible de valider une réservation qui n'est pas annulée" in html_parser.extract_alert(
+            redirected_response.data
+        )
+
+
+class CancelCollectiveBookingTest:
+    class CancelCollectiveBookingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.collective_bookings.mark_booking_as_cancelled"
+        endpoint_kwargs = {"collective_booking_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+    def test_cancel_booking(self, authenticated_client, collective_bookings):
+        # give
+        confirmed = collective_bookings[1]
+
+        # when
+        url = url_for(
+            "backoffice_v3_web.collective_bookings.mark_booking_as_cancelled", collective_booking_id=confirmed.id
+        )
+        response = send_request(authenticated_client, url)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(confirmed)
+        assert confirmed.status is educational_models.CollectiveBookingStatus.CANCELLED
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert f"La réservation {confirmed.id} a été annulée" in html_parser.extract_alert(redirected_response.data)
+
+    def test_cant_cancel_reimbursed_booking(self, authenticated_client, collective_bookings):
+        # give
+        reimbursed = collective_bookings[4]
+        old_status = reimbursed.status
+
+        # when
+        url = url_for(
+            "backoffice_v3_web.collective_bookings.mark_booking_as_cancelled", collective_booking_id=reimbursed.id
+        )
+        response = send_request(authenticated_client, url)
+        print(response.data.decode("utf8"))
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(reimbursed)
+        assert reimbursed.status == old_status
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert "Impossible d'annuler une réservation remboursée" in html_parser.extract_alert(redirected_response.data)
+
+    def test_cant_cancel_cancelled_booking(self, authenticated_client, collective_bookings):
+        # give
+        cancelled = collective_bookings[2]
+        old_status = cancelled.status
+
+        # when
+        url = url_for(
+            "backoffice_v3_web.collective_bookings.mark_booking_as_cancelled", collective_booking_id=cancelled.id
+        )
+        response = send_request(authenticated_client, url)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(cancelled)
+        assert cancelled.status == old_status
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        print(html_parser.extract_alert(redirected_response.data))
+        assert "Impossible d'annuler une réservation déjà annulée" in html_parser.extract_alert(
+            redirected_response.data
+        )

@@ -1,13 +1,17 @@
 import datetime
 from functools import partial
 
+from flask import flash
+from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
 import sqlalchemy as sa
 
 from pcapi.core.categories import subcategories_v2
+from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
@@ -17,13 +21,14 @@ from pcapi.utils.clean_accents import clean_accents
 from . import search_utils
 from . import utils
 from .forms import collective_booking as collective_booking_forms
+from .forms import empty as empty_forms
 
 
 collective_bookings_blueprint = utils.child_backoffice_blueprint(
     "collective_bookings",
     __name__,
     url_prefix="/collective-bookings",
-    permission=perm_models.Permissions.MANAGE_BOOKINGS,
+    permission=perm_models.Permissions.READ_BOOKINGS,
 )
 
 
@@ -36,7 +41,12 @@ def _get_collective_bookings(form: collective_booking_forms.GetCollectiveBooking
         )
         .options(
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
-            .load_only(educational_models.CollectiveStock.collectiveOfferId)
+            .load_only(
+                educational_models.CollectiveStock.collectiveOfferId,
+                # needed by total_amount:
+                educational_models.CollectiveStock.price,
+                educational_models.CollectiveStock.numberOfTickets,
+            )
             .joinedload(educational_models.CollectiveStock.collectiveOffer)
             .load_only(
                 educational_models.CollectiveOffer.id,
@@ -163,4 +173,44 @@ def list_collective_bookings() -> utils.BackofficeResponse:
         rows=paginated_bookings,
         form=form,
         next_pages_urls=next_pages_urls,
+        mark_as_used_booking_form=empty_forms.EmptyForm(),
+        cancel_booking_form=empty_forms.EmptyForm(),
     )
+
+
+def _redirect_after_collective_booking_action(code: int = 303) -> utils.BackofficeResponse:
+    if request.referrer:
+        return redirect(request.referrer, code)
+
+    return redirect(url_for("backoffice_v3_web.collective_bookings.list_collective_bookings"), code)
+
+
+@collective_bookings_blueprint.route("/<int:collective_booking_id>/mark-as-used", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse:
+    collective_booking = educational_models.CollectiveBooking.query.get_or_404(collective_booking_id)
+    if collective_booking.status != educational_models.CollectiveBookingStatus.CANCELLED:
+        flash("Impossible de valider une réservation qui n'est pas annulée", "warning")
+        return _redirect_after_collective_booking_action()
+
+    educational_api_booking.uncancel_collective_booking_by_id_from_support(collective_booking)
+
+    flash(f"La réservation {collective_booking.id} a été validée", "success")
+    return _redirect_after_collective_booking_action()
+
+
+@collective_bookings_blueprint.route("/<int:collective_booking_id>/cancel", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeResponse:
+    collective_booking = educational_models.CollectiveBooking.query.get_or_404(collective_booking_id)
+
+    try:
+        educational_api_booking.cancel_collective_booking_by_id_from_support(collective_booking)
+    except educational_exceptions.CollectiveBookingAlreadyCancelled:
+        flash("Impossible d'annuler une réservation déjà annulée", "warning")
+    except educational_exceptions.BookingIsAlreadyRefunded:
+        flash("Impossible d'annuler une réservation remboursée", "warning")
+    else:
+        flash(f"La réservation {collective_booking.id} a été annulée", "success")
+
+    return _redirect_after_collective_booking_action()
