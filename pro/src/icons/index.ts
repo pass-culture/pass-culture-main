@@ -194,3 +194,4 @@ export { ReactComponent as VisualDisabilityIcon } from 'icons/visual-disability.
 export { ReactComponent as WarningGreyIcon } from 'icons/ico-warning-grey.svg'
 export { ReactComponent as WarningStockIcon } from 'icons/ico-warning.svg'
 export { ReactComponent as OtherIcon } from 'icons/ico-other.svg'
+export { ReactComponent as OfferImagePlaceholderIcon } from 'icons/ico-placeholder-offer-image.svg'
