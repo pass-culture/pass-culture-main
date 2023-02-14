@@ -7,6 +7,8 @@ import {
 } from 'apiClient/v1'
 import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
 import { BOOKING_STATUS } from 'core/Bookings'
+import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import { ExternalLinkIcon, PenIcon } from 'icons'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -65,6 +67,14 @@ const CollectiveTimeLine = ({
       bookingRecap.bookingStatusHistory.length - 1
     ].date
   )
+  const { logEvent } = useAnalytics()
+
+  const logModifyBookingLimitDateClick = () => {
+    logEvent?.(CollectiveBookingsEvents.CLICKED_MODIFY_BOOKING_LIMIT_DATE, {
+      from: location.pathname,
+    })
+  }
+
   const pendingStep = {
     type: TimelineStepType.SUCCESS,
     content: (
@@ -124,6 +134,7 @@ const CollectiveTimeLine = ({
               isExternal: false,
             }}
             Icon={PenIcon}
+            onClick={logModifyBookingLimitDateClick}
           >
             Modifier la date limite de réservation
           </ButtonLink>
