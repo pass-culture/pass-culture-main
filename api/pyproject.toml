@@ -270,6 +270,7 @@ xlsxwriter = "*"
 zeep = "==4.1.0"
 
 [tool.poetry.group.dev.dependencies]
+commitizen = "*"
 debugpy = "*"
 isort = "*"
 mypy = "*"
