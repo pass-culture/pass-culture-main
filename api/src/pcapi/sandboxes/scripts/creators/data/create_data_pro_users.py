@@ -24,30 +24,24 @@ def create_data_pro_users(offerers_by_name: dict) -> dict[str, User]:
     users_by_name = {}
 
     offerers = list(offerers_by_name.values())
-    adage_eligible_offerers = [offerer for offerer in offerers if offerer.siren == str(MOCK_ADAGE_ELIGIBLE_SIREN)]
     adage_not_eligible_offerers = [offerer for offerer in offerers if offerer.siren != str(MOCK_ADAGE_ELIGIBLE_SIREN)]
 
     for _, pro_user_config in enumerate(pro_users_config):
 
         for pro_count in range(PROS_COUNT):
             departement_code = pro_user_config["departement_code"]
-            email = "pctest.pro{}.{}@example.com".format(departement_code, pro_count)
+            email = f"pctest.pro{departement_code}.{pro_count}@example.com"
             user = users_factories.ProFactory(
                 dateOfBirth=None,
                 departementCode=str(departement_code),
                 email=email,
                 firstName="PC Test Pro",
-                lastName="{} {}".format(departement_code, pro_count),
-                postalCode="{}100".format(departement_code),
-                publicName="PC Test Pro {} {}".format(departement_code, pro_count),
+                lastName=f"{departement_code} {pro_count}",
+                postalCode=f"{departement_code}100",
+                publicName=f"PC Test Pro {departement_code} {pro_count}",
             )
-            users_by_name["pro{} {} DATA".format(departement_code, pro_count)] = user
-            # user_offerer = (
-            #     adage_eligible_offerers[0]
-            #     if pro_user_config["has_adage_eligible_siren"] == True
-            #     else adage_not_eligible_offerers[0]
-            # )
-            user_offerer = (adage_not_eligible_offerers[0])
+            users_by_name[f"pro{departement_code} {pro_count} DATA"] = user
+            user_offerer = adage_not_eligible_offerers[0]
             UserOffererFactory(offerer=user_offerer, user=user)
 
     repository.save(*users_by_name.values())

@@ -1,11 +1,9 @@
 from datetime import date
 from datetime import datetime
 from datetime import time
-from datetime import timedelta
-import itertools
 import logging
-import uuid
 from random import choice
+
 from dateutil.relativedelta import relativedelta
 from faker import Faker
 from freezegun import freeze_time
@@ -16,7 +14,6 @@ import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
-from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.models import db
 
@@ -25,58 +22,33 @@ logger = logging.getLogger(__name__)
 
 
 DEPARTEMENT_CODES = ["93", "97"]
-BENEFICIARIES_TAGS = [
-    "has-filled-cultural-survey",
-    "has-confirmed-activation",
-    "has-booked-some",
-    "has-booked-some-but-deposit-expired",
-    "has-no-more-money",
-]
 UNDERAGE_BENEFICIARIES_TAGS = [
     "15-years-old-underage-beneficiary",
     "16-years-old-underage-beneficiary",
     "17-years-old-underage-beneficiary",
 ]
-OTHER_USERS_TAGS = ["has-signed-up", "has-booked-activation"]
-AGE_TAGS = ["age-more-than-18yo", "age-less-than-18yo", "age-18yo"]
-GRANT_18_DEPOSIT_VERSIONS = [1, 2]
-DATA_USERS=15
-DATA_UNDERAGE_USERS=5
+DATA_USERS = 15
+DATA_UNDERAGE_USERS = 5
+
 
 def create_data_app_users() -> dict[str, User]:
     beneficiaries = create_data_app_beneficiaries()
-    underage_beneficiaries_data = create_data_app_underage_beneficiaries_data()
-    other_users = create_data_app_other_users()
-    general_public_users = create_data_app_general_public_users()
+    underage_beneficiaries = create_data_app_underage_beneficiaries()
     short_email_users = create_short_email_beneficiaries()
 
-    app_users = dict(
-        beneficiaries, **beneficiaries_data, **underage_beneficiaries, **underage_beneficiaries_data, **other_users, **general_public_users, **short_email_users
-    )
-    return app_users
-
-def create_data_app_users_data() -> dict[str, User]:
-    beneficiaries_data=create_data_app_beneficiaries_data()
-    underage_beneficiaries_data = create_data_app_underage_beneficiaries_data()
-    other_users = create_data_app_other_users()
-    general_public_users = create_data_app_general_public_users()
-    short_email_users = create_short_email_beneficiaries()
-    app_users = dict(
-        beneficiaries_data,  **underage_beneficiaries_data, **other_users, **general_public_users, **short_email_users)
+    app_users = dict(beneficiaries, **underage_beneficiaries, **short_email_users)
     return app_users
 
 
-def create_data_app_beneficiaries_data() -> dict[str, User]:
+def create_data_app_beneficiaries() -> dict[str, User]:
     logger.info("create_data_app_beneficiaries_data")
 
     users_by_name = {}
 
-    #variants = itertools.product(DEPARTEMENT_CODES, BENEFICIARIES_TAGS, GRANT_18_DEPOSIT_VERSIONS)
-
-    for index in range(0,DATA_USERS):
-        departement_code="99"
-        tag="has-booked-some"
-        deposit_version=1
+    for index in range(0, DATA_USERS):
+        departement_code = "99"
+        tag = "has-booked-some"
+        deposit_version = 1
         short_tag = "".join([chunk[0].upper() for chunk in tag.split("-")])
 
         email = f"pctest.jeune.data{departement_code}_{index}.{tag}.v{deposit_version}@example.com"
@@ -104,17 +76,16 @@ def create_data_app_beneficiaries_data() -> dict[str, User]:
 
     return users_by_name
 
-def create_data_app_underage_beneficiaries_data() -> dict[str, User]:
+
+def create_data_app_underage_beneficiaries() -> dict[str, User]:
     logger.info("create_data_app_underage_beneficiaries_data")
 
     users_by_name = {}
 
-    #variants = itertools.product(DEPARTEMENT_CODES, UNDERAGE_BENEFICIARIES_TAGS)
-    
-    for index in range(0,DATA_UNDERAGE_USERS):
-        departement_code="99"
-        #tag="has-booked-some"
-        tag =choice(UNDERAGE_BENEFICIARIES_TAGS)
+    for index in range(0, DATA_UNDERAGE_USERS):
+        departement_code = "99"
+        # tag="has-booked-some"
+        tag = choice(UNDERAGE_BENEFICIARIES_TAGS)
         email = f"pctest.mineur.data{departement_code}_{index}.{tag}@example.com"
         short_tag = "".join([chunk[0].upper() for chunk in tag.split("-")])
         if tag == "15-years-old-underage-beneficiary":
@@ -142,175 +113,6 @@ def create_data_app_underage_beneficiaries_data() -> dict[str, User]:
         users_by_name[user_key] = user
 
     logger.info("created %d underage beneficiaries data", len(users_by_name))
-
-    return users_by_name
-
-def create_data_app_beneficiaries() -> dict[str, User]:
-    logger.info("create_data_app_beneficiaries")
-
-    users_by_name = {}
-
-    variants = itertools.product(DEPARTEMENT_CODES, BENEFICIARIES_TAGS, GRANT_18_DEPOSIT_VERSIONS)
-
-    for index, (departement_code, tag, deposit_version) in enumerate(variants, start=0):
-        short_tag = "".join([chunk[0].upper() for chunk in tag.split("-")])
-
-        email = f"pctest.jeune{departement_code}.{tag}.v{deposit_version}@example.com"
-        user = users_factories.BeneficiaryGrant18Factory(
-            culturalSurveyId=None,
-            departementCode=str(departement_code),
-            email=email,
-            phoneNumber=f"+336{index:0>8}",
-            firstName="PC Test Jeune",
-            lastName=f"{departement_code} {short_tag} {deposit_version}",
-            needsToFillCulturalSurvey=False,
-            postalCode="{}100".format(departement_code),
-            publicName=f"PC Test Jeune {departement_code} {short_tag} {deposit_version}",
-            deposit__source="sandbox",
-            deposit__version=deposit_version,
-        )
-        users_factories.DepositGrantFactory(
-            user=user, expirationDate=datetime.utcnow(), source="sandbox", type=finance_models.DepositType.GRANT_15_17
-        )
-
-        user_key = f"jeune{departement_code} {tag} v{deposit_version}"
-        users_by_name[user_key] = user
-
-    logger.info("created %d beneficiaries", len(users_by_name))
-
-    return users_by_name
-
-
-def create_data_app_underage_beneficiaries() -> dict[str, User]:
-    logger.info("create_data_app_underage_beneficiaries")
-
-    users_by_name = {}
-
-    variants = itertools.product(DEPARTEMENT_CODES, UNDERAGE_BENEFICIARIES_TAGS)
-
-    for index, (departement_code, tag) in enumerate(variants, start=0):
-        short_tag = "".join([chunk[0].upper() for chunk in tag.split("-")])
-
-        email = f"pctest.mineur{departement_code}.{tag}@example.com"
-
-        if tag == "15-years-old-underage-beneficiary":
-            age = 15
-        elif tag == "16-years-old-underage-beneficiary":
-            age = 16
-        else:
-            age = 17
-
-        user = users_factories.UnderageBeneficiaryFactory(
-            subscription_age=age,
-            culturalSurveyId=None,
-            departementCode=str(departement_code),
-            email=email,
-            phoneNumber=f"+336{index:0>8}",
-            firstName="PC Test Mineur",
-            lastName=f"{departement_code} {short_tag}",
-            needsToFillCulturalSurvey=False,
-            postalCode="{}100".format(departement_code),
-            publicName=f"PC Test Mineur {departement_code} {short_tag}",
-            deposit__source="sandbox",
-        )
-
-        user_key = f"jeune{departement_code} {tag}"
-        users_by_name[user_key] = user
-
-    logger.info("created %d underage beneficiaries", len(users_by_name))
-
-    return users_by_name
-
-
-def create_data_app_other_users() -> dict[str, User]:
-    logger.info("create_data_app_other_users")
-
-    users_by_name = {}
-
-    validation_prefix, validation_suffix = "AZERTY", 123
-    validation_suffix += 1
-
-    variants = itertools.product(DEPARTEMENT_CODES, OTHER_USERS_TAGS)
-
-    for index, (departement_code, tag) in enumerate(variants, start=0):
-        short_tag = "".join([chunk[0].upper() for chunk in tag.split("-")])
-
-        if tag == "has-signed-up":
-            reset_password_token = "{}{}".format(validation_prefix, validation_suffix)
-            validation_suffix += 1
-            cultural_survey_id = uuid.uuid4()
-            needs_to_fill_cultural_survey = True
-        else:
-            cultural_survey_id = None
-            needs_to_fill_cultural_survey = False
-            reset_password_token = None
-
-        email = f"pctest.autre{departement_code}.{tag}@example.com"
-
-        user = users_factories.UserFactory(
-            culturalSurveyId=cultural_survey_id,
-            departementCode=str(departement_code),
-            email=email,
-            phoneNumber=f"+336{index:0>8}",
-            firstName="PC Test Utilisateur",
-            lastName=f"{departement_code} {short_tag}",
-            needsToFillCulturalSurvey=needs_to_fill_cultural_survey,
-            postalCode="{}100".format(departement_code),
-            publicName=f"PC Test Utilisateur {departement_code} {short_tag}",
-        )
-
-        if reset_password_token:
-            users_factories.TokenFactory(
-                user=user,
-                value=reset_password_token,
-                expirationDate=datetime.utcnow() + timedelta(hours=24),
-                type=TokenType.RESET_PASSWORD,
-            )
-        user_key = f"jeune{departement_code} {tag}"
-        users_by_name[user_key] = user
-
-    logger.info("created %d other users", len(users_by_name))
-
-    return users_by_name
-
-
-def create_data_app_general_public_users() -> dict[str, User]:
-    logger.info("create_data_app_general_public_users")
-
-    users_by_name = {}
-
-    variants = itertools.product(AGE_TAGS)
-
-    for index, (age,) in enumerate(variants, start=100):
-        short_age = "".join([chunk[0].upper() for chunk in age.split("-")])
-        email = f"pctest.grandpublic.{age}@example.com"
-        departement_code = 39
-        today = datetime.today()
-        date_of_birth = today - timedelta(18 * 366)
-
-        if age == "age-more-than-18yo":
-            date_of_birth = today - timedelta(20 * 366)
-
-        if age == "age-less-than-18yo":
-            date_of_birth = today - timedelta(16 * 366)
-
-        user = users_factories.UserFactory(
-            culturalSurveyId=None,
-            departementCode=str(departement_code),
-            email=email,
-            phoneNumber=f"+336{index:0>8}",
-            firstName="PC Test Grand Public",
-            dateOfBirth=date_of_birth,
-            roles=[],
-            lastName=f"{short_age}",
-            needsToFillCulturalSurvey=True,
-            postalCode="{}100".format(departement_code),
-            publicName=f"PC Test Grand Public {short_age}",
-        )
-        user_key = f"grandpublic{age}"
-        users_by_name[user_key] = user
-
-    logger.info("created %d general public users", len(users_by_name))
 
     return users_by_name
 

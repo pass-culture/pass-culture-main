@@ -8,31 +8,30 @@ from pcapi.domain.music_types import music_types
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_DESCRIPTIONS
-from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_NAMES
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_NAMES_DATA
 from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES
 from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_LAST_NAMES
+
 
 logger = logging.getLogger(__name__)
 
 
 THINGS_PER_SUBCATEGORY = 2
 
+
 def create_data_thing_products() -> dict[str, offers_models.Product]:
     logger.info("create_data_thing_products_data")
 
     thing_products_by_name = {}
-    
+
     thing_subcategories = [s for s in subcategories.ALL_SUBCATEGORIES if not s.is_event]
 
-    logger.info("create thing_subcategories data %d ...",len(thing_subcategories))
+    logger.info("create thing_subcategories data %d ...", len(thing_subcategories))
     id_at_providers = 5678
 
     for product_creation_counter in range(0, THINGS_PER_SUBCATEGORY):
 
         for (thing_subcategories_list_index, thing_subcategory) in enumerate(thing_subcategories):
-            # if thing_subcategory.is_online_only :
-            #     continue
             mock_index = (product_creation_counter + thing_subcategories_list_index) % len(MOCK_NAMES_DATA)
 
             name = "{} / {}".format(thing_subcategory.id, MOCK_NAMES_DATA[mock_index])

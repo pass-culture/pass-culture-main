@@ -13,8 +13,6 @@ from .utils import get_price_by_short_name
 logger = logging.getLogger(__name__)
 
 
-EVENT_OCCURRENCES_WITH_STOCKS_REMOVE_MODULO = 4
-
 def create_data_event_stocks(event_occurrences_by_name: dict[str, EventOccurrence]) -> None:
     logger.info("create_data_event_stocks_data")
 

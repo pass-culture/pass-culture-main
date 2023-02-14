@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE = 5
 
+
 def create_data_event_offers(
     events_by_name: dict[str, offers_models.Product],
     offerers_by_name: dict[str, offerers_models.Offerer],
@@ -40,9 +41,9 @@ def create_data_event_offers(
             (event_name, event) = event_items[rest_event_index]
 
             name = "{} / {}".format(event_name, event_venue.name)
-            
+
             is_active = True
-            
+
             is_duo = True
             event_offers_by_name[name] = offers_factories.OfferFactory(
                 venue=event_venue,

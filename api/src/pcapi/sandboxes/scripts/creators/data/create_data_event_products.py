@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 EVENT_COUNTS_PER_TYPE_DATA = 2
 
+
 def create_data_event_products() -> dict[str, offers_models.Product]:
     logger.info("create_data_event_products_data")
 
@@ -33,14 +34,14 @@ def create_data_event_products() -> dict[str, offers_models.Product]:
 
             mock_index = (product_creation_counter + event_subcategories_list_index) % len(MOCK_NAMES)
             if event_subcategory == subcategories.ACTIVATION_EVENT:
-                event_name = "{} {}".format(MOCK_ACTIVATION_NAME, activation_index)
+                event_name = f"{MOCK_ACTIVATION_NAME} {activation_index}"
                 description = MOCK_ACTIVATION_DESCRIPTION
                 activation_index += 1
             else:
-                event_name = "{} {}".format("DATA", MOCK_NAMES[mock_index])
+                event_name = f"DATA {MOCK_NAMES[mock_index]}"
                 description = MOCK_DESCRIPTIONS[mock_index]
 
-            name = "{} / {} / {}".format(event_subcategory.id, event_name,"DATA")
+            name = f"{event_subcategory.id} / {event_name} / DATA"
             event_product = offers_factories.ProductFactory(
                 description=description,
                 durationMinutes=60,
@@ -48,35 +49,35 @@ def create_data_event_products() -> dict[str, offers_models.Product]:
                 subcategoryId=event_subcategory.id,
             )
 
-            extraData = {}
+            extra_data = {}
             extra_data_index = 0
-            for conditionalField in event_product.subcategory.conditional_fields:
+            for conditional_field in event_product.subcategory.conditional_fields:
                 conditional_index = product_creation_counter + event_subcategories_list_index + extra_data_index
-                if conditionalField in ["author", "performer", "speaker", "stageDirector"]:
+                if conditional_field in ["author", "performer", "speaker", "stageDirector"]:
                     mock_first_name_index = conditional_index % len(MOCK_FIRST_NAMES)
                     mock_first_name = MOCK_FIRST_NAMES[mock_first_name_index]
                     mock_last_name_index = conditional_index % len(MOCK_LAST_NAMES)
                     mock_last_name = MOCK_LAST_NAMES[mock_last_name_index]
-                    mock_name = "{} {}".format(mock_first_name, mock_last_name)
-                    extraData[conditionalField] = mock_name
-                elif conditionalField == "musicType":
+                    mock_name = f"{mock_first_name} {mock_last_name}"
+                    extra_data[conditional_field] = mock_name
+                elif conditional_field == "musicType":
                     music_type_index: int = conditional_index % len(music_types)
                     music_type = music_types[music_type_index]
-                    extraData[conditionalField] = str(music_type.code)
+                    extra_data[conditional_field] = str(music_type.code)
                     music_sub_type_index: int = conditional_index % len(music_type.children)
                     music_sub_type = music_type.children[music_sub_type_index]
-                    extraData["musicSubType"] = str(music_sub_type.code)
-                elif conditionalField == "showType":
+                    extra_data["musicSubType"] = str(music_sub_type.code)
+                elif conditional_field == "showType":
                     show_type_index: int = conditional_index % len(show_types)
                     show_type = show_types[show_type_index]
-                    extraData[conditionalField] = str(show_type.code)
+                    extra_data[conditional_field] = str(show_type.code)
                     show_sub_type_index: int = conditional_index % len(show_type.children)
                     show_sub_type = show_type.children[show_sub_type_index]
-                    extraData["showSubType"] = str(show_sub_type.code)
-                elif conditionalField == "visa":
+                    extra_data["showSubType"] = str(show_sub_type.code)
+                elif conditional_field == "visa":
                     pass
                 extra_data_index += 1
-            event_product.extraData = extraData
+            event_product.extraData = extra_data
             event_products_by_name[name] = event_product
 
         product_creation_counter += len(event_subcategories)

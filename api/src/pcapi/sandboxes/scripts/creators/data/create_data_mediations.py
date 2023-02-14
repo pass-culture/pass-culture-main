@@ -1,3 +1,5 @@
+from itertools import cycle
+from itertools import islice
 import logging
 from pathlib import Path
 from shutil import copyfile
@@ -7,17 +9,10 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.repository import repository
 import pcapi.sandboxes
-from pcapi.sandboxes.scripts.utils.select import remove_every
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 
 
 logger = logging.getLogger(__name__)
-
-
-OFFERS_WITH_MEDIATION_REMOVE_MODULO = 5
-
-from itertools import cycle
-from itertools import islice
 
 
 def prepare_mediations_folders() -> None:
@@ -48,7 +43,6 @@ def create_data_mediations(offers_by_name: dict[str, Offer]) -> None:
 
     offer_items = list(offers_by_name.items())
     offer_items_with_mediation = offer_items
-    #remove_every(offer_items, OFFERS_WITH_MEDIATION_REMOVE_MODULO)
     for (offer_name, offer) in offer_items_with_mediation:
         mediations_by_name[offer_name] = offers_factories.MediationFactory(offer=offer)
 
