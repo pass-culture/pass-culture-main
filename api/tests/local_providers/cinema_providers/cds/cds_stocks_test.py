@@ -408,8 +408,9 @@ class CDSStocksTest:
         assert created_stocks[0].quantity == 77
         assert created_stocks[0].price == 5.0
         assert created_stocks[0].dateCreated is not None
-        assert created_stocks[0].bookingLimitDatetime is None
         assert created_stocks[0].offer == created_offers[0]
+        assert created_stocks[0].bookingLimitDatetime == datetime(2022, 6, 20, 9)
+        assert created_stocks[0].beginningDatetime == datetime(2022, 6, 20, 9)
 
         assert created_offers[1].name == "Top Gun"
         assert created_offers[1].product == created_products[1]
@@ -427,8 +428,9 @@ class CDSStocksTest:
         assert created_stocks[1].quantity == 78
         assert created_stocks[1].price == 6.5
         assert created_stocks[1].dateCreated is not None
-        assert created_stocks[1].bookingLimitDatetime is None
         assert created_stocks[1].offer == created_offers[1]
+        assert created_stocks[1].bookingLimitDatetime == datetime(2022, 7, 1, 10)
+        assert created_stocks[1].beginningDatetime == datetime(2022, 7, 1, 10)
 
     @patch(
         "pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_internet_sale_gauge",
