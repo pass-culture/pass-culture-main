@@ -305,8 +305,14 @@ jobs:
       - skip_unchanged:
           paths: api
       - run:
+          name: activate poetry virtual environment
+          command: source $(poetry env info --path)/bin/activate
+      - run:
           name: Show installed Python packages
           command: pip freeze
+      - run:
+          name: Show installed Python packages (Poetry)
+          command: poetry show
       - run:
           name: Check imports are well organized with isort
           when: always
@@ -371,8 +377,14 @@ jobs:
       - skip_unchanged:
           paths: api
       - run:
+          name: activate poetry virtual environment
+          command: source $(poetry env info --path)/bin/activate
+      - run:
           name: Show installed Python packages
           command: pip freeze
+      - run:
+          name: Show installed Python packages (Poetry)
+          command: poetry show
       - run:
           name: Check for alembic multiple heads
           command: |
@@ -452,8 +464,14 @@ jobs:
       - skip_unchanged:
           paths: api
       - run:
+          name: activate poetry virtual environment
+          command: source $(poetry env info --path)/bin/activate
+      - run:
           name: Show installed Python packages
           command: pip freeze
+      - run:
+          name: Show installed Python packages (Poetry)
+          command: poetry show
       - run:
           name: Running backoffice tests
           command: |
