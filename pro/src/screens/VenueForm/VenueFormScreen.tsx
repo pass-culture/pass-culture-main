@@ -11,6 +11,7 @@ import {
   VenueForm,
 } from 'components/VenueForm'
 import { generateSiretValidationSchema } from 'components/VenueForm/Informations/SiretOrCommentFields'
+import WithdrawalConfirmDialog from 'components/WithdrawalConfirmDialog'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -69,7 +70,48 @@ const VenueFormScreen = ({
 
   const { currentUser } = useCurrentUser()
 
+  const [shouldSendMail, setShouldSendMail] = useState<boolean>(false)
+
+  const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] =
+    useState<boolean>(false)
+
+  const handleCancelWithdrawalDialog = async () => {
+    setShouldSendMail(false)
+    await formik.handleSubmit()
+  }
+
+  const handleConfirmWithdrawalDialog = async () => {
+    await setShouldSendMail(true)
+    await formik.handleSubmit()
+  }
+
+  const handleWithdrawalDialog = () => {
+    const valueMeta = formik.getFieldMeta('withdrawalDetails')
+    if (
+      valueMeta &&
+      valueMeta.touched &&
+      valueMeta.value != valueMeta.initialValue
+    ) {
+      if (isWithdrawalDialogOpen) {
+        setIsWithdrawalDialogOpen(false)
+      } else {
+        setIsWithdrawalDialogOpen(true)
+        return false
+      }
+    }
+    return true
+  }
+
   const onSubmit = async (value: IVenueFormValues) => {
+    if (!isCreatingVenue) {
+      // TODO: check if venue has booking
+      if (value.isWithdrawalAppliedOnAllOffers) {
+        if (!handleWithdrawalDialog()) {
+          return
+        }
+      }
+    }
+
     const request = isCreatingVenue
       ? api.postCreateVenue(
           serializePostVenueBodyModel(value, {
@@ -234,6 +276,13 @@ const VenueFormScreen = ({
             isNewOnboardingActive={isNewOnboardingActive}
           />
         </form>
+        {isWithdrawalDialogOpen && (
+          <WithdrawalConfirmDialog
+            hideDialog={() => setIsWithdrawalDialogOpen(false)}
+            handleCancel={handleCancelWithdrawalDialog}
+            handleConfirm={handleConfirmWithdrawalDialog}
+          />
+        )}
       </FormikProvider>
     </div>
   )
