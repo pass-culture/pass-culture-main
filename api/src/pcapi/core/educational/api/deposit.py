@@ -7,18 +7,15 @@ from pcapi.repository import repository
 
 
 def create_educational_deposit(
-    educational_year_id: str,
-    educational_institution_id: int,
-    deposit_amount: int,
-    ministry: educational_models.Ministry,
+    parameters: educational_models.EducationalDepositParameters,
 ) -> educational_models.EducationalDeposit:
     educational_deposit = educational_models.EducationalDeposit(
-        educationalYearId=educational_year_id,
-        educationalInstitutionId=educational_institution_id,
-        amount=decimal.Decimal(deposit_amount),
+        educationalYearId=parameters.educational_year_id,
+        educationalInstitutionId=parameters.educational_institution_id,
+        amount=decimal.Decimal(parameters.deposit_amount),
         isFinal=False,
         dateCreated=datetime.datetime.utcnow(),
-        ministry=ministry,
+        ministry=parameters.ministry,
     )
     repository.save(educational_deposit)
 

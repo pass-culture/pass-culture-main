@@ -5,6 +5,7 @@ from pcapi.routes.public import blueprints
 from pcapi.routes.public.collective.serialization import institutions as institutions_serialization
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization.educational_institutions import EducationalInstitutionParameters
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -40,14 +41,16 @@ def list_educational_institutions(
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste établissements scolaires."""
 
-    institutions = search_educational_institution(
-        name=query.name,
-        city=query.city,
-        postal_code=query.postal_code,
-        educational_institution_id=query.id,
-        institution_type=query.institution_type,
-        limit=query.limit,
-    )
+    institutions_parameters = EducationalInstitutionParameters()
+    institutions_parameters.name = query.name
+    institutions_parameters.city = query.city
+    institutions_parameters.postal_code = query.postal_code
+    institutions_parameters.educational_institution_id = query.id
+    institutions_parameters.institution_type = query.institution_type
+    institutions_parameters.limit = query.limit
+
+    institutions = search_educational_institution(institutions_parameters)
+
     return institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel(
         __root__=[
             institutions_serialization.CollectiveOffersEducationalInstitutionResponseModel.from_orm(institution)

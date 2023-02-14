@@ -20,6 +20,7 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.routes.serialization.educational_institutions import EducationalInstitutionParameters
 from pcapi.utils.clean_accents import clean_accents
 
 
@@ -874,43 +875,38 @@ def get_all_educational_institutions(offset: int = 0, limit: int = 0) -> tuple[t
 
 
 def search_educational_institution(
-    educational_institution_id: int | None,
-    name: str | None,
-    institution_type: str | None,
-    city: str | None,
-    postal_code: str | None,
-    limit: int,
+    parameters: EducationalInstitutionParameters,
 ) -> educational_models.EducationalInstitution:
     filters = []
-    if educational_institution_id is not None:
-        filters.append(educational_models.EducationalInstitution.id == educational_institution_id)
+    if parameters.educational_institution_id is not None:
+        filters.append(educational_models.EducationalInstitution.id == parameters.educational_institution_id)
 
-    if name is not None:
-        name = name.replace(" ", "%")
-        name = name.replace("-", "%")
+    if parameters.name is not None:
+        name = parameters.name.replace(" ", "%")
+        name = parameters.name.replace("-", "%")
         filters.append(
             sa.func.unaccent(educational_models.EducationalInstitution.name).ilike(f"%{clean_accents(name)}%"),
         )
 
-    if institution_type is not None:
-        institution_type = institution_type.replace(" ", "%")
-        institution_type = institution_type.replace("-", "%")
+    if parameters.institution_type is not None:
+        institution_type = parameters.institution_type.replace(" ", "%")
+        institution_type = parameters.institution_type.replace("-", "%")
         filters.append(
             sa.func.unaccent(educational_models.EducationalInstitution.institutionType).ilike(
                 f"%{clean_accents(institution_type)}%"
             ),
         )
 
-    if city is not None:
-        city = city.replace(" ", "%")
-        city = city.replace("-", "%")
+    if parameters.city is not None:
+        city = parameters.city.replace(" ", "%")
+        city = parameters.city.replace("-", "%")
         filters.append(
             sa.func.unaccent(educational_models.EducationalInstitution.city).ilike(f"%{clean_accents(city)}%"),
         )
 
-    if postal_code is not None:
-        postal_code = postal_code.replace(" ", "%")
-        postal_code = postal_code.replace("-", "%")
+    if parameters.postal_code is not None:
+        postal_code = parameters.postal_code.replace(" ", "%")
+        postal_code = parameters.postal_code.replace("-", "%")
         filters.append(
             sa.func.unaccent(educational_models.EducationalInstitution.postalCode).ilike(f"%{postal_code}%"),
         )
@@ -920,7 +916,7 @@ def search_educational_institution(
             educational_models.EducationalInstitution.isActive == True,
         )
         .order_by(educational_models.EducationalInstitution.id)
-        .limit(limit)
+        .limit(parameters.limit)
         .all()
     )
 

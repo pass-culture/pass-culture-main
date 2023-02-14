@@ -9,6 +9,7 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import utils
 from pcapi.core.educational.api.deposit import create_educational_deposit
 from pcapi.core.educational.api.institution import create_educational_institution
+from pcapi.core.educational.models import EducationalDepositParameters
 from pcapi.core.educational.models import Ministry
 
 
@@ -80,9 +81,15 @@ def _process_educational_csv(
                 f"\033[93mWARNING: deposit for educational institution with id {educational_institution.institutionId} already exists\033[0m"
             )
             continue
-        educational_deposit = create_educational_deposit(
-            educational_year.adageId, educational_institution.id, deposit_amount, ministry
-        )
+
+        deposit_parameters = EducationalDepositParameters()
+        deposit_parameters.educational_year_id = educational_year.adageId
+        deposit_parameters.educational_institution_id = educational_institution.id
+        deposit_parameters.deposit_amount = deposit_amount
+        deposit_parameters.ministry = ministry
+
+        educational_deposit = create_educational_deposit(deposit_parameters)
+
         logger.info(
             "Educational deposit has been created",
             extra={

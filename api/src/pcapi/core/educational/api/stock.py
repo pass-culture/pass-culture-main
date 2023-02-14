@@ -73,7 +73,13 @@ def edit_collective_stock(
     booking_limit = stock_data.get("bookingLimitDatetime")
     booking_limit = serialization_utils.as_utc_without_timezone(booking_limit) if booking_limit else None
 
-    updatable_fields = _extract_updatable_fields_from_stock_data(stock, stock_data, beginning, booking_limit)
+    updatable_parameters = educational_models.UpdatableFieldFromStockDataParameters()
+    updatable_parameters.stock = stock
+    updatable_parameters.stock_data = stock_data
+    updatable_parameters.beginning = beginning
+    updatable_parameters.booking_limit_datetime = booking_limit
+
+    updatable_fields = _extract_updatable_fields_from_stock_data(updatable_parameters)
 
     check_beginning = beginning
     check_booking_limit_datetime = booking_limit
@@ -134,24 +140,23 @@ def get_collective_stock(collective_stock_id: int) -> educational_models.Collect
 
 
 def _extract_updatable_fields_from_stock_data(
-    stock: educational_models.CollectiveStock,
-    stock_data: dict,
-    beginning: datetime.datetime | None,
-    booking_limit_datetime: datetime.datetime | None,
+    parameters: educational_models.UpdatableFieldFromStockDataParameters,
 ) -> dict:
     # if booking_limit_datetime is provided but null, set it to default value which is event datetime
-    if "bookingLimitDatetime" in stock_data.keys() and booking_limit_datetime is None:
-        booking_limit_datetime = beginning if beginning else stock.beginningDatetime
+    if "bookingLimitDatetime" in parameters.stock_data.keys() and parameters.booking_limit_datetime is None:
+        parameters.booking_limit_datetime = (
+            parameters.beginning if parameters.beginning else parameters.stock.beginningDatetime
+        )
 
-    if "bookingLimitDatetime" not in stock_data.keys():
-        booking_limit_datetime = stock.bookingLimitDatetime
+    if "bookingLimitDatetime" not in parameters.stock_data.keys():
+        parameters.booking_limit_datetime = parameters.stock.bookingLimitDatetime
 
     updatable_fields = {
-        "beginningDatetime": beginning,
-        "bookingLimitDatetime": booking_limit_datetime,
-        "price": stock_data.get("price"),
-        "numberOfTickets": stock_data.get("numberOfTickets"),
-        "priceDetail": stock_data.get("educationalPriceDetail"),
+        "beginningDatetime": parameters.beginning,
+        "bookingLimitDatetime": parameters.booking_limit_datetime,
+        "price": parameters.stock_data.get("price"),
+        "numberOfTickets": parameters.stock_data.get("numberOfTickets"),
+        "priceDetail": parameters.stock_data.get("educationalPriceDetail"),
     }
 
     return updatable_fields

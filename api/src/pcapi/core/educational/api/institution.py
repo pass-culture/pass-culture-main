@@ -8,6 +8,7 @@ from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.models import db
 from pcapi.repository import repository
+from pcapi.routes.serialization.educational_institutions import EducationalInstitutionParameters
 import pcapi.utils.postal_code as postal_code_utils
 
 
@@ -36,21 +37,9 @@ def get_educational_institution_department_code(
 
 
 def search_educational_institution(
-    educational_institution_id: int | None,
-    name: str | None,
-    institution_type: str | None,
-    city: str | None,
-    postal_code: str | None,
-    limit: int,
+    parameters: EducationalInstitutionParameters,
 ) -> educational_models.EducationalInstitution:
-    return educational_repository.search_educational_institution(
-        educational_institution_id=educational_institution_id,
-        name=name,
-        city=city,
-        postal_code=postal_code,
-        institution_type=institution_type,
-        limit=limit,
-    )
+    return educational_repository.search_educational_institution(parameters)
 
 
 def update_educational_institution_data(

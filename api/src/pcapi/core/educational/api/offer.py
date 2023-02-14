@@ -26,6 +26,7 @@ from pcapi.models import offer_mixin
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
 from pcapi.routes.serialization import collective_offers_serialize
+from pcapi.routes.serialization.collective_offers_serialize import CollectiveOfferProUserParameters
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferTemplateBodyModel
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
@@ -95,46 +96,37 @@ def unindex_expired_collective_offers(process_all_expired: bool = False) -> None
 
 
 def list_collective_offers_for_pro_user(
-    user_id: int,
-    user_is_admin: bool,
-    category_id: str | None,
-    offerer_id: int | None,
-    venue_id: int | None = None,
-    name_keywords: str | None = None,
-    status: str | None = None,
-    period_beginning_date: str | None = None,
-    period_ending_date: str | None = None,
-    offer_type: collective_offers_serialize.CollectiveOfferType | None = None,
+    parameters: CollectiveOfferProUserParameters,
 ) -> list[educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate]:
-    if offer_type != collective_offers_serialize.CollectiveOfferType.template:
+    if parameters.offer_type != collective_offers_serialize.CollectiveOfferType.template:
         offers = educational_repository.get_collective_offers_for_filters(
-            user_id=user_id,
-            user_is_admin=user_is_admin,
+            user_id=parameters.user_id,
+            user_is_admin=parameters.user_is_admin,
             offers_limit=OFFERS_RECAP_LIMIT,
-            offerer_id=offerer_id,
-            status=status,
-            venue_id=venue_id,
-            category_id=category_id,
-            name_keywords=name_keywords,
-            period_beginning_date=period_beginning_date,
-            period_ending_date=period_ending_date,
+            offerer_id=parameters.offerer_id,
+            status=parameters.status,
+            venue_id=parameters.venue_id,
+            category_id=parameters.category_id,
+            name_keywords=parameters.name_keywords,
+            period_beginning_date=parameters.period_beginning_date,
+            period_ending_date=parameters.period_ending_date,
         )
-        if offer_type is not None:
+        if parameters.offer_type is not None:
             return offers
-    if offer_type != collective_offers_serialize.CollectiveOfferType.offer:
+    if parameters.offer_type != collective_offers_serialize.CollectiveOfferType.offer:
         templates = educational_repository.get_collective_offers_template_for_filters(
-            user_id=user_id,
-            user_is_admin=user_is_admin,
+            user_id=parameters.user_id,
+            user_is_admin=parameters.user_is_admin,
             offers_limit=OFFERS_RECAP_LIMIT,
-            offerer_id=offerer_id,
-            status=status,
-            venue_id=venue_id,
-            category_id=category_id,
-            name_keywords=name_keywords,
-            period_beginning_date=period_beginning_date,
-            period_ending_date=period_ending_date,
+            offerer_id=parameters.offerer_id,
+            status=parameters.status,
+            venue_id=parameters.venue_id,
+            category_id=parameters.category_id,
+            name_keywords=parameters.name_keywords,
+            period_beginning_date=parameters.period_beginning_date,
+            period_ending_date=parameters.period_ending_date,
         )
-        if offer_type is not None:
+        if parameters.offer_type is not None:
             return templates
     offer_index = 0
     template_index = 0

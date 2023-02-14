@@ -37,18 +37,19 @@ logger = logging.getLogger(__name__)
 def get_collective_offers(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> collective_offers_serialize.ListCollectiveOffersResponseModel:
-    capped_offers = educational_api_offer.list_collective_offers_for_pro_user(
-        user_id=current_user.id,
-        user_is_admin=current_user.has_admin_role,
-        category_id=query.categoryId,
-        offerer_id=query.offerer_id,
-        venue_id=query.venue_id,
-        name_keywords=query.nameOrIsbn,
-        status=query.status,
-        period_beginning_date=query.period_beginning_date,
-        period_ending_date=query.period_ending_date,
-        offer_type=query.collective_offer_type,
-    )
+    offer_parameters = collective_offers_serialize.CollectiveOfferProUserParameters()
+    offer_parameters.user_id = current_user.id
+    offer_parameters.user_is_admin = current_user.has_admin_role
+    offer_parameters.category_id = query.categoryId
+    offer_parameters.offerer_id = query.offerer_id
+    offer_parameters.venue_id = query.venue_id
+    offer_parameters.name_keywords = query.nameOrIsbn
+    offer_parameters.status = query.status
+    offer_parameters.period_beginning_date = query.period_beginning_date
+    offer_parameters.period_ending_date = query.period_ending_date
+    offer_parameters.offer_type = query.collective_offer_type
+
+    capped_offers = educational_api_offer.list_collective_offers_for_pro_user(offer_parameters)
 
     return collective_offers_serialize.ListCollectiveOffersResponseModel(
         __root__=collective_offers_serialize.serialize_collective_offers_capped(capped_offers)

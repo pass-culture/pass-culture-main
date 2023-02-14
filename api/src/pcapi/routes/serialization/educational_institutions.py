@@ -34,3 +34,12 @@ class EducationalInstitutionsQueryModel(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
+
+
+class EducationalInstitutionParameters:
+    educational_institution_id: int | None
+    name: str | None
+    institution_type: str | None
+    city: str | None
+    postal_code: str | None
+    limit: int

@@ -695,6 +695,13 @@ class CollectiveStock(PcObject, Base, Model):
         return False
 
 
+class UpdatableFieldFromStockDataParameters:
+    stock: CollectiveStock
+    stock_data: dict
+    beginning: datetime | None
+    booking_limit_datetime: datetime | None
+
+
 class EducationalInstitution(PcObject, Base, Model):
     __tablename__ = "educational_institution"
 
@@ -772,6 +779,13 @@ class EducationalDeposit(PcObject, Base, Model):
             raise exceptions.InsufficientTemporaryFund()
 
         return
+
+
+class EducationalDepositParameters:
+    educational_year_id: str
+    educational_institution_id: int
+    deposit_amount: int
+    ministry: Ministry
 
 
 class EducationalRedactor(PcObject, Base, Model):

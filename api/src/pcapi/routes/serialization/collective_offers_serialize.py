@@ -671,3 +671,16 @@ class AttachImageResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class CollectiveOfferProUserParameters:
+    user_id: int
+    user_is_admin: bool
+    category_id: str | None
+    offerer_id: int | None
+    venue_id: int | None = None
+    name_keywords: str | None = None
+    status: str | None = None
+    period_beginning_date: str | None = None
+    period_ending_date: str | None = None
+    offer_type: CollectiveOfferType | None = None
