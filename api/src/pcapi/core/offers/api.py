@@ -456,7 +456,7 @@ def _get_or_create_price_category(price: decimal.Decimal, offer: models.Offer) -
     if not price_category:
         label = f"Tarif {len(offer.priceCategories) + 1}"
         return models.PriceCategory(
-            price=price, offer=offer, priceCategoryLabel=_get_or_create_label(label, offer.venue)
+            price=price, offer=offer, priceCategoryLabel=get_or_create_label(label, offer.venue)
         )
     return price_category
 
@@ -1179,7 +1179,7 @@ def batch_delete_draft_offers(query: BaseQuery) -> None:
     db.session.commit()
 
 
-def _get_or_create_label(label: str, venue: offerers_models.Venue) -> models.PriceCategoryLabel:
+def get_or_create_label(label: str, venue: offerers_models.Venue) -> models.PriceCategoryLabel:
     price_category_label = models.PriceCategoryLabel.query.filter_by(label=label, venue=venue).one_or_none()
     if not price_category_label:
         return models.PriceCategoryLabel(label=label, venue=venue)
@@ -1188,7 +1188,7 @@ def _get_or_create_label(label: str, venue: offerers_models.Venue) -> models.Pri
 
 def create_price_category(offer: models.Offer, label: str, price: decimal.Decimal) -> models.PriceCategory:
     validation.check_stock_price(price, offer)
-    price_category_label = _get_or_create_label(label, offer.venue)
+    price_category_label = get_or_create_label(label, offer.venue)
     created_price_category = models.PriceCategory(offer=offer, price=price, priceCategoryLabel=price_category_label)
     repository.add_to_session(created_price_category)
     return created_price_category
@@ -1208,7 +1208,7 @@ def edit_price_category(
         price_category.price = price
 
     if label is not UNCHANGED and label != price_category.label:
-        price_category_label = _get_or_create_label(label, offer.venue)
+        price_category_label = get_or_create_label(label, offer.venue)
         price_category.priceCategoryLabel = price_category_label
 
     repository.add_to_session(price_category)
