@@ -1,11 +1,15 @@
 import datetime
 from functools import partial
 
+from flask import flash
+from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
 import sqlalchemy as sa
 
+from pcapi.core.bookings import api as bookings_api
+from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.finance import models as finance_models
@@ -18,6 +22,7 @@ from pcapi.utils.clean_accents import clean_accents
 
 from . import search_utils
 from . import utils
+from .forms import empty as empty_forms
 from .forms import individual_booking as individual_booking_forms
 
 
@@ -25,7 +30,7 @@ individual_bookings_blueprint = utils.child_backoffice_blueprint(
     "individual_bookings",
     __name__,
     url_prefix="/individual-bookings",
-    permission=perm_models.Permissions.MANAGE_BOOKINGS,
+    permission=perm_models.Permissions.READ_BOOKINGS,
 )
 
 
@@ -167,4 +172,46 @@ def list_individual_bookings() -> utils.BackofficeResponse:
         rows=paginated_bookings,
         form=form,
         next_pages_urls=next_pages_urls,
+        mark_as_used_booking_form=empty_forms.EmptyForm(),
+        cancel_booking_form=empty_forms.EmptyForm(),
     )
+
+
+def _redirect_after_individual_booking_action() -> utils.BackofficeResponse:
+    if request.referrer:
+        return redirect(request.referrer, code=303)
+
+    return redirect(url_for("backoffice_v3_web.individual_bookings.list_individual_bookings"), code=303)
+
+
+@individual_bookings_blueprint.route("/<int:booking_id>/mark-as-used", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
+    booking = bookings_models.Booking.query.get_or_404(booking_id)
+    if booking.status != bookings_models.BookingStatus.CANCELLED:
+        flash("Impossible de valider une réservation qui n'est pas annulée", "warning")
+        return _redirect_after_individual_booking_action()
+
+    bookings_api.mark_as_used_with_uncancelling(booking)
+
+    flash(f"La réservation {booking.token} a été validée", "success")
+    return _redirect_after_individual_booking_action()
+
+
+@individual_bookings_blueprint.route("/<int:booking_id>/cancel", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
+    booking = bookings_models.Booking.query.get_or_404(booking_id)
+
+    try:
+        bookings_api.mark_as_cancelled(booking)
+    except bookings_exceptions.BookingIsAlreadyCancelled:
+        flash("Impossible d'annuler une réservation déjà annulée", "warning")
+    except bookings_exceptions.BookingIsAlreadyRefunded:
+        flash("Impossible d'annuler une réservation remboursée", "warning")
+    except bookings_exceptions.BookingIsAlreadyUsed:
+        flash("Impossible d'annuler une réservation déjà utilisée", "warning")
+    else:
+        flash(f"La réservation {booking.token} a été annulée", "success")
+
+    return _redirect_after_individual_booking_action()
