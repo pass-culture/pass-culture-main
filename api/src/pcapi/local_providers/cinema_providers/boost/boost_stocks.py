@@ -107,6 +107,7 @@ class BoostStocks(LocalProvider):
         stock.offerId = cast(int, self.last_offer_id)
         # a pydantic validator has already converted the showDate to a UTC datetime
         stock.beginningDatetime = self.showtime_details.showDate
+        stock.bookingLimitDatetime = self.showtime_details.showDate
 
         is_new_stock_to_insert = stock.id is None
         if is_new_stock_to_insert:
