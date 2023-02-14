@@ -4,6 +4,7 @@ import sqlalchemy as sa
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.clean_accents import clean_accents
 
 from . import blueprint
 
@@ -28,7 +29,7 @@ def autocomplete_offerers() -> AutocompleteResponse:
     if len(query_string) < 2:
         return AutocompleteResponse(items=[])
 
-    filters = offerers_models.Offerer.name.ilike(f"%{query_string}%")
+    filters = sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{clean_accents(query_string)}%")
 
     if query_string.isnumeric() and len(query_string) <= 9:
         filters = sa.or_(filters, offerers_models.Offerer.siren.like(f"{query_string}%"))
@@ -56,7 +57,7 @@ def autocomplete_venues() -> AutocompleteResponse:
     if not query_string or len(query_string) < 2:
         return AutocompleteResponse(items=[])
 
-    filters = offerers_models.Venue.name.ilike(f"%{query_string}%")
+    filters = sa.func.unaccent(offerers_models.Venue.name).ilike(f"%{clean_accents(query_string)}%")
 
     if query_string.isnumeric() and len(query_string) <= 14:
         filters = sa.or_(filters, offerers_models.Venue.siret.like(f"{query_string}%"))
