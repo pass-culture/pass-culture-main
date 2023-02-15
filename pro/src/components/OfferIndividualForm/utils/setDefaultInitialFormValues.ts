@@ -5,7 +5,7 @@ import {
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
-const setDefaultInitialFormValues = (
+export const setDefaultInitialFormValues = (
   values: IOfferIndividualFormValues,
   offererNames: TOffererName[],
   offererId: string | null,
@@ -23,14 +23,16 @@ const setDefaultInitialFormValues = (
     initialOffererId = offererId
   }
 
-  let initialVenueId = FORM_DEFAULT_VALUES.venueId
+  const initialVenueId =
+    venueId ??
+    (venueList.length === 1 ? venueList[0].id : FORM_DEFAULT_VALUES.venueId)
   let initialWithdrawalDetails = FORM_DEFAULT_VALUES.withdrawalDetails
   let initialAccessibility = FORM_DEFAULT_VALUES.accessibility
   let initialIsVenueVirtual
 
-  const venue = venueList.find(venue => venue.id === venueId)
-  if (venueId && venue) {
-    initialVenueId = venueId
+  const venue = venueList.find(venue => venue.id === initialVenueId)
+
+  if (initialVenueId && venue) {
     initialAccessibility = venue.accessibility
     initialIsVenueVirtual = venue.isVirtual
 

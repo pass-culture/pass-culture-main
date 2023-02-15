@@ -83,6 +83,7 @@ const OfferIndividualForm = ({
 
   const { offer } = useOfferIndividualContext()
   const providerName = offer?.lastProviderName
+
   return (
     <>
       {providerName && (
