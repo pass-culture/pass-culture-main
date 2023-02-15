@@ -596,6 +596,7 @@ describe('screens:StocksEvent:Edition', () => {
     expect(api.deleteStock).not.toHaveBeenCalled()
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
   })
+
   it('should display draft success message on save button when stock form is empty and redirect to next page', async () => {
     renderStockEventScreen()
     apiOffer.stocks = []
