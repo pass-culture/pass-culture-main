@@ -56,7 +56,7 @@ const StockSection = ({ offer }: IStockSection): JSX.Element => {
   return (
     <>
       <SummaryLayout.Section
-        title="Stocks et prix"
+        title={offer.isEvent ? 'Dates et capacité' : 'Stocks et prix'}
         editLink={editLink}
         onLinkClick={logEditEvent}
         aria-label="Modifier stock et prix"
