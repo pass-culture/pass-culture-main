@@ -13,7 +13,7 @@ class PcBackofficeApp {
   }
 
   bindEvents = () => {
-    this.$forms.forEach(($form) => {
+    [...this.$forms].forEach(($form) => {
       $form.addEventListener("submit", (event) => {
         event.preventDefault();
         const form = event.target;
