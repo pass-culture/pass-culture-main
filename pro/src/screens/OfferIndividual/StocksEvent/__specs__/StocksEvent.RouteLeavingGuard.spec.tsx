@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { generatePath, Route } from 'react-router'
+import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -205,7 +205,7 @@ describe('screens:StocksEvent', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape précédente' })
     )
-    await userEvent.click(screen.getByText('Ne pas enregistrer'))
+    await userEvent.click(screen.getByText('Quitter la page'))
 
     expect(await screen.findByText('Previous page')).toBeInTheDocument()
     expect(api.upsertStocks).not.toHaveBeenCalled()
@@ -221,7 +221,7 @@ describe('screens:StocksEvent', () => {
 
     await userEvent.click(screen.getByText('Go outside !'))
 
-    await userEvent.click(screen.getByText('Rester sur cette page'))
+    await userEvent.click(screen.getByText('Rester sur la page'))
 
     expect(screen.queryByTestId('stock-event-form')).toBeInTheDocument()
   })
@@ -236,7 +236,7 @@ describe('screens:StocksEvent', () => {
 
     await userEvent.click(screen.getByText('Go outside !'))
 
-    await userEvent.click(screen.getByText('Poursuivre la navigation'))
+    await userEvent.click(screen.getByText('Quitter la page'))
 
     expect(api.upsertStocks).toHaveBeenCalledTimes(0)
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
@@ -257,7 +257,7 @@ describe('screens:StocksEvent', () => {
 
     await userEvent.click(screen.getByText('Go outside !'))
 
-    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
+    await userEvent.click(screen.getByText('Quitter la page'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
@@ -272,143 +272,5 @@ describe('screens:StocksEvent', () => {
         used: 'RouteLeavingGuard',
       }
     )
-  })
-
-  it('should be able to submit from RouteLeavingGuard in creation', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-
-    renderStockEventScreen(props, contextValue)
-    await userEvent.click(screen.getByLabelText('Date', { exact: true }))
-    await userEvent.click(await screen.getByText(today.getDate()))
-    await userEvent.click(screen.getByLabelText('Horaire'))
-    await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
-
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    expect(
-      screen.getByText(
-        'Si vous quittez, les informations saisies ne seront pas sauvegardées dans votre brouillon.'
-      )
-    ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-
-    expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
-  })
-
-  it('should be able to submit from RouteLeavingGuard in draft', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-
-    renderStockEventScreen(
-      props,
-      contextValue,
-      generatePath(
-        getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        }),
-        { offerId: 'AA' }
-      )
-    )
-    await userEvent.click(screen.getByLabelText('Date', { exact: true }))
-    await userEvent.click(await screen.getByText(today.getDate()))
-    await userEvent.click(screen.getByLabelText('Horaire'))
-    await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
-
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    expect(
-      screen.getByText(
-        'Si vous quittez, les informations saisies ne seront pas sauvegardées dans votre brouillon.'
-      )
-    ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-
-    expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
-  })
-
-  it('should track when submitting from RouteLeavingGuard in draft', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-
-    renderStockEventScreen(
-      props,
-      contextValue,
-      generatePath(
-        getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        }),
-        { offerId: 'AA' }
-      )
-    )
-    await userEvent.click(screen.getByLabelText('Date', { exact: true }))
-    await userEvent.click(await screen.getByText(today.getDate()))
-    await userEvent.click(screen.getByLabelText('Horaire'))
-    await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
-
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'stocks',
-        isDraft: true,
-        isEdition: true,
-        offerId: 'OFFER_ID',
-        to: '/outside',
-        used: 'RouteLeavingGuard',
-      }
-    )
-  })
-
-  it('should be able to submit from RouteLeavingGuard in edition', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-
-    renderStockEventScreen(
-      props,
-      contextValue,
-      generatePath(
-        getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.EDITION,
-        }),
-        { offerId: 'AA' }
-      )
-    )
-    await userEvent.click(screen.getByLabelText('Date', { exact: true }))
-    await userEvent.click(await screen.getByText(today.getDate()))
-    await userEvent.click(screen.getByLabelText('Horaire'))
-    await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
-
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    expect(
-      screen.getByText(
-        'Si vous quittez, les informations saisies ne seront pas sauvegardées.'
-      )
-    ).toBeInTheDocument()
-    await userEvent.click(
-      screen.getAllByText('Enregistrer les modifications')[1]
-    )
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-
-    expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
   })
 })

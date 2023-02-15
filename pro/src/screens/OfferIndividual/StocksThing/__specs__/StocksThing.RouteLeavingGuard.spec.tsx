@@ -197,38 +197,10 @@ describe('screens:StocksThing', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape précédente' })
     )
-    await userEvent.click(screen.getByText('Poursuivre la navigation'))
+    await userEvent.click(screen.getByText('Quitter la page'))
 
     expect(await screen.findByText('Previous page')).toBeInTheDocument()
     expect(api.upsertStocks).not.toHaveBeenCalled()
-  })
-
-  it('should track when quitting on "Étape précédente"', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-
-    renderStockThingScreen(props, contextValue)
-
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape précédente' })
-    )
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'stocks',
-        isDraft: true,
-        isEdition: false,
-        offerId: 'OFFER_ID',
-        to: 'informations',
-        used: 'RouteLeavingGuard',
-      }
-    )
   })
 
   it('should be able to stay on stock form after click on "Annuler"', async () => {
@@ -241,7 +213,7 @@ describe('screens:StocksThing', () => {
 
     await userEvent.click(screen.getByText('Go outside !'))
 
-    await userEvent.click(screen.getByText('Rester sur cette page'))
+    await userEvent.click(screen.getByText('Rester sur la page'))
 
     expect(screen.getByTestId('stock-thing-form')).toBeInTheDocument()
   })
@@ -256,10 +228,12 @@ describe('screens:StocksThing', () => {
 
     await userEvent.click(screen.getByText('Go outside !'))
     expect(
-      screen.getByText('Des erreurs sont présentes sur cette page')
+      screen.getByText(
+        'Restez sur la page et cliquez sur "Sauvegarder le brouillon" pour ne rien perdre de vos modifications.'
+      )
     ).toBeInTheDocument()
 
-    await userEvent.click(screen.getByText('Poursuivre la navigation'))
+    await userEvent.click(screen.getByText('Quitter la page'))
     expect(api.upsertStocks).toHaveBeenCalledTimes(0)
 
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
@@ -274,7 +248,7 @@ describe('screens:StocksThing', () => {
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(screen.getByText('Go outside !'))
 
-    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
+    await userEvent.click(screen.getByText('Quitter la page'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
@@ -289,91 +263,6 @@ describe('screens:StocksThing', () => {
         used: 'RouteLeavingGuard',
       }
     )
-  })
-
-  it('should be able to submit from RouteLeavingGuard in creation', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-
-    renderStockThingScreen(props, contextValue)
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
-
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    expect(
-      screen.getByText(
-        'Si vous quittez, les informations saisies ne seront pas sauvegardées dans votre brouillon.'
-      )
-    ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-
-    expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
-  })
-
-  it('should be able to submit from RouteLeavingGuard in draft', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-
-    renderStockThingScreen(
-      props,
-      contextValue,
-      generatePath(
-        getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        }),
-        { offerId: 'AA' }
-      )
-    )
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
-
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    expect(
-      screen.getByText(
-        'Si vous quittez, les informations saisies ne seront pas sauvegardées dans votre brouillon.'
-      )
-    ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-
-    expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
-  })
-
-  it('should be able to submit from RouteLeavingGuard in edition', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-
-    renderStockThingScreen(
-      props,
-      contextValue,
-      generatePath(
-        getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.EDITION,
-        }),
-        { offerId: 'AA' }
-      )
-    )
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
-
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    expect(
-      screen.getByText(
-        'Si vous quittez, les informations saisies ne seront pas sauvegardées.'
-      )
-    ).toBeInTheDocument()
-    await userEvent.click(
-      screen.getAllByText('Enregistrer les modifications')[1]
-    )
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-
-    expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
   })
 
   it('should be able to submit from Action Bar without Guard after changing price in draft', async () => {

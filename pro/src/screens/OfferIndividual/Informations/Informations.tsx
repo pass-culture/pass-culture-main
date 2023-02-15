@@ -83,10 +83,6 @@ const Informations = ({
     'WIP_ENABLE_MULTI_PRICE_STOCKS'
   )
   const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
-  const [
-    isSubmittingFromRouteLeavingGuard,
-    setIsSubmittingFromRouteLeavingGuard,
-  ] = useState<boolean>(false)
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
   const { search } = useLocation()
@@ -172,35 +168,33 @@ const Informations = ({
           ? 'Vos modifications ont bien été enregistrées'
           : 'Brouillon sauvegardé dans la liste des offres'
       )
-      if (!isSubmittingFromRouteLeavingGuard) {
-        // replace url to fix back button
-        navigate(
-          getOfferIndividualUrl({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            offerId: receivedOfferId,
-            mode,
-          }),
-          { replace: true }
-        )
-
-        navigate(
-          getOfferIndividualUrl({
-            offerId: receivedOfferId,
-            step: nextStep,
-            mode,
-          })
-        )
-        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-          from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          to: nextStep,
-          used: isSubmittingDraft
-            ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
-            : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-          isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-          isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      // replace url to fix back button
+      navigate(
+        getOfferIndividualUrl({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           offerId: receivedOfferId,
+          mode,
+        }),
+        { replace: true }
+      )
+
+      navigate(
+        getOfferIndividualUrl({
+          offerId: receivedOfferId,
+          step: nextStep,
+          mode,
         })
-      }
+      )
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        to: nextStep,
+        used: isSubmittingDraft
+          ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
+          : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        offerId: receivedOfferId,
+      })
     } else {
       formik.setErrors(payload.errors)
     }
@@ -268,12 +262,6 @@ const Informations = ({
       </FormLayout>
       <RouteLeavingGuardOfferIndividual
         when={formik.dirty && !isClickingFromActionBar}
-        saveForm={formik.submitForm}
-        setIsSubmittingFromRouteLeavingGuard={
-          setIsSubmittingFromRouteLeavingGuard
-        }
-        mode={mode}
-        isFormValid={formik.isValid}
         tracking={nextLocation =>
           logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
             from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -285,7 +273,6 @@ const Informations = ({
             offerId: offer?.id,
           })
         }
-        hasOfferBeenCreated={!!offer?.id}
       />
     </FormikProvider>
   )

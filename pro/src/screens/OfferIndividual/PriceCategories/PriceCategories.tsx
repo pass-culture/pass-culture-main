@@ -75,10 +75,6 @@ export const shouldDisplayConfirmChangeOnPrice = (
 const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
   const { setOffer } = useOfferIndividualContext()
   const { logEvent } = useAnalytics()
-  const [
-    isSubmittingFromRouteLeavingGuard,
-    setIsSubmittingFromRouteLeavingGuard,
-  ] = useState<boolean>(false)
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
   const navigate = useNavigate()
@@ -116,9 +112,6 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
 
   const afterSubmitCallback = () => {
     notify.success(getSuccessMessage(mode))
-    if (isSubmittingFromRouteLeavingGuard) {
-      return
-    }
     const afterSubmitUrl = getOfferIndividualUrl({
       offerId: offer.id,
       step:
@@ -243,13 +236,6 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
       </FormLayout>
       <RouteLeavingGuardOfferIndividual
         when={formik.dirty && !isClickingFromActionBar}
-        saveForm={formik.submitForm}
-        setIsSubmittingFromRouteLeavingGuard={
-          setIsSubmittingFromRouteLeavingGuard
-        }
-        mode={mode}
-        isFormValid={formik.isValid}
-        hasOfferBeenCreated
         tracking={nextLocation =>
           logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
             from: OFFER_WIZARD_STEP_IDS.TARIFS,

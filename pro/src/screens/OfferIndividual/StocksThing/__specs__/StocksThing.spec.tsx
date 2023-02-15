@@ -357,6 +357,7 @@ describe('screens:StocksThing', () => {
         ],
       })
     })
+
     it('should display an error when activation code file is incorrect', async () => {
       jest.spyOn(api, 'upsertStocks').mockResolvedValue({
         stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
