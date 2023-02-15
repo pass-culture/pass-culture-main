@@ -2189,31 +2189,6 @@ class GetOffersBookedByFraudulentUsersTest:
         assert set(offers) == {offer_booked_by_both, offer_booked_by_fraudulent_users}
 
 
-class FindBookingsByFraudulentUsersTest:
-    def test_returns_only_bookings_by_fraudulent_users(self):
-        # Given
-        fraudulent_beneficiary_user = users_factories.BeneficiaryGrant18Factory(email="jesuisunefraude@example.com")
-        another_fraudulent_beneficiary_user = users_factories.BeneficiaryGrant18Factory(
-            email="jesuisuneautrefraude@example.com"
-        )
-        beneficiary_user = users_factories.BeneficiaryGrant18Factory(email="jenesuispasunefraude@EXAmple.com")
-
-        booking_booked_by_fraudulent_user = bookings_factories.BookingFactory(user=fraudulent_beneficiary_user)
-        another_booking_booked_by_fraudulent_user = bookings_factories.BookingFactory(
-            user=another_fraudulent_beneficiary_user
-        )
-        bookings_factories.BookingFactory(user=beneficiary_user, stock__price=1)
-
-        # When
-        bookings = booking_repository.find_cancellable_bookings_by_beneficiaries(
-            [fraudulent_beneficiary_user, another_fraudulent_beneficiary_user]
-        )
-
-        # Then
-        assert len(bookings) == 2
-        assert set(bookings) == {booking_booked_by_fraudulent_user, another_booking_booked_by_fraudulent_user}
-
-
 class FindExpiringBookingsTest:
     def test_find_expired_bookings_before_and_after_enabling_feature_flag(self):
         with freeze_time("2021-08-01 15:00:00") as frozen_time:
