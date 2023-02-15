@@ -1,4 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
+import isEqual from 'lodash/isEqual'
 import React, { useState, useEffect } from 'react'
 
 import { api } from 'apiClient/api'
@@ -262,8 +263,8 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   })
 
   const isFormEmpty = () => {
-    return formik.values.stocks.every(
-      val => val === STOCK_EVENT_FORM_DEFAULT_VALUES
+    return formik.values.stocks.every(val =>
+      isEqual(val, STOCK_EVENT_FORM_DEFAULT_VALUES)
     )
   }
 

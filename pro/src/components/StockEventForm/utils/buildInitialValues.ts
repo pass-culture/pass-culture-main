@@ -42,8 +42,10 @@ export const buildSingleInitialValues = ({
       offerStatus,
     }),
   }
-  const defaultPriceCategoryOption =
-    priceCategoriesOptions.length === 1 ? priceCategoriesOptions[0] : null
+  const defaultPriceCategoryOptionId =
+    isPriceCategoriesActive && priceCategoriesOptions.length === 1
+      ? priceCategoriesOptions[0].value
+      : ''
 
   return {
     ...hiddenValues,
@@ -71,7 +73,7 @@ export const buildSingleInitialValues = ({
     price: isPriceCategoriesActive ? '' : stock.price ?? '',
     priceCategoryId: isPriceCategoriesActive
       ? stock.priceCategoryId
-        ? String(stock.priceCategoryId) ?? defaultPriceCategoryOption
+        ? String(stock.priceCategoryId) ?? defaultPriceCategoryOptionId
         : ''
       : '',
   }
@@ -91,7 +93,17 @@ export const buildInitialValues = ({
   isPriceCategoriesActive,
 }: IBuildInitialValuesArgs): { stocks: IStockEventFormValues[] } => {
   if (offerStocks.length === 0) {
-    return { stocks: [STOCK_EVENT_FORM_DEFAULT_VALUES] }
+    return {
+      stocks: [
+        {
+          ...STOCK_EVENT_FORM_DEFAULT_VALUES,
+          priceCategoryId:
+            isPriceCategoriesActive && priceCategoriesOptions.length === 1
+              ? String(priceCategoriesOptions[0].value)
+              : '',
+        },
+      ],
+    }
   }
 
   return {
