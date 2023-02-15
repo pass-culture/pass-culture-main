@@ -41,6 +41,7 @@ import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.workers import push_notification_job
 from pcapi.workers import user_emails_job
 
+from . import constants
 from . import exceptions
 from . import validation
 from .exceptions import BookingIsAlreadyCancelled
@@ -511,3 +512,23 @@ def get_individual_bookings_from_stock(stock_id: int) -> typing.Generator[Bookin
 
     for booking in query.yield_per(1_000):
         yield booking
+
+
+def archive_old_activation_code_bookings() -> None:
+    old_bookings = Booking.query.join(Booking.stock, Stock.offer, Booking.activationCode).filter(
+        offers_models.Offer.isDigital.is_(True),  # type: ignore [attr-defined]
+        offers_models.ActivationCode.id.isnot(None),
+        Booking.dateCreated < datetime.datetime.utcnow() - constants.ARCHIVE_DELAY,
+    )
+    number_updated = Booking.query.filter(Booking.id.in_(old_bookings.with_entities(Booking.id))).update(
+        {"displayAsEnded": True},
+        synchronize_session=False,
+    )
+    db.session.commit()
+
+    logger.info(
+        "Old activation code bookings archived (displayAsEnded=True)",
+        extra={
+            "archivedBookings": number_updated,
+        },
+    )
