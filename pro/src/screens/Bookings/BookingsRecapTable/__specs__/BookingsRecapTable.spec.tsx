@@ -2,11 +2,14 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React, { ComponentProps } from 'react'
 
+import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { EMPTY_FILTER_VALUE } from 'screens/Bookings/BookingsRecapTable/components/Filters/_constants'
 import * as constants from 'screens/Bookings/BookingsRecapTable/constants/NB_BOOKINGS_PER_PAGE'
 import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import { bookingRecapFactory } from 'utils/apiFactories'
+import { collectiveBookingRecapFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import BookingsRecapTable from '../BookingsRecapTable'
@@ -240,5 +243,40 @@ describe('components | BookingsRecapTable', () => {
 
     expect(spyOnFilterBookingsRecap).toHaveBeenCalled()
     expect(bookingRow[0]).toHaveTextContent('Le nom de l’offre')
+  })
+
+  it('should log event when cliking collective row', async () => {
+    // Given
+    const bookingsRecap = [
+      collectiveBookingRecapFactory({ bookingId: 'mon booking id' }),
+    ]
+    jest.spyOn(filterBookingsRecap, 'default').mockReturnValue(bookingsRecap)
+
+    const mockLogEvent = jest.fn()
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      ...jest.requireActual('hooks/useAnalytics'),
+      logEvent: mockLogEvent,
+    }))
+
+    const props: Props = {
+      ...defaultProps,
+      audience: Audience.COLLECTIVE,
+      bookingsRecap: bookingsRecap,
+    }
+
+    // When
+    renderBookingRecap(props)
+    await userEvent.click(screen.getAllByRole('button')[1])
+
+    // Then
+    const bookingRow = screen.getAllByRole('cell')
+    expect(bookingRow[0]).toHaveTextContent('mon booking id')
+    await userEvent.click(bookingRow[0])
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      CollectiveBookingsEvents.CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS
+    )
   })
 })
