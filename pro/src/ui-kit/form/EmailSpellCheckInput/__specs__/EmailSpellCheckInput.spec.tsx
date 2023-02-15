@@ -29,7 +29,7 @@ const renderEmailSpellCheckInput = () => {
   )
 }
 
-describe('PhoneNumberInput', () => {
+describe('EmailSpellCheckInput', () => {
   it('The email suggestion should not be displayed when the field is empty', async () => {
     renderEmailSpellCheckInput()
     const emailField = screen.getByLabelText('Email')
