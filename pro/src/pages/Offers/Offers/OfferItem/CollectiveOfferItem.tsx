@@ -79,12 +79,13 @@ const CollectiveOfferItem = ({
             offerEventDate={offer.stocks[0].beginningDatetime}
           />
         )}
-
-      <EditOfferCell
-        offer={offer}
-        isOfferEditable={isOfferEditable}
-        editionOfferLink={editionOfferLink}
-      />
+      {offer.isEditable && (
+        <EditOfferCell
+          offer={offer}
+          isOfferEditable={isOfferEditable}
+          editionOfferLink={editionOfferLink}
+        />
+      )}
     </>
   )
 }
