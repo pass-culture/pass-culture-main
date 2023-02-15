@@ -180,7 +180,7 @@ def is_ended_booking(booking: Booking) -> bool:
         and booking.status != BookingStatus.CANCELLED
         and booking.stock.beginningDatetime >= datetime.utcnow()
     ):
-        # consider future events events as "ongoing" even if they are used
+        # consider future events as "ongoing" even if they are used
         return False
 
     if booking.stock.canHaveActivationCodes and booking.activationCode:

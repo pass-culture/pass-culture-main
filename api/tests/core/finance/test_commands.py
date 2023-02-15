@@ -7,12 +7,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.utils import human_ids
 
 from tests.conftest import clean_database
-
-
-def run_command(app, command_name, *args):
-    runner = app.test_cli_runner()
-    args = (command_name, *args)
-    return runner.invoke(args=args)
+from tests.test_utils import run_command
 
 
 class AddCustomOfferReimbursementRuleTest:

@@ -4,7 +4,7 @@ import typing
 
 import pytz
 import sentry_sdk
-from sqlalchemy.orm import Query
+import sqlalchemy as sa
 
 from pcapi.core import search
 from pcapi.core.bookings import constants
@@ -442,7 +442,7 @@ def recompute_dnBookedQuantity(stock_ids: list[int]) -> None:
     db.session.execute(query, {"stock_ids": tuple(stock_ids)})
 
 
-def _logs_for_data_purpose(collective_bookings_subquery: Query) -> None:
+def _logs_for_data_purpose(collective_bookings_subquery: sa.orm.Query) -> None:
     bookings_information_tuple = collective_bookings_subquery.with_entities(
         CollectiveBooking.id, CollectiveBooking.collectiveStockId
     )
