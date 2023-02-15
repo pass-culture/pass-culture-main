@@ -757,7 +757,7 @@ class CommentOffererTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, unauthorized_helpers.MissingCSRFHelper):
         endpoint = "backoffice_v3_web.offerer.comment_offerer"
         endpoint_kwargs = {"offerer_id": 1}
-        needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_add_comment(self, authenticated_client, legit_user, offerer):
         comment = "Code APE non éligible"
