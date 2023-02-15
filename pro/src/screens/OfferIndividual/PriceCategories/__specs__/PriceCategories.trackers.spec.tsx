@@ -302,62 +302,6 @@ describe('trackers for PriceCategories', () => {
     )
   })
 
-  it('should track when clicking from routeLeavingGuard', async () => {
-    renderPriceCategories({ offer: individualOfferFactory({ id: 'AA' }) })
-
-    await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif'),
-      'Mon tarif'
-    )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
-
-    await userEvent.click(screen.getByText('Étape précédente'))
-
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'tarifs',
-        isDraft: true,
-        isEdition: false,
-        offerId: 'AA',
-        to: 'informations',
-        used: 'RouteLeavingGuard',
-      }
-    )
-  })
-
-  it('should track when clicking from routeLeavingGuard and going outside', async () => {
-    renderPriceCategories({ offer: individualOfferFactory({ id: 'AA' }) })
-
-    await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif'),
-      'Mon tarif'
-    )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
-
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'tarifs',
-        isDraft: true,
-        isEdition: false,
-        offerId: 'AA',
-        to: '/outside',
-        used: 'RouteLeavingGuard',
-      }
-    )
-  })
-
   it('should track when clicking from routeLeavingGuard but cancelling', async () => {
     renderPriceCategories({ offer: individualOfferFactory({ id: 'AA' }) })
 
@@ -369,7 +313,7 @@ describe('trackers for PriceCategories', () => {
 
     await userEvent.click(screen.getByText('Étape précédente'))
 
-    await userEvent.click(screen.getByText('Ne pas enregistrer'))
+    await userEvent.click(screen.getByText('Quitter la page'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(

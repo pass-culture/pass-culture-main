@@ -67,7 +67,7 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation | RouteLeavingGu
     ).toBeInTheDocument()
   })
 
-  it("should not display the confirmation model before redirection when it's not activated", async () => {
+  it("should not display the confirmation modal before redirection when it's not activated", async () => {
     // Given
     props.when = false
 

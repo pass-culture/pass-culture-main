@@ -60,10 +60,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       mode,
     })
   )
-  const [
-    isSubmittingFromRouteLeavingGuard,
-    setIsSubmittingFromRouteLeavingGuard,
-  ] = useState<boolean>(false)
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
   const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
@@ -101,21 +97,19 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         setOffer && setOffer(response.payload)
         formik.resetForm({ values: buildInitialValues(response.payload) })
       }
-      if (!isSubmittingFromRouteLeavingGuard) {
-        navigate(afterSubmitUrl)
-        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-          from: OFFER_WIZARD_STEP_IDS.STOCKS,
-          to: isSubmittingDraft
-            ? OFFER_WIZARD_STEP_IDS.STOCKS
-            : OFFER_WIZARD_STEP_IDS.SUMMARY,
-          used: isSubmittingDraft
-            ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
-            : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-          isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-          isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-          offerId: offer.id,
-        })
-      }
+      navigate(afterSubmitUrl)
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.STOCKS,
+        to: isSubmittingDraft
+          ? OFFER_WIZARD_STEP_IDS.STOCKS
+          : OFFER_WIZARD_STEP_IDS.SUMMARY,
+        used: isSubmittingDraft
+          ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
+          : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        offerId: offer.id,
+      })
     } else {
       /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors(payload.errors)
@@ -379,12 +373,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       </FormLayout>
       <RouteLeavingGuardOfferIndividual
         when={formik.dirty && !isClickingFromActionBar}
-        saveForm={formik.submitForm}
-        setIsSubmittingFromRouteLeavingGuard={
-          setIsSubmittingFromRouteLeavingGuard
-        }
-        mode={mode}
-        isFormValid={formik.isValid}
         tracking={nextLocation =>
           logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
             from: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -395,7 +383,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
             offerId: offer?.id,
           })
         }
-        hasOfferBeenCreated
       />
     </FormikProvider>
   )
