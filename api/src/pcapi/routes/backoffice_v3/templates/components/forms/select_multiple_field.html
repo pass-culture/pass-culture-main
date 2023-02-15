@@ -1,4 +1,4 @@
-<div class="form-floating">
+<div class="form-floating {{ field.name }}-2-container">
     <select multiple class="form-select pc-select" id="{{ field.name }}" name="{{ field.name }}" size="2"
             style="border-radius: 1rem!important;">
         {% for value, label, selected in field.iter_choices() %}
@@ -12,44 +12,10 @@
 
 {% block scripts %}
     <script>
-        document.getElementById('{{ field.name }}').onmousedown = function (e) {
-            e.preventDefault()
-            var select = this;
-            var scroll = select.scrollTop;
-
-            e.target.selected = !e.target.selected
-            setTimeout(function () {
-                select.scrollTop = scroll;
-            }, 0);
-            document.getElementById('{{field.name}}').focus()
-        }
-        document.getElementById('{{ field.name }}').onmousemove = function (e) {
-            e.preventDefault();
-        };
-
-       ['change', 'scroll'].forEach(function (event) {
-            document.getElementById('{{field.name}}').addEventListener(event, () => {
-                var select = document.getElementById('{{field.name}}')
-                var selected = [...select.options]
-                    .filter(option => option.selected)
-                const label = document.querySelector('label#{{ field.name }}-label');
-
-                if (selected.length > 0) {
-                    label.classList.add('is-hidden')
-                } else {
-                    label.classList.remove('is-hidden')
-                }
-            })
+      PcUtils.addLoadEvent(() => {
+        new PcSelectMultipleField({
+          $container: document.querySelector('.{{ field.name }}-2-container'),
         })
-
+      })
     </script>
-{% endblock %}
-
-{% block styles %}
-    <style>
-        .is-hidden {
-            display: none;
-        }
-
-    </style>
 {% endblock %}
