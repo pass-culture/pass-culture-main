@@ -8,7 +8,13 @@ import LegalInfos from 'components/LegalInfos/LegalInfos'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import { useModal } from 'hooks/useModal'
-import { Button, SubmitButton, TextInput, Checkbox } from 'ui-kit'
+import {
+  Button,
+  Checkbox,
+  EmailSpellCheckInput,
+  SubmitButton,
+  TextInput,
+} from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { PasswordInput, SirenInput } from 'ui-kit/form'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
@@ -55,10 +61,10 @@ const SignupForm = (): JSX.Element => {
     <FormLayout>
       <div className={styles['sign-up-form']}>
         <FormLayout.Row>
-          <TextInput
-            label="Adresse e-mail"
+          <EmailSpellCheckInput
             name="email"
             placeholder="mail@exemple.com"
+            label="Adresse e-mail"
           />
         </FormLayout.Row>
         <FormLayout.Row>
