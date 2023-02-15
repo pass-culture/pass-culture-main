@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { CircleArrowIcon } from 'icons'
 import { Button } from 'ui-kit/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { suggestEmail } from 'ui-kit/form/EmailSpellCheckInput/suggestEmail'
 import { TextInput } from 'ui-kit/form/index'
 
 import styles from './EmailSpellCheckInput.module.scss'
@@ -22,16 +23,22 @@ const EmailSpellCheckInput = <FormType,>({
   label,
   overrideInitialTip = null,
 }: IEmailSpellCheckInputProps<FormType>): JSX.Element => {
-  const { setFieldValue } = useFormikContext<FormType>()
-  const [field] = useField<string>(name)
+  const { setFieldValue, setFieldTouched } = useFormikContext<FormType>()
+  const [field, meta] = useField<string>(name)
   const [emailValidationTip, setEmailValidationTip] = useState<string | null>(
     overrideInitialTip
   )
 
   const handleEmailValidation = () => {
     if (field.value.length > 0) {
-      // This will be impremented later
-      setEmailValidationTip('marie.dupont@gmail.com')
+      const suggestion = suggestEmail(
+        field.value.toString(),
+        Boolean(meta.error)
+      )
+      if (suggestion) {
+        setEmailValidationTip(suggestion)
+      }
+      setFieldTouched(field.name, true)
     }
   }
   const resetEmailValidation = () => {
