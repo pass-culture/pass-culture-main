@@ -162,6 +162,7 @@ describe('Summary', () => {
       offer: individualOfferFactory(
         {
           id: 'AA',
+          isEvent: false,
           name: 'mon offre',
           lastProvider: {
             id: 'ciné office',
