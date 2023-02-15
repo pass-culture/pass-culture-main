@@ -1061,3 +1061,26 @@ class GetInvidualBookingsFromStockTest:
     def test_has_no_bookings(self):
         stock = offers_factories.StockFactory()
         assert not list(api.get_individual_bookings_from_stock(stock.id))
+
+
+class ArchiveOldActivationCodeBookingsTest:
+    def test_old_activation_code_bookings_are_archived(self, db_session):
+        # given
+        now = datetime.utcnow()
+        recent = now - timedelta(days=29, hours=23)
+        old = now - timedelta(days=30, hours=1)
+        offer = offers_factories.OfferFactory(url="http://example.com")
+        stock = offers_factories.StockFactory(offer=offer)
+        recent_booking = bookings_factories.BookingFactory(stock=stock, dateCreated=recent)
+        old_booking = bookings_factories.BookingFactory(stock=stock, dateCreated=old)
+        offers_factories.ActivationCodeFactory(booking=recent_booking, stock=stock)
+        offers_factories.ActivationCodeFactory(booking=old_booking, stock=stock)
+
+        # when
+        api.archive_old_activation_code_bookings()
+
+        # then
+        db_session.refresh(recent_booking)
+        db_session.refresh(old_booking)
+        assert not recent_booking.displayAsEnded
+        assert old_booking.displayAsEnded
