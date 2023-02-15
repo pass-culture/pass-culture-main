@@ -51,6 +51,7 @@ jest.mock('apiClient/api', () => ({
     getOfferer: jest.fn(),
     getVenueTypes: jest.fn(),
     listVenueProviders: jest.fn(),
+    listOffers: jest.fn(),
   },
 }))
 

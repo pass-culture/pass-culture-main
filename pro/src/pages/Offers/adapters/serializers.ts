@@ -23,7 +23,7 @@ const serializeStocks = (
       ? new Date(stock.beginningDatetime)
       : null,
     remainingQuantity: stock.remainingQuantity,
-    bookingQuantity: stock.bookingQuantity,
+    bookingQuantity: stock?.bookingQuantity,
   }))
 
 export const serializeOffers = (offers: ListOffersResponseModel): Offer[] =>
