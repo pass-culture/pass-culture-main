@@ -273,43 +273,9 @@
         })
     </script>
     <script>
-        class UserOffererValidationFilters {
-          $container
-
-          constructor($container) {
-            this.$container = $container
-            this.areUserOffererFiltersHidden = localStorage.getItem("areUserOffererFiltersHidden") === "true"
-            this.toggleSearchFilters(this.areUserOffererFiltersHidden)
-            this.bindEvents()
-          }
-
-          get $toggleFiltersButton() {
-            return this.$container.querySelector(".toggle-filters-button")
-          }
-
-          get $filters() {
-            return this.$container.querySelector(".filters")
-          }
-
-          bindEvents = () => {
-            this.$toggleFiltersButton.addEventListener(
-              "click",
-              () => {
-                console.log('hello')
-                this.areUserOffererFiltersHidden = !this.areUserOffererFiltersHidden
-                localStorage.setItem("areUserOffererFiltersHidden", `${this.areUserOffererFiltersHidden}`)
-                this.toggleSearchFilters(this.areUserOffererFiltersHidden)
-              }
-            )
-          }
-
-          toggleSearchFilters = (areFiltersHidden) => {
-            this.$toggleFiltersButton.disabled = false
-            this.$toggleFiltersButton.textContent = areFiltersHidden ? "Afficher les filtres" : "Masquer les filtres"
-            this.$filters.classList[areFiltersHidden ? 'add' : 'remove']("d-none")
-          }
-        }
-
-        new UserOffererValidationFilters(document.querySelector('.table-container-user-offerer-validation'))
+        new PcValidationFilters({
+          $container: document.querySelector('.table-container-user-offerer-validation'),
+          localStorageKey: 'areUserOffererFiltersHidden',
+        })
     </script>
 {% endblock %}

@@ -14,14 +14,17 @@
 {% extends "layouts/connected.html" %}
 
 {% block page %}
-    <div class="pt-3 px-5">
+    <div class="pt-3 px-5 table-container-offerer-validation">
         <h2 class="fw-light">Structures à valider</h2>
         <div class="col-2">
             <div class="py-2">
-                <button id="toggle-filters-button" type="submit" class="btn btn-primary"></button>
+                <button type="submit" class="btn btn-primary toggle-filters-button" disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span class="visually-hidden">Chargement...</span>
+                </button>
             </div>
         </div>
-        <div id="filters" class="d-none">
+        <div class="d-none filters">
             <div class="row px-1">
                 {{ stats_card(stats["NEW"], "nouvelle structure", "nouvelles structures") }}
                 {{ stats_card(stats["PENDING"], "structure en attente", "structures en attente") }}
@@ -164,26 +167,9 @@
 
 {% block scripts %}
     <script>
-        function toggleSearchFilters(areFiltersHidden){
-            const button = document.getElementById("toggle-filters-button");
-            const filters = document.getElementById("filters");
-            if (areFiltersHidden){
-                button.textContent = "Afficher les filtres";
-                filters.classList.add("d-none");
-            } else {
-                button.textContent = "Masquer les filtres";
-                filters.classList.remove("d-none");
-            }
-        }
-        let areOffererFiltersHidden = localStorage.getItem("areOffererFiltersHidden") === "true";
-        toggleSearchFilters(areOffererFiltersHidden);
-        document.getElementById("toggle-filters-button").addEventListener(
-            "click",
-            function() {
-                areOffererFiltersHidden = !areOffererFiltersHidden;
-                localStorage.setItem("areOffererFiltersHidden", areOffererFiltersHidden.toString());
-                toggleSearchFilters(areOffererFiltersHidden);
-            }
-        )
+      new PcValidationFilters({
+        $container: document.querySelector('.table-container-offerer-validation'),
+        localStorageKey: 'areOffererFiltersHidden'
+      })
     </script>
 {% endblock %}
