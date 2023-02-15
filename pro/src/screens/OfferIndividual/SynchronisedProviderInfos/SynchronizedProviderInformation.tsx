@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import { getProviderInfo } from 'core/Providers/utils'
@@ -39,10 +38,6 @@ const SynchronizedProviderInformation = ({
       </Banner>
     </div>
   )
-}
-
-SynchronizedProviderInformation.propTypes = {
-  providerName: PropTypes.string.isRequired,
 }
 
 export default SynchronizedProviderInformation
