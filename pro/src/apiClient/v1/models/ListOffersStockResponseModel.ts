@@ -9,5 +9,5 @@ export type ListOffersStockResponseModel = {
   nonHumanizedId: number;
   offerId: string;
   remainingQuantity: (number | string);
+  bookingQuantity?: number;
 };
-

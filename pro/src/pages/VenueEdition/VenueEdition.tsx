@@ -1,13 +1,16 @@
 import React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { OfferStatus } from 'apiClient/v1'
 import { setInitialFormValues } from 'components/VenueForm'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
+import { DEFAULT_SEARCH_FILTERS } from 'core/Offers'
 import { useGetVenue } from 'core/Venue'
 import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import { useHomePath } from 'hooks'
 import useNotification from 'hooks/useNotification'
+import useGetFilteredOffersAdapter from 'pages/Offers/adapters/useGetFilteredOffers'
 import { VenueFormScreen } from 'screens/VenueForm'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -52,13 +55,37 @@ const VenueEdition = (): JSX.Element | null => {
     error: errorVenueProviders,
     data: venueProviders,
   } = useGetVenueProviders(venueId)
+
+  const apiFilters = {
+    ...DEFAULT_SEARCH_FILTERS,
+    status: OfferStatus.ACTIVE,
+    venueId: venue?.id ?? '',
+  }
+
+  const {
+    isLoading: isLoadingVenueOffers,
+    error: errorVenueOffers,
+    data: venueOffers,
+  } = useGetFilteredOffersAdapter(apiFilters)
+
+  const hasBookingQuantity = venueOffers?.offers.some(offer => {
+    return offer.stocks.some(stock => {
+      const currentBookingQuantity = stock?.bookingQuantity
+      if (currentBookingQuantity && currentBookingQuantity > 0) {
+        return true
+      }
+      return false
+    })
+  })
+
   if (
     isLoadingVenue ||
     isLoadingVenueTypes ||
     isLoadingVenueLabels ||
     isLoadingProviders ||
     isLoadingVenueProviders ||
-    isLoadingOfferer
+    isLoadingOfferer ||
+    isLoadingVenueOffers
   ) {
     return <Spinner />
   }
@@ -69,7 +96,8 @@ const VenueEdition = (): JSX.Element | null => {
     errorVenueTypes ||
     errorVenueLabels ||
     errorVenueProviders ||
-    errorProviders
+    errorProviders ||
+    errorVenueOffers
   ) {
     const loadingError = [
       errorOfferer,

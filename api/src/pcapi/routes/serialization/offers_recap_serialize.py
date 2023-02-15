@@ -41,6 +41,7 @@ def _serialize_stock(offer_id: int, stock: OfferRecapStock) -> dict:
         "hasBookingLimitDatetimePassed": stock.has_booking_limit_datetime_passed,
         "remainingQuantity": stock.remaining_quantity,
         "beginningDatetime": stock.beginning_datetime,
+        "bookingQuantity": stock.dnBookedQuantity,
     }
 
 

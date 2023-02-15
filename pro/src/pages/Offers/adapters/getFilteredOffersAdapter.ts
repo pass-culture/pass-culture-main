@@ -5,7 +5,7 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 import { serializeOffers } from './serializers'
 
-type IPayload = {
+export type IPayload = {
   offers: Offer[]
 }
 

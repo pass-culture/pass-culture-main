@@ -191,6 +191,7 @@ class ListOffersStockResponseModel(BaseModel):
     offerId: str
     remainingQuantity: int | str
     beginningDatetime: datetime | None
+    bookingQuantity: int | None
 
     @validator("remainingQuantity", pre=True)
     def validate_remaining_quantity(cls, remainingQuantity: int | str) -> int | str:
