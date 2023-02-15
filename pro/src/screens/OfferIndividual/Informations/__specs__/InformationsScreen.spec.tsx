@@ -141,54 +141,6 @@ describe('screens:OfferIndividual::Informations', () => {
     )
   })
 
-  it('should call filterCategories when venueId is given on initial values', async () => {
-    const venue: TOfferIndividualVenue = {
-      id: 'AA',
-      name: 'Lieu AA',
-      managingOffererId: 'A',
-      isVirtual: false,
-      withdrawalDetails: '',
-      accessibility: {
-        visual: false,
-        mental: false,
-        audio: false,
-        motor: false,
-        none: true,
-      },
-      hasMissingReimbursementPoint: false,
-      hasCreatedOffer: true,
-    }
-    props.venueId = venue.id
-    contextValue.venueList = [
-      venue,
-      {
-        id: 'BB',
-        name: 'Lieu BB',
-        managingOffererId: 'A',
-        isVirtual: false,
-        withdrawalDetails: '',
-        accessibility: {
-          visual: false,
-          mental: false,
-          audio: false,
-          motor: false,
-          none: true,
-        },
-        hasMissingReimbursementPoint: false,
-        hasCreatedOffer: true,
-      },
-    ]
-
-    renderInformationsScreen(props, contextValue)
-    await screen.findByRole('heading', { name: 'Type d’offre' })
-    expect(utils.filterCategories).toHaveBeenCalledWith(
-      contextValue.categories,
-      contextValue.subCategories,
-      CATEGORY_STATUS.OFFLINE,
-      null
-    )
-  })
-
   describe('when a subCategory is selected', () => {
     beforeEach(async () => {
       const venue: TOfferIndividualVenue = {

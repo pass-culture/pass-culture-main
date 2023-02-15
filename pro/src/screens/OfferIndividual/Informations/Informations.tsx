@@ -21,11 +21,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import {
-  CATEGORY_STATUS,
-  isOfferDisabled,
-  OFFER_WIZARD_MODE,
-} from 'core/Offers'
+import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import {
   createIndividualOffer,
   getOfferIndividualAdapter,
@@ -34,7 +30,6 @@ import {
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { FORM_ERROR_MESSAGE } from 'core/shared'
-import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useNavigate, useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -99,20 +94,10 @@ const Informations = ({
           venueList
         )
       : setInitialFormValues(offer, subCategories)
-  const initialVenue: TOfferIndividualVenue | undefined = venueList.find(
-    venue => venue.id === initialValues.venueId
-  )
-  // TODO to remove once the hub that always redirects to the good url with query params is in prod
-  const legacyCategoryStatus =
-    initialVenue === undefined
-      ? CATEGORY_STATUS.ONLINE_OR_OFFLINE
-      : initialVenue.isVirtual
-      ? CATEGORY_STATUS.ONLINE
-      : CATEGORY_STATUS.OFFLINE
   const [filteredCategories, filteredSubCategories] = filterCategories(
     categories,
     subCategories,
-    offerSubtype !== null ? categoryStatus : legacyCategoryStatus,
+    categoryStatus,
     isOfferSubtypeEvent(offerSubtype)
   )
 
