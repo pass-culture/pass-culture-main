@@ -5,6 +5,7 @@ from itertools import cycle
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.models.offer_mixin import OfferStatus
 
 
 def create_offers(
@@ -27,6 +28,18 @@ def create_offers(
         collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name}",
         collectiveOffer__educational_domains=[next(domains_iterator)],
         collectiveOffer__venue=next(venue_iterator),
+    )
+    educational_factories.CollectiveOfferFactory(
+        name=f"offer {next(number_iterator)} pour {offerer.name}",
+        educational_domains=[next(domains_iterator)],
+        venue=next(venue_iterator),
+        validation=OfferStatus.REJECTED,
+    )
+    educational_factories.CollectiveOfferFactory(
+        name=f"offer {next(number_iterator)} pour {offerer.name}",
+        educational_domains=[next(domains_iterator)],
+        venue=next(venue_iterator),
+        validation=OfferStatus.PENDING,
     )
 
     # eac_2
