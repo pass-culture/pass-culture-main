@@ -201,8 +201,8 @@ describe('screens:OfferIndividual::OfferType', () => {
 
     expect(screen.getByText('Un bien physique')).toBeInTheDocument()
     expect(screen.getByText('Un bien numérique')).toBeInTheDocument()
-    expect(screen.getByText('Un évènement physique')).toBeInTheDocument()
-    expect(screen.getByText('Un évènement numérique')).toBeInTheDocument()
+    expect(screen.getByText('Un évènement physique daté')).toBeInTheDocument()
+    expect(screen.getByText('Un évènement numérique daté')).toBeInTheDocument()
   })
 
   const individualChoices = [
@@ -215,11 +215,11 @@ describe('screens:OfferIndividual::OfferType', () => {
       expectedSearch: '?offer-type=VIRTUAL_GOOD',
     },
     {
-      buttonClicked: 'Un évènement physique',
+      buttonClicked: 'Un évènement physique daté',
       expectedSearch: '?offer-type=PHYSICAL_EVENT',
     },
     {
-      buttonClicked: 'Un évènement physique',
+      buttonClicked: 'Un évènement physique daté',
       expectedSearch: '?offer-type=PHYSICAL_EVENT',
     },
   ]
@@ -259,7 +259,7 @@ describe('screens:OfferIndividual::OfferType', () => {
   it('should select physical event', async () => {
     renderOfferTypes(store)
 
-    await userEvent.click(screen.getByText('Un évènement physique'))
+    await userEvent.click(screen.getByText('Un évènement physique daté'))
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
@@ -274,7 +274,7 @@ describe('screens:OfferIndividual::OfferType', () => {
   it('should select physical good', async () => {
     renderOfferTypes(store)
 
-    await userEvent.click(screen.getByText('Un évènement numérique'))
+    await userEvent.click(screen.getByText('Un évènement numérique daté'))
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
