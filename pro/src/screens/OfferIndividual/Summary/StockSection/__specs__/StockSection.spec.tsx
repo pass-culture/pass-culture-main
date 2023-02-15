@@ -89,12 +89,14 @@ describe('Summary stock section', () => {
       setLogEvent: null,
     }))
   })
+
   describe('for general case', () => {
     it('should render sold out warning', async () => {
       props = {
         offer: individualOfferFactory(
           {
             id: 'TEST_OFFER_ID',
+            isEvent: false,
             status: OfferStatus.SOLD_OUT,
           },
           individualStockFactory({
@@ -128,6 +130,7 @@ describe('Summary stock section', () => {
           {
             id: 'TEST_OFFER_ID',
             status: OfferStatus.EXPIRED,
+            isEvent: false,
           },
           individualStockFactory({
             quantity: 0,
@@ -158,6 +161,7 @@ describe('Summary stock section', () => {
         offer: individualOfferFactory({
           id: 'TEST_OFFER_ID',
           status: OfferStatus.SOLD_OUT,
+          isEvent: false,
           stocks: [],
         }),
       }
@@ -188,6 +192,7 @@ describe('Summary stock section', () => {
           {
             id: 'TEST_OFFER_ID',
             status: OfferStatus.ACTIVE,
+            isEvent: false,
           },
           individualStockFactory({
             quantity: 10,
@@ -285,6 +290,7 @@ describe('Summary stock section', () => {
           {
             id: 'TEST_OFFER_ID',
             status: OfferStatus.ACTIVE,
+            isEvent: true,
             stocks: [
               individualStockFactory({
                 quantity: 10,
@@ -318,7 +324,7 @@ describe('Summary stock section', () => {
         )
       )
       expect(
-        screen.getByRole('heading', { name: /Stocks et prix/ })
+        screen.getByRole('heading', { name: /Dates et capacité/ })
       ).toBeInTheDocument()
       expect(screen.getAllByText(/Date limite de réservation/)).toHaveLength(2)
 
@@ -340,7 +346,7 @@ describe('Summary stock section', () => {
         )
       )
       expect(
-        screen.getByRole('heading', { name: /Stocks et prix/ })
+        screen.getByRole('heading', { name: /Dates et capacité/ })
       ).toBeInTheDocument()
       expect(screen.getAllByText(/Date limite de réservation/)).toHaveLength(2)
 
@@ -353,7 +359,7 @@ describe('Summary stock section', () => {
     it('should render edition summary (v3)', async () => {
       renderStockSection(props)
       expect(
-        screen.getByRole('heading', { name: /Stocks et prix/ })
+        screen.getByRole('heading', { name: /Dates et capacité/ })
       ).toBeInTheDocument()
       expect(screen.getAllByText(/Date limite de réservation/)).toHaveLength(2)
 
@@ -406,7 +412,7 @@ describe('Summary stock section', () => {
         )
       )
       expect(
-        screen.getByRole('heading', { name: /Stocks et prix/ })
+        screen.getByRole('heading', { name: /Dates et capacité/ })
       ).toBeInTheDocument()
       expect(screen.getAllByText(/Date limite de réservation/)).toHaveLength(2)
       const displayMore = screen.getByText('Afficher plus de dates')
