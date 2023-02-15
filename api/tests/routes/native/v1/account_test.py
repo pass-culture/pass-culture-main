@@ -264,7 +264,7 @@ class AccountTest:
             (
                 {"ENABLE_CULTURAL_SURVEY": True, "ENABLE_NATIVE_CULTURAL_SURVEY": True},
                 [],
-                True,
+                False,
             ),
             (
                 {"ENABLE_CULTURAL_SURVEY": True, "ENABLE_NATIVE_CULTURAL_SURVEY": False},
@@ -279,7 +279,7 @@ class AccountTest:
             (
                 {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": True},
                 [],
-                True,
+                False,
             ),
             (
                 {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": True},
@@ -338,7 +338,6 @@ class AccountTest:
         n_queries += 1  # get feature enable_subscription_limitation
         n_queries += 1  # count ubble beneficiary_fraud_checks
         n_queries += 1  # get bookings
-        n_queries += 1  # get feature enable_native_cultural_survey
 
         with testing.assert_num_queries(n_queries):
             response = client.get("/native/v1/me")
@@ -354,6 +353,35 @@ class AccountTest:
 
         with testing.assert_no_duplicated_queries():
             response = client.get("/native/v1/me")
+
+    def should_hide_cultural_survey_if_not_beneficiary(self, client):
+        user = users_factories.UserFactory(
+            activity=users_models.ActivityEnum.STUDENT.value,
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
+            email=self.identifier,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
+        )
+        client.with_token(user.email)
+
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["needsToFillCulturalSurvey"] is False
+
+    def should_display_cultural_survey_if_beneficiary(self, client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        client.with_token(user.email)
+
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["needsToFillCulturalSurvey"] is True
 
 
 class AccountCreationTest:
