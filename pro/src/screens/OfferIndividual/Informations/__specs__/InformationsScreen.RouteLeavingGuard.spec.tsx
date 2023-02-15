@@ -321,7 +321,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     ).toBeInTheDocument()
   })
 
-  it('should block with creation block type when form has just been touched', async () => {
+  it('should block when form has just been touched', async () => {
     renderInformationsScreen(props, contextOverride)
 
     const categorySelect = screen.getByLabelText('Catégorie')
@@ -330,223 +330,9 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.click(screen.getByText('Go outside !'))
 
     expect(
-      screen.getByText('Souhaitez-vous quitter la création d’offre ?')
-    ).toBeInTheDocument()
-  })
-
-  it('should block with internal not valid block type when form has just been touched and nav is internal', async () => {
-    renderInformationsScreen(props, contextOverride)
-
-    const categorySelect = screen.getByLabelText('Catégorie')
-    await userEvent.selectOptions(categorySelect, 'A')
-
-    await userEvent.click(screen.getByText('Go to stocks !'))
-
-    expect(
-      screen.getByText('Des erreurs sont présentes sur cette page')
-    ).toBeInTheDocument()
-  })
-
-  it('should block with internal valid block type when form has been filled with mandatory data and nav is internal', async () => {
-    renderInformationsScreen(props, contextOverride)
-
-    const categorySelect = screen.getByLabelText('Catégorie')
-    await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
-    await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText('Titre de l’offre')
-    await userEvent.type(nameField, 'Le nom de mon offre')
-
-    await userEvent.click(screen.getByText('Go to stocks !'))
-
-    expect(
-      screen.getByText('Souhaitez-vous enregistrer vos modifications ?')
-    ).toBeInTheDocument()
-  })
-
-  it('should block with draft creation block when form has been filled with mandatory data', async () => {
-    renderInformationsScreen(props, contextOverride)
-
-    const categorySelect = screen.getByLabelText('Catégorie')
-    await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
-    await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText('Titre de l’offre')
-    await userEvent.type(nameField, 'Le nom de mon offre')
-
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    expect(
       screen.getByText(
-        'Souhaitez-vous enregistrer cette offre en brouillon avant de quitter ?'
+        'Restez sur la page et cliquez sur "Sauvegarder le brouillon" pour ne rien perdre de vos modifications.'
       )
-    ).toBeInTheDocument()
-  })
-
-  it('should block with draft block type when form has just been touched in creation', async () => {
-    contextOverride = {
-      ...contextOverride,
-      offerId: offer.id,
-      offer: offer,
-    }
-
-    props.offererId = offer.id
-    renderInformationsScreen(props, contextOverride)
-
-    const nameField = screen.getByLabelText('Titre de l’offre')
-    await userEvent.type(nameField, 'New name')
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    expect(
-      screen.getByText(
-        'Souhaitez-vous enregistrer vos modifications avant de quitter ?'
-      )
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        'Si vous quittez, les informations saisies ne seront pas sauvegardées dans votre brouillon.'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should block with draft block type when form has just been touched in draft', async () => {
-    contextOverride = {
-      ...contextOverride,
-      offerId: offer.id,
-      offer: offer,
-    }
-
-    props.offererId = offer.id
-    renderInformationsScreen(
-      props,
-      contextOverride,
-      generatePath(
-        getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        }),
-        { offerId: 'AA' }
-      )
-    )
-
-    const nameField = screen.getByLabelText('Titre de l’offre')
-    await userEvent.type(nameField, 'New name')
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    expect(
-      screen.getByText(
-        'Souhaitez-vous enregistrer vos modifications avant de quitter ?'
-      )
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        'Si vous quittez, les informations saisies ne seront pas sauvegardées dans votre brouillon.'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should block with edition block type when form has just been touched in edition', async () => {
-    contextOverride = {
-      ...contextOverride,
-      offerId: offer.id,
-      offer: offer,
-    }
-
-    props.offererId = offer.id
-    renderInformationsScreen(
-      props,
-      contextOverride,
-      generatePath(
-        getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode: OFFER_WIZARD_MODE.EDITION,
-        }),
-        { offerId: 'AA' }
-      )
-    )
-
-    const nameField = screen.getByLabelText('Titre de l’offre')
-    await userEvent.type(nameField, 'New name')
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    expect(
-      screen.getByText(
-        'Souhaitez-vous enregistrer vos modifications avant de quitter ?'
-      )
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        'Si vous quittez, les informations saisies ne seront pas sauvegardées.'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should let submitting in block modal', async () => {
-    renderInformationsScreen(props, contextOverride)
-
-    const categorySelect = screen.getByLabelText('Catégorie')
-    await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
-    await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText('Titre de l’offre')
-    await userEvent.type(nameField, 'Le nom de mon offre')
-
-    await userEvent.click(screen.getByText('Go outside !'))
-    await userEvent.click(
-      screen.getByText('Sauvegarder le brouillon et quitter')
-    )
-
-    expect(api.postOffer).toHaveBeenCalledTimes(1)
-    expect(
-      screen.getByText('This is outside offer creation')
-    ).toBeInTheDocument()
-  })
-
-  it('should track when submitting draft in block modal', async () => {
-    renderInformationsScreen(props, contextOverride)
-
-    const categorySelect = screen.getByLabelText('Catégorie')
-    await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
-    await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText('Titre de l’offre')
-    await userEvent.type(nameField, 'Le nom de mon offre')
-
-    await userEvent.click(screen.getByText('Go outside !'))
-    await userEvent.click(
-      screen.getByText('Sauvegarder le brouillon et quitter')
-    )
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'informations',
-        isDraft: true,
-        isEdition: false,
-        offerId: undefined,
-        to: '/outside',
-        used: 'RouteLeavingGuard',
-      }
-    )
-  })
-
-  it('should let quitting without submit in block modal', async () => {
-    renderInformationsScreen(props, contextOverride)
-
-    const categorySelect = screen.getByLabelText('Catégorie')
-    await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
-    await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText('Titre de l’offre')
-    await userEvent.type(nameField, 'Le nom de mon offre')
-
-    await userEvent.click(screen.getByText('Go outside !'))
-    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
-
-    expect(api.postOffer).toHaveBeenCalledTimes(0)
-    expect(
-      screen.getByText('This is outside offer creation')
     ).toBeInTheDocument()
   })
 
@@ -561,31 +347,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     await userEvent.click(screen.getByText('Go outside !'))
-    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'informations',
-        isDraft: true,
-        isEdition: false,
-        offerId: undefined,
-        to: '/outside',
-        used: 'RouteLeavingGuard',
-      }
-    )
-  })
-
-  it('should track when quitting without submit in block modal and not enough info to save draft', async () => {
-    renderInformationsScreen(props, contextOverride)
-
-    const categorySelect = screen.getByLabelText('Catégorie')
-    await userEvent.selectOptions(categorySelect, 'A')
-
-    await userEvent.click(screen.getByText('Go outside !'))
-    await userEvent.click(screen.getByText('Quitter'))
+    await userEvent.click(screen.getByText('Quitter la page'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
@@ -672,7 +434,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.type(nameField, 'new name')
 
     await userEvent.click(screen.getByText('Go outside !'))
-    await userEvent.click(screen.getByText('Quitter sans enregistrer'))
+    await userEvent.click(screen.getByText('Quitter la page'))
 
     // second tracking when quitting
     expect(mockLogEvent).toHaveBeenCalledTimes(2)

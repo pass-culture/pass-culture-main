@@ -9,28 +9,6 @@ export interface IShouldBlockNavigationReturnValue {
   shouldBlock: boolean
 }
 
-export enum BUTTON_ACTION {
-  QUIT_WITHOUT_SAVING = 'QUIT_WITHOUT_SAVING',
-  CANCEL = 'CANCEL',
-}
-
-interface IButtonDefault {
-  text: string
-  actionType?: BUTTON_ACTION.CANCEL | BUTTON_ACTION.QUIT_WITHOUT_SAVING
-  action?: never
-}
-
-const isIButtonWithCustomAction = (
-  buttonData: IButtonDefault | IButtonWithCustomAction
-): buttonData is IButtonWithCustomAction => {
-  return buttonData.action !== undefined
-}
-interface IButtonWithCustomAction {
-  text: string
-  action?: () => void | Promise<void>
-  actionType?: never
-}
-
 export interface IRouteLeavingGuardProps {
   children?: ReactNode | ReactNode[]
   extraClassNames?: string
@@ -40,8 +18,11 @@ export interface IRouteLeavingGuardProps {
   when: boolean
   dialogTitle: string
   tracking?: (p: string) => void
-  rightButton?: IButtonDefault | IButtonWithCustomAction
-  leftButton?: IButtonDefault | IButtonWithCustomAction
+  rightButton?: string
+  leftButton?: string
+  // This is a weird behavior that should be unified at a UX level
+  // the modal should follow the same behavior
+  closeModalOnRightButton?: boolean
 }
 
 const RouteLeavingGuard = ({
@@ -51,10 +32,9 @@ const RouteLeavingGuard = ({
   when,
   dialogTitle,
   tracking,
-  rightButton = {
-    text: 'Quitter',
-  },
-  leftButton = { text: 'Annuler' },
+  rightButton = 'Quitter',
+  leftButton = 'Annuler',
+  closeModalOnRightButton = false,
 }: IRouteLeavingGuardProps): JSX.Element => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   // FIX ME no any
@@ -67,6 +47,7 @@ const RouteLeavingGuard = ({
       const { redirectPath, shouldBlock } =
         shouldBlockNavigation(chosenLocation)
       setNextLocation(redirectPath ? redirectPath : chosenLocation)
+
       if (!isConfirmedNavigation && shouldBlock) {
         setIsModalVisible(true)
         return false
@@ -80,54 +61,20 @@ const RouteLeavingGuard = ({
     [isConfirmedNavigation, navigate, shouldBlockNavigation]
   )
 
-  const closeModal = useCallback(() => {
+  const closeModal = () => {
     setIsModalVisible(false)
-  }, [])
+  }
 
-  const handleConfirmNavigationClick = useCallback(() => {
+  const confirmNavigation = () => {
     setIsModalVisible(false)
     setIsConfirmedNavigation(true)
-  }, [])
 
-  const trackWhenQuit = useCallback(() => {
     tracking &&
       tracking(
         Object.keys(nextLocation).includes('pathname')
           ? nextLocation.pathname
           : nextLocation
       )
-  }, [isConfirmedNavigation, nextLocation])
-
-  const rightButtonAction = () => {
-    if (isIButtonWithCustomAction(rightButton)) {
-      return async () => {
-        rightButton.action && (await rightButton.action())
-        handleConfirmNavigationClick()
-        trackWhenQuit()
-      }
-    } else if (rightButton.actionType === BUTTON_ACTION.CANCEL) {
-      return closeModal
-    }
-    return () => {
-      handleConfirmNavigationClick()
-      trackWhenQuit()
-    }
-  }
-
-  const leftButtonAction = () => {
-    if (isIButtonWithCustomAction(leftButton)) {
-      return async () => {
-        leftButton.action && (await leftButton.action())
-        handleConfirmNavigationClick()
-        trackWhenQuit()
-      }
-    } else if (leftButton.actionType === BUTTON_ACTION.QUIT_WITHOUT_SAVING) {
-      return () => {
-        handleConfirmNavigationClick()
-        trackWhenQuit()
-      }
-    }
-    return closeModal
   }
 
   return isConfirmedNavigation && nextLocation ? (
@@ -139,11 +86,13 @@ const RouteLeavingGuard = ({
         <ConfirmDialog
           extraClassNames={extraClassNames}
           onCancel={closeModal}
-          onConfirm={rightButtonAction()}
+          leftButtonAction={
+            closeModalOnRightButton ? confirmNavigation : closeModal
+          }
+          onConfirm={closeModalOnRightButton ? closeModal : confirmNavigation}
           title={dialogTitle}
-          confirmText={rightButton.text}
-          cancelText={leftButton.text}
-          leftButtonAction={leftButtonAction()}
+          confirmText={rightButton}
+          cancelText={leftButton}
         >
           {children}
         </ConfirmDialog>
