@@ -8,11 +8,13 @@ class OfferRecapStock:
         has_booking_limit_datetime_passed: bool,
         remaining_quantity: int,
         beginning_datetime: datetime,
+        dnBookedQuantity: int,
     ):
         self.id = id
         self.has_booking_limit_datetime_passed = has_booking_limit_datetime_passed
         self.remaining_quantity = remaining_quantity
         self.beginning_datetime = beginning_datetime
+        self.dnBookedQuantity = dnBookedQuantity
 
 
 class OfferRecapVenue:
@@ -84,6 +86,7 @@ class OfferRecap:
                 stock["has_booking_limit_datetime_passed"],
                 stock["remaining_quantity"],
                 stock["beginning_datetime"],
+                stock["dnBookedQuantity"],
             )
             for stock in stocks
         ]
