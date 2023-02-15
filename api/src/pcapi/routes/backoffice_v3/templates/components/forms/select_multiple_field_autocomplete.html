@@ -1,76 +1,34 @@
-<div class="form-floating">
-    <select multiple class="form-select pc-select-autocomplete" id="{{ field.name }}" name="{{ field.name }}" size="2"
-            style="border-radius: 1rem!important;">
-    </select>
+<div class="form-floating {{ field.name }}-container">
+    <select
+        multiple
+        class="form-select pc-select-autocomplete"
+        id="{{ field.name }}"
+        name="{{ field.name }}"
+        size="2"
+        style="border-radius: 1rem!important;"></select>
     <label class="pc-select-label" for="{{ field.name }}" id="{{ field.name }}-label"> {{ field.label }}</label>
 </div>
 
 {% block scripts %}
     <script>
-        new TomSelect('#{{ field.name }}', {
-            plugins: ['dropdown_input', 'clear_button', 'checkbox_options'],
-            persist: false,
-            create: false,
-            valueField: 'id',
-            labelField: 'text',
-            {% if field.choices %}
-                options: [
-                    {% for choice_value, choice_label in field.choices %}
-                        {id: '{{ choice_value }}', text: '{{ choice_label }}'},
-                    {% endfor %}
-                ],
-                items: [{% for choice_value, _ in field.choices %}'{{ choice_value }}',{% endfor %}],
-            {% endif %}
-            load: function(query, callback) {
-                const url = '{{ field.autocomplete_url }}?q=' + encodeURIComponent(query);
-                fetch(url)
-                    .then(response => response.json())
-                    .then(json => {
-                        callback(json.items);
-                    }).catch(()=>{
-                        callback();
-                    });
-            }
-        });
-
-        document.getElementById('{{ field.name }}').onmousedown = function (e) {
-            e.preventDefault()
-            var select = this;
-            var scroll = select.scrollTop;
-
-            e.target.selected = !e.target.selected
-            setTimeout(function () {
-                select.scrollTop = scroll;
-            }, 0);
-            document.getElementById('{{field.name}}').focus()
+    PcUtils.addLoadEvent(() => {
+      new PcTomSelectMultipleFieldAutocomplete({
+        autoCompleteUrl: '{{ field.autocomplete_url }}',
+        tomSelectSelector: '#{{ field.name }}',
+        tomSelectOptions: {
+          {% if field.choices %}
+            options: [
+              {% for choice_value, choice_label in field.choices %}
+                {id: '{{ choice_value }}', text: '{{ choice_label }}'},
+              {% endfor %}
+            ],
+            items: [{% for choice_value, _ in field.choices %}'{{ choice_value }}',{% endfor %}],
+          {% endif %}
         }
-        document.getElementById('{{ field.name }}').onmousemove = function (e) {
-            e.preventDefault();
-        };
-
-       ['change', 'scroll'].forEach(function (event) {
-            document.getElementById('{{field.name}}').addEventListener(event, () => {
-                var select = document.getElementById('{{field.name}}')
-                var selected = [...select.options]
-                    .filter(option => option.selected)
-                const label = document.querySelector('label#{{ field.name }}-label');
-
-                if (selected.length > 0) {
-                    label.classList.add('is-hidden')
-                } else {
-                    label.classList.remove('is-hidden')
-                }
-            })
-        })
-
+      })
+      new PcSelectMultipleField({
+        $container: document.querySelector('.{{ field.name }}-container'),
+      })
+    })
     </script>
-{% endblock %}
-
-{% block styles %}
-    <style>
-        .is-hidden {
-            display: none;
-        }
-
-    </style>
 {% endblock %}
