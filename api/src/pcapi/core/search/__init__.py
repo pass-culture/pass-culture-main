@@ -133,9 +133,9 @@ def index_offers_in_queue(stop_only_when_empty: bool = False, from_error_queue: 
     cron job may run in parallel if the previous one has not finished.
     It's fine because they both pop from the queue.
 
-    If ``stop_only_when_empty`` is True (i.e. if called from the
-    ``process_offers`` Flask command), we pop from the queue and stop
-    only when the queue is empty.
+    If ``stop_only_when_empty`` is True (i.e. if called manually to
+    process the whole queue), we pop from the queue and stop only when
+    the queue is empty.
     """
     backend = _get_backend()
     while True:

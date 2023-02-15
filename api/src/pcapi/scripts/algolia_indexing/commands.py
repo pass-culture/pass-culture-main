@@ -13,16 +13,6 @@ from pcapi.utils.blueprint import Blueprint
 blueprint = Blueprint(__name__, __name__)
 
 
-@blueprint.cli.command("process_offers")
-def process_offers():  # type: ignore [no-untyped-def]
-    search.index_offers_in_queue(stop_only_when_empty=True)
-
-
-@blueprint.cli.command("process_offers_by_venue")
-def process_offers_by_venue():  # type: ignore [no-untyped-def]
-    search.index_offers_of_venues_in_queue()
-
-
 @blueprint.cli.command("process_offers_from_database")
 @click.option("--clear", help="Clear search index", type=bool, default=False)
 @click.option("-ep", "--ending-page", help="Ending page for indexing offers", type=int, default=None)
