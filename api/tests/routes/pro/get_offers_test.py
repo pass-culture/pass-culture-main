@@ -60,6 +60,7 @@ class Returns200Test:
                         "nonHumanizedId": stock.id,
                         "remainingQuantity": 1000,
                         "beginningDatetime": None,
+                        "bookingQuantity": 0,
                     }
                 ],
                 "thumbUrl": None,

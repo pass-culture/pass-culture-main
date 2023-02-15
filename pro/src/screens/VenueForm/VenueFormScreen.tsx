@@ -45,6 +45,7 @@ interface IVenueEditionProps {
   providers?: IProviders[]
   venueProviders?: VenueProviderResponse[]
   venue?: IVenue
+  hasBookingQuantity?: boolean
 }
 
 const VenueFormScreen = ({
@@ -56,6 +57,7 @@ const VenueFormScreen = ({
   venueProviders,
   venue,
   providers,
+  hasBookingQuantity,
 }: IVenueEditionProps): JSX.Element => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -103,13 +105,13 @@ const VenueFormScreen = ({
   }
 
   const onSubmit = async (value: IVenueFormValues) => {
-    if (!isCreatingVenue) {
-      // TODO: check if venue has booking
-      if (value.isWithdrawalAppliedOnAllOffers) {
-        if (!handleWithdrawalDialog()) {
-          return
-        }
-      }
+    if (
+      !isCreatingVenue &&
+      value.isWithdrawalAppliedOnAllOffers &&
+      hasBookingQuantity &&
+      !handleWithdrawalDialog()
+    ) {
+      return
     }
 
     const request = isCreatingVenue

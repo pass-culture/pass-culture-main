@@ -153,6 +153,10 @@ const Informations = ({
   }
 
   const handleSendMail = async (shouldSendMail: boolean) => {
+    if (!offer?.isActive) {
+      return
+    }
+
     const totalBookingsQuantity = offer?.stocks.reduce(
       (acc, stock) => acc + stock.bookingsQuantity,
       0

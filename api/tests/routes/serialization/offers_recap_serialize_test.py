@@ -16,6 +16,7 @@ def should_return_serialized_offers_with_relevant_informations():
         "has_booking_limit_datetime_passed": False,
         "remaining_quantity": 10,
         "beginning_datetime": None,
+        "dnBookedQuantity": 0,
     }
     departement_code = 12
     offer = OfferRecap(
@@ -67,6 +68,7 @@ def should_return_serialized_offers_with_relevant_informations():
                     "nonHumanizedId": stock_id,
                     "remainingQuantity": 10,
                     "beginningDatetime": None,
+                    "bookingQuantity": 0,
                 }
             ],
             "subcategoryId": "SUPPORT_PHYSIQUE_FILM",
