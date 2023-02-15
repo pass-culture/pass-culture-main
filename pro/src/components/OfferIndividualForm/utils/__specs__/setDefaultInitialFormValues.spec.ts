@@ -47,6 +47,22 @@ describe('setDefaultInitialFormValues', () => {
         hasMissingReimbursementPoint: false,
         hasCreatedOffer: true,
       },
+      {
+        id: 'D',
+        managingOffererId: 'A',
+        name: 'Venue Name 2',
+        isVirtual: true,
+        withdrawalDetails: 'détails de retrait',
+        accessibility: {
+          visual: false,
+          audio: false,
+          motor: false,
+          mental: false,
+          none: true,
+        },
+        hasMissingReimbursementPoint: false,
+        hasCreatedOffer: true,
+      },
     ]
   })
 
@@ -79,6 +95,24 @@ describe('setDefaultInitialFormValues', () => {
 
     // then
     expectedInitialValues.offererId = 'B'
+    expect(initialValues).toStrictEqual(expectedInitialValues)
+  })
+
+  it('should return venue when there is only one venue', () => {
+    // given
+    const venueId = null
+    venueList = [venueList[0]]
+
+    // when
+    const initialValues = setDefaultInitialFormValues(
+      FORM_DEFAULT_VALUES,
+      offererNames,
+      offererId,
+      venueId,
+      venueList
+    )
+
+    // then
     expect(initialValues).toStrictEqual(expectedInitialValues)
   })
 

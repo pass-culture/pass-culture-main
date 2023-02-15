@@ -22,6 +22,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
+  setDefaultInitialFormValues,
   validationSchema,
 } from '..'
 import OfferIndividualForm, {
@@ -83,7 +84,6 @@ describe('OfferIndividualForm', () => {
   let venueList: TOfferIndividualVenue[]
 
   beforeEach(() => {
-    initialValues = { ...FORM_DEFAULT_VALUES }
     categories = [
       {
         id: 'A',
@@ -179,6 +179,13 @@ describe('OfferIndividualForm', () => {
       onImageDelete: jest.fn(),
       offerSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
     }
+    initialValues = setDefaultInitialFormValues(
+      FORM_DEFAULT_VALUES,
+      offererNames,
+      null,
+      null,
+      venueList
+    )
   })
 
   it('should render the component', async () => {
@@ -242,6 +249,13 @@ describe('OfferIndividualForm', () => {
   )
 
   it('should submit minimal physical offer', async () => {
+    initialValues = setDefaultInitialFormValues(
+      FORM_DEFAULT_VALUES,
+      offererNames,
+      null,
+      'physical',
+      venueList
+    )
     renderOfferIndividualForm({
       initialValues,
       onSubmit,
@@ -302,6 +316,13 @@ describe('OfferIndividualForm', () => {
   })
 
   it('should submit minimal virtual offer', async () => {
+    initialValues = setDefaultInitialFormValues(
+      FORM_DEFAULT_VALUES,
+      offererNames,
+      null,
+      'virtual',
+      venueList
+    )
     renderOfferIndividualForm({
       initialValues,
       onSubmit,

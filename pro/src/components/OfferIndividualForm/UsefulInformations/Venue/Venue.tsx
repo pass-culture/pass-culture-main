@@ -7,7 +7,6 @@ import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { Select } from 'ui-kit'
 
-import { useVenueUpdates } from './hooks'
 import { buildOffererOptions, buildVenueOptions } from './utils'
 
 export interface IVenueProps {
@@ -21,7 +20,8 @@ const Venue = ({
   venueList,
   readOnlyFields = [],
 }: IVenueProps): JSX.Element => {
-  const { values } = useFormikContext<IOfferIndividualFormValues>()
+  const { values, setFieldValue } =
+    useFormikContext<IOfferIndividualFormValues>()
   const { isDisabled: isOffererDisabled, offererOptions } =
     buildOffererOptions(offererNames)
 
@@ -30,7 +30,20 @@ const Venue = ({
     venueList
   )
 
-  useVenueUpdates(venueList)
+  const onVenueChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newVenue = venueList.find(v => v.id === event.target.value)
+
+    if (!newVenue) {
+      return
+    }
+    setFieldValue('isVenueVirtual', newVenue.isVirtual)
+    setFieldValue('withdrawalDetails', newVenue?.withdrawalDetails || '')
+
+    // update offer accessibility from venue when venue accessibility is defined.
+    // set accessibility value after isVenueVirtual and withdrawalDetails otherwise the error message doesn't hide
+    Object.values(newVenue.accessibility).includes(true) &&
+      setFieldValue('accessibility', newVenue.accessibility)
+  }
 
   return (
     <>
@@ -48,6 +61,7 @@ const Venue = ({
           label="Lieu"
           name="venueId"
           options={venueOptions}
+          onChange={onVenueChange}
         />
       </FormLayout.Row>
     </>
