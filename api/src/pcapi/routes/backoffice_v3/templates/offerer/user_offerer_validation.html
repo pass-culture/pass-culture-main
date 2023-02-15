@@ -155,8 +155,6 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="{{ url_for('static', filename='backoffice/js/pc-table-multi-select.js') }}"></script>
-    <script src="{{ url_for('static', filename='backoffice/js/pc-override-custom-textarea-enter.js') }}"></script>
     <script>
         class UserOffererValidation {
           $container
@@ -223,7 +221,7 @@
           onBatchButtonClick = ({ url, title, divId, buttonText, useConfirmationModal }) => {
             const csrfToken = '{{ csrf_token }}'
             this.$modalContent.innerHTML = `
-            <form action="${url}" method="POST" class="modal-content" id="${divId}-form" data-turbo="false" name="user-offerer-validation-form-modal">
+            <form action="${url}" method="POST" class="modal-content" data-turbo="false" name="user-offerer-validation-form-${divId}">
                 ${csrfToken}
                 <div class="modal-header">
                     <h5 class="modal-title">${title}</h5>
@@ -232,10 +230,27 @@
                 <div class="modal-body row">
                     <div class="form-floating my-3 col">
                         <input name="object_ids" type="hidden" value="${this.tableMultiSelect.selectedRowsIds.join(',')}">
-                        <textarea name="comment" class="form-control" id="${divId}-textarea" rows="3" style="height:100%;" onkeydown="manageTextAreaKeydown(event)"></textarea>
+                        <textarea
+                            name="comment"
+                            class="form-control"
+                            id="user-offerer-validation-form-textarea-${divId}"
+                            data-id="${divId}"
+                            data-form-name="user-offerer-validation-form-${divId}"
+                            rows="3"
+                            style="height:100%;"
+                            onkeydown="pcOverrideCustomTextareaEnter.manageTextAreaKeydown(event)"
+                        ></textarea>
                         <label for=${divId}-textarea"><label for="comment">Raison</label></label>
                     </div>
-                    <button type="button" class="btn btn-outline-secondary col-1 h-50" id="${divId}-newline" onclick="manageReturnButton(event)">⏎</button>
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary col-1 h-50"
+                        id="${divId}-newline"
+                        data-form-name="user-offerer-validation-form-${divId}"
+                        onclick="pcOverrideCustomTextareaEnter.manageReturnButton(event)"
+                    >
+                        ⏎
+                    </button>
                 </div>
 
                 <div class="modal-footer">

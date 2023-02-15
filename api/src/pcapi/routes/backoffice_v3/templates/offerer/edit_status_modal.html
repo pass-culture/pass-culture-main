@@ -1,7 +1,7 @@
 {% macro build_edit_status_modal(dst, div_id, validate_btn_msg) %}
 <div class="modal fade" id="{{ div_id }}" tabindex="-1" aria-labelledby="{{ div_id }}-label" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <form action="{{ dst }}" method="POST" class="modal-content" id="{{ div_id }}-form" data-turbo="false">
+        <form action="{{ dst }}" method="POST" class="modal-content" id="{{ div_id }}-form" data-turbo="false" name="user-offerer-validation-form-{{ div_id }}">
             {{ csrf_token }}
 
             <div class="modal-header">
@@ -10,10 +10,27 @@
             </div>
             <div class="modal-body row">
                 <div class="form-floating my-3 col">
-                    <textarea name="comment" class="form-control" id="{{ div_id }}-textarea" rows="3" style="height:100%;"></textarea>
+                    <textarea
+                        name="comment"
+                        class="form-control"
+                        id="user-offerer-validation-form-textarea-{{ div_id }}"
+                        data-id="{{ div_id }}"
+                        data-form-name="user-offerer-validation-form-{{ div_id }}"
+                        rows="3"
+                        style="height:100%;"
+                        onkeydown="pcOverrideCustomTextareaEnter.manageTextAreaKeydown(event)"
+                    ></textarea>
                     <label for={{ div_id }}-textarea"><label for="comment">Raison</label></label>
                 </div>
-                <button type="button" class="btn btn-outline-secondary col-1 h-50" id="{{ div_id }}-newline">⏎</button>
+                <button
+                        type="button"
+                        class="btn btn-outline-secondary col-1 h-50"
+                        id="{{ div_id }}-newline"
+                        data-form-name="user-offerer-validation-form-{{ div_id }}"
+                        onclick="pcOverrideCustomTextareaEnter.manageReturnButton(event)"
+                >
+                    ⏎
+                </button>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
@@ -22,32 +39,4 @@
         </form>
     </div>
 </div>
-
-<script>
-    document.getElementById("{{ div_id }}-textarea").addEventListener(
-        "keydown",
-        function(event) {
-            if (event.keyCode === 13) {
-                event.preventDefault();
-                if (event.ctrlKey || event.shiftKey) {
-                    document.getElementById("{{ div_id }}-newline").click()
-                } else {
-                    document.getElementById("{{ div_id }}-form").submit();
-                }
-                return false;
-            }
-        }
-    )
-    document.getElementById("{{ div_id }}-newline").addEventListener(
-        "click",
-        function() {
-            const textarea = document.getElementById('{{ div_id }}-textarea')
-            const start = textarea.selectionStart
-            textarea.value = textarea.value.slice(0, start) + "\n" + textarea.value.slice(textarea.selectionEnd)
-            textarea.setSelectionRange(start + 1, start + 1)
-            textarea.focus()
-        }
-    )
-</script>
-
 {% endmacro %}
