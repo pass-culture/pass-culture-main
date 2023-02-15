@@ -10,12 +10,14 @@ import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import { useHomePath } from 'hooks'
 import useNotification from 'hooks/useNotification'
-import useGetFilteredOffersAdapter from 'pages/Offers/adapters/useGetFilteredOffers'
+import useGetFilteredOffers from 'pages/Offers/adapters/useGetFilteredOffers'
 import { VenueFormScreen } from 'screens/VenueForm'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import useGetProviders from '../../core/Venue/adapters/getProviderAdapter/useGetProvider'
 import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdapter/useGetVenueProvider'
+
+import { offerHasBookingQuantity } from './utils'
 
 const VenueEdition = (): JSX.Element | null => {
   const homePath = useHomePath()
@@ -62,21 +64,10 @@ const VenueEdition = (): JSX.Element | null => {
     venueId: venue?.id ?? '',
   }
 
-  const {
-    isLoading: isLoadingVenueOffers,
-    error: errorVenueOffers,
-    data: venueOffers,
-  } = useGetFilteredOffersAdapter(apiFilters)
+  const { isLoading: isLoadingVenueOffers, data: venueOffers } =
+    useGetFilteredOffers(apiFilters)
 
-  const hasBookingQuantity = venueOffers?.offers.some(offer => {
-    return offer.stocks.some(stock => {
-      const currentBookingQuantity = stock?.bookingQuantity
-      if (currentBookingQuantity && currentBookingQuantity > 0) {
-        return true
-      }
-      return false
-    })
-  })
+  const hasBookingQuantity = offerHasBookingQuantity(venueOffers?.offers)
 
   if (
     isLoadingVenue ||
@@ -96,8 +87,7 @@ const VenueEdition = (): JSX.Element | null => {
     errorVenueTypes ||
     errorVenueLabels ||
     errorVenueProviders ||
-    errorProviders ||
-    errorVenueOffers
+    errorProviders
   ) {
     const loadingError = [
       errorOfferer,
@@ -124,6 +114,7 @@ const VenueEdition = (): JSX.Element | null => {
       providers={providers}
       venue={venue}
       venueProviders={venueProviders}
+      hasBookingQuantity={venue?.id ? hasBookingQuantity : false}
     />
   )
 }

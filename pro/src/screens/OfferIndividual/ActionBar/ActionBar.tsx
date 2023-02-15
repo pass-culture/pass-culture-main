@@ -132,7 +132,7 @@ const ActionBar = ({
               <SubmitButton
                 onClick={onClickNext}
                 disabled={isDisabled}
-                type={isFormEmpty ? 'button' : 'submit'}
+                type={submitAsButton ? 'button' : 'submit'}
               >
                 Enregistrer les modifications
               </SubmitButton>
