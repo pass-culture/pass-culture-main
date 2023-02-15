@@ -16,7 +16,6 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import styles from '../../OfferItem.module.scss'
 
 const EditOfferCell = ({
-  isOfferEditable,
   editionOfferLink,
   offer,
 }: {
@@ -43,19 +42,17 @@ const EditOfferCell = ({
 
   return (
     <td className={styles['edit-column']}>
-      {isOfferEditable && (
-        <ButtonLink
-          variant={ButtonVariant.SECONDARY}
-          onClick={onEditOfferClick}
-          link={{ isExternal: false, to: editionOfferLink }}
-          className={styles['button']}
-          Icon={PenIcon}
-          iconPosition={IconPositionEnum.CENTER}
-          hasTooltip
-        >
-          Modifier l’offre
-        </ButtonLink>
-      )}
+      <ButtonLink
+        variant={ButtonVariant.SECONDARY}
+        onClick={onEditOfferClick}
+        link={{ isExternal: false, to: editionOfferLink }}
+        className={styles['button']}
+        Icon={PenIcon}
+        iconPosition={IconPositionEnum.CENTER}
+        hasTooltip
+      >
+        Modifier l’offre
+      </ButtonLink>
     </td>
   )
 }
