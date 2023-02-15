@@ -210,21 +210,19 @@ class UserProfileResponse(BaseModel):
         user.subscriptionMessage = user_subscription_state.subscription_message
         user.status = user_subscription_state.young_status
 
-        if _should_prevent_from_filling_cultural_survey(user):
-            user.needsToFillCulturalSurvey = False
-
         serialized_user = super().from_orm(user)
+
+        serialized_user.needsToFillCulturalSurvey = (
+            serialized_user.needsToFillCulturalSurvey and serialized_user.isBeneficiary and _is_cultural_survey_active()
+        )
         serialized_user.date_of_birth = user.birth_date
 
         return serialized_user
 
 
-def _should_prevent_from_filling_cultural_survey(user: users_models.User) -> bool:
-    # when the native form is active, there is no reason to prevent
-    if FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY.is_active():
-        return False
-    # when the typeform is active, it should be limited to only beneficiaries to respect the quota
-    return not FeatureToggle.ENABLE_CULTURAL_SURVEY.is_active() or not user.is_beneficiary
+def _is_cultural_survey_active() -> bool:
+    # When the native form or typeform form is active, there is no reason to prevent
+    return FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY.is_active() or FeatureToggle.ENABLE_CULTURAL_SURVEY.is_active()
 
 
 class UserProfileUpdateRequest(BaseModel):
