@@ -124,7 +124,7 @@
     "babel-plugin-typescript-to-proptypes": "^2.0.0",
     "count-lines-in-file": "^1.1.0",
     "eslint-config-prettier": "^8.4.0",
-    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-import": "^2.27.5",
     "history": "^4.7.2",
     "hygen": "^6.2.0",
     "jest-canvas-mock": "^2.4.0",

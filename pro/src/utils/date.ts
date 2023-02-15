@@ -1,5 +1,5 @@
-import { format } from 'date-fns-tz'
 import { fr } from 'date-fns/locale'
+import { format } from 'date-fns-tz'
 
 const FORMAT_ISO = "yyyy-MM-dd'T'HH:mm:ssX"
 export const FORMAT_ISO_DATE_ONLY = 'yyyy-MM-dd'
