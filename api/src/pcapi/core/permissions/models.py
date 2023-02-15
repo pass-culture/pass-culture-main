@@ -33,8 +33,8 @@ class Permissions(enum.Enum):
     MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"
 
     MANAGE_BOOKINGS = "gérer les réservations"
-    SEARCH_BOOKINGS = "rechercher les réservation"
-    READ_BOOKINGS = "visualiser les réservation"
+    SEARCH_BOOKINGS = "rechercher les réservations"
+    READ_BOOKINGS = "visualiser les réservations"
 
     SEARCH_OFFERS = "rechercher les offres"
     READ_OFFERS = "visualiser les offres"
