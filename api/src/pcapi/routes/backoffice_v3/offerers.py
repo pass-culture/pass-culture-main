@@ -586,7 +586,8 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
 
 
 def _user_offerer_batch_action(
-    api_function: typing.Callable[[offerers_models.UserOfferer, users_models.User, str | None], None]
+    api_function: typing.Callable[[offerers_models.UserOfferer, users_models.User, str | None], None],
+    success_message: str,
 ) -> utils.BackofficeResponse:
     form = offerer_forms.BatchOptionalCommentForm()
     try:
@@ -599,23 +600,30 @@ def _user_offerer_batch_action(
 
     for user_offerer in user_offerers:
         api_function(user_offerer, current_user, form.comment.data)
+    flash(success_message, "success")
 
     return _redirect_after_offerer_validation_action()
 
 
 @validation_blueprint.route("/user-offerer/batch-pending", methods=["POST"])
 def batch_set_user_offerer_pending() -> utils.BackofficeResponse:
-    return _user_offerer_batch_action(offerers_api.set_offerer_attachment_pending)
+    return _user_offerer_batch_action(
+        offerers_api.set_offerer_attachment_pending, "Les rattachements ont été mis en attente avec succès"
+    )
 
 
 @validation_blueprint.route("/user-offerer/batch-reject", methods=["POST"])
 def batch_reject_user_offerer() -> utils.BackofficeResponse:
-    return _user_offerer_batch_action(offerers_api.reject_offerer_attachment)
+    return _user_offerer_batch_action(
+        offerers_api.reject_offerer_attachment, "Les rattachements sélectionnés ont été rejetés avec succès"
+    )
 
 
 @validation_blueprint.route("/user-offerer/batch-validate", methods=["POST"])
 def batch_validate_user_offerer() -> utils.BackofficeResponse:
-    return _user_offerer_batch_action(offerers_api.validate_offerer_attachment)
+    return _user_offerer_batch_action(
+        offerers_api.validate_offerer_attachment, "Les rattachements sélectionnés ont été validés avec succès"
+    )
 
 
 offerer_tag_blueprint = utils.child_backoffice_blueprint(
