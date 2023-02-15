@@ -387,16 +387,7 @@ def suspend_account(
                 bookings_api.cancel_booking_for_fraud(booking)
                 n_bookings += 1
 
-    # Cancel all bookings of the user (the following works even if the
-    # user is not a beneficiary).
-    cancel_booking_callback = {
-        constants.SuspensionReason.FRAUD_SUSPICION: bookings_api.cancel_booking_for_fraud,
-        constants.SuspensionReason.UPON_USER_REQUEST: bookings_api.cancel_booking_on_user_requested_account_suspension,
-    }.get(reason)
-    if cancel_booking_callback:
-        for booking in bookings_repository.find_cancellable_bookings_by_beneficiaries([user]):
-            cancel_booking_callback(booking)
-            n_bookings += 1
+    n_bookings += _cancel_bookings_of_user_on_requested_account_suspension(user, reason)
 
     logger.info(
         "Account has been suspended",
@@ -408,6 +399,31 @@ def suspend_account(
     )
 
     return {"cancelled_bookings": n_bookings}
+
+
+def _cancel_bookings_of_user_on_requested_account_suspension(
+    user: users_models.User, reason: constants.SuspensionReason
+) -> int:
+    import pcapi.core.bookings.api as bookings_api
+
+    bookings_to_cancel = bookings_models.Booking.query.filter(
+        bookings_models.Booking.userId == user.id,
+        bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
+    ).all()
+
+    cancelled_bookings_count = 0
+
+    for booking in bookings_to_cancel:
+        match reason:
+            case constants.SuspensionReason.FRAUD_SUSPICION:
+                bookings_api.cancel_booking_for_fraud(booking)
+                cancelled_bookings_count += 1
+
+            case constants.SuspensionReason.UPON_USER_REQUEST:
+                bookings_api.cancel_booking_on_user_requested_account_suspension(booking)
+                cancelled_bookings_count += 1
+
+    return cancelled_bookings_count
 
 
 def unsuspend_account(
