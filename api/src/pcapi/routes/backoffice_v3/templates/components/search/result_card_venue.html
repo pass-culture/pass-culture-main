@@ -10,6 +10,12 @@
             {{ row.name | upper }}
         </h5>
 
+        {% if row.publicName and row.publicName != row.name %}
+            <h6 class="card-subtitle mt-4 mb-3 text-muted">
+                Nom d'usage : {{ row.publicName }}
+            </h6>
+        {% endif %}
+
         <h6 class="card-subtitle mt-4 mb-3 text-muted">
             Venue ID : {{ row.id }}
         </h6>
