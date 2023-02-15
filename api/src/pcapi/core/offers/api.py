@@ -1098,7 +1098,13 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(
         remaining_places = shows_remaining_places.pop(showtime_id, None)
         # make this stock sold out, instead of soft-deleting it (don't update its bookings)
         if remaining_places is None or remaining_places <= 0:
-            offers_repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
+            try:
+                offers_repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
+            except sqla_exc.InternalError:
+                # The SQLAlchemy session is invalidated as soon as an InternalError is raised
+                db.session.rollback()
+                bookings_api.recompute_dnBookedQuantity([stock.id])
+                offers_repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
             offer_has_new_sold_out_stock = True
         # to prevent a duo booking to fail
         if remaining_places == 1:

@@ -1954,3 +1954,29 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             mocked_async_index_offer_ids.assert_called_once_with([offer.id])
         else:
             mocked_async_index_offer_ids.assert_not_called()
+
+    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @patch("pcapi.core.search.async_index_offer_ids")
+    @patch("pcapi.core.offers.api.external_bookings_api.get_boost_movie_stocks")
+    def test_should_retry_when_inconsistent_stock(
+        self, mocked_get_boost_movie_shows_stock, mocked_async_index_offer_ids
+    ):
+        boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
+        movie_id = 456
+        show_id = 777
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%Boost"
+        offer = factories.EventOfferFactory(venue=venue_provider.venue, idAtProvider=offer_id_at_provider)
+        stock = factories.EventStockFactory(
+            offer=offer,
+            quantity=10,
+            idAtProviders=f"{offer_id_at_provider}#{show_id}",
+        )
+        bookings_factories.BookingFactory(stock=stock)
+        stock.dnBookedQuantity = 0
+
+        mocked_get_boost_movie_shows_stock.return_value = {777: 0}
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer, venue_provider)
+
+        assert stock.remainingQuantity == 0
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
