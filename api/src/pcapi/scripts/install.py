@@ -10,7 +10,7 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.core.external.commands.update_sendinblue_batch_attributes",
         "pcapi.core.finance.commands",
         "pcapi.core.providers.commands",
-        "pcapi.core.search.commands",
+        "pcapi.core.search.commands.settings",
         "pcapi.core.subscription.commands",
         "pcapi.scheduled_tasks.commands",
         "pcapi.scheduled_tasks.search_commands",
