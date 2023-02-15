@@ -936,6 +936,7 @@ class GetCsvReportTest:
             "Date et heure de réservation",
             "Date et heure de validation",
             "Contremarque",
+            "Intitulé du prix",
             "Prix de la réservation",
             "Statut de la contremarque",
             "Date et heure de remboursement",
@@ -955,6 +956,7 @@ class GetCsvReportTest:
         )
         assert data_dict["Date et heure de validation"] == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
         assert data_dict["Contremarque"] == booking.token
+        assert data_dict["Intitulé du prix"] == ""
         assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
         assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
@@ -1000,6 +1002,7 @@ class GetCsvReportTest:
             "Date et heure de réservation",
             "Date et heure de validation",
             "Contremarque",
+            "Intitulé du prix",
             "Prix de la réservation",
             "Statut de la contremarque",
             "Date et heure de remboursement",
@@ -1019,6 +1022,7 @@ class GetCsvReportTest:
         )
         assert data_dict["Date et heure de validation"] == ""
         assert data_dict["Contremarque"] == ""
+        assert data_dict["Intitulé du prix"] == ""
         assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
         assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
@@ -1159,9 +1163,8 @@ class GetCsvReportTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
-        stock = offers_factories.ThingStockFactory(
+        offer = offers_factories.EventOfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(
             offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
         )
         yesterday = datetime.utcnow() - timedelta(days=1)
@@ -1187,6 +1190,7 @@ class GetCsvReportTest:
             "Date et heure de réservation",
             "Date et heure de validation",
             "Contremarque",
+            "Intitulé du prix",
             "Prix de la réservation",
             "Statut de la contremarque",
             "Date et heure de remboursement",
@@ -1206,6 +1210,7 @@ class GetCsvReportTest:
         )
         assert data_dict["Date et heure de validation"] == ""
         assert data_dict["Contremarque"] == booking.token
+        assert data_dict["Intitulé du prix"] == "Tarif unique"
         assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
         assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
@@ -1896,7 +1901,7 @@ class GetCsvReportTest:
 
 
 class GetExcelReportTest:
-    def test_should_return_excel_export_according_to_booking_atrributes(self):
+    def test_should_return_excel_export_according_to_booking_attributes(self):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
@@ -1928,6 +1933,7 @@ class GetExcelReportTest:
             "Date et heure de réservation",
             "Date et heure de validation",
             "Contremarque",
+            "Intitulé du prix",
             "Prix de la réservation",
             "Statut de la contremarque",
             "Date et heure de remboursement",

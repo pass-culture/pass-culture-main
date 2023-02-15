@@ -81,6 +81,7 @@ BOOKING_EXPORT_HEADER = [
     "Date et heure de réservation",
     "Date et heure de validation",
     "Contremarque",
+    "Intitulé du prix",
     "Prix de la réservation",
     "Statut de la contremarque",
     "Date et heure de remboursement",
@@ -492,6 +493,7 @@ def _get_filtered_booking_report(
             User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
             Booking.id,
             Booking.token,
+            Booking.priceCategoryLabel,
             Booking.amount,
             Booking.quantity,
             Booking.status,
@@ -648,6 +650,7 @@ def _serialize_csv_report(query: BaseQuery) -> str:
                     booking.isExternal,
                     booking.stockBeginningDatetime,
                 ),
+                booking.priceCategoryLabel or "",
                 booking.amount,
                 _get_booking_status(booking.status, booking.isConfirmed),
                 convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
