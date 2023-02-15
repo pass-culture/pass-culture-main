@@ -270,7 +270,7 @@ const OfferType = (): JSX.Element => {
                     INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
                   }
                   label="Un bien physique"
-                  description="Livre, vinyle, instrument de musique, pass musée..."
+                  description="Livre, instrument de musique, abonnement, cartes et pass…"
                   onChange={handleIndividualOfferSubtypeChange}
                   value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}
                   dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}`}
@@ -287,7 +287,7 @@ const OfferType = (): JSX.Element => {
                     INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD
                   }
                   label="Un bien numérique"
-                  description="Ebook, jeu vidéo, abonnement streaming, pass ciné..."
+                  description="Ebook, jeu vidéo, abonnement streaming..."
                   onChange={handleIndividualOfferSubtypeChange}
                   value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}
                   dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}`}
@@ -303,8 +303,8 @@ const OfferType = (): JSX.Element => {
                     individualOfferSubtype ===
                     INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT
                   }
-                  label="Un évènement physique"
-                  description="Concert, spectacle vivant, conférence, cours..."
+                  label="Un évènement physique daté"
+                  description="Concert, représentation, conférence, ateliers..."
                   onChange={handleIndividualOfferSubtypeChange}
                   value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}
                   dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}`}
@@ -320,7 +320,7 @@ const OfferType = (): JSX.Element => {
                     individualOfferSubtype ===
                     INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
                   }
-                  label="Un évènement numérique"
+                  label="Un évènement numérique daté"
                   description="Livestream, cours en ligne, conférence en ligne..."
                   onChange={handleIndividualOfferSubtypeChange}
                   value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}
