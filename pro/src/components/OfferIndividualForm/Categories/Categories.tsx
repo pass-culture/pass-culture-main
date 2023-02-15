@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
 import BannerAddVenue from 'components/Banner/BannerAddVenue'
 import FormLayout from 'components/FormLayout'
@@ -10,12 +10,13 @@ import {
 } from 'components/OfferIndividualForm'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { SelectOption } from 'custom_types/form'
 import { InfoBox, Select } from 'ui-kit'
 
 import styles from '../OfferIndividualForm.module.scss'
+import buildSubCategoryFields from '../utils/buildSubCategoryFields'
 
-import { useSubcategoryOptions } from './hooks/useSubcategoryOptions'
-import useSubCategoryUpdates from './hooks/useSubCategoryUpdates/useSubCategoryUpdates'
+import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from './constants'
 import { MusicTypes } from './MusicTypes'
 import { OfferSubtypeTag } from './OfferSubtypeTag/OfferSubtypeTag'
 import { ShowTypes } from './ShowTypes'
@@ -28,14 +29,23 @@ export interface ICategoriesProps {
   offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
 }
 
-const buildCategoryOptions = (categories: IOfferCategory[]) => {
-  return categories
-    .map((c: IOfferCategory) => ({
-      value: c.id,
-      label: c.proLabel,
+const buildCategoryOptions = (categories: IOfferCategory[]): SelectOption[] =>
+  categories
+    .map((category: IOfferCategory) => ({
+      value: category.id,
+      label: category.proLabel,
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
-}
+
+const buildSubcategoryOptions = (
+  subCategories: IOfferSubCategory[],
+  categoryId: string
+): SelectOption[] =>
+  buildCategoryOptions(
+    subCategories.filter(
+      (subCategory: IOfferSubCategory) => subCategory.categoryId === categoryId
+    )
+  )
 
 const Categories = ({
   categories,
@@ -47,30 +57,53 @@ const Categories = ({
   const {
     values: { categoryId, subCategoryFields, offererId },
     setFieldValue,
-    setTouched,
-    touched,
   } = useFormikContext<IOfferIndividualFormValues>()
-  const subcategoryOptions = useSubcategoryOptions(subCategories, categoryId)
-  const [categoryOptions, setCategoryOptions] = useState<SelectOptions>(
-    buildCategoryOptions(categories)
-  )
-  useEffect(() => {
-    setCategoryOptions(buildCategoryOptions(categories))
-  }, [categories])
+  const categoryOptions = buildCategoryOptions(categories)
+  const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
 
-  useEffect(() => {
-    if (touched.categoryId && !readOnlyFields.includes('subcategoryId')) {
-      /* istanbul ignore next: DEBT, TO FIX */
-      if (subcategoryOptions.length === 1) {
-        setFieldValue('subcategoryId', subcategoryOptions[0].value, false)
-      } else {
-        setFieldValue('subcategoryId', FORM_DEFAULT_VALUES.subcategoryId, false)
-        setTouched({ categoryId: true })
-      }
+  const onSubCategoryChange = (newSubCategory: string) => {
+    const { subCategoryFields: newSubCategoryFields, isEvent } =
+      buildSubCategoryFields(newSubCategory, subCategories)
+    setFieldValue('subCategoryFields', newSubCategoryFields)
+    setFieldValue('isEvent', isEvent)
+    setFieldValue(
+      'isDuo',
+      Boolean(subCategories.find(s => s.id == newSubCategory)?.canBeDuo)
+    )
+    if (newSubCategoryFields === subCategoryFields) {
+      return
     }
-  }, [subcategoryOptions])
 
-  useSubCategoryUpdates({ subCategories })
+    const fieldsToReset = subCategoryFields.filter(
+      (field: string) => !newSubCategoryFields.includes(field)
+    )
+    fieldsToReset.forEach((field: string) => {
+      if (field in SUBCATEGORIES_FIELDS_DEFAULT_VALUES) {
+        setFieldValue(
+          field,
+          SUBCATEGORIES_FIELDS_DEFAULT_VALUES[
+            field as keyof typeof SUBCATEGORIES_FIELDS_DEFAULT_VALUES
+          ]
+        )
+      }
+    })
+  }
+
+  const onCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    if (readOnlyFields.includes('subcategoryId')) {
+      return
+    }
+    const newSubcategoryOptions = buildSubcategoryOptions(
+      subCategories,
+      event.target.value
+    )
+    const subCategoryId =
+      newSubcategoryOptions.length === 1
+        ? String(newSubcategoryOptions[0].value)
+        : FORM_DEFAULT_VALUES.subcategoryId
+    setFieldValue('subcategoryId', subCategoryId, false)
+    onSubCategoryChange(subCategoryId)
+  }
 
   const hasSubCategory = categoryId !== FORM_DEFAULT_VALUES.categoryId
   const hasMusicType = subCategoryFields.includes('musicType')
@@ -117,6 +150,7 @@ const Categories = ({
             value: FORM_DEFAULT_VALUES.categoryId,
           }}
           disabled={readOnlyFields.includes('categoryId')}
+          onChange={onCategoryChange}
         />
       </FormLayout.Row>
 
@@ -133,6 +167,9 @@ const Categories = ({
             disabled={
               readOnlyFields.includes('subcategoryId') ||
               subcategoryOptions.length === 1
+            }
+            onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+              onSubCategoryChange(event.target.value)
             }
           />
         </FormLayout.Row>
