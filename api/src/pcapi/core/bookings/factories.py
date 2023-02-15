@@ -23,6 +23,9 @@ class BookingFactory(BaseFactory):
     deposit = factory.LazyAttribute(lambda o: o.user.deposit)
     amount = factory.SelfAttribute("stock.price")
     status = models.BookingStatus.CONFIRMED
+    priceCategoryLabel = factory.Maybe(
+        "stock.priceCategory", factory.SelfAttribute("stock.priceCategory.priceCategoryLabel.label"), None
+    )
 
     @factory.post_generation
     def cancellation_limit_date(self, create, extracted, **kwargs):  # type: ignore [no-untyped-def]
