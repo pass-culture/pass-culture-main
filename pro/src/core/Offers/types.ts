@@ -40,6 +40,7 @@ export type Stock = {
   beginningDatetime?: Date | null
   remainingQuantity: string | number
   bookingLimitDatetime?: Date | null
+  bookingQuantity?: number
 }
 
 export type Offer = {
