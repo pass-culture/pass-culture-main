@@ -74,16 +74,20 @@ describe('screens | OfferEducational : creation offerer step', () => {
       ).not.toBeInTheDocument()
     })
   })
+
   describe('when the offerer is not validated', () => {
     beforeEach(() => {
       props = {
-        ...props,
+        ...defaultCreationProps,
         userOfferers: userOfferersFactory([
           {
             managedVenues: managedVenuesFactory([{}]),
           },
         ]),
       }
+      getIsOffererEligible = jest
+        .fn()
+        .mockResolvedValue(eligibilityResponse(false))
     })
 
     it('should display specific banner instead of place and referencing banner', async () => {
@@ -105,16 +109,20 @@ describe('screens | OfferEducational : creation offerer step', () => {
       ).not.toBeInTheDocument()
     })
   })
+
   describe('when there is only one managed venue associated with the offerer and offerer is eligible', () => {
     beforeEach(() => {
       props = {
-        ...props,
+        ...defaultCreationProps,
         userOfferers: userOfferersFactory([
           {
             managedVenues: managedVenuesFactory([{}]),
           },
         ]),
       }
+      getIsOffererEligible = jest
+        .fn()
+        .mockResolvedValue(eligibilityResponse(true))
     })
 
     it('should pre-select both selects and display the next step', async () => {
@@ -147,7 +155,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
   describe('when there is multiple offerers associated with an account', () => {
     beforeEach(() => {
       props = {
-        ...props,
+        ...defaultCreationProps,
         userOfferers: userOfferersFactory([
           { id: 'OFFERER_1' },
           { id: 'OFFERER_2' },
@@ -158,6 +166,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
         .fn()
         .mockResolvedValue(eligibilityResponse(true))
     })
+
     it('should require an offerer selection from the user and trigger eligibility check at selection', async () => {
       renderEACOfferForm({ ...props, getIsOffererEligible })
       const offererSelect = await screen.findByLabelText('Structure')
@@ -179,6 +188,9 @@ describe('screens | OfferEducational : creation offerer step', () => {
       expect(getIsOffererEligible).toHaveBeenCalledTimes(0)
 
       await userEvent.selectOptions(offererSelect, 'OFFERER_1')
+
+      await userEvent.click(offererSelect)
+      await userEvent.tab()
 
       expect(
         screen.queryByText('Veuillez sélectionner une structure')
@@ -207,7 +219,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
   describe('when there is multiple venues managed by an offerer', () => {
     beforeEach(() => {
       props = {
-        ...props,
+        ...defaultCreationProps,
         userOfferers: userOfferersFactory([
           {
             managedVenues: managedVenuesFactory([
@@ -218,6 +230,9 @@ describe('screens | OfferEducational : creation offerer step', () => {
           },
         ]),
       }
+      getIsOffererEligible = jest
+        .fn()
+        .mockResolvedValue(eligibilityResponse(true))
     })
 
     it('should require a venue selection from the user', async () => {

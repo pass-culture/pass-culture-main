@@ -296,12 +296,15 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should submit minimal virtual offer', async () => {
+    // Use virtual venue
+    props.venueId = 'BB'
     renderInformationsScreen(props, contextOverride)
 
     const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
     const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'virtual')
+
     const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 

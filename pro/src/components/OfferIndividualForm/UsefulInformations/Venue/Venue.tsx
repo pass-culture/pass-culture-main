@@ -30,8 +30,8 @@ const Venue = ({
     venueList
   )
 
-  const onVenueChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newVenue = venueList.find(v => v.id === event.target.value)
+  const onVenueChange = (venueId: string) => {
+    const newVenue = venueList.find(v => v.id === venueId)
 
     if (!newVenue) {
       return
@@ -45,6 +45,17 @@ const Venue = ({
       setFieldValue('accessibility', newVenue.accessibility)
   }
 
+  const onOffererChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { venueOptions: newVenueOptions } = buildVenueOptions(
+      event.target.value,
+      venueList
+    )
+    if (newVenueOptions.length === 1) {
+      setFieldValue('venueId', newVenueOptions[0].value)
+      onVenueChange(newVenueOptions[0].value)
+    }
+  }
+
   return (
     <>
       <FormLayout.Row>
@@ -53,6 +64,7 @@ const Venue = ({
           label="Structure"
           name="offererId"
           options={offererOptions}
+          onChange={onOffererChange}
         />
       </FormLayout.Row>
       <FormLayout.Row>
@@ -61,7 +73,7 @@ const Venue = ({
           label="Lieu"
           name="venueId"
           options={venueOptions}
-          onChange={onVenueChange}
+          onChange={event => onVenueChange(event.target.value)}
         />
       </FormLayout.Row>
     </>
