@@ -6,7 +6,6 @@ import {
 } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import Icon from 'ui-kit/Icon/Icon'
@@ -19,13 +18,9 @@ import {
 
 function getAvailableBookingStatuses<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
->(
-  audience: Audience,
-  bookingsRecap: T[],
-  isImproveCollectiveStatusActive: boolean
-) {
+>(audience: Audience, bookingsRecap: T[]) {
   const titleFormatter =
-    audience === Audience.INDIVIDUAL || !isImproveCollectiveStatusActive
+    audience === Audience.INDIVIDUAL
       ? getBookingStatusDisplayInformations
       : getCollectiveBookingStatusDisplayInformations
   const presentBookingStatues = Array.from(
@@ -69,9 +64,6 @@ const FilterByBookingStatus = <
   const [isToolTipVisible, setIsToolTipVisible] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const { logEvent } = useAnalytics()
-  const isImproveCollectiveStatusActive = useActiveFeature(
-    'WIP_IMPROVE_COLLECTIVE_STATUS'
-  )
 
   function showFilter() {
     setIsToolTipVisible(true)
@@ -117,8 +109,7 @@ const FilterByBookingStatus = <
 
   const filteredBookingStatuses = getAvailableBookingStatuses(
     audience,
-    bookingsRecap,
-    isImproveCollectiveStatusActive
+    bookingsRecap
   )
 
   return (

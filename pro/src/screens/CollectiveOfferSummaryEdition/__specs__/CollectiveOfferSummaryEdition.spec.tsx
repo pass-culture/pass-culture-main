@@ -25,11 +25,7 @@ import {
   categoriesFactory,
   subCategoriesFactory,
 } from 'screens/OfferEducational/__tests-utils__'
-import {
-  collectiveStockFactory,
-  collectiveOfferTemplateFactory,
-  collectiveOfferFactory,
-} from 'utils/collectiveApiFactories'
+import { collectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferSummaryEdition from '../CollectiveOfferSummaryEdition'
@@ -108,21 +104,6 @@ describe('CollectiveOfferSummary', () => {
     })
 
     expect(desactivateOffer).toBeInTheDocument()
-  })
-
-  it('should display cancel booking button when offer is booked', () => {
-    offer = collectiveOfferFactory({
-      isTemplate: false,
-      isActive: true,
-      collectiveStock: collectiveStockFactory({ isBooked: true }),
-    })
-    renderCollectiveOfferSummaryEdition(offer, categories)
-
-    const cancelBooking = screen.getByRole('button', {
-      name: 'Annuler la réservation',
-    })
-
-    expect(cancelBooking).toBeInTheDocument()
   })
 
   it('should log event when clicking duplicate offer button', async () => {

@@ -4,14 +4,12 @@ import type { Row } from 'react-table'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { RowExpandedContext } from 'screens/Bookings/BookingsRecapTable/BookingsRecapTable'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import CollectiveBookingDetails from '../CollectiveBookingDetails'
-import OldCollectiveBookingDetails from '../OldCollectiveBookingDetails'
 
 import getCollectiveBookingAdapter from './adapters/getCollectiveBookingAdapter'
 import TableRow from './TableRow'
@@ -27,9 +25,6 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
     useState<CollectiveBookingByIdResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
-  const isImproveCollectiveStatusActive = useActiveFeature(
-    'WIP_IMPROVE_COLLECTIVE_STATUS'
-  )
 
   const detailsRef = useRef<HTMLTableRowElement | null>(null)
   const rowToExpandContext = useContext(RowExpandedContext)
@@ -93,20 +88,11 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
             ) : (
               bookingDetails && (
                 <td className={styles['details-content']}>
-                  {isImproveCollectiveStatusActive ? (
-                    <CollectiveBookingDetails
-                      bookingDetails={bookingDetails}
-                      bookingRecap={row.original}
-                      reloadBookings={reloadBookings}
-                    />
-                  ) : (
-                    <OldCollectiveBookingDetails
-                      bookingDetails={bookingDetails}
-                      offerId={row.original.stock.offerIdentifier}
-                      canCancelBooking={bookingDetails.isCancellable}
-                      reloadBookings={reloadBookings}
-                    />
-                  )}
+                  <CollectiveBookingDetails
+                    bookingDetails={bookingDetails}
+                    bookingRecap={row.original}
+                    reloadBookings={reloadBookings}
+                  />
                 </td>
               )
             )}

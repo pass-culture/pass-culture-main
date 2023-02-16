@@ -14,7 +14,6 @@ import {
 } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { AlertFilledIcon } from 'icons'
 import { Tag } from 'ui-kit'
@@ -79,17 +78,12 @@ const OfferNameCell = ({
   const computeNumberOfSoldOutStocks = () =>
     offer.stocks.filter(stock => stock.remainingQuantity === 0).length
 
-  const isImproveCollectiveStatusActive = useActiveFeature(
-    'WIP_IMPROVE_COLLECTIVE_STATUS'
-  )
-
   const shouldShowIndividualWarning =
     audience === Audience.INDIVIDUAL &&
     computeNumberOfSoldOutStocks() > 0 &&
     offer.status !== OFFER_STATUS_SOLD_OUT
 
   const shouldShowCollectiveWarning =
-    isImproveCollectiveStatusActive &&
     audience === Audience.COLLECTIVE &&
     offer.educationalBooking?.booking_status === OFFER_STATUS_PENDING &&
     shouldDisplayWarning(offer.stocks)

@@ -3,7 +3,6 @@ import React from 'react'
 import { OfferStatus } from 'apiClient/v1'
 import { Offer, Venue } from 'core/Offers/types'
 import { Audience } from 'core/shared'
-import useActiveFeature from 'hooks/useActiveFeature'
 
 import BookingLinkCell from './Cells/BookingLinkCell'
 import CheckboxCell from './Cells/CheckboxCell'
@@ -12,7 +11,6 @@ import DuplicateOfferCell from './Cells/DuplicateOfferCell'
 import EditOfferCell from './Cells/EditOfferCell'
 import OfferInstitutionCell from './Cells/OfferInstitutionCell'
 import OfferNameCell from './Cells/OfferNameCell'
-import OfferStatusCell from './Cells/OfferStatusCell'
 import OfferVenueCell from './Cells/OfferVenueCell'
 import ThumbCell from './Cells/ThumbCell'
 
@@ -37,9 +35,6 @@ const CollectiveOfferItem = ({
   isOfferEditable,
   audience,
 }: CollectiveOfferItemProps) => {
-  const isImproveCollectiveStatusActive = useActiveFeature(
-    'WIP_IMPROVE_COLLECTIVE_STATUS'
-  )
   return (
     <>
       <CheckboxCell
@@ -60,18 +55,15 @@ const CollectiveOfferItem = ({
       <OfferInstitutionCell
         educationalInstitution={offer.educationalInstitution}
       />
-      {isImproveCollectiveStatusActive ? (
-        <CollectiveOfferStatusCell offer={offer} />
-      ) : (
-        <OfferStatusCell status={offer.status} />
-      )}
+
+      <CollectiveOfferStatusCell offer={offer} />
+
       {Boolean(offer.isShowcase) && (
         <DuplicateOfferCell templateOfferId={offer.id} />
       )}
 
-      {isImproveCollectiveStatusActive &&
-        (offer.status == OfferStatus.SOLD_OUT ||
-          offer.status == OfferStatus.EXPIRED) &&
+      {(offer.status == OfferStatus.SOLD_OUT ||
+        offer.status == OfferStatus.EXPIRED) &&
         offer.educationalBooking && (
           <BookingLinkCell
             bookingId={offer.educationalBooking?.id}

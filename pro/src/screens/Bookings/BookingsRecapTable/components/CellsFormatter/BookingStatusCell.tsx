@@ -5,7 +5,6 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import useActiveFeature from 'hooks/useActiveFeature'
 import Icon from 'ui-kit/Icon/Icon'
 import Tooltip from 'ui-kit/Tooltip'
 
@@ -25,11 +24,7 @@ const BookingStatusCell = ({
     | Row<CollectiveBookingResponseModel>
   isCollectiveStatus: boolean
 }) => {
-  const isImproveCollectiveStatusActive = useActiveFeature(
-    'WIP_IMPROVE_COLLECTIVE_STATUS'
-  )
-
-  if (isImproveCollectiveStatusActive && isCollectiveStatus) {
+  if (isCollectiveStatus) {
     const lastBookingStatus =
       bookingRecapInfo.original.bookingStatusHistory.slice(-1)[0].status
     const bookingDisplayInfo =

@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useState } from 'react'
+import React from 'react'
 
 import { CollectiveBookingStatus, OfferStatus } from 'apiClient/v1'
 import {
@@ -7,7 +7,6 @@ import {
   CollectiveOfferTemplate,
   isCollectiveOffer,
 } from 'core/OfferEducational'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { CircleArrowIcon } from 'icons'
 import { getCollectiveStatusLabel } from 'pages/Offers/Offers/OfferItem/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
 import { Button, ButtonLink } from 'ui-kit'
@@ -16,8 +15,6 @@ import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
 } from 'utils/date'
-
-import CancelCollectiveBookingModal from '../CancelCollectiveBookingModal'
 
 import { ReactComponent as IconActive } from './assets/icon-active.svg'
 import { ReactComponent as IconInactive } from './assets/icon-inactive.svg'
@@ -37,10 +34,8 @@ const OfferEducationalActions = ({
   isOfferActive,
   isBooked,
   offer,
-  cancelActiveBookings,
   setIsOfferActive,
 }: IOfferEducationalActions): JSX.Element => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const lastBookingId = isCollectiveOffer(offer) ? offer.lastBookingId : null
   const lastBookingStatus = isCollectiveOffer(offer)
     ? offer.lastBookingStatus
@@ -60,21 +55,8 @@ const OfferEducationalActions = ({
     return ''
   }
 
-  const isImproveCollectiveStatusActive = useActiveFeature(
-    'WIP_IMPROVE_COLLECTIVE_STATUS'
-  )
-
   return (
     <>
-      {isModalOpen && cancelActiveBookings && (
-        <CancelCollectiveBookingModal
-          onDismiss={() => setIsModalOpen(false)}
-          onValidate={() => {
-            cancelActiveBookings()
-            setIsModalOpen(false)
-          }}
-        />
-      )}
       <div className={cn(style['actions'], className)}>
         {!isBooked && setIsOfferActive && offer?.status != OfferStatus.EXPIRED && (
           <Button
@@ -88,20 +70,8 @@ const OfferEducationalActions = ({
               : 'Publier sur Adage'}
           </Button>
         )}
-        {!isImproveCollectiveStatusActive &&
-          isBooked &&
-          offer?.isCancellable &&
-          cancelActiveBookings && (
-            <Button
-              className={style['actions-button']}
-              onClick={() => setIsModalOpen(true)}
-              variant={ButtonVariant.SECONDARY}
-            >
-              Annuler la réservation
-            </Button>
-          )}
-        {isImproveCollectiveStatusActive &&
-          lastBookingId &&
+
+        {lastBookingId &&
           (lastBookingStatus != CollectiveBookingStatus.CANCELLED ||
             offer?.status == OfferStatus.EXPIRED) && (
             <ButtonLink
@@ -117,7 +87,7 @@ const OfferEducationalActions = ({
                 : 'réservation'}
             </ButtonLink>
           )}
-        {offer?.status && isImproveCollectiveStatusActive && (
+        {offer?.status && (
           <>
             {offer.status != OfferStatus.EXPIRED && (
               <>
