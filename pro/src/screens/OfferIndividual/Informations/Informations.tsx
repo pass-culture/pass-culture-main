@@ -187,7 +187,6 @@ const Informations = ({
   }
 
   const readOnlyFields = setFormReadOnlyFields(offer, currentUser.isAdmin)
-
   const formik = useFormik({
     initialValues,
     onSubmit: onSubmitOffer,

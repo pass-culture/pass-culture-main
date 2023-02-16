@@ -20,12 +20,13 @@ import { SynchronizedProviderInformation } from 'screens/OfferIndividual/Synchro
 import { Accessibility } from './Accessibility'
 import { Categories } from './Categories'
 import { ExternalLink } from './ExternalLink'
-import { useFilteredVenueList, useShowFullForm } from './hooks'
+import { useShowFullForm } from './hooks'
 import { ImageUploaderOffer } from './ImageUploaderOffer'
 import { Informations } from './Informations'
 import { Notifications } from './Notifications'
 import { OptionDuo } from './OptionDuo'
 import { UsefulInformations } from './UsefulInformations'
+import { getFilteredVenueList } from './utils/getFilteredVenueList'
 
 export interface IOfferIndividualFormProps {
   offererNames: TOffererName[]
@@ -59,11 +60,11 @@ const OfferIndividualForm = ({
 
   useScrollToFirstErrorAfterSubmit()
 
-  const filteredVenueList = useFilteredVenueList({
-    subCategories,
+  const filteredVenueList = getFilteredVenueList(
     subcategoryId,
-    venueList,
-  })
+    subCategories,
+    venueList
+  )
 
   const showFullForm = useShowFullForm(subcategoryId, filteredVenueList)
 
