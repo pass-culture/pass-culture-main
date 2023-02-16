@@ -1,5 +1,5 @@
 import { useField } from 'formik'
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback } from 'react'
 
 import { SelectOption } from 'custom_types/form'
 
@@ -42,17 +42,7 @@ const Select = ({
   classNameFooter,
   ...selectAttributes
 }: ISelectProps): JSX.Element => {
-  const [field, meta, helpers] = useField({ name, type: 'select' })
-
-  useEffect(() => {
-    if (
-      !isOptional &&
-      options.length === 1 &&
-      field.value !== options[0].value
-    ) {
-      helpers.setValue(options[0].value)
-    }
-  }, [options, helpers, field, isOptional])
+  const [field, meta] = useField({ name, type: 'select' })
 
   const onCustomChange = useCallback(
     async (e: React.ChangeEvent<HTMLSelectElement>) => {
