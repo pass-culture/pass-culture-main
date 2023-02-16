@@ -17,7 +17,7 @@ def upsert_roles(
         user.backoffice_profile.roles = []
 
     concrete_roles = perm_api.get_concrete_roles(roles)
-    user.backoffice_profile.roles.extend(concrete_roles)
+    user.backoffice_profile.roles = concrete_roles
 
     return user.backoffice_profile
 
