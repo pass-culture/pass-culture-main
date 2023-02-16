@@ -204,6 +204,11 @@ def edit_collective_offer(
         new_values["venueId"] = dehumanize_or_raise(new_values["venueId"])
 
     try:
+        offerers_api.can_offerer_create_educational_offer(offerer.id)
+    except educational_exceptions.CulturalPartnerNotFoundException:
+        raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
+
+    try:
         offers_api.update_collective_offer(offer_id=dehumanized_id, new_values=new_values)
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
@@ -288,6 +293,10 @@ def edit_collective_offer_template(
     if "venueId" in new_values:
         new_values["venueId"] = dehumanize_or_raise(new_values["venueId"])
 
+    try:
+        offerers_api.can_offerer_create_educational_offer(offerer.id)
+    except educational_exceptions.CulturalPartnerNotFoundException:
+        raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
     try:
         offers_api.update_collective_offer_template(offer_id=dehumanized_id, new_values=new_values)
     except educational_exceptions.VenueIdDontExist:
