@@ -8,7 +8,6 @@ import {
 } from 'apiClient/v1'
 import NoData from 'components/NoData'
 import PageTitle from 'components/PageTitle/PageTitle'
-import Tabs from 'components/Tabs'
 import {
   DEFAULT_PRE_FILTERS,
   GetBookingsCSVFileAdapter,
@@ -29,6 +28,7 @@ import { ReactComponent as UserIcon } from 'icons/user.svg'
 import ChoosePreFiltersMessage from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingsForPreFiltersMessage from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import Tabs from 'ui-kit/Tabs'
 import Titles from 'ui-kit/Titles/Titles'
 
 import {
