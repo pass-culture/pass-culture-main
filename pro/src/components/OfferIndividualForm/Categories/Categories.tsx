@@ -10,11 +10,14 @@ import {
 } from 'components/OfferIndividualForm'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { TOfferIndividualVenue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { InfoBox, Select } from 'ui-kit'
 
 import styles from '../OfferIndividualForm.module.scss'
+import { onVenueChange } from '../UsefulInformations/Venue/Venue'
 import buildSubCategoryFields from '../utils/buildSubCategoryFields'
+import { getFilteredVenueList } from '../utils/getFilteredVenueList'
 
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from './constants'
 import { MusicTypes } from './MusicTypes'
@@ -27,6 +30,7 @@ export interface ICategoriesProps {
   readOnlyFields?: string[]
   showAddVenueBanner?: boolean
   offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
+  venueList: TOfferIndividualVenue[]
 }
 
 const buildCategoryOptions = (categories: IOfferCategory[]): SelectOption[] =>
@@ -53,6 +57,7 @@ const Categories = ({
   readOnlyFields = [],
   showAddVenueBanner = false,
   offerSubtype,
+  venueList,
 }: ICategoriesProps): JSX.Element => {
   const {
     values: { categoryId, subCategoryFields, offererId },
@@ -87,6 +92,16 @@ const Categories = ({
         )
       }
     })
+
+    const venues = getFilteredVenueList(
+      newSubCategory,
+      subCategories,
+      venueList
+    )
+    if (venues.length === 1) {
+      setFieldValue('venueId', venues[0].id)
+      onVenueChange(setFieldValue, venueList, venues[0].id)
+    }
   }
 
   const onCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
