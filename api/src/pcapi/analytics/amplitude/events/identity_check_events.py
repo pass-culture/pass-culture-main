@@ -12,6 +12,10 @@ def track_educonnect_error_event(user_id: int, error_codes: list[fraud_models.Fr
     _track_identity_check_error_event(user_id, error_codes, fraud_models.FraudCheckType.EDUCONNECT)
 
 
+def track_ubble_error_event(user_id: int, error_codes: list[fraud_models.FraudReasonCode]) -> None:
+    _track_identity_check_error_event(user_id, error_codes, fraud_models.FraudCheckType.UBBLE)
+
+
 def track_dms_error_event(
     user_id: int,
     error_codes: list[fraud_models.FraudReasonCode],
@@ -36,6 +40,8 @@ def _track_identity_check_error_event(
     match fraud_check_type:
         case fraud_models.FraudCheckType.EDUCONNECT:
             event_name = AmplitudeEventType.EDUCONNECT_ERROR
+        case fraud_models.FraudCheckType.UBBLE:
+            event_name = AmplitudeEventType.UBBLE_ERROR
         case fraud_models.FraudCheckType.DMS:
             event_name = AmplitudeEventType.DMS_ERROR
         case _:

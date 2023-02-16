@@ -8,6 +8,8 @@ from dateutil.relativedelta import relativedelta
 import freezegun
 import pytest
 
+from pcapi.analytics.amplitude import testing as amplitude_testing
+from pcapi.analytics.amplitude.backends import amplitude_connector
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
@@ -424,6 +426,34 @@ class UbbleWorkflowTest:
         assert fraud_check.thirdPartyId == fraud_check.thirdPartyId
         assert fraud_check.reason == "L'utilisateur a dépassé l'âge maximum (20 ans)"
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.AGE_TOO_OLD]
+
+    def should_track_ubble_errors(self, ubble_mocker):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1))
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.PENDING, user=user
+        )
+        ubble_response = UbbleIdentificationResponseFactory(
+            identification_state=IdentificationState.INVALID,
+            included=[
+                UbbleIdentificationIncludedReferenceDataChecksFactory(
+                    attributes__score=0,
+                ),
+            ],
+        )
+
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            ubble_subscription_api.update_ubble_workflow(fraud_check)
+
+        assert amplitude_testing.requests[0]["event_name"] == amplitude_connector.AmplitudeEventType.UBBLE_ERROR.value
+        assert amplitude_testing.requests[0]["event_properties"] == {
+            "error_codes": [
+                fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH.value,
+                fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA.value,
+            ]
+        }
 
 
 class DownloadUbbleDocumentPictureTest:
