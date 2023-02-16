@@ -1,5 +1,5 @@
 {% if bookings %}
-    <table class="table mb-4">
+    <table class="table mb-4 get-details-bookings-view">
         <thead>
         <tr>
             <th scope="col"></th>
@@ -83,15 +83,31 @@
 
 {% block scripts %}
     <script>
-        document.querySelectorAll("[data-bs-toggle= 'collapse']").forEach((el) => {
-            el.addEventListener('click', (event) => {
-                //**
-                // check if the event target is `<button> <i></i> </button>` or is simply `<i></i>`
-                // */
-                var icon = event.target.children[0] ? event.target.children[0] : event.target
-                icon.classList.toggle("bi-chevron-down")
-                icon.classList.toggle("bi-chevron-right")
+      class PcGetDetailsBookings {
+        $container
+
+        constructor({ $container }) {
+          this.$container = $container
+        }
+
+        get $collapses() {
+          return this.$container.querySelectorAll('[data-bs-toggle="collapse"]')
+        }
+
+        bindEvents = () => {
+          this.$collapses.forEach(($collapse) => {
+            $collapse.addEventListener('click', (event) => {
+              // check if the event target is `<button> <i></i></button>` or `<i></i>`
+              var icon = event.target.children[0] ? event.target.children[0] : event.target
+              icon.classList.toggle('bi-chevron-down')
+              icon.classList.toggle('bi-chevron-right')
             })
-        });
+          })
+        }
+      }
+
+      new PcGetDetailsBookings({
+        $container: document.querySelector('.get-details-bookings-view')
+      })
     </script>
 {% endblock %}
