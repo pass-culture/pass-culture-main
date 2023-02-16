@@ -4,7 +4,11 @@ import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import {
+  FORM_DEFAULT_VALUES,
+  IOfferIndividualFormValues,
+  setDefaultInitialFormValues,
+} from 'components/OfferIndividualForm'
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
@@ -122,10 +126,13 @@ describe('OfferIndividual section: venue', () => {
       },
     ]
 
-    initialValues = {
-      offererId: '',
-      venueId: '',
-    }
+    initialValues = setDefaultInitialFormValues(
+      FORM_DEFAULT_VALUES,
+      offererNames,
+      null,
+      null,
+      venueList
+    )
     props = {
       offererNames,
       venueList,
@@ -165,6 +172,13 @@ describe('OfferIndividual section: venue', () => {
       offererNames: [props.offererNames[0]],
       venueList: [props.venueList[0]],
     }
+    initialValues = setDefaultInitialFormValues(
+      FORM_DEFAULT_VALUES,
+      props.offererNames,
+      null,
+      null,
+      props.venueList
+    )
     renderVenue({
       initialValues,
       onSubmit,
