@@ -14,20 +14,17 @@ const renderOfferEducationalActions = (props: IOfferEducationalActions) => {
 }
 
 describe('OfferEducationalActions', () => {
-  let props: IOfferEducationalActions
-  beforeEach(() => {
-    props = {
-      className: 'string',
-      isOfferActive: true,
-      isBooked: false,
-      offer: collectiveOfferFactory(),
-      setIsOfferActive: jest.fn(),
-      cancelActiveBookings: jest.fn(),
-    }
-  })
+  const defaultValues = {
+    className: 'string',
+    isOfferActive: true,
+    isBooked: false,
+    offer: collectiveOfferFactory(),
+    setIsOfferActive: jest.fn(),
+    cancelActiveBookings: jest.fn(),
+  }
 
   it('should display actions button and status tag by default', () => {
-    renderOfferEducationalActions(props)
+    renderOfferEducationalActions({ ...defaultValues })
     expect(
       screen.getByRole('button', { name: 'Masquer la publication sur Adage' })
     ).toBeInTheDocument()
@@ -35,12 +32,14 @@ describe('OfferEducationalActions', () => {
   })
 
   it('should display booking link for booked offer', () => {
-    props.offer = collectiveOfferFactory({
-      status: OfferStatus.SOLD_OUT,
-      lastBookingId: 1,
-      lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: collectiveOfferFactory({
+        status: OfferStatus.SOLD_OUT,
+        lastBookingId: 1,
+        lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
+      }),
     })
-    renderOfferEducationalActions(props)
     expect(
       screen.getByRole('link', { name: 'Voir la réservation' })
     ).toHaveAttribute(
@@ -50,12 +49,14 @@ describe('OfferEducationalActions', () => {
     expect(screen.getByText('réservée')).toBeInTheDocument()
   })
   it('should display booking link for used booking', () => {
-    props.offer = collectiveOfferFactory({
-      status: OfferStatus.EXPIRED,
-      lastBookingId: 1,
-      lastBookingStatus: CollectiveBookingStatus.USED,
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: collectiveOfferFactory({
+        status: OfferStatus.EXPIRED,
+        lastBookingId: 1,
+        lastBookingStatus: CollectiveBookingStatus.USED,
+      }),
     })
-    renderOfferEducationalActions(props)
     expect(
       screen.getByRole('link', { name: 'Voir la réservation' })
     ).toHaveAttribute(
@@ -63,5 +64,20 @@ describe('OfferEducationalActions', () => {
       '/reservations/collectives?page=1&offerEventDate=2021-10-15&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=1'
     )
     expect(screen.getByText('terminée')).toBeInTheDocument()
+  })
+  it('should not display booking link for cancelled booking', async () => {
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: collectiveOfferFactory({
+        status: OfferStatus.ACTIVE,
+        lastBookingId: 1,
+        lastBookingStatus: CollectiveBookingStatus.CANCELLED,
+      }),
+    })
+    expect(
+      screen.queryByRole('link', {
+        name: 'Voir la réservation',
+      })
+    ).not.toBeInTheDocument()
   })
 })
