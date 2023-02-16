@@ -71,7 +71,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
         basket_items = [boost_serializers.BasketItem(idShowtimePricing=pcu_pricing.id, quantity=quantity)]
         sale_body = boost_serializers.SaleRequest(
-            codePayment=pcu_pricing.pricingCode,
+            codePayment=constants.BOOST_PASS_CULTURE_CODE_PAYMENT,
             basketItems=basket_items,
         )
         sale_response = boost.post_resource(self.cinema_str_id, boost.ResourceBoost.COMPLETE_SALE, sale_body)
