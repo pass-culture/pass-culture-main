@@ -100,9 +100,9 @@ def assert_no_duplicated_queries() -> collections.abc.Generator[None, None, None
                 function_under_test()
     """
     # We record queries with _record_end_of_query and register_event_for_query_logger
-    flask._app_ctx_stack._query_logger = []  # type: ignore [attr-defined]
+    flask.g._query_logger = []  # type: ignore [attr-defined]
     yield
-    queries = flask._app_ctx_stack._query_logger  # type: ignore [attr-defined]
+    queries = flask.g._query_logger  # type: ignore [attr-defined]
     statements = [
         query["statement"]
         for query in queries
@@ -144,15 +144,15 @@ def assert_num_queries(expected_n_queries: int) -> collections.abc.Generator[Non
     """
     # Flask gracefully provides a global. Flask-SQLAlchemy uses it for
     # the same purpose. Let's do the same.
-    flask._app_ctx_stack._query_logger = []  # type: ignore [attr-defined]
+    flask.g._query_logger = []  # type: ignore [attr-defined]
     yield
-    queries = flask._app_ctx_stack._query_logger  # type: ignore [attr-defined]
+    queries = flask.g._query_logger  # type: ignore [attr-defined]
     if len(queries) != expected_n_queries:
         details = "\n".join(_format_sql_query(query, i, len(queries)) for i, query in enumerate(queries, start=1))
         pytest.fail(
             f"{len(queries)} queries executed, {expected_n_queries} expected\n" f"Captured queries were:\n{details}"
         )
-    del flask._app_ctx_stack._query_logger  # type: ignore [attr-defined]
+    del flask.g._query_logger  # type: ignore [attr-defined]
 
 
 def _format_sql_query(query: dict, i: int, total: int) -> str:
@@ -179,9 +179,9 @@ def _record_end_of_query(statement: str, parameters: dict, **kwargs: dict) -> No
         return
     # Do not record the query if we're not within the
     # assert_num_queries context manager.
-    if not hasattr(flask._app_ctx_stack, "_query_logger"):
+    if not hasattr(flask.g, "_query_logger"):
         return
-    flask._app_ctx_stack._query_logger.append(
+    flask.g._query_logger.append(
         {
             "statement": statement,
             "parameters": parameters,

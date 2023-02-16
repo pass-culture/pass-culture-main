@@ -78,7 +78,7 @@ types-requests
 types-urllib3
 # Pin weasyprint to keep new versions from changing how our PDF files look.
 weasyprint==56.1
-Werkzeug==2.0.3
+Werkzeug==2.2.3
 WTForms==3.0.1
 WTForms-SQLAlchemy==0.3
 XlsxWriter
