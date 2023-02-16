@@ -8,13 +8,6 @@
   tr {
     display: flex;
     flex-flow: row wrap;
-    border-top: rem.torem(1px) solid colors.$grey-medium;
-    padding: rem.torem(16px) 0;
-
-    &:first-child {
-      margin-top: rem.torem(16px);
-    }
-
   }
 
   td {
