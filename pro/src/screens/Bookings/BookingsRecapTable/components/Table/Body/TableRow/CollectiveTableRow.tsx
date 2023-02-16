@@ -85,7 +85,6 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
       />
       {row.isExpanded && (
         <>
-          <tr />
           <tr className={styles['details-container']} ref={detailsRef}>
             {isLoading ? (
               <td className={styles['loader']}>

@@ -2,7 +2,7 @@
 @use "styles/variables/_colors.scss" as colors;
 
 .details-container {
-  padding: rem.torem(32px) rem.torem(16px);
+  padding: rem.torem(16px) rem.torem(16px) rem.torem(32px) rem.torem(16px);
 
   .details-content {
     width: 100%;
@@ -10,6 +10,15 @@
     font-size: unset;
     font-weight: unset;
     line-height: unset;
+  }
+}
+
+.table-row {
+  border-top: rem.torem(1px) solid colors.$grey-medium;
+  padding: rem.torem(16px) 0;
+
+  &:first-child {
+    margin-top: rem.torem(16px);
   }
 }
 
