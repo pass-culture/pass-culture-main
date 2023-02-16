@@ -11,26 +11,6 @@ export default [
     files: [''],
   },
   {
-    error: 'Error: Not implemented: window.scrollTo',
-    files: ['app/App/App.tsx', ''],
-  },
-  {
-    error: "Error: Uncaught 'Error: Not implemented: window.scrollTon' +",
-    files: ['app/App/App.tsx', ''],
-  },
-  {
-    error: "Error: Uncaught [Error: Le statut de l'offre n'est pas valide]",
-    files: [''],
-  },
-  {
-    error: 'Error: Uncaught [Error: Should not already be working.]',
-    files: [''],
-  },
-  {
-    error: 'Error: Uncaught [Error: Unsupported step type: UNKNOWN]',
-    files: [''],
-  },
-  {
     error:
       'Warning: An update to %s inside a test was not wrapped in act(...).',
     files: [
