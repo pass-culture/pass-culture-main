@@ -949,8 +949,10 @@ def search_venue(search_query: str, order_by: list[str] | None = None) -> BaseQu
             ).order_by(
                 # Always order by similarity when searching by name
                 sa.desc(
-                    sa.func.similarity(models.Venue.name, search_query)
-                    + sa.func.similarity(models.Venue.publicName, search_query)
+                    sa.func.greatest(
+                        sa.func.similarity(models.Venue.name, search_query),
+                        sa.func.similarity(models.Venue.publicName, search_query),
+                    )
                 )
             )
 
