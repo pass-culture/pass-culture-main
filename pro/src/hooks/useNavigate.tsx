@@ -8,14 +8,17 @@ interface INavigateFunction {
     url: string,
     options?: {
       replace: boolean
-    }
+    },
+    search?: string
   ): void
 }
 
 const useNavigate = (): INavigateFunction => {
   const history = useHistory()
-  return (url: string, options = { replace: false }) =>
-    options.replace ? history.replace(url) : history.push(url)
+  return (url: string, options = { replace: false }, search) =>
+    options.replace
+      ? history.replace(url)
+      : history.push({ pathname: url, search: search })
 }
 
 export default useNavigate

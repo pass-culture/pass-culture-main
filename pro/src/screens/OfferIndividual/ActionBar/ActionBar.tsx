@@ -74,7 +74,7 @@ const ActionBar = ({
   }
 
   const Left = (): JSX.Element => {
-    if (mode !== OFFER_WIZARD_MODE.EDITION) {
+    if (mode === OFFER_WIZARD_MODE.CREATION) {
       return (
         <Button
           Icon={IcoMiniArrowLeft}
@@ -85,37 +85,62 @@ const ActionBar = ({
           Étape précédente
         </Button>
       )
-    }
-    return (
-      <>
-        {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
-          <ButtonLink
-            link={{ to: backOfferUrl, isExternal: false }}
-            variant={ButtonVariant.PRIMARY}
-            onClick={logCancel}
-          >
-            Retour à la liste des offres
-          </ButtonLink>
-        ) : (
-          <>
+    } else if (mode === OFFER_WIZARD_MODE.DRAFT) {
+      return (
+        <>
+          {step === OFFER_WIZARD_STEP_IDS.INFORMATIONS ? (
             <ButtonLink
-              link={{ to: backOfferUrl, isExternal: false }}
+              link={{ to: '/offres', isExternal: false }}
               variant={ButtonVariant.SECONDARY}
               onClick={logCancel}
             >
               Annuler et quitter
             </ButtonLink>
-            <SubmitButton
-              onClick={onClickNext}
+          ) : (
+            <Button
+              Icon={IcoMiniArrowLeft}
+              onClick={onClickPrevious}
+              variant={ButtonVariant.SECONDARY}
               disabled={isDisabled}
-              type={isFormEmpty ? 'button' : 'submit'}
             >
-              Enregistrer les modifications
-            </SubmitButton>
-          </>
-        )}
-      </>
-    )
+              Étape précédente
+            </Button>
+          )}
+        </>
+      )
+    } else {
+      // mode === OFFER_WIZARD_MODE.EDITION
+      return (
+        <>
+          {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
+            <ButtonLink
+              link={{ to: backOfferUrl, isExternal: false }}
+              variant={ButtonVariant.PRIMARY}
+              onClick={logCancel}
+            >
+              Retour à la liste des offres
+            </ButtonLink>
+          ) : (
+            <>
+              <ButtonLink
+                link={{ to: backOfferUrl, isExternal: false }}
+                variant={ButtonVariant.SECONDARY}
+                onClick={logCancel}
+              >
+                Annuler et quitter
+              </ButtonLink>
+              <SubmitButton
+                onClick={onClickNext}
+                disabled={isDisabled}
+                type={isFormEmpty ? 'button' : 'submit'}
+              >
+                Enregistrer les modifications
+              </SubmitButton>
+            </>
+          )}
+        </>
+      )
+    }
   }
 
   const Right = (): JSX.Element | null => {
