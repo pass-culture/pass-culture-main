@@ -16,7 +16,6 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_PENDING } from 'core/Offers'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
 import { AlertFilledIcon } from 'icons'
@@ -46,9 +45,6 @@ const BookingOfferCell = ({
   isCollective,
 }: IBookingOfferCellProps) => {
   const { logEvent } = useAnalytics()
-  const isImproveCollectiveStatusActive = useActiveFeature(
-    'WIP_IMPROVE_COLLECTIVE_STATUS'
-  )
 
   const editionUrl = useOfferEditionURL(
     offer.offerIsEducational,
@@ -66,7 +62,6 @@ const BookingOfferCell = ({
     : null
 
   const shouldShowCollectiveWarning =
-    isImproveCollectiveStatusActive &&
     isCollective &&
     bookingRecapInfo.values.bookingStatus.toUpperCase() ===
       OFFER_STATUS_PENDING &&
