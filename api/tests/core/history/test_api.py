@@ -3,6 +3,7 @@ import pytest
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
@@ -109,6 +110,24 @@ class ObjectUpdateSnapshotTest:
                 "siren": {"old_info": offerer.siren, "new_info": new_siren},
             }
         }
+
+    def test_trace_update_with_no_modification(self):
+        author = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+
+        # Reproduce the same process as through the form
+        longitude = float(str(venue.longitude))
+        latitude = float(str(venue.latitude))
+        venue_type_code = venue.venueTypeCode.name
+
+        attrs = {
+            "longitude": longitude,
+            "latitude": latitude,
+            "venueTypeCode": venue_type_code,
+        }
+        offerers_api.update_venue(venue, author=author, contact_data=None, **attrs)
+
+        assert history_models.ActionHistory.query.count() == 0
 
     def test_log_update_without_saving(self):
         author = users_factories.UserFactory()
