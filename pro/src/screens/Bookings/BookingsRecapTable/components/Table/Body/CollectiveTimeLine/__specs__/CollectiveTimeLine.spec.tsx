@@ -131,7 +131,16 @@ describe('collective timeline', () => {
           "À compter du jour de l'évènement, le virement sera exécuté dans un délai de 2 à 3 semaines."
         )
       ).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', {
+          name: 'Voir le calendrier des remboursements',
+        })
+      ).toHaveAttribute(
+        'href',
+        'https://aide.passculture.app/hc/fr/articles/4411992051601'
+      )
     })
+
     it('should render steps for validated booking and pending bankInformation', () => {
       const bookingRecap = collectiveBookingRecapFactory({
         bookingStatus: BOOKING_STATUS.VALIDATED,
@@ -152,6 +161,7 @@ describe('collective timeline', () => {
         'https://www.demarches-simplifiees.fr/dossiers/1'
       )
     })
+
     it('should render steps for validated booking and missing bankInformation', () => {
       const bookingRecap = collectiveBookingRecapFactory({
         bookingStatus: BOOKING_STATUS.VALIDATED,
