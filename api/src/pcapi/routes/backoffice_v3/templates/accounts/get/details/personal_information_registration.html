@@ -1,9 +1,4 @@
-<script>
-    $(document).ready(function () {
-        $('[data-toggle="tooltip"]').tooltip();
-    });
-</script>
-<div class="card my-4">
+<div class="card my-4 pc-personal-information-registration-view">
     <div class="card-body" id="{{ history_type }}">
         <h5 class="card-title text-bold fs-2 m-3">
             Parcours d'inscription
@@ -11,10 +6,8 @@
                 {{ history_type | i18n_public_account }}
             </span>
         </h5>
-
         <div class="card-body">
             <div class="row py-1">
-
                 {% for item in history.subscriptionItems %}
                     <div class="col-4 d-flex">
                         <p class="d-flex justify-content-between align-items-center">
@@ -34,10 +27,8 @@
                         </p>
                     </div>
                 {% endfor %}
-
             </div>
         </div>
-
     </div>
     <div class="row justify-content-evenly g-4 mb-4">
         {% for idCheckItem in history.idCheckHistory %}
@@ -47,9 +38,8 @@
                         {{ idCheckItem.type }}
                     </h5>
                 </div>
-
                 <div class="card-body">
-                    <div class=" py-3">
+                    <div class="py-3">
                         <div class="col">
                             <p class="d-flex justify-content-between">
                                 <span class="fs-6">Date de création</span>
@@ -97,7 +87,6 @@
                                 <span class="fs-6">Codes d'erreur</span>
                                 <span class="fs-6">{{ idCheckItem.reasonCodes | format_string_list }}</span>
                             </p>
-
                         </div>
                         <div class="col">
                             <div>
@@ -122,4 +111,3 @@
         {% endfor %}
     </div>
 </div>
-
