@@ -244,6 +244,16 @@ const CollectiveTimeLine = ({
           À compter du jour de l'évènement, le virement sera exécuté dans un
           délai de 2 à 3 semaines.
         </div>
+        <ButtonLink
+          variant={ButtonVariant.TERNARY}
+          link={{
+            to: 'https://aide.passculture.app/hc/fr/articles/4411992051601',
+            isExternal: true,
+          }}
+          Icon={ExternalLinkIcon}
+        >
+          Voir le calendrier des remboursements
+        </ButtonLink>
       </>
     ),
   }
