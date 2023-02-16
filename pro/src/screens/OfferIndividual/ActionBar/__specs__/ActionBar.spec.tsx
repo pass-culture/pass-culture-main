@@ -96,6 +96,22 @@ describe('OfferIndividual::ActionBar', () => {
     })
   })
 
+  describe('on draft', () => {
+    it('should render the component for information page', async () => {
+      props.step = OFFER_WIZARD_STEP_IDS.INFORMATIONS
+
+      renderActionBar({ props, url: '/brouillon/url' })
+
+      expect(screen.getByText('Annuler et quitter')).toBeInTheDocument()
+      const buttonSaveDraft = screen.getByText('Sauvegarder le brouillon')
+      await userEvent.click(buttonSaveDraft)
+      expect(onClickSaveDraftMock).toHaveBeenCalled()
+      const buttonNextStep = screen.getByText('Étape suivante')
+      await userEvent.click(buttonNextStep)
+      expect(onClickNextMock).toHaveBeenCalled()
+    })
+  })
+
   describe('on edition', () => {
     it('should render the component for information page', async () => {
       props.step = OFFER_WIZARD_STEP_IDS.INFORMATIONS
