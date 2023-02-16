@@ -21,7 +21,12 @@ class Returns200Test:
         response_json = response.json
         assert response.status_code == 200
         assert response_json == [
-            {"gender": "Mme.", "name": "SKLODOWSKA", "surname": "MARIA"},
+            {
+                "gender": "Mme.",
+                "name": "SKLODOWSKA",
+                "surname": "MARIA",
+                "email": "maria.sklodowska@example.com",
+            },
         ]
 
     def test_get_multiple_redactors(self, client):
@@ -37,8 +42,18 @@ class Returns200Test:
         response_json = response.json
         assert response.status_code == 200
         assert response_json == [
-            {"gender": "M.", "name": "POINTCARE", "surname": "HENRI"},
-            {"gender": "M.", "name": "HENMAR", "surname": "CONFUSION"},
+            {
+                "gender": "M.",
+                "name": "POINTCARE",
+                "surname": "HENRI",
+                "email": "henri.pointcare@example.com",
+            },
+            {
+                "gender": "M.",
+                "name": "HENMAR",
+                "surname": "CONFUSION",
+                "email": "confusion.raymar@example.com",
+            },
         ]
 
     def test_candidate_with_diacritics(self, client):
@@ -54,7 +69,12 @@ class Returns200Test:
         response_json = response.json
         assert response.status_code == 200
         assert response_json == [
-            {"gender": "M.", "name": "POINTCARE", "surname": "HENRI"},
+            {
+                "gender": "M.",
+                "name": "POINTCARE",
+                "surname": "HENRI",
+                "email": "henri.pointcare@example.com",
+            },
         ]
 
     def test_candidate_with_space(self, client):
@@ -70,7 +90,12 @@ class Returns200Test:
         response_json = response.json
         assert response.status_code == 200
         assert response_json == [
-            {"gender": "M.", "name": "POINTCARE", "surname": "HENRI"},
+            {
+                "gender": "M.",
+                "name": "POINTCARE",
+                "surname": "HENRI",
+                "email": "henri.pointcare@example.com",
+            },
         ]
 
     def test_no_redactors_found(self, client):
