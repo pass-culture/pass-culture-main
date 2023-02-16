@@ -15,7 +15,6 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.core.subscription.commands",
         "pcapi.scheduled_tasks.commands",
         "pcapi.scheduled_tasks.titelive_commands",
-        "pcapi.scripts.algolia_indexing.commands",
         "pcapi.scripts.beneficiary.import_test_users",
         "pcapi.scripts.booking.commands",
         "pcapi.scripts.clean_database",
