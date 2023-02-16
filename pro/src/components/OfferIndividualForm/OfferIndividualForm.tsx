@@ -89,13 +89,16 @@ const OfferIndividualForm = ({
       {providerName && (
         <SynchronizedProviderInformation providerName={providerName} />
       )}
+
       <FormLayout.MandatoryInfo />
+
       <Categories
         categories={categories}
         subCategories={subCategories}
         readOnlyFields={readOnlyFields}
         showAddVenueBanner={showAddVenueBanner}
         offerSubtype={offerSubtype}
+        venueList={venueList}
       />
       {showFullForm && (
         <>
