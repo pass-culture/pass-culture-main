@@ -74,7 +74,7 @@ class GetTokenValidationAndScoreTest:
 
 
 class CheckRecaptchaTokenIsValidTest:
-    @override_settings(IS_DEV=False)
+    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
     def test_v2_should_be_ok(self, recaptcha_response):
         token = generate_fake_token()
@@ -82,7 +82,7 @@ class CheckRecaptchaTokenIsValidTest:
         # No exception means it worked
         check_recaptcha_token_is_valid(token, secret=settings.RECAPTCHA_SECRET, version=ReCaptchaVersion.V2)
 
-    @override_settings(IS_DEV=False)
+    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
     def test_v3_should_be_ok(self, recaptcha_response):
         token = generate_fake_token()
@@ -96,7 +96,7 @@ class CheckRecaptchaTokenIsValidTest:
             minimal_score=0.5,
         )
 
-    @override_settings(IS_DEV=False)
+    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
     def test_should_raise_when_score_is_too_low(self, recaptcha_response):
         # Given
@@ -113,7 +113,7 @@ class CheckRecaptchaTokenIsValidTest:
                 minimal_score=0.5,
             )
 
-    @override_settings(IS_DEV=False)
+    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
     def test_should_raise_when_action_is_not_matching_the_original_action(self, recaptcha_response):
         # Given
@@ -133,7 +133,7 @@ class CheckRecaptchaTokenIsValidTest:
         # Then
         assert str(exception.value) == "The action 'fake-action' does not match 'submit' from the form"
 
-    @override_settings(IS_DEV=False)
+    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
     def test_should_raise_when_token_is_too_old_or_already_used(self, recaptcha_response):
         # Given
@@ -163,7 +163,7 @@ class CheckRecaptchaTokenIsValidTest:
             "bad-request",
         ],
     )
-    @override_settings(IS_DEV=False)
+    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
     def test_should_raise_exception_for_any_other_error_code(self, recaptcha_response, error_code):
         # Given
@@ -183,7 +183,7 @@ class CheckRecaptchaTokenIsValidTest:
                 minimal_score=0.5,
             )
 
-    @override_settings(IS_DEV=False)
+    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
     def test_v3_should_raise_exception_with_details(self, recaptcha_response):
         # Given
@@ -205,7 +205,7 @@ class CheckRecaptchaTokenIsValidTest:
 
         assert str(exception.value) == "Encountered the following error(s): ['first-error', 'second-error']"
 
-    @override_settings(IS_DEV=False)
+    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
     def test_v2_should_raise_exception_with_details(self, recaptcha_response):
         # Given
