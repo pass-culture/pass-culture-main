@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { UserRole } from 'apiClient/v1'
 import NoOffers from 'components/NoData'
 import PageTitle from 'components/PageTitle/PageTitle'
-import Tabs from 'components/Tabs'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -30,6 +29,7 @@ import ActionsBar from 'pages/Offers/Offers/ActionsBar'
 import OffersContainer from 'pages/Offers/Offers/Offers'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Tabs from 'ui-kit/Tabs'
 import Titles from 'ui-kit/Titles/Titles'
 
 import SearchFilters from './SearchFilters'
