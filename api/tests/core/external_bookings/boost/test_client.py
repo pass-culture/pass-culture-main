@@ -100,18 +100,24 @@ class BookTicketTest:
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36683_DATA,
+            "https://cinema-0.example.com/api/showtimes/36684",
+            json=fixtures.ShowtimeDetailsEndpointResponse.PC2_AND_FULL_PRICINGS_SHOWTIME_36684_DATA,
         )
-        requests_mock.post(
+        post_adapter = requests_mock.post(
             "https://cinema-0.example.com/api/sale/complete",
             json=fixtures.ConfirmedSaleEndpointResponse.DATA,
             headers={"Content-Type": "application/json"},
         )
 
         boost = boost_client.BoostClientAPI(cinema_str_id)
-        tickets = boost.book_ticket(show_id=36683, quantity=2)
+        tickets = boost.book_ticket(show_id=36684, quantity=2)
 
+        showtime_info = boost.get_showtime(showtime_id=36684)
+        assert showtime_info.showtimePricing == [FULL_PRICING, PC2_PRICING]
+        assert post_adapter.last_request.json() == {
+            "basketItems": [{"idShowtimePricing": 1114163, "quantity": 2}],
+            "codePayment": "PCU",
+        }
         assert len(tickets) == 2
         assert tickets == [
             external_bookings_models.Ticket(barcode="90474", seat_number=None),
