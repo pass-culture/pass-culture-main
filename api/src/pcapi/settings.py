@@ -214,6 +214,7 @@ RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE = float(os.environ.get("RECAPTCHA_RESET_P
 RECAPTCHA_API_URL = "https://www.google.com/recaptcha/api/siteverify"
 RECAPTCHA_SECRET = secrets_utils.get("RECAPTCHA_SECRET")
 NATIVE_RECAPTCHA_SECRET = secrets_utils.get("NATIVE_RECAPTCHA_SECRET")
+RECAPTCHA_IGNORE_VALIDATION = bool(int(os.environ.get("RECAPTCHA_IGNORE_VALIDATION", 0)))
 
 
 # JWT
