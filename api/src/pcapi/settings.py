@@ -358,6 +358,7 @@ ADAGE_BACKEND = os.environ.get("ADAGE_BACKEND", "pcapi.core.educational.adage_ba
 
 # NOTION
 NOTION_TOKEN = secrets_utils.get("NOTION_TOKEN", "")
+SEND_SYNCHRONIZATION_ERRORS_TO_NOTION = bool(int(os.environ.get("SEND_SYNCHRONIZATION_ERRORS_TO_NOTION", 0)))
 
 # EDUCONNECT
 API_URL_FOR_EDUCONNECT = os.environ.get(
