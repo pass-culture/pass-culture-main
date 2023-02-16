@@ -10,9 +10,9 @@ AMPLITUDE_API_PUBLIC_KEY = settings.AMPLITUDE_API_PUBLIC_KEY
 
 
 class AmplitudeEventType(enum.Enum):
-    EDUCONNECT_ERROR = "Educonnect Error"
-    UBBLE_ERROR = "Ubble Error"
-    DMS_ERROR = "DMS Error"
+    EDUCONNECT_ERROR = "EDUCONNECT_ERROR"
+    UBBLE_ERROR = "UBBLE_ERROR"
+    DMS_ERROR = "DMS_ERROR"
 
 
 class AmplitudeBackend:
@@ -35,7 +35,7 @@ class AmplitudeBackend:
         event_properties: dict | None = None,
     ) -> None:
         event = amplitude_sdk.BaseEvent(
-            user_id=user_id,
+            user_id=str(user_id),
             event_type=event_name.value,
             event_properties=event_properties,
         )
