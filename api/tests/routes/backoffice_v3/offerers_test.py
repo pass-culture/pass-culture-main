@@ -2139,7 +2139,7 @@ class BatchOffererAttachmentValidateTest:
         )
 
         assert response.status_code == 303
-        for index, user_offerer in enumerate(user_offerers):
+        for user_offerer in user_offerers:
             db.session.refresh(user_offerer)
             assert user_offerer.isValidated
             assert user_offerer.user.has_pro_role
@@ -2155,13 +2155,17 @@ class BatchOffererAttachmentValidateTest:
             assert action.offererId == user_offerer.offerer.id
             assert action.venueId is None
 
-            assert mails_testing.outbox[index].sent_data["To"] == user_offerer.user.email
+        assert len(mails_testing.outbox) == len(user_offerers)
+
+        # emails are not sorted by user_offerers
+        assert {mail.sent_data["To"] for mail in mails_testing.outbox} == {
+            user_offerer.user.email for user_offerer in user_offerers
+        }
+        for mail in mails_testing.outbox:
             assert (
-                mails_testing.outbox[index].sent_data["template"]
+                mail.sent_data["template"]
                 == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value.__dict__
             )
-
-        assert len(mails_testing.outbox) == len(user_offerers)
 
 
 class BatchOffererAttachmentRejectUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
