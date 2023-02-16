@@ -20,7 +20,6 @@ import { SynchronizedProviderInformation } from 'screens/OfferIndividual/Synchro
 import { Accessibility } from './Accessibility'
 import { Categories } from './Categories'
 import { ExternalLink } from './ExternalLink'
-import { useShowFullForm } from './hooks'
 import { ImageUploaderOffer } from './ImageUploaderOffer'
 import { Informations } from './Informations'
 import { Notifications } from './Notifications'
@@ -66,7 +65,7 @@ const OfferIndividualForm = ({
     venueList
   )
 
-  const showFullForm = useShowFullForm(subcategoryId, filteredVenueList)
+  const showFullForm = subcategoryId.length > 0 && filteredVenueList.length > 0
 
   const offerSubCategory = subCategories.find(s => s.id === subcategoryId)
 
