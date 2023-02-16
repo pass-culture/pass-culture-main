@@ -42,7 +42,7 @@ def check_recaptcha_token_is_valid(
     minimal_score: float | None = None,
 ) -> None:
     # This is to prevent E2E tests from being flaky
-    if settings.IS_DEV:
+    if settings.RECAPTCHA_IGNORE_VALIDATION:
         return
 
     response = get_token_validation_and_score(token, secret)
