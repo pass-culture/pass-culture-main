@@ -8,7 +8,7 @@ from flask import request
 from werkzeug.wrappers import Response
 
 from pcapi import settings
-from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
+from pcapi.analytics.amplitude.tasks import educonnect_events
 from pcapi.connectors.beneficiaries.educonnect import educonnect_connector
 from pcapi.connectors.beneficiaries.educonnect import exceptions as educonnect_exceptions
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
@@ -23,7 +23,6 @@ from pcapi.core.users import utils as users_utils
 from pcapi.routes.native.security import authenticated_and_active_user_required
 import pcapi.routes.serialization.educonnect as educonnect_serializers
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.tasks import amplitude_tasks
 
 from . import blueprint
 
@@ -174,7 +173,7 @@ def _on_educonnect_authentication_errors(
         else:
             error_query_param |= {"code": "UserAgeNotValid"}
 
-    track_educonnect_error_event(user.id, error_codes)
+    educonnect_events.track_educonnect_error_event(user.id, error_codes)
     return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
 
 
@@ -198,13 +197,3 @@ def _get_educonnect_user_response(
     } | base_query_param
 
     return redirect(SUCCESS_PAGE_URL + urlencode(success_query_params), code=302)
-
-
-def track_educonnect_error_event(user_id: int, error_codes: list[fraud_models.FraudReasonCode]) -> None:
-    amplitude_tasks.track_event.delay(
-        amplitude_tasks.TrackAmplitudeEventRequest(
-            user_id=user_id,
-            event_name=AmplitudeEventType.EDUCONNECT_ERROR,
-            event_properties={"error_codes": [error_codes.value for error_codes in error_codes]},
-        )
-    )
