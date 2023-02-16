@@ -5,7 +5,11 @@ import React from 'react'
 import * as yup from 'yup'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import {
+  FORM_DEFAULT_VALUES,
+  IOfferIndividualFormValues,
+  setDefaultInitialFormValues,
+} from 'components/OfferIndividualForm'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { TOffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
@@ -90,16 +94,13 @@ describe('OfferIndividual section: UsefulInformations', () => {
         hasCreatedOffer: true,
       },
     ]
-    initialValues = {
-      subCategoryFields: [],
-      offererId: '',
-      venueId: '',
-      subcategoryId: '',
-      withdrawalDetails: '',
-      withdrawalType: undefined,
-      withdrawalDelay: undefined,
-      url: '',
-    }
+    initialValues = setDefaultInitialFormValues(
+      FORM_DEFAULT_VALUES,
+      offererNames,
+      null,
+      null,
+      venueList
+    )
     props = {
       offererNames,
       venueList,
@@ -141,7 +142,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     await userEvent.click(await screen.findByText('Submit'))
 
     expect(onSubmit).toHaveBeenCalledWith(
-      {
+      expect.objectContaining({
         accessibility: {
           audio: false,
           mental: false,
@@ -158,7 +159,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
         withdrawalDelay: '0',
         withdrawalDetails: '',
         withdrawalType: 'by_email',
-      },
+      }),
       expect.anything()
     )
   })
@@ -184,7 +185,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     await userEvent.click(await screen.findByText('Submit'))
 
     expect(onSubmit).toHaveBeenCalledWith(
-      {
+      expect.objectContaining({
         name: 'Set offer',
         offererId: 'AA',
         subCategoryFields: ['withdrawalType'],
@@ -194,7 +195,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
         withdrawalDelay: 7200,
         withdrawalDetails: '',
         withdrawalType: WithdrawalTypeEnum.ON_SITE,
-      },
+      }),
       expect.anything()
     )
   })
@@ -279,7 +280,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       await userEvent.click(await screen.findByText('Submit'))
 
       expect(onSubmit).toHaveBeenCalledWith(
-        {
+        expect.objectContaining({
           accessibility: {
             audio: false,
             mental: false,
@@ -296,7 +297,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
           withdrawalDelay: undefined,
           withdrawalDetails: '',
           withdrawalType: undefined,
-        },
+        }),
         expect.anything()
       )
     })

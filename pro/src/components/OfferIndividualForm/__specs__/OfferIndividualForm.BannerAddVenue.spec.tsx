@@ -13,6 +13,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
+  setDefaultInitialFormValues,
   validationSchema,
 } from '..'
 import OfferIndividualForm, {
@@ -53,7 +54,6 @@ describe('OfferIndividualForm', () => {
   let venueList: TOfferIndividualVenue[]
 
   beforeEach(() => {
-    initialValues = { ...FORM_DEFAULT_VALUES }
     categories = [
       {
         id: 'A',
@@ -150,6 +150,13 @@ describe('OfferIndividualForm', () => {
       onImageDelete: jest.fn(),
       offerSubtype: null,
     }
+    initialValues = setDefaultInitialFormValues(
+      FORM_DEFAULT_VALUES,
+      offererNames,
+      null,
+      null,
+      venueList
+    )
   })
 
   describe('venue banner', () => {
