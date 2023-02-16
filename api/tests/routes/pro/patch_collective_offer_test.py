@@ -63,9 +63,13 @@ class Returns200Test:
             "students": ["Collège - 4e"],
             "interventionArea": ["01", "2A"],
         }
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 200
@@ -126,14 +130,16 @@ class Returns200Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-
-        # When
         data = {
             "name": "New name",
         }
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 200
@@ -146,8 +152,6 @@ class Returns200Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-
-        # When
         data = {
             "interventionArea": [],
             "offerVenue": {
@@ -156,9 +160,13 @@ class Returns200Test:
                 "venueId": "",
             },
         }
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 200
@@ -173,15 +181,17 @@ class Returns200Test:
             offerer=offer.venue.managingOfferer,
         )
         domain = EducationalDomainFactory(name="Architecture")
-
-        # When
         data = {
             "domains": [domain.id],
             "interventionArea": ["01", "2A"],
         }
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 200
@@ -196,11 +206,14 @@ class Returns200Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        # When
         data = {"students": ["Collège - 6e"]}
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 200
@@ -215,11 +228,14 @@ class Returns200Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        # When
         data = {"students": ["Collège - 6e", "Collège - 4e"]}
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 200
@@ -238,9 +254,12 @@ class Returns400Test:
         data = {
             "visualDisabilityCompliant": True,
         }
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -252,12 +271,14 @@ class Returns400Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-
-        # When
         data = {"name": " "}
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -286,12 +307,14 @@ class Returns400Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-
-        # When
         data = {"subcategoryId": "LIVRE_PAPIER"}
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -305,15 +328,16 @@ class Returns400Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-
-        # When
         data = {
             "domains": [],
         }
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
 
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
         # Then
         assert response.status_code == 400
 
@@ -326,14 +350,16 @@ class Returns400Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-
-        # When
         data = {
             "domains": None,
         }
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -347,14 +373,16 @@ class Returns400Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-
-        # When
         data = {
             "interventionArea": [],
         }
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -368,14 +396,16 @@ class Returns400Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-
-        # When
         data = {
             "interventionArea": None,
         }
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -389,14 +419,16 @@ class Returns400Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-
-        # When
         data = {
             "description": None,
         }
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -409,11 +441,13 @@ class Returns403Test:
         offer = CollectiveOfferFactory(name="Old name")
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
-        # When
         data = {"name": "New name"}
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 403
@@ -432,14 +466,16 @@ class Returns403Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-
-        # When
         data = {
             "name": "New name",
         }
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 403
@@ -453,13 +489,15 @@ class Returns403Test:
             offerer=offerer,
         )
         offer = CollectiveOfferFactory(venue__managingOfferer=offerer)
-
-        # When
         humanized_venue = humanize(0)
         data = {"venueId": humanized_venue}
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 404
@@ -475,13 +513,15 @@ class Returns403Test:
         )
         offer = CollectiveOfferFactory(venue__managingOfferer=offerer)
         venue2 = offerers_factories.VenueFactory(managingOfferer=offerer2)
-
-        # When
         humanized_venue = humanize(venue2.id)
         data = {"venueId": humanized_venue}
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 403
@@ -535,15 +575,41 @@ class Returns404Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-
-        # When
         data = {
             "domains": [0],
         }
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 404
         assert response.json["code"] == "EDUCATIONAL_DOMAIN_NOT_FOUND"
+
+    def test_edit_collective_offer_with_offerer_unregister_in_adage(self, client):
+        # GIVEN
+
+        offer = CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        data = {
+            "contactEmail": "toto@example.com",
+        }
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+            side_effect=CulturalPartnerNotFoundException,
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
+
+        # THEN
+        assert response.status_code == 403
+        assert response.json == {"Partner": "User not in Adage can't edit the offer"}
