@@ -63,6 +63,7 @@ const Informations = ({
   venueId,
 }: IInformationsProps): JSX.Element => {
   const notify = useNotification()
+  const location = useLocation()
   const { currentUser } = useCurrentUser()
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
@@ -227,8 +228,19 @@ const Informations = ({
         offerId: offer?.id,
       })
     }
+    const queryParams = new URLSearchParams(location.search)
+    const queryOffererId = queryParams.get('structure')
+    const queryVenueId = queryParams.get('lieu')
     /* istanbul ignore next: DEBT, TO FIX */
-    navigate('/offre/creation')
+    navigate(
+      '/offre/creation',
+      undefined,
+      queryOffererId && queryVenueId
+        ? `lieu=${queryVenueId}&structure=${queryOffererId}`
+        : queryOffererId && !queryVenueId
+        ? `structure=${queryOffererId}`
+        : ''
+    )
   }
 
   return (
