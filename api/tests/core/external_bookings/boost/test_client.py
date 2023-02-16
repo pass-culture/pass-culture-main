@@ -14,33 +14,33 @@ from tests.local_providers.cinema_providers.boost import fixtures
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
+FULL_PRICING = boost_serializers.ShowtimePricing(id=1225351, pricingCode="PLE", amountTaxesIncluded=Decimal(12))
+PCU_PRICING = boost_serializers.ShowtimePricing(id=1117628, pricingCode="PCU", amountTaxesIncluded=Decimal(5.5))
+PC2_PRICING = boost_serializers.ShowtimePricing(id=1114163, pricingCode="PC2", amountTaxesIncluded=Decimal(18))
+PC3_PRICING = boost_serializers.ShowtimePricing(id=4, pricingCode="PC3", amountTaxesIncluded=Decimal(8.5))
+
 
 class GetPcuPricingIfExistsTest:
-    FULL_PRICING = boost_serializers.ShowtimePricing(id=1, pricingCode="PLE", amountTaxesIncluded=Decimal(20))
-    PCU_PRICING = boost_serializers.ShowtimePricing(id=2, pricingCode="PCU", amountTaxesIncluded=Decimal(5.5))
-    PC2_PRICING = boost_serializers.ShowtimePricing(id=3, pricingCode="PC2", amountTaxesIncluded=Decimal(18))
-    PC3_PRICING = boost_serializers.ShowtimePricing(id=4, pricingCode="PC3", amountTaxesIncluded=Decimal(8.5))
-
     def test_no_valid_pricing(self):
-        showtime_pricing_list = [self.FULL_PRICING]
+        showtime_pricing_list = [FULL_PRICING]
 
         assert not boost_client.get_pcu_pricing_if_exists(showtime_pricing_list)
 
     def test_one_valid_pricing(self):
-        showtime_pricing_list = [self.FULL_PRICING, self.PCU_PRICING]
+        showtime_pricing_list = [FULL_PRICING, PCU_PRICING]
 
-        assert boost_client.get_pcu_pricing_if_exists(showtime_pricing_list) == self.PCU_PRICING
+        assert boost_client.get_pcu_pricing_if_exists(showtime_pricing_list) == PCU_PRICING
 
     def test_two_pass_culture_pricings(self, caplog):
-        showtime_pricing_list = [self.FULL_PRICING, self.PC2_PRICING, self.PC3_PRICING]
+        showtime_pricing_list = [FULL_PRICING, PC2_PRICING, PC3_PRICING]
 
-        assert boost_client.get_pcu_pricing_if_exists(showtime_pricing_list) == self.PC2_PRICING
+        assert boost_client.get_pcu_pricing_if_exists(showtime_pricing_list) == PC2_PRICING
         assert caplog.records[0].message == "There are several pass Culture Pricings for this Showtime, we will use PC2"
 
     def test_three_pass_culture_pricings(self, caplog):
-        showtime_pricing_list = [self.FULL_PRICING, self.PC2_PRICING, self.PC3_PRICING, self.PCU_PRICING]
+        showtime_pricing_list = [FULL_PRICING, PC2_PRICING, PC3_PRICING, PCU_PRICING]
 
-        assert boost_client.get_pcu_pricing_if_exists(showtime_pricing_list) == self.PCU_PRICING
+        assert boost_client.get_pcu_pricing_if_exists(showtime_pricing_list) == PCU_PRICING
         assert caplog.records[0].message == "There are several pass Culture Pricings for this Showtime, we will use PCU"
 
 
@@ -86,7 +86,7 @@ class GetShowtimeRemainingSeatsTest:
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
             "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36683_DATA,
+            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
         )
         boost = boost_client.BoostClientAPI(cinema_str_id)
 
