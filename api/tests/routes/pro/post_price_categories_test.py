@@ -1,3 +1,4 @@
+import datetime
 import decimal
 
 import pytest
@@ -68,28 +69,6 @@ class Returns200Test:
         assert price_category.price == decimal.Decimal("200.54")
         assert price_category.label == "Behind a post"
 
-    def test_edit_part_of_price_category(self, client):
-        offer = offers_factories.OfferFactory()
-        price_category = offers_factories.PriceCategoryFactory(
-            offer=offer,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change", venue=offer.venue),
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        data = {
-            "priceCategories": [
-                {"price": 200, "id": price_category.id},
-            ],
-        }
-
-        client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
-        price_category = offers_models.PriceCategory.query.one()
-        assert price_category.price == decimal.Decimal("200")
-        assert price_category.label == "Do not change"
-
     def test_update_part_of_price_category(self, client):
         offer = offers_factories.EventOfferFactory()
         offerers_factories.UserOffererFactory(
@@ -110,6 +89,7 @@ class Returns200Test:
         assert response.status_code == 200
         price_category = offers_models.PriceCategory.query.one()
         assert price_category.price == decimal.Decimal("25.12")
+        assert price_category.label == "Already exists"
         assert offers_models.PriceCategoryLabel.query.count() == 1
 
     def test_create_and_update_multiple_price_categories(self, client):
@@ -149,6 +129,11 @@ class Returns200Test:
         )
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_category)
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_category)
+        expired_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            priceCategory=price_category,
+            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=-2),
+        )
 
         response = client.with_session_auth("user@example.com").post(
             f"/offers/{offer.id}/price_categories",
@@ -156,7 +141,8 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        assert all((stock.price == 25 for stock in offer.stocks))
+        assert all((stock.price == 25 for stock in offer.stocks if not stock.isEventExpired))
+        assert expired_stock.price != 25
 
 
 class Returns400Test:

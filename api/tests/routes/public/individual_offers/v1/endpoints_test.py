@@ -2457,6 +2457,11 @@ class PatchPriceCategoryTest:
         )
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_category)
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_category)
+        expired_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            priceCategory=price_category,
+            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=-2),
+        )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{offer.id}/price_categories/{price_category.id}",
@@ -2464,4 +2469,5 @@ class PatchPriceCategoryTest:
         )
 
         assert response.status_code == 200
-        assert all((stock.price == decimal.Decimal("0.25") for stock in offer.stocks))
+        assert all((stock.price == decimal.Decimal("0.25") for stock in offer.stocks if not stock.isEventExpired))
+        assert expired_stock.price != decimal.Decimal("0.25")

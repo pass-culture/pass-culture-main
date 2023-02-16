@@ -733,8 +733,13 @@ def patch_event_price_categories(
     event_offer = (
         _retrieve_offer_query(event_id)
         .filter(offers_models.Offer.isEvent == True)
-        .options(sqla_orm.joinedload(offers_models.Offer.priceCategories))
-        .options(sqla_orm.joinedload(offers_models.Offer.stocks))
+        .outerjoin(offers_models.Offer.stocks.and_(offers_models.Stock.isEventExpired == False))
+        .options(sqla_orm.contains_eager(offers_models.Offer.stocks))
+        .options(
+            sqla_orm.joinedload(offers_models.Offer.priceCategories).joinedload(
+                offers_models.PriceCategory.priceCategoryLabel
+            )
+        )
         .one_or_none()
     )
     if not event_offer:

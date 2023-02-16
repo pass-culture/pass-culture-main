@@ -327,17 +327,23 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
 
 def _get_offer_for_price_categories_upsert(
     offer_id: int, price_category_edition_payload: list[offers_serialize.EditPriceCategoryModel]
-) -> models.Offer:
+) -> models.Offer | None:
     return (
-        models.Offer.query.options(sqla_orm.joinedload(models.Offer.stocks))
+        models.Offer.query.outerjoin(models.Offer.stocks.and_(models.Stock.isEventExpired == False))
         .outerjoin(
             models.Offer.priceCategories.and_(
                 models.PriceCategory.id.in_([price_category.id for price_category in price_category_edition_payload])
             )
         )
         .outerjoin(models.PriceCategoryLabel, models.PriceCategory.priceCategoryLabel)
+        .options(sqla_orm.contains_eager(models.Offer.stocks))
+        .options(
+            sqla_orm.contains_eager(models.Offer.priceCategories).contains_eager(
+                models.PriceCategory.priceCategoryLabel
+            )
+        )
         .filter(models.Offer.id == offer_id)
-        .first_or_404()
+        .one_or_none()
     )
 
 
@@ -360,7 +366,10 @@ def post_price_categories(
         for price_category in body.price_categories
         if isinstance(price_category, offers_serialize.EditPriceCategoryModel)
     ]
+
     offer = _get_offer_for_price_categories_upsert(offer_id, price_categories_to_edit)
+    if not offer:
+        raise ApiErrors({"offer_id": ["L'offre avec l'id %s n'existe pas" % offer_id]}, status_code=400)
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     existing_price_categories_by_id = {category.id: category for category in offer.priceCategories}
