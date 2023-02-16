@@ -44,11 +44,11 @@ class BoostStocksTest:
         requests_mock.get(
             # TODO(fseguin, 2023-02-06): add  ?filter_payment_method=external:credit:passculture when BB API is updated
             "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36683_DATA,
+            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
         )
         requests_mock.get(
             "https://cinema-0.example.com/api/showtimes/36848",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36848_DATA,
+            json=fixtures.ShowtimeDetailsEndpointResponse.ONE_PCU_PRICING_SHOWTIME_36848_DATA,
         )
         requests_mock.get(
             "https://cinema-0.example.com/api/showtimes/36932",
@@ -92,11 +92,11 @@ class BoostStocksTest:
         )
         requests_mock.get(
             "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36683_DATA,
+            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
         )
         requests_mock.get(
             "https://cinema-0.example.com/api/showtimes/36848",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36848_DATA,
+            json=fixtures.ShowtimeDetailsEndpointResponse.ONE_PCU_PRICING_SHOWTIME_36848_DATA,
         )
         requests_mock.get(
             "https://cinema-0.example.com/api/showtimes/36932",
@@ -194,7 +194,7 @@ class BoostStocksTest:
         )
         requests_mock.get(
             "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36683_DATA,
+            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
         )
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
@@ -229,7 +229,7 @@ class BoostStocksTest:
         )
         requests_mock.get(
             "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36683_DATA,
+            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
         )
         file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(file_path, "rb") as thumb_file:
