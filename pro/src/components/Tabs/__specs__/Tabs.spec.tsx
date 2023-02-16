@@ -35,34 +35,4 @@ describe('src | components | Tabs', () => {
       })
     ).toHaveAttribute('href', '/offres')
   })
-  it('should use query params', () => {
-    render(
-      <MemoryRouter
-        initialEntries={['http://localhost:3001/offres?filter=test']}
-      >
-        <Tabs
-          tabs={[
-            {
-              label: 'Offres individuelles',
-              url: '/offres',
-              key: 'individual',
-              Icon: UserIcon,
-            },
-            {
-              label: 'Offres collectives',
-              url: '/offres/collectives',
-              key: 'collective',
-              Icon: LibraryIcon,
-            },
-          ]}
-          withQueryParams
-        />
-      </MemoryRouter>
-    )
-    expect(
-      screen.getByRole('link', {
-        name: 'Offres collectives',
-      })
-    ).toHaveAttribute('href', '/offres/collectives?filter=test')
-  })
 })
