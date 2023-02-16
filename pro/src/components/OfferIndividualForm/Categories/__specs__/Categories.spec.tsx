@@ -108,6 +108,7 @@ describe('OfferIndividual section: Categories', () => {
       categories,
       subCategories,
       offerSubtype: INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT,
+      venueList: [],
     }
   })
 

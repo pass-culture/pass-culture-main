@@ -3,6 +3,7 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { OfferIndividualForm } from 'components/OfferIndividualForm/types'
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { Select } from 'ui-kit'
@@ -13,6 +14,25 @@ export interface IVenueProps {
   offererNames: TOffererName[]
   venueList: TOfferIndividualVenue[]
   readOnlyFields?: string[]
+}
+
+export const onVenueChange = (
+  setFieldValue: OfferIndividualForm['setFieldValue'],
+  venueList: TOfferIndividualVenue[],
+  venueId: string
+) => {
+  const newVenue = venueList.find(v => v.id === venueId)
+
+  if (!newVenue) {
+    return
+  }
+  setFieldValue('isVenueVirtual', newVenue.isVirtual)
+  setFieldValue('withdrawalDetails', newVenue?.withdrawalDetails || '')
+
+  // update offer accessibility from venue when venue accessibility is defined.
+  // set accessibility value after isVenueVirtual and withdrawalDetails otherwise the error message doesn't hide
+  Object.values(newVenue.accessibility).includes(true) &&
+    setFieldValue('accessibility', newVenue.accessibility)
 }
 
 const Venue = ({
@@ -30,21 +50,6 @@ const Venue = ({
     venueList
   )
 
-  const onVenueChange = (venueId: string) => {
-    const newVenue = venueList.find(v => v.id === venueId)
-
-    if (!newVenue) {
-      return
-    }
-    setFieldValue('isVenueVirtual', newVenue.isVirtual)
-    setFieldValue('withdrawalDetails', newVenue?.withdrawalDetails || '')
-
-    // update offer accessibility from venue when venue accessibility is defined.
-    // set accessibility value after isVenueVirtual and withdrawalDetails otherwise the error message doesn't hide
-    Object.values(newVenue.accessibility).includes(true) &&
-      setFieldValue('accessibility', newVenue.accessibility)
-  }
-
   const onOffererChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { venueOptions: newVenueOptions } = buildVenueOptions(
       event.target.value,
@@ -52,7 +57,7 @@ const Venue = ({
     )
     if (newVenueOptions.length === 1) {
       setFieldValue('venueId', newVenueOptions[0].value)
-      onVenueChange(newVenueOptions[0].value)
+      onVenueChange(setFieldValue, venueList, newVenueOptions[0].value)
     }
   }
 
@@ -73,7 +78,9 @@ const Venue = ({
           label="Lieu"
           name="venueId"
           options={venueOptions}
-          onChange={event => onVenueChange(event.target.value)}
+          onChange={event =>
+            onVenueChange(setFieldValue, venueList, event.target.value)
+          }
         />
       </FormLayout.Row>
     </>
