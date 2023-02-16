@@ -4,6 +4,7 @@ import logging
 import typing
 
 from pcapi import settings
+from pcapi.analytics.amplitude.events import identity_check_events
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
@@ -419,6 +420,9 @@ def _process_accepted_application(
         _update_fraud_check_with_field_errors(
             fraud_check, field_errors, fraud_models.FraudCheckStatus.ERROR, [fraud_models.FraudReasonCode.ERROR_IN_DATA]
         )
+        identity_check_events.track_dms_error_event(
+            user.id, [fraud_models.FraudReasonCode.ERROR_IN_DATA], field_errors=field_errors
+        )
         return
 
     dms_content: fraud_models.DMSContent = fraud_check.source_data()  # type: ignore [assignment]
@@ -432,7 +436,10 @@ def _process_accepted_application(
     subscription_api.update_user_birth_date_if_not_beneficiary(user, dms_content.get_birth_date())
 
     if fraud_check.status != fraud_models.FraudCheckStatus.OK:
-        _handle_validation_errors(user, fraud_check.reasonCodes, dms_content)  # type: ignore [arg-type]
+        error_codes = fraud_check.reasonCodes or []
+        _handle_validation_errors(user, error_codes, dms_content)
+        identity_check_events.track_dms_error_event(user.id, error_codes)
+
         return
 
     fraud_api.create_honor_statement_fraud_check(
