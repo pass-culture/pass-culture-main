@@ -10,7 +10,7 @@ interface ITab {
   url: string
   Icon?: FunctionComponent<SVGProps<SVGSVGElement>>
 }
-interface IFilterTabsProps {
+export interface IFilterTabsProps {
   tabs: ITab[]
   selectedKey?: string
 }
