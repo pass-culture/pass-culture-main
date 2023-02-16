@@ -6,6 +6,7 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 
+import styles from './TableRow.module.scss'
 interface ITableBodyProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 > {
@@ -26,7 +27,7 @@ const TableRow = <
   }
   return (
     <>
-      <tr {...rowAttributes}>
+      <tr {...rowAttributes} className={styles['table-row']}>
         {row.cells.map(cell => {
           const column: ColumnInstance<T> & { className?: string } = cell.column
           return (
