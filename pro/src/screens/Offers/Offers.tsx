@@ -16,6 +16,8 @@ import {
   NUMBER_OF_OFFERS_PER_PAGE,
   hasSearchFilters,
   OFFER_STATUS_DRAFT,
+  computeCollectiveOffersUrl,
+  computeOffersUrl,
 } from 'core/Offers'
 import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
@@ -241,7 +243,6 @@ const Offers = ({
     )
     return !selectedOffers.some(offer => offer.status !== OFFER_STATUS_DRAFT)
   }
-
   return (
     <div className="offers-page">
       <PageTitle title="Vos offres" />
@@ -251,18 +252,29 @@ const Offers = ({
         tabs={[
           {
             label: 'Offres individuelles',
-            url: '/offres',
+            url: computeOffersUrl(
+              {
+                ...searchFilters,
+                status: DEFAULT_SEARCH_FILTERS.status,
+              },
+              currentPageNumber
+            ),
             key: 'individual',
             Icon: UserIcon,
           },
           {
             label: 'Offres collectives',
-            url: '/offres/collectives',
+            url: computeCollectiveOffersUrl(
+              {
+                ...searchFilters,
+                status: DEFAULT_SEARCH_FILTERS.status,
+              },
+              currentPageNumber
+            ),
             key: 'collective',
             Icon: LibraryIcon,
           },
         ]}
-        withQueryParams
       />
 
       <SearchFilters
