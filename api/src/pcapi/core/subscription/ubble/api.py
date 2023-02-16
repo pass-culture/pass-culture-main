@@ -44,7 +44,7 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
     fraud_check.resultContent = content  # type: ignore [call-overload]
     pcapi_repository.repository.save(fraud_check)
 
-    user = fraud_check.user
+    user: users_models.User = fraud_check.user
 
     if status == ubble_fraud_models.UbbleIdentificationStatus.PROCESSING:
         fraud_check.status = fraud_models.FraudCheckStatus.PENDING
@@ -130,19 +130,20 @@ def get_most_relevant_ubble_error(
     return None
 
 
-def handle_validation_errors(  # type: ignore [no-untyped-def]
+def handle_validation_errors(
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
-):
-    error_code = get_most_relevant_ubble_error(fraud_check.reasonCodes if fraud_check.reasonCodes else [])
-    if error_code:
-        transactional_mails.send_subscription_document_error_email(user.email, error_code)
+) -> None:
+    error_codes = fraud_check.reasonCodes or []
+    relevant_error_code = get_most_relevant_ubble_error(error_codes)
+
+    if relevant_error_code:
+        transactional_mails.send_subscription_document_error_email(user.email, relevant_error_code)
     else:
-        reason_codes = fraud_check.reasonCodes or []
-        if fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
+        if fraud_models.FraudReasonCode.DUPLICATE_USER in error_codes:
             transactional_mails.send_duplicate_beneficiary_email(user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_USER)  # type: ignore [arg-type]
 
-        elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
+        elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in error_codes:
             transactional_mails.send_duplicate_beneficiary_email(
                 user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER  # type: ignore [arg-type]
             )
