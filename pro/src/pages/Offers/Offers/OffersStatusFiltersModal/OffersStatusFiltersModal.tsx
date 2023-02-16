@@ -4,7 +4,6 @@ import { OfferStatus } from 'apiClient/v1'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { ALL_STATUS } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { RadioInput } from 'ui-kit/form_raw/RadioInput/RadioInput'
 
 interface IOfferStatusFiltersModalProps {
@@ -27,9 +26,6 @@ export const OffersStatusFiltersModal = ({
   audience,
 }: IOfferStatusFiltersModalProps) => {
   const modalRef = useRef<HTMLDivElement | null>(null)
-  const isImproveCollectiveStatusActive = useActiveFeature(
-    'WIP_IMPROVE_COLLECTIVE_STATUS'
-  )
 
   const handleStatusFilterChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +68,7 @@ export const OffersStatusFiltersModal = ({
     return null
   }
   const filters =
-    audience === Audience.INDIVIDUAL || !isImproveCollectiveStatusActive
+    audience === Audience.INDIVIDUAL
       ? [
           { label: 'Tous', value: ALL_STATUS },
           ...(audience === Audience.INDIVIDUAL

@@ -31,19 +31,7 @@ const renderOfferItem = (props: OfferItemProps) =>
         </tbody>
       </table>
       <Notification />
-    </>,
-    {
-      storeOverrides: {
-        features: {
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_IMPROVE_COLLECTIVE_STATUS',
-            },
-          ],
-        },
-      },
-    }
+    </>
   )
 
 describe('src | components | pages | Offers | OfferItem', () => {
