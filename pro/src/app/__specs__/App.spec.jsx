@@ -12,6 +12,8 @@ jest.mock('hooks/useAnalytics', () => ({
   useConfigureFirebase: jest.fn(),
 }))
 
+window.scrollTo = jest.fn()
+
 jest.mock('hooks/useLogNavigation', () => jest.fn())
 
 const renderApp = ({ props, store: storeOverrides, initialEntries = '/' }) =>
