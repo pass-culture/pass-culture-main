@@ -131,13 +131,13 @@ def format_booking_cancellation_reason(reason: bookings_models.BookingCancellati
 def format_booking_status_long(status: bookings_models.BookingStatus) -> str:
     match status:
         case bookings_models.BookingStatus.CONFIRMED:
-            return "<span class='badge text-bg-success'>Réservation confirmée</span>"
+            return "Réservation confirmée"
         case bookings_models.BookingStatus.USED:
-            return "Le jeune a consommé l'offre"
+            return '<span class="badge text-bg-success">Le jeune a consommé l\'offre</span>'
         case bookings_models.BookingStatus.CANCELLED:
-            return "<span class='badge text-bg-danger'>L'offre n'a pas eu lieu</span>"
+            return "<span class=\"badge text-bg-danger\">L'offre n'a pas eu lieu</span>"
         case bookings_models.BookingStatus.REIMBURSED:
-            return "<span class='badge text-bg-success'>AC remboursé</span>"
+            return '<span class="badge text-bg-success">AC remboursé</span>'
         case _:
             return status.value
 
