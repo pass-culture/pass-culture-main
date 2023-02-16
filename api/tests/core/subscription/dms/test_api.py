@@ -6,6 +6,8 @@ from dateutil.relativedelta import relativedelta
 import freezegun
 import pytest
 
+from pcapi.analytics.amplitude import testing as amplitude_testing
+from pcapi.analytics.amplitude.backends import amplitude_connector
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import factories as fraud_factories
@@ -440,6 +442,27 @@ class HandleDmsApplicationTest:
 
         assert fraud_check.reasonCodes == []
         assert fraud_check.reason is None
+
+    def should_track_dms_errors(self):
+        user = users_factories.UserFactory()
+
+        dms_response = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.accepted,
+            email=user.email,
+            id_piece_number="(wrong_number)",
+            application_techid="XYZQVM",
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        assert amplitude_testing.requests[0]["event_name"] == amplitude_connector.AmplitudeEventType.DMS_ERROR.value
+        assert amplitude_testing.requests[0]["event_properties"] == {
+            "error_codes": [fraud_models.FraudReasonCode.ERROR_IN_DATA.value],
+            "field_errors": [
+                {"key": fraud_models.DmsFieldErrorKeyEnum.id_piece_number.value, "value": "(wrong_number)"}
+            ],
+        }
 
 
 @pytest.mark.usefixtures("db_session")

@@ -11,6 +11,7 @@ AMPLITUDE_API_PUBLIC_KEY = settings.AMPLITUDE_API_PUBLIC_KEY
 
 class AmplitudeEventType(enum.Enum):
     EDUCONNECT_ERROR = "Educonnect Error"
+    DMS_ERROR = "DMS Error"
 
 
 class AmplitudeBackend:
