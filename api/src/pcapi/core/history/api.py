@@ -1,4 +1,8 @@
+import decimal
+import enum
 import typing
+
+from sqlalchemy.ext.mutable import MutableDict
 
 from pcapi.core.history import models
 from pcapi.core.offerers import models as offerers_models
@@ -104,7 +108,14 @@ class ObjectUpdateSnapshot:
             data = {column: new_value for column, new_value in data.items() if hasattr(target, column)}
 
         for column, new_value in data.items():
-            old_value = getattr(target, column)
+            if isinstance(getattr(target, column), enum.Enum):
+                old_value = getattr(target, column).name
+            elif isinstance(getattr(target, column), decimal.Decimal):
+                old_value = float(getattr(target, column))
+            elif isinstance(getattr(target, column), MutableDict) and new_value is None:
+                old_value = None
+            else:
+                old_value = getattr(target, column)
 
             if old_value != new_value:
                 field_name = field_name_template.format(column)
