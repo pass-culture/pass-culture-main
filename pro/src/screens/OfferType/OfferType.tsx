@@ -333,6 +333,7 @@ const OfferType = (): JSX.Element => {
           {isDuplicateOfferSelectionActive &&
             isEligible &&
             !isLoadingEligibility &&
+            offerType === OFFER_TYPES.EDUCATIONAL &&
             collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
               <FormLayout.Section
                 title="Créer une nouvelle offre ou dupliquer une offre ?"
