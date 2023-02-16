@@ -23,6 +23,7 @@ class EducationalRedactor(BaseModel):
     name: str
     surname: str
     gender: str
+    email: str
 
 
 class EducationalRedactors(BaseModel):
