@@ -6,7 +6,8 @@ import React, { useState } from 'react'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividualStock } from 'core/Offers/types'
+import { getOfferIndividualAdapter } from 'core/Offers/adapters'
+import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import { EuroIcon, PlusCircleIcon, TrashFilledIcon } from 'icons'
 import { Button, Checkbox, InfoBox, TextInput } from 'ui-kit'
@@ -14,6 +15,7 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { BaseCheckbox } from 'ui-kit/form/shared'
 
 import deletePriceCategoryAdapter from './adapters/deletePriceCategoryAdapter'
+import { computeInitialValues } from './form/computeInitialValues'
 import {
   INITIAL_PRICE_CATEGORY,
   PRICE_CATEGORY_LABEL_MAX_LENGTH,
@@ -26,16 +28,20 @@ import styles from './PriceCategoriesForm.module.scss'
 
 interface IPriceCategoriesForm {
   offerId: string
+  humanizedOfferId: string
   stocks: IOfferIndividualStock[]
   mode: OFFER_WIZARD_MODE
+  setOffer: ((offer: IOfferIndividual | null) => void) | null
 }
 
 export const PriceCategoriesForm = ({
   offerId,
+  humanizedOfferId,
   stocks,
   mode,
+  setOffer,
 }: IPriceCategoriesForm): JSX.Element => {
-  const { setFieldValue, handleChange, values } =
+  const { setFieldValue, handleChange, resetForm, values } =
     useFormikContext<PriceCategoriesFormValues>()
   const notify = useNotification()
 
@@ -91,6 +97,14 @@ export const PriceCategoriesForm = ({
       })
       if (isOk) {
         arrayHelpers.remove(index)
+        const response = await getOfferIndividualAdapter(humanizedOfferId)
+        if (response.isOk) {
+          const updatedOffer = response.payload
+          setOffer && setOffer(updatedOffer)
+          resetForm({
+            values: computeInitialValues(updatedOffer),
+          })
+        }
         notify.success(message)
       } else {
         notify.error(message)
