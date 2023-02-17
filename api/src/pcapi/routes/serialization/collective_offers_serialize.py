@@ -75,6 +75,16 @@ class CollectiveOffersStockResponseModel(BaseModel):
         return remainingQuantity
 
 
+class EducationalRedactorResponseModel(BaseModel):
+    email: str | None
+    firstName: str | None
+    lastName: str | None
+    civility: str | None
+
+    class Config:
+        orm_mode = True
+
+
 class CollectiveOffersBookingResponseModel(BaseModel):
     id: str
     booking_status: str
@@ -345,7 +355,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     templateId: str | None
     lastBookingStatus: CollectiveBookingStatus | None
     lastBookingId: int | None
-    teacherEmail: str | None
+    teacher: EducationalRedactorResponseModel | None
 
 
 class CollectiveOfferResponseIdModel(BaseModel):

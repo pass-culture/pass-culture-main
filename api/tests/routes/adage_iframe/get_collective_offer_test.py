@@ -31,7 +31,7 @@ class Returns200Test:
             collectiveOffer__students=[StudentLevels.GENERAL2],
             collectiveOffer__educational_domains=[educational_factories.EducationalDomainFactory()],
             collectiveOffer__institution=institution,
-            collectiveOffer__teacherEmail="teacher@example.com",
+            collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(),
         )
 
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
@@ -104,7 +104,12 @@ class Returns200Test:
             "interventionArea": ["93", "94", "95"],
             "imageCredit": None,
             "imageUrl": None,
-            "teacherEmail": stock.collectiveOffer.teacherEmail,
+            "teacher": {
+                "email": stock.collectiveOffer.teacher.email,
+                "firstName": stock.collectiveOffer.teacher.firstName,
+                "lastName": stock.collectiveOffer.teacher.lastName,
+                "civility": stock.collectiveOffer.teacher.civility,
+            },
         }
 
     def test_get_collective_offer_with_offer_venue(self, client):
@@ -124,7 +129,6 @@ class Returns200Test:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
-            collectiveOffer__teacherEmail="teacher@example.com",
         )
 
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
@@ -197,7 +201,7 @@ class Returns200Test:
             "interventionArea": ["93", "94", "95"],
             "imageCredit": None,
             "imageUrl": None,
-            "teacherEmail": None,
+            "teacher": None,
         }
 
 

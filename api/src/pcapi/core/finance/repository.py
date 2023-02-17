@@ -423,9 +423,9 @@ def _get_legacy_payments_for_collective_bookings(
         )
         .join(offerers_models.Venue, offerers_models.Venue.id == educational_models.CollectiveBooking.venueId)
         .join(offerers_models.Offerer, offerers_models.Offerer.id == educational_models.CollectiveBooking.offererId)
-        .join(educational_models.CollectiveStock)
-        .join(educational_models.CollectiveOffer)
-        .join(educational_models.EducationalRedactor)
+        .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
+        .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
+        .join(educational_models.EducationalRedactor, educational_models.CollectiveBooking.educationalRedactor)
         .distinct(models.Payment.id)
         .order_by(models.Payment.id.desc(), models.PaymentStatus.date.desc())
         .with_entities(
