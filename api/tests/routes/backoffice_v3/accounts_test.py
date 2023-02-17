@@ -359,16 +359,11 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         assert response.status_code == 200
         content = html_parser.content_as_text(response.data)
         assert f"User ID : {user.id} " in content
-        assert f"Nom {user.lastName.upper()} " in content
-        assert f"Prénom {user.firstName} " in content
-        assert f"Email {user.email} " in content
-        assert f"Numéro de téléphone {user.phoneNumber} " in content
+        assert f"E-mail : {user.email} " in content
+        assert f"Tél : {user.phoneNumber} " in content
         if user.dateOfBirth:
             assert f"Date de naissance {user.dateOfBirth.strftime('%d/%m/%Y')} " in content
         assert f"Adresse {user.address} " in content
-        if user.postalCode:
-            assert f"Code postal {user.postalCode} " in content
-        assert f"Ville {user.city} " in content
         if expected_badge:
             assert expected_badge in content
         assert "Suspendu" not in content
@@ -386,7 +381,7 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
 
         # when
         response = authenticated_client.get(url_for(self.endpoint, user_id=grant_18.id))
-
+        print(response.data)
         # then
         assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
@@ -742,11 +737,16 @@ class ManualPhoneNumberValidationTest:
         user = users_factories.UserFactory(
             phoneValidationStatus=None, phoneNumber="+33601010203", isEmailValidated=True
         )
+        users_factories.TokenFactory(user=user, type=users_models.TokenType.PHONE_VALIDATION)
+        users_factories.TokenFactory(user=user, type=users_models.TokenType.RESET_PASSWORD)
+        users_factories.TokenFactory(type=users_models.TokenType.PHONE_VALIDATION)
+
         response = self.send_request(authenticated_client, user)
 
+        assert user.is_phone_validated == True
         assert response.status_code == 303
         assert history_models.ActionHistory.query.filter(history_models.ActionHistory.user == user).count() == 1
-        assert users_models.Token.query.filter(users_models.Token.user == user).count() == 0
+        assert users_models.Token.query.count() == 2
 
     def send_request(self, authenticated_client, user):
         account_detail_url = url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user.id)

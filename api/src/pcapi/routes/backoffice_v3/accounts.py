@@ -16,6 +16,8 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
@@ -35,8 +37,6 @@ import pcapi.utils.email as email_utils
 
 from . import search_utils
 from . import utils
-from ...core.history import api as history_api
-from ...core.history import models as history_models
 from .forms import account as account_forms
 from .forms import empty as empty_forms
 from .forms import search as search_forms
@@ -271,12 +271,13 @@ def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
         return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
     user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-    repository.save(user)
+    action = history_api.log_action(
+        action_type=history_models.ActionType.USER_PHONE_VALIDATED, author=current_user, user=user
+    )
+    repository.save(user, action)
 
     subscription_api.activate_beneficiary_if_no_missing_step(user)
     users_api.delete_all_users_phone_validation_tokens(user)
-
-    history_api.log_action(action_type=history_models.ActionType.USER_PHONE_VALIDATED, author=current_user, user=user)
 
     flash("Le numéro a été validé avec succès", "success")
 
