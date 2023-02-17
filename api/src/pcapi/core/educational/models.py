@@ -316,7 +316,19 @@ class CollectiveOffer(
     )
 
     isPublicApi: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False)
-    teacherEmail: str | None = sa.Column(sa.Text, nullable=True)
+
+    teacherId: int | None = sa.Column(
+        sa.BigInteger,
+        sa.ForeignKey("educational_redactor.id"),
+        nullable=True,
+        index=True,
+    )
+
+    teacher: sa_orm.Mapped["EducationalRedactor"] = relationship(
+        "EducationalRedactor",
+        back_populates="collectiveOffers",
+        uselist=False,
+    )
 
     @property
     def isEducational(self) -> bool:
@@ -790,6 +802,7 @@ class EducationalRedactor(PcObject, Base, Model):
     collectiveBookings: list["CollectiveBooking"] = relationship(
         "CollectiveBooking", back_populates="educationalRedactor"
     )
+    collectiveOffers: list["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="teacher")
 
 
 class CollectiveBooking(PcObject, Base, Model):
