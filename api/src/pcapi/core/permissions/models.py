@@ -32,6 +32,7 @@ class Permissions(enum.Enum):
     READ_PRO_ENTITY = "visualiser une structure, un lieu ou un compte pro"
     MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"
     DELETE_PRO_ENTITY = "supprimer une structure ou un lieu"
+    ADVANCED_PRO_SUPPORT = "support pro avancé : déplacer un SIRET"
 
     MANAGE_BOOKINGS = "gérer les réservations"
     SEARCH_BOOKINGS = "rechercher les réservations"
@@ -117,6 +118,7 @@ class Roles(enum.Enum):
     SUPPORT_N1 = "support-N1"
     SUPPORT_N2 = "support-N2"
     SUPPORT_PRO = "support-PRO"
+    SUPPORT_PRO_N2 = "support-PRO-N2"
     FRAUDE_CONFORMITE = "fraude-conformite"
     DAF = "daf"
     BIZDEV = "bizdev"
