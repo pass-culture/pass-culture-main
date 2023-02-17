@@ -17,5 +17,5 @@ export const getOfferVenueAndOffererName = (
     return venueName
   }
 
-  return `${venueName} - ${offererName}`
+  return `${venueName} - ${offererName} (${offerVenue.postalCode})`
 }

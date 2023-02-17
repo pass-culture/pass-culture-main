@@ -70,7 +70,7 @@ describe('offersSearch component', () => {
       await waitFor(() =>
         expect(
           screen.getByLabelText(
-            'Uniquement les acteurs qui se déplacent dans mon établissement : COLLEGE BELLEVUE - ALES (30)'
+            'Les acteurs qui se déplacent dans mon établissement : COLLEGE BELLEVUE - ALES (30)'
           )
         ).toBeInTheDocument()
       )
@@ -88,7 +88,7 @@ describe('offersSearch component', () => {
 
       expect(
         screen.queryByLabelText(
-          'Uniquement les acteurs qui se déplacent dans mon établissement'
+          'Les acteurs qui se déplacent dans mon établissement'
         )
       ).not.toBeInTheDocument()
     })
@@ -96,7 +96,7 @@ describe('offersSearch component', () => {
     it('should check user department when checking checkbox', async () => {
       renderOffersSearchComponent(props)
       const checkbox = screen.getByLabelText(
-        'Uniquement les acteurs qui se déplacent dans mon établissement',
+        'Les acteurs qui se déplacent dans mon établissement',
         { exact: false }
       )
 
@@ -110,7 +110,7 @@ describe('offersSearch component', () => {
     it('should uncheck checkbox when user remove department tag', async () => {
       renderOffersSearchComponent(props)
       const checkbox = screen.getByLabelText(
-        'Uniquement les acteurs qui se déplacent dans mon établissement',
+        'Les acteurs qui se déplacent dans mon établissement',
         { exact: false }
       )
       userEvent.click(checkbox)
@@ -123,7 +123,7 @@ describe('offersSearch component', () => {
       await waitFor(() =>
         expect(
           screen.getByLabelText(
-            'Uniquement les acteurs qui se déplacent dans mon établissement',
+            'Les acteurs qui se déplacent dans mon établissement',
             { exact: false }
           )
         ).not.toBeChecked()
@@ -133,7 +133,7 @@ describe('offersSearch component', () => {
     it('should uncheck checkbox when user deselect his department', async () => {
       renderOffersSearchComponent(props)
       const checkbox = screen.getByLabelText(
-        'Uniquement les acteurs qui se déplacent dans mon établissement',
+        'Les acteurs qui se déplacent dans mon établissement',
         { exact: false }
       )
       userEvent.click(checkbox)
@@ -144,7 +144,7 @@ describe('offersSearch component', () => {
       await waitFor(() =>
         expect(
           screen.getByLabelText(
-            'Uniquement les acteurs qui se déplacent dans mon établissement',
+            'Les acteurs qui se déplacent dans mon établissement',
             { exact: false }
           )
         ).not.toBeChecked()
@@ -154,7 +154,7 @@ describe('offersSearch component', () => {
     it('should uncheck checkbox when user adds a department', async () => {
       renderOffersSearchComponent(props)
       const checkbox = screen.getByLabelText(
-        'Uniquement les acteurs qui se déplacent dans mon établissement',
+        'Les acteurs qui se déplacent dans mon établissement',
         { exact: false }
       )
       userEvent.click(checkbox)
@@ -165,7 +165,7 @@ describe('offersSearch component', () => {
       await waitFor(() =>
         expect(
           screen.getByLabelText(
-            'Uniquement les acteurs qui se déplacent dans mon établissement',
+            'Les acteurs qui se déplacent dans mon établissement',
             { exact: false }
           )
         ).not.toBeChecked()
@@ -179,7 +179,7 @@ describe('offersSearch component', () => {
       await selectEvent.select(departmentFilter, '75 - Paris')
 
       const checkbox = screen.getByLabelText(
-        'Uniquement les acteurs qui se déplacent dans mon établissement',
+        'Les acteurs qui se déplacent dans mon établissement',
         { exact: false }
       )
 
