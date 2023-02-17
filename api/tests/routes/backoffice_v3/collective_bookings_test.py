@@ -70,6 +70,13 @@ def collective_bookings_fixture() -> tuple:
 class ListCollectiveBookingsTest:
     endpoint = "backoffice_v3_web.collective_bookings.list_collective_bookings"
 
+    # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
+    # by a field added in the jinja template.
+    # - fetch session (1 query)
+    # - fetch user (1 query)
+    # - fetch collective bookings with extra data (1 query)
+    expected_num_queries = 3
+
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
         endpoint = "backoffice_v3_web.collective_bookings.list_collective_bookings"
         endpoint_kwargs = {"offerer_id": 1}
@@ -87,7 +94,7 @@ class ListCollectiveBookingsTest:
     def test_list_bookings_by_id(self, authenticated_client, collective_bookings):
         # when
         searched_id = str(collective_bookings[1].id)
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
 
         # then
@@ -112,8 +119,9 @@ class ListCollectiveBookingsTest:
 
     def test_list_bookings_by_id_not_found(self, authenticated_client, collective_bookings):
         # when
-        with assert_no_duplicated_queries():
-            response = authenticated_client.get(url_for(self.endpoint, q=str(collective_bookings[-1].id * 1000)))
+        search_query = str(collective_bookings[-1].id * 1000)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=search_query))
 
         # then
         assert response.status_code == 200
@@ -122,7 +130,7 @@ class ListCollectiveBookingsTest:
     def test_list_bookings_by_offer_id(self, authenticated_client, collective_bookings):
         # when
         searched_id = str(collective_bookings[2].collectiveStock.collectiveOffer.id)
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
 
         # then
@@ -147,7 +155,7 @@ class ListCollectiveBookingsTest:
     def test_list_bookings_by_institution_id(self, authenticated_client, collective_bookings):
         # when
         search_query = str(collective_bookings[1].educationalInstitution.id)
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
 
         # then
@@ -175,7 +183,7 @@ class ListCollectiveBookingsTest:
         self, authenticated_client, collective_bookings, search_query, expected_idx
     ):
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
 
         # then
@@ -185,7 +193,7 @@ class ListCollectiveBookingsTest:
 
     def test_list_bookings_by_category(self, authenticated_client, collective_bookings):
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, category=categories.CONFERENCE_RENCONTRE.id))
 
         # then
@@ -212,12 +220,7 @@ class ListCollectiveBookingsTest:
     )
     def test_list_bookings_by_status(self, authenticated_client, collective_bookings, status, expected_idx):
         # when
-
-        # fetch session (1 query)
-        # fetch user (1 query)
-        # fetch collective bookings with extra data (1 query)
-        # count for pagination (1 pagination)
-        with assert_num_queries(4):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, status=status))
 
         # then
@@ -227,7 +230,7 @@ class ListCollectiveBookingsTest:
 
     def test_list_bookings_by_date(self, authenticated_client, collective_bookings):
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
                     self.endpoint,
@@ -244,7 +247,7 @@ class ListCollectiveBookingsTest:
     def test_list_bookings_by_offerer(self, authenticated_client, collective_bookings):
         # when
         offerer_ids = [collective_bookings[1].offererId, collective_bookings[3].offererId]
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, offerer=offerer_ids))
 
         # then
@@ -255,13 +258,30 @@ class ListCollectiveBookingsTest:
     def test_list_bookings_by_venue(self, authenticated_client, collective_bookings):
         # when
         venue_id = collective_bookings[0].venueId
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
 
         # then
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[0].id, collective_bookings[2].id}
+
+    def test_list_bookings_more_than_max(self, authenticated_client):
+        # given
+        educational_factories.CollectiveBookingFactory.create_batch(
+            25, status=educational_models.CollectiveBookingStatus.CONFIRMED
+        )
+
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, status=educational_models.CollectiveBookingStatus.CONFIRMED.name, limit=20)
+            )
+
+        # then
+        assert response.status_code == 200
+        assert html_parser.count_table_rows(response.data) == 20
+        assert "Il y a plus de 20 résultats dans la base de données" in html_parser.extract_alert(response.data)
 
 
 def send_request(authenticated_client, url, form_data=None):
