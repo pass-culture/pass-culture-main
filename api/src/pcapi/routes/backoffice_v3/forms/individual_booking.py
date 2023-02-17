@@ -13,7 +13,7 @@ class GetIndividualBookingListForm(FlaskForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("Code contremarque, ID offre, Nom ou ID du bénéficiaire")
+    q = fields.PCOptSearchField("Code contremarque, ID offre, Nom, email ou ID du bénéficiaire")
     offerer = fields.PCAutocompleteSelectMultipleField(
         "Structures", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_offerers"
     )
@@ -28,11 +28,11 @@ class GetIndividualBookingListForm(FlaskForm):
     )
     from_date = fields.PCDateField("À partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Jusqu'au", validators=(wtforms.validators.Optional(),))
-    page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
-    per_page = fields.PCSelectField(
-        "Par page",
-        choices=(("10", "10"), ("25", "25"), ("50", "50"), ("100", "100")),
+    limit = fields.PCSelectField(
+        "Nombre maximum",
+        choices=((20, "20"), (100, "100"), (500, "500"), (1000, "1000")),
         default="100",
+        coerce=int,
         validators=(wtforms.validators.Optional(),),
     )
 

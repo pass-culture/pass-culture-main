@@ -1,5 +1,4 @@
 import datetime
-from functools import partial
 
 from flask import flash
 from flask import redirect
@@ -18,7 +17,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.utils import date as date_utils
 from pcapi.utils.clean_accents import clean_accents
 
-from . import search_utils
 from . import utils
 from .forms import collective_booking as collective_booking_forms
 from .forms import empty as empty_forms
@@ -32,8 +30,10 @@ collective_bookings_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _get_collective_bookings(form: collective_booking_forms.GetCollectiveBookingListForm) -> sa.orm.Query:
-    query = (
+def _get_collective_bookings(
+    form: collective_booking_forms.GetCollectiveBookingListForm,
+) -> list[educational_models.CollectiveBooking]:
+    base_query = (
         educational_models.CollectiveBooking.query.outerjoin(educational_models.CollectiveStock)
         .outerjoin(educational_models.CollectiveOffer)
         .outerjoin(
@@ -75,40 +75,22 @@ def _get_collective_bookings(form: collective_booking_forms.GetCollectiveBooking
         )
     )
 
-    if form.q.data:
-        search_query = form.q.data
-
-        if search_query.isnumeric():
-            query = query.filter(
-                sa.or_(
-                    educational_models.CollectiveBooking.id == search_query,
-                    educational_models.CollectiveOffer.id == search_query,
-                    educational_models.EducationalInstitution.id == search_query,
-                )
-            )
-        else:
-            name = search_query.replace(" ", "%").replace("-", "%")
-            name = clean_accents(name)
-            query = query.filter(
-                sa.func.unaccent(educational_models.EducationalInstitution.name).ilike(f"%{name}%"),
-            )
-
     if form.from_date.data:
         from_datetime = date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time())
-        query = query.filter(educational_models.CollectiveBooking.dateCreated >= from_datetime)
+        base_query = base_query.filter(educational_models.CollectiveBooking.dateCreated >= from_datetime)
 
     if form.to_date.data:
         to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time())
-        query = query.filter(educational_models.CollectiveBooking.dateCreated <= to_datetime)
+        base_query = base_query.filter(educational_models.CollectiveBooking.dateCreated <= to_datetime)
 
     if form.offerer.data:
-        query = query.filter(educational_models.CollectiveBooking.offererId.in_(form.offerer.data))
+        base_query = base_query.filter(educational_models.CollectiveBooking.offererId.in_(form.offerer.data))
 
     if form.venue.data:
-        query = query.filter(educational_models.CollectiveBooking.venueId.in_(form.venue.data))
+        base_query = base_query.filter(educational_models.CollectiveBooking.venueId.in_(form.venue.data))
 
     if form.category.data:
-        query = query.filter(
+        base_query = base_query.filter(
             educational_models.CollectiveOffer.subcategoryId.in_(
                 subcategory.id
                 for subcategory in subcategories_v2.ALL_SUBCATEGORIES
@@ -117,9 +99,28 @@ def _get_collective_bookings(form: collective_booking_forms.GetCollectiveBooking
         )
 
     if form.status.data:
-        query = query.filter(educational_models.CollectiveBooking.status.in_(form.status.data))
+        base_query = base_query.filter(educational_models.CollectiveBooking.status.in_(form.status.data))
 
-    return query.order_by(educational_models.CollectiveBooking.dateCreated.desc())
+    if form.q.data:
+        search_query = form.q.data
+
+        if search_query.isnumeric():
+            # Performance is really better than .filter(sa.or_(...)) when searching for an id in different tables
+            query = base_query.filter(educational_models.CollectiveBooking.id == int(search_query)).union(
+                base_query.filter(educational_models.CollectiveOffer.id == int(search_query)),
+                base_query.filter(educational_models.EducationalInstitution.id == int(search_query)),
+            )
+        else:
+            name = search_query.replace(" ", "%").replace("-", "%")
+            name = clean_accents(name)
+            query = base_query.filter(
+                sa.func.unaccent(educational_models.EducationalInstitution.name).ilike(f"%{name}%"),
+            )
+    else:
+        query = base_query
+
+    # +1 to check if there are more results than requested
+    return query.limit(form.limit.data + 1).all()
 
 
 @collective_bookings_blueprint.route("", methods=["GET"])
@@ -134,15 +135,13 @@ def list_collective_bookings() -> utils.BackofficeResponse:
 
     bookings = _get_collective_bookings(form)
 
-    paginated_bookings = bookings.paginate(  # type: ignore [attr-defined]
-        page=int(form.data["page"]),
-        per_page=int(form.data["per_page"]),
-    )
-
-    next_page = partial(url_for, ".list_collective_bookings", **form.data)
-    next_pages_urls = search_utils.pagination_links(next_page, int(form.data["page"]), paginated_bookings.pages)
-
-    form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
+    if len(bookings) > form.limit.data:
+        flash(
+            f"Il y a plus de {form.limit.data} résultats dans la base de données, la liste ci-dessous n'en donne donc "
+            "qu'une partie. Veuillez affiner les filtres de recherche.",
+            "info",
+        )
+        bookings = bookings[: form.limit.data]
 
     if form.offerer.data:
         offerers = (
@@ -170,9 +169,8 @@ def list_collective_bookings() -> utils.BackofficeResponse:
 
     return render_template(
         "collective_bookings/list.html",
-        rows=paginated_bookings,
+        rows=bookings,
         form=form,
-        next_pages_urls=next_pages_urls,
         mark_as_used_booking_form=empty_forms.EmptyForm(),
         cancel_booking_form=empty_forms.EmptyForm(),
     )

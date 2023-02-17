@@ -10,12 +10,9 @@
             {% include "components/filters_form.html" %}
         </div>
         <div>
-            {% if rows and rows.total > 0 %}
+            {% if rows %}
                 <div class="d-flex justify-content-between">
-                    <p class="lead num-results">{{ rows.total }} résultat{{ "s" if rows.total > 1 else "" }}</p>
-                    <div>
-                        {% include 'components/search/pagination.html' %}
-                    </div>
+                    <p class="lead num-results">{{ rows|length }} résultat{{ "s" if rows|length > 1 else "" }}</p>
                 </div>
                 <table class="table mb-4">
                     <thead>
@@ -35,7 +32,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for booking in rows.items %}
+                    {% for booking in rows %}
                         {% set offer = booking.stock.offer %}
                         <tr>
                             <td>

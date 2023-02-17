@@ -26,7 +26,7 @@ pytestmark = [
 
 @pytest.fixture(scope="function", name="bookings")
 def bookings_fixture() -> tuple:
-    user1 = users_factories.BeneficiaryGrant18Factory(firstName="Napoléon", lastName="Bonaparte")
+    user1 = users_factories.BeneficiaryGrant18Factory(firstName="Napoléon", lastName="Bonaparte", email="napo@leon.com")
     user2 = users_factories.UnderageBeneficiaryFactory(firstName="Joséphine", lastName="de Beauharnais")
     user3 = users_factories.UnderageBeneficiaryFactory(firstName="Marie-Louise", lastName="d'Autriche")
     used = bookings_factories.UsedBookingFactory(
@@ -70,6 +70,13 @@ def bookings_fixture() -> tuple:
 class ListIndividualBookingsTest:
     endpoint = "backoffice_v3_web.individual_bookings.list_individual_bookings"
 
+    # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
+    # by a field added in the jinja template.
+    # - fetch session (1 query)
+    # - fetch user (1 query)
+    # - fetch individual bookings with extra data (1 query)
+    expected_num_queries = 3
+
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
         endpoint = "backoffice_v3_web.individual_bookings.list_individual_bookings"
         endpoint_kwargs = {"offerer_id": 1}
@@ -86,7 +93,7 @@ class ListIndividualBookingsTest:
 
     def test_list_bookings_by_token(self, authenticated_client, bookings):
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="WTRL00"))
 
         # then
@@ -111,7 +118,7 @@ class ListIndividualBookingsTest:
 
     def test_list_bookings_by_token_not_found(self, authenticated_client, bookings):
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="IENA06"))
 
         # then
@@ -121,7 +128,7 @@ class ListIndividualBookingsTest:
     def test_list_bookings_by_offer_id(self, authenticated_client, bookings):
         # when
         searched_id = str(bookings[2].stock.offer.id)
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
 
         # then
@@ -148,7 +155,7 @@ class ListIndividualBookingsTest:
     def test_list_bookings_by_user_id(self, authenticated_client, bookings):
         # when
         search_query = str(bookings[1].user.id)
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
 
         # then
@@ -158,10 +165,12 @@ class ListIndividualBookingsTest:
         assert len(rows) >= 1
         assert bookings[1].token in set(row["Contremarque"] for row in rows)
 
-    @pytest.mark.parametrize("search_query", ["napoleon", "bonaparte", "Napoléon Bonaparte"])
-    def test_list_bookings_by_user_name(self, authenticated_client, bookings, search_query):
+    @pytest.mark.parametrize(
+        "search_query", ["napoleon", "bonaparte", "Napoléon Bonaparte", "napo@leon.com", "Napo@Leon.com"]
+    )
+    def test_list_bookings_by_user(self, authenticated_client, bookings, search_query):
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
 
         # then
@@ -171,12 +180,7 @@ class ListIndividualBookingsTest:
 
     def test_list_bookings_by_category(self, authenticated_client, bookings):
         # when
-
-        # fetch session (1 query)
-        # fetch user (1 query)
-        # fetch individual bookings with extra data (1 query)
-        # count for pagination (1 pagination)
-        with assert_num_queries(4):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, category=categories.SPECTACLE.id))
 
         # then
@@ -199,7 +203,7 @@ class ListIndividualBookingsTest:
     )
     def test_list_bookings_by_status(self, authenticated_client, bookings, status, expected_tokens):
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, status=status))
 
         # then
@@ -209,7 +213,7 @@ class ListIndividualBookingsTest:
 
     def test_list_bookings_by_date(self, authenticated_client, bookings):
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
                     self.endpoint,
@@ -226,7 +230,8 @@ class ListIndividualBookingsTest:
     def test_list_bookings_by_offerer(self, authenticated_client, bookings):
         # when
         offerer_id = bookings[1].offererId
-        with assert_no_duplicated_queries():
+        # one more query because of offerer validation
+        with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, offerer=offerer_id))
 
         # then
@@ -237,13 +242,30 @@ class ListIndividualBookingsTest:
     def test_list_bookings_by_venue(self, authenticated_client, bookings):
         # when
         venue_ids = [bookings[0].venueId, bookings[2].venueId]
-        with assert_no_duplicated_queries():
+        # one more query because of venue validation
+        with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, venue=venue_ids))
 
         # then
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(row["Contremarque"] for row in rows) == {bookings[0].token, bookings[2].token}
+
+    def test_list_bookings_more_than_max(self, authenticated_client):
+        # given
+        bookings_factories.BookingFactory.create_batch(
+            25,
+            stock__offer__product__subcategoryId=subcategories_v2.CINE_PLEIN_AIR.id,
+        )
+
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, category=categories.CINEMA.id, limit=20))
+
+        # then
+        assert response.status_code == 200
+        assert html_parser.count_table_rows(response.data) == 20
+        assert "Il y a plus de 20 résultats dans la base de données" in html_parser.extract_alert(response.data)
 
 
 def send_request(authenticated_client, url, form_data=None):
