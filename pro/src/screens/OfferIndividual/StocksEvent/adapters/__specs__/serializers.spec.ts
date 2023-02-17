@@ -25,7 +25,6 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
         beginningTime: new Date('2022-10-26T15:00:00.0200'),
         remainingQuantity: STOCK_EVENT_FORM_DEFAULT_VALUES.remainingQuantity,
         bookingsQuantity: STOCK_EVENT_FORM_DEFAULT_VALUES.bookingsQuantity,
-        quantity: 12,
         bookingLimitDatetime: new Date('2022-10-26T00:00:00'),
         price: 10,
         isDeletable: true,
@@ -42,7 +41,7 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
       bookingLimitDatetime: '2022-10-26T13:00:00Z',
       price: 10,
       priceCategoryId: null,
-      quantity: 12,
+      quantity: null,
     }
 
     const serializedData = serializeStockEventList(
@@ -58,7 +57,7 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
       bookingLimitDatetime: '2022-10-26T13:00:00Z',
       price: 10,
       priceCategoryId: null,
-      quantity: 12,
+      quantity: null,
     }
 
     const serializedData = serializeStockEventList(
@@ -80,7 +79,7 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
       bookingLimitDatetime: '2022-10-10T21:59:59Z',
       price: null,
       priceCategoryId: 1,
-      quantity: 12,
+      quantity: null,
     }
 
     const serializedData = serializeStockEventList(

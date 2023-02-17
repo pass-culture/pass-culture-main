@@ -17,23 +17,9 @@ const StockEventFormInfo = ({
   className,
 }: IStockEventFormInfoProps): JSX.Element => {
   const { values } = useFormikContext<{ stocks: IStockEventFormValues[] }>()
-  const { remainingQuantity, bookingsQuantity } = values.stocks[stockIndex]
+  const { bookingsQuantity } = values.stocks[stockIndex]
   return (
     <div className={cn(styles['stock-form-info'], className)}>
-      <TextInput
-        name={`stocks[${stockIndex}]remainingQuantity`}
-        value={
-          remainingQuantity === 'unlimited' ? 'Illimité' : remainingQuantity
-        }
-        readOnly
-        label="Stock restant"
-        isLabelHidden={stockIndex !== 0}
-        smallLabel
-        className={styles['field-info-remaining-stocks']}
-        classNameLabel={formRowStyles['field-layout-label']}
-        classNameFooter={styles['field-layout-footer']}
-        hideHiddenFooter
-      />
       <TextInput
         name={`stocks[${stockIndex}]bookingsQuantity`}
         value={bookingsQuantity || 0}

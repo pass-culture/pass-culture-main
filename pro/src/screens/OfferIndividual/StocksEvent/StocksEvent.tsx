@@ -26,7 +26,6 @@ import { SelectOption } from 'custom_types/form'
 import { useNavigate, useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { getToday } from 'utils/date'
 import { formatPrice } from 'utils/formatPrice'
@@ -68,7 +67,7 @@ export const hasChangesOnStockWithBookings = (
   return values.stocks.some(stock => {
     if (
       !stock.bookingsQuantity ||
-      parseInt(stock.bookingsQuantity, 10) === 0 ||
+      stock.bookingsQuantity === 0 ||
       !stock.stockId
     ) {
       return false
@@ -104,7 +103,8 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const notify = useNotification()
   const { setOffer, shouldTrack, setShouldTrack } = useOfferIndividualContext()
   const providerName = offer?.lastProviderName
-  const { visible, showModal, hideModal } = useModal()
+  const [showStocksEventConfirmModal, setShowStocksEventConfirmModal] =
+    useState(false)
   const isPriceCategoriesActive = useActiveFeature(
     'WIP_ENABLE_MULTI_PRICE_STOCKS'
   )
@@ -142,11 +142,11 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
         formik.initialValues
       )
 
-      if (!visible && changesOnStockWithBookings) {
-        showModal()
+      if (!showStocksEventConfirmModal && changesOnStockWithBookings) {
+        setShowStocksEventConfirmModal(true)
         return
       } else {
-        hideModal()
+        setShowStocksEventConfirmModal(false)
       }
     }
 
@@ -369,10 +369,10 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
       {providerName && (
         <SynchronizedProviderInformation providerName={providerName} />
       )}
-      {visible && (
+      {showStocksEventConfirmModal && (
         <DialogStocksEventEditConfirm
           onConfirm={formik.submitForm}
-          onCancel={hideModal}
+          onCancel={() => setShowStocksEventConfirmModal(false)}
         />
       )}
       <FormLayout>

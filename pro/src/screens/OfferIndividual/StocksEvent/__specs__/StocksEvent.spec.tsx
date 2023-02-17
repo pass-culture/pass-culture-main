@@ -248,7 +248,7 @@ describe('screens:StocksEvent', () => {
           body: [
             {
               price: 'API price ERROR',
-              quantity: 'API quantity ERROR',
+              remainingQuantity: 'API quantity ERROR',
               bookingLimitDatetime: 'API bookingLimitDatetime ERROR',
             },
           ],

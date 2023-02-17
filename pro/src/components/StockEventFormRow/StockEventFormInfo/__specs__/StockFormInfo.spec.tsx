@@ -22,8 +22,6 @@ const renderStockFormInfo = () => {
 describe('StockFormInfo', () => {
   it('render', () => {
     renderStockFormInfo()
-    expect(screen.getByText('Stock restant')).toBeInTheDocument()
     expect(screen.getByText('Réservations')).toBeInTheDocument()
-    expect(screen.getByText('Illimité')).toBeInTheDocument()
   })
 })

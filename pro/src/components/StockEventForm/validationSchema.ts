@@ -60,18 +60,11 @@ const getSingleValidationSchema = (
     test: isBeforeBeginningDate,
   }),
   bookingsQuantity: yup.number(),
-  quantity: yup
+  remainingQuantity: yup
     .number()
     .nullable()
     .typeError('Doit être un nombre')
-    .min(0, 'Doit être positif')
-    .when(['bookingsQuantity'], (bookingsQuantity, schema) => {
-      const bookingQuantityNumber = parseInt(bookingsQuantity, 10)
-      if (!isNaN(bookingQuantityNumber)) {
-        return schema.min(bookingQuantityNumber, 'Quantité trop faible')
-      }
-      return schema
-    }),
+    .min(0, 'Doit être positif'),
 })
 
 export const getValidationSchema = (
