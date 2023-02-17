@@ -822,7 +822,7 @@ def get_eligible_for_search_venues(
         sa.orm.joinedload(models.Venue.managingOfferer).load_only(
             models.Offerer.isActive,
         )
-    )
+    ).order_by(models.Venue.id)
 
     if max_venues:
         query = query.limit(max_venues)
