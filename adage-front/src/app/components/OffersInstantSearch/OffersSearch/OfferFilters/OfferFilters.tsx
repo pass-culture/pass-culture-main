@@ -22,7 +22,24 @@ export interface OfferFiltersProps {
   user: AuthenticatedResponse
 }
 
-const getCheckboxLabel = (user: AuthenticatedResponse) => {
+const getOnlyInMyDptLabel = (user: AuthenticatedResponse) => {
+  const userInformation =
+    user.institutionCity &&
+    user.departmentCode &&
+    `${user.institutionCity} (${user.departmentCode})`
+
+  if (!userInformation) {
+    return ''
+  }
+
+  return (
+    <>
+      Les acteurs culturels de mon département : <b>{userInformation}</b>
+    </>
+  )
+}
+
+const getOnlyInMySchoolLabel = (user: AuthenticatedResponse) => {
   const userInformation =
     user.institutionName &&
     user.institutionCity &&
@@ -35,7 +52,7 @@ const getCheckboxLabel = (user: AuthenticatedResponse) => {
 
   return (
     <>
-      Uniquement les acteurs qui se déplacent dans mon établissement :{' '}
+      Les acteurs qui se déplacent dans mon établissement :{' '}
       <b>{userInformation}</b>
     </>
   )
@@ -60,6 +77,7 @@ export const OfferFilters = ({
   const [onlyInMySchool, setOnlyInMySchool] = useState(
     currentFilters.onlyInMySchool
   )
+  const [onlyInMyDpt, setOnlyInMyDpt] = useState(currentFilters.onlyInMyDpt)
 
   const handleResetFilters = () => {
     removeVenueFilter()
@@ -91,38 +109,61 @@ export const OfferFilters = ({
   useEffect(() => {
     setOnlyInMySchool(currentFilters.onlyInMySchool)
   }, [currentFilters.onlyInMySchool])
+  useEffect(() => {
+    setOnlyInMyDpt(currentFilters.onlyInMyDpt)
+  }, [currentFilters.onlyInMyDpt])
 
   const userDepartmentOption = departmentOptions.find(
     departmentOption => departmentOption.value === user.departmentCode
   )
 
-  const checkboxLabel = getCheckboxLabel(user)
+  const onlyInMySchoolLabel = getOnlyInMySchoolLabel(user)
+  const onlyInMyDptLabel = getOnlyInMyDptLabel(user)
 
   return (
     <div className={className}>
       <span className="offer-filters-title">Filtrer par :</span>
-      {checkboxLabel && (
-        <>
-          <div className="offer-filters-row">
-            <Checkbox
-              checked={onlyInMySchool}
-              label={checkboxLabel}
-              name="onlyInMySchool"
-              onChange={event => {
-                if (event.target.checked && userDepartmentOption) {
-                  dispatchCurrentFilters({
-                    type: 'POPULATE_ONLY_IN_MY_SCHOOL',
-                    departmentFilter: userDepartmentOption,
-                  })
-                } else {
-                  dispatchCurrentFilters({ type: 'RESET_ONLY_IN_MY_SCHOOL' })
-                }
-              }}
-            />
-          </div>
-          <div className="offer-filters-separator" />
-        </>
+
+      <div className="offer-filters-row">
+        {onlyInMyDptLabel && (
+          <Checkbox
+            checked={onlyInMyDpt}
+            label={onlyInMyDptLabel}
+            name="onlyInMyDpt"
+            onChange={event => {
+              if (event.target.checked && userDepartmentOption) {
+                dispatchCurrentFilters({
+                  type: 'POPULATE_ONLY_IN_MY_DEPARTMENT',
+                  departmentFilter: userDepartmentOption,
+                })
+              } else {
+                dispatchCurrentFilters({ type: 'RESET_ONLY_IN_MY_DEPARTMENT' })
+              }
+            }}
+          />
+        )}
+      </div>
+      {onlyInMySchoolLabel && (
+        <div className="offer-filters-row">
+          <Checkbox
+            checked={onlyInMySchool}
+            label={onlyInMySchoolLabel}
+            name="onlyInMySchool"
+            onChange={event => {
+              if (event.target.checked && userDepartmentOption) {
+                dispatchCurrentFilters({
+                  type: 'POPULATE_ONLY_IN_MY_SCHOOL',
+                  departmentFilter: userDepartmentOption,
+                })
+              } else {
+                dispatchCurrentFilters({ type: 'RESET_ONLY_IN_MY_SCHOOL' })
+              }
+            }}
+          />
+        </div>
       )}
+      <div className="offer-filters-separator" />
+
       <div className="offer-filters-row">
         <MultiSelectAutocomplete
           className="offer-filters-filter"

@@ -8,4 +8,5 @@ export const INITIAL_FILTERS: Filters = {
   students: [],
   domains: [],
   onlyInMySchool: false,
+  onlyInMyDpt: false,
 }

@@ -117,6 +117,9 @@ describe('app', () => {
       mockedApi.authenticate.mockResolvedValue({
         role: AdageFrontRoles.REDACTOR,
         uai: 'uai',
+        departmentCode: '30',
+        institutionName: 'COLLEGE BELLEVUE',
+        institutionCity: 'ALES',
       })
       mockedApi.getVenueBySiret.mockResolvedValue(venue)
       mockedApi.getVenueById.mockResolvedValue(venue)
@@ -360,6 +363,32 @@ describe('app', () => {
       ])
       expect(queryTag(`Lieu : ${venue?.publicName}`)).not.toBeInTheDocument()
       expect(queryResetFiltersButton()).not.toBeInTheDocument()
+    })
+
+    it('should search on department when only in my department is checked', async () => {
+      renderApp()
+
+      await screen.findByText(`Lieu : ${venue?.publicName}`)
+      const onlyInMyDptFilter = await screen.getByLabelText(
+        'Les acteurs culturels de mon département : ALES (30)'
+      )
+      const launchSearchButton = await findLaunchSearchButton()
+      // When
+      userEvent.click(onlyInMyDptFilter)
+      userEvent.click(launchSearchButton)
+
+      // Then
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
+      const searchConfigurationFirstCall = (Configure as jest.Mock).mock
+        .calls[2][0]
+      expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
+        ['venue.departmentCode:30'],
+        ['venue.id:1436'],
+        [
+          'offer.educationalInstitutionUAICode:all',
+          'offer.educationalInstitutionUAICode:uai',
+        ],
+      ])
     })
 
     describe('tabs', () => {

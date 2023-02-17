@@ -20,6 +20,7 @@ export const populateFacetFilters = ({
   domains,
   venueFilter = null,
   onlyInMySchool,
+  onlyInMyDpt,
   uai,
 }: {
   departments: Option[]
@@ -28,6 +29,7 @@ export const populateFacetFilters = ({
   domains: Option<number>[]
   venueFilter: VenueResponse | null
   onlyInMySchool: boolean
+  onlyInMyDpt: boolean
   uai?: string[] | null
 }): FacetsWithData => {
   const updatedFilters: Facets = []
@@ -37,7 +39,7 @@ export const populateFacetFilters = ({
     departments,
     (department: Option<string>) => [
       `venue.departmentCode:${department.value}`,
-      `offer.interventionArea:${department.value}`,
+      ...(onlyInMyDpt ? [] : [`offer.interventionArea:${department.value}`]),
     ]
   )
 
@@ -60,7 +62,10 @@ export const populateFacetFilters = ({
 
   if (filteredDepartments.length > 0) {
     filtersKeys.push('departments')
-    filtersKeys.push('interventionArea')
+    if (!onlyInMyDpt) {
+      filtersKeys.push('interventionArea')
+    }
+
     updatedFilters.push(filteredDepartments)
   }
 
