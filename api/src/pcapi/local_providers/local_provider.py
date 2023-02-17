@@ -193,6 +193,7 @@ class LocalProvider(Iterator):
             for providable_info in providable_infos:
                 chunk_key = providable_info.id_at_providers + "|" + str(providable_info.type.__name__)
                 pc_object = get_existing_pc_obj(providable_info, chunk_to_insert, chunk_to_update)
+                last_update_for_current_provider = get_last_update_for_provider(self.provider.id, pc_object)
 
                 if pc_object is None:
                     if not self.can_create:
@@ -204,7 +205,6 @@ class LocalProvider(Iterator):
                     except ApiErrors:
                         continue
                 else:
-                    last_update_for_current_provider = get_last_update_for_provider(self.provider.id, pc_object)
                     object_need_update = (
                         last_update_for_current_provider is None
                         or last_update_for_current_provider < providable_info.date_modified_at_provider
@@ -220,7 +220,10 @@ class LocalProvider(Iterator):
                         except ApiErrors:
                             continue
 
-                if isinstance(pc_object, HasThumbMixin):
+                if isinstance(pc_object, HasThumbMixin) and (
+                    not last_update_for_current_provider
+                    or last_update_for_current_provider.date() != datetime.today().date()
+                ):
                     initial_thumb_count = pc_object.thumbCount
                     try:
                         self._handle_thumb(pc_object)
