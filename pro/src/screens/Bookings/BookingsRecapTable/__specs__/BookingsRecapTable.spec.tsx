@@ -6,10 +6,14 @@ import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { EMPTY_FILTER_VALUE } from 'screens/Bookings/BookingsRecapTable/components/Filters/_constants'
+import * as bookingDetailsAdapter from 'screens/Bookings/BookingsRecapTable/components/Table/Body/TableRow/adapters/getCollectiveBookingAdapter'
 import * as constants from 'screens/Bookings/BookingsRecapTable/constants/NB_BOOKINGS_PER_PAGE'
 import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import { bookingRecapFactory } from 'utils/apiFactories'
-import { collectiveBookingRecapFactory } from 'utils/collectiveApiFactories'
+import {
+  collectiveBookingDetailsFactory,
+  collectiveBookingRecapFactory,
+} from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import BookingsRecapTable from '../BookingsRecapTable'
@@ -251,6 +255,11 @@ describe('components | BookingsRecapTable', () => {
       collectiveBookingRecapFactory({ bookingId: 'mon booking id' }),
     ]
     jest.spyOn(filterBookingsRecap, 'default').mockReturnValue(bookingsRecap)
+    jest.spyOn(bookingDetailsAdapter, 'default').mockResolvedValue({
+      isOk: true,
+      message: '',
+      payload: collectiveBookingDetailsFactory(),
+    })
 
     const mockLogEvent = jest.fn()
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
