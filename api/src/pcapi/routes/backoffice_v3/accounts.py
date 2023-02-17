@@ -30,10 +30,13 @@ import pcapi.core.users.constants as users_constants
 import pcapi.core.users.email.update as email_update
 import pcapi.core.users.utils as users_utils
 from pcapi.models import db
+from pcapi.repository import repository
 import pcapi.utils.email as email_utils
 
 from . import search_utils
 from . import utils
+from ...core.history import api as history_api
+from ...core.history import models as history_models
 from .forms import account as account_forms
 from .forms import empty as empty_forms
 from .forms import search as search_forms
@@ -255,6 +258,27 @@ def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
     else:
         users_api.request_email_confirmation(user)
         flash("Email de validation envoyé", "success")
+
+    return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
+
+
+@public_accounts_blueprint.route("/<int:user_id>/validate-phone-number", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
+    user = users_models.User.query.get_or_404(user_id)
+    if not user.phoneNumber:
+        flash("L'utilisateur n'a pas de numéro de téléphone", "warning")
+        return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
+
+    user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+    repository.save(user)
+
+    subscription_api.activate_beneficiary_if_no_missing_step(user)
+    users_api.delete_all_users_phone_validation_tokens(user)
+
+    history_api.log_action(action_type=history_models.ActionType.USER_PHONE_VALIDATED, author=current_user, user=user)
+
+    flash("Le numéro a été validé avec succès", "success")
 
     return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
