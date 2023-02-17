@@ -699,10 +699,11 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
                 booking.stockBeginningDatetime,
             ),
         )
-        worksheet.write(row, 10, booking.amount, currency_format)
-        worksheet.write(row, 11, _get_booking_status(booking.status, booking.isConfirmed))
-        worksheet.write(row, 12, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
-        worksheet.write(row, 13, serialize_offer_type_educational_or_individual(offer_is_educational=False))
+        worksheet.write(row, 10, booking.priceCategoryLabel)
+        worksheet.write(row, 11, booking.amount, currency_format)
+        worksheet.write(row, 12, _get_booking_status(booking.status, booking.isConfirmed))
+        worksheet.write(row, 13, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
+        worksheet.write(row, 14, serialize_offer_type_educational_or_individual(offer_is_educational=False))
         row += 1
 
     workbook.close()
