@@ -5,6 +5,7 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { individualStockFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -35,12 +36,17 @@ const renderPriceCategoriesForm = (
         offerId="42"
         mode={OFFER_WIZARD_MODE.DRAFT}
         stocks={[individualStockFactory({ priceCategoryId: 144 })]}
+        setOffer={jest.fn()}
+        humanizedOfferId="AA"
       />
     </Formik>
   )
 }
 
 describe('PriceCategories', () => {
+  beforeEach(() => {
+    jest.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
+  })
   it('should render without error', () => {
     renderPriceCategoriesForm()
 

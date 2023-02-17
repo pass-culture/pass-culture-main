@@ -95,6 +95,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
       )
     ) {
       setShowConfirmChangeOnPrice(true)
+      setIsClickingFromActionBar(false)
       return
     } else {
       setShowConfirmChangeOnPrice(false)
@@ -226,6 +227,8 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
             offerId={offer.nonHumanizedId.toString()}
             mode={mode}
             stocks={offer.stocks}
+            setOffer={setOffer}
+            humanizedOfferId={offer.id}
           />
 
           <ActionBar
