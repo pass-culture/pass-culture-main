@@ -685,23 +685,23 @@ def update_stock_quantity_to_dn_booked_quantity(stock_id: int | None) -> None:
     db.session.commit()
 
 
-def get_paginated_active_offer_ids(limit: int, page: int) -> list[int]:
+def get_paginated_active_offer_ids(batch_size: int, page: int = 1) -> list[int]:
     query = (
         models.Offer.query.with_entities(models.Offer.id)
         .filter(models.Offer.isActive.is_(True))
         .order_by(models.Offer.id)
-        .offset(page * limit)
-        .limit(limit)
+        .offset((page - 1) * batch_size)  # first page is 1, not 0
+        .limit(batch_size)
     )
     return [offer_id for offer_id, in query]
 
 
-def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int) -> list[int]:
+def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int = 0) -> list[int]:
     query = (
         models.Offer.query.with_entities(models.Offer.id)
         .filter(models.Offer.venueId == venue_id)
         .order_by(models.Offer.id)
-        .offset(page * limit)
+        .offset(page * limit)  # first page is 0
         .limit(limit)
     )
     return [offer_id for offer_id, in query]
