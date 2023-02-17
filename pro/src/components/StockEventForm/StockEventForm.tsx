@@ -4,7 +4,9 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import formRowStyles from 'components/StockEventFormRow/SharedStockEventFormRow.module.scss'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { SelectOption } from 'custom_types/form'
+import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { EuroIcon } from 'icons'
 import { DatePicker, TextInput, TimePicker, Select } from 'ui-kit'
@@ -29,6 +31,7 @@ const StockEventForm = ({
   const { values, setFieldValue, setTouched } = useFormikContext<{
     stocks: IStockEventFormValues[]
   }>()
+  const mode = useOfferWizardMode()
   const isPriceCategoriesActive = useActiveFeature(
     'WIP_ENABLE_MULTI_PRICE_STOCKS'
   )
@@ -55,19 +58,6 @@ const StockEventForm = ({
       })
       setFieldValue(`stocks[${stockIndex}]bookingLimitDatetime`, date)
     }
-  }
-
-  const onChangeQuantity = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const quantity = event.target.value
-    let remainingQuantity: number | string =
-      Number(quantity || 0) - Number(stockFormValues.bookingsQuantity || 0)
-
-    if (quantity === '') {
-      remainingQuantity = 'unlimited'
-    }
-
-    setFieldValue(`stocks[${stockIndex}]remainingQuantity`, remainingQuantity)
-    setFieldValue(`stocks[${stockIndex}]quantity`, quantity)
   }
 
   const beginningDate = stockFormValues.beginningDate
@@ -164,8 +154,10 @@ const StockEventForm = ({
 
       <TextInput
         smallLabel
-        name={`stocks[${stockIndex}]quantity`}
-        label="Quantité"
+        name={`stocks[${stockIndex}]remainingQuantity`}
+        label={
+          mode === OFFER_WIZARD_MODE.EDITION ? 'Quantité restante' : 'Quantité'
+        }
         isLabelHidden={stockIndex !== 0}
         placeholder="Illimité"
         className={cn(
@@ -174,11 +166,10 @@ const StockEventForm = ({
         )}
         classNameLabel={formRowStyles['field-layout-label']}
         classNameFooter={styles['field-layout-footer']}
-        disabled={readOnlyFields.includes('quantity')}
+        disabled={readOnlyFields.includes('remainingQuantity')}
         type="number"
         hasDecimal={false}
         hideHiddenFooter={true}
-        onChange={onChangeQuantity}
       />
     </>
   )

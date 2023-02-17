@@ -10,8 +10,7 @@ export const STOCK_EVENT_FORM_DEFAULT_VALUES: IStockEventFormValues = {
   beginningDate: null,
   beginningTime: null,
   remainingQuantity: '',
-  bookingsQuantity: '',
-  quantity: '',
+  bookingsQuantity: 0,
   bookingLimitDatetime: null,
   price: '',
   priceCategoryId: '',
@@ -31,6 +30,6 @@ export const STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS: (keyof ISt
     'beginningDate',
     'beginningTime',
     'price',
-    'quantity',
+    'remainingQuantity',
     'bookingLimitDatetime',
   ]

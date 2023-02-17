@@ -83,9 +83,9 @@ export const serializeStockEvent = (
         ? parseInt(formValues.priceCategoryId)
         : null,
     quantity:
-      formValues.quantity === null || formValues.quantity === ''
+      formValues.remainingQuantity === ''
         ? null
-        : formValues.quantity,
+        : formValues.remainingQuantity + formValues.bookingsQuantity,
   }
   if (formValues.stockId) {
     return {

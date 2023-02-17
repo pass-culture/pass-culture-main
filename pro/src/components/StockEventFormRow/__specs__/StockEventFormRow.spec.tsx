@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
@@ -54,9 +54,8 @@ describe('StockFormRow', () => {
       ...STOCK_EVENT_FORM_DEFAULT_VALUES,
       price: 12,
       stockId: 'STOCK_ID',
-      quantity: 10,
-      bookingsQuantity: '4',
-      remainingQuantity: '6',
+      bookingsQuantity: 4,
+      remainingQuantity: 6,
     }
   })
 
@@ -75,31 +74,12 @@ describe('StockFormRow', () => {
     expect(
       screen.getByLabelText('Date limite de réservation')
     ).toBeInTheDocument()
-    expect(screen.getByLabelText('Quantité')).toBeInTheDocument()
+    expect(screen.getByLabelText('Quantité restante')).toBeInTheDocument()
 
-    expect(screen.getByText('Stock restant')).toBeInTheDocument()
     expect(screen.getByText('Réservations')).toBeInTheDocument()
 
     expect(
       screen.getByTestId('stock-form-actions-button-open')
     ).toBeInTheDocument()
-  })
-
-  it('should set remainQuantity to unlimited on quantity change', async () => {
-    await await renderStockFormRow({
-      props: {
-        ...props,
-        showStockInfo: true,
-      },
-      initialValues,
-    })
-    const quantityInput = await screen.getByLabelText('Quantité', {
-      exact: false,
-    })
-    expect(screen.getByLabelText('Quantité')).toHaveValue(10)
-    expect(screen.queryAllByText('Illimité').length).toBe(0)
-
-    fireEvent.change(quantityInput, { target: { value: '' } })
-    expect(screen.queryAllByText('Illimité').length).toBe(1)
   })
 })

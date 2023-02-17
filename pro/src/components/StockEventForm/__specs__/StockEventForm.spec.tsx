@@ -66,7 +66,7 @@ describe('StockEventForm', () => {
     expect(
       screen.getByLabelText('Date limite de réservation')
     ).toBeInTheDocument()
-    expect(screen.getByLabelText('Quantité')).toBeInTheDocument()
+    expect(screen.getByLabelText('Quantité restante')).toBeInTheDocument()
 
     expect(screen.getByLabelText('Date', { exact: true })).not.toBeDisabled()
     expect(screen.getByLabelText('Horaire')).not.toBeDisabled()
@@ -74,7 +74,7 @@ describe('StockEventForm', () => {
     expect(
       screen.getByLabelText('Date limite de réservation')
     ).not.toBeDisabled()
-    expect(screen.getByLabelText('Quantité')).not.toBeDisabled()
+    expect(screen.getByLabelText('Quantité restante')).not.toBeDisabled()
   })
 
   it('render StockEventForm', () => {
@@ -86,7 +86,7 @@ describe('StockEventForm', () => {
     expect(
       screen.getByLabelText('Date limite de réservation')
     ).toBeInTheDocument()
-    expect(screen.getByLabelText('Quantité')).toBeInTheDocument()
+    expect(screen.getByLabelText('Quantité restante')).toBeInTheDocument()
 
     expect(screen.getByLabelText('Date', { exact: true })).not.toBeDisabled()
     expect(screen.getByLabelText('Horaire')).not.toBeDisabled()
@@ -94,7 +94,7 @@ describe('StockEventForm', () => {
     expect(
       screen.getByLabelText('Date limite de réservation')
     ).not.toBeDisabled()
-    expect(screen.getByLabelText('Quantité')).not.toBeDisabled()
+    expect(screen.getByLabelText('Quantité restante')).not.toBeDisabled()
   })
 
   it('should render disabled fields for empty form with synchronized offer in edition mode', () => {
@@ -104,7 +104,7 @@ describe('StockEventForm', () => {
     expect(screen.getByLabelText('Horaire')).toBeDisabled()
     expect(screen.getByLabelText('Tarif')).toBeDisabled()
     expect(screen.getByLabelText('Date limite de réservation')).toBeDisabled()
-    expect(screen.getByLabelText('Quantité')).toBeDisabled()
+    expect(screen.getByLabelText('Quantité restante')).toBeDisabled()
   })
 
   it('should not render disabled fields for empty form in edition mode for not synchronized offer', () => {
@@ -115,7 +115,7 @@ describe('StockEventForm', () => {
     expect(
       screen.getByLabelText('Date limite de réservation')
     ).not.toBeDisabled()
-    expect(screen.getByLabelText('Quantité')).not.toBeDisabled()
+    expect(screen.getByLabelText('Quantité restante')).not.toBeDisabled()
   })
 
   it('render disabled field in list', () => {
@@ -126,7 +126,7 @@ describe('StockEventForm', () => {
         'beginningTime',
         'bookingLimitDatetime',
         'price',
-        'quantity',
+        'remainingQuantity',
       ],
     })
 
@@ -134,15 +134,15 @@ describe('StockEventForm', () => {
     expect(screen.getByLabelText('Horaire')).toBeDisabled()
     expect(screen.getByLabelText('Tarif')).toBeDisabled()
     expect(screen.getByLabelText('Date limite de réservation')).toBeDisabled()
-    expect(screen.getByLabelText('Quantité')).toBeDisabled()
+    expect(screen.getByLabelText('Quantité restante')).toBeDisabled()
   })
+
   it('should set stockBookingLimitDatetime at event date if date changed before stockBookingLimitDatetime', async () => {
     const initialStock = stockEventFactory({
       beginningDate: new Date('2022-12-29T00:00:00Z'),
       beginningTime: new Date('2022-12-29T00:00:00Z'),
-      remainingQuantity: '11',
-      bookingsQuantity: '1',
-      quantity: 12,
+      remainingQuantity: 11,
+      bookingsQuantity: 1,
       bookingLimitDatetime: new Date('2022-12-28T00:00:00Z'),
       price: 10,
     })
@@ -188,7 +188,7 @@ describe('StockEventForm', () => {
     async ({ value, expectedNumber }) => {
       renderStockEventForm(props)
 
-      const quantityInput = screen.getByLabelText('Quantité', {
+      const quantityInput = screen.getByLabelText('Quantité restante', {
         exact: false,
       })
       await userEvent.type(quantityInput, value)
