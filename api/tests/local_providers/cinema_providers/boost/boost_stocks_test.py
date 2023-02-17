@@ -249,3 +249,29 @@ class BoostStocksTest:
             == f"http://localhost/storage/thumbs/products/{humanize(created_products[0].id)}"
         )
         assert created_products[0].thumbCount == 1
+
+    def should_not_update_thumbnail_more_then_once_a_day(self, requests_mock):
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
+        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{DATE_AFTER_30_DAYS_STR}?page=1&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
+        )
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/36683",
+            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
+        )
+        get_poster_adapter = requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
+
+        boost_stocks = BoostStocks(venue_provider=venue_provider)
+        boost_stocks.updateObjects()
+
+        assert get_poster_adapter.call_count == 1
+
+        boost_stocks.updateObjects()
+
+        assert get_poster_adapter.call_count == 1

@@ -1123,7 +1123,7 @@ class UpdateObjectsTest:
             created_offer = Offer.query.all()
             created_stock = Stock.query.all()
 
-            assert mock_poster_get_allocine.call_count == 2
+            assert mock_poster_get_allocine.call_count == 1
             assert len(created_product) == 1
             assert len(created_offer) == 2
             assert Offer.query.filter(Offer.venueId == venue1.id).count() == 1
