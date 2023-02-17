@@ -372,7 +372,7 @@ def update_collective_offer_educational_institution(
         raise exceptions.CollectiveOfferNotEditable()
 
     offer.institutionId = educational_institution_id
-    offer.teacherEmail = None
+    offer.teacher = None  # type: ignore [call-overload]
 
     if offer.institutionId is not None:
         if not offer.institution.isActive:
@@ -388,7 +388,15 @@ def update_collective_offer_educational_institution(
         )
         for teacher in possible_teachers:
             if teacher["mail"] == teacher_email:
-                offer.teacherEmail = teacher_email
+                redactor = educational_repository.find_redactor_by_email(teacher["mail"])
+                if not redactor:
+                    redactor = redactor = educational_models.EducationalRedactor(
+                        email=teacher["mail"],
+                        firstName=teacher["prenom"],
+                        lastName=teacher["nom"],
+                        civility=teacher["civilite"],
+                    )
+                offer.teacher = redactor
                 break
         else:
             raise exceptions.EducationalRedactorNotFound()

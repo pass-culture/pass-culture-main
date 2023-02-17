@@ -132,6 +132,16 @@ class EducationalInstitutionResponseModel(BaseModel):
         extra = "forbid"
 
 
+class EducationalRedactorResponseModel(BaseModel):
+    email: str | None
+    firstName: str | None
+    lastName: str | None
+    civility: str | None
+
+    class Config:
+        orm_mode = True
+
+
 class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplianceStrictMixin):
     id: int
     subcategoryLabel: str
@@ -153,7 +163,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     interventionArea: list[str]
     imageCredit: str | None
     imageUrl: str | None
-    teacherEmail: str | None
+    teacher: EducationalRedactorResponseModel | None
 
     @classmethod
     def from_orm(
@@ -177,9 +187,6 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
             city=offerVenue.city if offerVenue else None,
             **offer.offerVenue,
         )
-        if (uai and offer.institution and uai != offer.institution.institutionId) or not uai:
-            result.teacherEmail = None
-
         return result
 
     class Config:
