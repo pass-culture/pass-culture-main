@@ -26,12 +26,27 @@ def test_partially_index_offers(app):
         bookable_offer1.id,
     }
 
+    # test of legacy command, will be deleted until "---" below
     # fmt: off
     run_command(
         app,
         "process_offers_from_database",
         "--ending-page", 2,
         "--limit", 1,
+    )
+    # fmt: on
+
+    assert set(search_testing.search_store["offers"].keys()) == expected_to_be_reindexed
+
+    search_testing.reset_search_store()
+    # --- delete until here when legacy command is removed
+
+    # fmt: off
+    run_command(
+        app,
+        "partially_index_offers",
+        "--batch-size", 1,
+        "--last-page", 2,
     )
     # fmt: on
 
@@ -55,9 +70,9 @@ def test_partially_index_collective_offers(app):
     # fmt: off
     run_command(
         app,
-        "process_collective_offers_from_database",
-        "--ending-page", 2,
-        "--limit", 1,
+        "partially_index_collective_offers",
+        "--batch-size", 1,
+        "--last-page", 2,
     )
     # fmt: on
 
@@ -78,9 +93,9 @@ def test_partially_index_collective_offer_templates(app):
     # fmt: off
     run_command(
         app,
-        "process_collective_offers_template_from_database",
-        "--ending-page", 2,
-        "--limit", 1,
+        "partially_index_collective_offer_templates",
+        "--batch-size", 1,
+        "--last-page", 2,
     )
     # fmt: on
 
@@ -101,10 +116,25 @@ def test_partially_index_venues(app):
         # venues, which are _not_indexable_venue and indexable_venue1.
         # Only the latter is indexed.
     }
+
+    # test of legacy command, will be deleted until "---" below
     # fmt: off
     run_command(
         app,
         "process_venues_from_database",
+        "--max-venues", 2,
+    )
+    # fmt: on
+
+    assert set(search_testing.search_store["venues"].keys()) == expected_to_be_reindexed
+
+    search_testing.reset_search_store()
+    # --- delete until here when legacy command is removed
+
+    # fmt: off
+    run_command(
+        app,
+        "partially_index_venues",
         "--max-venues", 2,
     )
     # fmt: on
