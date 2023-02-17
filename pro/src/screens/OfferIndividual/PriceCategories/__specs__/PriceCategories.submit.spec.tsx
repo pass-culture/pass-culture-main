@@ -153,7 +153,7 @@ describe('PriceCategories', () => {
       {
         offer: individualOfferFactory(
           { id: 'AA' },
-          individualStockFactory({ priceCategoryId: 666 }),
+          individualStockFactory({ priceCategoryId: 666, bookingsQuantity: 0 }),
           undefined,
           priceCategoryFactory({ id: 666 })
         ),
@@ -179,7 +179,94 @@ describe('PriceCategories', () => {
         'Cette modification de tarif s’appliquera à l’ensemble des occurrences qui y sont associées.'
       )
     ).toBeInTheDocument()
+    expect(
+      screen.queryByText(
+        'Le tarif restera inchangé pour les personnes ayant déjà réservé cette offre.'
+      )
+    ).not.toBeInTheDocument()
+    await userEvent.click(screen.getByText('Confirmer la modification'))
 
+    expect(api.patchOffer).toHaveBeenCalled()
+    expect(api.postPriceCategories).toHaveBeenCalled()
+  })
+
+  it('should display price modification popin with booking', async () => {
+    renderPriceCategories(
+      {
+        offer: individualOfferFactory(
+          { id: 'AA' },
+          individualStockFactory({
+            priceCategoryId: 666,
+            bookingsQuantity: 17,
+          }),
+          undefined,
+          priceCategoryFactory({ id: 666 })
+        ),
+      },
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        }),
+        { offerId: 'AA' }
+      )
+    )
+    await userEvent.type(
+      screen.getByLabelText('Intitulé du tarif'),
+      'Mon tarif'
+    )
+    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+
+    await userEvent.click(screen.getByText('Étape suivante'))
+
+    expect(
+      screen.getByText(
+        'Cette modification de tarif s’appliquera à l’ensemble des occurrences qui y sont associées.'
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Le tarif restera inchangé pour les personnes ayant déjà réservé cette offre.'
+      )
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Confirmer la modification'))
+
+    expect(api.patchOffer).toHaveBeenCalled()
+    expect(api.postPriceCategories).toHaveBeenCalled()
+  })
+
+  it('should display label modification popin with booking', async () => {
+    renderPriceCategories(
+      {
+        offer: individualOfferFactory(
+          { id: 'AA' },
+          individualStockFactory({
+            priceCategoryId: 666,
+            bookingsQuantity: 17,
+          }),
+          undefined,
+          priceCategoryFactory({ id: 666 })
+        ),
+      },
+      generatePath(
+        getOfferIndividualPath({
+          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          mode: OFFER_WIZARD_MODE.DRAFT,
+        }),
+        { offerId: 'AA' }
+      )
+    )
+    await userEvent.type(
+      screen.getByLabelText('Intitulé du tarif'),
+      'Mon nouveau label'
+    )
+    await userEvent.click(screen.getByText('Étape suivante'))
+
+    expect(
+      screen.getByText(
+        'L’intitulé de ce tarif restera inchangé pour les personnes ayant déjà réservé cette offre.'
+      )
+    ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Confirmer la modification'))
 
     expect(api.patchOffer).toHaveBeenCalled()

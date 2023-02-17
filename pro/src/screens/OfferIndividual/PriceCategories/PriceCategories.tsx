@@ -32,11 +32,40 @@ export interface IPriceCategories {
   offer: IOfferIndividual
 }
 
-export const shouldDisplayConfirmChangeOnPrice = (
+export enum POPIN_TYPE {
+  PRICE = 'price',
+  PRICE_WITH_BOOKING = 'priceWithBooking',
+  LABEL_WITH_BOOKING = 'labelWithBooking',
+}
+
+const hasFieldChange = (
+  priceCategories: PriceCategoryForm[],
+  initialPriceCategories: Record<string, Partial<PriceCategoryForm>>,
+  stockPriceCategoryIds: (number | null | undefined)[],
+  field: keyof PriceCategoryForm
+) =>
+  priceCategories.some(priceCategory => {
+    // if no id, it is new and has no stocks
+    if (!priceCategory.id) {
+      return false
+    }
+    // have fields which trigger warning been edited ?
+    const initialpriceCategory = initialPriceCategories[priceCategory.id]
+    if (initialpriceCategory[field] !== priceCategory[field]) {
+      // does it match a stock ?
+      return stockPriceCategoryIds.some(
+        stockPriceCategoryId => stockPriceCategoryId === priceCategory.id
+      )
+    } else {
+      return false
+    }
+  })
+
+export const getPopinType = (
   stocks: IOfferIndividualStock[],
   initialValues: PriceCategoriesFormValues,
   values: PriceCategoriesFormValues
-) => {
+): POPIN_TYPE | null => {
   const initialPriceCategories: Record<
     string,
     Partial<PriceCategoryForm>
@@ -53,23 +82,62 @@ export const shouldDisplayConfirmChangeOnPrice = (
   )
   const stockPriceCategoryIds = stocks.map(stock => stock.priceCategoryId)
 
-  return values.priceCategories.some(priceCategory => {
-    // if no id, it is new and has no stocks
-    if (!priceCategory.id) {
-      return false
-    }
-
-    // have fields which trigger warning been edited ?
-    const initialpriceCategory = initialPriceCategories[priceCategory.id]
-    if (initialpriceCategory['price'] !== priceCategory['price']) {
-      // does it match a stock ?
+  const priceCategoryWithStocks = values.priceCategories.filter(
+    priceCategory => {
+      if (!priceCategory.id) {
+        return false
+      }
       return stockPriceCategoryIds.some(
         stockPriceCategoryId => stockPriceCategoryId === priceCategory.id
       )
-    } else {
-      return false
     }
-  })
+  )
+
+  // when there is no stock, no need for popin
+  if (priceCategoryWithStocks.length === 0) {
+    return null
+  }
+
+  const priceCategoryWithBookings = priceCategoryWithStocks.filter(
+    priceCategory => {
+      return stocks.some(stock => {
+        if (stock.priceCategoryId === priceCategory.id) {
+          if (stock.bookingsQuantity > 0) {
+            return true
+          }
+          return false
+        }
+        return false
+      })
+    }
+  )
+
+  if (priceCategoryWithBookings.length > 0) {
+    // if there are bookings we want to know if change is on price or label
+    if (
+      hasFieldChange(
+        values.priceCategories,
+        initialPriceCategories,
+        stockPriceCategoryIds,
+        'price'
+      )
+    ) {
+      return POPIN_TYPE.PRICE_WITH_BOOKING
+    } else {
+      return POPIN_TYPE.LABEL_WITH_BOOKING
+    }
+  } else if (
+    // if there are only stocks with no bookings there is a special popin for price
+    hasFieldChange(
+      values.priceCategories,
+      initialPriceCategories,
+      stockPriceCategoryIds,
+      'price'
+    )
+  ) {
+    return POPIN_TYPE.PRICE
+  }
+  return null
 }
 
 const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
@@ -81,29 +149,24 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
   const mode = useOfferWizardMode()
   const [isClickingDraft, setIsClickingDraft] = useState<boolean>(false)
   const notify = useNotification()
-  const [showConfirmChangeOnPrice, setShowConfirmChangeOnPrice] =
-    useState(false)
+  const [popinType, setPopinType] = useState<POPIN_TYPE | null>(null)
 
   const onSubmitWithCallback = async (values: PriceCategoriesFormValues) => {
-    if (
-      mode !== OFFER_WIZARD_MODE.EDITION &&
-      !showConfirmChangeOnPrice &&
-      shouldDisplayConfirmChangeOnPrice(
-        offer.stocks,
-        formik.initialValues,
-        values
-      )
-    ) {
-      setShowConfirmChangeOnPrice(true)
+    const newPopinType = getPopinType(
+      offer.stocks,
+      formik.initialValues,
+      values
+    )
+    setPopinType(newPopinType)
+    if (newPopinType !== null && popinType === null) {
       setIsClickingFromActionBar(false)
       return
-    } else {
-      setShowConfirmChangeOnPrice(false)
     }
 
     try {
       await onSubmit(values, offer, setOffer, formik.resetForm)
       afterSubmitCallback()
+      setPopinType(null)
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error?.message)
@@ -212,11 +275,32 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
 
   return (
     <FormikProvider value={formik}>
-      {showConfirmChangeOnPrice && (
+      {popinType === POPIN_TYPE.PRICE && (
         <ConfirmDialog
-          onCancel={() => setShowConfirmChangeOnPrice(false)}
+          onCancel={() => setPopinType(null)}
           onConfirm={formik.submitForm}
           title="Cette modification de tarif s’appliquera à l’ensemble des occurrences qui y sont associées."
+          confirmText="Confirmer la modification"
+          cancelText="Annuler"
+        />
+      )}
+      {popinType === POPIN_TYPE.PRICE_WITH_BOOKING && (
+        <ConfirmDialog
+          onCancel={() => setPopinType(null)}
+          onConfirm={formik.submitForm}
+          title="Cette modification de tarif s’appliquera à l’ensemble des occurrences qui y sont associées."
+          confirmText="Confirmer la modification"
+          cancelText="Annuler"
+        >
+          Le tarif restera inchangé pour les personnes ayant déjà réservé cette
+          offre.
+        </ConfirmDialog>
+      )}
+      {popinType === POPIN_TYPE.LABEL_WITH_BOOKING && (
+        <ConfirmDialog
+          onCancel={() => setPopinType(null)}
+          onConfirm={formik.submitForm}
+          title="L’intitulé de ce tarif restera inchangé pour les personnes ayant déjà réservé cette offre."
           confirmText="Confirmer la modification"
           cancelText="Annuler"
         />
