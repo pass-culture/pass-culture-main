@@ -58,6 +58,8 @@ export const DEFAULT_VISIBILITY_FORM_VALUES: VisibilityFormValues = {
   visibility: 'one',
   institution: '',
   'search-institution': '',
+  'search-teacher': '',
+  teacher: null,
 }
 
 export const MAX_DETAILS_LENGTH = 1000
