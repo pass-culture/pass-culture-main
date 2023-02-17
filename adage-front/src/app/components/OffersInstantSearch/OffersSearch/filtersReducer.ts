@@ -63,6 +63,15 @@ type ResetOnlyInMySchoolAction = {
   type: 'RESET_ONLY_IN_MY_SCHOOL'
 }
 
+type PopulateOnlyInMyDptAction = {
+  type: 'POPULATE_ONLY_IN_MY_DEPARTMENT'
+  departmentFilter: Option<string>
+}
+
+type ResetOnlyInMyDptAction = {
+  type: 'RESET_ONLY_IN_MY_DEPARTMENT'
+}
+
 export type FiltersReducerAction =
   | PopulateAllFiltersAction
   | ResetCurrentFiltersAction
@@ -76,6 +85,8 @@ export type FiltersReducerAction =
   | RemoveDomainFilterAction
   | PopulateOnlyInMySchoolAction
   | ResetOnlyInMySchoolAction
+  | PopulateOnlyInMyDptAction
+  | ResetOnlyInMyDptAction
 
 export const filtersReducer = (
   state: Filters,
@@ -89,12 +100,18 @@ export const filtersReducer = (
         students: action.allFilters.students,
         domains: action.allFilters.domains,
         onlyInMySchool: false,
+        onlyInMyDpt: false,
       }
     case 'REMOVE_ONE_DEPARTMENT_FILTER': {
       const newDepartments = state.departments?.filter(
         department => department.value !== action.departmentFilter.value
       )
-      return { ...state, departments: newDepartments, onlyInMySchool: false }
+      return {
+        ...state,
+        departments: newDepartments,
+        onlyInMySchool: false,
+        onlyInMyDpt: false,
+      }
     }
     case 'REMOVE_ONE_CATEGORY_FILTER': {
       const newCategories = state.categories?.filter(
@@ -119,6 +136,7 @@ export const filtersReducer = (
         ...state,
         departments: action.departmentFilters,
         onlyInMySchool: false,
+        onlyInMyDpt: false,
       }
     case 'POPULATE_CATEGORIES_FILTER':
       return { ...state, categories: action.categoryFilters }
@@ -133,6 +151,7 @@ export const filtersReducer = (
         students: [],
         domains: [],
         onlyInMySchool: false,
+        onlyInMyDpt: false,
       }
     case 'POPULATE_ONLY_IN_MY_SCHOOL':
       return {
@@ -142,6 +161,17 @@ export const filtersReducer = (
       }
     case 'RESET_ONLY_IN_MY_SCHOOL':
       return { ...state, onlyInMySchool: false }
+    case 'POPULATE_ONLY_IN_MY_DEPARTMENT':
+      return {
+        ...state,
+        departments: [action.departmentFilter],
+        onlyInMyDpt: true,
+      }
+    case 'RESET_ONLY_IN_MY_DEPARTMENT':
+      return {
+        ...state,
+        onlyInMyDpt: false,
+      }
     default:
       return state
   }
