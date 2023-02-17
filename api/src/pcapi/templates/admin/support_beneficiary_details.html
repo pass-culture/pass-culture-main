@@ -216,7 +216,7 @@
             </tr>
             <tr>
                 <th scope="row">Explication</th>
-                <td>{{ review.reason | pc_backoffice_public_account_link_in_comment | safe }}</td>
+                <td>{{ review.reason | safe }}</td>
             </tr>
         </table>
         {% endfor %}
@@ -347,7 +347,7 @@
                 </tr>
                 <tr>
                     <th scope="row">Explication</th>
-                    <td>{{ check.reason|default("Aucune") | pc_backoffice_public_account_link_in_comment | safe }}</td>
+                    <td>{{ check.reason|default("Aucune") | safe }}</td>
                 </tr>
                 <tr>
                     <th>Codes d'erreurs</th>
