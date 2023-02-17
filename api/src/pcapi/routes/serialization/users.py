@@ -97,14 +97,24 @@ class ProUserCreationBodyModel(BaseModel):
         check_password_strength("password", password)
         return password
 
-    # FIXME (dbaty, 2022-09-09): we need this validator because the
-    # first request with an unchecked box comes with the empty string.
-    # Subsequent requests correctly come with `false`, which does not
-    # require this validator. It may be a bug in the frontend. Revisit
-    # this when we have switched the frontend from "pcapi" to "apiClient".
-    @validator("contact_ok", pre=True, always=True)
-    def cast_contact_ok_to_bool(cls, contact_ok: bool | None) -> bool:
-        return bool(contact_ok)
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class ProUserCreationBodyV2Model(BaseModel):
+    email: pydantic.EmailStr
+    first_name: str
+    last_name: str
+    public_name: str
+    password: str
+    phone_number: str
+    contact_ok: bool
+
+    @validator("password")
+    def validate_password_strength(cls, password: str) -> str:
+        check_password_strength("password", password)
+        return password
 
     class Config:
         alias_generator = to_camel

@@ -1705,7 +1705,7 @@ def test_public_api(client):
                 },
                 "UserRole": {
                     "description": "An enumeration.",
-                    "enum": ["ADMIN", "BENEFICIARY", "PRO", "UNDERAGE_BENEFICIARY", "TEST"],
+                    "enum": ["ADMIN", "BENEFICIARY", "PRO", "NON_ATTACHED_PRO", "UNDERAGE_BENEFICIARY", "TEST"],
                     "title": "UserRole",
                 },
                 "UserSuspensionDateResponse": {

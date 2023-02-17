@@ -88,6 +88,7 @@ class UserRole(enum.Enum):
     ADMIN = "ADMIN"
     BENEFICIARY = "BENEFICIARY"
     PRO = "PRO"
+    NON_ATTACHED_PRO = "NON_ATTACHED_PRO"
     UNDERAGE_BENEFICIARY = "UNDERAGE_BENEFICIARY"
     TEST = "TEST"  # used to mark imported test users on staging
 
@@ -256,6 +257,11 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     def add_pro_role(self) -> None:
         self._add_role(UserRole.PRO)
+        self.remove_non_attached_pro_role()
+
+    def add_non_attached_pro_role(self) -> None:
+        self.remove_pro_role()
+        self._add_role(UserRole.NON_ATTACHED_PRO)
 
     def add_underage_beneficiary_role(self) -> None:
         from pcapi.core.users.exceptions import InvalidUserRoleException
@@ -331,6 +337,10 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def remove_pro_role(self) -> None:
         if self.has_pro_role:
             self.roles.remove(UserRole.PRO)
+
+    def remove_non_attached_pro_role(self) -> None:
+        if self.has_non_attached_pro_role:
+            self.roles.remove(UserRole.NON_ATTACHED_PRO)
 
     def setPassword(self, newpass):  # type: ignore [no-untyped-def]
         self.clearTextPassword = newpass
@@ -573,6 +583,14 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     @has_pro_role.expression  # type: ignore [no-redef]
     def has_pro_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.PRO])
+
+    @hybrid_property
+    def has_non_attached_pro_role(self) -> bool:
+        return UserRole.NON_ATTACHED_PRO in self.roles if self.roles else False
+
+    @has_non_attached_pro_role.expression  # type: ignore [no-redef]
+    def has_non_attached_pro_role(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.roles.contains([UserRole.NON_ATTACHED_PRO])
 
     @hybrid_property
     def has_underage_beneficiary_role(self) -> bool:
