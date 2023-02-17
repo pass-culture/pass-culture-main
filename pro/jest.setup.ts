@@ -8,14 +8,20 @@ import acceptableErrors from './jestErrorsAllowList'
 fetchMock.enableMocks()
 
 fetchMock.mockResponse(req => {
-  const msg = `
-----------------------------------------------------------------------------
-/!\\ UNMOCKED FETCH CALL TO :  ${req.url}
-----------------------------------------------------------------------------
-` // console.error is fine here
   // eslint-disable-next-line
-  console.error(msg)
-  return Promise.reject(new Error(msg))
+  console.error(`
+  ----------------------------------------------------------------------------
+  /!\\ UNMOCKED FETCH CALL TO :  ${req.url}
+  ----------------------------------------------------------------------------
+  `)
+
+  // We do not await this Promise so that Jest considers it as
+  // an unhandled rejection and thus fails the test
+  // (otherwise the console.error will appear but not fail the test)
+  void Promise.reject('Unmocked fetch call')
+
+  // And now return a Promise so that fetchMock is happy
+  return Promise.reject('Unmocked fetch call')
 })
 
 const findErrorSourceFile = (...data: any[]) => {
