@@ -1317,15 +1317,15 @@ class GetPaginatedActiveOfferIdsTest:
         offer2 = factories.OfferFactory(venue=venue)
         offer3 = factories.OfferFactory(venue=venue)
 
-        assert repository.get_paginated_active_offer_ids(limit=2, page=0) == [offer1.id, offer2.id]
-        assert repository.get_paginated_active_offer_ids(limit=2, page=1) == [offer3.id]
+        assert repository.get_paginated_active_offer_ids(batch_size=2, page=1) == [offer1.id, offer2.id]
+        assert repository.get_paginated_active_offer_ids(batch_size=2, page=2) == [offer3.id]
 
     def test_exclude_inactive_offers(self):
         venue = offerers_factories.VenueFactory()
         offer1 = factories.OfferFactory(venue=venue, isActive=True)
         _offer2 = factories.OfferFactory(venue=venue, isActive=False)
 
-        assert repository.get_paginated_active_offer_ids(limit=2, page=0) == [offer1.id]
+        assert repository.get_paginated_active_offer_ids(batch_size=2, page=1) == [offer1.id]
 
 
 @pytest.mark.usefixtures("db_session")

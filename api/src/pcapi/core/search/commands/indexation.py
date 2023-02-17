@@ -105,27 +105,20 @@ def index_venues_in_error():  # type: ignore [no-untyped-def]
     search.index_venues_in_queue(from_error_queue=True)
 
 
-# FIXME (dbaty, 2022-02-16): `limit` may be understood as the number
-# of items to index, but it's not. It should be called `batch_size`.
-# Also, `ending_page` is not too clear: it's not the last page, the
-# function does not process that page. The function would perhaps be
-# clearer if `starting_page` started at 1 and the ending condition was
-# changed to actually include the "last" page (which would be named
-# that way), or the function could take a number of pages to process.
 def _partially_index(
     what: str,
     getter: typing.Callable,
     indexation_callback: typing.Callable,
-    starting_page: int = 0,
-    ending_page: int | None = None,
-    limit: int = 10000,
+    batch_size: int = 10000,
+    starting_page: int = 1,
+    last_page: int | None = None,
 ) -> None:
     backend = search._get_backend()
     page = starting_page
     while True:
-        if ending_page and ending_page == page:
+        if last_page and page > last_page:
             break
-        ids = getter(limit=limit, page=page)
+        ids = getter(batch_size=batch_size, page=page)
         if not ids:
             break
         indexation_callback_arguments = [ids]
@@ -136,6 +129,9 @@ def _partially_index(
         page += 1
 
 
+# FIXME (dbaty, 2023-02-17): remove `process_offers_from_database`
+# command when it's been replaced by `partially_index_offers` command
+# in staging rebuild process (after v230, probably).
 @blueprint.cli.command("process_offers_from_database")
 @click.option("--clear", help="Clear search index first", type=bool, default=False)
 @click.option("-ep", "--ending-page", help="Ending page", type=int, default=None)
@@ -153,63 +149,111 @@ def process_offers_from_database(
         what="offers",
         getter=offers_repository.get_paginated_active_offer_ids,
         indexation_callback=search.reindex_offer_ids,
-        starting_page=starting_page,
-        ending_page=ending_page,
-        limit=limit,
+        starting_page=starting_page + 1,
+        last_page=ending_page,
+        batch_size=limit,
     )
 
 
-@blueprint.cli.command("process_collective_offers_from_database")
+@blueprint.cli.command("partially_index_offers")
 @click.option("--clear", help="Clear search index first", type=bool, default=False)
-@click.option("-ep", "--ending-page", help="Ending page", type=int, default=None)
-@click.option("-l", "--limit", help="Number of offers per page", type=int, default=10_000)
-@click.option("-sp", "--starting-page", help="Starting page (first is 0)", type=int, default=0)
-def process_collective_offers_from_database(
+@click.option("--batch-size", help="Number of offers per page", type=int, default=10_000)
+@click.option("--starting-page", help="Starting page (first is 1)", type=int, default=1)
+@click.option("--last-page", help="Last page of offers to index", type=int, default=None)
+def partially_index_offers(
     clear: bool,
-    ending_page: int,
-    limit: int,
+    batch_size: int,
     starting_page: int,
+    last_page: int | None,
 ) -> None:
+    if clear:
+        search.unindex_all_offers()
+    _partially_index(
+        what="offers",
+        getter=offers_repository.get_paginated_active_offer_ids,
+        indexation_callback=search.reindex_offer_ids,
+        batch_size=batch_size,
+        starting_page=starting_page,
+        last_page=last_page,
+    )
+
+
+@blueprint.cli.command("partially_index_collective_offers")
+@click.option("--clear", help="Clear search index first", type=bool, default=False)
+@click.option("--batch-size", help="Number of offers per page", type=int, default=10_000)
+@click.option("--starting-page", help="Starting page (first is 1)", type=int, default=1)
+@click.option("--last-page", help="Last page of offers to index", type=int, default=None)
+def partially_index_collective_offers(
+    clear: bool,
+    batch_size: int,
+    starting_page: int,
+    last_page: int,
+) -> None:
+    """Index a subset of collective offers.
+
+    This function fetches active offers by batch and then only reindex
+    offers that are eligible for search. You control the first and
+    last pages of the batches (starting from page 1).
+    """
     if clear:
         search.unindex_all_collective_offers(only_non_template=True)
     _partially_index(
         what="collective offers",
         getter=collective_offers_repository.get_paginated_active_collective_offer_ids,
         indexation_callback=search._reindex_collective_offer_ids,
+        batch_size=batch_size,
         starting_page=starting_page,
-        ending_page=ending_page,
-        limit=limit,
+        last_page=last_page,
     )
 
 
-@blueprint.cli.command("process_collective_offers_template_from_database")
+@blueprint.cli.command("partially_index_collective_offer_templates")
 @click.option("--clear", help="Clear search index first", type=bool, default=False)
-@click.option("-ep", "--ending-page", help="Ending page", type=int, default=None)
-@click.option("-l", "--limit", help="Number of templates per page", type=int, default=10_000)
-@click.option("-sp", "--starting-page", help="Starting page (first is 0)", type=int, default=0)
-def process_collective_offers_template_from_database(
+@click.option("--batch-size", help="Number of templates per page", type=int, default=10_000)
+@click.option("--starting-page", help="Starting page (first is 1)", type=int, default=1)
+@click.option("--last-page", help="Last page of templates to index", type=int, default=None)
+def partially_index_collective_offer_templates(
     clear: bool,
-    ending_page: int,
-    limit: int,
+    batch_size: int,
     starting_page: int,
+    last_page: int,
 ) -> None:
+    """Index a subset of collective offer templates.
+
+    This function fetches active templates by batch and then only
+    reindex templates that are eligible for search. You control the
+    first and last pages of the batches (starting from page 1).
+    """
     if clear:
         search.unindex_all_collective_offers(only_template=True)
     _partially_index(
         what="collective offer templates",
         getter=collective_offers_repository.get_paginated_active_collective_offer_template_ids,
         indexation_callback=search._reindex_collective_offer_template_ids,
+        batch_size=batch_size,
         starting_page=starting_page,
-        ending_page=ending_page,
-        limit=limit,
+        last_page=last_page,
     )
 
 
+# FIXME (dbaty, 2023-02-17): remove `process_venues_from_database`
+# command when it's been replaced by `partially_index_venues` command
+# in staging rebuild process.
 @blueprint.cli.command("process_venues_from_database")
 @click.option("--clear", help="Clear search index first", type=bool, default=False)
 @click.option("--batch-size", help="Batch size (Algolia)", type=int, default=10_000)
 @click.option("--max-venues", help="Max number of venues (total)", type=int, default=10_000)
 def process_venues_from_database(clear: bool, batch_size: int, max_venues: int) -> None:
+    if clear:
+        search.unindex_all_venues()
+    _reindex_all_eligible_venues(batch_size, max_venues)
+
+
+@blueprint.cli.command("partially_index_venues")
+@click.option("--clear", help="Clear search index first", type=bool, default=False)
+@click.option("--batch-size", help="Batch size (Algolia)", type=int, default=10_000)
+@click.option("--max-venues", help="Max number of venues (total)", type=int, default=10_000)
+def partially_index_venues(clear: bool, batch_size: int, max_venues: int) -> None:
     if clear:
         search.unindex_all_venues()
     _reindex_all_eligible_venues(batch_size, max_venues)
