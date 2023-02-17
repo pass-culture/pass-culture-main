@@ -1,11 +1,11 @@
-<div class="row row-cols-xl-3 row-cols-md-2 row-cols-sm-1 g-4 py-3">
+<div class="row row-cols-xl-3 row-cols-md-2 row-cols-sm-1 g-3 py-0">
     <div class="col">
-        <div class="card">
+        <div class="card shadow-sm">
             {% if credit is not none %}
                 <div class="card-body">
-                    <h5 class="card-title fs-1 mb-3">
+                    <h6 class="card-title fs-1 mb-3">
                         {{ credit.all.remaining | format_amount }}
-                    </h5>
+                    </h6>
 
                     <div class="d-flex">
                         <h6 class="card-subtitle text-muted me-auto">
@@ -37,12 +37,12 @@
     </div>
 
     <div class="col">
-        <div class="card">
+        <div class="card shadow-sm">
             {% if credit is not none and credit.digital is not none %}
                 <div class="card-body">
-                    <h5 class="card-title fs-1 mb-3">
+                    <h6 class="card-title fs-1 mb-3">
                         {{ credit.digital.remaining | format_amount }}
-                    </h5>
+                    </h6>
 
                     <div class="d-flex">
                         <h6 class="card-subtitle text-muted me-auto">
