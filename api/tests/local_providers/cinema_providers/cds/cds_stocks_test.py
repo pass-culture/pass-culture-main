@@ -527,6 +527,64 @@ class CDSStocksTest:
         )
         assert created_products[1].thumbCount == 1
 
+    @patch(
+        "pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_internet_sale_gauge",
+        return_value=True,
+    )
+    @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_movie_poster")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
+    def should_not_update_thumbnail_more_then_once_a_day(
+        self, mock_get_venue_movies, mocked_get_movie_poster, mock_get_shows, mock_get_internet_sale_gauge
+    ):
+        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
+        venue_provider = VenueProviderFactory(provider=cds_provider, isDuoOffers=True)
+        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+        mocked_movies = [
+            Movie(
+                id="123",
+                title="Coupez !",
+                duration=120,
+                description="Ca tourne mal",
+                visa="123456",
+                posterpath="fakeUrl/coupez.png",
+            ),
+        ]
+        mock_get_venue_movies.return_value = mocked_movies
+
+        mocked_shows = [
+            {
+                "show_information": ShowCDS(
+                    id=1,
+                    is_cancelled=False,
+                    is_deleted=False,
+                    is_disabled_seatmap=False,
+                    is_empty_seatmap=False,
+                    remaining_place=77,
+                    internet_remaining_place=10,
+                    showtime=datetime(2022, 6, 20, 11, 00, 00),
+                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
+                    screen=IdObjectCDS(id=1),
+                    media=IdObjectCDS(id=123),
+                ),
+                "price": 5,
+            },
+        ]
+        mock_get_shows.return_value = mocked_shows
+
+        cds_stocks = CDSStocks(venue_provider=venue_provider)
+        cds_stocks.updateObjects()
+
+        assert mocked_get_movie_poster.call_count == 1
+
+        cds_stocks.updateObjects()
+
+        assert mocked_get_movie_poster.call_count == 1
+
 
 @pytest.mark.usefixtures("db_session")
 class CDSStocksQuantityTest:

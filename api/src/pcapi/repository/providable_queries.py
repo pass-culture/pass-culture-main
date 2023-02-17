@@ -56,9 +56,9 @@ def get_existing_object(
 
 def get_last_update_for_provider(
     provider_id: int,
-    pc_obj: offers_models.Product | offers_models.Offer | offers_models.Stock,
+    pc_obj: offers_models.Product | offers_models.Offer | offers_models.Stock | None,
 ) -> datetime.datetime | None:
-    if pc_obj.lastProviderId == provider_id:
+    if pc_obj and pc_obj.lastProviderId == provider_id:
         return pc_obj.dateModifiedAtLastProvider
     return None
 
