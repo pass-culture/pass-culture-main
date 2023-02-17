@@ -4,6 +4,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
 import * as useNotification from 'hooks/useNotification'
@@ -18,6 +19,12 @@ jest.mock('react-router-dom', () => ({
   useParams: () => ({
     offerId: 'BQ',
   }),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getAutocompleteEducationalRedactorsForUai: jest.fn(),
+  },
 }))
 
 const institutions: EducationalInstitutionResponseModel[] = [
@@ -197,6 +204,8 @@ describe('CollectiveOfferVisibility', () => {
           visibility: 'one',
           institution: '12',
           'search-institution': 'Institution 1',
+          'search-teacher': 'Teacher 1',
+          teacher: 'teacher.teach@example.com',
         },
       })
       expect(
@@ -208,6 +217,82 @@ describe('CollectiveOfferVisibility', () => {
       expect(
         await screen.findByText(/91190 Gif-sur-Yvette/)
       ).toBeInTheDocument()
+    })
+    it('shoud delete institution selection', async () => {
+      renderVisibilityStep({
+        ...props,
+        mode: Mode.EDITION,
+        initialValues: {
+          visibility: 'one',
+          institution: '12',
+          'search-institution': 'Institution 1',
+          'search-teacher': 'Teacher Teach',
+          teacher: 'teacher.teach@example.com',
+        },
+      })
+
+      expect(
+        screen.getByLabelText(/Un établissement en particulier/)
+      ).toBeChecked()
+      expect(
+        await screen.findByText(/Collège Institution 1/)
+      ).toBeInTheDocument()
+      expect(
+        await screen.findByText(/91190 Gif-sur-Yvette/)
+      ).toBeInTheDocument()
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: /Supprimer/i,
+        })
+      )
+      expect(
+        await screen.queryByText(/Collège Institution 1/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should hide banner when clicking on trash icon', async () => {
+      const spyPatch = jest.fn().mockResolvedValue({
+        isOk: true,
+        payload: { teacherEmail: 'maria.sklodowska@example.com' },
+      })
+      renderVisibilityStep({ ...props, patchInstitution: spyPatch })
+      await userEvent.click(
+        screen.getByLabelText(/Un établissement en particulier/)
+      )
+      await userEvent.click(
+        await screen.findByPlaceholderText(
+          /Saisir l’établissement scolaire ou le code UAI/
+        )
+      )
+      await userEvent.click(
+        await screen.findByLabelText(/Collège Institution 1/)
+      )
+
+      const teacherInput = await screen.findByPlaceholderText(
+        /Saisir le prénom et le nom de l’enseignant/
+      )
+      await userEvent.click(teacherInput)
+
+      jest
+        .spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
+        .mockResolvedValue([
+          {
+            email: 'maria.sklodowska@example.com',
+            gender: 'Mme.',
+            name: 'SKLODOWSKA',
+            surname: 'MARIA',
+          },
+        ])
+      await userEvent.type(teacherInput, 'mar')
+      await userEvent.click(await screen.findByLabelText(/MARIA SKLODOWSKA/))
+      await userEvent.click(
+        screen.getAllByRole('button', {
+          name: /Supprimer/i,
+        })[1]
+      )
+      expect(
+        await screen.queryByText(/MARIA SKLODOWSKA/)
+      ).not.toBeInTheDocument()
     })
   })
 })

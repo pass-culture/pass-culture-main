@@ -10,11 +10,10 @@
 }
 
 .row-layout {
-  width: rem.torem(310px);
-  margin-bottom: rem.torem(32px);
+  width: rem.torem(488px);
 
-  &-large {
-    width: rem.torem(488px);
+  &:last-child {
+    margin-top: rem.torem(32px)
   }
 }
 
@@ -32,4 +31,11 @@
 
 .institution {
   margin: 0;
+}
+
+.banner-with-bin {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }

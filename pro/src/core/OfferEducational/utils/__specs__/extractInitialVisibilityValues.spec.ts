@@ -3,15 +3,17 @@ import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import { extractInitialVisibilityValues } from '../extractInitialVisibilityValues'
 
 describe('extractInitialVisibilityValues', () => {
-  it('when insitution is null', () => {
+  it('should return default values when institution is not defined', () => {
     expect(extractInitialVisibilityValues(null)).toStrictEqual({
       institution: '',
       'search-institution': '',
       visibility: 'all',
+      'search-teacher': '',
+      teacher: null,
     })
   })
 
-  it('when institution is defined', () => {
+  it('should return institution details', () => {
     const institution: EducationalInstitutionResponseModel = {
       id: 1,
       name: 'Collège Bellevue',
@@ -24,6 +26,32 @@ describe('extractInitialVisibilityValues', () => {
       institution: '1',
       'search-institution': 'Collège Bellevue - Alès',
       visibility: 'one',
+      'search-teacher': '',
+      teacher: null,
+    })
+  })
+
+  it('should return teacher details when institution and teacher are defined', () => {
+    const institution: EducationalInstitutionResponseModel = {
+      id: 1,
+      name: 'Collège Bellevue',
+      city: 'Alès',
+      postalCode: '30100',
+      phoneNumber: '',
+      institutionId: 'ABCDEF11',
+    }
+    const teacher = {
+      firstName: 'Reda',
+      lastName: 'Khteur',
+      civility: 'Mr.',
+      email: 'reda.khteur@example.com',
+    }
+    expect(extractInitialVisibilityValues(institution, teacher)).toStrictEqual({
+      institution: '1',
+      'search-institution': 'Collège Bellevue - Alès',
+      visibility: 'one',
+      'search-teacher': `${teacher.firstName} ${teacher.lastName}`,
+      teacher: 'reda.khteur@example.com',
     })
   })
 })
