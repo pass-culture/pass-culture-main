@@ -40,6 +40,7 @@ from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
+from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 from pcapi.tasks import batch_tasks
 from pcapi.utils.clean_accents import clean_accents
 import pcapi.utils.db as db_utils
@@ -743,18 +744,38 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
     return new_pro_user
 
 
-def create_pro_user(pro_user: ProUserCreationBodyModel) -> models.User:
+def create_pro_user_V2(pro_user: ProUserCreationBodyV2Model) -> models.User:
+    new_pro_user = create_pro_user(pro_user)
+
+    action = history_api.log_action(
+        history_models.ActionType.USER_CREATED, author=new_pro_user, user=new_pro_user, save=False
+    )
+
+    repository.save(new_pro_user, action)
+
+    if not transactional_mails.send_email_validation_to_pro_email(new_pro_user):
+        logger.warning(
+            "Could not send validation email when creating pro user",
+            extra={"user": new_pro_user.id},
+        )
+
+    external_attributes_api.update_external_pro(new_pro_user.email)
+    return new_pro_user
+
+
+def create_pro_user(pro_user: ProUserCreationBodyModel | ProUserCreationBodyV2Model) -> models.User:
     new_pro_user = models.User(from_dict=pro_user.dict(by_alias=True))  # type: ignore [call-arg]
     new_pro_user.email = email_utils.sanitize_email(new_pro_user.email)
     new_pro_user.notificationSubscriptions = asdict(
         models.NotificationSubscriptions(marketing_email=pro_user.contact_ok)
     )
+    new_pro_user.add_non_attached_pro_role()
     new_pro_user.remove_admin_role()
     new_pro_user.remove_beneficiary_role()
     new_pro_user.needsToFillCulturalSurvey = False
     new_pro_user.generate_validation_token()
 
-    if pro_user.postal_code:
+    if hasattr(pro_user, "postal_code") and pro_user.postal_code:
         new_pro_user.departementCode = postal_code_utils.PostalCode(pro_user.postal_code).get_departement_code()
 
     if settings.IS_INTEGRATION:

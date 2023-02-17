@@ -752,6 +752,7 @@ class ValidateOffererAttachmentTest:
 
         # Then
         assert applicant.has_pro_role
+        assert not applicant.has_non_attached_pro_role
 
     @patch("pcapi.core.mails.transactional.send_offerer_attachment_validation_email_to_pro")
     def test_send_validation_confirmation_email(self, mocked_send_validation_confirmation_email_to_pro):
@@ -791,6 +792,7 @@ class RejectOffererAttachementTest:
 
         # Then
         assert not user.has_pro_role
+        assert user.has_non_attached_pro_role
 
     def test_pro_role_is_not_removed_from_user(self):
         # Given
@@ -867,6 +869,7 @@ class ValidateOffererTest:
         assert user_offerer.user.has_pro_role
         assert not another_applicant.has_pro_role
         assert not another_user_on_same_offerer.isValidated
+        assert not user_offerer.user.has_non_attached_pro_role
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_managed_venues_are_reindexed(self, mocked_async_index_offers_of_venue_ids):
@@ -945,6 +948,7 @@ class RejectOffererTest:
 
         # Then
         assert not user.has_pro_role
+        assert user.has_non_attached_pro_role
 
     def test_pro_role_is_not_removed_from_user(self):
         # Given
@@ -957,6 +961,7 @@ class RejectOffererTest:
 
         # Then
         assert validated_user_offerer.user.has_pro_role
+        assert not validated_user_offerer.user.has_non_attached_pro_role
 
     def test_attachment_has_been_removed(self):
         # Given
