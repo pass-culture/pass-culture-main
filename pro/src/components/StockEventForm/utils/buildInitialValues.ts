@@ -49,9 +49,11 @@ export const buildSingleInitialValues = ({
 
   return {
     ...hiddenValues,
-    remainingQuantity: stock.remainingQuantity?.toString() || 'unlimited',
-    bookingsQuantity: stock.bookingsQuantity.toString(),
-    quantity: stock.quantity === undefined ? '' : stock.quantity,
+    remainingQuantity:
+      stock.quantity === null || stock.quantity === undefined
+        ? ''
+        : stock.quantity - stock.bookingsQuantity,
+    bookingsQuantity: stock.bookingsQuantity,
     beginningDate: stock.beginningDatetime
       ? getLocalDepartementDateTimeFromUtc(
           stock.beginningDatetime,

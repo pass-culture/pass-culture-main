@@ -118,7 +118,7 @@ describe('StockEventForm:validationSchema', () => {
     expect(errorBeginningTime).toBeInTheDocument()
     expect(errorPriceCategory).toBeInTheDocument()
     expect(
-      screen.queryByTestId('error-stocks[0]quantity')
+      screen.queryByTestId('error-stocks[0]remainingQuantity')
     ).not.toBeInTheDocument()
 
     expect(errorBeginningDate).toHaveTextContent('Veuillez renseigner une date')
@@ -139,7 +139,7 @@ describe('StockEventForm:validationSchema', () => {
       renderStockEventForm()
       await userEvent.click(screen.getByLabelText('Date', { exact: true }))
       await userEvent.click(screen.getByText(beginningDate))
-      await userEvent.click(screen.getByLabelText('Quantité'))
+      await userEvent.click(screen.getByLabelText('Quantité restante'))
       const errorbeginningDate = screen.queryByTestId(
         'error-stocks[0]beginningDate'
       )
@@ -169,30 +169,16 @@ describe('StockEventForm:validationSchema', () => {
     expect(screen.queryByTestId('error-stocks[0]price')).not.toBeInTheDocument()
   })
 
-  it('should display quantity error when min quantity is given', async () => {
-    renderStockEventForm({
-      ...STOCK_EVENT_FORM_DEFAULT_VALUES,
-      bookingsQuantity: '10',
-    })
-
-    const inputQuantity = screen.getByLabelText('Quantité')
-    await userEvent.type(inputQuantity, '9')
-    await userEvent.tab()
-    const errorquantity = screen.queryByTestId('error-stocks[0]quantity')
-    expect(errorquantity).toBeInTheDocument()
-    expect(errorquantity).toHaveTextContent('Quantité trop faible')
-  })
-
   const dataSetquantity = ['0', '100', '350']
   it.each(dataSetquantity)(
     'should not display quantity error',
     async quantity => {
       renderStockEventForm()
-      const inputQuantity = screen.getByLabelText('Quantité')
+      const inputQuantity = screen.getByLabelText('Quantité restante')
       await userEvent.type(inputQuantity, quantity)
       await userEvent.tab()
       expect(
-        screen.queryByTestId('error-stocks[0]quantity')
+        screen.queryByTestId('error-stocks[0]remainingQuantity')
       ).not.toBeInTheDocument()
     }
   )

@@ -11,6 +11,7 @@ import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
 import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { useModal } from 'hooks/useModal'
 import { PlusCircleIcon } from 'icons'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
@@ -66,6 +67,9 @@ const StockFormList = ({
     (page - 1) * STOCKS_PER_PAGE,
     page * STOCKS_PER_PAGE
   )
+  const isPriceCategoriesActive = useActiveFeature(
+    'WIP_ENABLE_MULTI_PRICE_STOCKS'
+  )
 
   return (
     <FieldArray
@@ -77,7 +81,14 @@ const StockFormList = ({
               variant={ButtonVariant.TERNARY}
               Icon={PlusCircleIcon}
               onClick={() =>
-                arrayHelpers.unshift(STOCK_EVENT_FORM_DEFAULT_VALUES)
+                arrayHelpers.unshift({
+                  ...STOCK_EVENT_FORM_DEFAULT_VALUES,
+                  priceCategoryId:
+                    isPriceCategoriesActive &&
+                    priceCategoriesOptions.length === 1
+                      ? priceCategoriesOptions[0].value
+                      : '',
+                })
               }
               disabled={isSynchronized || isDisabled}
             >
@@ -104,7 +115,7 @@ const StockFormList = ({
                         callback: async () => {
                           if (stockValues.stockId) {
                             /* istanbul ignore next: DEBT, TO FIX */
-                            if (parseInt(stockValues.bookingsQuantity) > 0) {
+                            if (stockValues.bookingsQuantity > 0) {
                               setDeletingStockData({
                                 deletingStock: stockValues,
                                 deletingIndex: index,
