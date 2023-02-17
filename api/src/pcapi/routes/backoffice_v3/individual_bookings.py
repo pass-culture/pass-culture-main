@@ -1,5 +1,5 @@
 import datetime
-from functools import partial
+import re
 
 from flask import flash
 from flask import redirect
@@ -18,9 +18,9 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.utils import date as date_utils
+from pcapi.utils import email as email_utils
 from pcapi.utils.clean_accents import clean_accents
 
-from . import search_utils
 from . import utils
 from .forms import empty as empty_forms
 from .forms import individual_booking as individual_booking_forms
@@ -34,8 +34,14 @@ individual_bookings_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _get_individual_bookings(form: individual_booking_forms.GetIndividualBookingListForm) -> sa.orm.Query:
-    query = (
+BOOKING_TOKEN_RE = re.compile(r"^[A-Za-z0-9]{6}$")
+NO_DIGIT_RE = re.compile(r"[^\d]+$")
+
+
+def _get_individual_bookings(
+    form: individual_booking_forms.GetIndividualBookingListForm,
+) -> list[bookings_models.Booking]:
+    base_query = (
         bookings_models.Booking.query.outerjoin(offers_models.Stock)
         .outerjoin(offers_models.Offer)
         .outerjoin(users_models.User, bookings_models.Booking.user)
@@ -70,44 +76,22 @@ def _get_individual_bookings(form: individual_booking_forms.GetIndividualBooking
         )
     )
 
-    if form.q.data:
-        search_query = form.q.data
-
-        if search_query.isnumeric():
-            query = query.filter(
-                sa.or_(
-                    bookings_models.Booking.token == search_query,
-                    offers_models.Offer.id == search_query,
-                    users_models.User.id == search_query,
-                )
-            )
-        elif len(search_query) == 6:
-            query = query.filter(bookings_models.Booking.token == search_query)
-        else:
-            name = search_query.replace(" ", "%").replace("-", "%")
-            name = clean_accents(name)
-            query = query.filter(
-                sa.func.unaccent(sa.func.concat(users_models.User.firstName, " ", users_models.User.lastName)).ilike(
-                    f"%{name}%"
-                ),
-            )
-
     if form.from_date.data:
         from_datetime = date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time())
-        query = query.filter(bookings_models.Booking.dateCreated >= from_datetime)
+        base_query = base_query.filter(bookings_models.Booking.dateCreated >= from_datetime)
 
     if form.to_date.data:
         to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time())
-        query = query.filter(bookings_models.Booking.dateCreated <= to_datetime)
+        base_query = base_query.filter(bookings_models.Booking.dateCreated <= to_datetime)
 
     if form.offerer.data:
-        query = query.filter(bookings_models.Booking.offererId.in_(form.offerer.data))
+        base_query = base_query.filter(bookings_models.Booking.offererId.in_(form.offerer.data))
 
     if form.venue.data:
-        query = query.filter(bookings_models.Booking.venueId.in_(form.venue.data))
+        base_query = base_query.filter(bookings_models.Booking.venueId.in_(form.venue.data))
 
     if form.category.data:
-        query = query.filter(
+        base_query = base_query.filter(
             offers_models.Offer.subcategoryId.in_(
                 subcategory.id
                 for subcategory in subcategories_v2.ALL_SUBCATEGORIES
@@ -116,9 +100,50 @@ def _get_individual_bookings(form: individual_booking_forms.GetIndividualBooking
         )
 
     if form.status.data:
-        query = query.filter(bookings_models.Booking.status.in_(form.status.data))
+        base_query = base_query.filter(bookings_models.Booking.status.in_(form.status.data))
 
-    return query.order_by(bookings_models.Booking.dateCreated.desc())
+    if form.q.data:
+        search_query = form.q.data
+        or_filters = []
+
+        if BOOKING_TOKEN_RE.match(search_query):
+            or_filters.append(bookings_models.Booking.token == search_query.upper())
+
+            if NO_DIGIT_RE.match(search_query):
+                flash(
+                    f"Le critère de recherche « {search_query} » peut correspondre à un nom. Cependant, la recherche "
+                    "n'a porté que sur les codes contremarques afin de répondre rapidement. Veuillez inclure prénom et "
+                    "nom dans le cas d'un nom de 6 lettres.",
+                    "info",
+                )
+
+        if search_query.isnumeric():
+            or_filters.append(offers_models.Offer.id == int(search_query))
+            or_filters.append(users_models.User.id == int(search_query))
+        else:
+            sanitized_email = email_utils.sanitize_email(search_query)
+            if email_utils.is_valid_email(sanitized_email):
+                or_filters.append(users_models.User.email == sanitized_email)
+
+        if not or_filters:
+            name = search_query.replace(" ", "%").replace("-", "%")
+            name = clean_accents(name)
+            or_filters.append(
+                sa.func.unaccent(sa.func.concat(users_models.User.firstName, " ", users_models.User.lastName)).ilike(
+                    f"%{name}%"
+                ),
+            )
+
+        query = base_query.filter(or_filters[0])
+        if len(or_filters) > 1:
+            # Performance is really better than .filter(sa.or_(...)) when searching for a numeric id
+            # On staging: or_ takes 19 minutes, union takes 0.15 second!
+            query = query.union(*(base_query.filter(f) for f in or_filters[1:]))
+    else:
+        query = base_query
+
+    # +1 to check if there are more results than requested
+    return query.limit(form.limit.data + 1).all()
 
 
 @individual_bookings_blueprint.route("", methods=["GET"])
@@ -133,15 +158,13 @@ def list_individual_bookings() -> utils.BackofficeResponse:
 
     bookings = _get_individual_bookings(form)
 
-    paginated_bookings = bookings.paginate(  # type: ignore [attr-defined]
-        page=int(form.data["page"]),
-        per_page=int(form.data["per_page"]),
-    )
-
-    next_page = partial(url_for, ".list_individual_bookings", **form.data)
-    next_pages_urls = search_utils.pagination_links(next_page, int(form.data["page"]), paginated_bookings.pages)
-
-    form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
+    if len(bookings) > form.limit.data:
+        flash(
+            f"Il y a plus de {form.limit.data} résultats dans la base de données, la liste ci-dessous n'en donne donc "
+            "qu'une partie. Veuillez affiner les filtres de recherche.",
+            "info",
+        )
+        bookings = bookings[: form.limit.data]
 
     if form.offerer.data:
         offerers = (
@@ -169,9 +192,8 @@ def list_individual_bookings() -> utils.BackofficeResponse:
 
     return render_template(
         "individual_bookings/list.html",
-        rows=paginated_bookings,
+        rows=bookings,
         form=form,
-        next_pages_urls=next_pages_urls,
         mark_as_used_booking_form=empty_forms.EmptyForm(),
         cancel_booking_form=empty_forms.EmptyForm(),
     )
