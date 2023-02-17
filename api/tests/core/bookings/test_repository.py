@@ -1973,14 +1973,16 @@ class GetExcelReportTest:
         assert sheet.cell(row=2, column=9).value == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
         # Contremarque
         assert sheet.cell(row=2, column=10).value == booking.token
+        # Intitulé du prix
+        assert sheet.cell(row=2, column=11).value == None
         # Prix de la réservation
-        assert sheet.cell(row=2, column=11).value == booking.amount
+        assert sheet.cell(row=2, column=12).value == booking.amount
         # Statut de la contremarque
-        assert sheet.cell(row=2, column=12).value == booking_repository.BOOKING_STATUS_LABELS[booking.status]
+        assert sheet.cell(row=2, column=13).value == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         # Date et heure de remboursement
-        assert sheet.cell(row=2, column=13).value == "None"
+        assert sheet.cell(row=2, column=14).value == "None"
         # Type d'offre
-        assert sheet.cell(row=2, column=14).value == "offre grand public"
+        assert sheet.cell(row=2, column=15).value == "offre grand public"
 
 
 class FindSoonToBeExpiredBookingsTest:
