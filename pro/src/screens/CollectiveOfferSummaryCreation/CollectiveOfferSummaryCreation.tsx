@@ -71,7 +71,7 @@ const CollectiveOfferSummaryCreation = ({
         offerEditLink={`/offre/collectif${offer.isTemplate ? '/vitrine' : ''}/${
           offer.id
         }/creation`}
-        stockEditLink={`/offre/${offer.id}/collectif/stocks/edition`}
+        stockEditLink={`/offre/${offer.id}/collectif/stocks`}
         visibilityEditLink={`/offre/${offer.id}/collectif/visibilite`}
       />
       <ActionsBarSticky>
