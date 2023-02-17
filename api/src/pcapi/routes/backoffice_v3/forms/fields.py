@@ -82,6 +82,13 @@ class PCEmailField(wtforms.EmailField):
     ]
 
 
+class PCIntegerField(wtforms.IntegerField):
+    widget = partial(widget, template="components/forms/string_field.html")
+    validators = [
+        validators.InputRequired("Information obligatoire"),
+    ]
+
+
 class PCDateField(wtforms.DateField):
     widget = partial(widget, template="components/forms/date_field.html")
 
