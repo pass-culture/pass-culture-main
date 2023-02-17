@@ -1,0 +1,17 @@
+{% extends "layouts/connected.html" %}
+
+{% block page %}
+    <div class="pt-3 px-5">
+        <h2 class="fw-light">Déplacer un SIRET d’un lieu à un autre</h2>
+        <div class="col-12 py-4">
+            <form action="{{ dst }}" method="POST">
+                <div class="form-group">
+                    {% include "components/form_body.html" %}
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">Continuer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
