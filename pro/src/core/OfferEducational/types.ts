@@ -118,6 +118,8 @@ export type VisibilityFormValues = {
   visibility: 'all' | 'one'
   institution: string
   'search-institution': string
+  'search-teacher': string | null
+  teacher: string | null
 }
 
 export enum CollectiveOfferStatus {

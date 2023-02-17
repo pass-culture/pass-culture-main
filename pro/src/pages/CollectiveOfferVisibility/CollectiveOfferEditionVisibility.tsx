@@ -59,7 +59,10 @@ const CollectiveOfferVisibility = ({
     <CollectiveOfferVisibilityScreen
       mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
       patchInstitution={patchEducationalInstitutionAdapter}
-      initialValues={extractInitialVisibilityValues(offer.institution)}
+      initialValues={extractInitialVisibilityValues(
+        offer.institution,
+        offer.teacher
+      )}
       onSuccess={onSuccess}
       institutions={institutionsPayload.institutions}
       isLoadingInstitutions={isLoading}
