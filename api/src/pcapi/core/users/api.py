@@ -132,6 +132,12 @@ def delete_all_users_tokens(user: models.User) -> None:
     models.Token.query.filter(models.Token.user == user).delete()
 
 
+def delete_all_users_phone_validation_tokens(user: models.User) -> None:
+    models.Token.query.filter(
+        models.Token.user == user, users_models.Token.type == users_models.TokenType.PHONE_VALIDATION
+    ).delete()
+
+
 def create_account(
     email: str,
     password: str,

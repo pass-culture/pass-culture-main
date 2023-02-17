@@ -37,6 +37,7 @@ class ActionType(enum.Enum):
     USER_CREATED = "Création du compte"
     USER_SUSPENDED = "Compte suspendu"
     USER_UNSUSPENDED = "Compte réactivé"
+    USER_PHONE_VALIDATED = "Validation manuelle du numéro de téléphone"
 
 
 class ActionHistory(PcObject, Base, Model):

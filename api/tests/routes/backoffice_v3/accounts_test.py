@@ -9,6 +9,7 @@ import pytest
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
@@ -721,6 +722,36 @@ class ResendValidationEmailTest:
         authenticated_client.get(account_detail_url)
 
         url = url_for("backoffice_v3_web.public_accounts.resend_validation_email", user_id=user.id)
+        form = {"csrf_token": g.get("csrf_token", "")}
+
+        return authenticated_client.post(url, form=form)
+
+
+class ManualPhoneNumberValidationTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        endpoint = "backoffice_v3_web.public_accounts.manually_validate_phone_number"
+        endpoint_kwargs = {"user_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    class MissingCsrfTest(unauthorized_helpers.MissingCSRFHelper):
+        endpoint = "backoffice_v3_web.public_accounts.manually_validate_phone_number"
+        endpoint_kwargs = {"user_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    def test_manual_phone_number_validation(self, authenticated_client):
+        user = users_factories.UserFactory(
+            phoneValidationStatus=None, phoneNumber="+33601010203", isEmailValidated=True
+        )
+        response = self.send_request(authenticated_client, user)
+
+        assert response.status_code == 303
+        assert history_models.ActionHistory.query.filter(history_models.ActionHistory.user == user).count() == 1
+        assert users_models.Token.query.filter(users_models.Token.user == user).count() == 0
+
+    def send_request(self, authenticated_client, user):
+        account_detail_url = url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user.id)
+        authenticated_client.get(account_detail_url)
+        url = url_for("backoffice_v3_web.public_accounts.manually_validate_phone_number", user_id=user.id)
         form = {"csrf_token": g.get("csrf_token", "")}
 
         return authenticated_client.post(url, form=form)
