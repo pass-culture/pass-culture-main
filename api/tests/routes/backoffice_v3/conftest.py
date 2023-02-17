@@ -51,6 +51,9 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.SEARCH_OFFERS,
         perm_models.Permissions.READ_OFFERS,
     ],
+    "support-PRO-N2": [
+        perm_models.Permissions.ADVANCED_PRO_SUPPORT,
+    ],
     "fraude-conformite": [
         perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
