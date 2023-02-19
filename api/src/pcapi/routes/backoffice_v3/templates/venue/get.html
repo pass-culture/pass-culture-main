@@ -252,7 +252,7 @@
         </div>
 
         <div class="mt-4">
-            <turbo-frame id="venue_total_revenue_frame" src="{{ url_for("backoffice_v3_web.venue.get_stats", venue_id=venue.id) }}">
+            <turbo-frame data-turbo="false" id="venue_total_revenue_frame" src="{{ url_for("backoffice_v3_web.venue.get_stats", venue_id=venue.id) }}">
                 <p class="text-center">
                     <span class="spinner-grow spinner-grow-sm" role="status">
                         <span class="visually-hidden">Chargement...</span>
@@ -263,7 +263,7 @@
         </div>
 
         <div class="mt-4">
-            <turbo-frame id="venue_details_frame" src="{{ url_for("backoffice_v3_web.venue.get_details", venue_id=venue.id) }}">
+            <turbo-frame data-turbo="false" id="venue_details_frame" src="{{ url_for("backoffice_v3_web.venue.get_details", venue_id=venue.id) }}">
                 <p class="text-center">
                     <span class="spinner-grow spinner-grow-sm" role="status">
                         <span class="visually-hidden">Chargement...</span>
