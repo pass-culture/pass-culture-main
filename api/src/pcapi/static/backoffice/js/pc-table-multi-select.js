@@ -1,4 +1,3 @@
-9
 /**
  * @summary Add select all rows features to a table
  * @description Add select all rows feature to a table.

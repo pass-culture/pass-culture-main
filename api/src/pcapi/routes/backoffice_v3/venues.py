@@ -108,6 +108,8 @@ def render_venue_details(
                 email=venue.contact.email if venue.contact else None,
                 phone_number=venue.contact.phone_number if venue.contact else None,
                 isPermanent=venue.isPermanent,
+                latitude=venue.latitude,
+                longitude=venue.longitude,
             )
 
     return render_template(
