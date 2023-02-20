@@ -5,6 +5,7 @@
 import type { CollectiveBookingStatus } from './CollectiveBookingStatus';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
+import type { EducationalRedactorResponseModel } from './EducationalRedactorResponseModel';
 import type { GetCollectiveOfferCollectiveStockResponseModel } from './GetCollectiveOfferCollectiveStockResponseModel';
 import type { GetCollectiveOfferVenueResponseModel } from './GetCollectiveOfferVenueResponseModel';
 import type { OfferDomain } from './OfferDomain';
@@ -44,7 +45,7 @@ export type GetCollectiveOfferResponseModel = {
   status: OfferStatus;
   students: Array<StudentLevels>;
   subcategoryId: SubcategoryIdEnum;
-  teacherEmail?: string | null;
+  teacher?: EducationalRedactorResponseModel | null;
   templateId?: string | null;
   venue: GetCollectiveOfferVenueResponseModel;
   venueId: string;

@@ -62,6 +62,7 @@ export type { EducationalInstitutionsQueryModel } from './models/EducationalInst
 export type { EducationalInstitutionsResponseModel } from './models/EducationalInstitutionsResponseModel';
 export type { EducationalRedactor } from './models/EducationalRedactor';
 export type { EducationalRedactorQueryModel } from './models/EducationalRedactorQueryModel';
+export type { EducationalRedactorResponseModel } from './models/EducationalRedactorResponseModel';
 export type { EducationalRedactors } from './models/EducationalRedactors';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export { GenderEnum } from './models/GenderEnum';

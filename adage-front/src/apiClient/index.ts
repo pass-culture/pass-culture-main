@@ -21,6 +21,7 @@ export type { CollectiveOfferResponseModel } from './models/CollectiveOfferRespo
 export type { CollectiveOfferTemplateResponseModel } from './models/CollectiveOfferTemplateResponseModel';
 export type { Coordinates } from './models/Coordinates';
 export type { EducationalInstitutionResponseModel } from './models/EducationalInstitutionResponseModel';
+export type { EducationalRedactorResponseModel } from './models/EducationalRedactorResponseModel';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export type { GetRelativeVenuesQueryModel } from './models/GetRelativeVenuesQueryModel';
 export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel';
