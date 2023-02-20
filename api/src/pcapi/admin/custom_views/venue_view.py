@@ -237,6 +237,8 @@ class VenueView(BaseAdminView):
             flash("Impossible d'effacer un lieu pour lequel il existe des réservations.", "error")
         except offerers_exception.CannotDeleteVenueUsedAsPricingPointException:
             flash("Impossible d'effacer un lieu utilisé comme point de valorisation d'un autre lieu.", "error")
+        except offerers_exception.CannotDeleteVenueUsedAsReimbursementPointException:
+            flash("Impossible d'effacer un lieu utilisé comme point de remboursement d'un autre lieu.", "error")
         return False
 
     def update_model(self, edit_venue_form: Form, venue: Venue) -> bool:

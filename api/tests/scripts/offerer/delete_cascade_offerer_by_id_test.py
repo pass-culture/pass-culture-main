@@ -54,26 +54,6 @@ def test_delete_cascade_offerer_should_abort_when_offerer_has_any_bookings():
 
 
 @pytest.mark.usefixtures("db_session")
-def test_delete_cascade_offerer_should_abort_when_pricing_point_for_another_venue():
-    # Given
-    venue = offerers_factories.VenueFactory(pricing_point="self")
-    offerers_factories.VenueFactory(pricing_point=venue)
-    offerer = venue.managingOfferer
-
-    # When
-    with pytest.raises(offerers_exceptions.CannotDeleteOffererUsedAsPricingPointException) as exception:
-        delete_cascade_offerer_by_id(offerer.id)
-
-    # Then
-    assert exception.value.errors["cannotDeleteOffererUsedAsPricingPointException"] == [
-        "Structure juridique non supprimable car elle est utilisée comme point de valorisation d'un lieu"
-    ]
-    assert offerers_models.Offerer.query.count() == 2
-    assert offerers_models.Venue.query.count() == 2
-    assert offerers_models.VenuePricingPointLink.query.count() == 2
-
-
-@pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_managed_venues_offers_stocks_and_activation_codes():
     # Given
     offerer_to_delete = offerers_factories.OffererFactory()

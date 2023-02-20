@@ -1,11 +1,11 @@
 {% extends "layouts/base.html" %}
 
-{% macro subMenuHeader(name) %}
+{% macro sub_menu_header(name) %}
     <hr class="mdc-deprecated-list-divider">
     <h6 class="mdc-deprecated-list-group__subheader">{{ name }}</h6>
 {% endmacro %}
 
-{% macro menuItem(label, url) %}
+{% macro menu_item(label, url) %}
     <a
             href="{{ url }}"
             class="mdc-deprecated-list-item {{ "mdc-deprecated-list-item--activated" if url == request.path else "" }}"

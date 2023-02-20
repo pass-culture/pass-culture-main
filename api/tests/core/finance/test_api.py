@@ -206,8 +206,8 @@ class PriceBookingTest:
         )
         api.price_booking(booking2)
         # Pricing of `booking1` has been deleted.
-        single_princing = models.Pricing.query.one()
-        assert single_princing.booking == booking2
+        single_pricing = models.Pricing.query.one()
+        assert single_pricing.booking == booking2
 
     def test_price_booking_that_is_already_priced(self):
         booking = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())

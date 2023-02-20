@@ -85,17 +85,17 @@ class CannotDeleteVenueWithBookingsException(ClientError):
         )
 
 
-class CannotDeleteOffererUsedAsPricingPointException(ClientError):
-    def __init__(self) -> None:
-        super().__init__(
-            "cannotDeleteOffererUsedAsPricingPointException",
-            "Structure juridique non supprimable car elle est utilisée comme point de valorisation d'un lieu",
-        )
-
-
 class CannotDeleteVenueUsedAsPricingPointException(ClientError):
     def __init__(self) -> None:
         super().__init__(
             "cannotDeleteVenueUsedAsPricingPointException",
             "Lieu non supprimable car il est utilisé comme point de valorisation d'un autre lieu",
+        )
+
+
+class CannotDeleteVenueUsedAsReimbursementPointException(ClientError):
+    def __init__(self) -> None:
+        super().__init__(
+            "cannotDeleteVenueUsedAsReimbursementPointException",
+            "Lieu non supprimable car il est utilisé comme point de remboursement d'un autre lieu",
         )
