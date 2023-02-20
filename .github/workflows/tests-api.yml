@@ -63,12 +63,29 @@ jobs:
           run: mypy src
       - name: Slack Notification
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: rtCamp/action-slack-notify@v2
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          # channel #dev
+          channel-id: "CPZ7U1CNP"
+          payload: |
+            {
+            "attachments": [
+              {
+                "mrkdwn_in": ["text"],
+                "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
+                "author_name": "${{github.actor}}",
+                "author_link": "https://github.com/${{github.actor}}",
+                "author_icon": "https://github.com/${{github.actor}}.png",
+                "title": "Api tests",
+                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                "text": "Les tests quality-checks échouent sur `master` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
+              }
+            ],
+            "unfurl_links": false,
+            "unfurl_media": false
+            }
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_CI_WEBHOOK }}
-          SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: "Les tests quality-checks échouent sur master. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
-          MSG_MINIMAL: true
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   pylint-check:
     name: Pylint
@@ -105,12 +122,29 @@ jobs:
           run: pylint src tests --jobs=2
       - name: Slack Notification
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: rtCamp/action-slack-notify@v2
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          # channel #dev
+          channel-id: "CPZ7U1CNP"
+          payload: |
+            {
+            "attachments": [
+              {
+                "mrkdwn_in": ["text"],
+                "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
+                "author_name": "${{github.actor}}",
+                "author_link": "https://github.com/${{github.actor}}",
+                "author_icon": "https://github.com/${{github.actor}}.png",
+                "title": "Api tests",
+                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                "text": "Les tests pylint-checks échouent sur `master` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
+              }
+            ],
+            "unfurl_links": false,
+            "unfurl_media": false
+            }
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_CI_WEBHOOK }}
-          SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: "Les tests pylint-checks échouent sur master. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
-          MSG_MINIMAL: true
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   tests-database:
     name: "Tests database schema"
@@ -198,12 +232,29 @@ jobs:
             alembic upgrade post@head
       - name: Slack Notification
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: rtCamp/action-slack-notify@v2
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          # channel #dev
+          channel-id: "CPZ7U1CNP"
+          payload: |
+            {
+            "attachments": [
+              {
+                "mrkdwn_in": ["text"],
+                "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
+                "author_name": "${{github.actor}}",
+                "author_link": "https://github.com/${{github.actor}}",
+                "author_icon": "https://github.com/${{github.actor}}.png",
+                "title": "Api tests",
+                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                "text": "Les tests database échouent sur `master` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
+              }
+            ],
+            "unfurl_links": false,
+            "unfurl_media": false
+            }
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_CI_WEBHOOK }}
-          SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: "Les tests database échouent sur master. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
-          MSG_MINIMAL: true
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   pytest:
     name: "Pytest"
@@ -304,9 +355,26 @@ jobs:
           fail_on_failure: true
       - name: Slack Notification
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: rtCamp/action-slack-notify@v2
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          # channel #dev
+          channel-id: "CPZ7U1CNP"
+          payload: |
+            {
+            "attachments": [
+              {
+                "mrkdwn_in": ["text"],
+                "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
+                "author_name": "${{github.actor}}",
+                "author_link": "https://github.com/${{github.actor}}",
+                "author_icon": "https://github.com/${{github.actor}}.png",
+                "title": "Api tests",
+                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                "text": "Les tests pytest échouent sur `master` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
+              }
+            ],
+            "unfurl_links": false,
+            "unfurl_media": false
+            }
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_CI_WEBHOOK }}
-          SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: "Les tests pytest échouent sur master. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
-          MSG_MINIMAL: true
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
