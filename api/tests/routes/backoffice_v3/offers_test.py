@@ -7,6 +7,7 @@ from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offers import factories as offers_factories
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 
 from .helpers import html_parser
 from .helpers import unauthorized as unauthorized_helpers
@@ -36,6 +37,13 @@ def offers_fixture() -> tuple:
 class ListOffersTest:
     endpoint = "backoffice_v3_web.offer.list_offers"
 
+    # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
+    # by a field added in the jinja template.
+    # - fetch session (1 query)
+    # - fetch user (1 query)
+    # - fetch offers with joinedload including extra data (1 query)
+    expected_num_queries = 3
+
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
         endpoint = "backoffice_v3_web.offer.list_offers"
         endpoint_kwargs = {"offerer_id": 1}
@@ -53,7 +61,7 @@ class ListOffersTest:
     def test_list_offers_by_id(self, authenticated_client, offers):
         # when
         searched_id = str(offers[0].id)
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
 
         # then
@@ -73,8 +81,8 @@ class ListOffersTest:
 
     def test_list_offers_by_name(self, authenticated_client, offers):
         # when
-        searched_name = str(offers[1].name)
-        with assert_no_duplicated_queries():
+        searched_name = offers[1].name
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=searched_name))
 
         # then
