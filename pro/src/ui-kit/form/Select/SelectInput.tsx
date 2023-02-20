@@ -31,6 +31,7 @@ const SelectInput = ({
   >
     <select
       aria-invalid={hasError}
+      {...(hasError ? { 'aria-describedby': `error-${name}` } : {})}
       className={cn(styles['select-input'], {
         [styles['has-error']]: hasError,
         [styles['has-description']]: hasDescription,
