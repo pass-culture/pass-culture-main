@@ -19,35 +19,13 @@
     }
   }
 
-  &-input {
+  &-primary-input {
     appearance: none;
     border: rem.torem(2px) solid forms.$input-border-color;
     border-radius: 50%;
     box-shadow: inset 0 0 0 rem.torem(10px) colors.$white;
     background-color: colors.$white;
     transition: border 150ms ease, background 150ms ease, box-shadow 150ms ease;
-
-    &:hover,
-    &:focus {
-      border-color: forms.$input-border-color-focus;
-    }
-
-    &:checked {
-      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
-      background:
-        radial-gradient(
-          colors.$primary 0%,
-          colors.$primary 40%,
-          transparent 50%,
-          transparent
-        );
-    }
-
-    &:hover:checked,
-    &:focus:checked {
-      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
-      background-color: forms.$input-border-color-focus;
-    }
 
     &.has-error {
       border-color: forms.$input-border-color-error;
@@ -68,32 +46,116 @@
       background-color: forms.$input-border-color-disabled;
     }
   }
+}
 
-  .base-radio-input {
+// Using input selector to override styles defines in _RadioInput.scss
+.base-radio-primary {
+  input {
     &:checked {
+      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
       border-color: colors.$primary;
-      background:
-        radial-gradient(
-          colors.$primary 0%,
-          colors.$primary 40%,
-          transparent 50%,
-          transparent
-        );
+      background: radial-gradient(
+        colors.$primary 0%,
+        colors.$primary 40%,
+        transparent 50%,
+        transparent
+      );
+    }
+
+    &:checked:disabled {
+      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
+      background-color: forms.$input-border-color-disabled;
+    }
+
+    &:hover,
+    &:focus {
+      border-color: forms.$input-border-color-focus;
     }
   }
 }
 
-.with-border {
+.with-border-primary {
   border: rem.torem(1px) solid colors.$black;
   border-radius: rem.torem(8px);
-  padding:  0 0 0 rem.torem(16px);
+  padding: 0 0 0 rem.torem(16px);
 
   .base-radio-label {
     padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) 0;
   }
+
+  &-checked {
+    border: rem.torem(1px) solid colors.$primary;
+    color: colors.$primary;
+  }
 }
 
-.with-border-primary {
-  border: rem.torem(1px) solid colors.$primary;
-  color: colors.$primary;
+// Using input selector to override styles defines in _RadioInput.scss
+.base-radio-secondary {
+  input {
+    border: rem.torem(2px) solid colors.$grey-dark;
+
+    &:checked,
+    &:hover:checked,
+    &:focus:checked {
+      border-color: colors.$tertiary;
+      background: radial-gradient(
+        colors.$tertiary 0%,
+        colors.$tertiary 40%,
+        transparent 50%,
+        transparent
+      );
+    }
+
+    &:hover:not(:checked),
+    &:focus:not(:checked),
+    &:hover,
+    &:focus {
+      border-color: colors.$grey-dark;
+    }
+
+    &:checked:disabled {
+      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
+      background-color: transparent;
+    }
+  }
+}
+
+.with-border-secondary {
+  border: rem.torem(1px) solid colors.$grey-dark;
+  border-radius: rem.torem(8px);
+  padding: 0 0 0 rem.torem(16px);
+
+  .base-radio-label {
+    padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) 0;
+  }
+
+  &:focus-within {
+    outline: rem.torem(1px) solid colors.$black;
+    outline-offset: rem.torem(2px);
+  }
+
+  &:hover {
+    box-shadow: forms.$input-hover-shadow;
+    cursor: pointer;
+  }
+
+  &-disabled {
+    border: none;
+    background-color: colors.$grey-light;
+    color: colors.$grey-dark;
+
+    &:focus-within {
+      outline: none;
+    }
+  }
+
+  &-checked {
+    border: rem.torem(2px) solid colors.$tertiary;
+    background-color: colors.$light-pink;
+
+    .base-radio-label {
+      font-weight: 700;
+      padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) 0;
+    }
+  }
 }
