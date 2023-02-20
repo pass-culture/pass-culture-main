@@ -248,34 +248,14 @@
     </div>
 </div>
 <script>
-  const debounce = (callback, ms) => {
-    let timeoutId = null
-    return (...args) => {
-      window.clearTimeout(timeoutId)
-      timeoutId = window.setTimeout(() => {
-        callback.apply(null, args)
-      }, ms)
-    }
-  }
 
-  class AddressAutocomplete {
-    static KEYCODE_ENTER = 13
-    static KEYCODE_SHIFT = 16
-    static KEYCODE_CTRL = 17
-    static KEYCODE_PAGEUP = 33
-    static KEYCODE_PAGEDOWN = 34
-    static KEYCODE_END = 35
-    static KEYCODE_HOME = 36
-    static KEYCODE_LEFT = 37
-    static KEYCODE_UP = 38
-    static KEYCODE_RIGHT = 39
-    static KEYCODE_DOWN = 40
 
+  class PcAddressAutocomplete {
     constructor() {
       this.cursorIndex = -1
       this.prepareHtml()
       this.bindEvents()
-      this.searchDebounce = debounce(this.search, 350)
+      this.searchDebounce = PcUtils.debounce(this.search, 350)
     }
 
     get $address() {
@@ -328,7 +308,7 @@
       this.$address.addEventListener('keyup', this.onAddressChange)
       this.$address.addEventListener('keypress', (event) => {
         const code = event.keyCode || event.which
-        if (code === AddressAutocomplete.KEYCODE_ENTER) {
+        if (code === KeyboardKeyCode.ENTER) {
           event.preventDefault() // disable form submit on enter
         }
       })
@@ -338,25 +318,23 @@
       event.preventDefault()
       const code = event.keyCode || event.which
       if ([
-        AddressAutocomplete.KEYCODE_UP,
-        AddressAutocomplete.KEYCODE_DOWN,
-        AddressAutocomplete.KEYCODE_ENTER
+        KeyboardKeyCode.UP,
+        KeyboardKeyCode.DOWN,
+        KeyboardKeyCode.ENTER,
+        KeyboardKeyCode.PAGEUP,
+        KeyboardKeyCode.PAGEDOWN
       ].includes(code)) {
         this.onManualIndexControl(event)
         return
       }
 
       if ([
-        AddressAutocomplete.KEYCODE_SHIFT,
-        AddressAutocomplete.KEYCODE_CTRL,
-        AddressAutocomplete.KEYCODE_END,
-        AddressAutocomplete.KEYCODE_HOME,
-        AddressAutocomplete.KEYCODE_PAGEUP,
-        AddressAutocomplete.KEYCODE_PAGEDOWN,
-        AddressAutocomplete.KEYCODE_LEFT,
-        AddressAutocomplete.KEYCODE_RIGHT,
-        AddressAutocomplete.KEYCODE_UP,
-        AddressAutocomplete.KEYCODE_RIGHT
+        KeyboardKeyCode.SHIFT,
+        KeyboardKeyCode.CTRL,
+        KeyboardKeyCode.END,
+        KeyboardKeyCode.HOME,
+        KeyboardKeyCode.LEFT,
+        KeyboardKeyCode.RIGHT,
       ].includes(code)) {
         return
       }
@@ -368,20 +346,29 @@
       const code = event.keyCode || event.which
 
       if ([
-        AddressAutocomplete.KEYCODE_UP,
-        AddressAutocomplete.KEYCODE_DOWN
+        KeyboardKeyCode.UP,
+        KeyboardKeyCode.DOWN,
+        KeyboardKeyCode.PAGEUP,
+        KeyboardKeyCode.PAGEDOWN
       ].includes(code)) {
         const $lis = [...this.$dropdown.children]
         $lis.forEach(($li) => $li.querySelector('a').classList.remove('active'))
-        this.cursorIndex = AddressAutocomplete.KEYCODE_UP === code ? --this.cursorIndex : ++this.cursorIndex
-        this.cursorIndex = this.cursorIndex < -1 ? -1 : this.cursorIndex
-        this.cursorIndex = this.cursorIndex >= $lis.length ? $lis.length - 1 : this.cursorIndex
+        if (KeyboardKeyCode.PAGEUP === code) {
+          this.cursorIndex = 0
+        } else if (KeyboardKeyCode.PAGEDOWN === code) {
+          this.cursorIndex = $lis.length - 1
+        } else {
+          this.cursorIndex = KeyboardKeyCode.UP === code ? --this.cursorIndex : ++this.cursorIndex
+          this.cursorIndex = this.cursorIndex < -1 ? -1 : this.cursorIndex
+          this.cursorIndex = this.cursorIndex >= $lis.length ? $lis.length - 1 : this.cursorIndex
+        }
+
         if (this.cursorIndex !== -1) {
           this.$dropdown.children[this.cursorIndex].children[0].classList.add('active')
         }
       }
 
-      if (AddressAutocomplete.KEYCODE_ENTER === code) {
+      if (KeyboardKeyCode.ENTER === code) {
         if (this.cursorIndex !== -1) {
           document.querySelector('.dropdown-menu a.active').click()
           this.cursorIndex = -1
@@ -448,6 +435,6 @@
     }
   }
 
-  new AddressAutocomplete()
+  new PcAddressAutocomplete()
 </script>
 {% endblock %}
