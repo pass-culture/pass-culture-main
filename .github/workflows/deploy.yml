@@ -234,37 +234,3 @@ jobs:
       google_project: ${{ inputs.environment == 'production' && 'passculture-metier-prod' || 'passculture-metier-ehp' }}
       base_ref: ${{ github.ref }}
     secrets: inherit
-
-
-  slack-notification:
-    name: Post to a Slack channel
-    needs: deploy-api
-    runs-on: ubuntu-latest
-    steps:
-      - uses: technote-space/workflow-conclusion-action@v3
-
-      - name: Post to a Slack channel
-        id: slack
-        if: ${{ always() }} && inputs.environment == 'testing'
-        uses: slackapi/slack-github-action@v1.23.0
-        with:
-          channel-id: 'C037KSSG38D'
-          payload: |
-            {
-              "attachments": [
-                {
-                  "mrkdwn_in": ["text"],
-                  "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
-                  "author_name": "${{github.actor}}",
-                  "author_link": "https://github.com/${{github.actor}}",
-                  "author_icon": "https://github.com/${{github.actor}}.png",
-                  "title": "Testing Deployment",
-                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "Deployment of testing ${{ fromJSON('["succeeded", "failed"]')[env.WORKFLOW_CONCLUSION == 'failure'] }} ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
-                }
-              ],
-              "unfurl_links": false,
-              "unfurl_media": false
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
