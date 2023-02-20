@@ -12,6 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
 from sqlalchemy.ext import mutable as sa_mutable
+from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BooleanClauseList
@@ -127,7 +128,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     def isDigital(self) -> bool:
         return self.url is not None and self.url != ""
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def can_be_synchronized(self) -> bool:
         return (
             self.isGcuCompatible
@@ -177,7 +178,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     def isBookable(self) -> bool:
         return self._bookable and self.offer.isReleased
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def _bookable(self) -> bool:
         return not self.isExpired and not self.isSoldOut
 
@@ -191,7 +192,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
             self.price == 0 and not self.offer.subcategory.is_bookable_by_underage_when_free
         )
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def hasBookingLimitDatetimePassed(self) -> bool:
         return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.datetime.utcnow())
 
@@ -200,7 +201,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         return sa.and_(cls.bookingLimitDatetime != None, cls.bookingLimitDatetime <= sa.func.now())
 
     # TODO(fseguin, 2021-03-25): replace unlimited by None (also in the front-end)
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def remainingQuantity(self) -> Union[int, str]:
         return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity
 
@@ -208,7 +209,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     def remainingQuantity(cls) -> Case:  # pylint: disable=no-self-argument
         return sa.case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.dnBookedQuantity))
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isEventExpired(self) -> bool:
         return bool(self.beginningDatetime and self.beginningDatetime <= datetime.datetime.utcnow())
 
@@ -216,7 +217,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     def isEventExpired(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls.beginningDatetime != None, cls.beginningDatetime <= sa.func.now())
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isExpired(self) -> bool:
         return self.isEventExpired or self.hasBookingLimitDatetimePassed
 
@@ -231,7 +232,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         limit_date_for_stock_deletion = self.beginningDatetime + bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
         return limit_date_for_stock_deletion >= datetime.datetime.utcnow()
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isSoldOut(self) -> bool:
         # pylint: disable=comparison-with-callable
         return (
@@ -423,7 +424,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def lastProvider(cls):  # pylint: disable=no-self-argument
         return sa.orm.relationship("Provider", foreign_keys=[cls.lastProviderId])
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isSoldOut(self) -> bool:
         for stock in self.stocks:
             if (
@@ -450,7 +451,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         only_active = list(filter(lambda m: m.isActive, sorted_by_date_desc))
         return only_active[0] if only_active else None
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def canExpire(self) -> bool:
         return self.subcategoryId in subcategories.EXPIRABLE_SUBCATEGORIES
 
@@ -463,7 +464,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         offerer = self.venue.managingOfferer
         return self._released and offerer.isActive and offerer.isValidated
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def _released(self) -> bool:
         return self.isActive and self.validation == OfferValidationStatus.APPROVED
 
@@ -471,7 +472,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def _released(cls) -> bool:  # pylint: disable=no-self-argument
         return sa.and_(cls.isActive, cls.validation == OfferValidationStatus.APPROVED)
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isPermanent(self) -> bool:
         return self.subcategoryId in subcategories.PERMANENT_SUBCATEGORIES
 
@@ -479,7 +480,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def isPermanent(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories.PERMANENT_SUBCATEGORIES)
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isEvent(self) -> bool:
         return self.subcategory.is_event
 
@@ -491,7 +492,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def isThing(self) -> bool:
         return not self.subcategory.is_event
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isDigital(self) -> bool:
         return self.url is not None and self.url != ""
 
@@ -525,7 +526,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
                 return True
         return False
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def is_eligible_for_search(self) -> bool:
         return self.isReleased and self.isBookable
 
@@ -533,7 +534,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def is_eligible_for_search(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls._released, Stock._bookable)
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         if self.activeStocks:
             return all(stock.hasBookingLimitDatetimePassed for stock in self.activeStocks)
@@ -549,7 +550,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             .where(Stock.hasBookingLimitDatetimePassed.is_(False)),
         )
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def firstBeginningDatetime(self) -> datetime.datetime | None:
         stocks_with_date = [
             stock.beginningDatetime for stock in self.activeStocks if stock.beginningDatetime is not None
@@ -618,7 +619,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         except ValueError:  # if no non-deleted stocks
             return 0
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def status(self) -> OfferStatus:
         if self.validation == OfferValidationStatus.REJECTED:
             return OfferStatus.REJECTED
