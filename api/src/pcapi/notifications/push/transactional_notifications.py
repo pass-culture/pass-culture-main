@@ -30,7 +30,7 @@ class TransactionalNotificationData(BaseModel):
     group_id: str  # Name of the campaign, useful for analytics purpose
     user_ids: list[int]
     message: TransactionalNotificationMessage
-    extra: dict | None = {}
+    extra: dict = {}
 
 
 def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> TransactionalNotificationData | None:
@@ -76,7 +76,8 @@ def get_offer_notification_data(user_id: int, offer: Offer) -> TransactionalNoti
 
 
 def get_soon_expiring_bookings_with_offers_notification_data(booking: Booking) -> TransactionalNotificationData:
-    remaining_days = (booking.expirationDate.date() - date.today()).days  # type: ignore [union-attr]
+    assert booking.expirationDate is not None  # help mypy
+    remaining_days = (booking.expirationDate.date() - date.today()).days
 
     if remaining_days < 0:
         raise exceptions.BookingIsExpired(booking.id)

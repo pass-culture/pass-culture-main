@@ -100,7 +100,7 @@ class BadSortError(Exception):
 def get_ordering_clauses(
     model: typing.Type[Model],
     sorts: typing.Iterable[str],
-) -> list[sqla.sql.ColumnElement | sqla.sql.expression.UnaryExpression]:  # type: ignore [name-defined]
+) -> list[sqla.sql.elements.ColumnElement | sqla.sql.elements.UnaryExpression]:
     """
     `sorts` should contains string in the form of:
     - an optional `-` prefix specifying a sort descending direction (ascending by default)

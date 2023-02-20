@@ -89,7 +89,7 @@ def delete(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> 
 
 
 class Session(requests.Session):
-    def __init__(self, *args, disable_synchronous_retry: bool = False, **kwargs):  # type: ignore [no-untyped-def]
+    def __init__(self, *args: Any, disable_synchronous_retry: bool = False, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         if disable_synchronous_retry:

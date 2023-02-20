@@ -17,6 +17,7 @@ import sqlalchemy.engine
 import sqlalchemy.event
 import sqlalchemy.orm
 
+from pcapi import models
 from pcapi import settings
 from pcapi.models import db
 from pcapi.models.feature import Feature
@@ -36,7 +37,13 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session_persistence = "commit"
 
     @classmethod
-    def _save(cls, model_class, session, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _save(
+        cls,
+        model_class: typing.Type[models.Model],
+        session: typing.Any,
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.Model:
         # FIXME (dbaty, 2020-10-20): pytest-flask-sqlalchemy mocks
         # (replaces) `db.session` to remove the session and rollback
         # changes at the end of each test function (see `_session()`
@@ -64,7 +71,13 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
         return super()._save(model_class, session, *args, **kwargs)
 
     @classmethod
-    def _get_or_create(cls, model_class, session, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _get_or_create(
+        cls,
+        model_class: typing.Type[models.Model],
+        session: typing.Any,
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.Model:
         # See comment in _save for the reason why we inject the
         # session like this.
         session = db.session

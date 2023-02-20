@@ -1,4 +1,5 @@
 import datetime
+import typing
 import uuid
 
 import factory
@@ -21,7 +22,12 @@ class ProductFactory(BaseFactory):
     description = factory.Sequence("A passionate description of product {}".format)
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[models.Product],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.Product:
         # Graciously provide the required idAtProviders if lastProvider is given.
         if kwargs.get("lastProvider") and not kwargs.get("idAtProviders"):
             kwargs["idAtProviders"] = uuid.uuid4()
@@ -60,7 +66,12 @@ class OfferFactory(BaseFactory):
     lastValidationType = OfferValidationType.AUTO
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[models.Offer],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.Offer:
         # Graciously provide the required idAtProvider if lastProvider is given.
         if kwargs.get("lastProvider") and not kwargs.get("idAtProvider"):
             kwargs["idAtProvider"] = uuid.uuid4()
@@ -151,7 +162,12 @@ class StockWithActivationCodesFactory(StockFactory):
     offer = factory.SubFactory(DigitalOfferFactory)
 
     @factory.post_generation
-    def activationCodes(self, create, extracted, **kwargs) -> None:  # type: ignore [no-untyped-def]
+    def activationCodes(
+        self,
+        create: bool,
+        extracted: list[str],
+        **kwargs: typing.Any,
+    ) -> None:
         if extracted:
             for code in extracted:
                 ActivationCodeFactory(stockId=self.id, code=code)

@@ -1,8 +1,10 @@
 import datetime
+import typing
 
 import factory
 
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models as offers_models
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
@@ -28,18 +30,28 @@ class BookingFactory(BaseFactory):
     )
 
     @factory.post_generation
-    def cancellation_limit_date(self, create, extracted, **kwargs):  # type: ignore [no-untyped-def]
+    def cancellation_limit_date(
+        self,
+        create: bool,
+        extracted: datetime.datetime | None,
+        **kwargs: typing.Any,
+    ) -> None:
         if extracted:
             self.cancellationLimitDate = extracted
         else:
             self.cancellationLimitDate = api.compute_cancellation_limit_date(
                 self.stock.beginningDatetime, self.dateCreated
-            )
+            )  # type: ignore [assignment]
         db.session.add(self)
         db.session.commit()
 
     @factory.post_generation
-    def cancellation_date(self, create, extracted, **kwargs):  # type: ignore [no-untyped-def]
+    def cancellation_date(
+        self,
+        create: bool,
+        extracted: datetime.datetime | None,
+        **kwargs: typing.Any,
+    ) -> None:
         # the public.save_cancellation_date() psql trigger overrides the extracted cancellationDate
         if extracted:
             self.cancellationDate = extracted
@@ -47,9 +59,14 @@ class BookingFactory(BaseFactory):
             db.session.flush()
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[models.Booking],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.Booking:
         if not kwargs.get("status") == models.BookingStatus.CANCELLED:
-            stock = kwargs.get("stock")
+            stock: offers_models.Stock = kwargs["stock"]
             stock.dnBookedQuantity = stock.dnBookedQuantity + kwargs.get("quantity", 1)
             kwargs["stock"] = stock
         kwargs["venue"] = kwargs["stock"].offer.venue

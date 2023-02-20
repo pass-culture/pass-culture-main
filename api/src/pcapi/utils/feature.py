@@ -1,13 +1,14 @@
 from functools import wraps
+import typing
 
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 
 
-def feature_required(feature_toggle: FeatureToggle):  # type: ignore [no-untyped-def]
-    def decorator(f):  # type: ignore [no-untyped-def]
+def feature_required(feature_toggle: FeatureToggle) -> typing.Callable:
+    def decorator(f: typing.Callable) -> typing.Callable:
         @wraps(f)
-        def wrapper(*args, **kwargs):  # type: ignore [no-untyped-def]
+        def wrapper(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
             if feature_toggle.is_active():
                 return f(*args, **kwargs)
 
