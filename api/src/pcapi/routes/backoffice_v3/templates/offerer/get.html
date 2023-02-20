@@ -97,6 +97,12 @@
                                     {{ offerer.address }}
                                 </p>
                             {% endif %}
+                            {% if offerer.first_user %}
+                                <p class="mb-1">
+                                    <span class="fw-bold">Numéro de téléphone :</span>
+                                    {{ offerer.first_user.phoneNumber | format_phone_number }}
+                                </p>
+                            {% endif %}
                         </div>
                     </div>
 
