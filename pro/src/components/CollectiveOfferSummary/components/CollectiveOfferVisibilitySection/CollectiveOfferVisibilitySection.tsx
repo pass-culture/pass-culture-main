@@ -1,39 +1,54 @@
 import React from 'react'
 
-import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import {
+  EducationalInstitutionResponseModel,
+  EducationalRedactorResponseModel,
+} from 'apiClient/v1'
 import { SummaryLayout } from 'components/SummaryLayout'
 
 interface ICollectiveOfferStockSectionProps {
   institution?: EducationalInstitutionResponseModel | null
+  teacher?: EducationalRedactorResponseModel | null
 }
 
 const CollectiveOfferStockSection = ({
   institution,
+  teacher,
 }: ICollectiveOfferStockSectionProps) => {
   const getVisibilityDescription = (
     institution?: EducationalInstitutionResponseModel | null
   ) => {
     if (!institution) {
-      return 'Tous les établissements'
+      return <div>Tous les établissements</div>
     }
 
     return (
-      <>
+      <div>
         {institution.institutionType} {institution.name}
         <br />
         {institution.postalCode} {institution.city}
         <br />
         UAI : {institution.institutionId}
-      </>
+      </div>
     )
   }
 
   return (
     <>
       <SummaryLayout.Row
-        title="Visibilité de l’offre"
+        title="Établissement scolaire qui peut voir votre offre"
         description={getVisibilityDescription(institution)}
       />
+      {teacher && (
+        <SummaryLayout.Row
+          title="Enseignant avec qui vous avez construit cette offre"
+          description={
+            <div>
+              {teacher.firstName} {teacher.lastName}
+            </div>
+          }
+        />
+      )}
     </>
   )
 }

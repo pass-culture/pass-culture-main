@@ -72,6 +72,7 @@ const CollectiveOfferSummary = ({
             >
               <CollectiveOfferVisibilitySection
                 institution={offer.institution}
+                teacher={offer.teacher}
               />
             </SummaryLayout.Section>
           )}
