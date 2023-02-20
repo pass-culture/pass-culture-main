@@ -21,8 +21,8 @@ IS_STAGING = ENV == "staging"
 IS_PROD = ENV == "production"
 IS_TESTING = ENV == "testing"
 IS_RUNNING_TESTS = os.environ.get("RUN_ENV") == "tests"
-IS_PERFORMANCE_TESTS = bool(os.environ.get("IS_PERFORMANCE_TESTS", False))
-IS_E2E_TESTS = bool(os.environ.get("IS_E2E_TESTS", False))
+IS_PERFORMANCE_TESTS = bool(int(os.environ.get("IS_PERFORMANCE_TESTS", "0")))
+IS_E2E_TESTS = bool(int(os.environ.get("IS_E2E_TESTS", "0")))
 assert not (IS_PROD and IS_PERFORMANCE_TESTS)
 
 # Load configuration files
@@ -104,7 +104,7 @@ DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT = int(os.environ.get("DATABASE_IDLE
 SQLALCHEMY_ECHO = bool(int(os.environ.get("SQLALCHEMY_ECHO", "0")))
 
 # FLASK
-PROFILE_REQUESTS = bool(os.environ.get("PROFILE_REQUESTS", False))
+PROFILE_REQUESTS = bool(int(os.environ.get("PROFILE_REQUESTS", "0")))
 PROFILE_REQUESTS_LINES_LIMIT = int(os.environ.get("PROFILE_REQUESTS_LINES_LIMIT", 100))
 FLASK_PORT = int(os.environ.get("PORT", 5001))
 FLASK_SECRET = secrets_utils.get("FLASK_SECRET", "+%+3Q23!zbc+!Dd@")
@@ -328,7 +328,7 @@ RATE_LIMIT_SIRENE_API = os.environ.get("RATE_LIMIT_SIRENE_API", "5/minute")
 
 
 # DEBUG
-DEBUG_ACTIVATED = bool(os.environ.get("DEBUG_ACTIVATED"))
+DEBUG_ACTIVATED = bool(int(os.environ.get("DEBUG_ACTIVATED", "0")))
 
 
 # PHONE NUMBERS
