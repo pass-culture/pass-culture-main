@@ -1,6 +1,7 @@
 import typing
 
 from flask_wtf import FlaskForm
+import wtforms
 from wtforms import validators
 
 import pcapi.core.offerers.models as offerers_models
@@ -16,9 +17,11 @@ class EditVirtualVenueForm(utils.PCForm):
 
 class EditVenueForm(EditVirtualVenueForm):
     siret = fields.PCStringField("siret")
+    address = fields.PCStringField("Adresse")
     city = fields.PCStringField("Ville")
     postalCode = fields.PCPostalCodeField("Code postal")  # match Venue.postalCode case
-    address = fields.PCStringField("Adresse")
+    latitude = wtforms.HiddenField("Latitude")
+    longitude = wtforms.HiddenField("Longitude")
     isPermanent = fields.PCSwitchBooleanField("Lieu permanent")
 
     def __init__(self, venue: offerers_models.Venue, *args: typing.Any, **kwargs: typing.Any) -> None:
@@ -32,6 +35,8 @@ class EditVenueForm(EditVirtualVenueForm):
         self.venue = venue
 
         # self._fields is a collections.OrderedDict
+        self._fields.move_to_end("latitude")
+        self._fields.move_to_end("longitude")
         self._fields.move_to_end("email")
         self._fields.move_to_end("phone_number")
         self._fields.move_to_end("isPermanent")
