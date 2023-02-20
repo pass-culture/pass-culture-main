@@ -4,6 +4,7 @@ import React from 'react'
 
 import { RadioButton } from '..'
 import { FieldSetLayout } from '../shared'
+import { BaseRadioVariant } from '../shared/BaseRadio/types'
 
 import styles from './RadioGroup.module.scss'
 
@@ -23,6 +24,7 @@ export interface IRadioGroupProps {
   }[]
   className?: string
   withBorder?: boolean
+  variant?: BaseRadioVariant
 }
 
 const RadioGroup = ({
@@ -34,6 +36,7 @@ const RadioGroup = ({
   legend,
   className,
   withBorder,
+  variant = BaseRadioVariant.PRIMARY,
 }: IRadioGroupProps): JSX.Element => {
   const [, meta] = useField({ name })
 
@@ -59,6 +62,7 @@ const RadioGroup = ({
             value={item.value}
             withBorder={withBorder}
             hasError={meta.touched && !!meta.error}
+            variant={variant}
           />
         </div>
       ))}

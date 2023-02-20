@@ -2,6 +2,7 @@ import type { ComponentStory } from '@storybook/react'
 import React from 'react'
 
 import BaseRadio from './BaseRadio'
+import { BaseRadioVariant } from './types'
 
 export default {
   title: 'ui-kit/forms/shared/BaseRadio',
@@ -21,6 +22,7 @@ Default.args = {
   hasError: false,
   disabled: false,
   checked: false,
+  variant: BaseRadioVariant.PRIMARY,
 }
 
 export const WithBorder = Template.bind({})
@@ -31,4 +33,5 @@ WithBorder.args = {
   disabled: false,
   checked: false,
   withBorder: true,
+  variant: BaseRadioVariant.PRIMARY,
 }
