@@ -6,6 +6,7 @@ import factory
 
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.models as offers_models
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationType
@@ -101,10 +102,23 @@ class DigitalOfferFactory(OfferFactory):
 class PriceCategoryLabelFactory(BaseFactory):
     class Meta:
         model = models.PriceCategoryLabel
-        sqlalchemy_get_or_create = ("label",)
 
     label = "Tarif unique"
     venue = factory.SubFactory(offerers_factories.VenueFactory)
+
+    @classmethod
+    def _create(
+        cls,
+        model_class: typing.Type[models.PriceCategoryLabel],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.PriceCategoryLabel:
+        label = offers_models.PriceCategoryLabel.query.filter_by(
+            label=kwargs.get("label"), venue=kwargs.get("venue")
+        ).one_or_none()
+        if label:
+            return label
+        return super()._create(model_class, *args, **kwargs)
 
 
 class PriceCategoryFactory(BaseFactory):

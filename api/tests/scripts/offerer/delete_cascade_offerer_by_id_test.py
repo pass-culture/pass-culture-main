@@ -46,19 +46,26 @@ def test_delete_cascade_offerer_should_remove_managed_venues_offers_stocks_and_a
     offerer_to_delete = offerers_factories.OffererFactory()
     offers_factories.OfferFactory(venue__managingOfferer=offerer_to_delete)
     stock_1 = offers_factories.StockFactory(offer__venue__managingOfferer=offerer_to_delete)
-    stock_2 = offers_factories.StockFactory()
     offers_factories.ActivationCodeFactory(stock=stock_1)
-    offers_factories.ActivationCodeFactory(stock=stock_2)
+    offers_factories.EventStockFactory(offer__venue__managingOfferer=offerer_to_delete)
 
+    other_offerer = offerers_factories.OffererFactory()
+
+    other_venue = offerers_factories.VenueFactory(managingOfferer=other_offerer)
+    stock_2 = offers_factories.StockFactory(offer__venue=other_venue)
+    offers_factories.ActivationCodeFactory(stock=stock_2)
+    offers_factories.EventStockFactory(offer__venue=other_venue)
     # When
     delete_cascade_offerer_by_id(offerer_to_delete.id)
 
     # Then
     assert offerers_models.Offerer.query.count() == 1
     assert offerers_models.Venue.query.count() == 1
-    assert offers_models.Offer.query.count() == 1
-    assert offers_models.Stock.query.count() == 1
+    assert offers_models.Offer.query.count() == 2
+    assert offers_models.Stock.query.count() == 2
     assert offers_models.ActivationCode.query.count() == 1
+    assert offers_models.PriceCategory.query.count() == 1
+    assert offers_models.PriceCategoryLabel.query.count() == 1
 
 
 @pytest.mark.usefixtures("db_session")
