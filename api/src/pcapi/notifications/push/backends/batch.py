@@ -119,7 +119,7 @@ class BatchBackend:
                         "title": notification_data.message.title,
                         "body": notification_data.message.body,
                     },
-                    **notification_data.extra,  # type: ignore [arg-type]
+                    **notification_data.extra,
                 },
             )
 
