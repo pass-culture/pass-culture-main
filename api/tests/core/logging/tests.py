@@ -5,6 +5,7 @@ import json
 import logging
 import uuid
 
+import amplitude
 from flask import g
 from flask_login import login_user
 import pytest
@@ -102,6 +103,7 @@ class JsonFormatterTest:
                 "user": user,
                 "bytes": b"encod\xc3\xa9",
                 "nested_complex_object": [{"foo": ["bar"]}],
+                "event": amplitude.BaseEvent(event_type="event type"),
             },
         )
         serialized = formatter.format(record)
@@ -117,6 +119,7 @@ class JsonFormatterTest:
             "user": 7,
             "bytes": "encodé",
             "nested_complex_object": [{"foo": ["bar"]}],
+            "event": {"event_type": "event type"},
         }
 
         # gracefully handle non-serializable objects
