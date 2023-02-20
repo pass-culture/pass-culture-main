@@ -136,7 +136,7 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
             and item.status != subscription_models.SubscriptionItemStatus.OK.value
         ]
 
-        if len(subscription_items) > 0:
+        if eligibility_history[user_current_eligibility.value].idCheckHistory and len(subscription_items) > 0:
             last_check_history = sorted(
                 eligibility_history[user_current_eligibility.value].idCheckHistory,
                 key=lambda item: item.dateCreated,
