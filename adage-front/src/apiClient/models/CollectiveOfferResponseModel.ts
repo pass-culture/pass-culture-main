@@ -4,6 +4,7 @@
 
 import type { CollectiveOfferOfferVenue } from './CollectiveOfferOfferVenue';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
+import type { EducationalRedactorResponseModel } from './EducationalRedactorResponseModel';
 import type { OfferDomain } from './OfferDomain';
 import type { OfferStockResponse } from './OfferStockResponse';
 import type { OfferVenueResponse } from './OfferVenueResponse';
@@ -32,7 +33,7 @@ export type CollectiveOfferResponseModel = {
   stock: OfferStockResponse;
   students: Array<StudentLevels>;
   subcategoryLabel: string;
-  teacherEmail?: string | null;
+  teacher?: EducationalRedactorResponseModel | null;
   venue: OfferVenueResponse;
   visualDisabilityCompliant: boolean;
 };
