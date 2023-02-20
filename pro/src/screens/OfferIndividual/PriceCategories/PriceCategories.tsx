@@ -11,7 +11,11 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import {
+  isOfferAllocineSynchronized,
+  isOfferDisabled,
+  OFFER_WIZARD_MODE,
+} from 'core/Offers'
 import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate, useOfferWizardMode } from 'hooks'
@@ -19,6 +23,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
+import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 import { getSuccessMessage } from '../utils'
 import { logTo } from '../utils/logTo'
 
@@ -150,6 +155,14 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
   const [isClickingDraft, setIsClickingDraft] = useState<boolean>(false)
   const notify = useNotification()
   const [popinType, setPopinType] = useState<POPIN_TYPE | null>(null)
+  const providerName = offer?.lastProviderName
+
+  const isDisabledBySynchronization =
+    Boolean(offer.lastProvider) && !isOfferAllocineSynchronized(offer)
+  const isDisabledByStatus = offer.status
+    ? isOfferDisabled(offer.status)
+    : false
+  const isDisabled = isDisabledByStatus || isDisabledBySynchronization
 
   const onSubmitWithCallback = async (values: PriceCategoriesFormValues) => {
     const newPopinType = getPopinType(
@@ -275,6 +288,9 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
 
   return (
     <FormikProvider value={formik}>
+      {providerName && (
+        <SynchronizedProviderInformation providerName={providerName} />
+      )}
       {popinType === POPIN_TYPE.PRICE && (
         <ConfirmDialog
           onCancel={() => setPopinType(null)}
@@ -313,6 +329,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
             stocks={offer.stocks}
             setOffer={setOffer}
             humanizedOfferId={offer.id}
+            isDisabled={isDisabled}
           />
 
           <ActionBar

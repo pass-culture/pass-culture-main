@@ -32,6 +32,7 @@ interface IPriceCategoriesForm {
   stocks: IOfferIndividualStock[]
   mode: OFFER_WIZARD_MODE
   setOffer: ((offer: IOfferIndividual | null) => void) | null
+  isDisabled: boolean
 }
 
 export const PriceCategoriesForm = ({
@@ -40,6 +41,7 @@ export const PriceCategoriesForm = ({
   stocks,
   mode,
   setOffer,
+  isDisabled,
 }: IPriceCategoriesForm): JSX.Element => {
   const { setFieldValue, handleChange, resetForm, values } =
     useFormikContext<PriceCategoriesFormValues>()
@@ -149,7 +151,7 @@ export const PriceCategoriesForm = ({
                   maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
                   countCharacters
                   className={styles['label-input']}
-                  disabled={values.priceCategories.length <= 1}
+                  disabled={values.priceCategories.length <= 1 || isDisabled}
                   isLabelHidden={index !== 0}
                 />
 
@@ -165,6 +167,7 @@ export const PriceCategoriesForm = ({
                   className={styles['price-input']}
                   onChange={onChangePrice(index)}
                   isLabelHidden={index !== 0}
+                  disabled={isDisabled}
                 />
 
                 <div
@@ -177,13 +180,16 @@ export const PriceCategoriesForm = ({
                     checked={isFreeCheckboxSelectedArray[index]}
                     name={`priceCategories[${index}].free`}
                     onChange={onChangeFree(index)}
+                    disabled={isDisabled}
                   />
                   {mode !== OFFER_WIZARD_MODE.EDITION && (
                     <Button
                       variant={ButtonVariant.TERNARY}
                       Icon={TrashFilledIcon}
                       iconPosition={IconPositionEnum.CENTER}
-                      disabled={values.priceCategories.length <= 1}
+                      disabled={
+                        values.priceCategories.length <= 1 || isDisabled
+                      }
                       onClick={() =>
                         onDeletePriceCategory(
                           index,
@@ -210,7 +216,8 @@ export const PriceCategoriesForm = ({
                 }
               }}
               disabled={
-                values.priceCategories.length >= PRICE_CATEGORY_MAX_LENGTH
+                values.priceCategories.length >= PRICE_CATEGORY_MAX_LENGTH ||
+                isDisabled
               }
             >
               Ajouter un tarif
@@ -233,6 +240,7 @@ export const PriceCategoriesForm = ({
           <Checkbox
             label="Accepter les réservations “Duo“"
             name="isDuo"
+            disabled={isDisabled}
             withBorder
           />
         </FormLayout.Row>

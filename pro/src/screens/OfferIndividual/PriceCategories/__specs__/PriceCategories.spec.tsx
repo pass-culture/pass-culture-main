@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
+import { OfferStatus } from 'apiClient/v1'
 import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -17,5 +18,52 @@ describe('PriceCategories', () => {
     expect(screen.getByText('Réservations “Duo”')).toBeInTheDocument()
   })
 
-  // TODO not implemented yet: Test submit logic
+  it('should render provider banner', () => {
+    renderPriceCategories({
+      offer: individualOfferFactory({ lastProviderName: 'allociné' }),
+    })
+
+    expect(
+      screen.getByText('Offre synchronisée avec Allociné')
+    ).toBeInTheDocument()
+  })
+
+  it('should not disabled field for allociné', () => {
+    renderPriceCategories({
+      offer: individualOfferFactory({ lastProviderName: 'allociné' }),
+    })
+
+    expect(screen.getByLabelText('Tarif par personne')).not.toBeDisabled()
+  })
+
+  it('should disabled field for provider', () => {
+    renderPriceCategories({
+      offer: individualOfferFactory({
+        lastProvider: {
+          id: 'AA',
+          isActive: true,
+          name: 'provider',
+        },
+        lastProviderName: 'provider',
+      }),
+    })
+
+    expect(screen.getByLabelText('Tarif par personne')).toBeDisabled()
+  })
+
+  it('should disabled field for pending offer', () => {
+    renderPriceCategories({
+      offer: individualOfferFactory({ status: OfferStatus.PENDING }),
+    })
+
+    expect(screen.getByLabelText('Tarif par personne')).toBeDisabled()
+  })
+
+  it('should disabled field for rejected offer', () => {
+    renderPriceCategories({
+      offer: individualOfferFactory({ status: OfferStatus.REJECTED }),
+    })
+
+    expect(screen.getByLabelText('Tarif par personne')).toBeDisabled()
+  })
 })

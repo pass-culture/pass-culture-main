@@ -38,6 +38,7 @@ const renderPriceCategoriesForm = (
         stocks={[individualStockFactory({ priceCategoryId: 144 })]}
         setOffer={jest.fn()}
         humanizedOfferId="AA"
+        isDisabled={false}
       />
     </Formik>
   )
