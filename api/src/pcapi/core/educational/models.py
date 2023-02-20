@@ -112,7 +112,7 @@ class HasImageMixin:
     # Whether or not we also stored the original image in the storage bucket.
     imageHasOriginal = sa.Column(sa.Boolean, nullable=True)
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def hasImage(self) -> bool:
         return self.imageId is not None
 
@@ -347,7 +347,7 @@ class CollectiveOffer(
 
         return is_editable
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isSoldOut(self) -> bool:
         if self.collectiveStock:
             return self.collectiveStock.isSoldOut
@@ -385,7 +385,7 @@ class CollectiveOffer(
             return self.collectiveStock.hasBookingLimitDatetimePassed  # type: ignore[return-value]
         return False
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         if not self.collectiveStock:
             return False
@@ -399,7 +399,7 @@ class CollectiveOffer(
             .where(CollectiveStock.hasBookingLimitDatetimePassed.is_(True))
         )
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def hasBeginningDatetimePassed(self) -> bool:
         if not self.collectiveStock:
             return False
@@ -419,7 +419,7 @@ class CollectiveOffer(
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for collective offer {self.id}")
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isEvent(self) -> bool:
         return self.subcategory.is_event
 
@@ -519,7 +519,7 @@ class CollectiveOfferTemplate(
     def isEditable(self) -> bool:
         return self.status not in [offer_mixin.OfferStatus.PENDING, offer_mixin.OfferStatus.REJECTED]
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         # this property is here for compatibility reasons
         return False
@@ -529,7 +529,7 @@ class CollectiveOfferTemplate(
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def hasBeginningDatetimePassed(self) -> bool:
         # this property is here for compatibility reasons
         return False
@@ -539,7 +539,7 @@ class CollectiveOfferTemplate(
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isSoldOut(self) -> bool:
         # this property is here for compatibility reasons
         return False
@@ -566,7 +566,7 @@ class CollectiveOfferTemplate(
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for collective offer template {self.id}")
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isEvent(self) -> bool:
         return self.subcategory.is_event
 
@@ -662,7 +662,7 @@ class CollectiveStock(PcObject, Base, Model):
                 return False
         return self.collectiveOffer.isEditable
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def hasBookingLimitDatetimePassed(self) -> bool:
         return self.bookingLimitDatetime <= datetime.utcnow()
 
@@ -670,7 +670,7 @@ class CollectiveStock(PcObject, Base, Model):
     def hasBookingLimitDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.bookingLimitDatetime <= sa.func.now()
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def hasBeginningDatetimePassed(self) -> bool:
         return self.beginningDatetime <= datetime.utcnow()
 
@@ -678,7 +678,7 @@ class CollectiveStock(PcObject, Base, Model):
     def hasBeginningDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.beginningDatetime <= sa.func.now()
 
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def isEventExpired(self) -> bool:  # todo rewrite
         return self.beginningDatetime <= datetime.utcnow()
 
