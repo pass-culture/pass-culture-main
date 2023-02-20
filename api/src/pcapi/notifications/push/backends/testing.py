@@ -39,7 +39,7 @@ class TestingBackend(LoggerBackend):
                 "user_ids": notification_data.user_ids,
                 "message": {"title": notification_data.message.title, "body": notification_data.message.body},
                 "can_be_asynchronously_retried": can_be_asynchronously_retried,
-                **notification_data.extra,  # type: ignore [arg-type]
+                **notification_data.extra,
             }
         )
 

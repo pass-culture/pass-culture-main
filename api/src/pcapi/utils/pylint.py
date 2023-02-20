@@ -1,6 +1,7 @@
 import astroid.nodes
 import pylint.checkers
 import pylint.interfaces
+import pylint.lint
 
 
 MSG_USE_OF_UNCONTROLLED_STRING = "markupsafe-uncontrolled-string"
@@ -97,7 +98,7 @@ class DatetimeNowChecker(pylint.checkers.BaseChecker):
             self.add_message(MSG_USE_OF_DATETIME_NOW, node=node, line=node.lineno)
 
 
-def register(linter):  # type: ignore [no-untyped-def]
+def register(linter: pylint.lint.PyLinter) -> None:
     linter.register_checker(BaseModelImportChecker(linter))
     linter.register_checker(DatetimeNowChecker(linter))
     linter.register_checker(MarkupSafeChecker(linter))

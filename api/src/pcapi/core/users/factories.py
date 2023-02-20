@@ -3,6 +3,7 @@ from datetime import datetime
 from datetime import time
 import random
 import string
+import typing
 import uuid
 
 from dateutil.relativedelta import relativedelta
@@ -15,7 +16,6 @@ import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.testing import BaseFactory
-from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 import pcapi.core.users.constants as users_constants
 from pcapi.models.beneficiary_import import BeneficiaryImport
@@ -50,7 +50,7 @@ class BeneficiaryImportFactory(BaseFactory):
 
 class UserFactory(BaseFactory):
     class Meta:
-        model = users_models.User
+        model = models.User
 
     email = factory.Sequence("jean.neige{}@example.com".format)
     address = factory.Sequence("{} place des noces rouges".format)
@@ -60,12 +60,17 @@ class UserFactory(BaseFactory):
     lastName = "Neige"
     publicName = "Jean Neige"
     isEmailValidated = True
-    roles = []  # type: ignore [var-annotated]
+    roles: list[models.UserRole] = []
     hasSeenProTutorials = True
     postalCode = factory.Faker("postcode")
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[models.User],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.User:
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._create(model_class, *args, **kwargs)
@@ -73,7 +78,12 @@ class UserFactory(BaseFactory):
         return instance
 
     @classmethod
-    def _build(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _build(
+        cls,
+        model_class: typing.Type[models.User],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.User:
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._build(model_class, *args, **kwargs)
@@ -83,7 +93,7 @@ class UserFactory(BaseFactory):
 
 class AdminFactory(BaseFactory):
     class Meta:
-        model = users_models.User
+        model = models.User
 
     email = factory.Sequence("un.admin{}@example.com".format)
     address = factory.Sequence("{} rue des détectives".format)
@@ -93,11 +103,16 @@ class AdminFactory(BaseFactory):
     lastName = "Columbo"
     publicName = "Frank Columbo"
     isEmailValidated = True
-    roles = [users_models.UserRole.ADMIN]
+    roles = [models.UserRole.ADMIN]
     hasSeenProTutorials = True
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[models.User],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.User:
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._create(model_class, *args, **kwargs)
@@ -105,7 +120,12 @@ class AdminFactory(BaseFactory):
         return instance
 
     @classmethod
-    def _build(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _build(
+        cls,
+        model_class: typing.Type[models.User],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.User:
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._build(model_class, *args, **kwargs)
@@ -115,7 +135,7 @@ class AdminFactory(BaseFactory):
 
 class BeneficiaryGrant18Factory(BaseFactory):
     class Meta:
-        model = users_models.User
+        model = models.User
 
     email = factory.Sequence("jeanne.doux{}@example.com".format)
     address = factory.Sequence("{} rue des machines".format)
@@ -128,12 +148,17 @@ class BeneficiaryGrant18Factory(BaseFactory):
     firstName = "Jeanne"
     lastName = "Doux"
     isEmailValidated = True
-    roles = [users_models.UserRole.BENEFICIARY]
+    roles = [models.UserRole.BENEFICIARY]
     hasSeenProTutorials = True
     hasSeenProRgs = False
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[models.User],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.User:
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         if "publicName" not in kwargs and kwargs["firstName"] and kwargs["lastName"]:
@@ -145,7 +170,12 @@ class BeneficiaryGrant18Factory(BaseFactory):
         return instance
 
     @classmethod
-    def _build(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _build(
+        cls,
+        model_class: typing.Type[models.User],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.User:
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         if "publicName" not in kwargs and kwargs["firstName"] and kwargs["lastName"]:
@@ -155,7 +185,12 @@ class BeneficiaryGrant18Factory(BaseFactory):
         return instance
 
     @factory.post_generation
-    def beneficiaryImports(obj, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def beneficiaryImports(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: BeneficiaryImport | None,
+        **kwargs: typing.Any,
+    ) -> BeneficiaryImport | None:
         if not create:
             return None
 
@@ -165,7 +200,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
         beneficiary_import = BeneficiaryImportFactory(
             beneficiary=obj,
             source=BeneficiaryImportSources.educonnect.value
-            if obj.eligibility == users_models.EligibilityType.UNDERAGE
+            if obj.eligibility == models.EligibilityType.UNDERAGE
             else BeneficiaryImportSources.ubble.value,
             eligibilityType=obj.eligibility,
         )
@@ -173,7 +208,12 @@ class BeneficiaryGrant18Factory(BaseFactory):
         return beneficiary_import
 
     @factory.post_generation
-    def beneficiaryFraudChecks(obj, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        **kwargs: typing.Any,
+    ) -> fraud_models.BeneficiaryFraudCheck | None:
         import pcapi.core.fraud.factories as fraud_factories
 
         if not create:
@@ -183,7 +223,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
             "type",
             (
                 fraud_models.FraudCheckType.EDUCONNECT
-                if obj.eligibility == users_models.EligibilityType.UNDERAGE
+                if obj.eligibility == models.EligibilityType.UNDERAGE
                 else fraud_models.FraudCheckType.UBBLE
             ),
         )
@@ -199,15 +239,20 @@ class BeneficiaryGrant18Factory(BaseFactory):
                 ine_hash=obj.ineHash or "".join(random.choices(string.ascii_lowercase + string.digits, k=32)),
                 registration_datetime=obj.dateCreated,
             )
-            if obj.eligibility == users_models.EligibilityType.UNDERAGE
+            if obj.eligibility == models.EligibilityType.UNDERAGE
             else fraud_factories.UbbleContentFactory(first_name=obj.firstName, last_name=obj.lastName),
-            eligibilityType=users_models.EligibilityType.UNDERAGE
-            if obj.eligibility == users_models.EligibilityType.UNDERAGE
-            else users_models.EligibilityType.AGE18,
+            eligibilityType=models.EligibilityType.UNDERAGE
+            if obj.eligibility == models.EligibilityType.UNDERAGE
+            else models.EligibilityType.AGE18,
         )
 
     @factory.post_generation
-    def deposit(obj, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def deposit(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: finance_models.Deposit | None,
+        **kwargs: typing.Any,
+    ) -> finance_models.Deposit | None:
         if not create:
             return None
 
@@ -221,7 +266,7 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
     class Params:
         subscription_age = 15
 
-    roles = [users_models.UserRole.UNDERAGE_BENEFICIARY]
+    roles = [models.UserRole.UNDERAGE_BENEFICIARY]
     dateOfBirth = LazyAttribute(
         lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=o.subscription_age, months=5)
     )
@@ -229,7 +274,12 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
     ineHash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
 
     @factory.post_generation
-    def deposit(obj, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def deposit(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: finance_models.Deposit | None,
+        **kwargs: typing.Any,
+    ) -> finance_models.Deposit | None:
         if not create:
             return None
 
@@ -241,7 +291,7 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
 
 class ProFactory(BaseFactory):
     class Meta:
-        model = users_models.User
+        model = models.User
 
     email = factory.Sequence("ma.librairie{}@example.com".format)
     address = factory.Sequence("{} rue des cinémas".format)
@@ -251,11 +301,16 @@ class ProFactory(BaseFactory):
     lastName = "Coty"
     publicName = "René Coty"
     isEmailValidated = True
-    roles = [users_models.UserRole.PRO]
+    roles = [models.UserRole.PRO]
     hasSeenProTutorials = True
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[models.User],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.User:
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._create(model_class, *args, **kwargs)
@@ -263,7 +318,12 @@ class ProFactory(BaseFactory):
         return instance
 
     @classmethod
-    def _build(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _build(
+        cls,
+        model_class: typing.Type[models.User],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.User:
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._build(model_class, *args, **kwargs)
@@ -275,7 +335,7 @@ class TokenFactory(BaseFactory):
     class Meta:
         model = models.Token
 
-    type = users_models.TokenType.EMAIL_VALIDATION
+    type = models.TokenType.EMAIL_VALIDATION
     user = factory.SubFactory(UserFactory)
     value = factory.Sequence("XYZ{0}".format)
 
@@ -297,7 +357,12 @@ class UserSessionFactory(BaseFactory):
     uuid = factory.LazyFunction(uuid.uuid4)
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[models.UserSession],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.UserSession:
         try:
             user = kwargs.pop("user")
         except KeyError:
@@ -324,7 +389,12 @@ class DepositGrantFactory(BaseFactory):
     source = "public"
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[finance_models.Deposit],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> finance_models.Deposit:
         age = users_utils.get_age_from_birth_date(kwargs["user"].dateOfBirth)
         eligibility = (
             models.EligibilityType.UNDERAGE
@@ -332,6 +402,7 @@ class DepositGrantFactory(BaseFactory):
             else models.EligibilityType.AGE18
         )
         granted_deposit = finance_api.get_granted_deposit(kwargs["user"], eligibility, age_at_registration=age)
+        assert granted_deposit is not None
 
         if "version" not in kwargs:
             kwargs["version"] = granted_deposit.version
@@ -367,7 +438,7 @@ class EduconnectUserFactory(factory.Factory):
 
 class UserEmailHistoryFactory(BaseFactory):
     class Meta:
-        model = users_models.UserEmailHistory
+        model = models.UserEmailHistory
         abstract = True
 
     user = factory.SubFactory(UserFactory)
@@ -378,12 +449,12 @@ class UserEmailHistoryFactory(BaseFactory):
 
 
 class EmailUpdateEntryFactory(UserEmailHistoryFactory):
-    eventType = users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
+    eventType = models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
 
 
 class EmailValidationEntryFactory(UserEmailHistoryFactory):
-    eventType = users_models.EmailHistoryEventTypeEnum.VALIDATION.value
+    eventType = models.EmailHistoryEventTypeEnum.VALIDATION.value
 
 
 class EmailAdminValidationEntryFactory(UserEmailHistoryFactory):
-    eventType = users_models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION.value
+    eventType = models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION.value

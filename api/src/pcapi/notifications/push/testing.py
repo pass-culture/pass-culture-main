@@ -1,4 +1,4 @@
-requests = []  # type: ignore [var-annotated]
+requests: list[dict | list] = []
 
 
 def reset_requests() -> None:

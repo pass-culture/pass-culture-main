@@ -2,6 +2,7 @@ from datetime import date
 from datetime import datetime
 import random
 import string
+import typing
 import uuid
 
 from dateutil.relativedelta import relativedelta
@@ -124,7 +125,7 @@ class ProfileCompletionContentFactory(factory.Factory):
     school_type = None
 
 
-FRAUD_CHECK_TYPE_MODEL_ASSOCIATION = {
+FRAUD_CHECK_TYPE_MODEL_ASSOCIATION: dict[models.FraudCheckType, factory.Factory | None] = {
     models.FraudCheckType.DMS: DMSContentFactory,
     models.FraudCheckType.USER_PROFILING: UserProfilingFraudDataFactory,
     models.FraudCheckType.UBBLE: UbbleContentFactory,
@@ -145,7 +146,12 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
     eligibilityType = users_models.EligibilityType.AGE18
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[models.BeneficiaryFraudCheck],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.BeneficiaryFraudCheck:
         """Override the default ``_create`` with our custom call."""
         factory_class = FRAUD_CHECK_TYPE_MODEL_ASSOCIATION.get(kwargs["type"])
         content = {}
