@@ -104,13 +104,17 @@ def test_delete_cascade_venue_should_remove_offers_stocks_and_activation_codes()
     offer_1 = offers_factories.OfferFactory(venue=venue_to_delete)
     offer_2 = offers_factories.OfferFactory(venue=venue_to_delete)
     stock = offers_factories.StockFactory(offer__venue=venue_to_delete)
-    stock_with_another_venue = offers_factories.StockFactory(
-        offer__venue__managingOfferer=venue_to_delete.managingOfferer
-    )
-    items_to_delete = [offer_1.id, offer_2.id, stock.offerId]
-    offers_factories.ActivationCodeFactory(stock=stock)
-    offers_factories.ActivationCodeFactory(stock=stock_with_another_venue)
+    event_stock = offers_factories.EventStockFactory(offer__venue=venue_to_delete)
+    items_to_delete = [offer_1.id, offer_2.id, stock.offerId, event_stock.offerId]
 
+    other_venue = offerers_factories.VenueFactory(managingOfferer=venue_to_delete.managingOfferer)
+    price_category_label = offers_factories.PriceCategoryLabelFactory(label="otherLabel", venue=other_venue)
+    offers_factories.ActivationCodeFactory(stock=stock)
+    stock_with_another_venue = offers_factories.EventStockFactory(
+        offer__venue=other_venue,
+        priceCategory__priceCategoryLabel=price_category_label,
+    )
+    offers_factories.ActivationCodeFactory(stock=stock_with_another_venue)
     # When
     recap_data = delete_cascade_venue_by_id(venue_to_delete.id)
 
@@ -119,6 +123,8 @@ def test_delete_cascade_venue_should_remove_offers_stocks_and_activation_codes()
     assert offers_models.Offer.query.count() == 1
     assert offers_models.Stock.query.count() == 1
     assert offers_models.ActivationCode.query.count() == 1
+    assert offers_models.PriceCategory.query.count() == 1
+    assert offers_models.PriceCategoryLabel.query.count() == 1
     assert sorted(recap_data["offer_ids_to_unindex"]) == sorted(items_to_delete)
 
 
