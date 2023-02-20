@@ -4,6 +4,8 @@ import {
   CollectiveBookingBankInformationStatus,
   CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
+  EducationalInstitutionResponseModel,
+  EducationalRedactorResponseModel,
   GetCollectiveOfferCollectiveStockResponseModel,
   GetCollectiveOfferManagingOffererResponseModel,
   GetCollectiveOfferVenueResponseModel,
@@ -25,6 +27,7 @@ let bookingId = 1
 let bookingDetailsId = 1
 let categoryId = 1
 let subCategoryId = 1
+let institutionId = 1
 
 const sharedCollectiveOfferData = {
   isActive: true,
@@ -274,4 +277,22 @@ export const collectiveSubCategoryFactory = (
     reimbursementRule: '',
     ...customSubCategory,
   }
+}
+
+export const defaultEducationalInstitution: EducationalInstitutionResponseModel =
+  {
+    city: 'Paris',
+    id: institutionId++,
+    institutionId: 'ABC123',
+    institutionType: 'LYCEE',
+    name: 'Sacré coeur',
+    phoneNumber: '0601020304',
+    postalCode: '75000',
+  }
+
+export const defaultEducationalRedactor: EducationalRedactorResponseModel = {
+  civility: 'Mr',
+  email: 'Jean.Dupont@example.com',
+  firstName: 'Jean',
+  lastName: 'Dupont',
 }
