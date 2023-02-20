@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from decimal import Decimal
 from unittest import mock
 from unittest.mock import patch
 
@@ -374,6 +375,8 @@ class UpdateVenueTest:
             "email": venue.contact.email + ".update",
             "phone_number": "+33102030456",
             "isPermanent": True,
+            "latitude": "48.87056",
+            "longitude": "2.34767",
         }
 
         response = send_request(authenticated_client, venue.id, url, data)
@@ -390,6 +393,8 @@ class UpdateVenueTest:
         assert venue.contact.email == data["email"]
         assert venue.contact.phone_number == data["phone_number"]
         assert venue.isPermanent == data["isPermanent"]
+        assert venue.latitude == Decimal("48.87056")
+        assert venue.longitude == Decimal("2.34767")
 
         # should not have been updated or erased
         assert venue.contact.website == website
