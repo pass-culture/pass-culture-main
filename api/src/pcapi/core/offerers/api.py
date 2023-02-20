@@ -787,23 +787,27 @@ def can_offerer_create_educational_offer(offerer_id: int | None) -> None:
 
 
 def get_educational_offerers(offerer_id: str | None, current_user: users_models.User) -> list[models.Offerer]:
-    if current_user.has_admin_role and offerer_id is None:
+    if current_user.has_admin_role and not offerer_id:
         logger.info("Admin user must provide offerer_id as a query parameter")
         raise exceptions.MissingOffererIdQueryParameter
 
     if offerer_id and current_user.has_admin_role:
-        offerers = models.Offerer.query.filter(
-            models.Offerer.isValidated,
-            models.Offerer.isActive.is_(True),
-            models.Offerer.id == human_ids.dehumanize(offerer_id),
-        ).all()
-
+        offerers = (
+            models.Offerer.query.filter(
+                models.Offerer.isValidated,
+                models.Offerer.isActive.is_(True),
+                models.Offerer.id == human_ids.dehumanize(offerer_id),
+            )
+            .options(sa.orm.joinedload(models.Offerer.managedVenues))
+            .all()
+        )
     else:
         offerers = (
             offerers_repository.get_all_offerers_for_user(
                 user=current_user,
                 validated=True,
             )
+            .options(sa.orm.joinedload(models.Offerer.managedVenues))
             .distinct(models.Offerer.id)
             .all()
         )
