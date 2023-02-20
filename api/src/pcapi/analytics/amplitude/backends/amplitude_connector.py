@@ -7,6 +7,7 @@ from pcapi import settings
 
 
 AMPLITUDE_API_PUBLIC_KEY = settings.AMPLITUDE_API_PUBLIC_KEY
+logger = logging.getLogger(__name__)
 
 
 class AmplitudeEventType(enum.Enum):
@@ -20,7 +21,7 @@ class AmplitudeBackend:
 
     def __init__(self) -> None:
         client = amplitude_sdk.Amplitude(AMPLITUDE_API_PUBLIC_KEY)
-        client.configuration.logger = logging.getLogger(__name__)
+        client.configuration.logger = logger
         client.configuration.min_id_length = 1
         client.configuration.server_zone = "EU"
         client.configuration.use_batch = True

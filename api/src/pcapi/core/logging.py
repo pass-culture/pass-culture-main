@@ -10,6 +10,7 @@ import time
 import typing
 import uuid
 
+import amplitude
 import flask
 from flask_login import current_user
 
@@ -135,7 +136,7 @@ def monkey_patch_logger_log() -> None:
 
 
 class JsonLogEncoder(json.JSONEncoder):
-    def default(self, obj: typing.Any) -> str | float | list[str | float]:
+    def default(self, obj: typing.Any) -> str | float | list[str | float] | dict:
         if isinstance(obj, decimal.Decimal):
             return float(obj)
         if isinstance(obj, enum.Enum):
@@ -152,6 +153,8 @@ class JsonLogEncoder(json.JSONEncoder):
             return obj.isoformat()
         if isinstance(obj, Exception):
             return str(obj)
+        if isinstance(obj, amplitude.BaseEvent):
+            return {"event_type": obj.event_type}
         return super().default(obj)
 
 
