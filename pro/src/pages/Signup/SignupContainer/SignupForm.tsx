@@ -7,6 +7,7 @@ import FormLayout from 'components/FormLayout'
 import LegalInfos from 'components/LegalInfos/LegalInfos'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { useModal } from 'hooks/useModal'
 import {
   Button,
@@ -29,6 +30,8 @@ const SignupForm = (): JSX.Element => {
   const { showModal } = useModal()
   const { values, setFieldValue, setFieldError, isSubmitting } =
     useFormikContext<ISignupFormValues>()
+
+  const newOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
 
   useScrollToFirstErrorAfterSubmit()
 
@@ -93,18 +96,20 @@ const SignupForm = (): JSX.Element => {
             }
           />
         </FormLayout.Row>
-        <div className={styles['siren-field']}>
-          <FormLayout.Row>
-            <SirenInput
-              label="SIREN de la structure que vous représentez"
-              onValidSiren={getSirenAPIData}
-            />
-          </FormLayout.Row>
-          <span className={styles['field-siren-value']}>
-            {values.legalUnitValues.name}
-          </span>
-          {showAnonymousBanner && <BannerInvisibleSiren />}
-        </div>
+        {!newOnboardingActive && (
+          <div className={styles['siren-field']}>
+            <FormLayout.Row>
+              <SirenInput
+                label="SIREN de la structure que vous représentez"
+                onValidSiren={getSirenAPIData}
+              />
+            </FormLayout.Row>
+            <span className={styles['field-siren-value']}>
+              {values.legalUnitValues.name}
+            </span>
+            {showAnonymousBanner && <BannerInvisibleSiren />}
+          </div>
+        )}
         <FormLayout.Row>
           <Checkbox
             hideFooter
