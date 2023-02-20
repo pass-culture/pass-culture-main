@@ -122,13 +122,6 @@ class OffererView(BaseAdminView):
         except offerers_exceptions.CannotDeleteOffererWithBookingsException:
             flash("Impossible d'effacer une structure juridique pour laquelle il existe des réservations.", "error")
             return False
-        except offerers_exceptions.CannotDeleteOffererUsedAsPricingPointException:
-            flash(
-                "Impossible d'effacer une structure juridique dont un lieu est utilisé comme point de valorisation "
-                "pour un lieu d'une autre structure.",
-                "error",
-            )
-            return False
 
         for email in emails:
             update_external_pro(email)

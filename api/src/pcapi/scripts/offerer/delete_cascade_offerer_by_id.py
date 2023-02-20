@@ -39,16 +39,6 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         offerers_models.Venue.id
     )
 
-    managed_venue_used_as_pricing_point = db.session.query(
-        offerers_models.VenuePricingPointLink.query.filter(
-            offerers_models.VenuePricingPointLink.venueId.not_in(venue_ids),
-            offerers_models.VenuePricingPointLink.pricingPointId.in_(venue_ids),
-        ).exists()
-    ).scalar()
-
-    if managed_venue_used_as_pricing_point:
-        raise offerers_exceptions.CannotDeleteOffererUsedAsPricingPointException()
-
     deleted_activation_codes_count = ActivationCode.query.filter(
         ActivationCode.stockId == Stock.id,
         Stock.offerId == Offer.id,
@@ -156,18 +146,13 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         BankInformation.id.in_(bank_information_ids_to_delete)
     ).delete(synchronize_session=False)
 
-    # Warning: we should only delete rows where the "venueId" is the
-    # venue to delete. We should NOT delete rows where the
-    # "pricingPointId" or the "reimbursementId" is the venue to
-    # delete. If other venues still have the "venue to delete" as
-    # their pricing/reimbursement point, the database will rightfully
-    # raise an error. Either these venues should be deleted first, or
-    # the "venue to delete" should not be deleted.
     deleted_pricing_point_links_count = offerers_models.VenuePricingPointLink.query.filter(
         offerers_models.VenuePricingPointLink.venueId.in_(venue_ids)
+        | offerers_models.VenuePricingPointLink.pricingPointId.in_(venue_ids),
     ).delete(synchronize_session=False)
     deleted_reimbursement_point_links_count = offerers_models.VenueReimbursementPointLink.query.filter(
         offerers_models.VenueReimbursementPointLink.venueId.in_(venue_ids)
+        | offerers_models.VenueReimbursementPointLink.reimbursementPointId.in_(venue_ids),
     ).delete(synchronize_session=False)
     deleted_venues_count = Venue.query.filter(Venue.managingOffererId == offerer_id).delete(synchronize_session=False)
 

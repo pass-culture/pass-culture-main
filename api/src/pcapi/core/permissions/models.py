@@ -31,6 +31,7 @@ class Permissions(enum.Enum):
     SEARCH_PRO_ACCOUNT = "rechercher un acteur culturel"
     READ_PRO_ENTITY = "visualiser une structure, un lieu ou un compte pro"
     MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"
+    DELETE_PRO_ENTITY = "supprimer une structure ou un lieu"
 
     MANAGE_BOOKINGS = "gérer les réservations"
     SEARCH_BOOKINGS = "rechercher les réservations"

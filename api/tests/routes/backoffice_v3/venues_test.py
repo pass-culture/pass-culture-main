@@ -13,6 +13,7 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 import pcapi.core.history.factories as history_factories
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
@@ -351,6 +352,94 @@ class HasReimbursementPointTest:
     def test_venue_with_no_reimbursement_point_links(self):
         venue = offerers_factories.VenueFactory()
         assert not venues.has_reimbursement_point(venue)
+
+
+class DeleteVenueTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.venue.delete_venue"
+        endpoint_kwargs = {"venue_id": 1}
+        needed_permission = perm_models.Permissions.DELETE_PRO_ENTITY
+
+    def test_delete_venue(self, legit_user, authenticated_client):
+        venue_to_delete = offerers_factories.VenueFactory()
+        venue_to_delete_name = venue_to_delete.name
+        venue_to_delete_id = venue_to_delete.id
+
+        response = self.delete_venue(authenticated_client, venue_to_delete)
+        assert response.status_code == 303
+        assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 0
+
+        expected_url = url_for("backoffice_v3_web.search_pro", _external=True)
+        assert response.location == expected_url
+        response = authenticated_client.get(expected_url)
+        assert (
+            html_parser.extract_alert(response.data)
+            == f"Le lieu {venue_to_delete_name} ({venue_to_delete_id}) a été supprimé"
+        )
+
+    def test_cant_delete_venue_with_bookings(self, legit_user, authenticated_client):
+        booking = bookings_factories.BookingFactory()
+        venue_to_delete = booking.venue
+        venue_to_delete_id = venue_to_delete.id
+
+        response = self.delete_venue(authenticated_client, venue_to_delete)
+        assert response.status_code == 303
+        assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
+
+        expected_url = url_for("backoffice_v3_web.venue.get", venue_id=venue_to_delete.id, _external=True)
+        assert response.location == expected_url
+        response = authenticated_client.get(expected_url)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Impossible d'effacer un lieu pour lequel il existe des réservations"
+        )
+
+    def test_cant_delete_venue_when_pricing_point_for_another_venue(self, legit_user, authenticated_client):
+        venue_to_delete = offerers_factories.VenueFactory(pricing_point="self")
+        offerers_factories.VenueFactory(pricing_point=venue_to_delete, managingOfferer=venue_to_delete.managingOfferer)
+        venue_to_delete_id = venue_to_delete.id
+
+        response = self.delete_venue(authenticated_client, venue_to_delete)
+        assert response.status_code == 303
+        assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
+
+        expected_url = url_for("backoffice_v3_web.venue.get", venue_id=venue_to_delete.id, _external=True)
+        assert response.location == expected_url
+        response = authenticated_client.get(expected_url)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Impossible d'effacer un lieu utilisé comme point de valorisation d'un autre lieu"
+        )
+
+    def test_cant_delete_venue_when_reimbursement_point_for_another_venue(self, legit_user, authenticated_client):
+        venue_to_delete = offerers_factories.VenueFactory(pricing_point="self")
+        offerers_factories.VenueFactory(
+            reimbursement_point=venue_to_delete, managingOfferer=venue_to_delete.managingOfferer
+        )
+        venue_to_delete_id = venue_to_delete.id
+
+        response = self.delete_venue(authenticated_client, venue_to_delete)
+        assert response.status_code == 303
+        assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
+
+        expected_url = url_for("backoffice_v3_web.venue.get", venue_id=venue_to_delete.id, _external=True)
+        assert response.location == expected_url
+        response = authenticated_client.get(expected_url)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Impossible d'effacer un lieu utilisé comme point de remboursement d'un autre lieu"
+        )
+
+    def delete_venue(self, authenticated_client, venue_to_delete):
+        # generate csrf token
+        venue_url = url_for("backoffice_v3_web.venue.get", venue_id=venue_to_delete.id)
+        authenticated_client.get(venue_url)
+
+        url = url_for("backoffice_v3_web.venue.delete_venue", venue_id=venue_to_delete.id)
+
+        form = {"csrf_token": g.get("csrf_token", "")}
+        return authenticated_client.post(url, form=form)
 
 
 class UpdateVenueTest:

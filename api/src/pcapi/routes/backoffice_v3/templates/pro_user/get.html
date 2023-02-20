@@ -1,5 +1,6 @@
 {% from "components/badges.html" import build_pro_user_badges %}
 {% from "components/generic_modal.html" import build_modal_form %}
+{% from "components/form_body.html" import build_form_body with context %}
 
 {% extends "layouts/pro.html" %}
 
@@ -45,7 +46,7 @@
                                         <form action="{{ dst }}" method="POST">
                                             <div class="modal-body">
                                                 <div class="form-group">
-                                                    {% include "components/form_body.html" %}
+                                                    {{ build_form_body(form) }}
                                                 </div>
                                             </div>
                                             <div class="modal-footer">

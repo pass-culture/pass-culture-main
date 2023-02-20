@@ -1,5 +1,6 @@
 {% from "components/badges.html" import build_venue_badges %}
 {% from "components/external_links.html" import build_siret_link %}
+{% from "components/form_body.html" import build_form_body with context %}
 
 {% extends "layouts/pro.html" %}
 
@@ -8,52 +9,79 @@
     <div class="col">
         <div class="card shadow">
             <div class="card-body">
-                <div class="row justify-content-start align-items-center">
-                    <div class="col d-flex align-items-center justify-content-start">
-                        <h2 class="card-title mb-3 text-primary">
-                            <a href="{{ venue | pc_pro_venue_link }}" target="_blank"
-                               class="link-primary">
-                                {{ venue.name | escape }}
-                            </a>
-                        </h2>
-                        <span class="fs-5 ps-4 mb-3 align-middle">
-                            {{ build_venue_badges(venue) }}
-                        </span>
-                    </div>
-
-                    <div class="col-2">
-                        <button class="btn btn-outline-primary lead fw-bold mt-2"
-                                data-bs-toggle="modal"
-                                data-bs-target="#venue-edit-details">
-                            Modifier les informations
-                        </button>
-                        <div class="modal fade" id="venue-edit-details" tabindex="-1"
-                             aria-labelledby="venue-edit-details-label" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <form action="{{ url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id) }}"
-                                      method="POST" class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Modifier les informations du lieu</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Fermer"></button>
+                <div class="d-flex flex-fill align-items-center">
+                    <h2 class="card-title text-primary">
+                        <a href="{{ venue | pc_pro_venue_link }}" target="_blank"
+                            class="link-primary">
+                            {{ venue.name | escape }}
+                        </a>
+                    </h2>
+                    <span class="fs-5 ps-4">
+                        {{ build_venue_badges(venue) }}
+                    </span>
+                    <div class="d-flex row-reverse justify-content-end flex-grow-1">
+                        {% if has_permission("MANAGE_PRO_ENTITY") %}
+                            <button class="btn btn-outline-primary lead fw-bold mt-2 mx-3" data-bs-toggle="modal"
+                                    data-bs-target="#edit-venue-modal" type="button">
+                                Modifier les informations
+                            </button>
+                            <div class="modal modal-lg fade" id="edit-venue-modal" tabindex="-1"
+                                aria-labelledby="edit-venue-modal-label" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <form action="{{ url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id) }}" method="POST">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Modifier les informations du lieu</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="form-floating my-3">
+                                                    {{ build_form_body(edit_venue_form) }}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                                                    Annuler
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                            </div>
+                                        </form>
                                     </div>
-
-                                    <div class="modal-body">
-                                        <div class="form-floating my-3">
-                                            {% include "components/form_body.html" %}
-                                        </div>
-                                    </div>
-
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-                                            Annuler
-                                        </button>
-                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
-                                    </div>
-
-                                </form>
+                                </div>
                             </div>
-                        </div>
+                        {% endif %}
+                        {% if has_permission("DELETE_PRO_ENTITY") %}
+                            <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
+                            data-bs-target="#delete-venue-modal" type="button">
+                                <i class="bi bi-trash3-fill"></i>
+                                Supprimer le lieu
+                            </button>
+                            <div class="modal modal-lg fade" id="delete-venue-modal" tabindex="-1"
+                                aria-describedby="delete-venue-modal-label" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <form action="{{ url_for("backoffice_v3_web.venue.delete_venue", venue_id=venue.id) }}"
+                                            method="POST" data-turbo="false">
+                                            <div class="modal-header" id="delete-venue-modal-label">
+                                                <h5 class="modal-title">Supprimer le lieu {{ venue.name }}</h5>
+                                            </div>
+                                            <div class="modal-body row">
+                                                <p>
+                                                    Le lieu <strong>{{ venue.name }} ({{ venue.id }})</strong> sera définitivement supprimé
+                                                    de la base de données. Veuillez confirmer ce choix.
+                                                </p>
+                                                <div class="form-group">
+                                                    {{ build_form_body(delete_venue_form) }}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
+                                                <button type="submit" class="btn btn-primary">Confirmer</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
