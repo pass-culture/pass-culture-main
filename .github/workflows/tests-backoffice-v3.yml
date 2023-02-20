@@ -91,12 +91,29 @@ jobs:
             flask install_data
             mkdir -p test-results
             pytest --durations=10 --junitxml=test-results/junit.xml -m backoffice_v3
-      - name: Slack Notification
-        if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: rtCamp/action-slack-notify@v2
+      - name: "Notification backoffice tests"
+        if: ${{ failure() }}
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          # channel #dev
+          channel-id: "CPZ7U1CNP"
+          payload: |
+            {
+            "attachments": [
+              {
+                "mrkdwn_in": ["text"],
+                "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
+                "author_name": "${{github.actor}}",
+                "author_link": "https://github.com/${{github.actor}}",
+                "author_icon": "https://github.com/${{github.actor}}.png",
+                "title": "Backoffice tests",
+                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                "text": "Les tests de backoffice-v3 échouent sur `master` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
+              }
+            ],
+            "unfurl_links": false,
+            "unfurl_media": false
+            }
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_CI_WEBHOOK }}
-          SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: "Les tests de backoffice-v3 échouent sur master. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
-          MSG_MINIMAL: true
-
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
