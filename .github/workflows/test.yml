@@ -7,6 +7,7 @@ on:
 jobs:
   openssl:
     name: Recover With OpenSSL
+    environment: production
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
