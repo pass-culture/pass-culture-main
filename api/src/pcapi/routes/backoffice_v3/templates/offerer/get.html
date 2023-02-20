@@ -1,5 +1,6 @@
 {% from "components/badges.html" import build_offerer_badges %}
 {% from "components/external_links.html" import build_siren_link %}
+{% from "components/form_body.html" import build_form_body with context %}
 
 {% extends "layouts/pro.html" %}
 
@@ -8,34 +9,33 @@
     <div class="col">
         <div class="card shadow">
             <div class="card-body">
-                <div class="row justify-content-start align-items-center">
-                    <div class="col d-flex align-items-center justify-content-start">
-                        <h2 class="card-title text-primary me-3">
-                            <a href="{{ offerer | pc_pro_offerer_link }}" target="_blank"
-                            class="link-primary">
-                                {{ offerer.name | escape }}
-                            </a>
-                        </h2>
-                        <span class="fs-5 ps-4 mb-3 align-middle">
-                            {{ build_offerer_badges(offerer) }}
-                        </span>
-                    </div>
-                    <div class="col-2">
+                <div class="d-flex flex-fill align-items-center">
+                    <h2 class="card-title text-primary">
+                        <a href="{{ offerer | pc_pro_offerer_link }}" target="_blank"
+                        class="link-primary">
+                            {{ offerer.name | escape }}
+                        </a>
+                    </h2>
+                    <span class="fs-5 ps-4">
+                        {{ build_offerer_badges(offerer) }}
+                    </span>
+                    <div class="d-flex row-reverse justify-content-end flex-grow-1">
                         {% if has_permission("MANAGE_PRO_ENTITY") %}
-                            <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
+                            <button class="btn btn-outline-primary lead fw-bold mt-2 mx-3" data-bs-toggle="modal"
                                     data-bs-target="#edit-offerer-modal" type="button">
                                 Modifier les informations
                             </button>
                             <div class="modal modal-lg fade" id="edit-offerer-modal" tabindex="-1"
-                                 aria-describedby="edit-offerer-modal-label" aria-hidden="true">
+                                aria-describedby="edit-offerer-modal-label" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                     <div class="modal-content">
-                                        <div class="modal-header fs-5" id="edit-offerer-modal-label">
-                                            Modifier les informations de la structure</div>
-                                        <form action="{{ dst }}" method="POST">
+                                        <form action="{{ url_for("backoffice_v3_web.offerer.update_offerer", offerer_id=offerer.id) }}" method="POST">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Modifier les informations de la structure</h5>
+                                            </div>
                                             <div class="modal-body pb-3">
                                                 <div class="form-group">
-                                                    {% include "components/form_body.html" %}
+                                                    {{ build_form_body(edit_offerer_form) }}
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -43,6 +43,39 @@
                                                     Annuler
                                                 </button>
                                                 <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if has_permission("DELETE_PRO_ENTITY") %}
+                            <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
+                            data-bs-target="#delete-offerer-modal" type="button">
+                                <i class="bi bi-trash3-fill"></i>
+                                Supprimer la structure
+                            </button>
+                            <div class="modal modal-lg fade" id="delete-offerer-modal" tabindex="-1"
+                                aria-describedby="delete-offerer-modal-label" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <form action="{{ url_for("backoffice_v3_web.offerer.delete_offerer", offerer_id=offerer.id) }}"
+                                            method="POST" data-turbo="false">
+                                            <div class="modal-header" id="delete-offerer-modal-label">
+                                                <h5 class="modal-title">Supprimer la structure {{ offerer.name }}</h5>
+                                            </div>
+                                            <div class="modal-body row">
+                                                <p>
+                                                    La structure <strong>{{ offerer.name }} ({{ offerer.id }})</strong> sera définitivement supprimée
+                                                    de la base de données. Veuillez confirmer ce choix.
+                                                </p>
+                                                <div class="form-group">
+                                                    {{ build_form_body(delete_offerer_form) }}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
+                                                <button type="submit" class="btn btn-primary">Confirmer</button>
                                             </div>
                                         </form>
                                     </div>

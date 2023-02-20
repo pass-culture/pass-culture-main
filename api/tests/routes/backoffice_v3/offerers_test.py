@@ -141,6 +141,59 @@ class GetOffererTest:
         assert "Éligible EAC : Non " in html_parser.content_as_text(response.data)
 
 
+class DeleteOffererTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.offerer.delete_offerer"
+        endpoint_kwargs = {"offerer_id": 1}
+        needed_permission = perm_models.Permissions.DELETE_PRO_ENTITY
+
+    def test_delete_offerer(self, legit_user, authenticated_client):
+        offerer_to_delete = offerers_factories.OffererFactory()
+        offerer_to_delete_name = offerer_to_delete.name
+        offerer_to_delete_id = offerer_to_delete.id
+
+        response = self.delete_offerer(authenticated_client, offerer_to_delete)
+        assert response.status_code == 303
+        assert offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_to_delete.id).count() == 0
+
+        expected_url = url_for("backoffice_v3_web.search_pro", _external=True)
+        assert response.location == expected_url
+        response = authenticated_client.get(expected_url)
+        assert (
+            html_parser.extract_alert(response.data)
+            == f"La structure {offerer_to_delete_name} ({offerer_to_delete_id}) a été supprimée"
+        )
+
+    def test_cant_delete_offerer_with_bookings(self, legit_user, authenticated_client):
+        offerer_to_delete = offerers_factories.OffererFactory()
+        offers_factories.OfferFactory(venue__managingOfferer=offerer_to_delete)
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer_to_delete)
+        offerer_to_delete_id = offerer_to_delete.id
+
+        response = self.delete_offerer(authenticated_client, offerer_to_delete)
+        assert response.status_code == 303
+        assert offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_to_delete_id).count() == 1
+
+        expected_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_to_delete.id, _external=True)
+        assert response.location == expected_url
+        response = authenticated_client.get(expected_url)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Impossible d'effacer une structure juridique pour laquelle il existe des réservations"
+        )
+
+    def delete_offerer(self, authenticated_client, offerer_to_delete):
+        # generate csrf token
+        offerer_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_to_delete.id)
+        authenticated_client.get(offerer_url)
+
+        url = url_for("backoffice_v3_web.offerer.delete_offerer", offerer_id=offerer_to_delete.id)
+
+        form = {"csrf_token": g.get("csrf_token", "")}
+        return authenticated_client.post(url, form=form)
+
+
 class UpdateOffererTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
         method = "post"

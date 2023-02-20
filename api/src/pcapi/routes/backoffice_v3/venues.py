@@ -12,15 +12,20 @@ from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.connectors.dms.api import DMSGraphQLClient
+from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.history.models as history_models
 from pcapi.core.offerers import api as offerers_api
-import pcapi.core.offerers.models as offerers_models
+from pcapi.core.offerers import exceptions as offerers_exceptions
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.permissions.models as perm_models
 from pcapi.models.api_errors import ApiErrors
 import pcapi.routes.serialization.base as serialize_base
+from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 import pcapi.utils.regions as regions_utils
 
 from . import utils
+from .forms import empty as empty_forms
 from .forms import venue as forms
 from .serialization import offerers as offerers_serialization
 from .serialization import venues as serialization
@@ -86,20 +91,20 @@ def has_reimbursement_point(
 
 
 def render_venue_details(
-    venue: offerers_models.Venue, form: forms.EditVirtualVenueForm | None = None
+    venue: offerers_models.Venue, edit_venue_form: forms.EditVirtualVenueForm | None = None
 ) -> utils.BackofficeResponse:
     dms_application_id = venue.bankInformation.applicationId if venue.bankInformation else None
     dms_stats = get_dms_stats(dms_application_id)
     region = regions_utils.get_region_name_from_postal_code(venue.postalCode) if venue.postalCode else ""
 
-    if not form:
+    if not edit_venue_form:
         if venue.isVirtual:
-            form = forms.EditVirtualVenueForm(
+            edit_venue_form = forms.EditVirtualVenueForm(
                 email=venue.contact.email if venue.contact else None,
                 phone_number=venue.contact.phone_number if venue.contact else None,
             )
         else:
-            form = forms.EditVenueForm(
+            edit_venue_form = forms.EditVenueForm(
                 venue=venue,
                 siret=venue.siret,
                 city=venue.city,
@@ -111,14 +116,16 @@ def render_venue_details(
                 latitude=venue.latitude,
                 longitude=venue.longitude,
             )
+    delete_venue_form = empty_forms.EmptyForm()
 
     return render_template(
         "venue/get.html",
         venue=venue,
-        form=form,
+        edit_venue_form=edit_venue_form,
         region=region,
         has_reimbursement_point=has_reimbursement_point(venue),
         dms_stats=dms_stats,
+        delete_venue_form=delete_venue_form,
     )
 
 
@@ -198,6 +205,33 @@ def get_details(venue_id: int) -> utils.BackofficeResponse:
         dst=dst,
         form=form,
     )
+
+
+@venue_blueprint.route("/delete", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
+def delete_venue(venue_id: int) -> utils.BackofficeResponse:
+    venue = offerers_models.Venue.query.get_or_404(venue_id)
+    venue_name = venue.name
+
+    emails = offerers_repository.get_emails_by_venue(venue)
+
+    try:
+        delete_cascade_venue_by_id(venue.id)
+    except offerers_exceptions.CannotDeleteVenueWithBookingsException:
+        flash("Impossible d'effacer un lieu pour lequel il existe des réservations", "warning")
+        return redirect(url_for("backoffice_v3_web.venue.get", venue_id=venue.id), code=303)
+    except offerers_exceptions.CannotDeleteVenueUsedAsPricingPointException:
+        flash("Impossible d'effacer un lieu utilisé comme point de valorisation d'un autre lieu", "warning")
+        return redirect(url_for("backoffice_v3_web.venue.get", venue_id=venue.id), code=303)
+    except offerers_exceptions.CannotDeleteVenueUsedAsReimbursementPointException:
+        flash("Impossible d'effacer un lieu utilisé comme point de remboursement d'un autre lieu", "warning")
+        return redirect(url_for("backoffice_v3_web.venue.get", venue_id=venue.id), code=303)
+
+    for email in emails:
+        external_attributes_api.update_external_pro(email)
+
+    flash(f"Le lieu {venue_name} ({venue_id}) a été supprimé", "success")
+    return redirect(url_for("backoffice_v3_web.search_pro"), code=303)
 
 
 @venue_blueprint.route("/update", methods=["POST"])

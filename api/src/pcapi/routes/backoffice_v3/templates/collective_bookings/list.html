@@ -1,5 +1,6 @@
 {% from "components/bookings/reimbursed.html" import build_reimbursed_td_content with context %}
 {% from "components/bookings/reimbursed.html" import build_reimbursed_extra_tr with context %}
+{% from "components/form_body.html" import build_form_body with context %}
 
 {% extends "layouts/connected.html" %}
 
@@ -67,8 +68,7 @@
                                                         </div>
                                                         <div class="modal-body row">
                                                             <div class="form-group">
-                                                                {% set form = mark_as_used_booking_form %}
-                                                                {% include "components/form_body.html" %}
+                                                                {{ build_form_body(mark_as_used_booking_form) }}
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
@@ -90,8 +90,7 @@
                                                         </div>
                                                         <div class="modal-body row">
                                                             <div class="form-group">
-                                                                {% set form = cancel_booking_form %}
-                                                                {% include "components/form_body.html" %}
+                                                                {{ build_form_body(cancel_booking_form) }}
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
