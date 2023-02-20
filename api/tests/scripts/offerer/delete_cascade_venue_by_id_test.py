@@ -86,6 +86,27 @@ def test_delete_cascade_venue_should_abort_when_pricing_point_for_another_venue(
 
 
 @pytest.mark.usefixtures("db_session")
+def test_delete_cascade_venue_should_abort_when_reimbursement_point_for_another_venue():
+    # Given
+    venue_to_delete = offerers_factories.VenueFactory(reimbursement_point="self")
+    offerers_factories.VenueFactory(
+        reimbursement_point=venue_to_delete, managingOfferer=venue_to_delete.managingOfferer
+    )
+
+    # When
+    with pytest.raises(offerers_exceptions.CannotDeleteVenueUsedAsReimbursementPointException) as exception:
+        delete_cascade_venue_by_id(venue_to_delete.id)
+
+    # Then
+    assert exception.value.errors["cannotDeleteVenueUsedAsReimbursementPointException"] == [
+        "Lieu non supprimable car il est utilisé comme point de remboursement d'un autre lieu"
+    ]
+    assert offerers_models.Offerer.query.count() == 1
+    assert offerers_models.Venue.query.count() == 2
+    assert offerers_models.VenueReimbursementPointLink.query.count() == 2
+
+
+@pytest.mark.usefixtures("db_session")
 def test_delete_cascade_venue_should_remove_offers_stocks_and_activation_codes():
     # Given
     venue_to_delete = offerers_factories.VenueFactory()

@@ -45,6 +45,16 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
     if venue_used_as_pricing_point:
         raise offerers_exceptions.CannotDeleteVenueUsedAsPricingPointException()
 
+    venue_used_as_reimbursement_point = db.session.query(
+        offerers_models.VenueReimbursementPointLink.query.filter(
+            offerers_models.VenueReimbursementPointLink.venueId != venue_id,
+            offerers_models.VenueReimbursementPointLink.reimbursementPointId == venue_id,
+        ).exists()
+    ).scalar()
+
+    if venue_used_as_reimbursement_point:
+        raise offerers_exceptions.CannotDeleteVenueUsedAsReimbursementPointException()
+
     deleted_activation_codes_count = ActivationCode.query.filter(
         ActivationCode.stockId == Stock.id,
         Stock.offerId == Offer.id,

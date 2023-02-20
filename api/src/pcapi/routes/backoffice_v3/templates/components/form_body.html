@@ -1,9 +1,11 @@
-{% for form_field in form %}
-    <div class="w-100 my-4">
-        {% for error in form_field.errors %}
-            <p class="text-warning lead">{{ error }}</p>
-        {% endfor %}
-    </div>
+{% macro build_form_body(form) %}
+    {% for form_field in form %}
+        <div class="w-100 my-4">
+            {% for error in form_field.errors %}
+                <p class="text-warning lead">{{ error }}</p>
+            {% endfor %}
+        </div>
 
-    {{ form_field }}
-{% endfor %}
+        {{ form_field }}
+    {% endfor %}
+{% endmacro %}

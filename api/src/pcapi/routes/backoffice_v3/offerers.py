@@ -14,15 +14,18 @@ from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
+from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 from pcapi.utils import date as date_utils
 import pcapi.utils.regions as regions_utils
 
@@ -42,7 +45,7 @@ offerer_blueprint = utils.child_backoffice_blueprint(
 
 
 def render_offerer_details(
-    offerer: offerers_models.Offerer, form: offerer_forms.EditOffererForm | None = None
+    offerer: offerers_models.Offerer, edit_offerer_form: offerer_forms.EditOffererForm | None = None
 ) -> utils.BackofficeResponse:
     basic_info = offerers_api.get_offerer_basic_info(offerer.id)
 
@@ -56,16 +59,15 @@ def render_offerer_details(
     bank_information_status = serialization.OffererBankInformationStatus(
         ok=bank_informations_ok, ko=bank_informations_ko
     )
-
-    if not form:
-        form = offerer_forms.EditOffererForm(
+    if not edit_offerer_form:
+        edit_offerer_form = offerer_forms.EditOffererForm(
             city=offerer.city,
             postal_code=offerer.postalCode,
             address=offerer.address,
             tags=offerer.tags,
         )
 
-    dst = url_for(".update_offerer", offerer_id=offerer.id)
+    delete_offerer_form = empty_forms.EmptyForm()
 
     return render_template(
         "offerer/get.html",
@@ -73,8 +75,8 @@ def render_offerer_details(
         region=regions_utils.get_region_name_from_postal_code(offerer.postalCode),
         bank_information_status=bank_information_status,
         is_collective_eligible=basic_info.is_collective_eligible,
-        form=form,
-        dst=dst,
+        edit_offerer_form=edit_offerer_form,
+        delete_offerer_form=delete_offerer_form,
     )
 
 
@@ -156,6 +158,29 @@ def _get_add_pro_user_form(offerer: offerers_models.Offerer) -> offerer_forms.Ad
     return form
 
 
+@offerer_blueprint.route("/delete", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
+def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer_name = offerer.name
+
+    # Get users to update before association info is deleted
+    # joined user is no longer available after delete_model()
+    emails = offerers_repository.get_emails_by_offerer(offerer)
+
+    try:
+        delete_cascade_offerer_by_id(offerer.id)
+    except offerers_exceptions.CannotDeleteOffererWithBookingsException:
+        flash("Impossible d'effacer une structure juridique pour laquelle il existe des réservations", "warning")
+        return redirect(url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id), code=303)
+
+    for email in emails:
+        external_attributes_api.update_external_pro(email)
+
+    flash(f"La structure {offerer_name} ({offerer_id}) a été supprimée", "success")
+    return redirect(url_for("backoffice_v3_web.search_pro"), code=303)
+
+
 @offerer_blueprint.route("/update", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
@@ -174,7 +199,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
             """
         ).format()
         flash(msg, "warning")
-        return render_offerer_details(offerer=offerer, form=form)
+        return render_offerer_details(offerer=offerer, edit_offerer_form=form)
 
     modified_info = offerers_api.update_offerer(
         offerer,
