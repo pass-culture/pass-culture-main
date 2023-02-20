@@ -15,6 +15,7 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { BaseCheckbox } from 'ui-kit/form/shared'
 
 import deletePriceCategoryAdapter from './adapters/deletePriceCategoryAdapter'
+import postPriceCategoriesAdapter from './adapters/postPriceCategoriesAdapter'
 import { computeInitialValues } from './form/computeInitialValues'
 import {
   INITIAL_PRICE_CATEGORY,
@@ -23,7 +24,7 @@ import {
   PRICE_CATEGORY_PRICE_MAX,
   UNIQUE_PRICE,
 } from './form/constants'
-import { PriceCategoriesFormValues } from './form/types'
+import { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
 import styles from './PriceCategoriesForm.module.scss'
 
 interface IPriceCategoriesForm {
@@ -76,6 +77,7 @@ export const PriceCategoriesForm = ({
   const onDeletePriceCategory = async (
     index: number,
     arrayHelpers: FieldArrayRenderProps,
+    priceCategories: PriceCategoryForm[],
     priceCategoryId?: number
   ) => {
     if (priceCategoryId) {
@@ -114,6 +116,32 @@ export const PriceCategoriesForm = ({
     }
     if (values.priceCategories.length === 2) {
       setFieldValue(`priceCategories[0].label`, UNIQUE_PRICE)
+      const otherPriceCategory = priceCategories.filter(
+        pC => pC.id !== priceCategoryId
+      )
+      const otherPriceCategoryId = otherPriceCategory[0]?.id
+      if (otherPriceCategoryId) {
+        const requestBody = {
+          priceCategories: [
+            {
+              label: UNIQUE_PRICE,
+              id: otherPriceCategoryId,
+            },
+          ],
+        }
+        await postPriceCategoriesAdapter({
+          offerId: offerId,
+          requestBody: requestBody,
+        })
+      }
+      const response = await getOfferIndividualAdapter(humanizedOfferId)
+      if (response.isOk) {
+        const updatedOffer = response.payload
+        setOffer && setOffer(updatedOffer)
+        resetForm({
+          values: computeInitialValues(updatedOffer),
+        })
+      }
     }
   }
 
@@ -133,6 +161,7 @@ export const PriceCategoriesForm = ({
                       onDeletePriceCategory(
                         index,
                         arrayHelpers,
+                        values.priceCategories,
                         values.priceCategories[index].id
                       )
                     }
@@ -188,6 +217,7 @@ export const PriceCategoriesForm = ({
                         onDeletePriceCategory(
                           index,
                           arrayHelpers,
+                          values.priceCategories,
                           values.priceCategories[index].id
                         )
                       }
