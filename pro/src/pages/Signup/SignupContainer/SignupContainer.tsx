@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useLogEventOnUnload from 'hooks/useLogEventOnUnload'
 import { useModal } from 'hooks/useModal'
@@ -26,6 +27,8 @@ const SignupContainer = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   useRedirectLoggedUser()
 
+  const newOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
+
   useEffect(() => {
     const script = document.createElement('script')
 
@@ -43,15 +46,24 @@ const SignupContainer = (): JSX.Element => {
   }, [])
 
   const onSubmit = (values: ISignupFormValues) => {
-    const { legalUnitValues, ...flattenvalues } = values
-    const { firstName, siren } = flattenvalues
-    api
-      .signupPro({
+    const { legalUnitValues, siren, ...flattenvalues } = values
+    const { firstName } = flattenvalues
+
+    let promise
+    if (!newOnboardingActive) {
+      promise = api.signupPro({
         ...flattenvalues,
         ...legalUnitValues,
         siren: removeWhitespaces(siren),
         publicName: firstName,
       })
+    } else {
+      promise = api.signupProV2({
+        ...flattenvalues,
+        publicName: firstName,
+      })
+    }
+    promise
       .then(() => onHandleSuccess())
       .catch(response => onHandleFail(response.errors ? response.errors : {}))
   }
@@ -75,7 +87,7 @@ const SignupContainer = (): JSX.Element => {
   const formik = useFormik({
     initialValues: SIGNUP_FORM_DEFAULT_VALUES,
     onSubmit: onSubmit,
-    validationSchema,
+    validationSchema: validationSchema(newOnboardingActive),
     validateOnChange: false,
   })
 
