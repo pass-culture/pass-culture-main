@@ -4,6 +4,7 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { individualStockFactory } from 'utils/individualApiFactories'
@@ -45,6 +46,9 @@ const renderPriceCategoriesForm = (
 
 describe('PriceCategories', () => {
   beforeEach(() => {
+    jest
+      .spyOn(api, 'postPriceCategories')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
   })
   it('should render without error', () => {
@@ -128,7 +132,7 @@ describe('PriceCategories', () => {
     expect(api.deletePriceCategory).not.toHaveBeenCalled()
   })
 
-  it('should remove price categories on trash button click', async () => {
+  it('should remove price categories on trash button click and rename last one', async () => {
     jest.spyOn(api, 'deletePriceCategory').mockResolvedValue()
     const values: PriceCategoriesFormValues = {
       priceCategories: [
@@ -144,6 +148,9 @@ describe('PriceCategories', () => {
       screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
     )
     expect(api.deletePriceCategory).toHaveBeenNthCalledWith(1, '42', '66')
+    expect(api.postPriceCategories).toHaveBeenNthCalledWith(1, '42', {
+      priceCategories: [{ id: 2, label: 'Tarif unique' }],
+    })
   })
 
   it('should display delete banner when stock is linked', async () => {
