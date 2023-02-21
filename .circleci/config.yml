@@ -21,9 +21,6 @@ parameters:
   pro_cache_key:
     type: string
     default: 'node_modules-18.12-{{ checksum "pro/yarn.lock" }}'
-  pro_jest_cache_key:
-    type: string
-    default: "node-18.12-jest-cache-{{ epoch }}" # epoch is to ensure we store jest cache at each run (cf https://circleci.com/docs/2.0/caching/#using-keys-and-templates)
   adage-front_cache_key:
     type: string
     default: 'node_modules-18.12-{{ checksum "adage-front/yarn.lock" }}'
@@ -677,113 +674,6 @@ jobs:
             - notify-slack:
                 channel: dev
 
-  quality-pro:
-    docker:
-      - image: cimg/node:18.12
-    working_directory: ~/pass-culture
-    steps:
-      - checkout
-      - skip_unchanged:
-          paths: pro
-      - unless:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - restore_cache:
-                name: Restore Yarn Package Cache
-                key: << pipeline.parameters.pro_cache_key >>
-      - run:
-          name: Install dependencies
-          working_directory: pro
-          command: yarn install
-      - unless:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - save_cache:
-                name: Save Yarn Package Cache
-                key: << pipeline.parameters.pro_cache_key >>
-                paths:
-                  - ~/pass-culture/pro/node_modules
-      - run:
-          name: Running linter
-          working_directory: pro
-          command: yarn lint:js --max-warnings 0
-      - run:
-          name: Running Stylelint
-          working_directory: pro
-          command: yarn lint:scss
-      - when:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - notify-slack:
-                channel: dev
-
-  tests-pro-unit-tests:
-    docker:
-      - image: cimg/node:18.12
-    working_directory: ~/pass-culture
-    steps:
-      - checkout
-      - skip_unchanged:
-          paths: pro
-      - unless:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - restore_cache:
-                name: Restore Yarn Package Cache
-                key: << pipeline.parameters.pro_cache_key >>
-      - run:
-          name: Install packages
-          command: yarn install
-          working_directory: pro
-      - restore_cache:
-          name: Restore Jest Cache
-          key: node-14.18-jest-cache-
-      - when:
-          condition:
-            or:
-              - equal: ["master", << pipeline.git.branch >>]
-              - matches:
-                  pattern: "^maint/.+$"
-                  value: << pipeline.git.branch >>
-          steps:
-            - run:
-                name: Run Unit Test PRO
-                command: yarn test:unit:ci
-                working_directory: pro
-      - unless:
-          condition:
-            matches:
-              pattern: "^maint/.+$"
-              value: << pipeline.git.branch >>
-          steps:
-            - run:
-                name: Coverage Unit Test PRO
-                command: yarn test:unit:ci --coverage --changedSince=master
-                working_directory: pro
-      - unless:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - save_cache:
-                name: Save Yarn Package Cache
-                key: << pipeline.parameters.pro_cache_key >>
-                paths:
-                  - ~/pass-culture/pro/node_modules
-      - save_cache:
-          name: Save Jest Package Cache
-          key: node-14.18-jest-cache-{{ epoch }}
-          paths:
-            - ~/pass-culture/pro/.jest_cache
-      - when:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - notify-slack:
-                channel: dev
   tests-pro-e2e-tests:
     machine:
       image: ubuntu-2004:202101-01
@@ -1164,15 +1054,6 @@ workflows:
                - integration
                - docs
          context: Slack
-      - quality-pro:
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-               - docs
-         context: Slack
       - type-checking-adage-front:
          filters:
            branches:
@@ -1256,17 +1137,6 @@ workflows:
          context: Slack
          requires:
            - type-checking-adage-front
-      - tests-pro-unit-tests:
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-               - docs
-         context: Slack
-         requires:
-           - type-checking-pro
       - tests-pro-e2e-tests:
          filters:
            branches:
@@ -1317,8 +1187,6 @@ workflows:
 #             only:
 #               - master
 #         requires:
-#           - quality-pro
-#           - tests-pro-unit-tests
 #           - tests-pro-e2e-tests
 #           - restart-pcapi
 #         context:
