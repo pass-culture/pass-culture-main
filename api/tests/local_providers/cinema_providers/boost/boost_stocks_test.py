@@ -5,6 +5,8 @@ import pytest
 
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import PriceCategory
+from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.factories import BoostCinemaDetailsFactory
@@ -108,8 +110,11 @@ class BoostStocksTest:
         created_offers = Offer.query.order_by(Offer.id).all()
         created_products = Product.query.order_by(Product.id).all()
         created_stocks = Stock.query.order_by(Stock.id).all()
+        created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
+        created_price_category_label = PriceCategoryLabel.query.one()
         assert len(created_offers) == len(created_products) == 2
         assert len(created_stocks) == 2
+        assert len(created_price_categories) == 2
 
         assert created_offers[0].name == "BLACK PANTHER : WAKANDA FOREVER"
         assert created_offers[0].product == created_products[0]
@@ -127,6 +132,7 @@ class BoostStocksTest:
 
         assert created_stocks[0].quantity == 96
         assert created_stocks[0].price == 6.0
+        assert created_stocks[0].priceCategory == created_price_categories[0]
         assert created_stocks[0].dateCreated is not None
         assert created_stocks[0].offer == created_offers[0]
         assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2022, 11, 28, 8)
@@ -148,10 +154,86 @@ class BoostStocksTest:
 
         assert created_stocks[1].quantity == 177
         assert created_stocks[1].price == 6.0
+        assert created_stocks[1].priceCategory == created_price_categories[1]
         assert created_stocks[1].dateCreated is not None
         assert created_stocks[1].offer == created_offers[1]
         assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2022, 11, 28, 8)
         assert created_stocks[1].beginningDatetime == datetime.datetime(2022, 11, 28, 8)
+
+        assert all((category.price == 6.0 for category in created_price_categories))
+        assert all(
+            (category.priceCategoryLabel == created_price_category_label for category in created_price_categories)
+        )
+        assert created_price_category_label.label == "PASS CULTURE"
+
+    def should_fill_offer_and_product_and_stocks_and_price_categories(self, requests_mock):
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
+        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{DATE_AFTER_30_DAYS_STR}?page=1&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.SAME_FILM_TWICE_JSON_DATA,
+        )
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/36683",
+            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
+        )
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/36684",
+            json=fixtures.ShowtimeDetailsEndpointResponse.PC2_AND_FULL_PRICINGS_SHOWTIME_36684_DATA,
+        )
+        boost_stocks = BoostStocks(venue_provider=venue_provider)
+        boost_stocks.updateObjects()
+
+        created_offer = Offer.query.order_by(Offer.id).one()
+        created_product = Product.query.order_by(Product.id).one()
+        created_stocks = Stock.query.order_by(Stock.id).all()
+        created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
+        created_price_category_labels = PriceCategoryLabel.query.order_by(PriceCategoryLabel.label).all()
+        assert len(created_price_categories) == 2
+        assert len(created_price_category_labels) == 2
+
+        assert created_offer.name == "BLACK PANTHER : WAKANDA FOREVER"
+        assert created_offer.product == created_product
+        assert created_offer.venue == venue_provider.venue
+        assert not created_offer.description  # FIXME
+        assert created_offer.durationMinutes == 162
+        assert created_offer.isDuo
+        assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
+        assert created_offer.extraData == {"visa": "158026"}
+
+        assert created_product.name == "BLACK PANTHER : WAKANDA FOREVER"
+        assert not created_product.description  # FIXME
+        assert created_product.durationMinutes == 162
+        assert created_product.extraData == {"visa": "158026"}
+
+        assert created_stocks[0].quantity == 96
+        assert created_stocks[0].price == 6.0
+        assert created_stocks[0].priceCategory == created_price_categories[0]
+        assert created_stocks[0].dateCreated is not None
+        assert created_stocks[0].offer == created_offer
+        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2022, 11, 28, 8)
+        assert created_stocks[0].beginningDatetime == datetime.datetime(2022, 11, 28, 8)
+
+        assert created_stocks[1].quantity == 130
+        assert created_stocks[1].price == 18.0
+        assert created_stocks[1].priceCategory == created_price_categories[1]
+        assert created_stocks[1].dateCreated is not None
+        assert created_stocks[1].offer == created_offer
+        assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2022, 11, 29, 8)
+        assert created_stocks[1].beginningDatetime == datetime.datetime(2022, 11, 29, 8)
+
+        assert created_price_categories[0].price == 6.0
+        assert created_price_categories[0].label == "PASS CULTURE"
+        assert created_price_categories[0].priceCategoryLabel == created_price_category_labels[0]
+
+        assert created_price_categories[1].price == 18.0
+        assert created_price_categories[1].label == "PASS CULTURE 1"
+        assert created_price_categories[1].priceCategoryLabel == created_price_category_labels[1]
 
     def should_not_create_stock_when_showtime_does_not_have_pass_culture_pricing(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
