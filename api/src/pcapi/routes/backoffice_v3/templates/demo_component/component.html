@@ -1,0 +1,19 @@
+<turbo-frame id="booking-component-{{booking.id}}">
+    <div class="card shadow m-2 p-2 d-flex flex-row justify-content-between">
+        <div>
+            <div>Booking id : {{ booking.id }}</div>
+            <div>Status : {{ booking.status }}</div>
+        </div>
+
+        {% if not booking.is_used_or_reimbursed %}
+        <a href="{{ url_for('.demo_use_booking', booking_id=booking.id) }}" class="btn btn-outline-primary">
+            USE
+        </a>
+
+        {% else %}
+        <a href="{{ url_for('.demo_cancel_booking', booking_id=booking.id) }}" class="btn btn-outline-primary">
+            CANCEL
+        </a>
+        {% endif %}
+    </div>
+</turbo-frame>
