@@ -781,6 +781,59 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       }
     )
 
+    it('should not open widthdrawal dialog if offer is not active', async () => {
+      const individualStock = individualStockFactory({ offerId: 'AA' })
+      contextOverride.offer = {
+        ...offer,
+        venueId: 'VID virtual',
+        subcategoryId: 'SCID virtual',
+        isEvent: true,
+        withdrawalDelay: undefined,
+        withdrawalType: null,
+        stocks: [individualStock],
+        isActive: false,
+      }
+      props = {
+        venueId: offer.venue.id,
+        offererId: offer.venue.offerer.id,
+      }
+      await renderInformationsScreen(props, contextOverride)
+
+      const nameField = screen.getByLabelText('Titre de l’offre')
+      await userEvent.clear(nameField)
+      await userEvent.type(nameField, 'Le nom de mon offre édité')
+
+      const withdrawalDetailsField = await screen.getByDisplayValue(
+        'Offer withdrawalDetails'
+      )
+      await userEvent.click(withdrawalDetailsField)
+      await userEvent.clear(withdrawalDetailsField)
+      await userEvent.type(
+        withdrawalDetailsField,
+        'Nouvelle information de retrait'
+      )
+      expectedBody.withdrawalDetails = 'Nouvelle information de retrait'
+      await waitFor(() => {
+        expect(screen.getByText('Nouvelle information de retrait'))
+      })
+
+      const submitButton = await screen.findByText(
+        'Enregistrer les modifications'
+      )
+      await userEvent.click(submitButton)
+
+      await expect(
+        await screen.queryByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).not.toBeInTheDocument()
+
+      expect(api.patchOffer).toHaveBeenCalledTimes(1)
+      expect(
+        await screen.findByText('There is the summary route content')
+      ).toBeInTheDocument()
+    })
+
     const withdrawalChanges = [
       {
         withdrawalDetails: true,
