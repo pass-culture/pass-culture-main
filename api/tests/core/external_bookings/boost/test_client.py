@@ -14,10 +14,18 @@ from tests.local_providers.cinema_providers.boost import fixtures
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
-FULL_PRICING = boost_serializers.ShowtimePricing(id=1225351, pricingCode="PLE", amountTaxesIncluded=Decimal(12))
-PCU_PRICING = boost_serializers.ShowtimePricing(id=1117628, pricingCode="PCU", amountTaxesIncluded=Decimal(5.5))
-PC2_PRICING = boost_serializers.ShowtimePricing(id=1114163, pricingCode="PC2", amountTaxesIncluded=Decimal(18))
-PC3_PRICING = boost_serializers.ShowtimePricing(id=4, pricingCode="PC3", amountTaxesIncluded=Decimal(8.5))
+FULL_PRICING = boost_serializers.ShowtimePricing(
+    id=1225351, pricingCode="PLE", amountTaxesIncluded=Decimal(12), title="PLEIN TARIF"
+)
+PCU_PRICING = boost_serializers.ShowtimePricing(
+    id=1117628, pricingCode="PCU", amountTaxesIncluded=Decimal(5.5), title="PASS CULTURE"
+)
+PC2_PRICING = boost_serializers.ShowtimePricing(
+    id=1114163, pricingCode="PC2", amountTaxesIncluded=Decimal(18), title="PASS CULTURE 1"
+)
+PC3_PRICING = boost_serializers.ShowtimePricing(
+    id=4, pricingCode="PC3", amountTaxesIncluded=Decimal(8.5), title="PASS CULTURE 2"
+)
 
 
 class GetPcuPricingIfExistsTest:
