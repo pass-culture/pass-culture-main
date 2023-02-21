@@ -128,7 +128,7 @@ def create_offerer_with_boost_venue_provider_and_external_bookings() -> None:
         venue=venue, provider=boost_provider, idAtProvider="passculture"
     )
     providers_factories.BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-    providers_factories.VenueProviderFactory(venue=venue, provider=boost_provider)
+    providers_factories.VenueProviderFactory(venue=venue, provider=boost_provider, venueIdAtOfferProvider="passculture")
     logger.info("created ExternalBookings for Boost-synced offers")
 
 
@@ -141,7 +141,7 @@ def create_offerer_with_cgr_provider_and_external_bookings() -> None:
         venue=venue, provider=cgr_provider, idAtProvider="passculture"
     )
     providers_factories.CGRCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-    providers_factories.VenueProviderFactory(venue=venue, provider=cgr_provider)
+    providers_factories.VenueProviderFactory(venue=venue, provider=cgr_provider, venueIdAtOfferProvider="passculture")
     logger.info("created ExternalBookings for CGR-synced offers")
 
 
