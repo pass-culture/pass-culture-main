@@ -100,6 +100,7 @@ const VenueEdition = (): JSX.Element | null => {
       notify.error(loadingError.message)
       return null
     }
+    /* istanbul ignore next: Never */
     return null
   }
 

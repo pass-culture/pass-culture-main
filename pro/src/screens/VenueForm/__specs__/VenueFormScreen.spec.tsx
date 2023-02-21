@@ -8,9 +8,9 @@ import { apiAdresse } from 'apiClient/adresse'
 import { api } from 'apiClient/api'
 import {
   ApiError,
+  EditVenueBodyModel,
   GetVenueResponseModel,
   SharedCurrentUserResponseModel,
-  VenueTypeCode,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -41,7 +41,8 @@ const renderForm = (
   initialValues: IVenueFormValues,
   isCreatingVenue: boolean,
   venue?: IVenue | undefined,
-  features?: { list: { isActive: true; nameKey: string }[] }
+  features?: { list: { isActive: true; nameKey: string }[] },
+  hasBookingQuantity?: boolean
 ) => {
   const storeOverrides = {
     user: {
@@ -67,6 +68,7 @@ const renderForm = (
                 providers={[]}
                 venue={venue}
                 venueProviders={[]}
+                hasBookingQuantity={hasBookingQuantity}
               />
             </>
           }
@@ -356,6 +358,122 @@ const venueResponse: GetVenueResponseModel = {
 }
 
 describe('screen | VenueForm', () => {
+  let formValues: IVenueFormValues
+  let expectedEditVenue: Partial<EditVenueBodyModel>
+  let venue: IVenue
+  beforeEach(() => {
+    formValues = {
+      bannerMeta: undefined,
+      comment: '',
+      description: '',
+      isVenueVirtual: false,
+      bookingEmail: 'em@ail.fr',
+      name: 'MINISTERE DE LA CULTURE',
+      publicName: 'Melodie Sims',
+      siret: '88145723823022',
+      venueType: 'GAMES',
+      venueLabel: 'EM',
+      departmentCode: '',
+      address: 'PARIS',
+      addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
+      'search-addressAutocomplete': 'PARIS',
+      city: 'Saint-Malo',
+      latitude: 48.635699,
+      longitude: -2.006961,
+      postalCode: '35400',
+      accessibility: {
+        visual: false,
+        mental: true,
+        audio: false,
+        motor: true,
+        none: false,
+      },
+      isAccessibilityAppliedOnAllOffers: false,
+      phoneNumber: '0604855967',
+      email: 'em@ail.com',
+      webSite: 'https://www.site.web',
+      isPermanent: false,
+      id: '',
+      bannerUrl: '',
+      withdrawalDetails: 'withdrawal details field',
+      venueSiret: null,
+      isWithdrawalAppliedOnAllOffers: false,
+      reimbursementPointId: 91,
+    }
+
+    venue = {
+      hasPendingBankInformationApplication: false,
+      demarchesSimplifieesApplicationId: '',
+      collectiveDomains: [],
+      dateCreated: '2022-02-02',
+      fieldsUpdated: [],
+      isVirtual: false,
+      managingOffererId: '',
+      accessibility: {
+        visual: false,
+        audio: false,
+        motor: false,
+        mental: false,
+        none: true,
+      },
+      address: 'Address',
+      bannerMeta: null,
+      bannerUrl: '',
+      city: 'city',
+      comment: 'comment',
+      contact: {
+        email: 'email',
+        phoneNumber: '0606060606',
+        webSite: 'web',
+      },
+      description: 'description',
+      departmentCode: '75008',
+      dmsToken: '',
+      id: 'id',
+      isPermanent: true,
+      isVenueVirtual: false,
+      latitude: 0,
+      longitude: 0,
+      mail: 'a@b.c',
+      name: 'name',
+      nonHumanizedId: 0,
+      pricingPoint: null,
+      postalCode: '75008',
+      publicName: 'name',
+      siret: '88145723823022',
+      venueType: 'ARTISTIC_COURSE',
+      venueLabel: 'AE',
+      reimbursementPointId: 0,
+      withdrawalDetails: 'string',
+      collectiveAccessInformation: 'string',
+      collectiveDescription: 'string',
+      collectiveEmail: 'string',
+      collectiveInterventionArea: [],
+      collectiveLegalStatus: null,
+      collectiveNetwork: [],
+      collectivePhone: 'string',
+      collectiveStudents: [],
+      collectiveWebsite: 'string',
+
+      managingOfferer: {
+        address: null,
+        bic: null,
+        city: 'string',
+        dateCreated: 'string',
+        dateModifiedAtLastProvider: null,
+        demarchesSimplifieesApplicationId: null,
+        fieldsUpdated: [],
+        iban: null,
+        id: 'id',
+        idAtProviders: null,
+        isValidated: true,
+        lastProviderId: null,
+        name: 'name',
+        postalCode: 'string',
+        siren: null,
+      },
+    }
+  })
   describe('Navigation', () => {
     describe('With new offer creation journey', () => {
       beforeEach(() => {
@@ -593,7 +711,6 @@ describe('screen | VenueForm', () => {
 
     it('should display new onboarding wording labels', async () => {
       venue.isVirtual = false
-
       renderForm(
         {
           id: 'EY',
@@ -646,6 +763,303 @@ describe('screen | VenueForm', () => {
       expect(
         await screen.getByText('Veuillez sélectionner une activité principale')
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('Withdrawal dialog to send mail', () => {
+    let features: { list: { isActive: true; nameKey: string }[] }
+
+    beforeEach(() => {
+      expectedEditVenue = {
+        address: 'PARIS',
+        audioDisabilityCompliant: false,
+        bookingEmail: 'em@ail.fr',
+        city: 'Saint-Malo',
+        comment: '',
+        contact: {
+          email: 'em@ail.com',
+          phoneNumber: '0604855967',
+          socialMedias: null,
+          website: 'https://www.site.web',
+        },
+        description: '',
+        isEmailAppliedOnAllOffers: true,
+        latitude: 48.635699,
+        longitude: -2.006961,
+        mentalDisabilityCompliant: true,
+        motorDisabilityCompliant: true,
+        name: 'MINISTERE DE LA CULTURE',
+        postalCode: '35400',
+        publicName: 'Melodie Sims',
+        reimbursementPointId: 91,
+        shouldSendMail: false,
+        siret: '88145723823022',
+        venueTypeCode: 'GAMES',
+        // @ts-expect-error string is not assignable to type number
+        venueLabelId: 'EM',
+        visualDisabilityCompliant: false,
+        withdrawalDetails: 'Nouvelle information de retrait',
+      }
+
+      features = {
+        list: [],
+      }
+    })
+
+    it('should display withdrawal and submit on confirm dialog button when offer has bookingQuantity and withdrawalDetails is updated and isWithdrawalAppliedOnAllOffers is true', async () => {
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: false,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        venue,
+        features,
+        true
+      )
+
+      const editVenue = jest
+        .spyOn(api, 'editVenue')
+        .mockResolvedValue({ id: 'AA' } as GetVenueResponseModel)
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Informations de retrait de vos offres')
+        ).toBeInTheDocument()
+      })
+
+      const withdrawalDetailsField = await screen.getByDisplayValue(
+        'withdrawal details field'
+      )
+
+      await userEvent.click(withdrawalDetailsField)
+      await userEvent.clear(withdrawalDetailsField)
+      await userEvent.type(
+        withdrawalDetailsField,
+        'Nouvelle information de retrait'
+      )
+      await waitFor(() => {
+        expect(screen.getByText('Nouvelle information de retrait'))
+      })
+      venue.withdrawalDetails = 'Nouvelle information de retrait'
+
+      await userEvent.click(
+        screen.getByText(
+          'Appliquer le changement à toutes les offres déjà existantes.'
+        )
+      )
+      expectedEditVenue.shouldSendMail = true
+
+      await userEvent.click(screen.getByText(/Enregistrer et quitter/))
+      await expect(
+        await screen.findByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).toBeInTheDocument()
+
+      const sendMailButton = await screen.findByText('Envoyer un e-mail')
+      await userEvent.click(sendMailButton)
+      await expect(
+        await screen.queryByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).not.toBeInTheDocument()
+
+      expect(editVenue).toHaveBeenCalledWith('id', expectedEditVenue)
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Vos modifications ont bien été enregistrées')
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('should display withdrawal dialog and submit on cancel click and should not send mail', async () => {
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: false,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        venue,
+        features,
+        true
+      )
+
+      const editVenue = jest
+        .spyOn(api, 'editVenue')
+        .mockResolvedValue({ id: 'AA' } as GetVenueResponseModel)
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Informations de retrait de vos offres')
+        ).toBeInTheDocument()
+      })
+
+      const withdrawalDetailsField = await screen.getByDisplayValue(
+        'withdrawal details field'
+      )
+
+      await userEvent.click(withdrawalDetailsField)
+      await userEvent.clear(withdrawalDetailsField)
+      await userEvent.type(
+        withdrawalDetailsField,
+        'Nouvelle information de retrait'
+      )
+      await waitFor(() => {
+        expect(screen.getByText('Nouvelle information de retrait'))
+      })
+      venue.withdrawalDetails = 'Nouvelle information de retrait'
+
+      await userEvent.click(
+        screen.getByText(
+          'Appliquer le changement à toutes les offres déjà existantes.'
+        )
+      )
+
+      await userEvent.click(screen.getByText(/Enregistrer et quitter/))
+
+      await expect(
+        await screen.findByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).toBeInTheDocument()
+
+      const cancelDialogButton = await screen.findByText('Ne pas envoyer')
+      await userEvent.click(cancelDialogButton)
+      await expect(
+        await screen.queryByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).not.toBeInTheDocument()
+
+      expect(editVenue).toHaveBeenCalledWith('id', expectedEditVenue)
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Vos modifications ont bien été enregistrées')
+        ).toBeInTheDocument()
+      })
+    })
+
+    it("should not display withdrawal if offer has no bookingQuantity or withdrawalDetails doesn't change or isWithdrawalAppliedOnAllOffers is not check", async () => {
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: false,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        venue,
+        features,
+        false
+      )
+
+      const editVenue = jest
+        .spyOn(api, 'editVenue')
+        .mockResolvedValue({ id: 'id' } as GetVenueResponseModel)
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Informations de retrait de vos offres')
+        ).toBeInTheDocument()
+      })
+
+      const withdrawalDetailsField = await screen.getByDisplayValue(
+        'withdrawal details field'
+      )
+
+      await userEvent.click(withdrawalDetailsField)
+      await userEvent.clear(withdrawalDetailsField)
+      await userEvent.type(
+        withdrawalDetailsField,
+        'Nouvelle information de retrait'
+      )
+      await waitFor(() => {
+        expect(screen.getByText('Nouvelle information de retrait'))
+      })
+      venue.withdrawalDetails = 'Nouvelle information de retrait'
+
+      await userEvent.click(screen.getByText(/Enregistrer et quitter/))
+      expect(editVenue).toHaveBeenCalledWith('id', expectedEditVenue)
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Vos modifications ont bien été enregistrées')
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('should close withdrawal dialog and not submit if user close dialog', async () => {
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: false,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        venue,
+        features,
+        true
+      )
+
+      const editVenue = jest
+        .spyOn(api, 'editVenue')
+        .mockResolvedValue({ id: 'AA' } as GetVenueResponseModel)
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Informations de retrait de vos offres')
+        ).toBeInTheDocument()
+      })
+
+      const withdrawalDetailsField = await screen.getByDisplayValue(
+        'withdrawal details field'
+      )
+
+      await userEvent.click(withdrawalDetailsField)
+      await userEvent.clear(withdrawalDetailsField)
+      await userEvent.type(
+        withdrawalDetailsField,
+        'Nouvelle information de retrait'
+      )
+      await waitFor(() => {
+        expect(screen.getByText('Nouvelle information de retrait'))
+      })
+      venue.withdrawalDetails = 'Nouvelle information de retrait'
+
+      await userEvent.click(
+        screen.getByText(
+          'Appliquer le changement à toutes les offres déjà existantes.'
+        )
+      )
+
+      await userEvent.click(screen.getByText(/Enregistrer et quitter/))
+
+      await expect(
+        await screen.findByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).toBeInTheDocument()
+
+      const closeWithdrawalDialogButton = await screen.getByRole('button', {
+        name: 'Fermer la modale',
+      })
+      await userEvent.click(closeWithdrawalDialogButton)
+
+      await expect(
+        await screen.queryByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).not.toBeInTheDocument()
+
+      expect(editVenue).toHaveBeenCalledTimes(0)
     })
   })
 })
