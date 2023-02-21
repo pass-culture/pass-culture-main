@@ -78,10 +78,14 @@ $offer-image-width: rem(176px);
       padding-right: rem(150px);
     }
 
-    .offer-venue-name {
-      font-weight: 400;
+    .offer-header-label {
+      color: colors.$grey-dark;
+    }
+    .offer-header-subtitles {
       margin: 0;
       padding-right: rem(150px);
+      font-weight: 500;
+      font-size: rem(15px);
     }
 
     .offer-domains-list {
