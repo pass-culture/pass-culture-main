@@ -14,29 +14,6 @@ from pcapi.models import Model
 from pcapi.models import db
 
 
-def get_batches(query, key, batch_size):  # type: ignore [no-untyped-def]
-    """Return a list of queries to process the requested query by batches.
-
-    It supposes that keys are evenly spread (i.e there are no gaps of
-    varying size). Otherwise it will work but the batches will not be
-    of the same size, which may lead to the very performance issues
-    you are trying to avoid.
-
-    WARNING: if your initial query is ordered in DESCending order, the
-    returned batch queries will NOT be ordered correctly. You will
-    have to reverse the order of the returned iterator.
-    """
-    sub = query.subquery()
-    min_key, max_key = db.session.query(sqla.func.min(sub.c.id), sqla.func.max(sub.c.id)).one()
-
-    if (min_key, max_key) == (None, None):
-        return
-
-    ranges = [(i, i + batch_size - 1) for i in range(min_key, max_key + 1, batch_size)]
-    for start, end in ranges:
-        yield query.filter(key.between(start, end))
-
-
 class MagicEnum(sqla_types.TypeDecorator):
     """A column type that stores an instance of a Python Enum object as a
     string or integer (depending on the type of the enum).
