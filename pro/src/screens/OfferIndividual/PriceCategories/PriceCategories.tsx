@@ -85,9 +85,26 @@ export const getPopinType = (
     },
     {}
   )
+
+  const changedPriceCategories = values.priceCategories.filter(
+    priceCategory => {
+      if (!priceCategory.id) {
+        return false
+      }
+      if (
+        priceCategory.price !==
+          initialPriceCategories[priceCategory.id].price ||
+        priceCategory.label !== initialPriceCategories[priceCategory.id].label
+      ) {
+        return true
+      }
+      return false
+    }
+  )
+
   const stockPriceCategoryIds = stocks.map(stock => stock.priceCategoryId)
 
-  const priceCategoryWithStocks = values.priceCategories.filter(
+  const priceCategoryWithStocks = changedPriceCategories.filter(
     priceCategory => {
       if (!priceCategory.id) {
         return false
@@ -106,11 +123,11 @@ export const getPopinType = (
   const priceCategoryWithBookings = priceCategoryWithStocks.filter(
     priceCategory => {
       return stocks.some(stock => {
-        if (stock.priceCategoryId === priceCategory.id) {
-          if (stock.bookingsQuantity > 0) {
-            return true
-          }
-          return false
+        if (
+          stock.priceCategoryId === priceCategory.id &&
+          stock.bookingsQuantity > 0
+        ) {
+          return true
         }
         return false
       })
@@ -121,7 +138,7 @@ export const getPopinType = (
     // if there are bookings we want to know if change is on price or label
     if (
       hasFieldChange(
-        values.priceCategories,
+        changedPriceCategories,
         initialPriceCategories,
         stockPriceCategoryIds,
         'price'
@@ -134,7 +151,7 @@ export const getPopinType = (
   } else if (
     // if there are only stocks with no bookings there is a special popin for price
     hasFieldChange(
-      values.priceCategories,
+      changedPriceCategories,
       initialPriceCategories,
       stockPriceCategoryIds,
       'price'

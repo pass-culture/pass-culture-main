@@ -44,35 +44,21 @@ export const PriceCategoriesForm = ({
   setOffer,
   isDisabled,
 }: IPriceCategoriesForm): JSX.Element => {
-  const { setFieldValue, handleChange, resetForm, values } =
+  const { setFieldValue, resetForm, values } =
     useFormikContext<PriceCategoriesFormValues>()
   const notify = useNotification()
   const [currentDeletionIndex, setCurrentDeletionIndex] = useState<
     number | null
   >(null)
-  const [isFreeCheckboxSelectedArray, setIsFreeCheckboxSelectedArray] =
-    useState(
-      // initialize an array of length with false or true when it's 0
-      values.priceCategories.map(priceCategory => priceCategory.price === 0)
-    )
+  const isFreeCheckboxSelectedArray = values.priceCategories.map(
+    priceCategory => priceCategory.price === 0
+  )
 
   const onChangeFree =
     (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.checked) {
         setFieldValue(`priceCategories[${index}].price`, 0)
       }
-
-      const newCheckboxArray = [...isFreeCheckboxSelectedArray]
-      newCheckboxArray[index] = e.target.checked
-      setIsFreeCheckboxSelectedArray(newCheckboxArray)
-    }
-
-  const onChangePrice =
-    (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newCheckboxArray = [...isFreeCheckboxSelectedArray]
-      newCheckboxArray[index] = e.target.value === '0'
-      setIsFreeCheckboxSelectedArray(newCheckboxArray)
-      handleChange(e)
     }
 
   const onDeletePriceCategory = async (
@@ -193,7 +179,6 @@ export const PriceCategoriesForm = ({
                   max={PRICE_CATEGORY_PRICE_MAX}
                   rightIcon={() => <EuroIcon />}
                   className={styles['price-input']}
-                  onChange={onChangePrice(index)}
                   isLabelHidden={index !== 0}
                   disabled={isDisabled}
                 />
