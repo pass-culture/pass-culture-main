@@ -1,5 +1,3 @@
-import merge from 'lodash.merge'
-
 import createStore from 'store'
 import { initialState as appInitialState } from 'store/app/reducer'
 import { initialState as featuresInitialState } from 'store/features/reducer'
@@ -22,5 +20,5 @@ export const configureTestStore = overrideData => {
     user: userInitialState,
   }
 
-  return createStore(merge({}, initialData, overrideData)).store
+  return createStore({ ...initialData, ...overrideData }).store
 }
