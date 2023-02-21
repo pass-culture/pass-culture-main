@@ -42,10 +42,11 @@ const ERROR_RESPONSE = {
 const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
   async ({ offererId, offer }) => {
     try {
+      const targetOffererId = offer?.venue.managingOffererId || offererId
       const responses = await Promise.all([
         getEducationalCategoriesAdapter(),
         getEducationalDomainsAdapter(),
-        getOfferersAdapter(offererId),
+        getOfferersAdapter(targetOffererId),
       ])
 
       if (responses.some(response => !response.isOk)) {
