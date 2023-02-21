@@ -13,7 +13,7 @@ import useNotification from 'hooks/useNotification'
 import CollectiveOfferSummaryCreationScreen from 'screens/CollectiveOfferSummaryCreation'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-interface CollectiveOfferSummaryCreationProps {
+export interface CollectiveOfferSummaryCreationProps {
   offer: CollectiveOffer | CollectiveOfferTemplate
   setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
 }

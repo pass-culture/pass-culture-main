@@ -15,7 +15,7 @@ import OfferEducationalScreen from 'screens/OfferEducational'
 import useOfferEducationalFormData from 'screens/OfferEducational/useOfferEducationalFormData'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-interface CollectiveOfferCreationProps {
+export interface CollectiveOfferCreationProps {
   offer?: CollectiveOffer | CollectiveOfferTemplate
   setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
   isTemplate?: boolean
