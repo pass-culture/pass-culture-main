@@ -257,6 +257,15 @@ class ShowtimesEndpointResponse:
         "totalPages": 1,
         "totalCount": 1,
     }
+    SAME_FILM_TWICE_JSON_DATA = {
+        "data": [SHOWTIME_36683, SHOWTIME_36684],
+        "message": "OK",
+        "page": 1,
+        "previousPage": 1,
+        "nextPage": 1,
+        "totalPages": 1,
+        "totalCount": 1,
+    }
 
 
 class ShowtimeDetailsEndpointResponse:

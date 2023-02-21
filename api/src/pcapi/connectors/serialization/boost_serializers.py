@@ -67,6 +67,7 @@ class ShowtimePricing(BaseModel):
     id: int
     pricingCode: str
     amountTaxesIncluded: Decimal
+    title: str
 
 
 class ShowTime(BaseModel):

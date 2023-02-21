@@ -1,4 +1,5 @@
 from datetime import datetime
+import decimal
 from typing import Iterator
 
 from pcapi.connectors.serialization import boost_serializers
@@ -24,12 +25,19 @@ class BoostStocks(LocalProvider):
         self.cinema_id = venue_provider.venueIdAtOfferProvider
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
         self.showtimes: Iterator[boost_serializers.ShowTime4] = iter(self._get_showtimes())
+        self.price_category_labels: list[
+            offers_models.PriceCategoryLabel
+        ] = offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
+
+        self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
 
     def __next__(self) -> list[ProvidableInfo]:
         showtime = next(self.showtimes)
         if showtime:
-            self.showtime_details = self._get_showtime_details(showtime.id)
-            self.pcu_pricing = get_pcu_pricing_if_exists(self.showtime_details.showtimePricing)
+            self.showtime_details: boost_serializers.ShowTime = self._get_showtime_details(showtime.id)
+            self.pcu_pricing: boost_serializers.ShowtimePricing | None = get_pcu_pricing_if_exists(
+                self.showtime_details.showtimePricing
+            )
             if not self.pcu_pricing:
                 return []
 
@@ -107,10 +115,47 @@ class BoostStocks(LocalProvider):
 
         if "price" not in stock.fieldsUpdated:
             assert self.pcu_pricing  # helps mypy
-            stock.price = self.pcu_pricing.amountTaxesIncluded
+            price = self.pcu_pricing.amountTaxesIncluded
+            stock.price = price
+
+            price_label = self.pcu_pricing.title
+            price_category = self.get_or_create_price_category(price, price_label)
+            stock.priceCategory = price_category
 
         if not is_new_stock_to_insert:
             stock.quantity = self.showtime_details.numberSeatsRemaining + stock.dnBookedQuantity
+
+    def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
+        if self.last_offer not in self.price_category_lists_by_offer:
+            self.price_category_lists_by_offer[self.last_offer] = (
+                offers_models.PriceCategory.query.filter(offers_models.PriceCategory.offer == self.last_offer)
+                .order_by(offers_models.PriceCategory.price)
+                .all()
+                if self.last_offer.id
+                else []
+            )
+        price_categories = self.price_category_lists_by_offer[self.last_offer]
+
+        price_category = next(
+            (category for category in price_categories if category.price == price and category.label == price_label),
+            None,
+        )
+        if not price_category:
+            price_category_label = self.get_or_create_price_category_label(price_label)
+            price_category = offers_models.PriceCategory(
+                price=price, priceCategoryLabel=price_category_label, offer=self.last_offer
+            )
+            price_categories.append(price_category)
+
+        return price_category
+
+    def get_or_create_price_category_label(self, price_label: str) -> offers_models.PriceCategoryLabel:
+        price_category_label = next((label for label in self.price_category_labels if label.label == price_label), None)
+        if not price_category_label:
+            price_category_label = offers_models.PriceCategoryLabel(label=price_label, venue=self.venue)
+            self.price_category_labels.append(price_category_label)
+
+        return price_category_label
 
     def update_from_movie_information(
         self, obj: offers_models.Offer | offers_models.Product, movie_information: Movie
