@@ -1,5 +1,4 @@
 /* istanbul ignore file */
-import omit from 'lodash.omit'
 
 const queryCallbacks = {
   // From the 4th tips of this article: https://www.polvara.me/posts/five-things-you-didnt-know-about-testing-library/
@@ -31,7 +30,10 @@ export function queryByTextTrimHtml(screen, searchString, options = {}) {
   const { leafOnly } = options
   return screen.queryByText(
     queryCallbacks.queryByTextWithChildren(searchString, leafOnly),
-    omit(options, 'leafOnly')
+    // remove key leafOnly from options
+    Object.keys(options).reduce((acc, cur) => {
+      return cur !== 'leafOnly' ? { ...acc, [cur]: options[cur] } : acc
+    }, {})
   )
 }
 
