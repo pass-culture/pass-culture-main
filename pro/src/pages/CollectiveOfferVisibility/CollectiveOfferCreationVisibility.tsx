@@ -16,7 +16,7 @@ import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'
 import patchEducationalInstitutionAdapter from './adapters/patchEducationalInstitutionAdapter'
 
-interface CollectiveOfferVisibilityProps {
+export interface CollectiveOfferVisibilityProps {
   setOffer: (offer: CollectiveOffer) => void
   offer: CollectiveOffer
 }
