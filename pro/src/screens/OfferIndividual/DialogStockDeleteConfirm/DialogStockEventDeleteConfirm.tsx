@@ -6,28 +6,25 @@ import { ReactComponent as Trash } from 'icons/ico-trash.svg'
 interface IDialogStockDeleteConfirmProps {
   onConfirm: () => void
   onCancel: () => void
-  isEvent: boolean
 }
 
-const DialogStockDeleteConfirm = ({
+const DialogStockEventDeleteConfirm = ({
   onConfirm,
   onCancel,
-  isEvent,
 }: IDialogStockDeleteConfirmProps) => {
   return (
     <ConfirmDialog
       onCancel={onCancel}
       onConfirm={onConfirm}
-      title="Voulez-vous supprimer ce stock ?"
+      title="Voulez-vous supprimer cette occurrence ?"
       confirmText="Supprimer"
       cancelText="Annuler"
       icon={Trash}
     >
       <p>
-        {'Ce stock ne sera plus disponible à la réservation et '}
+        {'Elle ne sera plus disponible à la réservation et '}
         <strong>
-          entraînera l’annulation des réservations en cours
-          {isEvent && ' et validées'} !
+          entraînera l’annulation des réservations en cours et validées !
         </strong>
       </p>
       <p>
@@ -38,4 +35,4 @@ const DialogStockDeleteConfirm = ({
   )
 }
 
-export default DialogStockDeleteConfirm
+export default DialogStockEventDeleteConfirm

@@ -1,1 +1,1 @@
-export { default as DialogStockDeleteConfirm } from './DialogStockDeleteConfirm'
+export { default as DialogStockThingDeleteConfirm } from './DialogStockThingDeleteConfirm'

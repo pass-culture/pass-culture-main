@@ -38,7 +38,7 @@ import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
-import { DialogStockDeleteConfirm } from '../DialogStockDeleteConfirm'
+import { DialogStockThingDeleteConfirm } from '../DialogStockDeleteConfirm'
 import { useNotifyFormError } from '../hooks'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 import { getSuccessMessage } from '../utils'
@@ -316,10 +316,9 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   return (
     <FormikProvider value={formik}>
       {deleteConfirmVisible && (
-        <DialogStockDeleteConfirm
+        <DialogStockThingDeleteConfirm
           onConfirm={onConfirmDeleteStock}
           onCancel={deleteConfirmHide}
-          isEvent={true}
         />
       )}
       {activationCodeFormVisible && (
