@@ -14,6 +14,7 @@ const TOP_MOST_USED_DOMAINS = [
 ]
 
 const config = {
+  domainThreshold: 4,
   domains: TOP_MOST_USED_DOMAINS,
   secondLevelDomains: [],
   topLevelDomains: [],
