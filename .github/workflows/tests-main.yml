@@ -87,14 +87,14 @@ jobs:
       - check-pro-folder-changes
       - test-adage
       - build-api
-      - test-backoffice
+      - test-backoffice-v3
       - test-pro
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
       (needs.test-adage.result == 'success' || needs.test-adage.result == 'skipped') &&
       (needs.build-api.result == 'success' || needs.build-api.result == 'skipped') &&
-      (needs.test-backoffice.result == 'success' || needs.test-backoffice.result == 'skipped') &&
+      (needs.test-backoffice-v3.result == 'success' || needs.test-backoffice-v3.result == 'skipped') &&
       (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
     uses: ./.github/workflows/deploy.yml
     with:
