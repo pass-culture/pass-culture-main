@@ -763,10 +763,10 @@ def delete_venue_banner(venue: models.Venue) -> None:
     search.async_index_venue_ids([venue.id])
 
 
-def can_offerer_create_educational_offer(offerer_id: int | None) -> None:
+def can_offerer_create_educational_offer(offerer_id: int) -> None:
     import pcapi.core.educational.adage_backends as adage_client
 
-    if offerer_id is None:
+    if settings.CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE:
         return
 
     if offerers_repository.offerer_has_venue_with_adage_id(offerer_id):

@@ -36,8 +36,12 @@ if __name__ == "__main__":
         import debugpy
 
         if not debugpy.is_client_connected():
-            debugpy.listen(("0.0.0.0", 10002))
-            print("⏳ Code debugger can now be attached, press F5 in VS Code for example ⏳", flush=True)
+            debug_port = 10002
+            debugpy.listen(("0.0.0.0", debug_port))
+            print(
+                f"⏳ Code debugger can now be attached on port {debug_port}, press F5 in VS Code for example ⏳",
+                flush=True,
+            )
             debugpy.wait_for_client()
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 

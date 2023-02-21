@@ -320,7 +320,12 @@ def patch_all_collective_offers_active_status(
 ) -> None:
     if body.is_active:
         try:
-            offerers_api.can_offerer_create_educational_offer(body.offerer_id)
+            if body.offerer_id:
+                offerers_api.can_offerer_create_educational_offer(body.offerer_id)
+            else:
+                offerers_ids = {user_offerer.offererId for user_offerer in current_user.UserOfferers}
+                for offerer_id in offerers_ids:
+                    offerers_api.can_offerer_create_educational_offer(offerer_id)
         except educational_exceptions.CulturalPartnerNotFoundException:
             raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
 

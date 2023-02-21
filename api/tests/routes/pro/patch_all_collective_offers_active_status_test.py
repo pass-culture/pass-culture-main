@@ -30,7 +30,8 @@ class Returns204Test:
         # When
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         data = {"isActive": True, "page": 1, "venueId": humanize(venue.id)}
-        response = client.patch("/collective/offers/all-active-status", json=data)
+        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
+            response = client.patch("/collective/offers/all-active-status", json=data)
 
         # Then
         assert response.status_code == 204
@@ -50,7 +51,8 @@ class Returns204Test:
         # When
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         data = {"isActive": False}
-        response = client.patch("/collective/offers/all-active-status", json=data)
+        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
+            response = client.patch("/collective/offers/all-active-status", json=data)
 
         # Then
         assert response.status_code == 204
@@ -86,7 +88,8 @@ class Returns204Test:
         client = TestClient(app.test_client()).with_session_auth(user_offerer.user.email)
 
         # When
-        response = client.patch("/collective/offers/all-active-status", json=data)
+        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
+            response = client.patch("/collective/offers/all-active-status", json=data)
 
         # Then
         assert response.status_code == 204
@@ -106,7 +109,8 @@ class Returns204Test:
 
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         data = {"isActive": True, "page": 1, "venueId": humanize(venue.id)}
-        response = client.patch("/collective/offers/all-active-status", json=data)
+        with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
+            response = client.patch("/collective/offers/all-active-status", json=data)
 
         assert response.status_code == 204
         assert approved_offer.isActive

@@ -29,6 +29,7 @@ from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesQueryM
 from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.human_ids import dehumanize_or_raise
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
 
@@ -198,7 +199,7 @@ def create_offerer(body: CreateOffererQueryModel) -> GetOffererResponseModel:
 # type: ignore [no-untyped-def]
 def can_offerer_create_educational_offer(humanized_offerer_id: str):
     try:
-        api.can_offerer_create_educational_offer(dehumanize(humanized_offerer_id))
+        api.can_offerer_create_educational_offer(dehumanize_or_raise(humanized_offerer_id))
     except educational_exceptions.CulturalPartnerNotFoundException:
         logger.info("This offerer has not been found in Adage", extra={"offerer_id": humanized_offerer_id})
         raise ApiErrors({"offerer": "not found in adage"}, 404)
