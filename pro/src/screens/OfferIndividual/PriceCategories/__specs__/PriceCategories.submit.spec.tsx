@@ -256,12 +256,18 @@ describe('PriceCategories', () => {
         { offerId: 'AA' }
       )
     )
-    await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif'),
-      'Mon nouveau label'
-    )
-    await userEvent.click(screen.getByText('Étape suivante'))
+    await userEvent.click(screen.getByText('Ajouter un tarif'))
 
+    await userEvent.type(
+      screen.getAllByLabelText('Intitulé du tarif')[0],
+      'NEW !'
+    )
+    await userEvent.type(
+      screen.getAllByLabelText('Intitulé du tarif')[1],
+      'a label'
+    )
+    await userEvent.type(screen.getAllByLabelText('Tarif par personne')[1], '1')
+    await userEvent.click(screen.getByText('Étape suivante'))
     expect(
       screen.getByText(
         'L’intitulé de ce tarif restera inchangé pour les personnes ayant déjà réservé cette offre.'
