@@ -123,6 +123,10 @@ describe('offer', () => {
       contactPhone: '',
       domains: [],
       interventionArea: ['75', '92'],
+      teacher: {
+        firstName: 'Jean',
+        lastName: 'Dupont',
+      },
     }
 
     offerInCayenne = {
@@ -198,6 +202,8 @@ describe('offer', () => {
       // Then
       const offerName = await screen.findByText(offerInParis.name)
       expect(offerName).toBeInTheDocument()
+      const redactorName = screen.getByText('Jean Dupont')
+      expect(redactorName).toBeInTheDocument()
       const listItemsInOffer = screen.getAllByTestId('offer-listitem')
       const summaryAndDomainList = within(listItemsInOffer[0]).getAllByRole(
         'list'
