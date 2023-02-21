@@ -5,15 +5,26 @@
             <div>Status : {{ booking.status }}</div>
         </div>
 
-        {% if not booking.is_used_or_reimbursed %}
-        <a href="{{ url_for('.demo_use_booking', booking_id=booking.id) }}" class="btn btn-outline-primary">
-            USE
-        </a>
-
-        {% else %}
-        <a href="{{ url_for('.demo_cancel_booking', booking_id=booking.id) }}" class="btn btn-outline-primary">
-            CANCEL
-        </a>
-        {% endif %}
+        <div class="dropdown">
+            <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn p-0"><i
+                    class="bi bi-three-dots-vertical"></i></button>
+            <ul class="dropdown-menu">
+                {% if not booking.is_used_or_reimbursed %}
+                <li class="dropdown-item p-0">
+                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                        href="{{ url_for('.demo_use_booking', booking_id=booking.id) }}">
+                        USE
+                    </a>
+                </li>
+                {% else %}
+                <li class="dropdown-item p-0">
+                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                        href="{{ url_for('.demo_cancel_booking', booking_id=booking.id) }}">
+                        CANCEL
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
 </turbo-frame>
