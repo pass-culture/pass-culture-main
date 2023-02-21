@@ -162,8 +162,8 @@ class GetVenueTest:
         assert response.status_code == 200
         response_text = html_parser.content_as_text(response.data)
         assert "Statut DMS : en_construction" in response_text
-        assert "Date de dépôt du dossier DMS : 21/09/2022" in response_text
-        assert "ACCÉDER AU DOSSIER DMS" in response_text
+        assert "Date de dépôt du dossier DMS CB : 21/09/2022" in response_text
+        assert "ACCÉDER AU DOSSIER DMS CB" in response_text
 
     def test_get_venue_none_dms_stats_when_no_application_id(self, authenticated_client, venue_with_accepted_bank_info):
         # when
@@ -173,7 +173,7 @@ class GetVenueTest:
 
         # then
         assert response.status_code == 200
-        assert "Pas de dossier DMS" in html_parser.content_as_text(response.data)
+        assert "Pas de dossier DMS CB" in html_parser.content_as_text(response.data)
 
 
 class GetVenueStatsDataTest:
