@@ -306,7 +306,7 @@ describe('screens:StocksEvent:Edition', () => {
     )
     await userEvent.click(screen.getAllByText('Supprimer le stock')[0])
     expect(
-      screen.getByText('Voulez-vous supprimer ce stock ?')
+      screen.getByText('Voulez-vous supprimer cette occurrence ?')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
     expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
@@ -385,7 +385,7 @@ describe('screens:StocksEvent:Edition', () => {
     )
     await userEvent.click(screen.getAllByText('Supprimer le stock')[2])
     expect(
-      screen.getByText('Voulez-vous supprimer ce stock ?')
+      screen.getByText('Voulez-vous supprimer cette occurrence ?')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
     expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
@@ -447,7 +447,7 @@ describe('screens:StocksEvent:Edition', () => {
     )
     await userEvent.click(screen.getAllByText('Supprimer le stock')[0])
     expect(
-      screen.getByText('Voulez-vous supprimer ce stock ?')
+      screen.getByText('Voulez-vous supprimer cette occurrence ?')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
     expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
