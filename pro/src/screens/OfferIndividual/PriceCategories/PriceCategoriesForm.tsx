@@ -47,10 +47,9 @@ export const PriceCategoriesForm = ({
   const { setFieldValue, handleChange, resetForm, values } =
     useFormikContext<PriceCategoriesFormValues>()
   const notify = useNotification()
-
-  const [showConfirmDeletePriceCategory, setShowConfirmDeletePriceCategory] =
-    useState(false)
-
+  const [currentDeletionIndex, setCurrentDeletionIndex] = useState<
+    number | null
+  >(null)
   const [isFreeCheckboxSelectedArray, setIsFreeCheckboxSelectedArray] =
     useState(
       // initialize an array of length with false or true when it's 0
@@ -87,13 +86,13 @@ export const PriceCategoriesForm = ({
         stock => stock.priceCategoryId === priceCategoryId
       )
       if (
-        !showConfirmDeletePriceCategory &&
+        currentDeletionIndex === null &&
         shouldDisplayConfirmDeletePriceCategory
       ) {
-        setShowConfirmDeletePriceCategory(true)
+        setCurrentDeletionIndex(index)
         return
       } else {
-        setShowConfirmDeletePriceCategory(false)
+        setCurrentDeletionIndex(null)
       }
       const { isOk, message } = await deletePriceCategoryAdapter({
         offerId,
@@ -154,24 +153,24 @@ export const PriceCategoriesForm = ({
         name="priceCategories"
         render={arrayHelpers => (
           <FormLayout.Section title="Tarifs">
+            {currentDeletionIndex !== null && (
+              <ConfirmDialog
+                onCancel={() => setCurrentDeletionIndex(null)}
+                onConfirm={() =>
+                  onDeletePriceCategory(
+                    currentDeletionIndex,
+                    arrayHelpers,
+                    values.priceCategories,
+                    values.priceCategories[currentDeletionIndex].id
+                  )
+                }
+                title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des occurrences qui lui sont associées."
+                confirmText="Confirmer la supression"
+                cancelText="Annuler"
+              />
+            )}
             {values.priceCategories.map((priceCategory, index) => (
               <FormLayout.Row key={index} inline>
-                {showConfirmDeletePriceCategory && index === 0 && (
-                  <ConfirmDialog
-                    onCancel={() => setShowConfirmDeletePriceCategory(false)}
-                    onConfirm={() =>
-                      onDeletePriceCategory(
-                        index,
-                        arrayHelpers,
-                        values.priceCategories,
-                        values.priceCategories[index].id
-                      )
-                    }
-                    title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des occurrences qui lui sont associées."
-                    confirmText="Confirmer la supression"
-                    cancelText="Annuler"
-                  />
-                )}
                 <TextInput
                   smallLabel
                   name={`priceCategories[${index}].label`}
