@@ -55,7 +55,6 @@
     "final-form-calculate": "^1.2.1",
     "formik": "^2.2.9",
     "identity-obj-proxy": "^3.0.0",
-    "leaflet": "^1.7.1",
     "libphonenumber-js": "^1.9.44",
     "lodash.debounce": "^4.0.8",
     "lodash.get": "^4.4.2",
