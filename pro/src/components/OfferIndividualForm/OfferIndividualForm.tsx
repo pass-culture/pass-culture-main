@@ -14,6 +14,7 @@ import {
 } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { SynchronizedProviderInformation } from 'screens/OfferIndividual/SynchronisedProviderInfos'
 
@@ -56,6 +57,9 @@ const OfferIndividualForm = ({
   const {
     values: { offererId, subcategoryId, venueId },
   } = useFormikContext<IOfferIndividualFormValues>()
+  const isPriceCategoriesActive = useActiveFeature(
+    'WIP_ENABLE_MULTI_PRICE_STOCKS'
+  )
 
   useScrollToFirstErrorAfterSubmit()
 
@@ -108,6 +112,7 @@ const OfferIndividualForm = ({
             onImageDelete={onImageDelete}
             imageOffer={imageOffer}
           />
+
           <UsefulInformations
             isUserAdmin={isAdmin}
             offererNames={offererNames}
@@ -116,9 +121,15 @@ const OfferIndividualForm = ({
             isVenueVirtual={isVenueVirtual}
             readOnlyFields={readOnlyFields}
           />
+
           <Accessibility readOnlyFields={readOnlyFields} />
-          <OptionDuo readOnlyFields={readOnlyFields} />
+
+          {!isPriceCategoriesActive && (
+            <OptionDuo readOnlyFields={readOnlyFields} />
+          )}
+
           <ExternalLink readOnlyFields={readOnlyFields} />
+
           <Notifications
             venueBookingEmail={venue?.bookingEmail}
             readOnlyFields={readOnlyFields}

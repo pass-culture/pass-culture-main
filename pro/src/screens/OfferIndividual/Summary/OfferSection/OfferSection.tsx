@@ -13,6 +13,7 @@ import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 
 import { serializeOfferSectionData } from './serializer'
@@ -31,6 +32,9 @@ const OfferSummary = ({
   const { logEvent } = useAnalytics()
   const { categories, subCategories } = useOfferIndividualContext()
   const offerData = serializeOfferSectionData(offer, categories, subCategories)
+  const isPriceCategoriesActive = useActiveFeature(
+    'WIP_ENABLE_MULTI_PRICE_STOCKS'
+  )
 
   const editLink = getOfferIndividualUrl({
     offerId: offerData.id,
@@ -251,7 +255,7 @@ const OfferSummary = ({
         }
       />
 
-      {conditionalFields.includes('isDuo') && (
+      {!isPriceCategoriesActive && conditionalFields.includes('isDuo') && (
         <SummaryLayout.SubSection title="Autres caractéristiques">
           <SummaryLayout.Row
             description={
