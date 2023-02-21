@@ -137,7 +137,6 @@
     "jest-axe": "^7.0.0",
     "jest-canvas-mock": "^2.4.0",
     "jest-fetch-mock": "^3.0.3",
-    "lodash": "^4.17.21",
     "node-env-file": "^0.1.8",
     "openapi-typescript-codegen": "^0.23.0",
     "pnp-webpack-plugin": "^1.7.0",
