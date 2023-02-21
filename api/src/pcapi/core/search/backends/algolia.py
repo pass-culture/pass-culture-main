@@ -4,6 +4,7 @@ import re
 from typing import Iterable
 import urllib.parse
 
+import algoliasearch.http.requester
 import algoliasearch.search_client
 from flask import current_app
 import redis
@@ -17,6 +18,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import base
 from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
+from pcapi.utils import requests
 import pcapi.utils.date as date_utils
 from pcapi.utils.stopwords import STOPWORDS
 
@@ -107,12 +109,21 @@ def remove_stopwords(s: str) -> str:
     return " ".join(words)
 
 
+def create_algolia_client() -> algoliasearch.search_client.SearchClient:
+    config = algoliasearch.search_client.SearchConfig(
+        app_id=settings.ALGOLIA_APPLICATION_ID,
+        api_key=settings.ALGOLIA_API_KEY,
+    )
+    requester = algoliasearch.http.requester.Requester()
+    requester._session = requests.Session()  # inject our own session handler that logs
+    transporter = algoliasearch.search_client.Transporter(requester, config)
+    return algoliasearch.search_client.SearchClient(transporter, config)
+
+
 class AlgoliaBackend(base.SearchBackend):
     def __init__(self) -> None:
         super().__init__()
-        client = algoliasearch.search_client.SearchClient.create(
-            app_id=settings.ALGOLIA_APPLICATION_ID, api_key=settings.ALGOLIA_API_KEY
-        )
+        client = create_algolia_client()
         self.algolia_offers_client = client.init_index(settings.ALGOLIA_OFFERS_INDEX_NAME)
         self.algolia_collective_offers_client = client.init_index(settings.ALGOLIA_COLLECTIVE_OFFERS_INDEX_NAME)
         self.algolia_collective_offers_templates_client = client.init_index(

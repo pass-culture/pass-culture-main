@@ -4,12 +4,12 @@ import logging
 import os
 import pathlib
 
-from algoliasearch.search_client import SearchClient
 from algoliasearch.search_index import SearchIndex
 import click
 
 import pcapi
 from pcapi import settings
+import pcapi.core.search.backends.algolia as algolia_backend
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -35,10 +35,7 @@ def _get_index_default_file(index_type: IndexTypes) -> str:
 
 
 def _get_index_client(index_type: IndexTypes) -> SearchIndex:
-    client = SearchClient.create(
-        app_id=settings.ALGOLIA_APPLICATION_ID,
-        api_key=settings.ALGOLIA_API_KEY,
-    )
+    client = algolia_backend.create_algolia_client()
     index = client.init_index(index_type.value)
     return index
 
