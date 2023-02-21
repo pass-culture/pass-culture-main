@@ -15,7 +15,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import { useModal } from 'hooks/useModal'
 import { PlusCircleIcon } from 'icons'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
-import { DialogStockDeleteConfirm } from 'screens/OfferIndividual/DialogStockDeleteConfirm'
+import DialogStockEventDeleteConfirm from 'screens/OfferIndividual/DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Pagination } from 'ui-kit/Pagination'
@@ -164,7 +164,7 @@ const StockFormList = ({
           />
 
           {deleteConfirmVisible && (
-            <DialogStockDeleteConfirm
+            <DialogStockEventDeleteConfirm
               /* istanbul ignore next: DEBT, TO FIX */
               onConfirm={async () => {
                 /* istanbul ignore next: DEBT, TO FIX */
@@ -176,7 +176,6 @@ const StockFormList = ({
                 deleteConfirmHide()
               }}
               onCancel={deleteConfirmHide}
-              isEvent={true}
             />
           )}
         </>
