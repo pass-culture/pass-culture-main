@@ -108,6 +108,7 @@ describe('getPopinType', () => {
         '7 there is price category associated with stock, no bookings and change on price',
       stocks: [
         individualStockFactory({ priceCategoryId: 42, bookingsQuantity: 0 }),
+        individualStockFactory({ priceCategoryId: 1337, bookingsQuantity: 10 }),
       ],
       initialValues: {
         priceCategories: [priceCategoryFormFactory({ id: 42, price: 3.14 })],
