@@ -154,12 +154,12 @@ describe('PriceCategories', () => {
     })
   })
 
-  it('should display delete banner when stock is linked', async () => {
+  it('should display delete banner when stock is linked and delete right line', async () => {
     jest.spyOn(api, 'deletePriceCategory').mockResolvedValue()
     const values: PriceCategoriesFormValues = {
       priceCategories: [
-        priceCategoryFormFactory({ id: 144 }),
         priceCategoryFormFactory({ id: 2 }),
+        priceCategoryFormFactory({ id: 144 }),
       ],
       isDuo: false,
     }
@@ -168,14 +168,19 @@ describe('PriceCategories', () => {
 
     // I can cancel
     await userEvent.click(
-      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[1]
     )
+    expect(
+      screen.getByText(
+        'En supprimant ce tarif vous allez aussi supprimer l’ensemble des occurrences qui lui sont associées.'
+      )
+    ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Annuler'))
     expect(api.deletePriceCategory).not.toHaveBeenCalled()
 
     // I can delete
     await userEvent.click(
-      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[1]
     )
     await userEvent.click(screen.getByText('Confirmer la supression'))
     expect(api.deletePriceCategory).toHaveBeenNthCalledWith(1, '42', '144')
