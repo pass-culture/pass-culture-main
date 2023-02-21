@@ -19,7 +19,7 @@ import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'
 import postCollectiveStockAdapter from './adapters/postCollectiveStock'
 
-interface OfferEducationalStockCreationProps {
+export interface OfferEducationalStockCreationProps {
   offer: CollectiveOffer
   setOffer: (offer: CollectiveOffer) => void
 }
