@@ -2,6 +2,7 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient'
+import { hasProperty } from 'utils/types'
 
 export type EducationalDomain = {
   id: number
@@ -11,5 +12,11 @@ export type EducationalDomain = {
 export type HydratedCollectiveOffer = CollectiveOfferResponseModel & {
   isTemplate: false
 }
+
+export const isCollectiveOffer = (
+  value: unknown
+): value is HydratedCollectiveOffer =>
+  hasProperty(value, 'isTemplate') && value.isTemplate === false
+
 export type HydratedCollectiveOfferTemplate =
   CollectiveOfferTemplateResponseModel & { isTemplate: true }

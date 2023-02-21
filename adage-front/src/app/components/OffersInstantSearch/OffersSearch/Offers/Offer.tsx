@@ -7,6 +7,7 @@ import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
+  isCollectiveOffer,
 } from 'app/types/offers'
 import { ModalLayout, Tag } from 'app/ui-kit'
 import { ReactComponent as ChevronIcon } from 'assets/chevron.svg'
@@ -104,9 +105,18 @@ export const Offer = ({
           )}
           <div className="offer-header">
             <h2 className="offer-header-title">{offer.name}</h2>
-            <p className="offer-venue-name">
-              {getOfferVenueAndOffererName(offer.venue)}
-            </p>
+            <div className="offer-header-subtitles">
+              <span className="offer-header-label">Proposée par </span>
+              <span>{getOfferVenueAndOffererName(offer.venue)}</span>
+            </div>
+            {isCollectiveOffer(offer) && offer.teacher && (
+              <div className="offer-header-subtitles">
+                <span className="offer-header-label">Destinée à </span>
+                <span>
+                  {offer.teacher.firstName} {offer.teacher.lastName}
+                </span>
+              </div>
+            )}
             <ul className="offer-domains-list">
               {offer?.domains?.map(domain => (
                 <li className="offer-domains-list-item" key={domain.id}>
