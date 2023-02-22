@@ -112,7 +112,7 @@ jobs:
   notification:
     name: "Notification"
     runs-on: [self-hosted, linux, x64]
-    if: ${{ failure() }}
+    if: ${{ failure() && github.ref == 'refs/heads/master' }}
     needs:
       - deploy-to-testing
     steps:
