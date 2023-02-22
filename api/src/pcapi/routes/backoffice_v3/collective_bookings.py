@@ -68,7 +68,9 @@ def _get_collective_bookings(
                 offerers_models.Venue.managingOffererId,
             ),
             sa.orm.joinedload(educational_models.CollectiveBooking.pricings)
-            .load_only(finance_models.Pricing.amount)
+            .load_only(
+                finance_models.Pricing.amount, finance_models.Pricing.status, finance_models.Pricing.creationDate
+            )
             .joinedload(finance_models.Pricing.cashflows)
             .load_only(finance_models.Cashflow.batchId)
             .joinedload(finance_models.Cashflow.batch)
