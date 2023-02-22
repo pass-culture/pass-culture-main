@@ -90,9 +90,6 @@ export const PriceCategoriesForm = ({
         if (response.isOk) {
           const updatedOffer = response.payload
           setOffer && setOffer(updatedOffer)
-          resetForm({
-            values: computeInitialValues(updatedOffer),
-          })
         }
         notify.success(message)
       } else {
