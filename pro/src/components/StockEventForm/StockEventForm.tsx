@@ -35,7 +35,6 @@ const StockEventForm = ({
   const isPriceCategoriesActive = useActiveFeature(
     'WIP_ENABLE_MULTI_PRICE_STOCKS'
   )
-
   const stockFormValues = values.stocks[stockIndex]
 
   if (disableAllStockFields) {
@@ -111,7 +110,10 @@ const StockEventForm = ({
             label: 'Séléctionner un tarif',
             value: '',
           }}
-          disabled={priceCategoriesOptions.length === 1}
+          disabled={
+            priceCategoriesOptions.length === 1 ||
+            readOnlyFields.includes('priceCategoryId')
+          }
         />
       ) : (
         <TextInput
