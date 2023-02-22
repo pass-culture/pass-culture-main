@@ -936,7 +936,7 @@ class GetCsvReportTest:
             "Date et heure de réservation",
             "Date et heure de validation",
             "Contremarque",
-            "Intitulé du prix",
+            "Intitulé du tarif",
             "Prix de la réservation",
             "Statut de la contremarque",
             "Date et heure de remboursement",
@@ -956,7 +956,7 @@ class GetCsvReportTest:
         )
         assert data_dict["Date et heure de validation"] == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
         assert data_dict["Contremarque"] == booking.token
-        assert data_dict["Intitulé du prix"] == ""
+        assert data_dict["Intitulé du tarif"] == ""
         assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
         assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
@@ -1002,7 +1002,7 @@ class GetCsvReportTest:
             "Date et heure de réservation",
             "Date et heure de validation",
             "Contremarque",
-            "Intitulé du prix",
+            "Intitulé du tarif",
             "Prix de la réservation",
             "Statut de la contremarque",
             "Date et heure de remboursement",
@@ -1022,7 +1022,7 @@ class GetCsvReportTest:
         )
         assert data_dict["Date et heure de validation"] == ""
         assert data_dict["Contremarque"] == ""
-        assert data_dict["Intitulé du prix"] == ""
+        assert data_dict["Intitulé du tarif"] == ""
         assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
         assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
@@ -1190,7 +1190,7 @@ class GetCsvReportTest:
             "Date et heure de réservation",
             "Date et heure de validation",
             "Contremarque",
-            "Intitulé du prix",
+            "Intitulé du tarif",
             "Prix de la réservation",
             "Statut de la contremarque",
             "Date et heure de remboursement",
@@ -1210,7 +1210,7 @@ class GetCsvReportTest:
         )
         assert data_dict["Date et heure de validation"] == ""
         assert data_dict["Contremarque"] == booking.token
-        assert data_dict["Intitulé du prix"] == "Tarif unique"
+        assert data_dict["Intitulé du tarif"] == "Tarif unique"
         assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
         assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
@@ -1933,7 +1933,7 @@ class GetExcelReportTest:
             "Date et heure de réservation",
             "Date et heure de validation",
             "Contremarque",
-            "Intitulé du prix",
+            "Intitulé du tarif",
             "Prix de la réservation",
             "Statut de la contremarque",
             "Date et heure de remboursement",
@@ -1973,7 +1973,7 @@ class GetExcelReportTest:
         assert sheet.cell(row=2, column=9).value == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
         # Contremarque
         assert sheet.cell(row=2, column=10).value == booking.token
-        # Intitulé du prix
+        # Intitulé du tarif
         assert sheet.cell(row=2, column=11).value == None
         # Prix de la réservation
         assert sheet.cell(row=2, column=12).value == booking.amount
