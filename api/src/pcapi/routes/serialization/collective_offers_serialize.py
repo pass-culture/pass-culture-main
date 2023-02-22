@@ -110,6 +110,7 @@ class CollectiveOfferResponseModel(BaseModel):
     templateId: str | None
     imageCredit: str | None
     imageUrl: str | None
+    isPublicApi: bool
 
 
 class ListCollectiveOffersResponseModel(BaseModel):
@@ -159,6 +160,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         templateId=templateId,
         imageCredit=offer.imageCredit,
         imageUrl=offer.imageUrl,
+        isPublicApi=offer.isPublicApi if not is_offer_template else False,
     )
 
 
@@ -357,6 +359,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     lastBookingId: int | None
     teacher: EducationalRedactorResponseModel | None
     _humanize_templateId = humanize_field("templateId")
+    isPublicApi: bool
 
 
 class CollectiveOfferResponseIdModel(BaseModel):
