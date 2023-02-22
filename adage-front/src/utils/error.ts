@@ -1,9 +1,9 @@
 type Error = {
   statusCode: number
-  content: {
+  body: {
     code: string
   }
 }
 
 export const hasErrorCode = (error: any): error is Error =>
-  typeof error?.content?.code === 'string'
+  typeof error?.body?.code === 'string'

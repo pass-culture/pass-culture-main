@@ -36,7 +36,7 @@ export const postBookingAdapater: PostBookingAdapter = async stockId => {
     }
   } catch (error) {
     if (hasErrorCode(error)) {
-      return ERROR_RESPONSE[error.content.code]
+      return ERROR_RESPONSE[error.body.code]
     }
 
     return FAILING_RESPONSE
