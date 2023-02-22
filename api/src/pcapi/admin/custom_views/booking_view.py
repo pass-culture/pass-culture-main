@@ -192,7 +192,7 @@ class CollectiveBookingView(BaseCustomAdminView):
         except Exception as exc:  # pylint: disable=broad-except
             flash(f"L'opération a échoué : {_get_error_msg(exc)}", "error")
         else:
-            flash("La réservation a été dés-annulée et marquée comme utilisée.", "info")
+            flash("La réservation a été dés-annulée et marquée comme confirmé ou préreservé.", "info")
         return redirect(booking_url)
 
     @expose("/cancel/<int:booking_id>", methods=["POST"])

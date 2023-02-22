@@ -314,7 +314,7 @@ class MarkCollectiveBookingAsUsedTest:
         assert response.status_code == 303
 
         db.session.refresh(cancelled)
-        assert cancelled.status is educational_models.CollectiveBookingStatus.USED
+        assert cancelled.status is educational_models.CollectiveBookingStatus.CONFIRMED
 
         redirected_response = authenticated_client.get(response.headers["location"])
         assert f"La réservation {cancelled.id} a été validée" in html_parser.extract_alert(redirected_response.data)

@@ -1,6 +1,8 @@
 import datetime
 from unittest import mock
 
+from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -29,7 +31,7 @@ class BookingViewTest:
         assert response.status_code == 200
         content = response.data.decode(response.charset)
         assert booking.email in content
-        assert "Marquer comme utilisée" not in content
+        assert "Désannuler" not in content
 
     def test_show_mark_as_used_button(self, app):
         users_factories.AdminFactory(email="admin@example.com")
@@ -40,7 +42,7 @@ class BookingViewTest:
 
         assert response.status_code == 200
         content = response.data.decode(response.charset)
-        assert "Marquer comme utilisée" in content
+        assert "Désannuler" in content
 
     def test_uncancel_and_mark_as_used(self, app):
         users_factories.AdminFactory(email="admin@example.com")
@@ -162,7 +164,7 @@ class CollectiveBookingViewTest:
         assert response.status_code == 200
         content = response.data.decode(response.charset)
         assert booking.collectiveStock.collectiveOffer.name in content
-        assert "Marquer comme utilisée" not in content
+        assert "Désannuler" not in content
 
     def test_show_mark_as_used_button(self, client):
         users_factories.AdminFactory(email="admin@example.com")
@@ -178,9 +180,9 @@ class CollectiveBookingViewTest:
 
         assert response.status_code == 200
         content = response.data.decode(response.charset)
-        assert "Marquer comme utilisée" in content
+        assert "Désannuler" in content
 
-    def test_uncancel_and_mark_as_used(self, client):
+    def test_uncancel_and_mark_as_confirmed(self, client):
         users_factories.AdminFactory(email="admin@example.com")
         booking = educational_factories.CollectiveBookingFactory(
             cancellationDate=datetime.datetime.utcnow(),
@@ -195,10 +197,10 @@ class CollectiveBookingViewTest:
         assert response.location == f"http://localhost/pc/back-office/collective-bookings/?id={booking.id}"
         response = client.with_session_auth("admin@example.com").get(response.location)
         content = response.data.decode(response.charset)
-        assert "La réservation a été dés-annulée et marquée comme utilisée." in content
+        assert "La réservation a été dés-annulée et marquée comme confirmé ou préreservé." in content
         booking = CollectiveBooking.query.get(booking.id)
         assert booking.status is not CollectiveBookingStatus.CANCELLED
-        assert booking.status is CollectiveBookingStatus.USED
+        assert booking.status is CollectiveBookingStatus.CONFIRMED
 
     def test_fail_to_uncancel_and_mark_as_used(self, client):
         users_factories.AdminFactory(email="admin@example.com")
@@ -287,3 +289,24 @@ class CollectiveBookingViewTest:
 
         booking = CollectiveBooking.query.get(booking.id)
         assert booking.status == CollectiveBookingStatus.CANCELLED
+
+    @freeze_time("2023-02-02 15:00:00")
+    def test_uncancel_with_datetime_before_now(self, client):
+        users_factories.AdminFactory(email="admin@example.com")
+
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=datetime.datetime.utcnow() - relativedelta(days=1)
+        )
+        booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock,
+            cancellationDate=datetime.datetime.utcnow(),
+            cancellationReason=CollectiveBookingCancellationReasons.OFFERER,
+            status=CollectiveBookingStatus.CANCELLED,
+        )
+
+        route = f"/pc/back-office/collective-bookings/mark-as-used/{booking.id}"
+        response = client.with_session_auth("admin@example.com").post(route, form={})
+
+        assert response.status_code == 302
+        assert booking.status is CollectiveBookingStatus.USED
+        assert booking.dateUsed == datetime.datetime.utcnow()
