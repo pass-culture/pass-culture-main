@@ -86,6 +86,25 @@ export const hasChangesOnStockWithBookings = (
   })
 }
 
+const getPriceCategoryOptions = (offer: IOfferIndividual): SelectOption[] => {
+  const priceCategories = offer.priceCategories
+  priceCategories?.sort((a, b) => {
+    if (a.price === b.price) {
+      return a.label.localeCompare(b.label)
+    }
+    return a.price - b.price
+  })
+
+  return (
+    priceCategories?.map(
+      (priceCategory): SelectOption => ({
+        label: `${formatPrice(priceCategory.price)} - ${priceCategory.label}`,
+        value: priceCategory.id,
+      })
+    ) ?? []
+  )
+}
+
 const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
@@ -108,13 +127,7 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   const isPriceCategoriesActive = useActiveFeature(
     'WIP_ENABLE_MULTI_PRICE_STOCKS'
   )
-  const priceCategoriesOptions =
-    offer.priceCategories?.map(
-      (priceCategory): SelectOption => ({
-        label: `${formatPrice(priceCategory.price)} - ${priceCategory.label}`,
-        value: priceCategory.id,
-      })
-    ) ?? []
+  const priceCategoriesOptions = getPriceCategoryOptions(offer)
 
   let description
   let links
