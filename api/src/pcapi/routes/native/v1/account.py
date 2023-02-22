@@ -138,24 +138,6 @@ def get_email_update_token_expiration_date(user: users_models.User) -> serialize
     return serializers.UpdateEmailTokenExpiration(expiration=email_api.get_active_token_expiration(user))
 
 
-@blueprint.native_v1.route("/me/cultural_survey", methods=["POST"])
-@spectree_serialize(
-    on_success_status=204,
-    on_error_statuses=[400],
-    api=blueprint.api,
-)
-@authenticated_and_active_user_required
-def update_cultural_survey(user: users_models.User, body: serializers.CulturalSurveyRequest) -> None:
-    with transaction():
-        if not body.needs_to_fill_cultural_survey:
-            user.needsToFillCulturalSurvey = False
-        if body.cultural_survey_id:
-            logger.info("User %s updated cultural survey", user.id, extra={"actor": user.id})
-            user.culturalSurveyId = body.cultural_survey_id
-            user.culturalSurveyFilledDate = datetime.utcnow()
-    return
-
-
 @blueprint.native_v1.route("/account", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def create_account(body: serializers.AccountRequest) -> None:
