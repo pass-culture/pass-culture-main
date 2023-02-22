@@ -3,6 +3,8 @@ import datetime
 from flask import url_for
 import pytest
 
+from pcapi.core.categories import categories
+from pcapi.core.categories import subcategories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offers import factories as offers_factories
 import pcapi.core.permissions.models as perm_models
@@ -19,19 +21,38 @@ pytestmark = [
 ]
 
 
+@pytest.fixture(scope="function", name="criteria")
+def criteria_fixture() -> list:
+    return criteria_factories.CriterionFactory.create_batch(2)
+
+
 @pytest.fixture(scope="function", name="offers")
-def offers_fixture() -> tuple:
-    criterion = criteria_factories.CriterionFactory()
-    offer_with_unlimited_stock = offers_factories.OfferFactory(criteria=[criterion])
-    offer_with_limited_stock = offers_factories.OfferFactory(
-        name="A Very Specific Name", lastValidationDate=datetime.date(2022, 2, 22)
+def offers_fixture(criteria) -> tuple:
+    offer_with_unlimited_stock = offers_factories.OfferFactory(
+        criteria=[criteria[0]],
+        venue__postalCode="47000",
+        venue__departementCode="47",
+        product__subcategoryId=subcategories.MATERIEL_ART_CREATIF.id,
     )
-    offers_factories.OfferFactory(name="A Very Specific Name That Is Longer")
+    offer_with_limited_stock = offers_factories.OfferFactory(
+        name="A Very Specific Name",
+        lastValidationDate=datetime.date(2022, 2, 22),
+        venue__postalCode="97400",
+        venue__departementCode="974",
+        product__subcategoryId=subcategories.LIVRE_AUDIO_PHYSIQUE.id,
+    )
+    offer_with_two_criteria = offers_factories.OfferFactory(
+        name="A Very Specific Name That Is Longer",
+        criteria=[criteria[0], criteria[1]],
+        venue__postalCode="74000",
+        venue__departementCode="74",
+        product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+    )
     offers_factories.StockFactory(quantity=None, offer=offer_with_unlimited_stock)
     offers_factories.StockFactory(offer=offer_with_unlimited_stock)
     offers_factories.StockFactory(quantity=10, dnBookedQuantity=0, offer=offer_with_limited_stock)
     offers_factories.StockFactory(quantity=10, dnBookedQuantity=5, offer=offer_with_limited_stock)
-    return offer_with_unlimited_stock, offer_with_limited_stock
+    return offer_with_unlimited_stock, offer_with_limited_stock, offer_with_two_criteria
 
 
 class ListOffersTest:
@@ -78,6 +99,8 @@ class ListOffersTest:
         assert rows[0]["Pondération"] == ""
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Dernière date de validation"] == ""
+        assert rows[0]["Dép."] == offers[0].venue.departementCode
+        assert rows[0]["Lieu"] == offers[0].venue.name
 
     def test_list_offers_by_name(self, authenticated_client, offers):
         # when
@@ -99,3 +122,70 @@ class ListOffersTest:
         assert rows[0]["Pondération"] == ""
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Dernière date de validation"] == "22/02/2022"
+        assert rows[0]["Dép."] == offers[1].venue.departementCode
+        assert rows[0]["Lieu"] == offers[1].venue.name
+
+    def test_list_offers_by_criteria(self, authenticated_client, criteria, offers):
+        # when
+        criterion_id = criteria[0].id
+        with assert_num_queries(
+            self.expected_num_queries + 1
+        ):  # +1 because of reloading selected criterion in the form
+            response = authenticated_client.get(url_for(self.endpoint, criteria=[criterion_id]))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {offers[0].id, offers[2].id}
+
+    def test_list_offers_by_category(self, authenticated_client, offers):
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, category=[categories.LIVRE.id]))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {offers[1].id, offers[2].id}
+
+    def test_list_offers_by_department(self, authenticated_client, offers):
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, department=["74", "47", "971"]))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {offers[0].id, offers[2].id}
+
+    def test_list_offers_by_venue(self, authenticated_client, offers):
+        # when
+        venue_id = offers[1].venueId
+        with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected venue in the form
+            response = authenticated_client.get(url_for(self.endpoint, venue=[venue_id]))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+
+    def test_list_offers_by_all_filters(self, authenticated_client, criteria, offers):
+        # when
+        criterion_id = criteria[1].id
+        venue_id = offers[2].venueId
+        with assert_num_queries(self.expected_num_queries + 2):  # +2 because of reloading selected criterion and venue
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    q="specific name",
+                    criteria=[criterion_id],
+                    category=[categories.LIVRE.id],
+                    department=["74"],
+                    venue=[venue_id],
+                )
+            )
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {offers[2].id}

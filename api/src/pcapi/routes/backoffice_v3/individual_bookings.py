@@ -21,6 +21,7 @@ from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils.clean_accents import clean_accents
 
+from . import autocomplete
 from . import utils
 from .forms import empty as empty_forms
 from .forms import individual_booking as individual_booking_forms
@@ -166,29 +167,8 @@ def list_individual_bookings() -> utils.BackofficeResponse:
         )
         bookings = bookings[: form.limit.data]
 
-    if form.offerer.data:
-        offerers = (
-            offerers_models.Offerer.query.filter(offerers_models.Offerer.id.in_(form.offerer.data))
-            .order_by(offerers_models.Offerer.name)
-            .with_entities(
-                offerers_models.Offerer.id,
-                offerers_models.Offerer.name,
-                offerers_models.Offerer.siren,
-            )
-        )
-        form.offerer.choices = [(offerer_id, f"{name} ({siren})") for offerer_id, name, siren in offerers]
-
-    if form.venue.data:
-        venues = (
-            offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(form.venue.data))
-            .order_by(offerers_models.Venue.name)
-            .with_entities(
-                offerers_models.Venue.id,
-                offerers_models.Venue.name,
-                offerers_models.Venue.siret,
-            )
-        )
-        form.venue.choices = [(venue_id, f"{name} ({siret or 'Pas de SIRET'})") for venue_id, name, siret in venues]
+    autocomplete.prefill_offerers_choices(form.offerer)
+    autocomplete.prefill_venues_choices(form.venue)
 
     return render_template(
         "individual_bookings/list.html",

@@ -25,6 +25,8 @@
                         <th scope="col">Pondération</th>
                         <th scope="col">État</th>
                         <th scope="col">Dernière date de validation</th>
+                        <th scope="col">Dép.</th>
+                        <th scope="col">Lieu</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -53,6 +55,8 @@
                             <td>{{ offer.rankingWeight | empty_string_if_null }}</td>
                             <td>{{ offer.validation | format_offer_validation_status }}</td>
                             <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
+                            <td>{{ offer.venue.departementCode }}</td>
+                            <td>{{ offer.venue.name }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
