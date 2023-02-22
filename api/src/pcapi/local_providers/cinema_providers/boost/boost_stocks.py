@@ -1,8 +1,5 @@
 from datetime import datetime
 from typing import Iterator
-from typing import cast
-
-from sqlalchemy.sql.schema import Sequence
 
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.categories import subcategories
@@ -17,7 +14,6 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
-from pcapi.models import db
 
 
 class BoostStocks(LocalProvider):
@@ -30,7 +26,6 @@ class BoostStocks(LocalProvider):
         self.cinema_id = venue_provider.venueIdAtOfferProvider
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
         self.showtimes: Iterator[boost_serializers.ShowTime4] = iter(self._get_showtimes())
-        self.last_offer_id: int | None = None
 
     def __next__(self) -> list[ProvidableInfo]:
         showtime = next(self.showtimes)
@@ -78,11 +73,7 @@ class BoostStocks(LocalProvider):
 
         self.update_from_movie_information(product, self.showtime_details.film.to_generic_movie())
 
-        is_new_product_to_insert = product.id is None
-
-        if is_new_product_to_insert:
-            product.id = get_next_product_id_from_database()
-        self.last_product_id = product.id
+        self.last_product = product
 
     def fill_offer_attributes(self, offer: Offer) -> None:
         offer.venueId = self.venue.id
@@ -93,18 +84,16 @@ class BoostStocks(LocalProvider):
 
         offer.name = self.showtime_details.film.titleCnc
         offer.subcategoryId = subcategories.SEANCE_CINE.id
-        offer.productId = self.last_product_id
+        offer.product = self.last_product
 
         is_new_offer_to_insert = offer.id is None
-
         if is_new_offer_to_insert:
-            offer.id = get_next_offer_id_from_database()
             offer.isDuo = self.isDuo
 
-        self.last_offer_id = offer.id
+        self.last_offer = offer
 
     def fill_stock_attributes(self, stock: Stock) -> None:
-        stock.offerId = cast(int, self.last_offer_id)
+        stock.offer = self.last_offer
         # a pydantic validator has already converted the showDate to a UTC datetime
         stock.beginningDatetime = self.showtime_details.showDate
         stock.bookingLimitDatetime = self.showtime_details.showDate
@@ -151,16 +140,6 @@ class BoostStocks(LocalProvider):
     def _get_boost_movie_poster(self, image_url: str) -> bytes:
         client_boost = BoostClientAPI(self.cinema_id)
         return client_boost.get_movie_poster(image_url)
-
-
-def get_next_product_id_from_database() -> int:
-    sequence: Sequence = Sequence("product_id_seq")
-    return db.session.execute(sequence)
-
-
-def get_next_offer_id_from_database() -> int:
-    sequence: Sequence = Sequence("offer_id_seq")
-    return db.session.execute(sequence)
 
 
 def _find_showtimes_by_movie_id(showtimes_information: list[dict], movie_id: int) -> list[dict]:
