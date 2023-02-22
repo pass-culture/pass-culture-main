@@ -50,8 +50,8 @@ describe('validationSchema', () => {
         ],
       }),
       expectedErrors: [
-        'Veuillez renseigner des intitulés différents',
-        'Veuillez renseigner des intitulés différents',
+        'Plusieurs tarifs sont identiques, veuillez changer l’intitulé ou le prix',
+        'Plusieurs tarifs sont identiques, veuillez changer l’intitulé ou le prix',
       ],
     },
   ]
