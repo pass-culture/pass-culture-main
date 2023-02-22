@@ -534,6 +534,25 @@ class UpdateVenueTest:
         update_snapshot = venue.action_history[0].extraData["modified_info"]
         assert update_snapshot["contact.email"]["new_info"] == data["email"]
 
+    def test_update_venue_empty_phone_number(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
+        data = {
+            "siret": venue.siret,
+            "city": venue.city,
+            "postalCode": venue.postalCode,
+            "address": venue.address,
+            "email": venue.contact.email,
+            "phone_number": "",
+        }
+
+        response = send_request(authenticated_client, venue.id, url, data)
+
+        assert response.status_code == 303
+        db.session.refresh(venue)
+        assert venue.contact.phone_number is None
+
     def test_update_virtual_venue(self, authenticated_client, offerer):
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
