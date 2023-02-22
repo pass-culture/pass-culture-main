@@ -37,6 +37,7 @@ class AdageCollectiveOffer(AdageBaseResponseModel):
     venueTimezone: str
     isDigital: bool
     withdrawalDetails: str | None
+    teacherEmail: str | None
 
 
 def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> AdageCollectiveOffer:
@@ -70,6 +71,7 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
         venueTimezone=venue.timezone,
         isDigital=False,
         withdrawalDetails=None,
+        teacherEmail=collective_offer.teacher.email if collective_offer.teacher else None,
     )
 
 
