@@ -56,7 +56,7 @@ jobs:
     name: Test backoffice
     needs: check-backoffice-folder-changes
     if: needs.check-backoffice-folder-changes.outputs.folder_changed == 'true'
-    uses: ./.github/workflows/tests-backoffice.yml
+    uses: ./.github/workflows/tests-backoffice-v3.yml
     secrets: inherit
 
   test-pro:
@@ -87,14 +87,14 @@ jobs:
       - check-pro-folder-changes
       - test-adage
       - build-api
-      - test-backoffice-v3
+      - test-backoffice
       - test-pro
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
       (needs.test-adage.result == 'success' || needs.test-adage.result == 'skipped') &&
       (needs.build-api.result == 'success' || needs.build-api.result == 'skipped') &&
-      (needs.test-backoffice-v3.result == 'success' || needs.test-backoffice-v3.result == 'skipped') &&
+      (needs.test-backoffice.result == 'success' || needs.test-backoffice.result == 'skipped') &&
       (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
     uses: ./.github/workflows/deploy.yml
     with:
