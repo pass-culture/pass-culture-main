@@ -93,6 +93,13 @@ def format_cents(amount_in_cents: float | None) -> str:
     return format_amount(amount_in_cents / 100)
 
 
+def format_rate(rate: float | None) -> str:
+    if rate is None:
+        return "N/A"
+
+    return f"{rate}\u202f%".replace(".", ",")
+
+
 def format_bool(data: bool | None) -> str:
     if data is None:
         return ""
@@ -219,6 +226,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_booking_status_long"] = format_booking_status_long
     app.jinja_env.filters["format_bool"] = format_bool
     app.jinja_env.filters["format_cents"] = format_cents
+    app.jinja_env.filters["format_rate"] = format_rate
     app.jinja_env.filters["format_string_list"] = format_string_list
     app.jinja_env.filters["format_date"] = format_date
     app.jinja_env.filters["format_deposit_type"] = format_deposit_type
