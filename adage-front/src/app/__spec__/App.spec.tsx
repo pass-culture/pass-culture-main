@@ -136,6 +136,7 @@ describe('app', () => {
       expect(contentTitle).toBeInTheDocument()
       const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
+        ['venue.departmentCode:30'],
         [
           'offer.educationalInstitutionUAICode:all',
           'offer.educationalInstitutionUAICode:uai',
@@ -143,7 +144,6 @@ describe('app', () => {
       ])
       expect(Configure).toHaveBeenCalledTimes(1)
 
-      expect(queryResetFiltersButton()).not.toBeInTheDocument()
       expect(
         screen.queryByText('Lieu :', { exact: false })
       ).not.toBeInTheDocument()
@@ -258,6 +258,7 @@ describe('app', () => {
       expect(mockedApi.getVenueBySiret).toHaveBeenCalledWith(siret, false)
       const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
+        ['venue.departmentCode:30'],
         [
           'offer.educationalInstitutionUAICode:all',
           'offer.educationalInstitutionUAICode:uai',
@@ -265,7 +266,6 @@ describe('app', () => {
       ])
       expect(Configure).toHaveBeenCalledTimes(1)
       expect(queryTag(`Lieu : ${venue?.publicName}`)).not.toBeInTheDocument()
-      expect(queryResetFiltersButton()).not.toBeInTheDocument()
       expect(
         screen.getByText('Lieu inconnu. Tous les résultats sont affichés.')
       ).toBeInTheDocument()
@@ -356,16 +356,16 @@ describe('app', () => {
       const searchConfigurationLastCall = (Configure as jest.Mock).mock
         .calls[3][0]
       expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
+        ['venue.departmentCode:30'],
         [
           'offer.educationalInstitutionUAICode:all',
           'offer.educationalInstitutionUAICode:uai',
         ],
       ])
       expect(queryTag(`Lieu : ${venue?.publicName}`)).not.toBeInTheDocument()
-      expect(queryResetFiltersButton()).not.toBeInTheDocument()
     })
 
-    it('should search on department when only in my department is checked', async () => {
+    it('should uncheck on department only and search on intervention area also when only in my department is unchecked', async () => {
       renderApp()
 
       await screen.findByText(`Lieu : ${venue?.publicName}`)
@@ -382,7 +382,7 @@ describe('app', () => {
       const searchConfigurationFirstCall = (Configure as jest.Mock).mock
         .calls[2][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
-        ['venue.departmentCode:30'],
+        ['venue.departmentCode:30', 'offer.interventionArea:30'],
         ['venue.id:1436'],
         [
           'offer.educationalInstitutionUAICode:all',
@@ -438,6 +438,7 @@ describe('app', () => {
           .calls[2][0]
 
         expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
+          [`venue.departmentCode:30`],
           [`venue.id:${venue.id}`],
           ['offer.educationalInstitutionUAICode:uai'],
         ])
