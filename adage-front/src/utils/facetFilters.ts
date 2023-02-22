@@ -1,9 +1,14 @@
-export const getDefaultFacetFilterUAICodeValue = (uai?: string | null) => {
+export const getDefaultFacetFilterUAICodeValue = (
+  uai?: string | null,
+  departmentCode?: string | null
+) => {
   const institutionIdFilters = ['offer.educationalInstitutionUAICode:all']
 
   if (uai) {
     institutionIdFilters.push(`offer.educationalInstitutionUAICode:${uai}`)
   }
 
-  return institutionIdFilters
+  return departmentCode
+    ? [[`venue.departmentCode:${departmentCode}`], institutionIdFilters]
+    : [institutionIdFilters]
 }
