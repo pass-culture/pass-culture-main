@@ -83,8 +83,7 @@ logger = logging.getLogger(__name__)
 RECREDIT_UNDERAGE_USERS_BATCH_SIZE = 1000
 
 # When used through the cron, only price bookings that were used in 2022.
-# Prior bookings will be priced manually.
-# FIXME (dbaty, 2021-12-23): remove once prior bookings have been priced.
+# Prior bookings have been priced manually.
 MIN_DATE_TO_PRICE = datetime.datetime(2021, 12, 31, 23, 0)  # UTC
 
 # The ORDER BY clause to be used to price bookings in a specific,
