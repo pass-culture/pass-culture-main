@@ -466,7 +466,6 @@ class CreateOffererTest:
     ):
         # Given
         gen_offerer_tags()
-        offerers_factories.VirtualVenueTypeFactory()
         user = users_factories.UserFactory()
         offerer_informations = CreateOffererQueryModel(
             name="Test Offerer", siren="777084112", address="123 rue de Paris", postalCode="93100", city="Montreuil"
@@ -507,7 +506,6 @@ class CreateOffererTest:
     @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
     def test_create_digital_venue_if_siren_is_not_already_registered(self, mock_maybe_send_offerer_validation_email):
         # Given
-        offerers_factories.VirtualVenueTypeFactory()
         user = users_factories.UserFactory()
         offerer_informations = CreateOffererQueryModel(
             name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
@@ -526,7 +524,6 @@ class CreateOffererTest:
         self, mock_maybe_send_offerer_validation_email
     ):
         # Given
-        offerers_factories.VirtualVenueTypeFactory()
         user = users_factories.UserFactory()
         offerer_informations = CreateOffererQueryModel(
             name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
@@ -565,7 +562,6 @@ class CreateOffererTest:
         self, mock_maybe_send_offerer_validation_email
     ):
         # Given
-        offerers_factories.VirtualVenueTypeFactory()
         user = users_factories.UserFactory()
         offerer_informations = CreateOffererQueryModel(
             name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
@@ -592,7 +588,6 @@ class CreateOffererTest:
         self, mock_maybe_send_offerer_validation_email
     ):
         # Given
-        offerers_factories.VirtualVenueTypeFactory()
         user = users_factories.UserFactory()
         offerer_informations = CreateOffererQueryModel(
             name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
@@ -647,7 +642,6 @@ class CreateOffererTest:
 
     def test_create_offerer_auto_tagging_no_error_if_tag_not_in_db(self):
         # Given
-        offerers_factories.VirtualVenueTypeFactory()
         user = users_factories.UserFactory()
         offerer_informations = CreateOffererQueryModel(
             name="Test Offerer", siren="777084112", address="123 rue de Paris", postalCode="93100", city="Montreuil"
@@ -664,7 +658,6 @@ class CreateOffererTest:
     def test_create_offerer_national_partner_autotagging(self):
         # Given
         national_partner_tag = offerers_factories.OffererTagFactory(name="partenaire-national")
-        offerers_factories.VirtualVenueTypeFactory()
         not_a_parner_user = users_factories.UserFactory(email="noël.flantier@gmail.com")
         partner_user = users_factories.UserFactory(email="ssap.erutluc@partner.com")
         not_a_partner_offerer_informations = CreateOffererQueryModel(
