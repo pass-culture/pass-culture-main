@@ -44,6 +44,25 @@ class Returns200Test:
         assert response_json[0]["educationalInstitution"]["name"] == institution.name
         assert response_json[0]["imageCredit"] == None
         assert response_json[0]["imageUrl"] == None
+        assert response_json[0]["isPublicApi"] == False
+
+    def test_if_collective_offer_is_public_api(self, app):
+        # Given
+        user = users_factories.UserFactory()
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        institution = educational_factories.EducationalInstitutionFactory()
+        educational_factories.CollectiveOfferFactory(venue=venue, offerId=1, institution=institution, isPublicApi=True)
+
+        # When
+        client = TestClient(app.test_client()).with_session_auth(email=user.email)
+        response = client.get("/collective/offers")
+
+        # Then
+        response_json = response.json
+        assert response.status_code == 200
+        assert response_json[0]["isPublicApi"] == True
 
     def test_one_simple_collective_offer_template(self, app):
         # Given
