@@ -5,10 +5,9 @@ import re
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.models import VenueType
-from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.providers import factories as providers_factories
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 
@@ -37,7 +36,7 @@ def add_default_image_to_venue(image_venue_counter: int, offerer: Offerer, venue
         )
 
 
-def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType]) -> dict[str, Venue]:
+def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
     logger.info("create_industrial_venues")
 
     venue_by_name = {}
@@ -47,8 +46,6 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
     iban_prefix = "FR7630001007941234567890185"
     bic_prefix, bic_suffix = "QSDFGH8Z", 556
     application_id_prefix = "12"
-
-    label_to_code = {venue_type.name: venue_type.value for venue_type in VenueTypeCode}
 
     image_venue_counter = 0
 
@@ -89,8 +86,6 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
             # TODO: remove venue_type and label to code mapping when
             # the venue_type table has been finally replaced by the
             # VenueTypeCode enum
-            venue_type = random.choice(venue_types)
-            venue_type_code = VenueTypeCode[label_to_code.get(venue_type.label, "OTHER")]
 
             venue = offerers_factories.VenueFactory(
                 managingOfferer=offerer,
@@ -100,8 +95,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
                 comment=comment,
                 name=venue_name,
                 siret=siret,
-                venueTypeId=venue_type.id,
-                venueTypeCode=venue_type_code,
+                venueTypeCode=random.choice(list(offerers_models.VenueTypeCode)),
                 isPermanent=True,
                 pricing_point="self" if siret else None,
                 reimbursement_point="self" if siret else None,
