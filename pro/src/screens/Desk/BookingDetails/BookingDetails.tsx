@@ -8,6 +8,18 @@ import { IBooking } from '..'
 
 import styles from './BookingDetails.module.scss'
 
+interface IBookingDetailsLine {
+  label: string
+  value: number | string
+}
+
+const BookingDetailsLine = ({ label, value }: IBookingDetailsLine) => (
+  <div>
+    <div className={styles['desk-label']}>{label}</div>
+    <div className={styles['desk-value']}>{value}</div>
+  </div>
+)
+
 interface IBookingDetailsProps {
   booking: IBooking | null
 }
@@ -36,20 +48,13 @@ const BookingDetails = ({
       aria-relevant="all"
       className={styles['booking-summary']}
     >
-      <div>
-        <div className={styles['desk-label']}>{'Utilisateur : '}</div>
-        <div className={styles['desk-value']}>{booking.userName}</div>
-      </div>
-      <div>
-        <div className={styles['desk-label']}>{'Offre : '}</div>
-        <div className={styles['desk-value']}>{booking.offerName}</div>
-      </div>
-      <div>
-        <div className={styles['desk-label']}>{'Date de l’offre : '}</div>
-        <div className={styles['desk-value']}>
-          {formattedBookingDate(booking)}
-        </div>
-      </div>
+      <BookingDetailsLine label="Utilisateur : " value={booking.userName} />
+      <BookingDetailsLine label="Offre : " value={booking.offerName} />
+      <BookingDetailsLine
+        label="Date de l’offre : "
+        value={formattedBookingDate(booking)}
+      />
+
       {
         /* istanbul ignore next: DEBT, TO FIX */
         booking.quantity === 2 ? (
@@ -61,17 +66,17 @@ const BookingDetails = ({
             </div>
           </div>
         ) : (
-          <div>
-            <div className={styles['desk-label']}>{'Prix : '}</div>
-            <div className={styles['desk-value']}>{`${booking.price} €`}</div>
-          </div>
+          <BookingDetailsLine label="Prix : " value={`${booking.price} €`} />
         )
       }
-      {booking.ean13 !== null && (
-        <div>
-          <div className={styles['desk-label']}>{'ISBN : '}</div>
-          <div className={styles['desk-value']}>{booking.ean13}</div>
-        </div>
+      {booking.priceCategoryLabel && (
+        <BookingDetailsLine
+          label="Intitulé du tarif : "
+          value={booking.priceCategoryLabel}
+        />
+      )}
+      {booking.ean13 && (
+        <BookingDetailsLine label="ISBN : " value={booking.ean13} />
       )}
     </div>
   )
