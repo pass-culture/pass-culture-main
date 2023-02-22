@@ -191,9 +191,13 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
         flash("Impossible de valider une réservation qui n'est pas annulée", "warning")
         return _redirect_after_collective_booking_action()
 
-    educational_api_booking.uncancel_collective_booking_by_id_from_support(collective_booking)
+    try:
+        educational_api_booking.uncancel_collective_booking_by_id_from_support(collective_booking)
+    except sa.exc.SQLAlchemyError as exc:
+        flash(f"Une erreur s'est produite : {str(exc)}", "warning")
+    else:
+        flash(f"La réservation {collective_booking.id} a été validée", "success")
 
-    flash(f"La réservation {collective_booking.id} a été validée", "success")
     return _redirect_after_collective_booking_action()
 
 
@@ -208,6 +212,8 @@ def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeRes
         flash("Impossible d'annuler une réservation déjà annulée", "warning")
     except educational_exceptions.BookingIsAlreadyRefunded:
         flash("Impossible d'annuler une réservation remboursée", "warning")
+    except sa.exc.SQLAlchemyError as exc:
+        flash(f"Une erreur s'est produite : {str(exc)}", "warning")
     else:
         flash(f"La réservation {collective_booking.id} a été annulée", "success")
 
