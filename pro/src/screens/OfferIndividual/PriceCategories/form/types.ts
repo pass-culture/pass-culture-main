@@ -8,6 +8,10 @@ export type PriceCategoryForm = {
   id?: number
 }
 
+export const isPriceCategoriesForm = (
+  value: unknown
+): value is PriceCategoryForm => hasProperties(value, ['label', 'price'])
+
 export type PriceCategoriesFormValues = {
   priceCategories: PriceCategoryForm[]
   isDuo: boolean
@@ -16,6 +20,8 @@ export type PriceCategoriesFormValues = {
 export const isPriceCategoriesFormValues = (
   value: unknown
 ): value is PriceCategoriesFormValues =>
-  hasProperties(value, ['priceCategories', 'isDuo'])
+  hasProperties(value, ['priceCategories', 'isDuo']) &&
+  Array.isArray(value.priceCategories) &&
+  value.priceCategories.every(isPriceCategoriesForm)
 
 export type PriceCategoriesFormType = FormikProps<PriceCategoriesFormValues>

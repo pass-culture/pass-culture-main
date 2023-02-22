@@ -6,7 +6,7 @@ import {
   PRICE_CATEGORY_LABEL_MAX_LENGTH,
   PRICE_CATEGORY_PRICE_MAX,
 } from './constants'
-import { isPriceCategoriesFormValues } from './types'
+import { isPriceCategoriesForm, isPriceCategoriesFormValues } from './types'
 
 export const priceCategoryValidationSchema = yup.object().shape({
   label: yup
@@ -14,18 +14,33 @@ export const priceCategoryValidationSchema = yup.object().shape({
     .required('Veuillez renseigner un intitulé de tarif')
     .max(PRICE_CATEGORY_LABEL_MAX_LENGTH, 'Le nom du tarif est trop long')
     .test(
-      'labelDuplication',
-      'Veuillez renseigner des intitulés différents',
-      function test(value) {
+      'priceCategoryDuplication',
+      'Plusieurs tarifs sont identiques, veuillez changer l’intitulé ou le prix',
+      function test() {
         const allFormValues = getNthParentFormValues(this, 1)
+        const currentPriceCategoryFormValues = getNthParentFormValues(this, 0)
 
-        if (!isPriceCategoriesFormValues(allFormValues)) {
+        if (
+          !isPriceCategoriesFormValues(allFormValues) ||
+          !isPriceCategoriesForm(currentPriceCategoryFormValues)
+        ) {
           throw new yup.ValidationError("Le formulaire n'est pas complet")
+        }
+
+        if (
+          currentPriceCategoryFormValues.label === '' ||
+          currentPriceCategoryFormValues.label === undefined ||
+          currentPriceCategoryFormValues.price === '' ||
+          currentPriceCategoryFormValues.price === undefined
+        ) {
+          return true
         }
 
         return (
           allFormValues.priceCategories.filter(
-            priceCategory => priceCategory.label === value
+            priceCategory =>
+              priceCategory.label === currentPriceCategoryFormValues.label &&
+              priceCategory.price === currentPriceCategoryFormValues.price
           ).length === 1
         )
       }
