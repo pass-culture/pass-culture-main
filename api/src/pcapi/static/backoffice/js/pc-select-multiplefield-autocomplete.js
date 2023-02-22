@@ -81,6 +81,11 @@ class PcTomSelectMultipleFieldAutocomplete {
           .then((json) => callback(json.items))
           .catch((error) => callback(undefined, error));
       },
+      render: {
+        no_results: function(data, escape){
+          return '<div class="no-results">Aucun résultat pour "' + escape(data.input) + '"</div>';
+        },
+      },
       ...this.tomSelectOptions,
     });
   }

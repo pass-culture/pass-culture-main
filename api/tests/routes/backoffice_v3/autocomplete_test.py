@@ -1,6 +1,9 @@
+import datetime
+
 from flask import url_for
 import pytest
 
+from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offerers import factories as offerers_factories
 
 
@@ -8,6 +11,19 @@ pytestmark = [
     pytest.mark.usefixtures("db_session"),
     pytest.mark.backoffice_v3,
 ]
+
+
+def _test_autocomplete(authenticated_client, endpoint: str, search_query: str, expected_texts: list[str]) -> None:
+    # when
+    response = authenticated_client.get(url_for(endpoint, q=search_query))
+
+    # then
+    assert response.status_code == 200
+    items = response.json["items"]
+    for item in items:
+        assert isinstance(item["id"], int)
+        assert isinstance(item["text"], str)
+    assert {item["text"] for item in items} == expected_texts
 
 
 class AutocompleteOffererTest:
@@ -28,22 +44,14 @@ class AutocompleteOffererTest:
         ],
     )
     def test_autocomplete_offerers(self, authenticated_client, search_query, expected_texts):
-        # given
         offerers_factories.OffererFactory(siren="100200300", name="Le Théâtre")
         offerers_factories.OffererFactory(siren="123456789", name="Le Cinéma")
         offerers_factories.OffererFactory(siren="123444556", name="La Librairie")
         offerers_factories.OffererFactory(siren="561234789", name="Cinéma concurrent")
 
-        # when
-        response = authenticated_client.get(url_for("backoffice_v3_web.autocomplete_offerers", q=search_query))
-
-        # then
-        assert response.status_code == 200
-        items = response.json["items"]
-        for item in items:
-            assert isinstance(item["id"], int)
-            assert isinstance(item["text"], str)
-        assert {item["text"] for item in items} == expected_texts
+        _test_autocomplete(
+            authenticated_client, "backoffice_v3_web.autocomplete_offerers", search_query, expected_texts
+        )
 
 
 class AutocompleteVenueTest:
@@ -68,20 +76,39 @@ class AutocompleteVenueTest:
         ],
     )
     def test_autocomplete_venues(self, authenticated_client, search_query, expected_texts):
-        # given
         offerers_factories.VenueFactory(siret="10020030000021", name="Le Théâtre")
         offerers_factories.VenueFactory(siret="12345678900018", name="Le Cinéma")
         offerers_factories.VenueFactory(siret="12344455600012", name="La Librairie")
         offerers_factories.VenueFactory(siret="12345678900011", name="La Médiathèque")
         offerers_factories.VenueFactory(siret="56123478900023", name="Cinéma concurrent")
 
-        # when
-        response = authenticated_client.get(url_for("backoffice_v3_web.autocomplete_venues", q=search_query))
+        _test_autocomplete(authenticated_client, "backoffice_v3_web.autocomplete_venues", search_query, expected_texts)
 
-        # then
-        assert response.status_code == 200
-        items = response.json["items"]
-        for item in items:
-            assert isinstance(item["id"], int)
-            assert isinstance(item["text"], str)
-        assert {item["text"] for item in items} == expected_texts
+
+class AutocompleteCriteriaTest:
+    @pytest.mark.parametrize(
+        "search_query, expected_texts",
+        [
+            ("", set()),
+            ("o", set()),
+            ("offre", {"Bonne offre d'appel", "Offre du moment"}),
+            ("va", {"Mauvaise accroche (22/02/2023-…)", "Lecture pour les vacances (01/07/2023-31/08/2023)"}),
+            ("Cinema", {"Playlist cinéma (…-28/02/2023)"}),
+            ("playlist lecture", set()),
+        ],
+    )
+    def test_autocomplete_criteria(self, authenticated_client, search_query, expected_texts):
+        # given
+        criteria_factories.CriterionFactory(name="Bonne offre d'appel")
+        criteria_factories.CriterionFactory(name="Mauvaise accroche", startDateTime=datetime.datetime(2023, 2, 22, 12))
+        criteria_factories.CriterionFactory(name="Offre du moment")
+        criteria_factories.CriterionFactory(
+            name="Lecture pour les vacances",
+            startDateTime=datetime.datetime(2023, 7, 1, 8),
+            endDateTime=datetime.datetime(2023, 8, 31, 21, 59),
+        )
+        criteria_factories.CriterionFactory(name="Playlist cinéma", endDateTime=datetime.datetime(2023, 2, 28, 22, 59))
+
+        _test_autocomplete(
+            authenticated_client, "backoffice_v3_web.autocomplete_criteria", search_query, expected_texts
+        )
