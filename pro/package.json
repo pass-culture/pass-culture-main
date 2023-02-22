@@ -138,9 +138,9 @@
     "source-map-explorer": "^2.5.0",
     "storybook": "^6.5.16",
     "storybook-svgr-react-component": "^1.0.1",
-    "stylelint": "^14.16.0",
+    "stylelint": "^14.16.1",
     "stylelint-a11y": "^1.2.3",
-    "stylelint-config-prettier": "^9.0.4",
+    "stylelint-config-prettier": "^9.0.5",
     "stylelint-config-standard-scss": "^6.1.0",
     "testcafe": "^2.2.0",
     "url-loader": "^4.1.1"
