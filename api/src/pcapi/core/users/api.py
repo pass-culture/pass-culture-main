@@ -531,7 +531,6 @@ def update_user_info(
     user: users_models.User,
     author: users_models.User,
     cultural_survey_filled_date: datetime.datetime | T_UNCHANGED = UNCHANGED,
-    cultural_survey_id: int | T_UNCHANGED = UNCHANGED,
     email: str | T_UNCHANGED = UNCHANGED,
     first_name: str | T_UNCHANGED = UNCHANGED,
     last_name: str | T_UNCHANGED = UNCHANGED,
@@ -545,8 +544,6 @@ def update_user_info(
 
     if cultural_survey_filled_date is not UNCHANGED:
         user.culturalSurveyFilledDate = cultural_survey_filled_date
-    if cultural_survey_id is not UNCHANGED:
-        user.culturalSurveyId = cultural_survey_id
     if email is not UNCHANGED:
         old_email = user.email
         user.email = email_utils.sanitize_email(email)
