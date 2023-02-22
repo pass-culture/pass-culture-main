@@ -45,6 +45,7 @@ export interface IStocksEventProps {
   offer: IOfferIndividual
 }
 
+// remove price when removing WIP_ENABLE_MULTI_PRICE_STOCKS
 export const hasChangesOnStockWithBookings = (
   values: { stocks: IStockEventFormValues[] },
   initialValues: { stocks: IStockEventFormValues[] }
@@ -56,6 +57,7 @@ export const hasChangesOnStockWithBookings = (
     (dict: Record<string, Partial<IStockEventFormValues>>, stock) => {
       dict[stock.stockId || 'IStockEventFormValuesnewStock'] = {
         price: stock.price,
+        priceCategoryId: stock.priceCategoryId,
         beginningDate: stock.beginningDate,
         beginningTime: stock.beginningTime,
       }
@@ -75,6 +77,7 @@ export const hasChangesOnStockWithBookings = (
     const initialStock = initialStocks[stock.stockId]
     const fieldsWithWarning: (keyof IStockEventFormValues)[] = [
       'price',
+      'priceCategoryId',
       'beginningDate',
       'beginningTime',
     ]
