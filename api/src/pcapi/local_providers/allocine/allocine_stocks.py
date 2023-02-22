@@ -1,10 +1,8 @@
 from datetime import datetime
 import decimal
 import re
-from typing import cast
 
 from dateutil.parser import parse
-from sqlalchemy import Sequence
 
 from pcapi import settings
 from pcapi.core.categories import subcategories
@@ -15,10 +13,10 @@ import pcapi.core.providers.models as providers_models
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
 from pcapi.domain.price_rule import AllocineStocksPriceRule
+from pcapi.domain.price_rule import PriceRule
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
-from pcapi.models import db
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import local_datetime_to_default_timezone
 
@@ -44,14 +42,24 @@ class AllocineStocks(LocalProvider):
         self.isDuo = allocine_venue_provider.isDuo
         self.quantity = allocine_venue_provider.quantity
         self.room_internal_id = allocine_venue_provider.internalId
+        self.price_and_price_rule_tuples: list[tuple[decimal.Decimal, PriceRule]] = (
+            providers_models.AllocineVenueProviderPriceRule.query.filter(
+                providers_models.AllocineVenueProviderPriceRule.allocineVenueProvider == allocine_venue_provider
+            )
+            .with_entities(
+                providers_models.AllocineVenueProviderPriceRule.price,
+                providers_models.AllocineVenueProviderPriceRule.priceRule,
+            )
+            .all()
+        )
 
         self.movie_information: dict | None = None
         self.filtered_movie_showtimes: list[dict] | None = None
         self.last_product_id: int | None = None
         self.last_vf_offer_id: int | None = None
         self.last_vo_offer_id: int | None = None
-        self.label: offers_models.PriceCategoryLabel | None = None
-        self.price_category_by_offer_id: dict[int, offers_models.PriceCategory] = {}
+        self.label: offers_models.PriceCategoryLabel = offers_api.get_or_create_label("Tarif unique", self.venue)
+        self.price_category_by_offer: dict[offers_models.Offer, offers_models.PriceCategory] = {}
 
     def __next__(self) -> list[ProvidableInfo]:
         raw_movie_information = next(self.movies_showtimes)  # type: ignore [var-annotated]
@@ -142,11 +150,7 @@ class AllocineStocks(LocalProvider):
 
         self.update_from_movie_information(allocine_product, self.movie_information)  # type: ignore [arg-type]
 
-        is_new_product_to_insert = allocine_product.id is None
-
-        if is_new_product_to_insert:
-            allocine_product.id = get_next_product_id_from_database()
-        self.last_product_id = allocine_product.id
+        self.last_product = allocine_product
 
     def fill_offer_attributes(self, allocine_offer: offers_models.Offer) -> None:
         allocine_offer.venueId = self.venue.id
@@ -175,19 +179,17 @@ class AllocineStocks(LocalProvider):
 
         allocine_offer.name = f"{self.movie_information['title']} - {movie_version}"  # type: ignore [index]
         allocine_offer.subcategoryId = subcategories.SEANCE_CINE.id
-        allocine_offer.productId = cast(int, self.last_product_id)
+        allocine_offer.product = self.last_product
         allocine_offer.extraData["diffusionVersion"] = movie_version
 
         is_new_offer_to_insert = allocine_offer.id is None
-
         if is_new_offer_to_insert:
-            allocine_offer.id = get_next_offer_id_from_database()
             allocine_offer.isDuo = self.isDuo
 
         if movie_version == ORIGINAL_VERSION_SUFFIX:
-            self.last_vo_offer_id = allocine_offer.id
+            self.last_vo_offer = allocine_offer
         else:
-            self.last_vf_offer_id = allocine_offer.id
+            self.last_vf_offer = allocine_offer
 
     def fill_stock_attributes(self, allocine_stock: offers_models.Stock):  # type: ignore [no-untyped-def]
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)  # type: ignore [arg-type]
@@ -196,9 +198,7 @@ class AllocineStocks(LocalProvider):
         parsed_showtimes = retrieve_showtime_information(showtime)  # type: ignore [arg-type]
         diffusion_version = parsed_showtimes["diffusionVersion"]
 
-        allocine_stock.offerId = cast(
-            int, (self.last_vo_offer_id if diffusion_version == ORIGINAL_VERSION else self.last_vf_offer_id)
-        )
+        allocine_stock.offer = self.last_vo_offer if diffusion_version == ORIGINAL_VERSION else self.last_vf_offer
 
         local_tz = get_department_timezone(self.venue.departementCode)
         date_in_utc = local_datetime_to_default_timezone(parsed_showtimes["startsAt"], local_tz)
@@ -218,30 +218,29 @@ class AllocineStocks(LocalProvider):
             price = self.apply_allocine_price_rule(allocine_stock)
             allocine_stock.price = price
             if not allocine_stock.priceCategory:
-                if allocine_stock.offerId in self.price_category_by_offer_id:
-                    allocine_stock.priceCategory = self.price_category_by_offer_id[allocine_stock.offerId]
-                else:
-                    price_category = self.get_or_create_allocine_price_category(price, allocine_stock.offerId)
-                    allocine_stock.priceCategory = price_category
-                    self.price_category_by_offer_id[allocine_stock.offerId] = price_category
+                if not allocine_stock.offer in self.price_category_by_offer:
+                    self.price_category_by_offer[allocine_stock.offer] = self.get_or_create_allocine_price_category(
+                        price, allocine_stock.offer
+                    )
+                allocine_stock.priceCategory = self.price_category_by_offer[allocine_stock.offer]
             else:
                 allocine_stock.priceCategory.price = price
 
     def get_or_create_allocine_price_category(
-        self, price: decimal.Decimal, offer_id: int
+        self, price: decimal.Decimal, offer: offers_models.Offer
     ) -> offers_models.PriceCategory:
-        price_category = offers_models.PriceCategory.query.filter_by(price=price, offerId=offer_id).one_or_none()
+        price_category = (
+            offers_models.PriceCategory.query.filter_by(price=price, offer=offer).one_or_none() if offer.id else None
+        )
         if price_category:
             return price_category
-        if not self.label:
-            self.label = offers_api.get_or_create_label("Tarif unique", self.venue)
-            self.label.id = get_next_label_id_from_database()
-        return offers_models.PriceCategory(priceCategoryLabelId=self.label.id, price=price, offerId=offer_id)
+
+        return offers_models.PriceCategory(priceCategoryLabel=self.label, price=price, offer=offer)
 
     def apply_allocine_price_rule(self, allocine_stock: offers_models.Stock) -> decimal.Decimal:
-        for price_rule in self.venue_provider.priceRules:
-            if price_rule.priceRule(allocine_stock):
-                return price_rule.price
+        for price, price_rule in self.price_and_price_rule_tuples:
+            if price_rule(allocine_stock):
+                return price
         raise AllocineStocksPriceRule("Aucun prix par défaut n'a été trouvé")
 
     def get_object_thumb(self) -> bytes:
@@ -252,21 +251,6 @@ class AllocineStocks(LocalProvider):
 
     def shall_synchronize_thumbs(self) -> bool:
         return True
-
-
-def get_next_product_id_from_database() -> int:
-    sequence: Sequence = Sequence("product_id_seq")
-    return db.session.execute(sequence)
-
-
-def get_next_offer_id_from_database() -> int:
-    sequence: Sequence = Sequence("offer_id_seq")
-    return db.session.execute(sequence)
-
-
-def get_next_label_id_from_database() -> int:
-    sequence: Sequence = Sequence("price_category_label_id_seq")
-    return db.session.execute(sequence)
 
 
 def retrieve_movie_information(raw_movie_information: dict) -> dict:
