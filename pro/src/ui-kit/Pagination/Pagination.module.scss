@@ -6,6 +6,7 @@
   align-items: center;
   justify-content: center;
   gap: rem.torem(16px);
+
   @include fonts.caption;
 }
 
