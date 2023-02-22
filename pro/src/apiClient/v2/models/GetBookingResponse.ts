@@ -21,6 +21,7 @@ export type GetBookingResponse = {
   offerType: BookingOfferType;
   phoneNumber?: string | null;
   price: number;
+  priceCategoryLabel?: string | null;
   publicOfferId: string;
   quantity: number;
   /**
