@@ -28,6 +28,7 @@ export enum Events {
   CLICKED_MODIFY_OFFERER = 'hasClickedModifyOfferer',
   CLICKED_OFFER = 'hasClickedOffer',
   CLICKED_OFFER_FORM_NAVIGATION = 'hasClickedOfferFormNavigation',
+  CLICKED_CANCEL_OFFER_CREATION = 'hasClickedCancelOfferCreation',
   CLICKED_PERSONAL_DATA = 'hasClickedConsultPersonalData',
   CLICKED_PRO = 'hasClickedPro',
   CLICKED_REIMBURSEMENT = 'hasClickedReimbursement',

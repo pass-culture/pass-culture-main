@@ -3,14 +3,15 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
+import { Events } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferType from '../OfferType'
+
+const mockLogEvent = jest.fn()
 
 const renderOfferTypes = (storeOverrides: any) =>
   renderWithProviders(<OfferType />, {
@@ -54,6 +55,11 @@ describe('screens:OfferIndividual::OfferType', () => {
         },
       },
     }
+
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
   })
 
   it('should render the component with button', async () => {
@@ -85,19 +91,6 @@ describe('screens:OfferIndividual::OfferType', () => {
     expect(
       screen.getByRole('button', { name: 'Étape suivante' })
     ).toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
-
-    expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: getOfferIndividualPath({
-        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        isCreation: true,
-      }),
-      search: '?offer-type=PHYSICAL_GOOD',
-    })
   })
 
   it('should select collective offer', async () => {
@@ -208,19 +201,19 @@ describe('screens:OfferIndividual::OfferType', () => {
   const individualChoices = [
     {
       buttonClicked: 'Un bien physique',
-      expectedSearch: '?offer-type=PHYSICAL_GOOD',
+      expectedSearch: 'PHYSICAL_GOOD',
     },
     {
       buttonClicked: 'Un bien numérique',
-      expectedSearch: '?offer-type=VIRTUAL_GOOD',
+      expectedSearch: 'VIRTUAL_GOOD',
     },
     {
       buttonClicked: 'Un évènement physique daté',
-      expectedSearch: '?offer-type=PHYSICAL_EVENT',
+      expectedSearch: 'PHYSICAL_EVENT',
     },
     {
-      buttonClicked: 'Un évènement physique daté',
-      expectedSearch: '?offer-type=PHYSICAL_EVENT',
+      buttonClicked: 'Un évènement numérique daté',
+      expectedSearch: 'VIRTUAL_EVENT',
     },
   ]
   it.each(individualChoices)(
@@ -236,55 +229,21 @@ describe('screens:OfferIndividual::OfferType', () => {
 
       expect(mockHistoryPush).toHaveBeenCalledWith({
         pathname: '/offre/individuelle/creation/informations',
-        search: expectedSearch,
+        search: `?offer-type=${expectedSearch}`,
       })
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'OfferFormHomepage',
+          offerType: expectedSearch,
+          to: 'informations',
+          used: 'StickyButtons',
+        }
+      )
     }
   )
-
-  it('should select virtual good', async () => {
-    renderOfferTypes(store)
-
-    await userEvent.click(screen.getByText('Un bien numérique'))
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
-
-    expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/individuelle/creation/informations',
-      search: '?offer-type=VIRTUAL_GOOD',
-    })
-  })
-
-  it('should select physical event', async () => {
-    renderOfferTypes(store)
-
-    await userEvent.click(screen.getByText('Un évènement physique daté'))
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
-
-    expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/individuelle/creation/informations',
-      search: '?offer-type=PHYSICAL_EVENT',
-    })
-  })
-
-  it('should select physical good', async () => {
-    renderOfferTypes(store)
-
-    await userEvent.click(screen.getByText('Un évènement numérique daté'))
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
-
-    expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/individuelle/creation/informations',
-      search: '?offer-type=VIRTUAL_EVENT',
-    })
-  })
 
   it('should select duplicate template offer', async () => {
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
@@ -383,6 +342,19 @@ describe('screens:OfferIndividual::OfferType', () => {
 
     expect(notifyError).toHaveBeenCalledWith(
       'Vous devez créer une offre vitrine avant de pouvoir utiliser cette fonctionnalité'
+    )
+  })
+
+  it('should log when cancelling ', async () => {
+    renderOfferTypes(store)
+
+    await userEvent.click(
+      screen.getByRole('link', { name: 'Annuler et quitter' })
+    )
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_CANCEL_OFFER_CREATION
     )
   })
 })
