@@ -426,7 +426,7 @@ def uncancel_collective_booking_by_id_from_support(
     with transaction():
         educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
         db.session.refresh(collective_booking)
-        collective_booking.uncancel_booking_set_used()
+        collective_booking.uncancel_booking()
         db.session.commit()
 
     search.async_index_collective_offer_ids([collective_booking.collectiveStock.collectiveOfferId])

@@ -909,13 +909,19 @@ class CollectiveBooking(PcObject, Base, Model):
         self.cancellationReason = reason
         self.dateUsed = None
 
-    def uncancel_booking_set_used(self) -> None:
+    def uncancel_booking(self) -> None:
         if not (self.status is CollectiveBookingStatus.CANCELLED):
             raise booking_exceptions.BookingIsNotCancelledCannotBeUncancelled()
         self.cancellationDate = None
         self.cancellationReason = None
-        self.status = CollectiveBookingStatus.USED
-        self.dateUsed = datetime.utcnow()
+        if self.confirmationDate:
+            if self.collectiveStock.beginningDatetime < datetime.utcnow():
+                self.status = CollectiveBookingStatus.USED
+                self.dateUsed = datetime.utcnow()
+            else:
+                self.status = CollectiveBookingStatus.CONFIRMED
+        else:
+            self.status = CollectiveBookingStatus.PENDING
 
     def mark_as_confirmed(self) -> None:
         if self.has_confirmation_limit_date_passed():
