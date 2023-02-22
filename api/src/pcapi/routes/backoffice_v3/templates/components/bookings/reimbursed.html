@@ -2,7 +2,7 @@
     {% if booking.isReimbursed %}
         <button class="mx-2 btn btn-outline-primary"
                 data-bs-toggle="collapse"
-                data-bs-target="#b{{ booking.id }}"
+                data-bs-target="#reimbursement-data-{{ booking.id }}"
         >
             {{ booking.status | format_booking_status }}
         </button>
@@ -13,7 +13,7 @@
 
 {% macro build_reimbursed_extra_tr(booking) %}
     {% if booking.isReimbursed %}
-        <tr class="collapse accordion-collapse" id="b{{ booking.id }}" data-bs-parent=".table">
+        <tr class="collapse accordion-collapse" id="reimbursement-data-{{ booking.id }}" data-bs-parent=".table">
             <td colspan="12">
                 <div class="row">
                     <div class="col-6">
@@ -63,7 +63,7 @@
                                 </li>
 
                                 <li>
-                                    Taux de remboursement : {{ booking.reimbursement_rate | empty_string_if_null }}%
+                                    Taux de remboursement : {{ booking.reimbursement_rate | format_rate | empty_string_if_null }}
                                 </li>
                             </ul>
                         </div>

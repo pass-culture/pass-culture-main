@@ -278,7 +278,7 @@ class Booking(PcObject, Base, Model):
     @property
     def pricing(self) -> finance_models.Pricing | None:
         processed_pricings = [
-            pricing for pricing in self.pricings if pricing.status == finance_models.PricingStatus.PROCESSED
+            pricing for pricing in self.pricings if pricing.status == finance_models.PricingStatus.INVOICED
         ]
 
         pricings = sorted(processed_pricings, key=lambda x: x.creationDate, reverse=True)
@@ -299,15 +299,15 @@ class Booking(PcObject, Base, Model):
         return cashflow.batch
 
     @property
-    def reimbursement_rate(self) -> int | None:
+    def reimbursement_rate(self) -> float | None:
         if not self.pricing:
             return None
 
         try:
             # pricing.amount is in cents, amount in euros
             # -> the result is a percentage
-            return int(-self.pricing.amount / self.amount)
-        except decimal.DivisionByZero:
+            return float("{:.2f}".format((-self.pricing.amount / self.amount)))
+        except (decimal.DivisionByZero, decimal.InvalidOperation):  # raised when both values are 0
             return None
 
 
