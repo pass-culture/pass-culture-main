@@ -8,6 +8,8 @@ from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -282,6 +284,37 @@ class ListCollectiveBookingsTest:
         assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 20
         assert "Il y a plus de 20 résultats dans la base de données" in html_parser.extract_alert(response.data)
+
+    def test_additional_data_when_reimbursed(self, authenticated_client, collective_bookings):
+        # give
+        reimbursed = collective_bookings[4]
+        reimbursement_and_pricing_venue = offerers_factories.VenueFactory()
+        pricing = finance_factories.CollectivePricingFactory(
+            collectiveBooking=reimbursed,
+            status=finance_models.PricingStatus.INVOICED,
+            venue=reimbursement_and_pricing_venue,
+        )
+        bank_info = finance_factories.BankInformationFactory(venue=reimbursement_and_pricing_venue)
+        cashflow = finance_factories.CashflowFactory(
+            reimbursementPoint=reimbursement_and_pricing_venue, bankAccount=bank_info, pricings=[pricing]
+        )
+
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, status=educational_models.CollectiveBookingStatus.REIMBURSED.name)
+            )
+
+        # then
+        assert response.status_code == 200
+        reimbursement_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
+        assert "Total payé par l'utilisateur : 100,00 €" in reimbursement_data
+        assert f"Date de remboursement : {reimbursed.reimbursementDate.strftime('%d/%m/%Y')}" in reimbursement_data
+        assert f"Nom de la structure : {reimbursed.offerer.name}" in reimbursement_data
+        assert f"Nom du lieu : {reimbursed.venue.name}" in reimbursement_data
+        assert "Montant remboursé : 100,00 €" in reimbursement_data
+        assert f"N° de virement : {cashflow.batch.label}" in reimbursement_data
+        assert "Taux de remboursement : 100,0 %" in reimbursement_data
 
 
 def send_request(authenticated_client, url, form_data=None):
