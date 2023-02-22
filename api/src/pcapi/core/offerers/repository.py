@@ -581,3 +581,17 @@ def get_emails_by_offerer(offerer: models.Offerer) -> set[str]:
     }
     emails.discard(None)
     return emails
+
+
+def find_venues_of_offerer_from_siret(siret: str) -> tuple[models.Offerer | None, list[models.Venue]]:
+    siren = siret[:9]
+    offerer = models.Offerer.query.filter(models.Offerer.siren == siren).one_or_none()
+    if not offerer:
+        return None, []
+    venues = (
+        models.Venue.query.join(models.Offerer)
+        .filter(models.Offerer.siren == siren, models.Venue.isPermanent.is_(True))
+        .order_by(models.Venue.common_name)
+        .all()
+    )
+    return offerer, venues
