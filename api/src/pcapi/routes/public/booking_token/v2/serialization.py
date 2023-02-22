@@ -37,6 +37,7 @@ class GetBookingResponse(BaseModel):
     publicOfferId: str
     offerName: str
     offerType: BookingOfferType
+    priceCategoryLabel: str | None
     phoneNumber: str | None
     price: Decimal
     quantity: int
@@ -80,6 +81,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         offerType=BookingOfferType.EVENEMENT if booking.stock.offer.isEvent else BookingOfferType.EVENEMENT,
         phoneNumber=booking.user.phoneNumber,
         price=booking.amount,
+        priceCategoryLabel=booking.priceCategoryLabel,
         quantity=booking.quantity,
         theater=extra_data.get("theater", ""),
         userName=booking.userName,
