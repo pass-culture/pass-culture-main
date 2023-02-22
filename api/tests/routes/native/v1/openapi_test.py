@@ -63,6 +63,16 @@ def test_public_api(client):
                     "enum": ["browser_computer", "browser_mobile", "agent_mobile"],
                     "title": "AgentType",
                 },
+                "Banner": {
+                    "properties": {
+                        "name": {"$ref": "#/components/schemas/BannerName"},
+                        "text": {"title": "Text", "type": "string"},
+                        "title": {"title": "Title", "type": "string"},
+                    },
+                    "required": ["name", "title", "text"],
+                    "title": "Banner",
+                    "type": "object",
+                },
                 "BannerMetaModel": {
                     "properties": {
                         "image_credit": {
@@ -74,6 +84,16 @@ def test_public_api(client):
                         }
                     },
                     "title": "BannerMetaModel",
+                    "type": "object",
+                },
+                "BannerName": {
+                    "description": "An enumeration.",
+                    "enum": ["geolocation_banner", "activation_banner"],
+                    "title": "BannerName",
+                },
+                "BannerResponse": {
+                    "properties": {"banner": {"anyOf": [{"$ref": "#/components/schemas/Banner"}], "nullable": True}},
+                    "title": "BannerResponse",
                     "type": "object",
                 },
                 "BookOfferRequest": {
@@ -1985,6 +2005,31 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "unsuspend_account <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/banner": {
+                "get": {
+                    "description": "",
+                    "operationId": "get_/native/v1/banner",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/BannerResponse"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable " "Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "get_banner <GET>",
                     "tags": [],
                 }
             },
