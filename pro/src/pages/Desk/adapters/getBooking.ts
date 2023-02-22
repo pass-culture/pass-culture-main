@@ -18,6 +18,7 @@ const getBookingSuccess = (
       price: response.price,
       quantity: response.quantity,
       userName: response.userName,
+      priceCategoryLabel: response.priceCategoryLabel,
       venueDepartmentCode: response.venueDepartmentCode,
     } as IBooking,
   }
