@@ -749,12 +749,12 @@ class GetOffererDetailsTest:
         assert rows[0]["ID"] == str(venue_1.id)
         assert rows[0]["SIRET"] == venue_1.siret
         assert rows[0]["Nom"] == venue_1.name
-        assert rows[0]["Type de lieu"] == venue_1.venueType.label
+        assert rows[0]["Type de lieu"] == venue_1.venueTypeCode.value
 
         assert rows[1]["ID"] == str(venue_2.id)
         assert rows[1]["SIRET"] == venue_2.siret
         assert rows[1]["Nom"] == venue_2.name
-        assert rows[1]["Type de lieu"] == venue_2.venueType.label
+        assert rows[1]["Type de lieu"] == venue_2.venueTypeCode.value
 
 
 class GetOffererHistoryDataTest:
