@@ -1,4 +1,5 @@
 from functools import partial
+import json
 import typing
 
 from flask import render_template
@@ -120,7 +121,17 @@ class PCAutocompleteSelectMultipleField(PCSelectMultipleField):
 
     def __init__(self, label: str, endpoint: str, **kwargs: typing.Any):
         super().__init__(label, **kwargs)
-        self.autocomplete_url = url_for(endpoint)
+        self.tomselect_autocomplete_url = url_for(endpoint)
+
+    @property
+    def tomselect_options(self) -> str:
+        return json.dumps(
+            [{"id": str(choice_value), "text": choice_label} for choice_value, choice_label in self.choices]
+        )
+
+    @property
+    def tomselect_items(self) -> str:
+        return json.dumps([str(choice_value) for choice_value, _ in self.choices])
 
 
 class PCQuerySelectMultipleField(wtforms_sqlalchemy.fields.QuerySelectMultipleField):

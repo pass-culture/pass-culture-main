@@ -1,4 +1,21 @@
-class PcUtils {
+/** This file musts contains only static utilities */
+
+/**
+ * Used to extends static class utilities
+ */
+class NonConstructableUtils {
+  static #isInternalConstructing = false
+  constructor() {
+    if (!NonConstructableUtils.#isInternalConstructing) {
+      throw new TypeError(`${this.constructor.name} is not constructable`)
+    }
+  }
+}
+
+/**
+ * Store core utilities
+ */
+class PcUtils extends NonConstructableUtils {
   /**
    * Push a callback to window.onload
    * @param {function} callback - a function to be called on window.onload
@@ -17,7 +34,7 @@ class PcUtils {
    * Debounce a function
    * @param {function} callback - the function to debounce
    * @param {number} ms - debounce delay in milliseconds
-   * @returns {(function(...[*]=): void)|*} - the debounced function
+   * @returns {function} - the debounced function
    */
   static debounce(callback, ms) {
     let timeoutId = null
@@ -28,9 +45,25 @@ class PcUtils {
       }, ms)
     }
   }
+
+
+  /**
+   * pop from array at a defined index
+   * @param {array} array - the array to pop from
+   * @param {string|number} value - the value to find in array
+   */
+  static popAtIndex(array, value) {
+    const index = array.indexOf(value)
+    if (index > -1) {
+      array.splice(index, 1)
+    }
+  }
 }
 
-class KeyboardKeyCode {
+/**
+ * Keyboard keycode
+ */
+class KeyboardKeyCode extends NonConstructableUtils {
   static ENTER = 13
   static SHIFT = 16
   static CTRL = 17
