@@ -265,9 +265,8 @@ class Pricing(Base, Model):
     collectiveBooking: sqla_orm.Mapped["educational_models.CollectiveBooking | None"] = sqla_orm.relationship(
         "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="pricings"
     )
-    # FIXME (dbaty 2022-08-03): make NOT NULLable once we have populated all rows.
-    venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
-    venue: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship("Venue", foreign_keys=[venueId])
+    venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
+    venue: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship("Venue", foreign_keys=[venueId])
 
     # FIXME (dbaty, 2022-06-20): remove `businessUnitId` and `siret`
     # columns once we have fully switched to `pricingPointId`
