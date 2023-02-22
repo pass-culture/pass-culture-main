@@ -3,6 +3,8 @@ import React from 'react'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { ReactComponent as Trash } from 'icons/ico-trash.svg'
 
+import styles from './DialogStockDeleteConfirm.module.scss'
+
 interface IDialogStockDeleteConfirmProps {
   onConfirm: () => void
   onCancel: () => void
@@ -21,7 +23,7 @@ const DialogStockEventDeleteConfirm = ({
       cancelText="Annuler"
       icon={Trash}
     >
-      <p>
+      <p className={styles['first-block']}>
         {'Elle ne sera plus disponible à la réservation et '}
         <strong>
           entraînera l’annulation des réservations en cours et validées !
