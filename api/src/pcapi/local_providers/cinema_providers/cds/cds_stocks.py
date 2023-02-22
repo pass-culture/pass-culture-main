@@ -1,8 +1,5 @@
 from datetime import datetime
 from typing import Iterator
-from typing import cast
-
-from sqlalchemy import Sequence
 
 from pcapi import settings
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
@@ -18,7 +15,6 @@ from pcapi.core.providers.repository import get_cds_cinema_details
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
-from pcapi.models import db
 import pcapi.utils.date as utils_date
 
 
@@ -38,7 +34,6 @@ class CDSStocks(LocalProvider):
         self.movies: Iterator[Movie] = iter(self._get_cds_movies())
         self.shows = self._get_cds_shows()
         self.filtered_movie_showtimes = None
-        self.last_offer_id: int | None = None
 
     def __next__(self) -> list[ProvidableInfo]:
         movie_infos = next(self.movies)
@@ -93,11 +88,7 @@ class CDSStocks(LocalProvider):
 
         self.update_from_movie_information(cds_product, self.movie_information)
 
-        is_new_product_to_insert = cds_product.id is None
-
-        if is_new_product_to_insert:
-            cds_product.id = get_next_product_id_from_database()
-        self.last_product_id = cds_product.id
+        self.last_product = cds_product
 
     def fill_offer_attributes(self, cds_offer: Offer) -> None:
         cds_offer.venueId = self.venue.id
@@ -111,18 +102,16 @@ class CDSStocks(LocalProvider):
 
         cds_offer.name = self.movie_information.title
         cds_offer.subcategoryId = subcategories.SEANCE_CINE.id
-        cds_offer.productId = self.last_product_id
+        cds_offer.product = self.last_product
 
         is_new_offer_to_insert = cds_offer.id is None
-
         if is_new_offer_to_insert:
-            cds_offer.id = get_next_offer_id_from_database()
             cds_offer.isDuo = self.isDuo
 
-        self.last_offer_id = cds_offer.id
+        self.last_offer = cds_offer
 
     def fill_stock_attributes(self, cds_stock: Stock):  # type: ignore [no-untyped-def]
-        cds_stock.offerId = cast(int, self.last_offer_id)
+        cds_stock.offer = self.last_offer
 
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(cds_stock.idAtProviders)  # type: ignore [arg-type]
         showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)  # type: ignore [arg-type]
@@ -228,16 +217,6 @@ class CDSStocks(LocalProvider):
                 )
 
         return shows_with_pass_culture_tariff
-
-
-def get_next_product_id_from_database() -> int:
-    sequence: Sequence = Sequence("product_id_seq")
-    return db.session.execute(sequence)
-
-
-def get_next_offer_id_from_database() -> int:
-    sequence: Sequence = Sequence("offer_id_seq")
-    return db.session.execute(sequence)
 
 
 def _find_showtimes_by_movie_id(showtimes_information: list[dict], movie_id: int) -> list[dict]:
