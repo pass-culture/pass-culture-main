@@ -24,7 +24,6 @@ import * as useNotification from 'hooks/useNotification'
 import { offererFactory } from 'utils/apiFactories'
 import { individualOfferOffererFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
-import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import Offers, { IOffersProps } from '../Offers'
 import { individualOfferFactory } from '../utils/individualOffersFactories'
@@ -225,7 +224,7 @@ describe('screen Offers', () => {
 
         // Then
         screen.getByText(offersRecap[0].name)
-        expect(queryByTextTrimHtml(screen, '2 offres')).toBeInTheDocument()
+        expect(screen.getByText('2 offres')).toBeInTheDocument()
       })
 
       it('should display total number of offers in singular if one or no offer', async () => {
@@ -234,7 +233,7 @@ describe('screen Offers', () => {
 
         // Then
         screen.getByText(offersRecap[0].name)
-        expect(queryByTextTrimHtml(screen, '1 offre')).toBeInTheDocument()
+        expect(await screen.findByText('1 offre')).toBeInTheDocument()
       })
 
       it('should display 500+ for total number of offers if more than 500 offers are fetched', async () => {
@@ -248,7 +247,7 @@ describe('screen Offers', () => {
 
         // Then
         screen.getByText(offersRecap[0].name)
-        expect(queryByTextTrimHtml(screen, '500\\+ offres')).toBeInTheDocument()
+        expect(await screen.findByText('500+ offres')).toBeInTheDocument()
       })
     })
 
@@ -682,18 +681,9 @@ describe('screen Offers', () => {
       // When
       await renderOffers(props, store)
 
-      await waitFor(() => {
-        expect(
-          screen.getByRole('link', { name: 'Créer une offre' })
-        ).toBeInTheDocument()
-      })
-
-      // Then
-      const createLink = queryByTextTrimHtml(screen, 'Créer une offre', {
-        selector: 'a',
-        leafOnly: false,
-      })
-      expect(createLink).not.toBeNull()
+      expect(
+        await screen.findByRole('link', { name: 'Créer une offre' })
+      ).toBeInTheDocument()
     })
 
     it('should not be displayed when user is not yet validated', async () => {
@@ -709,11 +699,9 @@ describe('screen Offers', () => {
       })
 
       // Then
-      const createLink = queryByTextTrimHtml(screen, 'Créer une offre', {
-        selector: 'a',
-        leafOnly: false,
-      })
-      expect(createLink).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', { name: /Créer une offre/ })
+      ).not.toBeInTheDocument()
     })
   })
 
