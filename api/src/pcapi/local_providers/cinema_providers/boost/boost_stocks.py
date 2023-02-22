@@ -10,9 +10,8 @@ from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.boost.client import get_pcu_pricing_if_exists
 from pcapi.core.external_bookings.models import Movie
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Product
-from pcapi.core.offers.models import Stock
+from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
@@ -44,7 +43,7 @@ class BoostStocks(LocalProvider):
         # The Product ID must be unique
         provider_movie_unique_id = _build_movie_uuid(self.showtime_details.film.id, self.venue)
         product_providable_info = self.create_providable_info(
-            pc_object=Product,
+            pc_object=offers_models.Product,
             id_at_providers=provider_movie_unique_id,
             date_modified_at_provider=datetime.utcnow(),
             new_id_at_provider=provider_movie_unique_id,
@@ -52,27 +51,29 @@ class BoostStocks(LocalProvider):
         providable_information_list.append(product_providable_info)
 
         offer_providable_info = self.create_providable_info(
-            Offer, provider_movie_unique_id, datetime.utcnow(), provider_movie_unique_id
+            offers_models.Offer, provider_movie_unique_id, datetime.utcnow(), provider_movie_unique_id
         )
         providable_information_list.append(offer_providable_info)
 
         showtime_id = _build_stock_uuid(self.showtime_details.film.id, self.venue, self.showtime_details.id)
-        stock_providable_info = self.create_providable_info(Stock, showtime_id, datetime.utcnow(), showtime_id)
+        stock_providable_info = self.create_providable_info(
+            offers_models.Stock, showtime_id, datetime.utcnow(), showtime_id
+        )
         providable_information_list.append(stock_providable_info)
 
         return providable_information_list
 
     def fill_object_attributes(self, pc_object: Model) -> None:
-        if isinstance(pc_object, Product):
+        if isinstance(pc_object, offers_models.Product):
             self.fill_product_attributes(pc_object)
 
-        if isinstance(pc_object, Offer):
+        if isinstance(pc_object, offers_models.Offer):
             self.fill_offer_attributes(pc_object)
 
-        if isinstance(pc_object, Stock):
+        if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
-    def fill_product_attributes(self, product: Product) -> None:
+    def fill_product_attributes(self, product: offers_models.Product) -> None:
         product.name = self.showtime_details.film.titleCnc
         product.subcategoryId = subcategories.SEANCE_CINE.id
 
@@ -84,7 +85,7 @@ class BoostStocks(LocalProvider):
             product.id = get_next_product_id_from_database()
         self.last_product_id = product.id
 
-    def fill_offer_attributes(self, offer: Offer) -> None:
+    def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
         offer.venueId = self.venue.id
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
@@ -103,7 +104,7 @@ class BoostStocks(LocalProvider):
 
         self.last_offer_id = offer.id
 
-    def fill_stock_attributes(self, stock: Stock) -> None:
+    def fill_stock_attributes(self, stock: offers_models.Stock) -> None:
         stock.offerId = cast(int, self.last_offer_id)
         # a pydantic validator has already converted the showDate to a UTC datetime
         stock.beginningDatetime = self.showtime_details.showDate
@@ -123,7 +124,9 @@ class BoostStocks(LocalProvider):
         if not is_new_stock_to_insert:
             stock.quantity = self.showtime_details.numberSeatsRemaining + stock.dnBookedQuantity
 
-    def update_from_movie_information(self, obj: Offer | Product, movie_information: Movie) -> None:
+    def update_from_movie_information(
+        self, obj: offers_models.Offer | offers_models.Product, movie_information: Movie
+    ) -> None:
         if movie_information.description:
             obj.description = movie_information.description
         if movie_information.duration:
