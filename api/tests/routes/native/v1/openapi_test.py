@@ -448,20 +448,6 @@ def test_public_api(client):
                     "title": "CulturalSurveyQuestionsResponse",
                     "type": "object",
                 },
-                "CulturalSurveyRequest": {
-                    "properties": {
-                        "culturalSurveyId": {
-                            "format": "uuid",
-                            "nullable": True,
-                            "title": "Culturalsurveyid",
-                            "type": "string",
-                        },
-                        "needsToFillCulturalSurvey": {"title": "Needstofillculturalsurvey", "type": "boolean"},
-                    },
-                    "required": ["needsToFillCulturalSurvey"],
-                    "title": "CulturalSurveyRequest",
-                    "type": "object",
-                },
                 "CulturalSurveyUserAnswer": {
                     "properties": {
                         "answerIds": {
@@ -2270,32 +2256,6 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "get_user_profile <GET>",
-                    "tags": [],
-                }
-            },
-            "/native/v1/me/cultural_survey": {
-                "post": {
-                    "description": "",
-                    "operationId": "post_/native/v1/me/cultural_survey",
-                    "parameters": [],
-                    "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/CulturalSurveyRequest"}}
-                        }
-                    },
-                    "responses": {
-                        "204": {"description": "No Content"},
-                        "400": {"description": "Bad Request"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"JWTAuth": []}],
-                    "summary": "update_cultural_survey <POST>",
                     "tags": [],
                 }
             },
