@@ -107,7 +107,7 @@ const StockEventForm = ({
           classNameLabel={formRowStyles['field-layout-label']}
           classNameFooter={styles['field-layout-footer']}
           defaultOption={{
-            label: 'Séléctionner un tarif',
+            label: 'Sélectionner un tarif',
             value: '',
           }}
           disabled={
