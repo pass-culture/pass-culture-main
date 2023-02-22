@@ -108,7 +108,7 @@ export const OffersSearchComponent = ({
     setFacetFilters(
       activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
         ? [`offer.educationalInstitutionUAICode:${user.uai}`]
-        : [getDefaultFacetFilterUAICodeValue(user.uai)]
+        : [...getDefaultFacetFilterUAICodeValue(user.uai)]
     )
     refine(INITIAL_QUERY)
   }
@@ -117,7 +117,7 @@ export const OffersSearchComponent = ({
     if (venueFilter?.id) {
       setFacetFilters([
         computeVenueFacetFilter(venueFilter),
-        getDefaultFacetFilterUAICodeValue(user.uai),
+        ...getDefaultFacetFilterUAICodeValue(user.uai),
       ])
     }
   }, [setFacetFilters, venueFilter, user.uai])
