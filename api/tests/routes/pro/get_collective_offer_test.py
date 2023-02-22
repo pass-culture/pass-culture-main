@@ -39,6 +39,7 @@ class Returns200Test:
         assert response_json["nonHumanizedId"] == offer.id
         assert response_json["lastBookingStatus"] is None
         assert response_json["lastBookingId"] is None
+        assert response_json["isPublicApi"] == False
         assert response_json["teacher"] == {
             "email": offer.teacher.email,
             "firstName": offer.teacher.firstName,
