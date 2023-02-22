@@ -323,6 +323,25 @@ class MarkBookingAsUsedTest:
             redirected_response.data
         )
 
+    def test_uncancel_booking_sql_constraint_error(self, authenticated_client, bookings):
+        # given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        cancelled_booking = bookings_factories.CancelledBookingFactory(user=beneficiary, stock__price="250")
+        bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock__price="100")
+
+        # when
+        url = url_for("backoffice_v3_web.individual_bookings.mark_booking_as_used", booking_id=cancelled_booking.id)
+        response = send_request(authenticated_client, url)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(cancelled_booking)
+        assert cancelled_booking.status == bookings_models.BookingStatus.CANCELLED
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert "insufficientFunds" in html_parser.extract_alert(redirected_response.data)
+
 
 class CancelBookingTest:
     class CancelBookingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
