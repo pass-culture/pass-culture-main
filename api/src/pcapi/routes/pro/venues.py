@@ -264,3 +264,20 @@ def get_venue_stats_dashboard_url(humanized_venue_id: str) -> offerers_serialize
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     url = offerers_api.get_metabase_stats_iframe_url(venue.managingOfferer, venues=[venue])
     return offerers_serialize.OffererStatsResponseModel(dashboardUrl=url)
+
+
+@private_api.route("/venues/siret/<siret>", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=venues_serialize.GetVenuesOfOffererFromSiretResponseModel, api=blueprint.pro_private_schema
+)
+def get_venues_of_offerer_from_siret(siret: str) -> venues_serialize.GetVenuesOfOffererFromSiretResponseModel:
+    offerer, db_venues = offerers_repository.find_venues_of_offerer_from_siret(siret)
+    venue_with_siret = next((v for v in db_venues if v.siret == siret), None)
+    if venue_with_siret:
+        db_venues.insert(0, db_venues.pop(db_venues.index(venue_with_siret)))
+    return venues_serialize.GetVenuesOfOffererFromSiretResponseModel(
+        offererSiren=offerer.siren if offerer else None,
+        offererName=offerer.name if offerer else None,
+        venues=[venues_serialize.VenueOfOffererFromSiretResponseModel.from_orm(venue) for venue in db_venues],
+    )

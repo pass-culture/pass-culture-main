@@ -570,3 +570,21 @@ class AdageCulturalPartnersResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class VenueOfOffererFromSiretResponseModel(BaseModel):
+    id: str
+    name: str
+    publicName: str | None
+    siret: str | None
+
+    _humanize_id = humanize_field("id")
+
+    class Config:
+        orm_mode = True
+
+
+class GetVenuesOfOffererFromSiretResponseModel(BaseModel):
+    offererName: str | None
+    offererSiren: str | None
+    venues: list[VenueOfOffererFromSiretResponseModel]
