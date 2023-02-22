@@ -41,7 +41,7 @@
     "@firebase/analytics": "^0.9.1",
     "@firebase/app": "^0.9.1",
     "@firebase/remote-config": "0.4.1",
-    "@reach/dialog": "^0.16.2",
+    "@reach/dialog": "^0.18.0",
     "@reach/menu-button": "^0.15.1",
     "@reduxjs/toolkit": "^1.8.5",
     "@sentry/browser": "^7.1.1",
