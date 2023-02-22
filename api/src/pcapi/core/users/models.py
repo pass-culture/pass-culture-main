@@ -180,6 +180,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     clearTextPassword = None
     comment = sa.Column(sa.Text(), nullable=True)
     culturalSurveyFilledDate = sa.Column(sa.DateTime, nullable=True)
+    # culturalSurveyId is obsolete. the column is kept for backward compatibility with the existing data
     culturalSurveyId = sa.Column(postgresql.UUID(as_uuid=True), nullable=True)
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
     dateOfBirth = sa.Column(sa.DateTime, nullable=True)  # declared at signup

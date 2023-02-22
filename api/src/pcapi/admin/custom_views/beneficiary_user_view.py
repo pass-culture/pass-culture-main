@@ -194,7 +194,6 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         "city",
         "civility",
         "culturalSurveyFilledDate",
-        "culturalSurveyId",
         "dateCreated",
         "validatedBirthDate",
         "departementCode",
