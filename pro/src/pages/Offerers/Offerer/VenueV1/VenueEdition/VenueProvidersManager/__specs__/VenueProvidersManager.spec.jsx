@@ -9,7 +9,6 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
-import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
 import VenueProvidersManager from '../VenueProvidersManager'
@@ -252,20 +251,17 @@ describe('src | VenueProvidersManager', () => {
 
       // Then
       expect(
-        screen.queryByText('Paramètres des offres synchronisées')
+        await screen.findByText('Paramètres des offres synchronisées')
       ).toBeInTheDocument()
 
-      const price = queryByTextTrimHtml(screen, 'Prix de vente/place : 5')
-      expect(price).toBeInTheDocument()
+      expect(screen.getByText('Prix de vente/place :')).toBeInTheDocument()
+      expect(screen.getByText('5,00 €')).toBeInTheDocument()
 
-      const quantity = queryByTextTrimHtml(
-        screen,
-        'Nombre de places/séance : 20'
-      )
-      expect(quantity).toBeInTheDocument()
+      expect(screen.getByText('Nombre de places/séance :')).toBeInTheDocument()
+      expect(screen.getByText('20')).toBeInTheDocument()
 
-      const isDuo = queryByTextTrimHtml(screen, 'Accepter les offres DUO : Oui')
-      expect(isDuo).toBeInTheDocument()
+      expect(screen.getByText('Accepter les offres DUO :')).toBeInTheDocument()
+      expect(screen.getByText('Oui')).toBeInTheDocument()
     })
 
     it('should be possible to edit parameters when has Allociné provider', async () => {
@@ -382,8 +378,8 @@ describe('src | VenueProvidersManager', () => {
       await renderVenueProvidersManager(props)
 
       // Then
-      const isDuo = queryByTextTrimHtml(screen, 'Accepter les offres DUO : Non')
-      expect(isDuo).toBeInTheDocument()
+      expect(screen.getByText('Accepter les offres DUO :')).toBeInTheDocument()
+      expect(screen.getByText('Non')).toBeInTheDocument()
     })
 
     it('should display pause synchronisation button when venueProvider isActive', async () => {
