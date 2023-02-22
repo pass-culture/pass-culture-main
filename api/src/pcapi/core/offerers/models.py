@@ -206,10 +206,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         "CollectiveOfferTemplate", back_populates="venue"
     )
 
-    venueTypeId = Column(Integer, ForeignKey("venue_type.id"), nullable=True)
-
-    venueType: sa_orm.Mapped["VenueType"] = relationship("VenueType", foreign_keys=[venueTypeId])
-
     venueTypeCode = Column(sa.Enum(VenueTypeCode, create_constraint=False), nullable=True, default=VenueTypeCode.OTHER)
 
     venueLabelId = Column(Integer, ForeignKey("venue_label.id"), nullable=True)
@@ -464,11 +460,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
 class VenueLabel(PcObject, Base, Model):
     __tablename__ = "venue_label"
-    label: str = Column(String(100), nullable=False)
-
-
-class VenueType(PcObject, Base, Model):
-    __tablename__ = "venue_type"
     label: str = Column(String(100), nullable=False)
 
 
