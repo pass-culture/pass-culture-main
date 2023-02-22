@@ -1,5 +1,5 @@
 {
-  "extends": ["stylelint-config-standard-scss", "stylelint-config-prettier"],
+  "extends": ["stylelint-config-standard-scss"],
   "rules": {
     "at-rule-no-unknown": null,
     "no-descending-specificity": null,
