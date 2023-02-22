@@ -3,12 +3,14 @@ from flask import render_template
 from flask import request
 import sqlalchemy as sa
 
+from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.utils.clean_accents import clean_accents
 
+from . import autocomplete
 from . import utils
 from .forms import offer as offer_forms
 
@@ -24,10 +26,10 @@ list_offers_blueprint = utils.child_backoffice_blueprint(
 
 
 def _get_offers(
-    search_query: str | None,
+    form: offer_forms.GetOffersListForm,
     limit: int,
 ) -> list[offers_models.Offer]:
-    offers = offers_models.Offer.query.options(
+    query = offers_models.Offer.query.options(
         sa.orm.load_only(
             offers_models.Offer.id,
             offers_models.Offer.name,
@@ -35,6 +37,7 @@ def _get_offers(
             offers_models.Offer.rankingWeight,
             offers_models.Offer.validation,
             offers_models.Offer.lastValidationDate,
+            offers_models.Offer.isActive,
         ),
         sa.orm.joinedload(offers_models.Offer.stocks).load_only(
             offers_models.Stock.offerId,
@@ -46,22 +49,48 @@ def _get_offers(
             offers_models.Stock.dnBookedQuantity,
         ),
         sa.orm.joinedload(offers_models.Offer.criteria).load_only(criteria_models.Criterion.name),
+        sa.orm.joinedload(offers_models.Offer.venue).load_only(
+            offerers_models.Venue.managingOffererId, offerers_models.Venue.departementCode, offerers_models.Venue.name
+        )
         # needed to check if stock is bookable and compute initial/remaining stock:
-        sa.orm.joinedload(offers_models.Offer.venue)
-        .load_only(offerers_models.Venue.managingOffererId)
-        .joinedload(offerers_models.Venue.managingOfferer)
-        .load_only(offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus),
+        .joinedload(offerers_models.Venue.managingOfferer).load_only(
+            offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
+        ),
     )
 
-    if search_query:
+    if form.q.data:
+        search_query = form.q.data
+
         if search_query.isnumeric():
-            offers = offers.filter(offers_models.Offer.id == int(search_query))
+            query = query.filter(offers_models.Offer.id == int(search_query))
         else:
             name_query = search_query.replace(" ", "%").replace("-", "%")
             name_query = clean_accents(name_query)
-            offers = offers.filter(sa.func.unaccent(offers_models.Offer.name).ilike(f"%{name_query}%")).limit(limit)
+            query = query.filter(sa.func.unaccent(offers_models.Offer.name).ilike(f"%{name_query}%"))
 
-    return offers.all()
+    if form.criteria.data:
+        query = query.outerjoin(offers_models.Offer.criteria).filter(
+            criteria_models.Criterion.id.in_(form.criteria.data)
+        )
+
+    if form.category.data:
+        query = query.filter(
+            offers_models.Offer.subcategoryId.in_(
+                subcategory.id
+                for subcategory in subcategories_v2.ALL_SUBCATEGORIES
+                if subcategory.category.id in form.category.data
+            )
+        )
+
+    if form.department.data:
+        query = query.join(offers_models.Offer.venue).filter(
+            offerers_models.Venue.departementCode.in_(form.department.data)
+        )
+
+    if form.venue.data:
+        query = query.filter(offers_models.Offer.venueId.in_(form.venue.data))
+
+    return query.limit(limit).all()
 
 
 def _get_initial_stock(offer: offers_models.Offer) -> int | str:
@@ -86,10 +115,10 @@ def list_offers() -> utils.BackofficeResponse:
     if not form.validate():
         return render_template("offer/list.html", rows=[], form=form), 400
 
-    if not form.q.data:
+    if form.is_empty():
         return render_template("offer/list.html", rows=[], form=form)
 
-    offers = _get_offers(form.q.data, limit=MAX_OFFERS)
+    offers = _get_offers(form, limit=MAX_OFFERS)
 
     if len(offers) >= MAX_OFFERS:
         flash(
@@ -97,6 +126,9 @@ def list_offers() -> utils.BackofficeResponse:
             "qu'une partie. Veuillez affiner les filtres de recherche.",
             "info",
         )
+
+    autocomplete.prefill_criteria_choices(form.criteria)
+    autocomplete.prefill_venues_choices(form.venue)
 
     return render_template(
         "offer/list.html",
