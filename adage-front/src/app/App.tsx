@@ -90,7 +90,10 @@ export const App = (): JSX.Element => {
   }
 
   return (
-    <FacetFiltersContextProvider uai={user?.uai}>
+    <FacetFiltersContextProvider
+      departmentCode={user?.departmentCode}
+      uai={user?.uai}
+    >
       {notification && <NotificationComponent notification={notification} />}
       {user?.role &&
       [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(

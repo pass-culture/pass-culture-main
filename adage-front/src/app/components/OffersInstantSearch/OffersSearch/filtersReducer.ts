@@ -100,7 +100,7 @@ export const filtersReducer = (
         students: action.allFilters.students,
         domains: action.allFilters.domains,
         onlyInMySchool: false,
-        onlyInMyDpt: false,
+        onlyInMyDpt: true,
       }
     case 'REMOVE_ONE_DEPARTMENT_FILTER': {
       const newDepartments = state.departments?.filter(
@@ -151,7 +151,7 @@ export const filtersReducer = (
         students: [],
         domains: [],
         onlyInMySchool: false,
-        onlyInMyDpt: false,
+        onlyInMyDpt: true,
       }
     case 'POPULATE_ONLY_IN_MY_SCHOOL':
       return {

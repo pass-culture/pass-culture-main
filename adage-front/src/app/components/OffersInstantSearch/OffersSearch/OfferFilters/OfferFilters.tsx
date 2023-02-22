@@ -1,6 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 
-import { AuthenticatedResponse, VenueResponse } from 'apiClient'
+import {
+  AdageFrontRoles,
+  AuthenticatedResponse,
+  VenueResponse,
+} from 'apiClient'
 import { getEducationalCategoriesOptionsAdapter } from 'app/adapters/getEducationalCategoriesOptionsAdapter'
 import { getEducationalDomainsOptionsAdapter } from 'app/adapters/getEducationalDomainsOptionsAdapter'
 import { departmentOptions } from 'app/constants/departmentOptions'
@@ -79,6 +83,23 @@ export const OfferFilters = ({
   )
   const [onlyInMyDpt, setOnlyInMyDpt] = useState(currentFilters.onlyInMyDpt)
 
+  const userDepartmentOption = departmentOptions.find(
+    departmentOption => departmentOption.value === user.departmentCode
+  )
+
+  const setDefaultDepartmentFilter = useCallback(() => {
+    if (userDepartmentOption && user.role === AdageFrontRoles.REDACTOR) {
+      dispatchCurrentFilters({
+        type: 'POPULATE_DEPARTMENTS_FILTER',
+        departmentFilters: [userDepartmentOption],
+      })
+      dispatchCurrentFilters({
+        type: 'POPULATE_ONLY_IN_MY_DEPARTMENT',
+        departmentFilter: userDepartmentOption,
+      })
+    }
+  }, [user, dispatchCurrentFilters, userDepartmentOption])
+
   const handleResetFilters = () => {
     removeVenueFilter()
     removeQuery()
@@ -104,7 +125,8 @@ export const OfferFilters = ({
     }
 
     loadFiltersOptions()
-  }, [])
+    setDefaultDepartmentFilter()
+  }, [setDefaultDepartmentFilter])
 
   useEffect(() => {
     setOnlyInMySchool(currentFilters.onlyInMySchool)
@@ -112,10 +134,6 @@ export const OfferFilters = ({
   useEffect(() => {
     setOnlyInMyDpt(currentFilters.onlyInMyDpt)
   }, [currentFilters.onlyInMyDpt])
-
-  const userDepartmentOption = departmentOptions.find(
-    departmentOption => departmentOption.value === user.departmentCode
-  )
 
   const onlyInMySchoolLabel = getOnlyInMySchoolLabel(user)
   const onlyInMyDptLabel = getOnlyInMyDptLabel(user)
