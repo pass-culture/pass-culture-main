@@ -27,9 +27,9 @@ class VenueContactModel(BaseModel):
     social_medias: SocialMedias | None
 
     @validator("phone_number")
-    def validate_phone_number(cls, phone_number: str) -> str:
-        if phone_number is None:
-            return phone_number
+    def validate_phone_number(cls, phone_number: str) -> str | None:
+        if not phone_number:
+            return None
 
         try:
             return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
