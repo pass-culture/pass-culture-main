@@ -134,131 +134,136 @@ export const PriceCategoriesForm = ({
 
   return (
     <>
-      <FormLayout.MandatoryInfo />
-      <FieldArray
-        name="priceCategories"
-        render={arrayHelpers => (
-          <FormLayout.Section title="Tarifs">
-            {currentDeletionIndex !== null && (
-              <ConfirmDialog
-                onCancel={() => setCurrentDeletionIndex(null)}
-                onConfirm={() =>
-                  onDeletePriceCategory(
-                    currentDeletionIndex,
-                    arrayHelpers,
-                    values.priceCategories,
-                    values.priceCategories[currentDeletionIndex].id
-                  )
-                }
-                title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des occurrences qui lui sont associées."
-                confirmText="Confirmer la supression"
-                cancelText="Annuler"
-              />
-            )}
-            {values.priceCategories.map((priceCategory, index) => (
-              <FormLayout.Row key={index} inline>
-                <TextInput
-                  smallLabel
-                  name={`priceCategories[${index}].label`}
-                  label="Intitulé du tarif"
-                  placeholder="Ex : catégorie 1, orchestre..."
-                  maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
-                  countCharacters
-                  className={styles['label-input']}
-                  disabled={values.priceCategories.length <= 1 || isDisabled}
-                  isLabelHidden={index !== 0}
+      <FormLayout>
+        <FormLayout.MandatoryInfo />
+        <FieldArray
+          name="priceCategories"
+          render={arrayHelpers => (
+            <FormLayout.Section title="Tarifs">
+              {currentDeletionIndex !== null && (
+                <ConfirmDialog
+                  onCancel={() => setCurrentDeletionIndex(null)}
+                  onConfirm={() =>
+                    onDeletePriceCategory(
+                      currentDeletionIndex,
+                      arrayHelpers,
+                      values.priceCategories,
+                      values.priceCategories[currentDeletionIndex].id
+                    )
+                  }
+                  title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des occurrences qui lui sont associées."
+                  confirmText="Confirmer la supression"
+                  cancelText="Annuler"
                 />
+              )}
+              {values.priceCategories.map((priceCategory, index) => (
+                <FormLayout.Row key={index} inline>
+                  <TextInput
+                    smallLabel
+                    name={`priceCategories[${index}].label`}
+                    label="Intitulé du tarif"
+                    placeholder="Ex : catégorie 1, orchestre..."
+                    maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
+                    countCharacters
+                    className={styles['label-input']}
+                    disabled={values.priceCategories.length <= 1 || isDisabled}
+                    isLabelHidden={index !== 0}
+                  />
 
-                <TextInput
-                  smallLabel
-                  name={`priceCategories[${index}].price`}
-                  label="Tarif par personne"
-                  placeholder="Ex : 25€"
-                  type="number"
-                  step="0.01"
-                  max={PRICE_CATEGORY_PRICE_MAX}
-                  rightIcon={() => <EuroIcon />}
-                  className={styles['price-input']}
-                  isLabelHidden={index !== 0}
-                  disabled={isDisabled}
-                />
-
-                <div
-                  className={cn(styles['form-row-actions'], {
-                    [styles['first-row']]: index === 0,
-                  })}
-                >
-                  <BaseCheckbox
-                    label="Gratuit"
-                    checked={isFreeCheckboxSelectedArray[index]}
-                    name={`priceCategories[${index}].free`}
-                    onChange={onChangeFree(index)}
+                  <TextInput
+                    smallLabel
+                    name={`priceCategories[${index}].price`}
+                    label="Tarif par personne"
+                    placeholder="Ex : 25€"
+                    type="number"
+                    step="0.01"
+                    max={PRICE_CATEGORY_PRICE_MAX}
+                    rightIcon={() => <EuroIcon />}
+                    className={styles['price-input']}
+                    isLabelHidden={index !== 0}
                     disabled={isDisabled}
                   />
-                  {mode !== OFFER_WIZARD_MODE.EDITION && (
-                    <Button
-                      variant={ButtonVariant.TERNARY}
-                      Icon={TrashFilledIcon}
-                      iconPosition={IconPositionEnum.CENTER}
-                      disabled={
-                        values.priceCategories.length <= 1 || isDisabled
-                      }
-                      onClick={() =>
-                        onDeletePriceCategory(
-                          index,
-                          arrayHelpers,
-                          values.priceCategories,
-                          values.priceCategories[index].id
-                        )
-                      }
-                      hasTooltip
-                    >
-                      Supprimer le tarif
-                    </Button>
-                  )}
-                </div>
-              </FormLayout.Row>
-            ))}
 
-            <Button
-              variant={ButtonVariant.TERNARY}
-              Icon={PlusCircleIcon}
-              onClick={() => {
-                arrayHelpers.push(INITIAL_PRICE_CATEGORY)
-                if (values.priceCategories[0].label === UNIQUE_PRICE) {
-                  setFieldValue(`priceCategories[0].label`, '')
+                  <div
+                    className={cn(styles['form-row-actions'], {
+                      [styles['first-row']]: index === 0,
+                    })}
+                  >
+                    <BaseCheckbox
+                      label="Gratuit"
+                      checked={isFreeCheckboxSelectedArray[index]}
+                      name={`priceCategories[${index}].free`}
+                      onChange={onChangeFree(index)}
+                      disabled={isDisabled}
+                    />
+                    {mode !== OFFER_WIZARD_MODE.EDITION && (
+                      <Button
+                        variant={ButtonVariant.TERNARY}
+                        Icon={TrashFilledIcon}
+                        iconPosition={IconPositionEnum.CENTER}
+                        disabled={
+                          values.priceCategories.length <= 1 || isDisabled
+                        }
+                        onClick={() =>
+                          onDeletePriceCategory(
+                            index,
+                            arrayHelpers,
+                            values.priceCategories,
+                            values.priceCategories[index].id
+                          )
+                        }
+                        hasTooltip
+                      >
+                        Supprimer le tarif
+                      </Button>
+                    )}
+                  </div>
+                </FormLayout.Row>
+              ))}
+
+              <Button
+                variant={ButtonVariant.TERNARY}
+                Icon={PlusCircleIcon}
+                onClick={() => {
+                  arrayHelpers.push(INITIAL_PRICE_CATEGORY)
+                  if (values.priceCategories[0].label === UNIQUE_PRICE) {
+                    setFieldValue(`priceCategories[0].label`, '')
+                  }
+                }}
+                disabled={
+                  values.priceCategories.length >= PRICE_CATEGORY_MAX_LENGTH ||
+                  isDisabled
                 }
-              }}
-              disabled={
-                values.priceCategories.length >= PRICE_CATEGORY_MAX_LENGTH ||
-                isDisabled
-              }
-            >
-              Ajouter un tarif
-            </Button>
-          </FormLayout.Section>
-        )}
-      />
-      <FormLayout.Section
-        className={styles['duo-section']}
-        title="Réservations “Duo”"
-      >
-        <FormLayout.Row
-          sideComponent={
-            <InfoBox
-              type="info"
-              text="Cette option permet au bénéficiaire de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."
-            />
-          }
+              >
+                Ajouter un tarif
+              </Button>
+            </FormLayout.Section>
+          )}
+        />
+      </FormLayout>
+
+      <FormLayout small>
+        <FormLayout.Section
+          className={styles['duo-section']}
+          title="Réservations “Duo”"
         >
-          <Checkbox
-            label="Accepter les réservations “Duo“"
-            name="isDuo"
-            disabled={isDisabled}
-            withBorder
-          />
-        </FormLayout.Row>
-      </FormLayout.Section>
+          <FormLayout.Row
+            sideComponent={
+              <InfoBox
+                type="info"
+                text="Cette option permet au bénéficiaire de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."
+              />
+            }
+          >
+            <Checkbox
+              label="Accepter les réservations “Duo“"
+              name="isDuo"
+              disabled={isDisabled}
+              withBorder
+            />
+          </FormLayout.Row>
+        </FormLayout.Section>
+      </FormLayout>
     </>
   )
 }

@@ -2,7 +2,6 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
@@ -338,27 +337,26 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
           cancelText="Annuler"
         />
       )}
-      <FormLayout small>
-        <form onSubmit={formik.handleSubmit}>
-          <PriceCategoriesForm
-            offerId={offer.nonHumanizedId.toString()}
-            mode={mode}
-            stocks={offer.stocks}
-            setOffer={setOffer}
-            humanizedOfferId={offer.id}
-            isDisabled={isDisabled}
-          />
 
-          <ActionBar
-            onClickPrevious={handlePreviousStep}
-            onClickNext={handleNextStep()}
-            onClickSaveDraft={handleNextStep({ saveDraft: true })}
-            step={OFFER_WIZARD_STEP_IDS.TARIFS}
-            isDisabled={formik.isSubmitting}
-            offerId={offer.id}
-          />
-        </form>
-      </FormLayout>
+      <form onSubmit={formik.handleSubmit}>
+        <PriceCategoriesForm
+          offerId={offer.nonHumanizedId.toString()}
+          mode={mode}
+          stocks={offer.stocks}
+          setOffer={setOffer}
+          humanizedOfferId={offer.id}
+          isDisabled={isDisabled}
+        />
+
+        <ActionBar
+          onClickPrevious={handlePreviousStep}
+          onClickNext={handleNextStep()}
+          onClickSaveDraft={handleNextStep({ saveDraft: true })}
+          step={OFFER_WIZARD_STEP_IDS.TARIFS}
+          isDisabled={formik.isSubmitting}
+          offerId={offer.id}
+        />
+      </form>
       <RouteLeavingGuardOfferIndividual
         when={formik.dirty && !isClickingFromActionBar}
         tracking={nextLocation =>
