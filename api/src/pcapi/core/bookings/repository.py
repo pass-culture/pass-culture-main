@@ -81,7 +81,7 @@ BOOKING_EXPORT_HEADER = [
     "Date et heure de réservation",
     "Date et heure de validation",
     "Contremarque",
-    "Intitulé du prix",
+    "Intitulé du tarif",
     "Prix de la réservation",
     "Statut de la contremarque",
     "Date et heure de remboursement",
