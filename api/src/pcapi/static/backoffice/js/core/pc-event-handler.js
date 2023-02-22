@@ -86,7 +86,7 @@ class PcEventHandler {
 
   constructor() {
     if (!PcEventHandler.#isInternalConstructing) {
-      throw new TypeError("PcEventHandler is not constructable");
+      throw new TypeError("PcEventHandler is not constructable")
     }
     this.uidEvent = 1
     this.eventRegistry = {} // Events storage
@@ -99,10 +99,10 @@ class PcEventHandler {
    * const EventHandler = PcEventHandler.create()
    */
   static create() {
-    PcEventHandler.#isInternalConstructing = true;
-    const instance = new PcEventHandler();
-    PcEventHandler.#isInternalConstructing = false;
-    return instance;
+    PcEventHandler.#isInternalConstructing = true
+    const instance = new PcEventHandler()
+    PcEventHandler.#isInternalConstructing = false
+    return instance
   }
 
   #makeEventUid = (element, uid) => {

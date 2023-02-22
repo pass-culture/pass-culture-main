@@ -1,5 +1,5 @@
-<div class="form-floating {{ field.name }}-2-container">
-    <select multiple class="form-select pc-select" id="{{ field.name }}" name="{{ field.name }}" size="2"
+<div class="form-floating {{ field.name }}-container">
+    <select multiple class="form-select pc-select-multiple-field" id="{{ field.name }}" name="{{ field.name }}" size="2"
             style="border-radius: 1rem!important;">
         {% for value, label, selected in field.iter_choices() %}
             <option value="{{ value }}" {{ "selected" if selected else "" }}>
@@ -10,12 +10,3 @@
     <label class="pc-select-label" for="{{ field.name }}" id="{{ field.name }}-label"> {{ field.label }}</label>
 </div>
 
-{% block scripts %}
-    <script>
-      PcUtils.addLoadEvent(() => {
-        new PcSelectMultipleField({
-          $container: document.querySelector('.{{ field.name }}-2-container'),
-        })
-      })
-    </script>
-{% endblock %}

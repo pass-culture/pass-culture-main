@@ -12,22 +12,20 @@
                 <div class="form-floating my-3 col">
                     <textarea
                         name="comment"
-                        class="form-control"
+                        class="form-control pc-override-custom-textarea-enter"
                         id="user-offerer-validation-form-textarea-{{ div_id }}"
                         data-id="{{ div_id }}"
                         data-form-name="user-offerer-validation-form-{{ div_id }}"
                         rows="3"
                         style="height:100%;"
-                        onkeydown="pcOverrideCustomTextareaEnter.manageTextAreaKeydown(event)"
                     ></textarea>
                     <label for={{ div_id }}-textarea"><label for="comment">Raison</label></label>
                 </div>
                 <button
                         type="button"
-                        class="btn btn-outline-secondary col-1 h-50"
+                        class="btn btn-outline-secondary col-1 h-50 pc-override-custom-textarea-enter-line-break"
                         id="{{ div_id }}-newline"
                         data-form-name="user-offerer-validation-form-{{ div_id }}"
-                        onclick="pcOverrideCustomTextareaEnter.manageReturnButton(event)"
                 >
                     ⏎
                 </button>

@@ -1,53 +1,84 @@
+/**
+ * pass Culture application entry point
+ */
 class PcBackofficeApp {
-  tooltips
 
-  constructor() {
-    this.bindEvents()
-    this.initializePcSelects()
-    this.initializeTooltips()
+  /** localStorage key for this application */
+  static LOCALSTORAGE_KEY = 'pc'
+
+  /** addons */
+  addons = {}
+
+  /** application state, can be partially persisted per addon using addon.saveState(state) */
+  appState = {}
+
+  /**
+   * Initialize applications
+   * @param {array} addOns - list of addons (class extending AddOn) to be used
+   */
+  constructor({ addOns: AddOns }) {
+    this.#rehydrateState()
+    AddOns.forEach((AddOn) => {
+      const name = `${AddOn.name[0].toLowerCase()}${AddOn.name.slice(1)}`
+      this.addons[name] = new AddOn({
+        name,
+        app: this,
+        addOnState: this.appState[name],
+      })
+    })
+    PcUtils.addLoadEvent(this.initialize)
+    PcUtils.addLoadEvent(this.bindEvents)
   }
 
-  get $pcSelects() {
-    return document.querySelectorAll('.pc-select')
+  /**
+   * initialize addon(s)
+   * @example To initialize a specific addon
+   * app.addons.bsTooltips.initialize()
+   * @example To initialize all addons
+   * app.initialize()
+   */
+  initialize = () => {
+    Object.values(this.addons).forEach(({ initialize }) => initialize())
   }
 
-  get $forms() {
-    return document.forms
-  }
-
-  get $tooltips() {
-    return document.querySelectorAll('[data-toggle="tooltip"]')
-  }
-
+  /**
+   * bind addons events
+   * @example To bind a specific addon
+   * app.addons.bsTooltips.unbindEvents()
+   * @example To bind all addons
+   * app.bindEvents()
+   */
   bindEvents = () => {
-    [...this.$forms].forEach(($form) => {
-      $form.addEventListener("submit", this.onFormSubmit, false);
-    })
+    Object.values(this.addons).forEach(({ bindEvents }) => bindEvents())
   }
 
-  onFormSubmit = (event) => {
-    event.preventDefault();
-    const form = event.target;
-    if (form.checkValidity()) {
-      form.submit();
-    }
+  /**
+   * unbind addons events
+   * @example To unbind a specific addon
+   * app.addons.bsTooltips.unbindEvents()
+   * @example To unbind all addons
+   * app.unbindEvents()
+   */
+  unbindEvents = () => {
+    Object.values(this.addons).forEach(({ unbindEvents }) => unbindEvents())
   }
 
-  initializeTooltips = () => {
-    this.$tooltips.forEach(($tooltip) => {
-      this.tooltips.push(new bootstrap.Tooltip($tooltip))
-    })
+  /**
+   * Persist add on state in localStorage
+   * This method is public only for addons to have access to it.
+   * Addons add a saveState method that allow persistence of any addon's state
+   * It should not be used directly
+   * @param {string} name - addon name
+   * @param {any} value - addon state
+   */
+  _setAppState = (name, value) => {
+    localStorage.setItem(
+      PcBackofficeApp.LOCALSTORAGE_KEY,
+      JSON.stringify({ ...this.appState, [name]: value })
+    )
   }
 
-  initializePcSelects = () => {
-    this.$pcSelects.forEach(($pcSelect) => {
-      const settings = {
-        plugins: ['dropdown_input', 'clear_button', 'checkbox_options'],
-        persist: false,
-        create: false,
-
-      };
-      new TomSelect($pcSelect, settings);
-    })
+  #rehydrateState = () => {
+    this.appState = JSON.parse(localStorage.getItem(PcBackofficeApp.LOCALSTORAGE_KEY) || '{}')
   }
 }

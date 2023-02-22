@@ -6,26 +6,26 @@
 {% extends "layouts/connected.html" %}
 
 {% block page %}
-    <div class="pt-3 px-5 table-container-user-offerer-validation">
+    <div class="pt-3 px-5 table-container-user-offerer-validation" data-toggle="filters" data-toggle-id="user-offerer-validation">
         <div class="d-flex justify-content-between">
             <h2 class="fw-light">Rattachements à valider</h2>
         </div>
         <div class="col-2">
             <div class="py-2">
-                <button type="button" class="toggle-filters-button btn btn-primary" disabled>
+                <button type="button" class="btn btn-primary filters-toggle-button" disabled>
                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                     <span class="visually-hidden">Chargement...</span>
                 </button>
             </div>
         </div>
-        <div class="filters d-none">
+        <div class="filters-container d-none">
             {{ build_filters_form(form, dst) }}
         </div>
         <div>
             {% if rows and rows.total > 0 %}
                 <div class="d-flex justify-content-between">
                     <p class="lead num-results">{{ rows.total }} résultat{{ "s" if rows.total > 1 else "" }}</p>
-                    <div class="btn-group btn-group-sm pctms-batch-button-group">
+                    <div class="btn-group btn-group-sm pc-table-multi-select-batch-button-group">
                         <button type="button" class="btn btn-outline-primary batch-validating-button">Valider</button>
                         <button type="button" class="btn btn-outline-primary batch-pending-button">Mettre en attente</button>
                         <button type="button" class="btn btn-outline-primary batch-rejecting-button">Rejeter</button>
@@ -40,10 +40,10 @@
                     </div>
                 </div>
 
-                <table class="table mb-4">
+                <table class="table mb-4" data-table-multi-select-id="table-container-user-offerer-validation">
                     <thead>
                     <tr>
-                        <th scope="col"><input class="form-check-input pctms-check-all" type="checkbox" name="pctms-check-all"></th>
+                        <th scope="col"><input class="form-check-input" type="checkbox" name="pc-table-multi-select-check-all"></th>
                         <th scope="col"></th>
                         <th scope="col">ID Compte pro</th>
                         <th scope="col">Email Compte pro</th>
@@ -67,7 +67,7 @@
                                 <input
                                     type="checkbox"
                                     class="form-check-input"
-                                    name="pctms-check-{{ offerer.id }}-{{ user_offerer.user.id }}"
+                                    name="pc-table-multi-select-check-{{ offerer.id }}-{{ user_offerer.user.id }}"
                                     data-id="{{ user_offerer.id }}"
                                 >
                             </td>
@@ -150,12 +150,13 @@
     <script>
         class UserOffererValidation {
           $container
-          tableMultiSelect
+          pcTableMultiSelectId
           modal
 
-          constructor({ $container, tableMultiSelect }) {
+          constructor({ $container, pcTableMultiSelectId }) {
             this.$container = $container
-            this.tableMultiSelect = tableMultiSelect
+
+            this.pcTableMultiSelectId = pcTableMultiSelectId
             this.bindEvents()
             this.modal = new bootstrap.Modal(this.$modal, {})
           }
@@ -221,25 +222,23 @@
                 </div>
                 <div class="modal-body row">
                     <div class="form-floating my-3 col">
-                        <input name="object_ids" type="hidden" value="${this.tableMultiSelect.selectedRowsIds.join(',')}">
+                        <input name="object_ids" type="hidden" value="${app.addons.pcTableMultiSelect.state[this.pcTableMultiSelectId].selectedRowsIds.join(',')}">
                         <textarea
                             name="comment"
-                            class="form-control"
+                            class="form-control pc-override-custom-textarea-enter"
                             id="user-offerer-validation-form-textarea-${divId}"
                             data-id="${divId}"
                             data-form-name="user-offerer-validation-form-${divId}"
                             rows="3"
                             style="height:100%;"
-                            onkeydown="pcOverrideCustomTextareaEnter.manageTextAreaKeydown(event)"
                         ></textarea>
                         <label for=${divId}-textarea"><label for="comment">Raison</label></label>
                     </div>
                     <button
                         type="button"
-                        class="btn btn-outline-secondary col-1 h-50"
+                        class="btn btn-outline-secondary col-1 h-50 pc-override-custom-textarea-enter-line-break"
                         id="${divId}-newline"
                         data-form-name="user-offerer-validation-form-${divId}"
-                        onclick="pcOverrideCustomTextareaEnter.manageReturnButton(event)"
                     >
                         ⏎
                     </button>
@@ -250,7 +249,6 @@
                     <button type="submit" class="btn btn-primary">${buttonText}</button>
                 </div>
             </form>`
-
             if (useConfirmationModal) {
               this.modal.show()
               return
@@ -261,13 +259,8 @@
 
         new UserOffererValidation({
           $container: document.querySelector('.table-container-user-offerer-validation'),
-          tableMultiSelect: new TableMultiSelect(document.querySelector('.table-container-user-offerer-validation'))
+          pcTableMultiSelectId: 'table-container-user-offerer-validation'
         })
-    </script>
-    <script>
-        new PcValidationFilters({
-          $container: document.querySelector('.table-container-user-offerer-validation'),
-          localStorageKey: 'areUserOffererFiltersHidden',
-        })
+
     </script>
 {% endblock %}
