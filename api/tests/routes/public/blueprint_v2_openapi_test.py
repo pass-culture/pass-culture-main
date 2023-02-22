@@ -168,6 +168,7 @@ def test_public_api(client, app):
                             "type": "string",
                         },
                         "price": {"title": "Price", "type": "number"},
+                        "priceCategoryLabel": {"nullable": True, "title": "Pricecategorylabel", "type": "string"},
                         "publicOfferId": {"title": "Publicofferid", "type": "string"},
                         "quantity": {"title": "Quantity", "type": "integer"},
                         "theater": {
