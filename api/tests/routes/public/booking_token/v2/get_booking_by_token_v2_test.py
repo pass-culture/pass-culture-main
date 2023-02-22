@@ -62,6 +62,7 @@ class Returns200Test:
             "offerType": "EVENEMENT",
             "phoneNumber": "+33101010101",
             "price": 10.0,
+            "priceCategoryLabel": None,
             "publicOfferId": humanize(booking.stock.offerId),
             "quantity": 1,
             "theater": {
