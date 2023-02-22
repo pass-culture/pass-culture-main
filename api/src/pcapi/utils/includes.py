@@ -1,5 +1,4 @@
 USER_INCLUDES = [
-    "-culturalSurveyId",
     "-culturalSurveyFilledDate",
     "-extraData",
     "-isActive",

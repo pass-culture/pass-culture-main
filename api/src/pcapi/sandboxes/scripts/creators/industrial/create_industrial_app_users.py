@@ -4,7 +4,6 @@ from datetime import time
 from datetime import timedelta
 import itertools
 import logging
-import uuid
 
 from dateutil.relativedelta import relativedelta
 from faker import Faker
@@ -67,7 +66,6 @@ def create_industrial_app_beneficiaries() -> dict[str, User]:
 
         email = f"pctest.jeune{departement_code}.{tag}.v{deposit_version}@example.com"
         user = users_factories.BeneficiaryGrant18Factory(
-            culturalSurveyId=None,
             departementCode=str(departement_code),
             email=email,
             phoneNumber=f"+336{index:0>8}",
@@ -112,7 +110,6 @@ def create_industrial_app_underage_beneficiaries() -> dict[str, User]:
 
         user = users_factories.UnderageBeneficiaryFactory(
             subscription_age=age,
-            culturalSurveyId=None,
             departementCode=str(departement_code),
             email=email,
             phoneNumber=f"+336{index:0>8}",
@@ -148,17 +145,14 @@ def create_industrial_app_other_users() -> dict[str, User]:
         if tag == "has-signed-up":
             reset_password_token = "{}{}".format(validation_prefix, validation_suffix)
             validation_suffix += 1
-            cultural_survey_id = uuid.uuid4()
             needs_to_fill_cultural_survey = True
         else:
-            cultural_survey_id = None
             needs_to_fill_cultural_survey = False
             reset_password_token = None
 
         email = f"pctest.autre{departement_code}.{tag}@example.com"
 
         user = users_factories.UserFactory(
-            culturalSurveyId=cultural_survey_id,
             departementCode=str(departement_code),
             email=email,
             phoneNumber=f"+336{index:0>8}",
@@ -205,7 +199,6 @@ def create_industrial_app_general_public_users() -> dict[str, User]:
             date_of_birth = today - timedelta(16 * 366)
 
         user = users_factories.UserFactory(
-            culturalSurveyId=None,
             departementCode=str(departement_code),
             email=email,
             phoneNumber=f"+336{index:0>8}",
