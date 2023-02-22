@@ -7,7 +7,6 @@ jobs:
 
   test-backoffice:
     name: Test backoffice
-    needs: check-backoffice-folder-changes
     uses: ./.github/workflows/tests-backoffice-v3.yml
     secrets: inherit
 
