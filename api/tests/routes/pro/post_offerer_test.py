@@ -18,7 +18,6 @@ DEFAULT_DIGITAL_VENUE_LABEL = "Offre numérique"
 def test_create_virtual_venue(client):
     # given
     pro = users_factories.ProFactory()
-    offerers_factories.VirtualVenueTypeFactory()
 
     body = {
         "name": "Test Offerer",
@@ -44,7 +43,6 @@ def test_create_virtual_venue(client):
 def test_when_no_address_is_provided(client):
     # given
     pro = users_factories.ProFactory()
-    offerers_factories.VirtualVenueTypeFactory()
     body = {"name": "Test Offerer", "siren": "418166096", "postalCode": "93100", "city": "Montreuil"}
 
     # when
@@ -61,7 +59,6 @@ def test_when_no_address_is_provided(client):
 def test_when_current_user_is_admin(client):
     # Given
     admin = users_factories.AdminFactory()
-    offerers_factories.VirtualVenueTypeFactory()
     body = {
         "name": "Test Offerer",
         "siren": "418166096",
@@ -81,7 +78,6 @@ def test_when_current_user_is_admin(client):
 def test_current_user_has_access_to_created_offerer(client):
     # Given
     pro = users_factories.ProFactory()
-    offerers_factories.VirtualVenueTypeFactory()
     body = {
         "name": "Test Offerer",
         "siren": "418166096",
@@ -105,7 +101,6 @@ def test_new_user_offerer_has_validation_status_new(client):
     pro = users_factories.ProFactory()
     offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(offerer=offerer)
-    offerers_factories.VirtualVenueTypeFactory()
     body = {
         "name": offerer.name,
         "siren": offerer.siren,

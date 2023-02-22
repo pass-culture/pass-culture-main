@@ -9,6 +9,7 @@ from pcapi import settings
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.external.automations import venue as venue_automations
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 
@@ -38,14 +39,14 @@ class VenueAutomationsTest:
         # excluded because of venue type:
         venue_festival = offerers_factories.VenueFactory(
             managingOfferer=offerer_validated_92_days_ago,
-            venueType=offerers_factories.VenueTypeFactory(label="Festival"),
+            venueTypeCode=offerers_models.VenueTypeCode.FESTIVAL,
             bookingEmail="venue_type_festival@example.com",
         )
         offers_factories.EventOfferFactory(venue=venue_festival, validation=OfferValidationStatus.APPROVED)
 
         venue_digital = offerers_factories.VenueFactory(
             managingOfferer=offerer_validated_92_days_ago,
-            venueType=offerers_factories.VenueTypeFactory(label="Offre numérique"),
+            venueTypeCode=offerers_models.VenueTypeCode.DIGITAL,
             isVirtual=True,
             siret=None,
             bookingEmail="venue_type_digital@example.com",

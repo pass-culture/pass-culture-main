@@ -6,7 +6,6 @@ from wtforms.form import Form
 
 from pcapi.admin.custom_views.pro_user_view import ProUserView
 from pcapi.core.history import models as history_models
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
 import pcapi.core.users.factories as users_factories
@@ -24,7 +23,6 @@ class ProUserViewTest:
     def test_pro_user_creation(self, mocked_validate_csrf_token, app):
         # Given
         bo_user = users_factories.AdminFactory(email="USER@example.com")
-        offerers_factories.VirtualVenueTypeFactory()
 
         data = dict(
             email="toto@testemail.fr",
@@ -157,7 +155,6 @@ class ProUserViewTest:
 
     def test_it_gives_a_random_password_to_user(self, app, db_session):
         # Given
-        offerers_factories.VirtualVenueTypeFactory()
         pro_user_view = ProUserView(User, db_session)
         pro_user_view_create_form = pro_user_view.get_create_form()
         data = dict(
