@@ -93,7 +93,6 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     users_models.User.query.delete()
     users_models.UserSession.query.delete()
     providers_models.Provider.query.delete()
-    offerers_models.VenueType.query.delete()
     offerers_models.VenueLabel.query.delete()
     educational_models.EducationalDeposit.query.delete()
     educational_models.EducationalInstitution.query.delete()
