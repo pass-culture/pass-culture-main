@@ -716,7 +716,6 @@ jobs:
           command: |
             dockerize -wait http://localhost/health/api -timeout 10m -wait-retry-interval 5s
             dockerize -wait http://localhost/health/database -timeout 10m -wait-retry-interval 5s
-            pc sandbox --name=testcafe
       - run:
           name: Running functional tests PRO
           command: |
