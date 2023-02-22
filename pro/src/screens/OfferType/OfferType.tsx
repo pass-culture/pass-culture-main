@@ -5,6 +5,11 @@ import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import PageTitle from 'components/PageTitle/PageTitle'
+import {
+  Events,
+  OFFER_FORM_HOMEPAGE,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import {
   INDIVIDUAL_OFFER_SUBTYPE,
@@ -18,6 +23,7 @@ import {
 } from 'core/Offers/constants'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.svg'
@@ -42,6 +48,7 @@ const OfferType = (): JSX.Element => {
   const history = useHistory()
   const location = useLocation()
   const notify = useNotification()
+  const { logEvent } = useAnalytics()
   const isDuplicateOfferSelectionActive = useActiveFeature(
     'WIP_DUPLICATE_OFFER_SELECTION'
   )
@@ -85,6 +92,12 @@ const OfferType = (): JSX.Element => {
 
   const getNextPageHref = (event: FormEvent<HTMLFormElement>) => {
     if (offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        offerType: individualOfferSubtype,
+        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        from: OFFER_FORM_HOMEPAGE,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+      })
       /* istanbul ignore next: condition will be removed when FF active in prod */
       return history.push({
         pathname: getOfferIndividualUrl({
