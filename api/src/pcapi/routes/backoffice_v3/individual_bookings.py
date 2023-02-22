@@ -194,9 +194,13 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
         flash("Impossible de valider une réservation qui n'est pas annulée", "warning")
         return _redirect_after_individual_booking_action()
 
-    bookings_api.mark_as_used_with_uncancelling(booking)
+    try:
+        bookings_api.mark_as_used_with_uncancelling(booking)
+    except sa.exc.SQLAlchemyError as exc:
+        flash(f"Une erreur s'est produite : {str(exc)}", "warning")
+    else:
+        flash(f"La réservation {booking.token} a été validée", "success")
 
-    flash(f"La réservation {booking.token} a été validée", "success")
     return _redirect_after_individual_booking_action()
 
 
@@ -213,6 +217,8 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
         flash("Impossible d'annuler une réservation remboursée", "warning")
     except bookings_exceptions.BookingIsAlreadyUsed:
         flash("Impossible d'annuler une réservation déjà utilisée", "warning")
+    except sa.exc.SQLAlchemyError as exc:
+        flash(f"Une erreur s'est produite : {str(exc)}", "warning")
     else:
         flash(f"La réservation {booking.token} a été annulée", "success")
 
