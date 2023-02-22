@@ -15,6 +15,7 @@ export interface IBooking {
   price: number
   quantity: number
   userName: string
+  priceCategoryLabel: string | null
   venueDepartmentCode?: string | null
 }
 

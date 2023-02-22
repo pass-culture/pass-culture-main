@@ -31,6 +31,7 @@ describe('src | components | Desk', () => {
     price: 13,
     quantity: 1,
     userName: 'USER',
+    priceCategoryLabel: 'mon label',
     venueDepartmentCode: '75',
   }
   const defaultProps: IDeskProps = {
