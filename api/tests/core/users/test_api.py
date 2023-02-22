@@ -783,7 +783,6 @@ class CreateProUserAndOffererTest:
     def test_offerer_auto_tagging(self):
         # Given
         gen_offerer_tags()
-        offerers_factories.VirtualVenueTypeFactory()
         user_info = ProUserCreationBodyModel(
             address="1 rue des polissons",
             city="Paris",
