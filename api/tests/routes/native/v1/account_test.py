@@ -8,7 +8,6 @@ import re
 from unittest.mock import patch
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
-import uuid
 
 from dateutil.relativedelta import relativedelta
 from freezegun.api import freeze_time
@@ -46,8 +45,6 @@ from pcapi.routes.native.v1.serialization import account as account_serializers
 from pcapi.scripts.payment.user_recredit import recredit_underage_users
 
 from tests.connectors import user_profiling_fixtures
-
-from .utils import create_user_and_test_client
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -846,87 +843,6 @@ class GetTokenExpirationTest:
 
         assert response.status_code == 200
         assert response.json["expiration"] is None
-
-
-class CulturalSurveyTest:
-    identifier = "email@example.com"
-    FROZEN_TIME = ""
-    UUID = uuid.uuid4()
-
-    @freeze_time("2018-06-01 14:44")
-    def test_user_finished_the_cultural_survey(self, app):
-        user, test_client = create_user_and_test_client(
-            app,
-            email=self.identifier,
-            needsToFillCulturalSurvey=True,
-            culturalSurveyId=None,
-            culturalSurveyFilledDate=None,
-        )
-
-        response = test_client.post(
-            "/native/v1/me/cultural_survey",
-            json={
-                "needsToFillCulturalSurvey": False,
-                "culturalSurveyId": self.UUID,
-            },
-        )
-
-        assert response.status_code == 204
-
-        user = users_models.User.query.one()
-        assert user.needsToFillCulturalSurvey == False
-        assert user.culturalSurveyId == self.UUID
-        assert user.culturalSurveyFilledDate == datetime(2018, 6, 1, 14, 44)
-
-    @freeze_time("2018-06-01 14:44")
-    def test_user_gave_up_the_cultural_survey(self, app):
-        user, test_client = create_user_and_test_client(
-            app,
-            email=self.identifier,
-            needsToFillCulturalSurvey=False,
-            culturalSurveyId=None,
-            culturalSurveyFilledDate=None,
-        )
-
-        response = test_client.post(
-            "/native/v1/me/cultural_survey",
-            json={
-                "needsToFillCulturalSurvey": False,
-                "culturalSurveyId": None,
-            },
-        )
-
-        assert response.status_code == 204
-
-        user = users_models.User.query.one()
-        assert user.needsToFillCulturalSurvey == False
-        assert user.culturalSurveyId == None
-        assert user.culturalSurveyFilledDate == None
-
-    def test_user_fills_again_the_cultural_survey(self, app):
-        user, test_client = create_user_and_test_client(
-            app,
-            email=self.identifier,
-            needsToFillCulturalSurvey=False,
-            culturalSurveyId=self.UUID,
-            culturalSurveyFilledDate=datetime(2016, 5, 1, 14, 44),
-        )
-        new_uuid = uuid.uuid4()
-
-        response = test_client.post(
-            "/native/v1/me/cultural_survey",
-            json={
-                "needsToFillCulturalSurvey": False,
-                "culturalSurveyId": new_uuid,
-            },
-        )
-
-        assert response.status_code == 204
-
-        user = users_models.User.query.one()
-        assert user.needsToFillCulturalSurvey == False
-        assert user.culturalSurveyId == new_uuid
-        assert user.culturalSurveyFilledDate > datetime(2016, 5, 1, 14, 44)
 
 
 class ResendEmailValidationTest:

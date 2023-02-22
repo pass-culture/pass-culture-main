@@ -1,7 +1,6 @@
 import datetime
 import re
 import typing
-from uuid import UUID
 
 from dateutil.relativedelta import relativedelta
 from jwt import DecodeError
@@ -41,14 +40,6 @@ class AccountRequest(BaseModel):
     token: str
     apps_flyer_user_id: str | None = None
     apps_flyer_platform: str | None = None
-
-    class Config:
-        alias_generator = to_camel
-
-
-class CulturalSurveyRequest(BaseModel):
-    needs_to_fill_cultural_survey: bool
-    cultural_survey_id: UUID | None
 
     class Config:
         alias_generator = to_camel
