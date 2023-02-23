@@ -450,7 +450,7 @@ def create_collective_offer_public(
         "otherAddress": body.offer_venue.otherAddress or "",
     }
     collective_offer = educational_models.CollectiveOffer(
-        venueId=venue.id,
+        venue=venue,
         name=body.name,
         description=body.description,
         subcategoryId=body.subcategory_id,
