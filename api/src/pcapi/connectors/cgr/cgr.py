@@ -1,4 +1,5 @@
 import json
+import logging
 
 from pydantic import parse_obj_as
 from zeep import Client
@@ -9,6 +10,10 @@ from pcapi import settings
 from pcapi.connectors.cgr.exceptions import CGRAPIException
 from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.providers import models as providers_models
+from pcapi.utils import requests
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_cgr_service_proxy(cinema_url: str) -> ServiceProxy:
@@ -27,9 +32,21 @@ def get_seances_pass_culture(
     cinema_url = cinema_details.cinemaUrl or settings.CGR_API_URL
     service = get_cgr_service_proxy(cinema_url)
     response = service.GetSeancesPassCulture(User=user, mdp=password)
+    # TODO(yacine-pc, 2023-02-23): add a log external service called with request duration
     response = json.loads(response)
     _check_response_is_ok(response, "GetSeancesPassCulture")
     return parse_obj_as(cgr_serializers.GetSancesPassCultureResponse, response)
+
+
+def get_movie_poster_from_api(image_url: str) -> bytes:
+    api_response = requests.get(image_url)
+
+    if api_response.status_code != 200:
+        raise CGRAPIException(
+            f"Error getting CGR API movie poster {image_url}" f" with code {api_response.status_code}"
+        )
+
+    return api_response.content
 
 
 def _check_response_is_ok(response: dict, resource: str) -> None:

@@ -4,6 +4,7 @@ from typing import Callable
 from urllib3 import exceptions as urllib3_exceptions
 
 import pcapi.connectors.notion as notion_connector
+from pcapi.core.providers.constants import CINEMA_PROVIDER_NAMES
 from pcapi.core.providers.models import VenueProvider
 from pcapi.infrastructure.repository.stock_provider import provider_api
 import pcapi.local_providers
@@ -58,11 +59,13 @@ def synchronize_venue_provider(venue_provider: VenueProvider, limit: int | None 
         synchronize_provider_api.synchronize_venue_provider(venue_provider)
 
     else:
-        assert venue_provider.provider.localClass in [
-            "AllocineStocks",
-            "CDSStocks",
-            "BoostStocks",
-        ], "Only AllocineStocks, CDSStocks or BoostStocks should reach this code"
+        assert (
+            venue_provider.provider.localClass
+            in [
+                "AllocineStocks",
+            ]
+            + CINEMA_PROVIDER_NAMES
+        ), f"Only {', '.join(CINEMA_PROVIDER_NAMES)} or AllocineStocks should reach this code"
         provider_class = get_local_provider_class_by_name(venue_provider.provider.localClass)
 
         logger.info(
