@@ -409,6 +409,10 @@ def _cancel_bookings_of_user_on_requested_account_suspension(
     bookings_to_cancel = bookings_models.Booking.query.filter(
         bookings_models.Booking.userId == user.id,
         bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
+        sa.or_(
+            datetime.datetime.utcnow() < bookings_models.Booking.cancellationLimitDate,
+            bookings_models.Booking.cancellationLimitDate == None,
+        ),
     ).all()
 
     cancelled_bookings_count = 0
