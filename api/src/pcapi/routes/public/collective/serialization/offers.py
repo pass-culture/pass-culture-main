@@ -10,6 +10,7 @@ from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.subscription.phone_validation.exceptions import InvalidPhoneNumber
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import collective_offers_serialize
@@ -128,7 +129,18 @@ def validate_students(students: list[str] | None) -> list[StudentLevels]:
         except AttributeError:
             permitted = '", "'.join(StudentLevels.__members__.keys())
             raise ValueError(f'Value is not a valid enumeration member; permitted: ["{permitted}"]')
-    return output
+
+    results = output
+    if not FeatureToggle.WIP_ADD_CLG_6_5_COLLECTIVE_OFFER.is_active():
+        results = []
+        for student in output:
+            if student in (StudentLevels.COLLEGE5, StudentLevels.COLLEGE6):
+                continue
+            results.append(student)
+        if not results:
+            raise ValueError("Les offres EAC ne sont pas encore ouvertes aux 6eme et 5eme.")
+
+    return results
 
 
 def validate_image_file(image_file: str | None) -> str | None:
