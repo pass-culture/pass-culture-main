@@ -1,7 +1,7 @@
 import { IStockEventFormValues } from 'components/StockEventForm'
 import { stockEventFactory } from 'components/StockEventForm/stockEventFactory'
 
-import { hasChangesOnStockWithBookings } from '../StocksEvent'
+import { hasChangesOnStockWithBookings } from '../StocksEventEdition'
 
 describe('hasChangesOnStockWithBookings', () => {
   it('should return false when no booking quantity', () => {
