@@ -244,7 +244,7 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
 
         assert booking_event.status is BookingStatus.CANCELLED
 
-    def should_cancel_event_when_cancellation_limit_date_is_past(self):
+    def should_not_cancel_event_when_cancellation_limit_date_is_past(self):
         """
         ---[        cancellable       ][         not cancellable        ]-->
         ---|---------------------------|--------------------------------|-->
@@ -267,7 +267,7 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
 
         users_api.suspend_account(booking_event.user, reason, author)
 
-        assert booking_event.status is BookingStatus.CANCELLED
+        assert booking_event.status is BookingStatus.CONFIRMED
 
 
 @pytest.mark.usefixtures("db_session")
@@ -316,7 +316,7 @@ class SuspendAccountTest:
         assert _datetime_within_last_5sec(user.suspension_date)
 
         assert cancellable_booking.status is BookingStatus.CANCELLED
-        assert confirmed_booking.status is BookingStatus.CANCELLED
+        assert confirmed_booking.status is BookingStatus.CONFIRMED
         assert used_booking.status is BookingStatus.USED
 
         history = history_models.ActionHistory.query.filter_by(userId=user.id).all()
