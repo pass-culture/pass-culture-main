@@ -184,7 +184,7 @@ describe('Summary', () => {
           externalTicketOfficeUrl: 'https://grand-public-url.example.com',
           bookingEmail: 'booking@example.com',
         },
-        individualStockFactory({ price: 0 }),
+        individualStockFactory({ price: 0, quantity: null }),
         individualOfferVenueFactory(
           {
             name: 'ma venue',

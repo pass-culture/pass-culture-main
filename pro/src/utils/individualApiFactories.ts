@@ -5,6 +5,7 @@ import {
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { OfferStatus } from 'apiClient/v2'
+import { IStocksEvent } from 'components/StocksEventList/StocksEventList'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
 import {
@@ -100,6 +101,7 @@ export const individualStockFactory = (
     isEventExpired: false,
     isSoftDeleted: false,
     hasActivationCode: false,
+    quantity: 18,
     activationCodesExpirationDatetime: null,
     activationCodes: [],
     ...customStock,
@@ -180,3 +182,15 @@ export const individualOfferSubCategoryFactory = (
   isSelectable: true,
   ...customOfferSubCategory,
 })
+
+export const individualStockEventListFactory = (
+  customStock: Partial<IStocksEvent> = {}
+): IStocksEvent => {
+  return {
+    beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
+    bookingLimitDatetime: new Date('2021-09-15T12:00:00Z').toISOString(),
+    priceCategoryId: 2,
+    quantity: 18,
+    ...customStock,
+  }
+}
