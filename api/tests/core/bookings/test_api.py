@@ -836,37 +836,37 @@ class MarkAsUnusedTest:
 
 
 @pytest.mark.parametrize(
-    "booking_date",
+    "booking_creation_date",
     [datetime(2020, 7, 14, 15, 30), datetime(2020, 10, 25, 1, 45), datetime.utcnow()],
     ids=["14 Jul", "Daylight Saving Switch", "Now"],
 )
 @pytest.mark.usefixtures("db_session")
 class ComputeCancellationDateTest:
-    def test_returns_none_if_no_event_beginning(self, booking_date):
+    def test_returns_none_if_no_event_beginning(self, booking_creation_date):
         event_beginning = None
-        booking_creation = booking_date
-        assert api.compute_cancellation_limit_date(event_beginning, booking_creation) is None
+        assert api.compute_cancellation_limit_date(event_beginning, booking_creation_date) is None
 
-    def test_returns_creation_date_if_event_begins_too_soon(self, booking_date):
-        event_date_too_close_to_cancel_booking = booking_date + timedelta(days=1)
-        booking_creation = booking_date
+    def test_returns_creation_date_if_event_begins_too_soon(self, booking_creation_date):
+        event_date_too_close_to_cancel_booking = booking_creation_date + timedelta(days=1)
         assert (
-            api.compute_cancellation_limit_date(event_date_too_close_to_cancel_booking, booking_creation)
-            == booking_creation
+            api.compute_cancellation_limit_date(event_date_too_close_to_cancel_booking, booking_creation_date)
+            == booking_creation_date
         )
 
-    def test_returns_two_days_after_booking_creation_if_event_begins_in_more_than_four_days(self, booking_date):
-        event_date_more_ten_days_from_now = booking_date + timedelta(days=6)
-        booking_creation = booking_date
+    def test_returns_two_days_after_booking_creation_if_event_begins_in_more_than_four_days(
+        self, booking_creation_date
+    ):
+        event_date_more_ten_days_from_now = booking_creation_date + timedelta(days=6)
         assert api.compute_cancellation_limit_date(
-            event_date_more_ten_days_from_now, booking_creation
-        ) == booking_creation + timedelta(days=2)
+            event_date_more_ten_days_from_now, booking_creation_date
+        ) == booking_creation_date + timedelta(days=2)
 
-    def test_returns_two_days_before_event_if_event_begins_between_two_and_four_days_from_now(self, booking_date):
-        event_date_four_days_from_now = booking_date + timedelta(days=4)
-        booking_creation = booking_date
+    def test_returns_two_days_before_event_if_event_begins_between_two_and_four_days_from_now(
+        self, booking_creation_date
+    ):
+        event_date_four_days_from_now = booking_creation_date + timedelta(days=4)
         assert api.compute_cancellation_limit_date(
-            event_date_four_days_from_now, booking_creation
+            event_date_four_days_from_now, booking_creation_date
         ) == event_date_four_days_from_now - timedelta(days=2)
 
 
