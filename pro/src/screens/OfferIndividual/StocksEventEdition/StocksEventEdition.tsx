@@ -41,10 +41,6 @@ import { logTo } from '../utils/logTo'
 import { upsertStocksEventAdapter } from './adapters'
 import { StockFormList } from './StockFormList'
 
-export interface IStocksEventProps {
-  offer: IOfferIndividual
-}
-
 // remove price when removing WIP_ENABLE_MULTI_PRICE_STOCKS
 export const hasChangesOnStockWithBookings = (
   values: { stocks: IStockEventFormValues[] },
@@ -108,7 +104,13 @@ const getPriceCategoryOptions = (offer: IOfferIndividual): SelectOption[] => {
   )
 }
 
-const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
+export interface IStocksEventEditionProps {
+  offer: IOfferIndividual
+}
+
+const StocksEventEdition = ({
+  offer,
+}: IStocksEventEditionProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
     getOfferIndividualUrl({
@@ -437,4 +439,4 @@ const StocksEvent = ({ offer }: IStocksEventProps): JSX.Element => {
   )
 }
 
-export default StocksEvent
+export default StocksEventEdition

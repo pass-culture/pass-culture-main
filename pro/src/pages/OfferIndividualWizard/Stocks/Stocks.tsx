@@ -4,16 +4,20 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
-import { useNavigate } from 'hooks'
+import { useNavigate, useOfferWizardMode } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import {
-  StocksEvent as StocksEventScreen,
-  StocksThing as StocksThingScreen,
-  Template as WizardTemplate,
+  StocksEventEdition,
+  StocksThing,
+  Template,
 } from 'screens/OfferIndividual'
+import { StocksEventCreation } from 'screens/OfferIndividual/StocksEventCreation/StocksEventCreation'
 
 const Stocks = (): JSX.Element | null => {
   const { offer } = useOfferIndividualContext()
   const navigate = useNavigate()
+  const mode = useOfferWizardMode()
+  const isRecurrenceActive = useActiveFeature('WIP_RECURRENCE')
 
   // if we've no offer, we are redirect from parent route.
   /* istanbul ignore next: DEBT, TO FIX */
@@ -28,13 +32,17 @@ const Stocks = (): JSX.Element | null => {
   }
 
   return (
-    <WizardTemplate>
+    <Template>
       {offer.isEvent ? (
-        <StocksEventScreen offer={offer} />
+        isRecurrenceActive && mode !== OFFER_WIZARD_MODE.EDITION ? (
+          <StocksEventCreation offer={offer} />
+        ) : (
+          <StocksEventEdition offer={offer} />
+        )
       ) : (
-        <StocksThingScreen offer={offer} />
+        <StocksThing offer={offer} />
       )}
-    </WizardTemplate>
+    </Template>
   )
 }
 

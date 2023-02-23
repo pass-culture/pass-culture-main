@@ -91,7 +91,7 @@ const renderStockEventScreen = () => {
   )
 }
 
-describe('screens:StocksEvent:Edition', () => {
+describe('screens:StocksEventEdition', () => {
   let apiOffer: GetIndividualOfferResponseModel
 
   beforeEach(() => {
