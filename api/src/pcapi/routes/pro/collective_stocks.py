@@ -98,3 +98,8 @@ def edit_collective_stock(
             {"educationalStock": ["La date limite de confirmation ne peut être fixée après la date de l évènement"]},
             status_code=400,
         )
+    except educational_exceptions.PriceRequesteCantBedHigherThanActualPrice:
+        raise ApiErrors(
+            {"educationalStock": "Le prix demandé ne peux être supérieur aux prix actuel si l'offre a été confirmée."},
+            status_code=403,
+        )

@@ -105,6 +105,11 @@ def check_collective_stock_is_editable(stock: models.CollectiveStock) -> None:
             break
 
 
+def check_if_edition_lower_price_possible(stock: models.CollectiveStock, price: float) -> None:
+    if price > float(stock.price):
+        raise exceptions.PriceRequesteCantBedHigherThanActualPrice()
+
+
 def check_collective_booking_status_pending(booking: models.CollectiveBooking) -> None:
     if booking.status is not models.CollectiveBookingStatus.PENDING:
         raise exceptions.CollectiveOfferStockBookedAndBookingNotPending(booking.status, booking.id)
