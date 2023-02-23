@@ -69,6 +69,10 @@ class StockDoesNotExist(ApiErrors):
     status_code = 400
 
 
+class PriceRequesteCantBedHigherThanActualPrice(Exception):
+    pass
+
+
 class CollectiveOfferStockBookedAndBookingNotPending(Exception):
     def __init__(self, status: models.CollectiveBookingStatus, booking_id: int) -> None:
         self.booking_status = status
