@@ -506,6 +506,9 @@ class AlgoliaBackend(base.SearchBackend):
                 if collective_offer.institution
                 else "all",
                 "interventionArea": collective_offer.interventionArea,
+                "schoolInterventionArea": collective_offer.interventionArea
+                if collective_offer.offerVenue.get("addressType") == "school"
+                else None,
                 "eventAddressType": collective_offer.offerVenue.get("addressType"),
                 "beginningDatetime": beginning_datetime,
             },
@@ -539,6 +542,9 @@ class AlgoliaBackend(base.SearchBackend):
                 "domains": [domain.id for domain in collective_offer_template.domains],
                 "educationalInstitutionUAICode": "all",
                 "interventionArea": collective_offer_template.interventionArea,
+                "schoolInterventionArea": collective_offer_template.interventionArea
+                if collective_offer_template.offerVenue.get("addressType") == "school"
+                else None,
                 "eventAddressType": collective_offer_template.offerVenue.get("addressType"),
                 "beginningDatetime": date_created,  # this hack is needed to make the order keeps working
             },
