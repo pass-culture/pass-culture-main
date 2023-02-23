@@ -198,7 +198,7 @@ def post_collective_offer_public(
     except offerers_exceptions.VenueNotFoundException:
         raise ApiErrors(
             errors={
-                "venueId": ["Ce lieu n'à pas été trouvée."],
+                "venueId": ["Ce lieu n'à pas été trouvé."],
             },
             status_code=404,
         )
@@ -218,8 +218,13 @@ def post_collective_offer_public(
         )
     except educational_exceptions.EducationalInstitutionIsNotActive:
         raise ApiErrors(
-            errors={"global": ["l'institution n'est pas active"]},
+            errors={"educationalInstitutionId": ["L'établissement scolaire n'est pas actif."]},
             status_code=403,
+        )
+    except educational_exceptions.EducationalDomainsNotFound:
+        raise ApiErrors(
+            errors={"domains": ["Domaine scolaire non trouvé."]},
+            status_code=404,
         )
 
     if image_as_bytes and body.image_credit is not None:
