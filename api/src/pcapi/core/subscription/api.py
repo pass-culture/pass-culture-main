@@ -845,7 +845,26 @@ def get_subscription_steps_to_display(user: users_models.User) -> list[models.Su
         steps.append(models.SubscriptionStep.PHONE_VALIDATION)
 
     steps.append(models.SubscriptionStep.PROFILE_COMPLETION)
-    steps.append(models.SubscriptionStep.IDENTITY_CHECK)
+
+    if not can_skip_identity_check_step(user):
+        steps.append(models.SubscriptionStep.IDENTITY_CHECK)
+
     steps.append(models.SubscriptionStep.HONOR_STATEMENT)
 
     return steps
+
+
+def can_skip_identity_check_step(user: users_models.User) -> bool:
+    if not user.has_underage_beneficiary_role:
+        return False
+
+    fraud_check = get_relevant_identity_fraud_check(user, users_models.EligibilityType.AGE18)
+    if not fraud_check:
+        return False
+
+    if (
+        fraud_check.status == fraud_models.FraudCheckStatus.OK
+        and fraud_check.type in models.VALID_IDENTITY_CHECK_TYPES_AFTER_UNDERAGE_DEPOSIT_EXPIRATION
+    ):
+        return True
+    return False

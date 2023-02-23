@@ -643,6 +643,49 @@ class NextStepTest:
             "honor-statement",
         ]
 
+    def should_not_contain_id_check_in_steps_if_ubble_or_dms_done_for_underage(self, client):
+        user = users_factories.UnderageBeneficiaryFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=18, months=5),
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.json["subscriptionStepsToDisplay"] == [
+            "phone-validation",
+            "profile-completion",
+            "honor-statement",
+        ]
+
+    def should_contain_id_check_in_steps_if_educonnect_done_for_underage(self, client):
+        user = users_factories.ExUnderageBeneficiaryFactory()
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            dateCreated=datetime.datetime.utcnow() - relativedelta(years=1),
+        )
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.json["subscriptionStepsToDisplay"] == [
+            "phone-validation",
+            "profile-completion",
+            "identity-check",
+            "honor-statement",
+        ]
+
 
 class UpdateProfileTest:
     @override_features(ENABLE_UBBLE=True)
