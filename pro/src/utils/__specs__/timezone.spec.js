@@ -15,7 +15,7 @@ describe('formatLocalTimeDateString', () => {
     )
 
     // then
-    expect(formattedDate).toBe('Thursday 28 February 2019, 22:59')
+    expect(formattedDate).toBe('jeudi 28 février 2019, 22:59')
   })
 
   it('should return a formatted date with Cayenne departement code and specified format', () => {
@@ -32,7 +32,7 @@ describe('formatLocalTimeDateString', () => {
     )
 
     // then
-    expect(formattedDate).toBe('Thursday 28 February 2019, 18:59')
+    expect(formattedDate).toBe('jeudi 28 février 2019, 18:59')
   })
 
   it('should return a formatted date with Reunion departement code and default format', () => {
@@ -44,7 +44,7 @@ describe('formatLocalTimeDateString', () => {
     const formattedDate = formatLocalTimeDateString(date, departementCode)
 
     // then
-    expect(formattedDate).toBe('Friday 01/03/2019 à 01:59')
+    expect(formattedDate).toBe('vendredi 01/03/2019 à 01:59')
   })
 })
 

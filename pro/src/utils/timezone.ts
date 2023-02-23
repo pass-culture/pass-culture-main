@@ -1,3 +1,4 @@
+import { fr } from 'date-fns/locale'
 import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
 
 export const formatLocalTimeDateString = (
@@ -11,6 +12,7 @@ export const formatLocalTimeDateString = (
   )
   return format(zonedDate, dateFormat, {
     timeZone: getDepartmentTimezone(departementCode),
+    locale: fr,
   })
 }
 
