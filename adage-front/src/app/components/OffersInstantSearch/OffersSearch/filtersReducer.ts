@@ -151,7 +151,7 @@ export const filtersReducer = (
         students: [],
         domains: [],
         onlyInMySchool: false,
-        onlyInMyDpt: true,
+        onlyInMyDpt: false,
       }
     case 'POPULATE_ONLY_IN_MY_SCHOOL':
       return {
