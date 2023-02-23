@@ -12,10 +12,10 @@ from pcapi.utils.human_ids import humanize
 class Returns200Test:
     def test_basics(self, client):
         # Given
+        template = educational_factories.CollectiveOfferTemplateFactory()
         stock = educational_factories.CollectiveStockFactory()
         offer = educational_factories.CollectiveOfferFactory(
-            collectiveStock=stock,
-            teacher=educational_factories.EducationalRedactorFactory(),
+            collectiveStock=stock, teacher=educational_factories.EducationalRedactorFactory(), templateId=template.id
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -45,6 +45,7 @@ class Returns200Test:
             "lastName": offer.teacher.lastName,
             "civility": offer.teacher.civility,
         }
+        assert response_json["templateId"] == humanize(template.id)
 
     def test_sold_out(self, client):
         # Given
