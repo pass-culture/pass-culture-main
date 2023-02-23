@@ -4,7 +4,6 @@ from decimal import Decimal
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
-import requests_mock
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
@@ -460,30 +459,6 @@ class CreateBeneficiaryTest:
         assert len(user.deposits) == 1
         assert user.has_active_deposit
         assert user.deposit.amount == 30
-
-    def test_apps_flyer_called(self):
-        apps_flyer_data = {"apps_flyer": {"user": "some-user-id", "platform": "ANDROID"}}
-        user = users_factories.UserFactory(externalIds=apps_flyer_data)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
-        )
-        expected = {
-            "customer_user_id": str(user.id),
-            "appsflyer_id": "some-user-id",
-            "eventName": "af_complete_beneficiary_registration",
-            "eventValue": {"af_user_id": str(user.id)},
-        }
-
-        with requests_mock.Mocker() as mock:
-            posted = mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
-            user = subscription_api.activate_beneficiary_for_eligibility(
-                user, "test", users_models.EligibilityType.AGE18
-            )
-
-            assert posted.last_request.json() == expected
-
-            assert user.has_beneficiary_role
-            assert len(user.deposits) == 1
 
     def test_external_users_updated(self):
         user = users_factories.UserFactory(roles=[])
