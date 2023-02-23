@@ -608,6 +608,40 @@ class NextStepTest:
         assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"] is None
 
+    def should_contain_all_subscription_steps_for_18yo_user(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=18, months=5),
+            isEmailValidated=True,
+        )
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json["subscriptionStepsToDisplay"] == [
+            "phone-validation",
+            "profile-completion",
+            "identity-check",
+            "honor-statement",
+        ]
+
+    def should_contain_all_subscription_steps_for_15yo_user(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=15, months=5),
+            isEmailValidated=True,
+        )
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json["subscriptionStepsToDisplay"] == [
+            "profile-completion",
+            "identity-check",
+            "honor-statement",
+        ]
 
 
 class UpdateProfileTest:
