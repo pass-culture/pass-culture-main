@@ -1,6 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { IOfferIndividual } from 'core/Offers/types'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
+
+import { HelpSection } from './HelpSection/HelpSection'
+import styles from './StocksEventCreation.module.scss'
 
 export interface IStocksEventCreationProps {
   offer: IOfferIndividual
@@ -9,5 +14,21 @@ export interface IStocksEventCreationProps {
 export const StocksEventCreation = ({
   offer,
 }: IStocksEventCreationProps): JSX.Element => {
-  return <div>Récurrence</div>
+  const [stocks] = useState(offer.stocks)
+
+  return (
+    <div className={styles['container']}>
+      {stocks.length === 0 && (
+        <HelpSection className={styles['help-section']} />
+      )}
+
+      <Button
+        variant={ButtonVariant.PRIMARY}
+        onClick={() => alert('Modale de recurrence !')}
+        type="button"
+      >
+        Ajouter une récurrence
+      </Button>
+    </div>
+  )
 }
