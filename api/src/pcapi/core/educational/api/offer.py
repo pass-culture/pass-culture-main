@@ -426,6 +426,8 @@ def create_collective_offer_public(
     validation.validate_offer_venue(body.offer_venue)
 
     educational_domains = educational_repository.get_educational_domains_from_ids(body.domains)
+    if not len(educational_domains) == len(body.domains):
+        raise exceptions.EducationalDomainsNotFound()
 
     if body.educational_institution_id:
         institution = educational_models.EducationalInstitution.query.filter_by(

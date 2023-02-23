@@ -487,3 +487,32 @@ class CollectiveOffersPublicPatchOfferTest:
         assert response.status_code == 200
         assert offer.hasImage == False
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
+
+    def test_patch_offer_invalid_domains(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        domain = educational_factories.EducationalDomainFactory()
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__imageCredit="pouet",
+            collectiveOffer__imageId="123456789",
+            collectiveOffer__venue=venue,
+            collectiveOffer__domains=[domain],
+        )
+
+        payload = {
+            "domains": [0],
+        }
+
+        # When
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+            )
+
+        # Then
+        assert response.status_code == 404
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        assert offer.domains[0].id == domain.id
