@@ -3,7 +3,9 @@ import './AddVenueProviderButton.scss'
 import PropTypes from 'prop-types'
 import React, { useCallback, useMemo, useState } from 'react'
 
-import { ReactComponent as SynchronizeOffers } from 'icons/ico-more-circle.svg'
+import { MoreCircleIcon } from 'icons'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import Select from 'ui-kit/form_raw/Select'
 import { sortByDisplayName } from 'utils/strings'
 
@@ -55,15 +57,15 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
 
   const AddButton = (
     <div className="has-text-centered">
-      <button
-        className="secondary-button"
+      <Button
         id="add-venue-provider-btn"
         onClick={setCreationMode}
         type="button"
+        variant={ButtonVariant.SECONDARY}
+        Icon={MoreCircleIcon}
       >
-        <SynchronizeOffers />
-        <span>Synchroniser des offres</span>
-      </button>
+        Synchroniser des offres
+      </Button>
     </div>
   )
 

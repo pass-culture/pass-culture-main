@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import { IOfferIndividual } from 'core/Offers/types'
+import { MoreCircleIcon } from 'icons'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -22,7 +23,11 @@ export const StocksEventCreation = ({
         <HelpSection className={styles['help-section']} />
       )}
 
-      <Button variant={ButtonVariant.PRIMARY} type="button">
+      <Button
+        variant={ButtonVariant.PRIMARY}
+        type="button"
+        Icon={MoreCircleIcon}
+      >
         Ajouter une récurrence
       </Button>
     </div>
