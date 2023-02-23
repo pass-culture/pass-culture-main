@@ -50,6 +50,7 @@ class ReimbursementDetailsTest:
             booking__quantity=2,
             booking__dateUsed=datetime(2022, 6, 18),
             booking__stock__offer__venue__reimbursement_point=reimbursement_point,
+            booking__priceCategoryLabel="Tarif unique",
         )
         finance_factories.PaymentStatusFactory(
             payment=payment,
@@ -98,6 +99,7 @@ class ReimbursementDetailsTest:
         assert row[next(row_number)] == booking.token
         assert row[next(row_number)] == booking.dateUsed
         # reimbursement
+        assert row[next(row_number)] == booking.priceCategoryLabel
         assert row[next(row_number)] == "21,00"
         assert row[next(row_number)] == "100 %"
         assert row[next(row_number)] == "21,00"
@@ -129,6 +131,7 @@ class ReimbursementDetailsTest:
         assert row[next(row_number)] == booking.token
         assert row[next(row_number)] == booking.dateUsed
         # reimbursement
+        assert row[next(row_number)] == booking.priceCategoryLabel
         assert row[next(row_number)] == "21,00"
         assert row[next(row_number)] == f"{int(payment.reimbursementRate * 100)}%"
         assert row[next(row_number)] == "21,00"
@@ -171,11 +174,11 @@ class ReimbursementDetailsTest:
 
         # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        assert row[20] == "12,34 %"
+        assert row[21] == "12,34 %"
 
         # legacy payment data
         row = ReimbursementDetails(payments_info[1]).as_csv_row()
-        assert row[20] == ""
+        assert row[21] == ""
 
 
 @pytest.mark.usefixtures("db_session")
@@ -226,15 +229,15 @@ def test_generate_reimbursement_details_csv() -> None:
     rows = csv.splitlines()
     assert (
         rows[0]
-        == '''"Réservations concernées par le remboursement";"Date du justificatif";"N° du justificatif";"N° de virement";"Point de remboursement";"Adresse du point de remboursement";"SIRET du point de remboursement";"IBAN";"Raison sociale du lieu";"Adresse du lieu";"SIRET du lieu";"Nom de l'offre";"N° de réservation (offre collective)";"Nom (offre collective)";"Prénom (offre collective)";"Nom de l'établissement (offre collective)";"Date de l'évènement (offre collective)";"Contremarque";"Date de validation de la réservation";"Montant de la réservation";"Barème";"Montant remboursé";"Type d'offre"'''
+        == '''"Réservations concernées par le remboursement";"Date du justificatif";"N° du justificatif";"N° de virement";"Point de remboursement";"Adresse du point de remboursement";"SIRET du point de remboursement";"IBAN";"Raison sociale du lieu";"Adresse du lieu";"SIRET du lieu";"Nom de l'offre";"N° de réservation (offre collective)";"Nom (offre collective)";"Prénom (offre collective)";"Nom de l'établissement (offre collective)";"Date de l'évènement (offre collective)";"Contremarque";"Date de validation de la réservation";"Intitulé du tarif";"Montant de la réservation";"Barème";"Montant remboursé";"Type d'offre"'''
     )
     assert (  # new pricing+cashflow data
         rows[1]
-        == f'''"Validées et remboursables sur juin : 2nde quinzaine";"{invoice_date_as_str}";"F220000001";"VIR1";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100 %";"21,00";"offre grand public"'''
+        == f'''"Validées et remboursables sur juin : 2nde quinzaine";"{invoice_date_as_str}";"F220000001";"VIR1";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"";"21,00";"100 %";"21,00";"offre grand public"'''
     )
     assert (  # legacy payment data
         rows[2]
-        == '''"Validées et remboursables sur juin : 2nde quinzaine";"";"";"";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100%";"21,00";"offre grand public"'''
+        == '''"Validées et remboursables sur juin : 2nde quinzaine";"";"";"";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"";"21,00";"100%";"21,00";"offre grand public"'''
     )
 
 
@@ -354,6 +357,7 @@ class CollectiveReimbursementDetailsTest:
             ),
             None,
             booking3.dateUsed,
+            None,
             "100,00",
             "100 %",
             "100,00",
@@ -422,6 +426,7 @@ class CollectiveReimbursementDetailsTest:
         assert row[next(row_number)] is None
         assert row[next(row_number)] == booking.dateUsed
         # reimbursement
+        assert row[next(row_number)] is None
         assert row[next(row_number)] == "21,00"
         assert row[next(row_number)] == "100 %"
         assert row[next(row_number)] == "21,00"
