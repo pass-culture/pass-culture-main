@@ -35,13 +35,20 @@ export const populateFacetFilters = ({
   const updatedFilters: Facets = []
   const filtersKeys: string[] = []
 
-  const filteredDepartments: string[] = flatMap(
-    departments,
-    (department: Option<string>) => [
+  let filteredDepartments: string[] = []
+  if (onlyInMyDpt || onlyInMySchool) {
+    filteredDepartments = departments.flatMap(department => [
+      ...(onlyInMyDpt ? [`venue.departmentCode:${department.value}`] : []),
+      ...(onlyInMySchool
+        ? [`offer.schoolInterventionArea:${department.value}`]
+        : []),
+    ])
+  } else {
+    filteredDepartments = departments.flatMap(department => [
       `venue.departmentCode:${department.value}`,
-      ...(onlyInMyDpt ? [] : [`offer.interventionArea:${department.value}`]),
-    ]
-  )
+      `offer.interventionArea:${department.value}`,
+    ])
+  }
 
   const filteredCategories: string[] = flatMap(
     categories,
@@ -62,8 +69,9 @@ export const populateFacetFilters = ({
 
   if (filteredDepartments.length > 0) {
     filtersKeys.push('departments')
-    if (!onlyInMyDpt) {
+    if (onlyInMySchool) {
       filtersKeys.push('interventionArea')
+      filtersKeys.push('mySchool')
     }
 
     updatedFilters.push(filteredDepartments)
@@ -96,11 +104,6 @@ export const populateFacetFilters = ({
     updatedFilters.push(
       uai.map(uaiCode => `offer.educationalInstitutionUAICode:${uaiCode}`)
     )
-  }
-
-  if (onlyInMySchool) {
-    filtersKeys.push('mySchool')
-    updatedFilters.push('offer.eventAddressType:school')
   }
 
   return {
