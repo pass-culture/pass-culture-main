@@ -10,6 +10,7 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.api.offer import notify_educational_redactor_on_collective_offer_or_stock_edit
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offers import validation as offer_validation
 from pcapi.core.users.models import User
 from pcapi.models import db
@@ -82,32 +83,46 @@ def edit_collective_stock(
     if booking_limit is None:
         check_booking_limit_datetime = stock.bookingLimitDatetime
 
-    offer_validation.check_booking_limit_datetime(stock, check_beginning, check_booking_limit_datetime)
-
-    # due to check_booking_limit_datetime the only reason beginning < booking_limit_dt is when they are on the same day
-    # in the venue timezone
-    if beginning is not None and beginning < updatable_fields["bookingLimitDatetime"]:
-        updatable_fields["bookingLimitDatetime"] = updatable_fields["beginningDatetime"]
-
-    collective_stock_unique_booking = educational_models.CollectiveBooking.query.filter(
+    current_booking = educational_models.CollectiveBooking.query.filter(
         educational_models.CollectiveBooking.collectiveStockId == stock.id,
         sa.sql.elements.not_(
             educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CANCELLED
         ),
     ).one_or_none()
-    if collective_stock_unique_booking:
-        validation.check_collective_booking_status_pending(collective_stock_unique_booking)
 
-        collective_stock_unique_booking.confirmationLimitDate = updatable_fields["bookingLimitDatetime"]
+    if "beginningDatetime" not in stock_data and "bookingLimitDatetime" not in stock_data:
+        price = updatable_fields.get("price")
+        if current_booking and current_booking.status == CollectiveBookingStatus.USED:
+            last_edition_date = current_booking.dateUsed + datetime.timedelta(days=2)
+            if last_edition_date > datetime.datetime.utcnow() and price:
+                validation.check_if_edition_lower_price_possible(stock, price)
+        elif current_booking and current_booking.status == CollectiveBookingStatus.CONFIRMED:
+            if price is not None:
+                validation.check_if_edition_lower_price_possible(stock, price)
+        else:
+            if current_booking:
+                validation.check_collective_booking_status_pending(current_booking)
+            validation.check_collective_stock_is_editable(stock)
+    else:
+        validation.check_collective_stock_is_editable(stock)
+        offer_validation.check_booking_limit_datetime(stock, check_beginning, check_booking_limit_datetime)
+        if current_booking:
+            validation.check_collective_booking_status_pending(current_booking)
+
+    if current_booking:
+        current_booking.confirmationLimitDate = updatable_fields["bookingLimitDatetime"]
 
         if beginning:
-            _update_educational_booking_cancellation_limit_date(collective_stock_unique_booking, beginning)
-            _update_educational_booking_educational_year_id(collective_stock_unique_booking, beginning)
+            _update_educational_booking_cancellation_limit_date(current_booking, beginning)
+            _update_educational_booking_educational_year_id(current_booking, beginning)
 
         if stock_data.get("price"):
-            collective_stock_unique_booking.amount = stock_data.get("price")
+            current_booking.amount = stock_data.get("price")
 
-    validation.check_collective_stock_is_editable(stock)
+    # due to check_booking_limit_datetime the only reason beginning < booking_limit_dt is when they are on the same day
+    # in the venue timezone
+    if beginning is not None and beginning < updatable_fields["bookingLimitDatetime"]:
+        updatable_fields["bookingLimitDatetime"] = updatable_fields["beginningDatetime"]
 
     with transaction():
         stock = educational_repository.get_and_lock_collective_stock(stock_id=stock.id)
