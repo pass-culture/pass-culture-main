@@ -763,11 +763,16 @@ def test_public_api(client):
                             "nullable": True,
                             "title": "SubscriptionMessage",
                         },
+                        "subscriptionStepsToDisplay": {
+                            "items": {"$ref": "#/components/schemas/SubscriptionStep"},
+                            "type": "array",
+                        },
                     },
                     "required": [
                         "stepperIncludesPhoneValidation",
                         "allowedIdentityCheckMethods",
                         "hasIdentityCheckPending",
+                        "subscriptionStepsToDisplay",
                     ],
                     "title": "NextSubscriptionStepResponse",
                     "type": "object",
