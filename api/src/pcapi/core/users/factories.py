@@ -289,6 +289,57 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
         return DepositGrantFactory(user=obj, **kwargs, type=finance_models.DepositType.GRANT_15_17)
 
 
+class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
+    class Params:
+        subscription_age = 18
+
+    @factory.post_generation
+    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        **kwargs: typing.Any,
+    ) -> fraud_models.BeneficiaryFraudCheck | None:
+        import pcapi.core.fraud.factories as fraud_factories
+
+        if not create:
+            return None
+
+        return fraud_factories.BeneficiaryFraudCheckFactory(
+            user=obj,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            resultContent=fraud_factories.EduconnectContentFactory(
+                first_name=obj.firstName,
+                last_name=obj.lastName,
+                birth_date=obj.dateOfBirth.date(),
+                ine_hash=obj.ineHash or "".join(random.choices(string.ascii_lowercase + string.digits, k=32)),
+                registration_datetime=obj.dateCreated,
+            ),
+            eligibilityType=models.EligibilityType.UNDERAGE,
+        )
+
+    @factory.post_generation
+    def deposit(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: finance_models.Deposit | None,
+        **kwargs: typing.Any,
+    ) -> finance_models.Deposit | None:
+        if not create:
+            return None
+
+        if "dateCreated" not in kwargs:
+            kwargs["dateCreated"] = obj.dateCreated
+
+        return DepositGrantFactory(
+            user=obj,
+            **kwargs,
+            type=finance_models.DepositType.GRANT_15_17,
+            expirationDate=datetime.utcnow() - relativedelta(days=1),
+        )
+
+
 class ProFactory(BaseFactory):
     class Meta:
         model = models.User
