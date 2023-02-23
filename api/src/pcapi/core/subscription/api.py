@@ -830,3 +830,18 @@ def initialize_identity_fraud_check(
     pcapi_repository.repository.save(fraud_check)
     batch.track_identity_check_started_event(user.id, fraud_check.type)
     return fraud_check
+
+def get_subscription_steps_to_display(user: users_models.User) -> list[models.SubscriptionStep]:
+    """
+    return the list of steps to complete to subscribe to the pass Culture
+    the steps are ordered
+    """
+    steps = []
+    if user.eligibility == users_models.EligibilityType.AGE18 and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
+        steps.append(models.SubscriptionStep.PHONE_VALIDATION)
+
+    steps.append(models.SubscriptionStep.PROFILE_COMPLETION)
+    steps.append(models.SubscriptionStep.IDENTITY_CHECK)
+    steps.append(models.SubscriptionStep.HONOR_STATEMENT)
+
+    return steps
