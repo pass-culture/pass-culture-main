@@ -27,7 +27,6 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 import pcapi.repository as pcapi_repository
 import pcapi.utils.postal_code as postal_code_utils
-from pcapi.workers import apps_flyer_job
 
 from . import exceptions
 from . import models
@@ -92,9 +91,6 @@ def activate_beneficiary_for_eligibility(
 
     external_attributes_api.update_external_user(user)
     batch.track_deposit_activated_event(user.id, deposit)
-
-    if "apps_flyer" in user.externalIds:  # type: ignore [operator]
-        apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
 
     return user
 
