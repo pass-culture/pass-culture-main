@@ -356,6 +356,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     lastBookingStatus: CollectiveBookingStatus | None
     lastBookingId: int | None
     teacher: EducationalRedactorResponseModel | None
+    _humanize_templateId = humanize_field("templateId")
 
 
 class CollectiveOfferResponseIdModel(BaseModel):
