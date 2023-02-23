@@ -93,6 +93,7 @@ class ReimbursementDetails:
         "Date de l'évènement (offre collective)",
         "Contremarque",
         "Date de validation de la réservation",
+        "Intitulé du tarif",
         "Montant de la réservation",
         "Barème",
         "Montant remboursé",
@@ -155,6 +156,7 @@ class ReimbursementDetails:
         self.offer_name = payment_info.offer_name
         self.booking_token = getattr(payment_info, "booking_token", None)
         self.booking_used_date = payment_info.booking_used_date
+        self.booking_price_category_label = getattr(payment_info, "booking_price_category_label", None)
         self.booking_total_amount = format_number_as_french(
             payment_info.booking_amount * getattr(payment_info, "booking_quantity", 1)
         )
@@ -219,6 +221,7 @@ class ReimbursementDetails:
             self.event_date,
             self.booking_token,
             self.booking_used_date,
+            self.booking_price_category_label,
             self.booking_total_amount,
             self.reimbursement_rate,
             self.reimbursed_amount,

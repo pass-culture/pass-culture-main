@@ -382,10 +382,7 @@ class FindAllOffererPaymentsTest:
         # automatically be created by the Venue factory when linking a
         # reimbursement point.
         factories.BankInformationFactory(venue=stock.offer.venue, iban="CF13QSDFGH456789")
-        booking = bookings_factories.UsedBookingFactory(
-            stock=stock,
-            token="ABCDEF",
-        )
+        booking = bookings_factories.UsedBookingFactory(stock=stock, token="ABCDEF", priceCategoryLabel="Tarif unique")
 
         # Create an old-style payment
         payment = factories.PaymentFactory(
@@ -422,6 +419,7 @@ class FindAllOffererPaymentsTest:
             "booking_token": "ABCDEF",
             "booking_used_date": booking.dateUsed.replace(microsecond=0),
             "booking_quantity": 1,
+            "booking_price_category_label": booking.priceCategoryLabel,
             "booking_amount": decimal.Decimal("10.00"),
             "offer_name": "Test Book",
             "collective_booking_id": None,
