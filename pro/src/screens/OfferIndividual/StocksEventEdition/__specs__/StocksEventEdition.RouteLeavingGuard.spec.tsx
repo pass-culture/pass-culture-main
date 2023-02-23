@@ -23,7 +23,9 @@ import { ButtonLink } from 'ui-kit'
 import { getToday } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StocksEvent, { IStocksEventProps } from '../StocksEvent'
+import StocksEventEdition, {
+  IStocksEventEditionProps,
+} from '../StocksEventEdition'
 
 const mockLogEvent = jest.fn()
 
@@ -45,7 +47,7 @@ jest.mock('utils/date', () => ({
 }))
 
 const renderStockEventScreen = (
-  props: IStocksEventProps,
+  props: IStocksEventEditionProps,
   contextValue: IOfferIndividualContext,
   url: string = getOfferIndividualPath({
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -63,7 +65,7 @@ const renderStockEventScreen = (
         )}
       >
         <OfferIndividualContext.Provider value={contextValue}>
-          <StocksEvent {...props} />
+          <StocksEventEdition {...props} />
           <ButtonLink link={{ to: '/outside', isExternal: false }}>
             Go outside !
           </ButtonLink>
@@ -103,8 +105,8 @@ const renderStockEventScreen = (
 
 const today = getToday()
 
-describe('screens:StocksEvent', () => {
-  let props: IStocksEventProps
+describe('screens:StocksEventEdition', () => {
+  let props: IStocksEventEditionProps
   let contextValue: IOfferIndividualContext
   let offer: Partial<IOfferIndividual>
 

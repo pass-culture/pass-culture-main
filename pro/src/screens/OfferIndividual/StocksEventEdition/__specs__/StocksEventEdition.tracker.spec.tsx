@@ -19,7 +19,9 @@ import * as useAnalytics from 'hooks/useAnalytics'
 import { getToday } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StocksEvent, { IStocksEventProps } from '../StocksEvent'
+import StocksEventEdition, {
+  IStocksEventEditionProps,
+} from '../StocksEventEdition'
 
 const mockLogEvent = jest.fn()
 
@@ -41,7 +43,7 @@ jest.mock('utils/date', () => ({
 }))
 
 const renderStockEventScreen = (
-  props: IStocksEventProps,
+  props: IStocksEventEditionProps,
   contextValue: IOfferIndividualContext,
   url = '/creation/stocks'
 ) =>
@@ -49,7 +51,7 @@ const renderStockEventScreen = (
     <>
       <Route path={['/creation/stocks', '/brouillon/stocks', '/stocks']}>
         <OfferIndividualContext.Provider value={contextValue}>
-          <StocksEvent {...props} />
+          <StocksEventEdition {...props} />
         </OfferIndividualContext.Provider>
       </Route>
       <Notification />
@@ -59,8 +61,8 @@ const renderStockEventScreen = (
 
 const today = getToday()
 
-describe('screens:StocksEvent', () => {
-  let props: IStocksEventProps
+describe('screens:StocksEventEdition', () => {
+  let props: IStocksEventEditionProps
   let contextValue: IOfferIndividualContext
   let offer: Partial<IOfferIndividual>
 
