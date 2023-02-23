@@ -1,3 +1,5 @@
+{% from "components/form_body.html" import build_form_body with context %}
+
 {% extends "layouts/connected.html" %}
 
 {% block page %}
@@ -6,7 +8,7 @@
         <div class="col-12 py-4">
             <form action="{{ dst }}" method="POST">
                 <div class="form-group">
-                    {% include "components/form_body.html" %}
+                    {{ build_form_body(form) }}
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary">Continuer</button>
