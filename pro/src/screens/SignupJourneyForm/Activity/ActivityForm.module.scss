@@ -1,0 +1,15 @@
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+
+.url-input, .venue-type-select {
+  width: rem.torem(486px);
+}
+
+.first-row {
+  // "Center" with input
+  // We are using margin-top and not flex center because when there is an error the
+  // input field grows at the bottom and we don't want the icon to move
+  display: flex;
+  align-items: center;
+}
