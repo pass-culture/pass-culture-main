@@ -22,11 +22,7 @@ export const StocksEventCreation = ({
         <HelpSection className={styles['help-section']} />
       )}
 
-      <Button
-        variant={ButtonVariant.PRIMARY}
-        onClick={() => alert('Modale de recurrence !')}
-        type="button"
-      >
+      <Button variant={ButtonVariant.PRIMARY} type="button">
         Ajouter une récurrence
       </Button>
     </div>
