@@ -152,7 +152,7 @@ class AdageLoggerClient(AdageClient):
         api_url = f"{self.base_url}/v1/etablissement-culturel/{uai}"
         logger.info("Adage has been called at %s", api_url)
 
-        if uai in ("0470009E"):
+        if uai == "0470009E":
             response_content = [
                 {
                     "civilite": "Mme.",
