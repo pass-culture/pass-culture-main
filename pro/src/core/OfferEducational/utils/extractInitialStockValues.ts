@@ -2,15 +2,24 @@ import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
   CollectiveOffer,
+  CollectiveOfferTemplate,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 export const extractInitialStockValues = (
-  offer: CollectiveOffer
+  offer: CollectiveOffer,
+  offerTemplate?: CollectiveOfferTemplate
 ): OfferEducationalStockFormValues => {
   const { collectiveStock } = offer
+
   if (!collectiveStock) {
+    if (offerTemplate?.educationalPriceDetail) {
+      return {
+        ...DEFAULT_EAC_STOCK_FORM_VALUES,
+        priceDetail: offerTemplate.educationalPriceDetail,
+      }
+    }
     return DEFAULT_EAC_STOCK_FORM_VALUES
   }
 

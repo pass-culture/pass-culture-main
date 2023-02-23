@@ -1,16 +1,18 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   CollectiveOffer,
+  CollectiveOfferTemplate,
   EducationalOfferType,
   extractInitialStockValues,
   isCollectiveOffer,
   Mode,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
+import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useNotification from 'hooks/useNotification'
 import patchCollectiveStockAdapter from 'pages/CollectiveOfferStockEdition/adapters/patchCollectiveStockAdapter'
@@ -31,7 +33,24 @@ const CollectiveOfferStockCreation = ({
   const notify = useNotification()
   const history = useHistory()
 
-  const initialValues = extractInitialStockValues(offer)
+  const [offerTemplate, setOfferTemplate] = useState<CollectiveOfferTemplate>()
+
+  useEffect(() => {
+    const fetchOfferTemplateDetails = async () => {
+      if (!(isCollectiveOffer(offer) && offer.templateId)) {
+        return null
+      }
+      const { isOk, payload, message } =
+        await getCollectiveOfferTemplateAdapter(offer.templateId)
+      if (!isOk) {
+        return notify.error(message)
+      }
+      setOfferTemplate(payload)
+    }
+    fetchOfferTemplateDetails()
+  }, [])
+
+  const initialValues = extractInitialStockValues(offer, offerTemplate)
 
   const handleSubmitStock = async (
     offer: CollectiveOffer,
