@@ -1,3 +1,4 @@
+// File should be deleted when WIP_RECURRENCE is removed
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
@@ -29,7 +30,7 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { STOCKS_PER_PAGE } from '../StockFormList/StockFormList'
-import StocksEvent, { IStocksEventProps } from '../StocksEvent'
+import StocksEvent, { IStocksEventEditionProps } from '../StocksEventEdition'
 
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
@@ -49,7 +50,7 @@ jest.mock('utils/date', () => ({
 }))
 
 const renderStockEventScreen = (
-  props: IStocksEventProps,
+  props: IStocksEventEditionProps,
   contextValue: IOfferIndividualContext
 ) =>
   renderWithProviders(
@@ -94,8 +95,8 @@ const renderStockEventScreen = (
 
 const today = getToday()
 
-describe('screens:StocksEvent', () => {
-  let props: IStocksEventProps
+describe('screens:StocksEventEdition', () => {
+  let props: IStocksEventEditionProps
   let contextValue: IOfferIndividualContext
   let offer: IOfferIndividual
 
