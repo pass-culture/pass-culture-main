@@ -1,23 +1,23 @@
 import React from 'react'
 
-import SignupBreadcrumb from 'components/SignupBreadcrumb/SignupBreadcrumb'
+import { SignupJourneyBreadcrumb } from 'components/SignupJourneyBreadcrumb'
 
-import styles from './SignupOffererFormLayoutContent.module.scss'
+import styles from './SignupJourneyFormLayoutContent.module.scss'
 
 interface ISignupOffererFormLayoutProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
 }
 
-const SignupOffererFormLayout = ({
+const SignupJourneyFormLayout = ({
   children,
 }: ISignupOffererFormLayoutProps): JSX.Element => (
   <div className={styles['signup-offerer-layout']}>
     <div className={styles['stepper']}>
-      <SignupBreadcrumb />
+      <SignupJourneyBreadcrumb />
     </div>
     <div className={styles['content']}>{children}</div>
   </div>
 )
 
-export default SignupOffererFormLayout
+export default SignupJourneyFormLayout

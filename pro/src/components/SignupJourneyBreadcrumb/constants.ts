@@ -1,10 +1,10 @@
-export const SIGNUP_STEP_IDS = {
-  AUTHENTICATION: 'authentification',
-  ACTIVITY: 'activité',
-  VALIDATION: 'validation',
+export enum SIGNUP_STEP_IDS {
+  AUTHENTICATION = 'authentification',
+  ACTIVITY = 'activité',
+  VALIDATION = 'validation',
 }
 
-export const STEP_LIST = [
+export const SIGNUP_JOURNEY_STEP_LIST = [
   {
     id: SIGNUP_STEP_IDS.AUTHENTICATION,
     label: 'Authentification',
