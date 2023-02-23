@@ -390,22 +390,23 @@ def get_qr_code_data(booking_token: str) -> str:
 def compute_cancellation_limit_date(
     event_beginning: datetime.datetime | None, booking_creation_or_event_edition: datetime.datetime
 ) -> datetime.datetime | None:
-    if event_beginning:
-        if event_beginning.tzinfo:
-            tz_naive_event_beginning = event_beginning.astimezone(pytz.utc)
-            tz_naive_event_beginning = tz_naive_event_beginning.replace(tzinfo=None)
-        else:
-            tz_naive_event_beginning = event_beginning
-        before_event_limit = tz_naive_event_beginning - constants.CONFIRM_BOOKING_BEFORE_EVENT_DELAY
-        after_booking_or_event_edition_limit = (
-            booking_creation_or_event_edition + constants.CONFIRM_BOOKING_AFTER_CREATION_DELAY
-        )
-        earliest_date_in_cancellation_period = min(before_event_limit, after_booking_or_event_edition_limit)
-        latest_date_between_earliest_date_in_cancellation_period_and_booking_creation_or_event_edition = max(
-            earliest_date_in_cancellation_period, booking_creation_or_event_edition
-        )
-        return latest_date_between_earliest_date_in_cancellation_period_and_booking_creation_or_event_edition
-    return None
+    if event_beginning is None:
+        return None
+
+    if event_beginning.tzinfo:
+        tz_naive_event_beginning = event_beginning.astimezone(pytz.utc)
+        tz_naive_event_beginning = tz_naive_event_beginning.replace(tzinfo=None)
+    else:
+        tz_naive_event_beginning = event_beginning
+    before_event_limit = tz_naive_event_beginning - constants.CONFIRM_BOOKING_BEFORE_EVENT_DELAY
+    after_booking_or_event_edition_limit = (
+        booking_creation_or_event_edition + constants.CONFIRM_BOOKING_AFTER_CREATION_DELAY
+    )
+    earliest_cancellation_limit_date = max(
+        booking_creation_or_event_edition,
+        min(after_booking_or_event_edition_limit, before_event_limit),
+    )
+    return earliest_cancellation_limit_date
 
 
 def update_cancellation_limit_dates(
