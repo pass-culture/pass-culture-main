@@ -10,6 +10,12 @@ if typing.TYPE_CHECKING:
     from pcapi.core.users.young_status import YoungStatus
 
 
+VALID_IDENTITY_CHECK_TYPES_AFTER_UNDERAGE_DEPOSIT_EXPIRATION = [
+    fraud_models.FraudCheckType.DMS,
+    fraud_models.FraudCheckType.UBBLE,
+]
+
+
 class SubscriptionStep(enum.Enum):
     EMAIL_VALIDATION = "email-validation"
     MAINTENANCE = "maintenance"
