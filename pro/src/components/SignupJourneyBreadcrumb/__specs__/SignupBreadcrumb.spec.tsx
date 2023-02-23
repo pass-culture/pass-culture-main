@@ -5,7 +5,7 @@ import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import SignupBreadcrumb from '../SignupBreadcrumb'
+import SignupBreadcrumb from '../SignupJourneyBreadcrumb'
 
 const renderSignupBreadcrumb = (
   url = '/signup/authentification',

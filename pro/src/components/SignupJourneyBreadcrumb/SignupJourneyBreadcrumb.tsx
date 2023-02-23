@@ -2,18 +2,18 @@ import React from 'react'
 
 import Breadcrumb, { BreadcrumbStyle } from 'components/Breadcrumb'
 
-import { STEP_LIST } from './constants'
+import { SIGNUP_JOURNEY_STEP_LIST } from './constants'
 import { useActiveStep } from './hooks'
 
-const SignupBreadcrumb = () => {
+const SignupJourneyBreadcrumb = () => {
   const activeStep = useActiveStep()
   return (
     <Breadcrumb
       activeStep={activeStep}
-      steps={STEP_LIST}
+      steps={SIGNUP_JOURNEY_STEP_LIST}
       styleType={BreadcrumbStyle.STEPPER}
     />
   )
 }
 
-export default SignupBreadcrumb
+export default SignupJourneyBreadcrumb
