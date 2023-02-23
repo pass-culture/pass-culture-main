@@ -308,6 +308,7 @@ def _get_sent_pricings_for_individual_bookings(
             bookings_models.Booking.token.label("booking_token"),
             _truncate_milliseconds(bookings_models.Booking.dateUsed).label("booking_used_date"),
             bookings_models.Booking.quantity.label("booking_quantity"),
+            bookings_models.Booking.priceCategoryLabel.label("booking_price_category_label"),
             bookings_models.Booking.amount.label("booking_amount"),
             offers_models.Offer.name.label("offer_name"),
             offerers_models.Venue.name.label("venue_name"),
@@ -378,6 +379,7 @@ def _get_legacy_payments_for_individual_bookings(
         .with_entities(
             bookings_models.Booking.token.label("booking_token"),
             _truncate_milliseconds(bookings_models.Booking.dateUsed).label("booking_used_date"),
+            bookings_models.Booking.priceCategoryLabel.label("booking_price_category_label"),
             bookings_models.Booking.quantity.label("booking_quantity"),
             bookings_models.Booking.amount.label("booking_amount"),
             offers_models.Offer.name.label("offer_name"),
