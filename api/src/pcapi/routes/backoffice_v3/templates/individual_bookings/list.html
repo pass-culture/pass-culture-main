@@ -1,5 +1,5 @@
-{% from "components/bookings/reimbursed.html" import build_reimbursed_td_content with context %}
-{% from "components/bookings/reimbursed.html" import build_reimbursed_extra_tr with context %}
+{% from "components/bookings/extra_row.html" import build_booking_extra_toggle with context %}
+{% from "components/bookings/extra_row.html" import build_booking_extra_tr with context %}
 {% from "components/form_body.html" import build_form_body with context %}
 
 {% extends "layouts/connected.html" %}
@@ -19,92 +19,104 @@
                     <thead>
                     <tr>
                         <th scope="col"></th>
+                        <th scope="col">ID résa</th>
                         <th scope="col">Contremarque</th>
                         <th scope="col">Bénéficiaire</th>
                         <th scope="col">Nom de l'offre</th>
                         <th scope="col">ID offre</th>
-                        <th scope="col">Catégorie</th>
-                        <th scope="col">Sous-catégorie</th>
+                        <th scope="col">Offre duo</th>
                         <th scope="col">Stock</th>
+                        <th scope="col">Montant</th>
                         <th scope="col">Statut</th>
                         <th scope="col">Date de réservation</th>
-                        <th scope="col">Date d'utilisation</th>
-                        <th scope="col">Date d'annulation</th>
+                        <th scope="col">Date de l'événement</th>
+                        <th scope="col">Structure</th>
+                        <th scope="col">Lieu</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for booking in rows %}
                         {% set offer = booking.stock.offer %}
                         <tr>
-                            <td>
-                                <div class="dropdown">
+                            <th scope="row">
+                                <div class="d-flex">
+                                    {{ build_booking_extra_toggle(booking) }}
+                                    <div class="mx-2 dropdown">
                                     {% if has_permission("MANAGE_BOOKINGS") %}
                                         <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
                                                 class="btn p-0"><i
                                                 class="bi bi-three-dots-vertical"></i></button>
                                         <ul class="dropdown-menu">
-                                            <li class="dropdown-item p-0">
-                                                <a class="btn btn-sm d-block w-100 text-start px-3"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#validate-booking-modal-{{ booking.id }}">
-                                                        Valider la réservation
-                                                </a>
-                                            </li>
-                                            <li class="dropdown-item p-0">
-                                                <a class="btn btn-sm d-block w-100 text-start px-3"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#cancel-booking-modal-{{ booking.id }}">
-                                                        Annuler la réservation
-                                                </a>
-                                            </li>
+                                            {% if booking.isCancelled %}
+                                                <li class="dropdown-item p-0">
+                                                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#validate-booking-modal-{{ booking.id }}">
+                                                            Valider la réservation
+                                                    </a>
+                                                </li>
+                                            {% elif not booking.isReimbursed %}
+                                                <li class="dropdown-item p-0">
+                                                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#cancel-booking-modal-{{ booking.id }}">
+                                                            Annuler la réservation
+                                                    </a>
+                                                </li>
+                                            {% endif %}
                                         </ul>
-                                        <div class="modal modal-lg fade" id="validate-booking-modal-{{ booking.id }}" tabindex="-1"
-                                            aria-labelledby="validate-booking-modal-{{ booking.id }}-label" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <form action="{{ url_for("backoffice_v3_web.individual_bookings.mark_booking_as_used", booking_id=booking.id) }}"
-                                                        method="POST" data-turbo="false">
-                                                        <div class="modal-header" id="validate-booking-modal-{{ booking.id }}-label">
-                                                            <h5 class="modal-title">Valider la réservation {{ booking.token }}</h5>
-                                                        </div>
-                                                        <div class="modal-body row">
-                                                            <div class="form-group">
-                                                                {{ build_form_body(mark_as_used_booking_form) }}
+                                        {% if booking.isCancelled %}
+                                            <div class="modal modal-lg fade" id="validate-booking-modal-{{ booking.id }}" tabindex="-1"
+                                                aria-labelledby="validate-booking-modal-{{ booking.id }}-label" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <form action="{{ url_for("backoffice_v3_web.individual_bookings.mark_booking_as_used", booking_id=booking.id) }}"
+                                                            method="POST" data-turbo="false">
+                                                            <div class="modal-header" id="validate-booking-modal-{{ booking.id }}-label">
+                                                                <h5 class="modal-title">Valider la réservation {{ booking.token }}</h5>
                                                             </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
-                                                            <button type="submit" class="btn btn-primary">Confirmer</button>
-                                                        </div>
-                                                    </form>
+                                                            <div class="modal-body row">
+                                                                <div class="form-group">
+                                                                    {{ build_form_body(mark_as_used_booking_form) }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
+                                                                <button type="submit" class="btn btn-primary">Confirmer</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="modal modal-lg fade" id="cancel-booking-modal-{{ booking.id }}" tabindex="-1"
-                                            aria-labelledby="cancel-booking-modal-{{ booking.id }}-label" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <form action="{{ url_for("backoffice_v3_web.individual_bookings.mark_booking_as_cancelled", booking_id=booking.id) }}"
-                                                        method="POST" data-turbo="false">
-                                                        <div class="modal-header" id="cancel-booking-modal-{{ booking.id }}-label">
-                                                            <h5 class="modal-title">Annuler la réservation {{ booking.token }}</h5>
-                                                        </div>
-                                                        <div class="modal-body row">
-                                                            <div class="form-group">
-                                                                {{ build_form_body(cancel_booking_form) }}
+                                        {% elif not booking.isReimbursed %}
+                                            <div class="modal modal-lg fade" id="cancel-booking-modal-{{ booking.id }}" tabindex="-1"
+                                                aria-labelledby="cancel-booking-modal-{{ booking.id }}-label" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <form action="{{ url_for("backoffice_v3_web.individual_bookings.mark_booking_as_cancelled", booking_id=booking.id) }}"
+                                                            method="POST" data-turbo="false">
+                                                            <div class="modal-header" id="cancel-booking-modal-{{ booking.id }}-label">
+                                                                <h5 class="modal-title">Annuler la réservation {{ booking.token }}</h5>
                                                             </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
-                                                            <button type="submit" class="btn btn-primary">Confirmer</button>
-                                                        </div>
-                                                    </form>
+                                                            <div class="modal-body row">
+                                                                <div class="form-group">
+                                                                    {{ build_form_body(cancel_booking_form) }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
+                                                                <button type="submit" class="btn btn-primary">Confirmer</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
-                            </td>
+                                </div>
+                            </th>
+                            <td>{{ booking.id }}</td>
                             <td>{{ booking.token }}</td>
                             <td>
                                 {% if booking.user %}
@@ -118,18 +130,30 @@
                                   {{ offer.name | escape }}
                                 </a>
                             </td>
-                            <td>{{ offer.id }}</td>
-                            <td>{{ offer.category.pro_label }}</td>
-                            <td>{{ offer.subcategory.pro_label }}</td>
+                            <td>
+                                <a href="{{ url_for('backoffice_v3_web.offer.list_offers', q=offer.id) }}" class="link-primary">
+                                    {{ offer.id }}
+                                </a>
+                            </td>
+                            <td>{{ offer.isDuo | format_bool }}</td>
                             <td>{{ booking.stock.quantity }}</td>
-                            <td>{{ build_reimbursed_td_content(booking) }}</td>
+                            <td>{{ booking.total_amount | format_amount }}</td>
+                            <td>{{ booking.status | format_booking_status(with_badge=True) | safe }}</td>
                             <td>{{ booking.dateCreated | format_date("%d/%m/%Y") }}</td>
-                            <td>{{ booking.dateUsed | format_date("%d/%m/%Y") }}</td>
-                            <td>{{ booking.cancellationDate | format_date("%d/%m/%Y") }}</td>
+{#                            <td>{{ booking.dateUsed | format_date("%d/%m/%Y") }}</td>#}
+                            <td>{{ booking.stock.beginningDatetime | format_date }}</td>
+                            <td>
+                                <a href="{{ url_for('backoffice_v3_web.offerer.get', offerer_id=booking.offerer.id) }}" class="link-primary">
+                                    {{ booking.offerer.name }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('backoffice_v3_web.venue.get', venue_id=booking.venue.id) }}" class="link-primary">
+                                    {{ booking.venue.name }}
+                                </a>
+                            </td>
                         </tr>
-
-						{{ build_reimbursed_extra_tr(booking) }}
-
+						{{ build_booking_extra_tr(booking, booking.stock, offer) }}
                     {% endfor %}
                     </tbody>
                 </table>

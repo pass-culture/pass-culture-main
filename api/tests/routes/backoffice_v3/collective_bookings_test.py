@@ -42,6 +42,8 @@ def collective_bookings_fixture() -> tuple:
     # 1
     confirmed = educational_factories.CollectiveBookingFactory(
         educationalInstitution=institution1,
+        educationalRedactor=educational_factories.EducationalRedactorFactory(firstName="Pépin", lastName="d'Italie"),
+        collectiveStock__price=1234,
         collectiveStock__collectiveOffer__name="Visite des locaux primitifs du pass Culture",
         collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.VISITE_GUIDEE.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
@@ -49,6 +51,8 @@ def collective_bookings_fixture() -> tuple:
     # 2
     cancelled = educational_factories.CancelledCollectiveBookingFactory(
         educationalInstitution=institution2,
+        educationalRedactor=educational_factories.EducationalRedactorFactory(firstName="Louis", lastName="Le Pieux"),
+        collectiveStock__price=567.8,
         collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.DECOUVERTE_METIERS.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
         venue=venue,
@@ -104,18 +108,35 @@ class ListCollectiveBookingsTest:
         rows = html_parser.extract_table_rows(response.data)
         # Warning: test may return more than 1 row when an offer id or institution id is the same as booking id
         assert len(rows) >= 1
-        result = [row for row in rows if row["ID résa"] == searched_id][0]
-        assert result["Établissement"].startswith("Collège Pépin le Bref")
-        assert result["Nom de l'offre"] == "Visite des locaux primitifs du pass Culture"
-        assert result["ID offre"].isdigit()
-        assert result["Catégorie"] == categories.MUSEE.pro_label
-        assert result["Sous-catégorie"] == subcategories_v2.VISITE_GUIDEE.pro_label
-        assert result["Statut"] == "Confirmée"
-        assert result["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=3)).strftime(
-            "%d/%m/%Y"
+        for row_index, row in enumerate(rows):
+            if row["ID résa"] == searched_id:
+                break
+        else:
+            row_index, row = 0, {}  # for pylint
+            assert False, f"Expected booking {searched_id} not found in results"
+        assert row["Établissement"].startswith("Collège Pépin le Bref")
+        assert row["Enseignant"] == "Pépin d'Italie"
+        assert row["Nom de l'offre"] == "Visite des locaux primitifs du pass Culture"
+        assert row["ID offre"].isdigit()
+        assert row["Montant"] == "1 234,00 €"
+        assert row["Statut"] == "Confirmée"
+        assert row["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=3)).strftime("%d/%m/%Y")
+        assert row["Structure"] == collective_bookings[1].offerer.name
+        assert row["Lieu"] == collective_bookings[1].venue.name
+
+        extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[row_index]
+        assert f"Catégorie : {categories.MUSEE.pro_label}" in extra_data
+        assert f"Sous-catégorie : {subcategories_v2.VISITE_GUIDEE.pro_label}" in extra_data
+        assert "Date de validation" not in extra_data
+        assert (
+            f"Date de confirmation de réservation : {(datetime.date.today() - datetime.timedelta(days=1)).strftime('%d/%m/%Y')}"
+            in extra_data
         )
-        assert result["Date de validation"] == (datetime.date.today() - datetime.timedelta(days=1)).strftime("%d/%m/%Y")
-        assert not result["Date d'annulation"]
+        assert (
+            f"Date limite de réservation : {(datetime.date.today() + datetime.timedelta(days=1)).strftime('%d/%m/%Y')}"
+            in extra_data
+        )
+        assert "Date d'annulation" not in extra_data
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
 
@@ -140,17 +161,35 @@ class ListCollectiveBookingsTest:
         rows = html_parser.extract_table_rows(response.data)
         # Warning: test may return more than 1 row when a booking id or institution id is the same as offer id
         assert len(rows) >= 1
-        result = [row for row in rows if row["ID offre"] == searched_id][0]
-        assert result["ID résa"] == str(collective_bookings[2].id)
-        assert result["Établissement"].startswith("Collège Bertrade de Laon")
-        assert result["Nom de l'offre"] == collective_bookings[2].collectiveStock.collectiveOffer.name
-        assert result["Catégorie"] == categories.CONFERENCE_RENCONTRE.pro_label
-        assert result["Sous-catégorie"] == subcategories_v2.DECOUVERTE_METIERS.pro_label
-        assert result["Statut"] == "Annulée"
-        assert result["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=2)).strftime(
-            "%d/%m/%Y"
+        for row_index, row in enumerate(rows):
+            if row["ID offre"] == searched_id:
+                break
+        else:
+            row_index, row = 0, {}  # for pylint
+            assert False, f"Expected offer {searched_id} not found in results"
+        assert row["ID résa"] == str(collective_bookings[2].id)
+        assert row["Établissement"].startswith("Collège Bertrade de Laon")
+        assert row["Enseignant"] == "Louis Le Pieux"
+        assert row["Nom de l'offre"] == collective_bookings[2].collectiveStock.collectiveOffer.name
+        assert row["Montant"] == "567,80 €"
+        assert row["Statut"] == "Annulée"
+        assert row["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=2)).strftime("%d/%m/%Y")
+        assert row["Structure"] == collective_bookings[2].offerer.name
+        assert row["Lieu"] == collective_bookings[2].venue.name
+
+        extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[row_index]
+        assert f"Catégorie : {categories.CONFERENCE_RENCONTRE.pro_label}" in extra_data
+        assert f"Sous-catégorie : {subcategories_v2.DECOUVERTE_METIERS.pro_label}" in extra_data
+        assert "Date de validation" not in extra_data
+        assert (
+            f"Date de confirmation de réservation : {(datetime.date.today() - datetime.timedelta(days=1)).strftime('%d/%m/%Y')}"
+            in extra_data
         )
-        assert result["Date d'annulation"] == datetime.date.today().strftime("%d/%m/%Y")
+        assert (
+            f"Date limite de réservation : {(datetime.date.today() + datetime.timedelta(days=1)).strftime('%d/%m/%Y')}"
+            in extra_data
+        )
+        assert f"Date d'annulation : {datetime.date.today().strftime('%d/%m/%Y')}" in extra_data
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
 
@@ -282,7 +321,7 @@ class ListCollectiveBookingsTest:
 
         # then
         assert response.status_code == 200
-        assert html_parser.count_table_rows(response.data) == 20
+        assert html_parser.count_table_rows(response.data) == 2 * 20  # extra data in second row for each booking
         assert "Il y a plus de 20 résultats dans la base de données" in html_parser.extract_alert(response.data)
 
     def test_additional_data_when_reimbursed(self, authenticated_client, collective_bookings):
@@ -310,8 +349,6 @@ class ListCollectiveBookingsTest:
         reimbursement_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
         assert "Total payé par l'utilisateur : 100,00 €" in reimbursement_data
         assert f"Date de remboursement : {reimbursed.reimbursementDate.strftime('%d/%m/%Y')}" in reimbursement_data
-        assert f"Nom de la structure : {reimbursed.offerer.name}" in reimbursement_data
-        assert f"Nom du lieu : {reimbursed.venue.name}" in reimbursement_data
         assert "Montant remboursé : 100,00 €" in reimbursement_data
         assert f"N° de virement : {cashflow.batch.label}" in reimbursement_data
         assert "Taux de remboursement : 100,0 %" in reimbursement_data

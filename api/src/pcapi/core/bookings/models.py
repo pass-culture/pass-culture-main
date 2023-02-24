@@ -237,11 +237,11 @@ class Booking(PcObject, Base, Model):
         return cls.status == BookingStatus.REIMBURSED
 
     @hybrid_property
-    def is_cancelled(self) -> bool:
+    def isCancelled(self) -> bool:
         return self.status == BookingStatus.CANCELLED
 
-    @is_cancelled.expression  # type: ignore [no-redef]
-    def is_cancelled(cls) -> bool:  # pylint: disable=no-self-argument
+    @isCancelled.expression  # type: ignore [no-redef]
+    def isCancelled(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.status == BookingStatus.CANCELLED
 
     @property

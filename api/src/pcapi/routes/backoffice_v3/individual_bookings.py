@@ -48,11 +48,17 @@ def _get_individual_bookings(
         .outerjoin(users_models.User, bookings_models.Booking.user)
         .options(
             sa.orm.joinedload(bookings_models.Booking.stock)
-            .load_only(offers_models.Stock.quantity, offers_models.Stock.offerId)
+            .load_only(
+                offers_models.Stock.quantity,
+                offers_models.Stock.offerId,
+                offers_models.Stock.beginningDatetime,
+                offers_models.Stock.bookingLimitDatetime,
+            )
             .joinedload(offers_models.Stock.offer)
             .load_only(
                 offers_models.Offer.id,
                 offers_models.Offer.name,
+                offers_models.Offer.isDuo,
                 offers_models.Offer.subcategoryId,
             ),
             sa.orm.joinedload(bookings_models.Booking.user).load_only(

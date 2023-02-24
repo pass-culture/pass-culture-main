@@ -304,7 +304,7 @@ def get_booking_attributes_2022(
 ) -> tuple[Decimal, str | None, str | None]:
     bookings_2022 = sorted(
         filter(
-            lambda booking: booking.dateCreated.year == 2022 and not booking.is_cancelled,
+            lambda booking: booking.dateCreated.year == 2022 and not booking.isCancelled,
             user_bookings,
         ),
         key=attrgetter("dateCreated"),
