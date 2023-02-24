@@ -54,7 +54,7 @@ def bookings_fixture() -> tuple:
         user=user1,
         quantity=1,
         token="ELBEIT",
-        stock__price="13.95",
+        stock__price=13.95,
         stock__quantity="2",
         stock__offer__product__name="Guide Ile d'Elbe 1814 Petit Futé",
         stock__offer__product__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
@@ -103,19 +103,27 @@ class ListIndividualBookingsTest:
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
+        assert rows[0]["ID résa"] == str(bookings[0].id)
         assert rows[0]["Contremarque"] == "WTRL00"
         assert rows[0]["Bénéficiaire"].startswith("Napoléon Bonaparte (")
         assert rows[0]["Nom de l'offre"] == "Guide du Routard Sainte-Hélène"
         assert rows[0]["ID offre"].isdigit()
-        assert rows[0]["Catégorie"] == categories.LIVRE.pro_label
-        assert rows[0]["Sous-catégorie"] == subcategories_v2.LIVRE_PAPIER.pro_label
+        assert rows[0]["Offre duo"] == "Non"
         assert rows[0]["Stock"] == "212"
+        assert rows[0]["Montant"] == "30,40 €"
         assert rows[0]["Statut"] == "Validée"
         assert rows[0]["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=4)).strftime(
             "%d/%m/%Y"
         )
-        assert rows[0]["Date d'utilisation"] == datetime.date.today().strftime("%d/%m/%Y")
-        assert not rows[0]["Date d'annulation"]
+        assert rows[0]["Structure"] == bookings[0].offerer.name
+        assert rows[0]["Lieu"] == bookings[0].venue.name
+
+        extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
+        assert f"Catégorie : {categories.LIVRE.pro_label}" in extra_data
+        assert f"Sous-catégorie : {subcategories_v2.LIVRE_PAPIER.pro_label}" in extra_data
+        assert f"Date de validation : {datetime.date.today().strftime('%d/%m/%Y')}" in extra_data
+        assert "Date limite de réservation" not in extra_data
+        assert "Date d'annulation" not in extra_data
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, 1)
 
@@ -139,19 +147,28 @@ class ListIndividualBookingsTest:
         rows = html_parser.extract_table_rows(response.data)
         # Warning: test may return more than 1 row when a user id is the same as expected offer id
         assert len(rows) >= 1
-        result = [row for row in rows if row["ID offre"] == searched_id][0]
-        assert result["Contremarque"] == "ELBEIT"
-        assert result["Bénéficiaire"].startswith("Napoléon Bonaparte (")
-        assert result["Nom de l'offre"] == "Guide Ile d'Elbe 1814 Petit Futé"
-        assert result["Catégorie"] == categories.LIVRE.pro_label
-        assert result["Sous-catégorie"] == subcategories_v2.LIVRE_PAPIER.pro_label
-        assert result["Stock"] == "2"
-        assert result["Statut"] == "Confirmée"
-        assert result["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=2)).strftime(
-            "%d/%m/%Y"
-        )
-        assert not result["Date d'utilisation"]
-        assert not result["Date d'annulation"]
+        for row_index, row in enumerate(rows):
+            if row["ID offre"] == searched_id:
+                break
+        else:
+            row_index, row = 0, {}  # for pylint
+            assert False, f"Expected offer {searched_id} not found in results"
+        assert row["ID résa"] == str(bookings[2].id)
+        assert row["Contremarque"] == "ELBEIT"
+        assert row["Bénéficiaire"].startswith("Napoléon Bonaparte (")
+        assert row["Nom de l'offre"] == "Guide Ile d'Elbe 1814 Petit Futé"
+        assert row["Offre duo"] == "Non"
+        assert row["Stock"] == "2"
+        assert row["Montant"] == "13,95 €"
+        assert row["Statut"] == "Confirmée"
+        assert row["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=2)).strftime("%d/%m/%Y")
+        assert row["Structure"] == bookings[2].offerer.name
+        assert row["Lieu"] == bookings[2].venue.name
+
+        extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[row_index]
+        assert f"Catégorie : {categories.LIVRE.pro_label}" in extra_data
+        assert f"Sous-catégorie : {subcategories_v2.LIVRE_PAPIER.pro_label}" in extra_data
+        assert "Date" not in extra_data
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
 
@@ -267,7 +284,7 @@ class ListIndividualBookingsTest:
 
         # then
         assert response.status_code == 200
-        assert html_parser.count_table_rows(response.data) == 20
+        assert html_parser.count_table_rows(response.data) == 2 * 20  # extra data in second row for each booking
         assert "Il y a plus de 20 résultats dans la base de données" in html_parser.extract_alert(response.data)
 
     def test_additional_data_when_reimbursed(self, authenticated_client, bookings):
@@ -293,8 +310,6 @@ class ListIndividualBookingsTest:
         reimbursement_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
         assert "Total payé par l'utilisateur : 10,00 €" in reimbursement_data
         assert f"Date de remboursement : {reimbursed.reimbursementDate.strftime('%d/%m/%Y')}" in reimbursement_data
-        assert f"Nom de la structure : {reimbursed.offerer.name}" in reimbursement_data
-        assert f"Nom du lieu : {reimbursed.venue.name}" in reimbursement_data
         assert "Montant remboursé : 10,00 €" in reimbursement_data
         assert f"N° de virement : {cashflow.batch.label}" in reimbursement_data
         assert "Taux de remboursement : 100,0 %" in reimbursement_data

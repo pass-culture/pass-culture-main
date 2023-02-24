@@ -119,18 +119,22 @@ def format_reason_label(reason: str) -> str:
     return users_constants.SUSPENSION_REASON_CHOICES.get(users_constants.SuspensionReason(reason), "Raison inconnue")
 
 
-def format_booking_cancellation_reason(reason: bookings_models.BookingCancellationReasons) -> str:
+def format_booking_cancellation_reason(
+    reason: bookings_models.BookingCancellationReasons | educational_models.CollectiveBookingCancellationReasons,
+) -> str:
     match reason:
-        case bookings_models.BookingCancellationReasons.OFFERER:
+        case bookings_models.BookingCancellationReasons.OFFERER | educational_models.CollectiveBookingCancellationReasons.OFFERER:
             return "Annulée par l'acteur culturel"
-        case bookings_models.BookingCancellationReasons.BENEFICIARY:
+        case bookings_models.BookingCancellationReasons.BENEFICIARY | educational_models.CollectiveBookingCancellationReasons.BENEFICIARY:
             return "Annulée par le bénéficiaire"
-        case bookings_models.BookingCancellationReasons.EXPIRED:
+        case bookings_models.BookingCancellationReasons.EXPIRED | educational_models.CollectiveBookingCancellationReasons.EXPIRED:
             return "Expirée"
-        case bookings_models.BookingCancellationReasons.FRAUD:
+        case bookings_models.BookingCancellationReasons.FRAUD | educational_models.CollectiveBookingCancellationReasons.FRAUD:
             return "Fraude"
-        case bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE:
+        case bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE | educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE:
             return "Refusée par l'institution"
+        case educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER:
+            return "Refusée par le chef d'établissement"
         case _:
             return ""
 
@@ -149,18 +153,20 @@ def format_booking_status_long(status: bookings_models.BookingStatus) -> str:
             return status.value
 
 
-def format_booking_status(status: bookings_models.BookingStatus | educational_models.CollectiveBookingStatus) -> str:
+def format_booking_status(
+    status: bookings_models.BookingStatus | educational_models.CollectiveBookingStatus, with_badge: bool = False
+) -> str:
     match status:
         case educational_models.CollectiveBookingStatus.PENDING:
-            return "Pré-réservée"
+            return '<span class="text-nowrap">Pré-réservée</span>' if with_badge else "Pré-réservée"
         case bookings_models.BookingStatus.CONFIRMED | educational_models.CollectiveBookingStatus.CONFIRMED:
             return "Confirmée"
         case bookings_models.BookingStatus.USED | educational_models.CollectiveBookingStatus.USED:
-            return "Validée"
+            return '<span class="badge text-bg-success">Validée</span>' if with_badge else "Validée"
         case bookings_models.BookingStatus.CANCELLED | educational_models.CollectiveBookingStatus.CANCELLED:
-            return "Annulée"
+            return '<span class="badge text-bg-danger">Annulée</span>' if with_badge else "Annulée"
         case bookings_models.BookingStatus.REIMBURSED | educational_models.CollectiveBookingStatus.REIMBURSED:
-            return "Remboursée"
+            return '<span class="badge text-bg-success">Remboursée</span>' if with_badge else "Remboursée"
         case _:
             return status.value
 

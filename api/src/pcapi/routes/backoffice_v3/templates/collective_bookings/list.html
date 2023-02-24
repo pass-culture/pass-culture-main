@@ -1,5 +1,5 @@
-{% from "components/bookings/reimbursed.html" import build_reimbursed_td_content with context %}
-{% from "components/bookings/reimbursed.html" import build_reimbursed_extra_tr with context %}
+{% from "components/bookings/extra_row.html" import build_booking_extra_toggle with context %}
+{% from "components/bookings/extra_row.html" import build_booking_extra_tr with context %}
 {% from "components/form_body.html" import build_form_body with context %}
 
 {% extends "layouts/connected.html" %}
@@ -21,111 +21,125 @@
                         <th scope="col"></th>
                         <th scope="col">ID résa</th>
                         <th scope="col">Établissement</th>
+                        <th scope="col">Enseignant</th>
                         <th scope="col">Nom de l'offre</th>
                         <th scope="col">ID offre</th>
-                        <th scope="col">Catégorie</th>
-                        <th scope="col">Sous-catégorie</th>
+                        <th scope="col">Montant</th>
                         <th scope="col">Statut</th>
                         <th scope="col">Date de réservation</th>
-                        <th scope="col">Date de validation</th>
-                        <th scope="col">Date d'annulation</th>
+                        <th scope="col">Structure</th>
+                        <th scope="col">Lieu</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for collective_booking in rows %}
                         {% set collective_offer = collective_booking.collectiveStock.collectiveOffer %}
                         <tr>
-                            <td>
-                                <div class="dropdown">
+                            <th scope="row">
+                                <div class="d-flex">
+                                    {{ build_booking_extra_toggle(collective_booking) }}
+                                    <div class="mx-2 dropdown">
                                     {% if has_permission("MANAGE_BOOKINGS") %}
                                         <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
                                                 class="btn p-0"><i
                                                 class="bi bi-three-dots-vertical"></i></button>
                                         <ul class="dropdown-menu">
-                                            <li class="dropdown-item p-0">
-                                                <a class="btn btn-sm d-block w-100 text-start px-3"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#validate-booking-modal-{{ collective_booking.id }}">
-                                                        Valider la réservation
-                                                </a>
-                                            </li>
-                                            <li class="dropdown-item p-0">
-                                                <a class="btn btn-sm d-block w-100 text-start px-3"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#cancel-booking-modal-{{ collective_booking.id }}">
-                                                        Annuler la réservation
-                                                </a>
-                                            </li>
+                                            {% if collective_booking.isCancelled %}
+                                                <li class="dropdown-item p-0">
+                                                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#validate-booking-modal-{{ collective_booking.id }}">
+                                                            Valider la réservation
+                                                    </a>
+                                                </li>
+                                            {% elif not collective_booking.isReimbursed %}
+                                                <li class="dropdown-item p-0">
+                                                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#cancel-booking-modal-{{ collective_booking.id }}">
+                                                            Annuler la réservation
+                                                    </a>
+                                                </li>
+                                            {% endif %}
                                         </ul>
-                                        <div class="modal modal-lg fade" id="validate-booking-modal-{{ collective_booking.id }}" tabindex="-1"
-                                            aria-labelledby="validate-booking-modal-{{ collective_booking.id }}-label" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <form action="{{ url_for("backoffice_v3_web.collective_bookings.mark_booking_as_used", collective_booking_id=collective_booking.id) }}"
-                                                        method="POST" data-turbo="false">
-                                                        <div class="modal-header" id="validate-booking-modal-{{ collective_booking.id }}-label">
-                                                            <h5 class="modal-title">Valider la réservation {{ collective_booking.id }}</h5>
-                                                        </div>
-                                                        <div class="modal-body row">
-                                                            <div class="form-group">
-                                                                {{ build_form_body(mark_as_used_booking_form) }}
+                                        {% if collective_booking.isCancelled %}
+                                            <div class="modal modal-lg fade" id="validate-booking-modal-{{ collective_booking.id }}" tabindex="-1"
+                                                aria-labelledby="validate-booking-modal-{{ collective_booking.id }}-label" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <form action="{{ url_for("backoffice_v3_web.collective_bookings.mark_booking_as_used", collective_booking_id=collective_booking.id) }}"
+                                                            method="POST" data-turbo="false">
+                                                            <div class="modal-header" id="validate-booking-modal-{{ collective_booking.id }}-label">
+                                                                <h5 class="modal-title">Valider la réservation {{ collective_booking.id }}</h5>
                                                             </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
-                                                            <button type="submit" class="btn btn-primary">Confirmer</button>
-                                                        </div>
-                                                    </form>
+                                                            <div class="modal-body row">
+                                                                <div class="form-group">
+                                                                    {{ build_form_body(mark_as_used_booking_form) }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
+                                                                <button type="submit" class="btn btn-primary">Confirmer</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="modal modal-lg fade" id="cancel-booking-modal-{{ collective_booking.id }}" tabindex="-1"
-                                            aria-labelledby="cancel-booking-modal-{{ collective_booking.id }}-label" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <form action="{{ url_for("backoffice_v3_web.collective_bookings.mark_booking_as_cancelled", collective_booking_id=collective_booking.id) }}"
-                                                        method="POST" data-turbo="false">
-                                                        <div class="modal-header" id="cancel-booking-modal-{{ collective_booking.id }}-label">
-                                                            <h5 class="modal-title">Annuler la réservation {{ collective_booking.id }}</h5>
-                                                        </div>
-                                                        <div class="modal-body row">
-                                                            <div class="form-group">
-                                                                {{ build_form_body(cancel_booking_form) }}
+                                        {% elif not collective_booking.isReimbursed %}
+                                            <div class="modal modal-lg fade" id="cancel-booking-modal-{{ collective_booking.id }}" tabindex="-1"
+                                                aria-labelledby="cancel-booking-modal-{{ collective_booking.id }}-label" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <form action="{{ url_for("backoffice_v3_web.collective_bookings.mark_booking_as_cancelled", collective_booking_id=collective_booking.id) }}"
+                                                            method="POST" data-turbo="false">
+                                                            <div class="modal-header" id="cancel-booking-modal-{{ collective_booking.id }}-label">
+                                                                <h5 class="modal-title">Annuler la réservation {{ collective_booking.id }}</h5>
                                                             </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
-                                                            <button type="submit" class="btn btn-primary">Confirmer</button>
-                                                        </div>
-                                                    </form>
+                                                            <div class="modal-body row">
+                                                                <div class="form-group">
+                                                                    {{ build_form_body(cancel_booking_form) }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
+                                                                <button type="submit" class="btn btn-primary">Confirmer</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
-                            </td>
+                                </div>
+                            </th>
                             <td>{{ collective_booking.id }}</td>
                             <td>
                                 {{ collective_booking.educationalInstitution.name | escape }}
                                 ({{ collective_booking.educationalInstitution.id }})
                             </td>
+                            <td>{{ collective_booking.educationalRedactor.firstName }} {{ collective_booking.educationalRedactor.lastName }}</td>
                             <td>
                                 <a href="{{ collective_offer | pc_pro_offer_link }}" target="_blank" class="link-primary">
                                   {{ collective_offer.name | escape }}
                                 </a>
                             </td>
                             <td>{{ collective_offer.id }}</td>
-                            <td>{{ collective_offer.subcategory.category.pro_label }}</td>
-                            <td>{{ collective_offer.subcategory.pro_label }}</td>
-                            <td>
-                                {{ build_reimbursed_td_content(collective_booking) }}
-                            </td>
+                            <td>{{ collective_booking.total_amount | format_amount }}</td>
+                            <td>{{ collective_booking.status | format_booking_status(with_badge=True) | safe }}</td>
                             <td>{{ collective_booking.dateCreated | format_date("%d/%m/%Y") }}</td>
-                            <td>{{ collective_booking.confirmationDate | format_date("%d/%m/%Y") }}</td>
-                            <td>{{ collective_booking.cancellationDate | format_date("%d/%m/%Y") }}</td>
+                            <td>
+                                <a href="{{ url_for('backoffice_v3_web.offerer.get', offerer_id=collective_booking.offerer.id) }}" class="link-primary">
+                                    {{ collective_booking.offerer.name }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('backoffice_v3_web.venue.get', venue_id=collective_booking.venue.id) }}" class="link-primary">
+                                    {{ collective_booking.venue.name }}
+                                </a>
+                            </td>
                         </tr>
-
-                        {{ build_reimbursed_extra_tr(collective_booking) }}
+                        {{ build_booking_extra_tr(collective_booking, collective_booking.collectiveStock, collective_offer) }}
                     {% endfor %}
                     </tbody>
                 </table>
