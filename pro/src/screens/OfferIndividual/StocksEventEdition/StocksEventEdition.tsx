@@ -85,7 +85,9 @@ export const hasChangesOnStockWithBookings = (
   })
 }
 
-const getPriceCategoryOptions = (offer: IOfferIndividual): SelectOption[] => {
+export const getPriceCategoryOptions = (
+  offer: IOfferIndividual
+): SelectOption[] => {
   const priceCategories = offer.priceCategories
   priceCategories?.sort((a, b) => {
     if (a.price === b.price) {
