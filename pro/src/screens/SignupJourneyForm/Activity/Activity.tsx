@@ -3,6 +3,7 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { SIGNUP_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
+import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { FORM_ERROR_MESSAGE } from 'core/shared'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import { useNavigate } from 'hooks'
@@ -23,8 +24,11 @@ const Activity = (): JSX.Element => {
   } = useGetVenueTypes()
   const notify = useNotification()
   const navigate = useNavigate()
-  // Get activity context
-  const initialValues: IActivityFormValues = DEFAULT_ACTIVITY_FORM_VALUES
+  const { activity, setActivity } = useSignupJourneyContext()
+
+  const initialValues: IActivityFormValues = activity
+    ? activity
+    : DEFAULT_ACTIVITY_FORM_VALUES
 
   const handleNextStep = () => async () => {
     if (Object.keys(formik.errors).length !== 0) {
@@ -37,6 +41,7 @@ const Activity = (): JSX.Element => {
     formValues: IActivityFormValues
   ): Promise<void> => {
     if (Object.keys(formik.errors).length === 0) {
+      setActivity(formValues)
       navigate('/signup/validation')
     }
   }
