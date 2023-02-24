@@ -146,6 +146,11 @@ class ParseBeneficiaryInformationTest:
 
         assert base_content == labels_edited_content
 
+    def test_serializer_handles_id_piece_numbers_with_extra_spaces(self):
+        raw_data = fixture.make_graphql_application(1, "accepte", id_piece_number=" N  12345667 ")
+        content = dms_serializer.parse_beneficiary_information_graphql(dms_models.DmsApplicationResponse(**raw_data))
+        assert content.id_piece_number == "N 12345667"
+
 
 class FieldErrorsTest:
     def test_beneficiary_information_postalcode_error(self):
