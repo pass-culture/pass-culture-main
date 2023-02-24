@@ -45,9 +45,6 @@ from pcapi.scripts.subscription import ubble as ubble_script
 from pcapi.utils.blueprint import Blueprint
 
 
-DMS_OLD_PROCEDURE_ID = 44623
-
-
 blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
@@ -102,22 +99,11 @@ def synchronize_cgr_stocks() -> None:
     synchronize_venue_providers(venue_providers)
 
 
+# TODO: (lixxday 24/02/2023) remove this command when PR https://github.com/pass-culture/pass-culture-deployment/pull/200 is deployed
 @blueprint.cli.command("import_beneficiaries_from_dms_v4")
 @log_cron_with_transaction
 def import_beneficiaries_from_dms_legacy() -> None:
-    procedures = []
-    if settings.IS_PROD:
-        procedures.append(("old_procedure_1", settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID))
-        procedures.append(("old_procedure_2", DMS_OLD_PROCEDURE_ID))
-        procedures.append(
-            ("old_procedure_after_general_opening", settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING)
-        )
-
-    for procedure_name, procedure_id in procedures:
-        if not procedure_id:
-            logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
-            continue
-        dms_script.import_dms_accepted_applications(procedure_id)
+    pass
 
 
 @blueprint.cli.command("archive_already_processed_dms_applications")
@@ -127,12 +113,6 @@ def archive_already_processed_dms_applications() -> None:
         ("v4_FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR),
         ("v4_ET", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET),
     ]
-    if settings.IS_PROD:
-        procedures.append(("old_procedure_1", settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID))
-        procedures.append(("old_procedure_2", DMS_OLD_PROCEDURE_ID))
-        procedures.append(
-            ("old_procedure_after_general_opening", settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING)
-        )
 
     for procedure_name, procedure_id in procedures:
         if not procedure_id:
@@ -397,13 +377,6 @@ def handle_inactive_dms_applications_cron() -> None:
         settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET, with_never_eligible_applicant_rule=settings.IS_TESTING
     )
 
-    if settings.IS_PROD:
-        dms_script.handle_inactive_dms_applications(settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING)
-        dms_script.handle_inactive_dms_applications(
-            settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID, with_never_eligible_applicant_rule=True
-        )
-        dms_script.handle_inactive_dms_applications(DMS_OLD_PROCEDURE_ID)
-
 
 @blueprint.cli.command("handle_deleted_dms_applications_cron")
 @log_cron_with_transaction
@@ -411,11 +384,7 @@ def handle_deleted_dms_applications_cron() -> None:
     procedures = [
         settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR,
         settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET,
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING,
-        settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID,
     ]
-    if settings.IS_PROD:
-        procedures.append(DMS_OLD_PROCEDURE_ID)
     for procedure_id in procedures:
         try:
             dms_script.handle_deleted_dms_applications(procedure_id)
