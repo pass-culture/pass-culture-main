@@ -1,23 +1,24 @@
-import { Routes, Route } from 'react-router-dom-v5-compat'
+import { Route } from 'react-router-dom'
 
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
+import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
 import { Activity } from 'screens/SignupJourneyForm/Activity'
 
 const SignupJourneyRoutes = () => {
   return (
-    <SignupJourneyFormLayout>
-      <Routes>
-        <Route path={'/authentification'}>
+    <SignupJourneyContextProvider>
+      <SignupJourneyFormLayout>
+        <Route path={'/signup/authentification'}>
           <div>Authentification</div>
         </Route>
-        <Route path={'/activite'}>
+        <Route path={'/signup/activite'}>
           <Activity />
         </Route>
         <Route path={'/signup/validation'}>
           <div>Validation</div>
         </Route>
-      </Routes>
-    </SignupJourneyFormLayout>
+      </SignupJourneyFormLayout>
+    </SignupJourneyContextProvider>
   )
 }
 
