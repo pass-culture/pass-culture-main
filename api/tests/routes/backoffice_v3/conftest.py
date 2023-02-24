@@ -213,6 +213,14 @@ def venue_with_educational_status_fixture(offerer):
     return venue
 
 
+@pytest.fixture(name="venue_with_adage_id")
+def venue_with_adage_id(offerer):
+    venue = offerers_factories.CollectiveVenueFactory(
+        managingOfferer=offerer,
+    )
+    return venue
+
+
 @pytest.fixture(name="venue_with_no_contact")
 def venue_with_no_contact_fixture():
     venue = offerers_factories.VenueFactory(contact=None)

@@ -80,7 +80,7 @@ class GetVenueTest:
         assert f"Code postal : {venue.postalCode} " in response_text
         assert f"E-mail : {venue.contact.email} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
-        assert "Éligible EAC : Non" in response_text
+        assert "Référencement Adage : Non" in response_text
         assert "ID Adage" not in response_text
         assert f"Site web : {venue.contact.website}" in response_text
         assert "Pas de dossier DMS" in response_text
@@ -97,7 +97,7 @@ class GetVenueTest:
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert "Éligible EAC : Oui" in response_text
+        assert "Référencement Adage : Oui" in response_text
         assert "ID Adage : 7122022" in response_text
 
     def test_get_venue_with_no_contact(self, authenticated_client, venue_with_no_contact):
