@@ -1000,6 +1000,7 @@ def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:
         .group_by(sa.text("status"))
         .subquery()
     )
+    # TODO (24/02/2023) used only in backoffice v2; remove when backoffice v2 is removed
     is_collective_eligible_query = (
         sa.select(offerers_models.Venue)
         .filter(

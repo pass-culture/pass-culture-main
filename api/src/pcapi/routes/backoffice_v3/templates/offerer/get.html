@@ -140,20 +140,9 @@
                     </div>
 
                     <div class="col-4">
-                        {% if is_collective_eligible is not none %}
-                            <p class="mb-1">
-                                <span class="fw-bold">Éligible EAC :</span>
-                                {% if is_collective_eligible %}
-                                    <span class="mx-2 pb-1 badge rounded-pill text-bg-success">
-                                        <i class="bi bi-check-circle"></i> Oui
-                                    </span>
-                                {% else %}
-                                    <span class="mx-2 pb-1 badge rounded-pill text-bg-dark">
-                                        <i class="bi bi-x-circle"></i> Non
-                                    </span>
-                                {% endif %}
-                            </p>
-                        {% endif %}
+                        <p class="mb-1">
+                            <span class="fw-bold">Référencement Adage : {{ offerer.managedVenues | format_adage_referred }}</span>
+                        </p>
 
                         <p class="mb-1">
                             <span class="fw-bold">Présence CB dans les lieux :</span>

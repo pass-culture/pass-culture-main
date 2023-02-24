@@ -74,7 +74,6 @@ def render_offerer_details(
         offerer=offerer,
         region=regions_utils.get_region_name_from_postal_code(offerer.postalCode),
         bank_information_status=bank_information_status,
-        is_collective_eligible=basic_info.is_collective_eligible,
         edit_offerer_form=edit_offerer_form,
         delete_offerer_form=delete_offerer_form,
     )
