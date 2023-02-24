@@ -206,6 +206,10 @@ def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemMode
     return ""
 
 
+def format_adage_referred(venues: list[offerers_models.Venue]) -> str:
+    return f"{len([venue for venue in venues if venue.adageId])}/{len(venues)}"
+
+
 def parse_referrer(url: str) -> str:
     """
     Ensure that a relative path is used, which will be understood.
@@ -239,6 +243,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_role"] = format_role
     app.jinja_env.filters["format_state"] = format_state
     app.jinja_env.filters["format_reason_label"] = format_reason_label
+    app.jinja_env.filters["format_adage_referred"] = format_adage_referred
     app.jinja_env.filters["parse_referrer"] = parse_referrer
     app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link
     app.jinja_env.filters["pc_pro_offerer_link"] = urls.build_pc_pro_offerer_link

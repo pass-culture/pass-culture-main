@@ -120,17 +120,15 @@ class GetOffererTest:
         assert response.status_code == 200
         assert "Présence CB dans les lieux : 2 OK / 2 KO " in html_parser.content_as_text(response.data)
 
-    def test_offerer_with_educational_venue_is_collective_eligible(
-        self, authenticated_client, offerer, venue_with_educational_status
-    ):
+    def test_offerer_with_educational_venue_has_adage_data(self, authenticated_client, offerer, venue_with_adage_id):
         # when
         response = authenticated_client.get(url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id))
 
         # then
         assert response.status_code == 200
-        assert "Éligible EAC : Oui " in html_parser.content_as_text(response.data)
+        assert "Référencement Adage : 1/1" in html_parser.content_as_text(response.data)
 
-    def test_offerer_with_no_educational_venue_is_not_collective_eligible(
+    def test_offerer_with_no_educational_venue_has_adage_data(
         self, authenticated_client, offerer, venue_with_accepted_bank_info
     ):
         # when
@@ -138,7 +136,7 @@ class GetOffererTest:
 
         # then
         assert response.status_code == 200
-        assert "Éligible EAC : Non " in html_parser.content_as_text(response.data)
+        assert "Référencement Adage : 0/1" in html_parser.content_as_text(response.data)
 
 
 class DeleteOffererTest:
