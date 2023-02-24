@@ -110,8 +110,8 @@ def import_beneficiaries_from_dms_legacy() -> None:
 @log_cron_with_transaction
 def archive_already_processed_dms_applications() -> None:
     procedures = [
-        ("v4_FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR),
-        ("v4_ET", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET),
+        ("v4_FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_FR),
+        ("v4_ET", settings.DMS_ENROLLMENT_PROCEDURE_ID_ET),
     ]
 
     for procedure_name, procedure_id in procedures:
@@ -125,8 +125,8 @@ def archive_already_processed_dms_applications() -> None:
 @log_cron_with_transaction
 def import_all_updated_dms_applications() -> None:
     for procedure_name, procedure_id in (
-        ("v4_FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR),
-        ("v4_ET", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET),
+        ("v4_FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_FR),
+        ("v4_ET", settings.DMS_ENROLLMENT_PROCEDURE_ID_ET),
     ):
         if not procedure_id:
             logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
@@ -371,10 +371,10 @@ def delete_suspended_accounts_after_withdrawal_period() -> None:
 @log_cron_with_transaction
 def handle_inactive_dms_applications_cron() -> None:
     dms_script.handle_inactive_dms_applications(
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR, with_never_eligible_applicant_rule=settings.IS_TESTING
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, with_never_eligible_applicant_rule=settings.IS_TESTING
     )
     dms_script.handle_inactive_dms_applications(
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET, with_never_eligible_applicant_rule=settings.IS_TESTING
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_ET, with_never_eligible_applicant_rule=settings.IS_TESTING
     )
 
 
@@ -382,8 +382,8 @@ def handle_inactive_dms_applications_cron() -> None:
 @log_cron_with_transaction
 def handle_deleted_dms_applications_cron() -> None:
     procedures = [
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR,
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET,
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_ET,
     ]
     for procedure_id in procedures:
         try:
