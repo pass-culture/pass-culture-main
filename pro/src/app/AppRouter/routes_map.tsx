@@ -26,6 +26,7 @@ import SetPassword from 'pages/SetPassword/SetPassword'
 import SetPasswordConfirm from 'pages/SetPasswordConfirm/SetPasswordConfirm'
 import SignIn from 'pages/SignIn/SignIn'
 import Signup from 'pages/Signup/Signup'
+import { SignupJourneyRoutes } from 'pages/SignupOffererRoutes'
 import { UserProfile } from 'pages/User'
 import { VenueCreation } from 'pages/VenueCreation'
 import { VenueEdition } from 'pages/VenueEdition'
@@ -335,6 +336,16 @@ const routes: IRoute[] = [
     title: 'Statistiques',
     featureName: 'ENABLE_OFFERER_STATS',
     useV6Router: true,
+  },
+  {
+    component: SignupJourneyRoutes,
+    path: [
+      '/signup/authentification',
+      '/signup/activite',
+      '/signup/validation',
+    ],
+    exact: true,
+    title: 'Parcours de souscription',
   },
 ]
 
