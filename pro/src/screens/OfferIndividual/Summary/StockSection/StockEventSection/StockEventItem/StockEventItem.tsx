@@ -59,9 +59,9 @@ const StockEventItem = ({
       {isPriceCategoriesActive && priceCategory ? (
         <SummaryLayout.Row
           title="Tarif"
-          description={`${priceCategory.price
-            .toString()
-            .replace('.', ',')} € - ${priceCategory.label}`}
+          description={`${formatPrice(priceCategory.price)} - ${
+            priceCategory.label
+          }`}
         />
       ) : (
         <SummaryLayout.Row title="Prix" description={formatPrice(price)} />
