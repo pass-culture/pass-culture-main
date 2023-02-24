@@ -144,7 +144,7 @@ class AdageSpyClient(AdageClient):
         ]
 
     def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
-        api_url = f"{self.base_url}/v1/etablissement-culturel/{uai}"
+        api_url = f"{self.base_url}/v1/redacteurs-projets/{uai}"
         testing.adage_requests.append({"url": api_url, "sent_data": ""})
         if uai == "0470009E":
             return [
