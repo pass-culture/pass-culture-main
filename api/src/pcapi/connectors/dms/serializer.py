@@ -30,6 +30,14 @@ DMS_ACTIVITY_ENUM_MAPPING = {
 DMS_ANNOTATION_SLUG = "AN_001"
 
 
+def _sanitize_id_piece_number(id_piece_number: str) -> str:
+    """
+    Replaces double spaces by single spaces.
+    This is to avoid errors when parsing the ID piece number.
+    """
+    return re.sub(" +", " ", id_piece_number)
+
+
 def parse_beneficiary_information_graphql(
     application_detail: dms_models.DmsApplicationResponse,
 ) -> fraud_models.DMSContent:
@@ -86,7 +94,7 @@ def parse_beneficiary_information_graphql(
                 logger.error("Could not parse birth date %s for DMS application %s", value, application_number)
 
         elif dms_models.FieldLabelKeyword.ID_PIECE_NUMBER.value in label:
-            value = value.strip()
+            value = _sanitize_id_piece_number(value.strip())
             if not fraud_api.validate_id_piece_number_format_fraud_item(value):
                 field_errors.append(
                     fraud_models.DmsFieldErrorDetails(
