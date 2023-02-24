@@ -8,6 +8,7 @@ export interface ISignupJourneyContext {
   activity: IActivityFormValues | null
   shouldTrack: boolean
   setShouldTrack: (p: boolean) => void
+  setIsLoading: (p: boolean) => void
   setActivity: (activityFormValues: IActivityFormValues | null) => void
 }
 
@@ -15,6 +16,7 @@ export const SignupJourneyContext = createContext<ISignupJourneyContext>({
   activity: null,
   shouldTrack: true,
   setShouldTrack: () => {},
+  setIsLoading: () => {},
   setActivity: () => {},
 })
 
@@ -45,6 +47,7 @@ export function SignupJourneyContextProvider({
         activity,
         shouldTrack,
         setShouldTrack,
+        setIsLoading,
         setActivity,
       }}
     >

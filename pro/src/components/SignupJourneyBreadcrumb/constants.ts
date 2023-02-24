@@ -1,6 +1,6 @@
 export enum SIGNUP_STEP_IDS {
   AUTHENTICATION = 'authentification',
-  ACTIVITY = 'activité',
+  ACTIVITY = 'activite',
   VALIDATION = 'validation',
 }
 

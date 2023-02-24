@@ -16,7 +16,7 @@ import {
 export interface IActivityFormValues {
   venueType: string
   socialUrls: string[]
-  targetCustomer: TargetCustomerTypeEnum | null
+  targetCustomer: TargetCustomerTypeEnum | undefined | null
 }
 
 interface IActivityFormProps {
@@ -70,6 +70,7 @@ const ActivityForm = ({ venueTypes }: IActivityFormProps): JSX.Element => {
                     iconPosition={IconPositionEnum.CENTER}
                     disabled={values.socialUrls.length <= 1}
                     onClick={() => arrayHelpers.remove(index)}
+                    className={styles['delete-button']}
                     hasTooltip
                   >
                     Supprimer l'url
