@@ -238,8 +238,9 @@ class AdageHttpClient(AdageClient):
             raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
         response_content = api_response.json()
+        result = response_content.get("redacteurs", [])
 
-        if len(response_content) == 0:
+        if len(result) == 0:
             raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
 
-        return response_content
+        return result
