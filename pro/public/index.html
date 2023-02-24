@@ -1,26 +1,33 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#000000">
-    <meta name="version" content="%VERSION%">
-    <% if (process.env.NODE_ENV === 'development') { %>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#000000">
+  <meta name="version" content="%VERSION%">
+  <% if (process.env.NODE_ENV==='development' ) { %>
     <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com; connect-src 'self' data: https: http: ws://*:3001 wss://*:3001; style-src 'self' 'unsafe-inline'">
+      content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com https://app.getbeamer.com/js/beamer-embed.js; connect-src 'self' data: https: http: ws://*:3001 wss://*:3001; style-src 'self' 'unsafe-inline'">
     <% } else { %>
-    <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com; style-src 'self' 'unsafe-inline'">
+      <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com https://app.getbeamer.com/js/beamer-embed.js; style-src 'self' 'unsafe-inline'">
+      <% } %>
+        <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+        <link rel="shortcut icon" href="%PUBLIC_URL%/icon/app-icon-iphone.png">
+        <link rel="apple-touch-icon" href="%PUBLIC_URL%/icon/app-icon-iphone.png">
+        <title>pass Culture Pro</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <noscript>pass Culture Pro a besoin de JavaScript pour fonctionner.</noscript>
+  <% if (process.env.REACT_APP_ENVIRONMENT_NAME==='testing' ) { %>
+    <script> var beamer_config = { product_id: "vjbiYuMS52566" };</script>
+    <script type="text/javascript" src="https://app.getbeamer.com/js/beamer-embed.js" defer="defer"></script>
     <% } %>
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
-    <link rel="shortcut icon" href="%PUBLIC_URL%/icon/app-icon-iphone.png">
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/icon/app-icon-iphone.png">
-    <title>pass Culture Pro</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <noscript>pass Culture Pro a besoin de JavaScript pour fonctionner.</noscript>
-  </body>
+</body>
+
 </html>
