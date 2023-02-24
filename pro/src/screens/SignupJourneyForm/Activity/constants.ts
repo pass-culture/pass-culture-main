@@ -1,7 +1,7 @@
 export const DEFAULT_ACTIVITY_FORM_VALUES = {
   venueType: '',
   socialUrls: [''],
-  targetCustomer: null,
+  targetCustomer: undefined,
 }
 
 export enum TargetCustomerTypeEnum {
