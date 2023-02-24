@@ -9,6 +9,14 @@ def check_offer_name_length_is_valid(offer_name: str) -> None:
         raise api_error
 
 
+def check_collective_offer_name_length_is_valid(offer_name: str) -> None:
+    max_offer_name_length = 110
+    if len(offer_name) > max_offer_name_length:
+        api_error = ApiErrors()
+        api_error.add_error("name", "Le titre de l’offre doit faire au maximum 110 caractères.")
+        raise api_error
+
+
 def check_offer_isbn_is_valid(isbn: str | None) -> None:
     isbn_length = 13
     if not isbn or not (isbn and isbn.isnumeric() and len(isbn) == isbn_length):

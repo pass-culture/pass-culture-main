@@ -32,7 +32,7 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.image_conversion import CropParams
-from pcapi.validation.routes.offers import check_offer_name_length_is_valid
+from pcapi.validation.routes.offers import check_collective_offer_name_length_is_valid
 
 
 T_GetCollectiveOfferBaseResponseModel = typing.TypeVar(
@@ -418,7 +418,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
 
     @validator("name", pre=True)
     def validate_name(cls, name: str) -> str:
-        check_offer_name_length_is_valid(name)
+        check_collective_offer_name_length_is_valid(name)
         return name
 
     @validator("students")
@@ -521,7 +521,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     @validator("name", allow_reuse=True)
     def validate_name(cls, name: str | None) -> str | None:
         assert name is not None and name.strip() != ""
-        check_offer_name_length_is_valid(name)
+        check_collective_offer_name_length_is_valid(name)
         return name
 
     @validator("students")
