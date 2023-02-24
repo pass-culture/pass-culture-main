@@ -19,6 +19,7 @@ export type CollectiveOfferResponseModel = {
   isActive: boolean;
   isEditable: boolean;
   isEducational: boolean;
+  isPublicApi: boolean;
   isShowcase: boolean;
   name: string;
   nonHumanizedId: number;
