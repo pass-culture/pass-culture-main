@@ -32,7 +32,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
     expect(titleInput).toHaveValue('')
     expect(titleInput.getAttribute('placeholder')).toBeNull()
 
-    expect(await screen.findByTestId('counter-title')).toHaveTextContent('0/90')
+    expect(await screen.findByTestId('counter-title')).toHaveTextContent(
+      '0/110'
+    )
 
     const descriptionTextArea = await screen.findByLabelText(/Description/)
     expect(descriptionTextArea).toBeEnabled()
@@ -168,10 +170,10 @@ describe('screens | OfferEducational : creation offer type step', () => {
   })
 
   describe('title, description and duration inputs', () => {
-    it('should require a title with less than 90 chars (and truncate longer strings)', async () => {
+    it('should require a title with less than 110 chars (and truncate longer strings)', async () => {
       renderEACOfferForm(props)
 
-      const titleMaxLength = 90
+      const titleMaxLength = 110
 
       const titleInput = await screen.findByLabelText('Titre de l’offre')
       expect(titleInput).toHaveValue('')
