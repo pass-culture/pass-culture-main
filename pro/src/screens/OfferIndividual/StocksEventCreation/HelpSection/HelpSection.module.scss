@@ -7,7 +7,7 @@
 .container {
   position: relative;
   border: 1px solid colors.$tertiary;
-  border-radius: 6px;
+  border-radius: rem.torem(6px);
   padding: rem.torem(40px) rem.torem(16px) rem.torem(24px);
 }
 

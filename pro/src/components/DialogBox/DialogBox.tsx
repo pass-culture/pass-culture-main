@@ -24,11 +24,14 @@ const DialogBox: FunctionComponent<DialogProps> = ({
   initialFocusRef,
 }) => (
   <DialogOverlay
-    className="dialog-box-overlay"
+    className={styles['dialog-box-overlay']}
     initialFocusRef={initialFocusRef}
     onDismiss={onDismiss}
   >
-    <DialogContent aria-labelledby={labelledBy} className="dialog-box-content">
+    <DialogContent
+      aria-labelledby={labelledBy}
+      className={styles['dialog-box-content']}
+    >
       {hasCloseButton && (
         <span className={styles['dialog-box-close-container']}>
           <CloseButton onCloseClick={onDismiss} />
