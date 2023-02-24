@@ -44,6 +44,7 @@ const sharedCollectiveOfferData = {
   hasBookingLimitDatetimesPassed: false,
   interventionArea: ['mainland'],
   isEditable: true,
+  isPublicApi: false,
   nonHumanizedId: 123,
   offerVenue: {
     venueId: '',
