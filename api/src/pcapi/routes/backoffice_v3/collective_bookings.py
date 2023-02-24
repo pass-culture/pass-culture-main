@@ -44,6 +44,8 @@ def _get_collective_bookings(
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
             .load_only(
                 educational_models.CollectiveStock.collectiveOfferId,
+                educational_models.CollectiveStock.beginningDatetime,
+                educational_models.CollectiveStock.bookingLimitDatetime,
                 # needed by total_amount:
                 educational_models.CollectiveStock.price,
                 educational_models.CollectiveStock.numberOfTickets,
@@ -56,6 +58,9 @@ def _get_collective_bookings(
             ),
             sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
                 educational_models.EducationalInstitution.id, educational_models.EducationalInstitution.name
+            ),
+            sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
+                educational_models.EducationalRedactor.firstName, educational_models.EducationalRedactor.lastName
             ),
             sa.orm.joinedload(educational_models.CollectiveBooking.offerer).load_only(
                 offerers_models.Offerer.id, offerers_models.Offerer.name

@@ -49,7 +49,7 @@
                                 <span class="fw-bold">Utilisée le :</span>
                                 {{ booking.dateUsed | format_date("%d/%m/%Y à %Hh%M") }}
                             </p>
-                        {% elif booking.is_cancelled %}
+                        {% elif booking.isCancelled %}
                             <p class="mb-1">
                                 <span class="fw-bold">Annulée le :</span>
                                 {{ booking.cancellationDate | format_date("%d/%m/%Y à %Hh%M") }}

@@ -56,7 +56,11 @@
                             <td>{{ offer.validation | format_offer_validation_status }}</td>
                             <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
                             <td>{{ offer.venue.departementCode }}</td>
-                            <td>{{ offer.venue.name }}</td>
+                            <td>
+                                <a href="{{ url_for('backoffice_v3_web.venue.get', venue_id=offer.venue.id) }}" class="link-primary">
+                                    {{ offer.venue.name }}
+                                </a>
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
