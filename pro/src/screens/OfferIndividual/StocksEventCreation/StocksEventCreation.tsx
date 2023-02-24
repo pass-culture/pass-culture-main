@@ -10,7 +10,7 @@ import { HelpSection } from './HelpSection/HelpSection'
 import { RecurrenceForm } from './RecurrenceForm'
 import styles from './StocksEventCreation.module.scss'
 
-export interface IStocksEventCreationProps {
+interface IStocksEventCreationProps {
   offer: IOfferIndividual
 }
 
@@ -20,6 +20,13 @@ export const StocksEventCreation = ({
   const [stocks] = useState(offer.stocks)
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
 
+  const onCancel = () => setIsRecurrenceModalOpen(false)
+  const onConfirm = () => {
+    setIsRecurrenceModalOpen(false)
+    // TODO add new stocks to state
+    alert('new stock!')
+  }
+
   return (
     <div className={styles['container']}>
       {stocks.length === 0 && (
@@ -27,6 +34,7 @@ export const StocksEventCreation = ({
       )}
 
       <Button
+        id="add-recurrence"
         variant={ButtonVariant.PRIMARY}
         type="button"
         onClick={() => setIsRecurrenceModalOpen(true)}
@@ -37,12 +45,16 @@ export const StocksEventCreation = ({
 
       {isRecurrenceModalOpen && (
         <DialogBox
-          onDismiss={() => setIsRecurrenceModalOpen(false)}
+          onDismiss={onCancel}
           hasCloseButton
-          labelledBy="Lolilol"
+          labelledBy="add-recurrence"
           extraClassNames={styles['recurrence-modal']}
         >
-          <RecurrenceForm />
+          <RecurrenceForm
+            offer={offer}
+            onCancel={onCancel}
+            onConfirm={onConfirm}
+          />
         </DialogBox>
       )}
     </div>
