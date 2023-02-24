@@ -218,7 +218,7 @@ class AdageHttpClient(AdageClient):
         return parse_obj_as(list[AdageEducationalInstitution], institutions)
 
     def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
-        api_url = f"{self.base_url}/v1/etablissement-culturel/{uai}"
+        api_url = f"{self.base_url}/v1/redacteurs-projets/{uai}"
         try:
             api_response = requests.get(
                 api_url,
