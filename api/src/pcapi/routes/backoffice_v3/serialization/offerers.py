@@ -22,7 +22,6 @@ class OffererBasicInfo(BaseModel):
     siren: str | None
     region: str
     bank_information_status: OffererBankInformationStatus
-    is_collective_eligible: bool
 
 
 class BaseOffersStats(BaseModel):
