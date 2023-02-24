@@ -18,7 +18,7 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number
 from pcapi.utils.human_ids import dehumanize
-from pcapi.validation.routes.offers import check_offer_name_length_is_valid
+from pcapi.validation.routes.offers import check_collective_offer_name_length_is_valid
 
 
 class AuthErrorResponseModel(BaseModel):
@@ -365,7 +365,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
 
     @validator("name", pre=True)
     def validate_name(cls, name: str) -> str:
-        check_offer_name_length_is_valid(name)
+        check_collective_offer_name_length_is_valid(name)
         return name
 
     @validator("domains", pre=True)
@@ -438,7 +438,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     @validator("name", allow_reuse=True)
     def validate_name(cls, name: str | None) -> str | None:
         assert name is not None and name.strip() != ""
-        check_offer_name_length_is_valid(name)
+        check_collective_offer_name_length_is_valid(name)
         return name
 
     @validator("domains")
