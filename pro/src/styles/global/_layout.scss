@@ -2,6 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
 
 * {
   box-sizing: border-box;
@@ -31,7 +32,7 @@ body {
 
 #root {
   display: grid;
-  grid-template-columns: [col-start] 1fr [col-main] rem.torem(874px) 1fr;
+  grid-template-columns: [col-start] 1fr [col-main] size.$main-content-width 1fr;
   grid-template-rows: [row-nav] rem.torem(72px) [row-header] rem.torem(80px) [row-main] 1fr [row-footer] rem.torem(
       120px
     );
