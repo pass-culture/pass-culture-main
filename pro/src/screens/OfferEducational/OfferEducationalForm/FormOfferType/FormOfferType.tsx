@@ -119,7 +119,7 @@ const FormOfferType = ({
         <TextInput
           countCharacters
           label={TITLE_LABEL}
-          maxLength={90}
+          maxLength={110}
           name="title"
           disabled={disableForm}
         />
