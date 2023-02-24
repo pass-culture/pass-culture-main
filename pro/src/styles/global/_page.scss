@@ -1,6 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
 
 .columns,
 .field.is-grouped {
@@ -78,7 +79,7 @@ main {
       border-radius: rem.torem(10px);
 
       .after-notification-content {
-        padding: rem.torem(24px);
+        padding: size.$main-content-padding;
         position: relative;
 
         &.with-padding {
