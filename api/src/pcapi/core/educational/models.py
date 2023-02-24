@@ -954,6 +954,14 @@ class CollectiveBooking(PcObject, Base, Model):
     def isReimbursed(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.status == CollectiveBookingStatus.REIMBURSED
 
+    @hybrid_property
+    def isCancelled(self) -> bool:
+        return self.status == CollectiveBookingStatus.CANCELLED
+
+    @isCancelled.expression  # type: ignore [no-redef]
+    def isCancelled(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.status == CollectiveBookingStatus.CANCELLED
+
     @property
     def userName(self) -> str | None:
         return f"{self.educationalRedactor.firstName} {self.educationalRedactor.lastName}"
