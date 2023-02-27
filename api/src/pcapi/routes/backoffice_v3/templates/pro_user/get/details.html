@@ -3,7 +3,7 @@
 {% from "components/presentation/details/tabs.html" import build_details_tab_content %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
 
-<turbo-frame data-turbo="false" id="pro_user_details_frame">
+<turbo-frame id="pro_user_details_frame">
 
     {% call build_details_tabs_wrapper() %}
         {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
