@@ -11,6 +11,7 @@ import styles from './Signup.module.scss'
 import SignupConfirmation from './SignupConfirmation/SignupConfirmation'
 import SignupContainer from './SignupContainer/SignupContainer'
 import SignupUnavailable from './SignupUnavailable/SignupUnavailable'
+import SignUpValidation from './SignUpValidation'
 
 const Signup = () => {
   useEffect(() => {
@@ -35,6 +36,7 @@ const Signup = () => {
         <Routes>
           <Route element={<SignupContainer />} path="" />
           <Route element={<SignupConfirmation />} path="/confirmation" />
+          <Route element={<SignUpValidation />} path="/validation/:token" />
         </Routes>
       ) : (
         <SignupUnavailable />
