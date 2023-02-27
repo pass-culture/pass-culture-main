@@ -3,10 +3,11 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import PageTitle from 'components/PageTitle/PageTitle'
+import { useNavigate } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as AddOffererSvg } from 'icons/ico-plus.svg'
 import { ButtonLink } from 'ui-kit'
@@ -25,7 +26,12 @@ import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 /* eslint-disable */
 function withRouterAndApiSiren(Component) {
   return props => (
-    <Component {...props} history={useHistory()} location={useLocation()} isOffererCreationAvailable={useActiveFeature('API_SIRENE_AVAILABLE')}/>
+    <Component
+      {...props}
+      navigate={useNavigate()}
+      location={useLocation()}
+      isOffererCreationAvailable={useActiveFeature('API_SIRENE_AVAILABLE')}
+    />
   )
 }
 /* eslint-enable */
@@ -113,13 +119,13 @@ class Offerers extends PureComponent {
   }
 
   handleOnKeywordsSubmit = () => {
-    const { history, location } = this.props
+    const { navigate, location } = this.props
     const { keywordsInputValue } = this.state
     const keywords = keywordsInputValue
 
     const queryParams = new URLSearchParams(location.search)
 
-    history.replace('/structures?mots-cles=' + keywords || '')
+    navigate('/structures?mots-cles=' + keywords || '', { replace: true })
 
     this.forceRenderKey++ // See variable declaration for more information
 
@@ -148,17 +154,17 @@ class Offerers extends PureComponent {
   }
 
   onPageChange = page => {
-    const { history, location } = this.props
+    const { navigate, location } = this.props
     const queryParams = new URLSearchParams(location.search)
     queryParams.set('page', page)
-    history.replace(`structures?${queryParams.toString()}`)
+    navigate(`structures?${queryParams.toString()}`, { replace: true })
   }
 
   onPageReset = () => {
-    const { history, location } = this.props
+    const { navigate, location } = this.props
     const queryParams = new URLSearchParams(location.search)
     queryParams.delete('page')
-    history.replace(`structures?${queryParams.toString()}`)
+    navigate(`structures?${queryParams.toString()}`, { replace: true })
   }
 
   render() {
@@ -242,7 +248,7 @@ class Offerers extends PureComponent {
 }
 
 Offerers.propTypes = {
-  history: PropTypes.shape().isRequired,
+  navigate: PropTypes.func.isRequired,
   isOffererCreationAvailable: PropTypes.bool.isRequired,
   location: PropTypes.shape().isRequired,
 }
