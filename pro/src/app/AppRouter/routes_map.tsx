@@ -315,10 +315,12 @@ const routes: IRoute[] = [
         pageName: 'reimbursements',
       },
     },
+    useV6Router: true,
   },
   {
     component: UserProfile,
     path: '/profil',
+    useV6Router: true,
     title: 'Profil',
   },
   {
@@ -326,6 +328,7 @@ const routes: IRoute[] = [
     path: '/statistiques',
     title: 'Statistiques',
     featureName: 'ENABLE_OFFERER_STATS',
+    useV6Router: true,
   },
 ]
 
