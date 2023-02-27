@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types'
 import React, { useEffect } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom-v5-compat'
 
 import AppLayout from 'app/AppLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
@@ -13,7 +12,7 @@ import SignupConfirmation from './SignupConfirmation/SignupConfirmation'
 import SignupContainer from './SignupContainer/SignupContainer'
 import SignupUnavailable from './SignupUnavailable/SignupUnavailable'
 
-const Signup = ({ location }) => {
+const Signup = () => {
   useEffect(() => {
     campaignTracker.signUp()
   }, [])
@@ -33,22 +32,15 @@ const Signup = ({ location }) => {
         <Logo noLink signPage />
       </div>
       {isProAccountCreationEnabled ? (
-        <Switch location={location}>
-          <Route component={SignupContainer} exact path="/inscription" />
-          <Route
-            component={SignupConfirmation}
-            path="/inscription/confirmation"
-          />
-        </Switch>
+        <Routes>
+          <Route element={<SignupContainer />} path="" />
+          <Route element={<SignupConfirmation />} path="/confirmation" />
+        </Routes>
       ) : (
         <SignupUnavailable />
       )}
     </AppLayout>
   )
-}
-
-Signup.propTypes = {
-  location: PropTypes.shape().isRequired,
 }
 
 export default Signup
