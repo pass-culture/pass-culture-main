@@ -1,5 +1,5 @@
-{% from "components/bookings/extra_row.html" import build_booking_extra_toggle with context %}
-{% from "components/bookings/extra_row.html" import build_booking_extra_tr with context %}
+{% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
+{% from "components/bookings/extra_row.html" import build_booking_extra_row with context %}
 {% from "components/form_body.html" import build_form_body with context %}
 
 {% extends "layouts/connected.html" %}
@@ -37,7 +37,7 @@
                         <tr>
                             <th scope="row">
                                 <div class="d-flex">
-                                    {{ build_booking_extra_toggle(collective_booking) }}
+                                    {{ build_booking_toggle_extra_row_button(collective_booking) }}
                                     <div class="mx-2 dropdown">
                                     {% if has_permission("MANAGE_BOOKINGS") %}
                                         <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
@@ -139,7 +139,7 @@
                                 </a>
                             </td>
                         </tr>
-                        {{ build_booking_extra_tr(collective_booking, collective_booking.collectiveStock, collective_offer) }}
+                        {{ build_booking_extra_row(collective_booking, collective_booking.collectiveStock, collective_offer) }}
                     {% endfor %}
                     </tbody>
                 </table>
