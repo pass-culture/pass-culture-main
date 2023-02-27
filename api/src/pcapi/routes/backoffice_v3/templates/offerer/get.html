@@ -1,6 +1,6 @@
 {% from "components/badges.html" import build_offerer_badges %}
-{% from "components/external_links.html" import build_siren_link %}
 {% from "components/form_body.html" import build_form_body with context %}
+{% import "components/links.html" as links %}
 
 {% extends "layouts/pro.html" %}
 
@@ -10,12 +10,7 @@
         <div class="card shadow">
             <div class="card-body">
                 <div class="d-flex flex-fill align-items-center">
-                    <h2 class="card-title text-primary">
-                        <a href="{{ offerer | pc_pro_offerer_link }}" target="_blank"
-                        class="link-primary">
-                            {{ offerer.name | escape }}
-                        </a>
-                    </h2>
+                    <h2 class="card-title text-primary">{{ links.build_offerer_name_to_pc_pro_link(offerer) }}</h2>
                     <span class="fs-5 ps-4">
                         {{ build_offerer_badges(offerer) }}
                     </span>
@@ -90,7 +85,7 @@
                 </p>
 
                 <p class="card-subtitle text-muted mb-3 h5">
-                    SIREN : {{ build_siren_link(offerer) }}
+                    SIREN : {{ links.build_siren_to_external_link(offerer) }}
                 </p>
 
                 <div class="row pt-3">

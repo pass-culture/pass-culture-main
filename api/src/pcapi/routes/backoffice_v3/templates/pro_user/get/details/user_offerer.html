@@ -1,5 +1,5 @@
 {% from "components/badges.html" import build_user_offerer_status_badge %}
-{% from "components/external_links.html" import build_siren_link %}
+{% import "components/links.html" as links %}
 
 <table class="table table-hover my-4">
     <thead>
@@ -17,12 +17,8 @@
                 <th scope="row"></th>
                 <td>{{ user_offerer.offererId}}</td>
                 <td>{{ build_user_offerer_status_badge(user_offerer) }}</td>
-                <td class="text-break">
-                    <a href="{{ url_for("backoffice_v3_web.offerer.get", offerer_id=user_offerer.offererId) }}" class="link-primary">
-                        {{ user_offerer.offerer.name }}
-                    </a>
-                </td>
-                <td>{{ build_siren_link(user_offerer.offerer) }}</td>
+                <td class="text-break">{{ links.build_offerer_name_to_details_link(user_offerer.offerer) }}</td>
+                <td>{{ links.build_siren_to_external_link(user_offerer.offerer) }}</td>
             </tr>
         {% endfor %}
     </tbody>

@@ -1,6 +1,7 @@
 {% from "offerer/edit_status_modal.html" import build_edit_status_modal with context %}
 {% from "components/badges.html" import build_offerer_status_badge %}
-{% from "components/external_links.html" import build_siren_link %}
+{% import "components/links.html" as links %}
+
 {% macro stats_card(value, text_one, text_many) %}
     <div class="col-3 p-2">
         <div class="card shadow">
@@ -101,11 +102,7 @@
                                 </div>
                             </td>
                             <td>{{ offerer.id }}</td>
-                            <td>
-                                <a href="{{ url_for('backoffice_v3_web.offerer.get', offerer_id=offerer.id) }}" class="link-primary">
-                                    {{ offerer.name | upper | escape }}
-                                </a>
-                            </td>
+                            <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
                             <td>{{ build_offerer_status_badge(offerer) }}</td>
                             <td>
                                 {% set top_actor_checked = is_top_actor_func(offerer) %}
@@ -129,16 +126,9 @@
                             </td>
                             <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                             <td>{{ get_last_comment_func(offerer) | empty_string_if_null | replace("\n", "<br/>"|safe) }}</td>
-                            <td>{{ build_siren_link(offerer) }}</td>
+                            <td>{{ links.build_siren_to_external_link(offerer) }}</td>
                             <td>{{ (owner and owner.email) | empty_string_if_null }}</td>
-                            <td>
-                                {% if owner %}
-                                    <a href="{{ url_for('backoffice_v3_web.pro_user.get', user_id=owner.id) }}" class="link-primary">
-                                        {{ owner.firstName | empty_string_if_null | escape }}
-                                        {{ owner.lastName | empty_string_if_null | escape }}
-                                    </a>
-                                {% endif %}
-                            </td>
+                            <td>{{ links.build_pro_user_name_to_details_link(owner) }}</td>
                             <td>{{ offerer.city | empty_string_if_null }}</td>
                             <td>{{ (owner and owner.phoneNumber) | format_phone_number }}</td>
                         </tr>
