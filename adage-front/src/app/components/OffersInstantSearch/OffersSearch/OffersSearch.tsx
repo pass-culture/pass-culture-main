@@ -53,6 +53,9 @@ export const OffersSearchComponent = ({
   const uaiCodeShareWithMyInstitutionTab = userUAICode ? [userUAICode] : null
 
   const handleTabChange = (tab: OfferTab) => {
+    dispatchCurrentFilters({
+      type: 'RESET_CURRENT_FILTERS',
+    })
     setActiveTab(tab)
     setFacetFilters(
       populateFacetFilters({
