@@ -290,3 +290,33 @@ class Returns400Test:
         assert response.json["reimbursementPointId"] == [
             f"Le lieu {new_reimbursement_point.name} ne peut pas être utilisé pour les remboursements car il n'appartient pas à la même structure."
         ]
+
+    def test_raises_if_comment_too_long(self, client) -> None:
+        venue = offerers_factories.VenueFactory(siret=None, comment="No SIRET")
+        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        venue_data = populate_missing_data_from_venue(
+            {"comment": "No SIRET " * 60},
+            venue,
+        )
+        response = client.with_session_auth(email=user_offerer.user.email).patch(
+            f"/venues/{humanize(venue.id)}", json=venue_data
+        )
+
+        assert response.status_code == 400
+        assert response.json["comment"] == ["ensure this value has at most 500 characters"]
+
+    def test_raises_if_withdrawal_details_too_long(self, client) -> None:
+        venue = offerers_factories.VenueFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        venue_data = populate_missing_data_from_venue(
+            {"withdrawalDetails": "blabla " * 100},
+            venue,
+        )
+        response = client.with_session_auth(email=user_offerer.user.email).patch(
+            f"/venues/{humanize(venue.id)}", json=venue_data
+        )
+
+        assert response.status_code == 400
+        assert response.json["withdrawalDetails"] == ["ensure this value has at most 500 characters"]

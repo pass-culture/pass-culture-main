@@ -36,7 +36,7 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     address: base.VenueAddress
     bookingEmail: base.VenueBookingEmail
     city: base.VenueCity
-    comment: str | None
+    comment: base.VenueComment | None
     latitude: float
     longitude: float
     managingOffererId: str
@@ -46,7 +46,7 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     siret: base.VenueSiret | None
     venueLabelId: str | None
     venueTypeCode: str
-    withdrawalDetails: str | None
+    withdrawalDetails: base.VenueWithdrawalDetails | None
     description: base.VenueDescription | None
     contact: base.VenueContactModel | None
 
@@ -293,10 +293,10 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     postalCode: base.VenuePostalCode | None
     city: base.VenueCity | None
     publicName: base.VenuePublicName | None
-    comment: str | None
+    comment: base.VenueComment | None
     venueTypeCode: str | None
     venueLabelId: int | None
-    withdrawalDetails: str | None
+    withdrawalDetails: base.VenueWithdrawalDetails | None
     isAccessibilityAppliedOnAllOffers: bool | None
     isWithdrawalAppliedOnAllOffers: bool | None
     isEmailAppliedOnAllOffers: bool | None
