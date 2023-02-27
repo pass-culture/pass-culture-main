@@ -4,7 +4,6 @@ import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import * as useNotification from 'hooks/useNotification'
 import {
   collectiveOfferFactory,
