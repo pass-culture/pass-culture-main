@@ -1,9 +1,6 @@
-import { waitFor } from '@testing-library/react'
-import type { Action, History } from 'history'
-import { createBrowserHistory } from 'history'
+import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import reactRouter from 'react-router'
-import { Router } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
@@ -22,8 +19,19 @@ jest.mock('hooks/useCurrentUser')
 jest.mock('hooks/useNotification')
 jest.mock('tracking/mediaCampaignsTracking')
 
+const renderSignupValidation = (url: string) =>
+  renderWithProviders(
+    <Routes>
+      <Route path="/validation/:token" element={<SignUpValidation />} />
+      <Route path="/" element={<div>Accueil</div>} />
+      <Route path="/connexion" element={<div>Connexion</div>} />
+    </Routes>,
+    {
+      initialRouterEntries: [url],
+    }
+  )
+
 describe('src | components | pages | Signup | validation', () => {
-  let history: History
   const mockUseNotification = {
     close: jest.fn(),
     error: jest.fn(),
@@ -33,8 +41,6 @@ describe('src | components | pages | Signup | validation', () => {
   }
 
   beforeEach(() => {
-    history = createBrowserHistory()
-    jest.spyOn(reactRouter, 'useParams').mockReturnValue({ token: 'AAA' })
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...mockUseNotification,
     }))
@@ -47,68 +53,37 @@ describe('src | components | pages | Signup | validation', () => {
 
   it('should redirect to home page if the user is logged in', async () => {
     const validateUser = jest.spyOn(api, 'validateUser')
-    const redirect = jest.fn()
-    jest.spyOn(reactRouter, 'useHistory').mockImplementation(() => ({
-      push: redirect,
-      length: 0,
-      action: 'REPLACE' as Action,
-      location: {
-        pathname: '',
-        search: '',
-        state: '',
-        hash: '',
-      },
-      replace: jest.fn(),
-      go: jest.fn(),
-      goBack: jest.fn(),
-      goForward: jest.fn(),
-      block: jest.fn(),
-      listen: jest.fn(),
-      createHref: jest.fn(),
-    }))
     jest.spyOn(useCurrentUser, 'default').mockReturnValue({
       currentUser: {
         id: '123',
       },
     } as IUseCurrentUserReturn)
     // when the user is logged in and lands on signup validation page
-    renderWithProviders(
-      <Router history={history}>
-        <SignUpValidation />
-      </Router>
-    )
+    renderSignupValidation('/validation/AAA')
+
     // then the validity of his token should not be verified
     expect(validateUser).not.toHaveBeenCalled()
     // and he should be redirected to home page
-    expect(redirect).toHaveBeenCalledTimes(1)
-    expect(redirect).toHaveBeenNthCalledWith(1, '/')
+    expect(screen.getByText('Accueil')).toBeInTheDocument()
   })
 
   it('should verify validity of user token and redirect to connexion', async () => {
     const validateUser = jest.spyOn(api, 'validateUser').mockResolvedValue()
     // when the user lands on signup validation page
-    renderWithProviders(
-      <Router history={history}>
-        <SignUpValidation />
-      </Router>
-    )
+    renderSignupValidation('/validation/AAA')
     // then the validity of his token should be verified
     expect(validateUser).toHaveBeenCalledTimes(1)
     expect(validateUser).toHaveBeenNthCalledWith(1, 'AAA')
     // and he should be redirected to signin page
     await waitFor(() => {
-      expect(history.location.pathname).toBe('/connexion')
+      expect(screen.getByText('Connexion')).toBeInTheDocument()
     })
   })
 
   it('should call media campaign tracker once', () => {
     jest.spyOn(api, 'validateUser').mockResolvedValue()
     // when the user lands on signup validation page
-    renderWithProviders(
-      <Router history={history}>
-        <SignUpValidation />
-      </Router>
-    )
+    renderSignupValidation('/validation/AAA')
     // then the media campaign tracker should be called once
     expect(campaignTracker.signUpValidation).toHaveBeenCalledTimes(1)
   })
@@ -121,11 +96,8 @@ describe('src | components | pages | Signup | validation', () => {
       success: notifySuccess,
     }))
     // given the user lands on signup validation page
-    renderWithProviders(
-      <Router history={history}>
-        <SignUpValidation />
-      </Router>
-    )
+    renderSignupValidation('/validation/AAA')
+
     // when his token is successfully validated
     // then a success message should be dispatched
     await waitFor(() => {
@@ -134,6 +106,7 @@ describe('src | components | pages | Signup | validation', () => {
         'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
       )
     })
+    expect(screen.getByText('Connexion')).toBeInTheDocument()
   })
 
   it('should display an error message when token verification is not successful', async () => {
@@ -154,11 +127,7 @@ describe('src | components | pages | Signup | validation', () => {
       )
     )
     // given the user lands on signup validation page
-    renderWithProviders(
-      <Router history={history}>
-        <SignUpValidation />
-      </Router>
-    )
+    renderSignupValidation('/validation/AAA')
     // when his token is not successfully validated
     // then an error message should be dispatched
     await waitFor(() => {
