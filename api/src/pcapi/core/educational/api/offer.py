@@ -429,14 +429,13 @@ def create_collective_offer_public(
     if not len(educational_domains) == len(body.domains):
         raise exceptions.EducationalDomainsNotFound()
 
-    if body.educational_institution_id:
-        institution = educational_models.EducationalInstitution.query.filter_by(
-            id=body.educational_institution_id
-        ).one_or_none()
-        if not institution:
-            raise exceptions.EducationalInstitutionUnknown()
-        if not institution.isActive:
-            raise exceptions.EducationalInstitutionIsNotActive()
+    institution = educational_models.EducationalInstitution.query.filter_by(
+        id=body.educational_institution_id
+    ).one_or_none()
+    if not institution:
+        raise exceptions.EducationalInstitutionUnknown()
+    if not institution.isActive:
+        raise exceptions.EducationalInstitutionIsNotActive()
 
     if body.offer_venue.venueId:
         query = db.session.query(sa.func.count(offerers_models.Venue.id))
@@ -538,10 +537,10 @@ def edit_collective_offer_public(
         elif key == "educationalInstitutionId":
             if value is not None:
                 institution = educational_models.EducationalInstitution.query.filter_by(id=value).one_or_none()
-                if not institution.isActive:
-                    raise exceptions.EducationalInstitutionIsNotActive()
                 if not institution:
                     raise exceptions.EducationalInstitutionUnknown()
+                if not institution.isActive:
+                    raise exceptions.EducationalInstitutionIsNotActive()
             offer.institutionId = value
         elif key == "offerVenue":
             offer.offerVenue["venueId"] = humanize(value["venueId"]) or ""

@@ -516,3 +516,33 @@ class CollectiveOffersPublicPatchOfferTest:
         assert response.status_code == 404
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
         assert offer.domains[0].id == domain.id
+
+    def test_patch_offer_bad_institution(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__imageCredit="pouet",
+            collectiveOffer__imageId="123456789",
+            collectiveOffer__venue=venue,
+            collectiveOffer__institution=educational_institution,
+        )
+
+        payload = {
+            "educationalInstitutionId": 0,
+        }
+
+        # When
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+            )
+
+        # Then
+        assert response.status_code == 404
+
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        assert offer.institutionId == educational_institution.id
