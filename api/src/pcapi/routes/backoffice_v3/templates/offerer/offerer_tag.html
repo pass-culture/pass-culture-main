@@ -1,4 +1,4 @@
-{% from "components/form_body.html" import build_form_body with context %}
+{% from "components/forms.html" import build_form_fields_group with context %}
 
 {% extends "layouts/connected.html" %}
 
@@ -18,9 +18,7 @@
                             <h5 class="modal-title">Créer un tag structure</h5>
                         </div>
                         <div class="modal-body row">
-                            <div class="form-group">
-                                {{ build_form_body(create_tag_form) }}
-                            </div>
+                            {{ build_form_fields_group(create_tag_form) }}
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
@@ -80,9 +78,7 @@
                                                     <h5 class="modal-title">Modifier le tag {{ offerer_tag.name }}</h5>
                                                 </div>
                                                 <div class="modal-body row">
-                                                    <div class="form-group">
-                                                        {{ build_form_body(forms[offerer_tag.id]) }}
-                                                    </div>
+                                                    {{ build_form_fields_group(forms[offerer_tag.id]) }}
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
@@ -107,9 +103,7 @@
                                                             Le tag <strong>{{ offerer_tag.label or offerer_tag.name }}</strong> sera définitivement supprimé
                                                             de la base de données et retiré de toutes les structures auxquelles il est associé. Veuillez confirmer ce choix.
                                                         </p>
-                                                        <div class="form-group">
-                                                            {{ build_form_body(delete_tag_form) }}
-                                                        </div>
+                                                        {{ build_form_fields_group(delete_tag_form) }}
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>

@@ -1,4 +1,4 @@
-{% from "components/form_body.html" import build_form_body with context %}
+{% from "components/forms.html" import build_form_fields_group with context %}
 
 {% extends "layouts/connected.html" %}
 
@@ -7,9 +7,7 @@
         <h2 class="fw-light">Déplacer un SIRET d’un lieu à un autre</h2>
         <div class="col-12 py-4">
             <form action="{{ dst }}" method="POST">
-                <div class="form-group">
-                    {{ build_form_body(form) }}
-                </div>
+                {{ build_form_fields_group(form) }}
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary">Continuer</button>
                 </div>
