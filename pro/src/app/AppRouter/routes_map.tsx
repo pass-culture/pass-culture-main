@@ -176,6 +176,20 @@ const routes: IRoute[] = [
     useV6Router: true,
   },
   {
+    component: SetPasswordConfirm,
+    exact: true,
+    path: '/creation-de-mot-de-passe-erreur',
+    title: 'Erreur de création de mot de passe',
+    meta: {
+      public: true,
+      layoutConfig: {
+        fullscreen: true,
+        pageName: 'sign-in',
+      },
+    },
+    useV6Router: true,
+  },
+  {
     component: SignIn,
     exact: true,
     path: '/connexion',
@@ -221,6 +235,7 @@ const routes: IRoute[] = [
     exact: true,
     path: '/structures/:offererId',
     title: 'Structures',
+    useV6Router: true,
   },
   {
     component: VenueCreation,

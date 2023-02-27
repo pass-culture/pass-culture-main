@@ -3,11 +3,10 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import PageTitle from 'components/PageTitle/PageTitle'
-import { useNavigate } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as AddOffererSvg } from 'icons/ico-plus.svg'
 import { ButtonLink } from 'ui-kit'
@@ -157,14 +156,14 @@ class Offerers extends PureComponent {
     const { navigate, location } = this.props
     const queryParams = new URLSearchParams(location.search)
     queryParams.set('page', page)
-    navigate(`structures?${queryParams.toString()}`, { replace: true })
+    navigate(`/structures?${queryParams.toString()}`, { replace: true })
   }
 
   onPageReset = () => {
     const { navigate, location } = this.props
     const queryParams = new URLSearchParams(location.search)
     queryParams.delete('page')
-    navigate(`structures?${queryParams.toString()}`, { replace: true })
+    navigate(`/structures?${queryParams.toString()}`, { replace: true })
   }
 
   render() {
