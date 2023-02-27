@@ -1,12 +1,11 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { Field, Form } from 'react-final-form'
-import { useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
 import LegalInfos from 'components/LegalInfos/LegalInfos'
 import PageTitle from 'components/PageTitle/PageTitle'
-import { useNavigate } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import PasswordField from 'ui-kit/form_rff/fields/PasswordField'
@@ -29,7 +28,7 @@ const SetPassword = () => {
 
   const redirectOnTokenError = () => {
     // TODO: handle errors with a different route
-    navigate('/creation-de-mot-de-passe-confirmation?error=unvalid-link')
+    navigate('/creation-de-mot-de-passe-erreur')
   }
 
   const token = params.token

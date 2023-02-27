@@ -17,6 +17,10 @@ const renderSetPassword = (
         path="/creation-de-mot-de-passe-confirmation"
         element={<SetPasswordConfirm />}
       />
+      <Route
+        path="/creation-de-mot-de-passe-erreur"
+        element={<SetPasswordConfirm />}
+      />
       <Route path="/accueil" element={<div>Accueil</div>} />
       <Route path="/connexion" element={<div>Connexion</div>} />
     </Routes>,
@@ -63,10 +67,7 @@ describe('src | components | pages | SetPassword', () => {
   })
 
   it('should display error message when error in query params', async () => {
-    renderSetPassword(
-      store,
-      '/creation-de-mot-de-passe-confirmation?error=unvalid-link'
-    )
+    renderSetPassword(store, '/creation-de-mot-de-passe-erreur')
 
     expect(screen.getByText('Votre lien a expiré !')).toBeVisible()
     expect(screen.getByText('Veuillez contacter notre support')).toBeVisible()
