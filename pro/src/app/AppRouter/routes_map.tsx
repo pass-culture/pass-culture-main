@@ -88,12 +88,14 @@ export const routesWithoutLayout: IRoute[] = [
     exact: true,
     path: '/reservations/detail',
     title: 'Réservations',
+    useV6Router: true,
   },
   {
     component: CsvTable,
     exact: true,
     path: '/remboursements-details',
     title: 'Remboursements',
+    useV6Router: true,
   },
   {
     component: Unavailable,
@@ -103,6 +105,7 @@ export const routesWithoutLayout: IRoute[] = [
     meta: {
       public: true,
     },
+    useV6Router: true,
   },
 ]
 
