@@ -21,11 +21,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const renderLostPassword = url => {
-  const storeOverrides = {
-    user: {
-      currentUser: { id: 'CMOI' },
-    },
-  }
+  const storeOverrides = {}
 
   renderWithProviders(<LostPassword />, {
     storeOverrides,
