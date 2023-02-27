@@ -32,15 +32,11 @@ describe('src | components | pages | Signup', () => {
   afterEach(jest.resetAllMocks)
 
   it('should render logo and sign-up form', () => {
-    // given
-    const props = {
-      location: {
-        pathname: '/inscription',
-      },
-    }
-
     // when
-    renderWithProviders(<Signup {...props} />, { storeOverrides })
+    renderWithProviders(<Signup />, {
+      storeOverrides,
+      initialRouterEntries: ['/'], // /inscription
+    })
 
     // then
     expect(
@@ -49,15 +45,11 @@ describe('src | components | pages | Signup', () => {
   })
 
   it('should render logo and confirmation page', () => {
-    // given
-    const props = {
-      location: {
-        pathname: '/inscription/confirmation',
-      },
-    }
-
     // when
-    renderWithProviders(<Signup {...props} />, { storeOverrides })
+    renderWithProviders(<Signup />, {
+      storeOverrides,
+      initialRouterEntries: ['/confirmation'], // /inscription/confirmation
+    })
 
     // then
     expect(
@@ -67,11 +59,6 @@ describe('src | components | pages | Signup', () => {
 
   it('should render maintenance page when signup is unavailable', async () => {
     // given
-    const props = {
-      location: {
-        pathname: '/inscription',
-      },
-    }
     const storeOverrides = {
       features: {
         list: [{ isActive: false, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
@@ -79,7 +66,10 @@ describe('src | components | pages | Signup', () => {
     }
 
     // when
-    renderWithProviders(<Signup {...props} />, { storeOverrides })
+    renderWithProviders(<Signup />, {
+      storeOverrides,
+      initialRouterEntries: ['/inscription'],
+    })
 
     // then
     expect(
@@ -95,17 +85,15 @@ describe('src | components | pages | Signup', () => {
         nameKey: 'ENABLE_PRO_ACCOUNT_CREATION',
       },
     ])
-    const props = {
-      location: {},
-    }
 
     // when
-    const { rerender } = renderWithProviders(<Signup {...props} />, {
+    const { rerender } = renderWithProviders(<Signup />, {
       storeOverrides,
+      initialRouterEntries: ['/inscription'],
     })
 
     // when rerender
-    rerender(<Signup {...props} />)
+    rerender(<Signup />)
 
     // then
     expect(campaignTracker.signUp).toHaveBeenCalledTimes(1)

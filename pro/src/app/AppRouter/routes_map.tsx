@@ -66,11 +66,12 @@ export const routesWithoutLayout: IRoute[] = [
   {
     component: Signup,
     exact: true,
-    path: '/inscription/(confirmation)?',
+    path: '/inscription*',
     title: 'Inscription',
     meta: {
       public: true,
     },
+    useV6Router: true,
   },
   {
     component: SignUpValidation,
