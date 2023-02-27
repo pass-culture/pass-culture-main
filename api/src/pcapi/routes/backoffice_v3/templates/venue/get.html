@@ -1,5 +1,5 @@
 {% from "components/badges.html" import build_venue_badges %}
-{% from "components/form_body.html" import build_form_body with context %}
+{% from "components/forms.html" import build_form_fields_group with context %}
 {% import "components/links.html" as links %}
 
 {% extends "layouts/pro.html" %}
@@ -30,7 +30,7 @@
                                             </div>
                                             <div class="modal-body">
                                                 <div class="form-floating my-3">
-                                                    {{ build_form_body(edit_venue_form) }}
+                                                    {{ build_form_fields_group(edit_venue_form) }}
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -64,9 +64,7 @@
                                                     Le lieu <strong>{{ venue.name }} ({{ venue.id }})</strong> sera définitivement supprimé
                                                     de la base de données. Veuillez confirmer ce choix.
                                                 </p>
-                                                <div class="form-group">
-                                                    {{ build_form_body(delete_venue_form) }}
-                                                </div>
+                                                {{ build_form_fields_group(delete_venue_form) }}
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
