@@ -11,6 +11,72 @@ import { selectActiveFeatures } from 'store/features/selectors'
 
 import getLegacyRedirect, { ILegacyRedirect } from './utils/getLegacyRedirect'
 
+const AppRouterV6 = (): JSX.Element => {
+  const activeFeatures = useSelector(selectActiveFeatures)
+  const activeRoutes = routes.filter(
+    route =>
+      (!route.featureName && !route.disabledFeatureName) ||
+      activeFeatures.includes(route.featureName) ||
+      (route.disabledFeatureName &&
+        !activeFeatures.includes(route.disabledFeatureName))
+  )
+  const activeRoutesWithoutLayout = routesWithoutLayout.filter(
+    route => !route.featureName || activeFeatures.includes(route.featureName)
+  )
+
+  return (
+    <Routes>
+      {activeRoutes
+        .filter(route => route.useV6Router)
+        .map(route =>
+          Array.isArray(route.path) ? (
+            route.path.map(path => (
+              <RouteV6
+                key={path}
+                path={path}
+                element={
+                  <AppLayout
+                    layoutConfig={route.meta && route.meta.layoutConfig}
+                  >
+                    <route.component />
+                  </AppLayout>
+                }
+              />
+            ))
+          ) : (
+            <RouteV6
+              key={route.path}
+              path={route.path}
+              element={
+                <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
+                  <route.component />
+                </AppLayout>
+              }
+            />
+          )
+        )}
+
+      {activeRoutesWithoutLayout
+        .filter(route => route.useV6Router)
+        .map(route =>
+          Array.isArray(route.path) ? (
+            route.path.map(path => (
+              <RouteV6 key={path} path={path} element={<route.component />} />
+            ))
+          ) : (
+            <RouteV6
+              key={route.path}
+              path={route.path}
+              element={<route.component />}
+            />
+          )
+        )}
+
+      <RouteV6 path="*" element={<NotFound />} />
+    </Routes>
+  )
+}
+
 const AppRouter = (): JSX.Element => {
   const activeFeatures = useSelector(selectActiveFeatures)
   const activeRoutes = routes.filter(
@@ -70,58 +136,9 @@ const AppRouter = (): JSX.Element => {
               }
             />
           ))}
-        <Route component={NotFound} />
+
+        <Route exact={false} component={AppRouterV6} />
       </Switch>
-
-      <Routes>
-        {activeRoutes
-          .filter(route => route.useV6Router)
-          .map(route =>
-            Array.isArray(route.path) ? (
-              route.path.map(path => (
-                <RouteV6
-                  key={path}
-                  path={path}
-                  element={
-                    <AppLayout
-                      layoutConfig={route.meta && route.meta.layoutConfig}
-                    >
-                      <route.component />
-                    </AppLayout>
-                  }
-                />
-              ))
-            ) : (
-              <RouteV6
-                key={route.path}
-                path={route.path}
-                element={
-                  <AppLayout
-                    layoutConfig={route.meta && route.meta.layoutConfig}
-                  >
-                    <route.component />
-                  </AppLayout>
-                }
-              />
-            )
-          )}
-
-        {activeRoutesWithoutLayout
-          .filter(route => route.useV6Router)
-          .map(route =>
-            Array.isArray(route.path) ? (
-              route.path.map(path => (
-                <RouteV6 key={path} path={path} element={<route.component />} />
-              ))
-            ) : (
-              <RouteV6
-                key={route.path}
-                path={route.path}
-                element={<route.component />}
-              />
-            )
-          )}
-      </Routes>
     </>
   )
 }
