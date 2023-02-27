@@ -934,7 +934,7 @@ class ListOfferersToValidateTest:
             rows = html_parser.extract_table_rows(response.data)
             assert len(rows) == 1
             assert rows[0]["ID"] == str(user_offerer.offerer.id)
-            assert rows[0]["Nom de la structure"] == user_offerer.offerer.name.upper()
+            assert rows[0]["Nom de la structure"] == user_offerer.offerer.name
             assert rows[0]["État"] == expected_status
             assert rows[0]["Top Acteur"] == ""  # no text
             assert rows[0]["Date de la demande"] == "03/10/2022"
@@ -960,7 +960,7 @@ class ListOfferersToValidateTest:
             rows = html_parser.extract_table_rows(response.data)
             assert len(rows) == 1
             assert rows[0]["ID"] == str(user_offerer.offerer.id)
-            assert rows[0]["Nom de la structure"] == user_offerer.offerer.name.upper()
+            assert rows[0]["Nom de la structure"] == user_offerer.offerer.name
             assert rows[0]["État"] == "Nouvelle"
             assert rows[0]["Date de la demande"] == "03/10/2022"
             assert rows[0]["Dernier commentaire"] == ""
@@ -1225,7 +1225,7 @@ class ListOfferersToValidateTest:
             # then
             assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom de la structure"] for row in rows} == {name.upper() for name in expected_offerer_names}
+            assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
 
         @pytest.mark.parametrize(
             "status_filter, expected_status, expected_offerer_names",
@@ -1592,7 +1592,7 @@ class ListUserOffererToValidateTest:
         assert rows[0]["Date de la demande"] == "03/11/2022"
         assert rows[0]["Dernier commentaire"] == "Bla blabla"
         assert rows[0]["Tél Compte pro"] == new_user_offerer.user.phoneNumber
-        assert rows[0]["Nom Structure"] == owner_user_offerer.offerer.name.upper()
+        assert rows[0]["Nom Structure"] == owner_user_offerer.offerer.name
         assert rows[0]["Date de création Structure"] == "02/11/2022"
         assert rows[0]["Email Responsable"] == owner_user_offerer.user.email
         assert rows[0]["SIREN"] == owner_user_offerer.offerer.siren
@@ -1624,7 +1624,7 @@ class ListUserOffererToValidateTest:
         assert rows[0]["Date de la demande"] == "25/11/2022"
         assert rows[0]["Dernier commentaire"] == ""
         assert rows[0]["Tél Compte pro"] == ""
-        assert rows[0]["Nom Structure"] == owner_user_offerer.offerer.name.upper()
+        assert rows[0]["Nom Structure"] == owner_user_offerer.offerer.name
         assert rows[0]["Date de création Structure"] == "03/11/2022"
         assert rows[0]["Email Responsable"] == owner_user_offerer.user.email
         assert rows[0]["SIREN"] == owner_user_offerer.offerer.siren
