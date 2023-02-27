@@ -229,6 +229,8 @@ def parse_referrer(url: str) -> str:
 
 
 def install_template_filters(app: Flask) -> None:
+    app.jinja_env.trim_blocks = True
+    app.jinja_env.lstrip_blocks = True
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
     app.jinja_env.filters["format_amount"] = format_amount
     app.jinja_env.filters["format_booking_cancellation_reason"] = format_booking_cancellation_reason
