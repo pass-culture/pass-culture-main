@@ -31,7 +31,8 @@ import { VenueCreation } from 'pages/VenueCreation'
 import { VenueEdition } from 'pages/VenueEdition'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
-interface ILayoutConfig {
+export interface ILayoutConfig {
+  backTo?: { path: string; label: string } | null
   pageName?: string
   fullscreen?: boolean
 }
@@ -78,6 +79,7 @@ export const routesWithoutLayout: IRoute[] = [
     exact: true,
     path: '/inscription/validation/:token',
     title: 'Validation de votre inscription',
+    useV6Router: true,
     meta: {
       public: true,
     },
