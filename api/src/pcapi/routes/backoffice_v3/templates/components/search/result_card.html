@@ -1,4 +1,4 @@
-{% from "components/badges.html" import build_pro_user_badges %}
+{% from "components/badges.html" import build_pro_user_status_badge %}
 
 <div class="card shadow">
     <div class="card-body">
@@ -14,7 +14,7 @@
                     {{ role | format_role }}
                 </span>
             {% endfor %}
-            {{ build_pro_user_badges(row) }}
+            {{ build_pro_user_status_badge(row) }}
         </h5>
 
         <h5 class="card-title">

@@ -1,4 +1,5 @@
 {% from "offerer/edit_status_modal.html" import build_edit_status_modal with context %}
+{% from "components/badges.html" import build_offerer_status_badge %}
 {% from "components/external_links.html" import build_siren_link %}
 {% macro stats_card(value, text_one, text_many) %}
     <div class="col-3 p-2">
@@ -105,7 +106,7 @@
                                     {{ offerer.name | upper | escape }}
                                 </a>
                             </td>
-                            <td>{% include "components/offerer/status_badge.html" %}</td>
+                            <td>{{ build_offerer_status_badge(offerer) }}</td>
                             <td>
                                 {% set top_actor_checked = is_top_actor_func(offerer) %}
                                 <div class="form-check form-switch">

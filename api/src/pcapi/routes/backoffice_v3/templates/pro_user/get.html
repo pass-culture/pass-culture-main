@@ -1,4 +1,4 @@
-{% from "components/badges.html" import build_pro_user_badges %}
+{% from "components/badges.html" import build_pro_user_status_badge %}
 {% from "components/generic_modal.html" import build_modal_form %}
 {% from "components/form_body.html" import build_form_body with context %}
 
@@ -27,7 +27,7 @@
                                     {{ user.isActive | format_state }}
                                 </span>
                             {% endif %}
-                            {{ build_pro_user_badges(user) }}
+                            {{ build_pro_user_status_badge(user) }}
                         </div>
                     </div>
                     <div class="col-2">
