@@ -20,7 +20,7 @@ jobs:
 
   quality-checks:
     name: Quality checks
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     needs: build-tests-docker-image
     permissions:
       id-token: write
@@ -89,7 +89,7 @@ jobs:
 
   pylint-check:
     name: Pylint
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     needs: build-tests-docker-image
     permissions:
       id-token: write
@@ -152,7 +152,7 @@ jobs:
       RUN_ENV: tests
       DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
       REDIS_URL: redis://redis:6379
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     needs: build-tests-docker-image
     permissions:
       id-token: write
@@ -262,7 +262,7 @@ jobs:
       RUN_ENV: tests
       DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
       REDIS_URL: redis://redis:6379
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     strategy:
       fail-fast: false
       matrix:
