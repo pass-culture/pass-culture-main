@@ -1,7 +1,7 @@
 import './Reimbursement.scss'
 
 import React, { useCallback, useEffect, useState } from 'react'
-import { Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { BannerReimbursementsInfo } from 'components/Banner'
@@ -35,8 +35,6 @@ const Reimbursements = () => {
   const [reimbursementPointsOptions, setReimbursementPointsOptions] = useState(
     []
   )
-
-  const match = useRouteMatch()
 
   const loadVenues = useCallback(async () => {
     const venuesResponse = await getVenuesForOffererAdapter({
@@ -92,21 +90,27 @@ const Reimbursements = () => {
 
           <ReimbursementsBreadcrumb />
 
-          <Switch>
-            <Route exact path={`${match.path}/justificatifs`}>
-              <ReimbursementsInvoices
-                reimbursementPointsOptions={reimbursementPointsOptions}
-                isCurrentUserAdmin={currentUser.isAdmin}
-              />
-            </Route>
-            <Route exact path={`${match.path}/details`}>
-              <ReimbursementsDetails
-                isCurrentUserAdmin={currentUser.isAdmin}
-                loadVenues={loadVenues}
-                venuesOptions={venuesOptions}
-              />
-            </Route>
-          </Switch>
+          <Routes>
+            <Route
+              path="/justificatifs"
+              element={
+                <ReimbursementsInvoices
+                  reimbursementPointsOptions={reimbursementPointsOptions}
+                  isCurrentUserAdmin={currentUser.isAdmin}
+                />
+              }
+            />
+            <Route
+              path="/details"
+              element={
+                <ReimbursementsDetails
+                  isCurrentUserAdmin={currentUser.isAdmin}
+                  loadVenues={loadVenues}
+                  venuesOptions={venuesOptions}
+                />
+              }
+            />
+          </Routes>
         </>
       )}
     </>
