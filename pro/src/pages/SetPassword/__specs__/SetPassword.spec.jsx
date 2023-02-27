@@ -1,8 +1,8 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Route, Router } from 'react-router'
+import reactRouter from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
@@ -14,27 +14,54 @@ import SetPassword from '../SetPassword'
 jest.mock('apiClient/api', () => ({
   api: { postNewPassword: jest.fn() },
 }))
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
+  useParams: () => ({
+    token: 'AT3VXY5EB',
+  }),
+}))
 
-const renderSetPassword = (storeOverrides, history) =>
+const renderSetPassword = storeOverrides =>
   renderWithProviders(
-    <Router history={history}>
-      <Route path="/creation-de-mot-de-passe/:token?">
-        <>
-          <SetPassword />
-          <Notification />
-        </>
-      </Route>
-    </Router>,
-    { storeOverrides }
+    <Routes>
+      <Route
+        path="/creation-de-mot-de-passe"
+        element={
+          <>
+            <SetPassword />
+            <Notification />
+          </>
+        }
+      />
+      <Route
+        path="/creation-de-mot-de-passe/:token"
+        element={
+          <>
+            <SetPassword />
+            <Notification />
+          </>
+        }
+      />
+      <Route path="/accueil" element={<div>Accueil</div>} />
+      <Route
+        path="/creation-de-mot-de-passe-confirmation"
+        element={<div>Confirmation</div>}
+      />
+      <Route
+        path="/creation-de-mot-de-passe-confirmation?error=unvalid-link"
+        element={<div>Error</div>}
+      />
+    </Routes>,
+    {
+      storeOverrides,
+      initialRouterEntries: ['/creation-de-mot-de-passe/AT3VXY5EB'],
+    }
   )
 
 describe('src | components | pages | SetPassword', () => {
-  let store, history, historyPushSpy
+  let store
   beforeEach(() => {
     store = {}
-    history = createBrowserHistory()
-    history.push('/creation-de-mot-de-passe/AT3VXY5EB')
-    historyPushSpy = jest.spyOn(history, 'push')
   })
 
   it('should redirect the user to structure page', async () => {
@@ -42,25 +69,27 @@ describe('src | components | pages | SetPassword', () => {
     store = {
       user: { currentUser: { publicName: 'Bosetti' } },
     }
-    renderSetPassword(store, history)
+    renderSetPassword(store)
 
     // Then
-    expect(historyPushSpy).toHaveBeenCalledWith('/accueil')
+    expect(await screen.findByText('Accueil')).toBeInTheDocument()
   })
 
-  it('should render the default page without redirect', () => {
+  it('should render the default page without redirect', async () => {
     // Given
-    renderSetPassword(store, history)
+    renderSetPassword(store)
 
     // Then
-    expect(
-      screen.getByText('Bienvenue sur l’espace dédié aux acteurs culturels')
-    ).toBeVisible()
+    await waitFor(() =>
+      expect(
+        screen.getByText('Bienvenue sur l’espace dédié aux acteurs culturels')
+      ).toBeInTheDocument()
+    )
   })
 
   it('should display form validation error on wrong confirmation', async () => {
     // Given
-    renderSetPassword(store, history)
+    renderSetPassword(store)
     const passwordInput = screen.getByLabelText('Mot de passe')
     const confirmationPasswordInput = screen.getByLabelText(
       'Confirmer le mot de passe'
@@ -80,11 +109,9 @@ describe('src | components | pages | SetPassword', () => {
 
   it('should send the right data', async () => {
     // Given
-    history = createBrowserHistory()
-    history.push('/creation-de-mot-de-passe/fakeToken')
-    historyPushSpy = jest.spyOn(history, 'push')
+    jest.spyOn(reactRouter, 'useParams').mockReturnValue({ token: 'fakeToken' })
     api.postNewPassword.mockResolvedValue()
-    renderSetPassword(store, history)
+    renderSetPassword(store)
     const passwordInput = screen.getByLabelText('Mot de passe')
     const confirmationPasswordInput = screen.getByLabelText(
       'Confirmer le mot de passe'
@@ -106,7 +133,7 @@ describe('src | components | pages | SetPassword', () => {
   it('should display the success message and redirect to login page', async () => {
     // Given
     api.postNewPassword.mockResolvedValue()
-    renderSetPassword(store, history)
+    renderSetPassword(store)
     const passwordInput = screen.getByLabelText('Mot de passe')
     const confirmationPasswordInput = screen.getByLabelText(
       'Confirmer le mot de passe'
@@ -119,9 +146,7 @@ describe('src | components | pages | SetPassword', () => {
     await userEvent.click(submitButton)
 
     // Then
-    expect(history.push).toHaveBeenCalledWith(
-      '/creation-de-mot-de-passe-confirmation'
-    )
+    expect(screen.getByText('Confirmation')).toBeInTheDocument()
   })
 
   it('should display the form error', async () => {
@@ -136,7 +161,7 @@ describe('src | components | pages | SetPassword', () => {
         ''
       )
     )
-    renderSetPassword(store, history)
+    renderSetPassword(store)
     const passwordInput = screen.getByLabelText('Mot de passe')
     const confirmationPasswordInput = screen.getByLabelText(
       'Confirmer le mot de passe'
@@ -172,7 +197,7 @@ describe('src | components | pages | SetPassword', () => {
         ''
       )
     )
-    renderSetPassword(store, history)
+    renderSetPassword(store)
     const passwordInput = screen.getByLabelText('Mot de passe')
     const confirmationPasswordInput = screen.getByLabelText(
       'Confirmer le mot de passe'
@@ -185,9 +210,7 @@ describe('src | components | pages | SetPassword', () => {
     await userEvent.click(submitButton)
 
     // Then
-    expect(history.push).toHaveBeenCalledWith(
-      '/creation-de-mot-de-passe-confirmation?error=unvalid-link'
-    )
+    expect(await screen.findByText('Error')).toBeInTheDocument()
   })
 
   it('should display the unknown error', async () => {
@@ -201,7 +224,7 @@ describe('src | components | pages | SetPassword', () => {
         ''
       )
     )
-    renderSetPassword(store, history)
+    renderSetPassword(store)
     const passwordInput = screen.getByLabelText('Mot de passe')
     const confirmationPasswordInput = screen.getByLabelText(
       'Confirmer le mot de passe'
@@ -223,14 +246,11 @@ describe('src | components | pages | SetPassword', () => {
 
   it('should redirect the user to reset password page with a toaster when no token', async () => {
     // Given
-    history = createBrowserHistory()
-    history.push('/creation-de-mot-de-passe')
-    historyPushSpy = jest.spyOn(history, 'push')
-    renderSetPassword(store, history)
+    jest.spyOn(reactRouter, 'useParams').mockReturnValue({ token: null })
+
+    renderSetPassword(store)
 
     // Then
-    expect(history.push).toHaveBeenCalledWith(
-      '/creation-de-mot-de-passe-confirmation?error=unvalid-link'
-    )
+    expect(await screen.findByText('Error')).toBeInTheDocument()
   })
 })
