@@ -211,17 +211,35 @@ jobs:
     name: "apply Algolia settings"
     needs: deploy-api
     if: |
-      inputs.environment == 'production' &&
+      (inputs.environment == 'staging' || inputs.environment == 'production') &&
       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped')
     environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
     runs-on: [self-hosted, linux, x64]
-    defaults:
-      run:
-        working-directory: backoffice
     steps:
-      - run: su pcapi -c "flask set_algolia_settings offers --dry-run=false"
-      - run: su pcapi -c "flask set_algolia_settings collective_offers --dry-run=false"
-      - run: su pcapi -c "flask set_algolia_settings venues --dry-run=false"
+      - name: Install Teleport
+        uses: teleport-actions/setup@v1
+        with:
+          version: ${{ inputs.teleport_version }}
+      - id: teleport-auth
+        name: "Teleport Authentication"
+        uses: teleport-actions/auth-k8s@v1
+        with:
+          proxy: ${{ inputs.teleport_proxy }}
+          token: github-token
+          certificate-ttl: 1h
+          kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
+      - id: set_algolia_settings
+        name: "Configure algolia"
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          POD_NAME=$(./kubectl -n ${{ inputs.environment }} get po -l role=api -o jsonpath='{.items[0].metadata.name}')
+          ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings offers --dry-run=false
+          ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings collective_offers --dry-run=false
+          ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings venues --dry-run=false
 
   deploy-image-resizing:
     name: "Deploy image-resizing"
