@@ -263,6 +263,10 @@ class DMSContent(common_models.IdentityCheckContent):
         return dms_models.parse_dms_datetime(self.registration_datetime) if self.registration_datetime else None
 
 
+class HonorStatementContent(pydantic.BaseModel):
+    pass
+
+
 class UserProfilingRiskRating(enum.Enum):
     HIGH = "high"
     LOW = "low"
@@ -341,6 +345,7 @@ class ProfileCompletionContent(pydantic.BaseModel):
 FRAUD_CHECK_MAPPING = {
     FraudCheckType.DMS: DMSContent,
     FraudCheckType.EDUCONNECT: EduconnectContent,
+    FraudCheckType.HONOR_STATEMENT: HonorStatementContent,
     FraudCheckType.INTERNAL_REVIEW: PhoneValidationFraudData,
     FraudCheckType.JOUVE: JouveContent,
     FraudCheckType.PHONE_VALIDATION: PhoneValidationFraudData,
