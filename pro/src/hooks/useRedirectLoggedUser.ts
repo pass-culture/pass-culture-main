@@ -1,10 +1,12 @@
 import { useEffect } from 'react'
-import { useHistory, useLocation } from 'react-router'
+import { useLocation } from 'react-router'
+
+import { useNavigate } from 'hooks'
 
 import useCurrentUser from './useCurrentUser'
 
 const useRedirectLoggedUser = () => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const location = useLocation()
   const { currentUser } = useCurrentUser()
 
@@ -20,7 +22,7 @@ const useRedirectLoggedUser = () => {
       } else {
         redirectUrl = `/accueil${location.search}`
       }
-      redirectUrl && history.push(redirectUrl)
+      redirectUrl && navigate(redirectUrl)
     }
   }, [currentUser])
 }
