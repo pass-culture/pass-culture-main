@@ -21,7 +21,10 @@ class IdCheckItemModel(BaseModel):
 
     @classmethod
     def from_orm(cls, fraud_check: fraud_models.BeneficiaryFraudCheck) -> "IdCheckItemModel":
-        fraud_check.technicalDetails = fraud_check.source_data()
+        if fraud_check.resultContent:
+            fraud_check.technicalDetails = fraud_check.source_data()
+        else:
+            fraud_check.technicalDetails = None
 
         if fraud_check.type == fraud_models.FraudCheckType.DMS and fraud_check.resultContent is not None:
             dms_content = fraud_models.DMSContent(**fraud_check.resultContent)  # type: ignore [arg-type]

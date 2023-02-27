@@ -381,7 +381,7 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
 
         # when
         response = authenticated_client.get(url_for(self.endpoint, user_id=grant_18.id))
-        print(response.data)
+
         # then
         assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
