@@ -69,7 +69,7 @@ const AppLayout = props => {
 
 AppLayout.defaultProps = {
   layoutConfig: {},
-  classname: undefined,
+  className: undefined,
 }
 
 AppLayout.propTypes = {
@@ -78,7 +78,7 @@ AppLayout.propTypes = {
     PropTypes.shape(),
   ]).isRequired,
   layoutConfig: PropTypes.shape(),
-  classname: PropTypes.string,
+  className: PropTypes.string,
 }
 
 export default AppLayout
