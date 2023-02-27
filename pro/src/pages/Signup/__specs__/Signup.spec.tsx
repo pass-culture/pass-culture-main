@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { api } from 'apiClient/api'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -17,7 +16,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 describe('src | components | pages | Signup', () => {
-  let storeOverrides
+  let storeOverrides: any
   beforeEach(() => {
     storeOverrides = {
       user: {
@@ -27,7 +26,6 @@ describe('src | components | pages | Signup', () => {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
     }
-    api.listFeatures.mockResolvedValue([])
   })
   afterEach(jest.resetAllMocks)
 
@@ -79,12 +77,11 @@ describe('src | components | pages | Signup', () => {
 
   it('should call media campaign tracker on mount only', async () => {
     // given
-    api.listFeatures.mockResolvedValue([
-      {
-        isActive: true,
-        nameKey: 'ENABLE_PRO_ACCOUNT_CREATION',
+    const storeOverrides = {
+      features: {
+        list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
-    ])
+    }
 
     // when
     const { rerender } = renderWithProviders(<Signup />, {
