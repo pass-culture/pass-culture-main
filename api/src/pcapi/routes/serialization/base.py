@@ -93,6 +93,18 @@ class VenueSiret(RequiredStrippedString):
     max_length = 14
 
 
+class VenueComment(pydantic.ConstrainedStr):
+    strip_whitespace = True
+    # optional, hence no `min_length`
+    max_length = 500
+
+
+class VenueWithdrawalDetails(pydantic.ConstrainedStr):
+    strip_whitespace = True
+    # optional, hence no `min_length`
+    max_length = 500
+
+
 class BaseVenueResponse(BaseModel):
     isVirtual: bool
     name: str
