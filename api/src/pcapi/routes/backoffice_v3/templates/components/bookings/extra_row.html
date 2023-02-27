@@ -1,4 +1,4 @@
-{% macro build_booking_extra_toggle(booking) %}
+{% macro build_booking_toggle_extra_row_button(booking) %}
     <button class="btn btn-sm btn-outline-primary " data-bs-toggle="collapse"
             data-bs-target="#b{{ booking.id }}"><i
             class="bi bi-chevron-right"
@@ -6,7 +6,7 @@
     </button>
 {% endmacro %}
 
-{% macro build_booking_extra_tr(booking, stock, offer) %}
+{% macro build_booking_extra_row(booking, stock, offer) %}
     <tr class="collapse accordion-collapse" id="b{{ booking.id }}">
         <td colspan="100%">
             <div class="row">
