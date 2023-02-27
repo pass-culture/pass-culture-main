@@ -17,30 +17,31 @@ const SignupValidation = (): null => {
     campaignTracker.signUpValidation()
   }, [])
   const notify = useNotification()
+
   useEffect(() => {
-    if (currentUser?.id) {
-      navigate('/')
-    } else if (token) {
-      api
-        .validateUser(token)
-        .then(() => {
+    const validateTokenAndRedirect = async () => {
+      if (currentUser?.id) {
+        navigate('/')
+      } else if (token) {
+        try {
+          await api.validateUser(token)
           notify.success(
             'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
           )
-        })
-        .catch(payload => {
-          if (isErrorAPIError(payload)) {
-            const errors = getError(payload)
+        } catch (error) {
+          if (isErrorAPIError(error)) {
+            const errors = getError(error)
             notify.error(errors.global)
           }
-        })
-        .finally(() => navigate('/connexion'))
+        } finally {
+          navigate('/connexion')
+        }
+      }
     }
-  }, [history, notify, token, currentUser?.id])
+    void validateTokenAndRedirect()
+  }, [notify, token, currentUser?.id])
+
   return null
-}
-SignupValidation.defaultProps = {
-  currentUser: null,
 }
 
 export default SignupValidation
