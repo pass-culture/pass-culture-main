@@ -1,30 +1,35 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Route, Router } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SetPasswordConfirm from '../SetPasswordConfirm'
 
-const renderSetPassword = (storeOverrides, history) =>
+const renderSetPassword = (
+  storeOverrides,
+  initialRoute = '/creation-de-mot-de-passe-confirmation'
+) =>
   renderWithProviders(
-    <Router history={history}>
-      <Route path="/creation-de-mot-de-passe-confirmation">
-        <SetPasswordConfirm />
-      </Route>
-    </Router>,
-    { storeOverrides }
+    <Routes>
+      <Route
+        path="/creation-de-mot-de-passe-confirmation"
+        element={<SetPasswordConfirm />}
+      />
+      <Route path="/accueil" element={<div>Accueil</div>} />
+      <Route path="/connexion" element={<div>Connexion</div>} />
+    </Routes>,
+    {
+      storeOverrides,
+      initialRouterEntries: [initialRoute],
+    }
   )
 
 describe('src | components | pages | SetPassword', () => {
-  let store, history, historyPushSpy
+  let store
   beforeEach(() => {
     store = {}
-    history = createBrowserHistory()
-    history.push('/creation-de-mot-de-passe-confirmation')
-    historyPushSpy = jest.spyOn(history, 'push')
   })
 
   it('should redirect the user to structure page', async () => {
@@ -32,15 +37,15 @@ describe('src | components | pages | SetPassword', () => {
     store = {
       user: { currentUser: { publicName: 'Bosetti' } },
     }
-    renderSetPassword(store, history)
+    renderSetPassword(store)
 
     // Then
-    expect(historyPushSpy).toHaveBeenCalledWith('/accueil')
+    expect(await screen.findByText('Accueil')).toBeInTheDocument()
   })
 
   it('should render the default page without redirect', async () => {
     // Given
-    renderSetPassword(store, history)
+    renderSetPassword(store)
 
     // Then
     expect(
@@ -49,28 +54,20 @@ describe('src | components | pages | SetPassword', () => {
   })
 
   it('should redirect to login page on link click', async () => {
-    // Given
-    renderSetPassword(store, history)
-    const submitButton = screen.getByText('Se connecter', { selector: 'a' })
+    renderSetPassword(store)
 
-    // When
+    const submitButton = screen.getByText('Se connecter', { selector: 'a' })
     userEvent.click(submitButton)
 
-    // Then
-    await waitFor(() => {
-      expect(history.push).toHaveBeenCalledWith('/connexion')
-    })
+    expect(await screen.findByText('Connexion')).toBeInTheDocument()
   })
 
   it('should display error message when error in query params', async () => {
-    // Given
-    history = createBrowserHistory()
-    history.push('/creation-de-mot-de-passe-confirmation?error=unvalid-link')
+    renderSetPassword(
+      store,
+      '/creation-de-mot-de-passe-confirmation?error=unvalid-link'
+    )
 
-    // When
-    renderSetPassword(store, history)
-
-    // Then
     expect(screen.getByText('Votre lien a expiré !')).toBeVisible()
     expect(screen.getByText('Veuillez contacter notre support')).toBeVisible()
     const link = screen.getByText('Contacter')
