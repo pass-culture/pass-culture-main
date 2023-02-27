@@ -1,6 +1,6 @@
 /* istanbul ignore file: DEBT, TO FIX*/
 import React, { useCallback, useEffect, useState } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom-v5-compat'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
@@ -50,41 +50,61 @@ const CollectiveOfferEditionRoutes = ({
 
   return (
     <CollectiveOfferLayout subTitle={offer.name}>
-      <Switch>
-        <Route path="/offre/:offerId/collectif/edition">
-          <PageTitle title="Détails de l'offre" />
-          <CollectiveOfferEdition
-            offer={offer}
-            setOffer={setOffer}
-            reloadCollectiveOffer={loadCollectiveOffer}
-          />
-        </Route>
-        <Route path="/offre/:offerId/collectif/recapitulatif">
-          <PageTitle title="Récapitulatif" />
-          <CollectiveOfferSummaryEdition
-            offer={offer}
-            reloadCollectiveOffer={loadCollectiveOffer}
-          />
-        </Route>
+      <Routes>
+        <Route
+          path="/offre/:offerId/collectif/edition"
+          element={
+            <>
+              <PageTitle title="Détails de l'offre" />
+              <CollectiveOfferEdition
+                offer={offer}
+                setOffer={setOffer}
+                reloadCollectiveOffer={loadCollectiveOffer}
+              />
+            </>
+          }
+        />
+        <Route
+          path="/offre/:offerId/collectif/recapitulatif"
+          element={
+            <>
+              <PageTitle title="Récapitulatif" />
+              <CollectiveOfferSummaryEdition
+                offer={offer}
+                reloadCollectiveOffer={loadCollectiveOffer}
+              />
+            </>
+          }
+        />
         {!isTemplate && isCollectiveOffer(offer) && (
           <>
-            <Route path="/offre/:offerId/collectif/stocks/edition">
-              <PageTitle title="Date et prix" />
-              <CollectiveOfferStockEdition
-                offer={offer}
-                reloadCollectiveOffer={loadCollectiveOffer}
-              />
-            </Route>
-            <Route path="/offre/:offerId/collectif/visibilite/edition">
-              <PageTitle title="Visibilité" />
-              <CollectiveOfferVisibility
-                offer={offer}
-                reloadCollectiveOffer={loadCollectiveOffer}
-              />
-            </Route>
+            <Route
+              path="/offre/:offerId/collectif/stocks/edition"
+              element={
+                <>
+                  <PageTitle title="Date et prix" />
+                  <CollectiveOfferStockEdition
+                    offer={offer}
+                    reloadCollectiveOffer={loadCollectiveOffer}
+                  />
+                </>
+              }
+            />
+            <Route
+              path="/offre/:offerId/collectif/visibilite/edition"
+              element={
+                <>
+                  <PageTitle title="Visibilité" />
+                  <CollectiveOfferVisibility
+                    offer={offer}
+                    reloadCollectiveOffer={loadCollectiveOffer}
+                  />
+                </>
+              }
+            />
           </>
         )}
-      </Switch>
+      </Routes>
     </CollectiveOfferLayout>
   )
 }
