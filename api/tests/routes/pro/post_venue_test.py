@@ -173,6 +173,29 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["siret"] == ["Veuillez saisir soit un SIRET soit un commentaire"]
 
+    def test_comment_too_long(self, client) -> None:
+        user = ProFactory()
+        client = client.with_session_auth(email=user.email)
+        venue_data = create_valid_venue_data(user)
+        venue_data["siret"] = None
+        venue_data["comment"] = "Pas de SIRET " * 40
+
+        response = client.post("/venues", json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json["comment"] == ["ensure this value has at most 500 characters"]
+
+    def test_withdrawal_details_too_long(self, client) -> None:
+        user = ProFactory()
+        client = client.with_session_auth(email=user.email)
+        venue_data = create_valid_venue_data(user)
+        venue_data["withdrawalDetails"] = "Trop long " * 51
+
+        response = client.post("/venues", json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json["withdrawalDetails"] == ["ensure this value has at most 500 characters"]
+
 
 class Returns403Test:
     def test_user_is_not_managing_offerer_create_venue(self, client):
