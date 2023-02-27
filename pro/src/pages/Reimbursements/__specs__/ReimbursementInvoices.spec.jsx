@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -35,12 +34,10 @@ const renderReimbursements = props => {
     },
   }
 
-  renderWithProviders(
-    <Route path="/remboursements" exact={false}>
-      <Reimbursements {...props} />
-    </Route>,
-    { storeOverrides, initialRouterEntries: ['/remboursements/justificatifs'] }
-  )
+  renderWithProviders(<Reimbursements {...props} />, {
+    storeOverrides,
+    initialRouterEntries: ['/justificatifs'],
+  })
 }
 
 const BASE_VENUES = [
@@ -149,14 +146,14 @@ describe('reimbursementsWithFilters', () => {
     expect(reimbursementCells[17]).toContain('J123456789.invoice')
   })
 
-  it('shoud reorder invoices on order buttons click', async () => {
+  it('should reorder invoices on order buttons click', async () => {
     renderReimbursements(props)
     const button = screen.queryByRole('link', {
       name: /Lancer la recherche/i,
     })
     await userEvent.click(button)
 
-    const reimbursementCells = screen.queryAllByRole('cell')
+    const reimbursementCells = await screen.getAllByRole('cell')
     expect(reimbursementCells[3].innerHTML).toContain('VIR9, VIR12')
     expect(reimbursementCells[9].innerHTML).toContain('VIR4')
     expect(reimbursementCells[15].innerHTML).toContain('VIR7')

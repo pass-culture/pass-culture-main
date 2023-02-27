@@ -6,7 +6,6 @@ import {
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -29,12 +28,10 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const renderReimbursements = (storeOverrides = {}) => {
-  const utils = renderWithProviders(
-    <Route path="/remboursements" exact={false}>
-      <Reimbursements />
-    </Route>,
-    { storeOverrides, initialRouterEntries: ['/remboursements/details'] }
-  )
+  const utils = renderWithProviders(<Reimbursements />, {
+    storeOverrides,
+    initialRouterEntries: ['/details'],
+  })
 
   const getElements = () => ({
     nav: {
