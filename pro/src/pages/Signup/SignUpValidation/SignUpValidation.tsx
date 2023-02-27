@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
@@ -12,14 +12,14 @@ type Params = { token: string }
 const SignupValidation = (): null => {
   const { token } = useParams<Params>()
   const { currentUser } = useCurrentUser()
-  const history = useHistory()
+  const navigate = useNavigate()
   useEffect(() => {
     campaignTracker.signUpValidation()
   }, [])
   const notify = useNotification()
   useEffect(() => {
     if (currentUser?.id) {
-      history.push('/')
+      navigate('/')
     } else if (token) {
       api
         .validateUser(token)
@@ -34,7 +34,7 @@ const SignupValidation = (): null => {
             notify.error(errors.global)
           }
         })
-        .finally(() => history.push('/connexion'))
+        .finally(() => navigate('/connexion'))
     }
   }, [history, notify, token, currentUser?.id])
   return null

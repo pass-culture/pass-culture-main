@@ -25,7 +25,6 @@ import SetPassword from 'pages/SetPassword/SetPassword'
 import SetPasswordConfirm from 'pages/SetPasswordConfirm/SetPasswordConfirm'
 import SignIn from 'pages/SignIn/SignIn'
 import Signup from 'pages/Signup/Signup'
-import SignUpValidation from 'pages/SignUpValidation'
 import { UserProfile } from 'pages/User'
 import { VenueCreation } from 'pages/VenueCreation'
 import { VenueEdition } from 'pages/VenueEdition'
@@ -67,7 +66,7 @@ export const routesWithoutLayout: IRoute[] = [
   {
     component: Signup,
     exact: true,
-    path: '/inscription*',
+    path: '/inscription',
     title: 'Inscription',
     meta: {
       public: true,
@@ -75,14 +74,14 @@ export const routesWithoutLayout: IRoute[] = [
     useV6Router: true,
   },
   {
-    component: SignUpValidation,
+    component: Signup,
     exact: true,
-    path: '/inscription/validation/:token',
-    title: 'Validation de votre inscription',
-    useV6Router: true,
+    path: '/inscription/*',
+    title: 'Inscription',
     meta: {
       public: true,
     },
+    useV6Router: true,
   },
   {
     component: CsvTable,
