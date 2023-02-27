@@ -1,5 +1,4 @@
 import classnames from 'classnames'
-import PropTypes from 'prop-types'
 import React from 'react'
 import ReactTooltip from 'react-tooltip'
 
@@ -8,10 +7,16 @@ import GoBackLink from 'components/GoBackLink'
 import Header from 'components/Header/Header'
 import TutorialDialog from 'components/TutorialDialog'
 
-const AppLayout = props => {
-  const { children, layoutConfig, className } = props
+import { ILayoutConfig } from './AppRouter/routes_map'
 
-  const defaultConfig = {
+interface Props {
+  children: React.ReactNode
+  layoutConfig?: ILayoutConfig
+  className?: string
+}
+
+const AppLayout = ({ children, layoutConfig, className }: Props) => {
+  const defaultConfig: ILayoutConfig = {
     backTo: null,
     fullscreen: false,
     pageName: 'Accueil',
@@ -65,20 +70,6 @@ const AppLayout = props => {
       </main>
     </>
   )
-}
-
-AppLayout.defaultProps = {
-  layoutConfig: {},
-  className: undefined,
-}
-
-AppLayout.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.shape()),
-    PropTypes.shape(),
-  ]).isRequired,
-  layoutConfig: PropTypes.shape(),
-  className: PropTypes.string,
 }
 
 export default AppLayout
