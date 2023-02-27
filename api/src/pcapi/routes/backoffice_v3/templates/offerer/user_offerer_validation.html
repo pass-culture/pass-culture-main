@@ -1,5 +1,6 @@
 {% from "offerer/edit_status_modal.html" import build_edit_status_modal with context %}
 {% from "components/badges.html" import build_user_offerer_status_badge %}
+{% from "components/forms.html" import build_filters_form with context %}
 {% import "components/links.html" as links %}
 
 {% extends "layouts/connected.html" %}
@@ -18,7 +19,7 @@
             </div>
         </div>
         <div class="filters d-none">
-            {% include "components/filters_form.html" %}
+            {{ build_filters_form(form, dst) }}
         </div>
         <div>
             {% if rows and rows.total > 0 %}

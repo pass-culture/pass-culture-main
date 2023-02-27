@@ -1,3 +1,4 @@
+{% from "components/forms.html" import build_filters_form with context %}
 {% import "components/links.html" as links %}
 
 {% extends "layouts/connected.html" %}
@@ -5,7 +6,7 @@
 {% block page %}
     <div class="pt-3 px-5">
         <h2 class="fw-light">Rechercher des offres</h2>
-        {% include "components/filters_form.html" %}
+        {{ build_filters_form(form, dst) }}
         <div>
             {% if rows %}
                 <div class="d-flex justify-content-between">

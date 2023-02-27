@@ -1,6 +1,6 @@
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
 {% from "components/bookings/extra_row.html" import build_booking_extra_row with context %}
-{% from "components/form_body.html" import build_form_body with context %}
+{% import "components/forms.html" as forms with context %}
 {% import "components/links.html" as links %}
 
 {% extends "layouts/connected.html" %}
@@ -9,7 +9,7 @@
     <div class="pt-3 px-5">
         <h2 class="fw-light">Réservations collectives</h2>
         <div id="filters">
-            {% include "components/filters_form.html" %}
+            {{ forms.build_filters_form(form, dst) }}
         </div>
         <div>
             {% if rows %}
@@ -74,9 +74,7 @@
                                                                 <h5 class="modal-title">Valider la réservation {{ collective_booking.id }}</h5>
                                                             </div>
                                                             <div class="modal-body row">
-                                                                <div class="form-group">
-                                                                    {{ build_form_body(mark_as_used_booking_form) }}
-                                                                </div>
+                                                                {{ forms.build_form_fields_group(mark_as_used_booking_form) }}
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
@@ -97,9 +95,7 @@
                                                                 <h5 class="modal-title">Annuler la réservation {{ collective_booking.id }}</h5>
                                                             </div>
                                                             <div class="modal-body row">
-                                                                <div class="form-group">
-                                                                    {{ build_form_body(cancel_booking_form) }}
-                                                                </div>
+                                                                {{ forms.build_form_fields_group(cancel_booking_form) }}
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
