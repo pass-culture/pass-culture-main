@@ -1,6 +1,6 @@
 import { startOfDay } from 'date-fns'
 import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat'
 
 import {
   BookingRecapResponseModel,
@@ -143,7 +143,7 @@ const Bookings = <
     formatBrowserTimezonedDateAsUTC(date, FORMAT_ISO_DATE_ONLY)
 
   const location = useLocation()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const params = new URLSearchParams(location.search)
@@ -220,7 +220,7 @@ const Bookings = <
       ...urlParams,
       ...partialUrlInfo,
     })
-    history.push(
+    navigate(
       `/reservations${
         audience === Audience.COLLECTIVE ? '/collectives' : ''
       }?page=1&${stringify(partialUrlInfo)}`
