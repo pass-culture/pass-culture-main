@@ -1,5 +1,4 @@
-{% macro build_badges(object, new, pending, validated, rejected) %}
-
+{% macro build_status_badge(object, new, pending, validated, rejected) %}
     {% if object.isNew %}
         <span class="me-1 pb-1 badge rounded-pill text-bg-info">
             {{ new }}
@@ -17,7 +16,6 @@
             {{ rejected }}
         </span>
     {% endif %}
-
 {% endmacro %}
 
 {% macro build_venue_badges(venue) %}
@@ -37,12 +35,16 @@
     {% endif %}
 {% endmacro %}
 
+{% macro build_offerer_status_badge(offerer) %}
+    {{  build_status_badge(offerer, "Nouvelle", "En attente", "Validée", "Rejetée") }}
+{% endmacro %}
+
 {% macro build_offerer_badges(offerer) %}
     <span class="me-1 pb-1 badge rounded-pill text-bg-primary">
         Structure
     </span>
 
-    {{  build_badges(offerer, "Nouvelle", "En attente", "Validée", "Rejetée") }}
+    {{  build_offerer_status_badge(offerer) }}
 
     {% if not offerer.isActive %}
         <span class="me-1 pb-1 badge rounded-pill text-bg-dark">
@@ -52,11 +54,11 @@
     {% endif %}
 {% endmacro %}
 
-{% macro build_user_offerer_badges(user_offerer) %}
-    {{  build_badges(user_offerer, "Nouveau", "En attente", "Validé", "Rejeté") }}
+{% macro build_user_offerer_status_badge(user_offerer) %}
+    {{  build_status_badge(user_offerer, "Nouveau", "En attente", "Validé", "Rejeté") }}
 {% endmacro %}
 
-{% macro build_pro_user_badges(pro_user) %}
+{% macro build_pro_user_status_badge(pro_user) %}
     {% if pro_user.proValidationStatus.value == "VALIDATED" %}
         <span class="badge rounded-pill text-bg-success align-middle">
             Validé
