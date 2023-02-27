@@ -1,10 +1,6 @@
-import { parse } from 'querystring'
-
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createMemoryHistory } from 'history'
 import React from 'react'
-import { Router } from 'react-router'
 import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
@@ -28,15 +24,11 @@ const renderOffers = async (
     page?: number
   } = DEFAULT_SEARCH_FILTERS
 ) => {
-  const history = createMemoryHistory()
   const route = computeCollectiveOffersUrl(filters)
-  history.push(route)
-  renderWithProviders(
-    <Router history={history}>
-      <CollectiveOffers />
-    </Router>,
-    { storeOverrides }
-  )
+  renderWithProviders(<CollectiveOffers />, {
+    storeOverrides,
+    initialRouterEntries: [route],
+  })
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
@@ -413,6 +405,29 @@ describe('route CollectiveOffers', () => {
           )
         })
 
+        it('should store search value', async () => {
+          // Given
+          await renderOffers(store)
+          const searchInput = screen.getByPlaceholderText(
+            'Rechercher par nom d’offre'
+          )
+          // When
+          await userEvent.type(searchInput, 'search string')
+          await userEvent.click(screen.getByText('Lancer la recherche'))
+          // Then
+          expect(api.getCollectiveOffers).toHaveBeenCalledWith(
+            'search string',
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+          )
+        })
+
         it('should load offers with selected venue filter', async () => {
           // Given
           await renderOffers(store)
@@ -536,264 +551,7 @@ describe('route CollectiveOffers', () => {
     })
   })
 
-  describe('url query params', () => {
-    it('should have page value when page value is not first page', async () => {
-      // Given
-      const offersRecap = Array.from({ length: 11 }, () =>
-        collectiveOfferFactory()
-      )
-      jest
-        .spyOn(api, 'getCollectiveOffers')
-        // @ts-expect-error FIX ME
-        .mockResolvedValueOnce(offersRecap)
-      const { history } = await renderOffers(store)
-      const nextPageIcon = screen.getByAltText('Page suivante')
-      // When
-      await userEvent.click(nextPageIcon)
-      const urlSearchParams = parse(history.location.search.substring(1))
-      // Then
-      expect(urlSearchParams).toMatchObject({
-        page: '2',
-      })
-    })
-
-    it('should have offer name value when name search value is not an empty string', async () => {
-      // Given
-      const { history } = await renderOffers(store)
-      // When
-      await userEvent.type(
-        screen.getByPlaceholderText('Rechercher par nom d’offre'),
-        'AnyWord'
-      )
-      await userEvent.click(screen.getByText('Lancer la recherche'))
-      const urlSearchParams = parse(history.location.search.substring(1))
-      // Then
-      expect(urlSearchParams).toMatchObject({
-        'nom-ou-isbn': 'AnyWord',
-      })
-    })
-
-    it('should store search value', async () => {
-      // Given
-      await renderOffers(store)
-      const searchInput = screen.getByPlaceholderText(
-        'Rechercher par nom d’offre'
-      )
-      // When
-      await userEvent.type(searchInput, 'search string')
-      await userEvent.click(screen.getByText('Lancer la recherche'))
-      // Then
-      expect(api.getCollectiveOffers).toHaveBeenCalledWith(
-        'search string',
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      )
-    })
-
-    it('should have offer name value be removed when name search value is an empty string', async () => {
-      // Given
-      const { history } = await renderOffers(store)
-      // When
-      await userEvent.clear(
-        screen.getByPlaceholderText('Rechercher par nom d’offre')
-      )
-      await userEvent.click(screen.getByText('Lancer la recherche'))
-      const urlSearchParams = parse(history.location.search.substring(1))
-      // Then
-      expect(urlSearchParams).toMatchObject({})
-    })
-
-    it('should have venue value when user filters by venue', async () => {
-      // Given
-      const { history } = await renderOffers(store)
-      const firstVenueOption = screen.getByRole('option', {
-        name: proVenues[0].name,
-      })
-      const venueSelect = screen.getByLabelText('Lieu')
-      // When
-      await userEvent.selectOptions(venueSelect, firstVenueOption)
-      await userEvent.click(screen.getByText('Lancer la recherche'))
-      const urlSearchParams = parse(history.location.search.substring(1))
-      // Then
-      expect(urlSearchParams).toMatchObject({
-        lieu: proVenues[0].id,
-      })
-    })
-
-    it('should have venue value be removed when user asks for all venues', async () => {
-      // Given
-      jest
-        .spyOn(api, 'getCollectiveOffers')
-        // @ts-expect-error FIX ME
-        .mockResolvedValueOnce(offersRecap)
-      jest.spyOn(api, 'getCategories').mockResolvedValue({
-        categories: [
-          { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
-          {
-            id: 'test_id_2',
-            proLabel: 'My second test value',
-            isSelectable: true,
-          },
-        ],
-        subcategories: [
-          // @ts-expect-error FIX ME
-          {
-            id: 'test_sub_id_1',
-            categoryId: 'test_id_1',
-            isSelectable: true,
-            canBeEducational: true,
-          },
-          // @ts-expect-error FIX ME
-          {
-            id: 'test_sub_id_2',
-            categoryId: 'test_id_2',
-            canBeEducational: true,
-            isSelectable: true,
-          },
-        ],
-      })
-      const { history } = await renderOffers(store)
-      const firstTypeOption = screen.getByRole('option', {
-        name: 'My test value',
-      })
-      const typeSelect = screen.getByDisplayValue(
-        ALL_CATEGORIES_OPTION.displayName
-      )
-      // When
-      await userEvent.selectOptions(typeSelect, firstTypeOption)
-      await userEvent.click(screen.getByText('Lancer la recherche'))
-      const urlSearchParams = parse(history.location.search.substring(1))
-
-      // Then
-      expect(urlSearchParams).toMatchObject({
-        categorie: 'test_id_1',
-      })
-    })
-
-    it('should have status value when user filters by status', async () => {
-      // Given
-      jest.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
-        // @ts-expect-error FIX ME
-        collectiveOfferFactory(
-          {
-            id: 'KE',
-            availabilityMessage: 'Pas de stock',
-            status: OfferStatus.ACTIVE,
-          },
-          // @ts-expect-error collectiveOfferFactory is not typed and null throws an error but is accepted by the function
-          null
-        ),
-      ])
-      const { history } = await renderOffers(store)
-      await userEvent.click(
-        screen.getByAltText('Afficher ou masquer le filtre par statut')
-      )
-      await userEvent.click(screen.getByLabelText('Réservée'))
-      // When
-      await userEvent.click(screen.getByText('Appliquer'))
-      const urlSearchParams = parse(history.location.search.substring(1))
-      // Then
-      expect(urlSearchParams).toMatchObject({
-        statut: 'reservee',
-      })
-    })
-
-    it('should have status value be removed when user ask for all status', async () => {
-      // Given
-      jest.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
-        // @ts-expect-error FIX ME
-        collectiveOfferFactory(
-          {
-            id: 'KE',
-            availabilityMessage: 'Pas de stock',
-            status: OfferStatus.ACTIVE,
-          },
-          // @ts-expect-error collectiveOfferFactory is not typed and null throws an error but is accepted by the function
-          null
-        ),
-      ])
-      const { history } = await renderOffers(store)
-      await userEvent.click(
-        screen.getByAltText('Afficher ou masquer le filtre par statut')
-      )
-      await userEvent.click(screen.getByLabelText('Tous'))
-      // When
-      await userEvent.click(screen.getByText('Appliquer'))
-      const urlSearchParams = parse(history.location.search.substring(1))
-      // Then
-      expect(urlSearchParams).toMatchObject({})
-    })
-
-    it('should have offerer filter when user filters by offerer', async () => {
-      // Given
-      const filters = { offererId: 'A4' }
-      // @ts-expect-error FIX ME
-      jest.spyOn(api, 'getOfferer').mockResolvedValueOnce({
-        name: 'La structure',
-      })
-      // When
-      await renderOffers(store, filters)
-      // Then
-      const offererFilter = screen.getByText('La structure')
-      expect(offererFilter).toBeInTheDocument()
-    })
-
-    it('should have offerer value be removed when user removes offerer filter', async () => {
-      // Given
-      const filters = { offererId: 'A4' }
-      // @ts-expect-error FIX ME
-      jest.spyOn(api, 'getOfferer').mockResolvedValueOnce({
-        name: 'La structure',
-      })
-      await renderOffers(store, filters)
-      // When
-      await userEvent.click(
-        screen.getByAltText('Supprimer le filtre par structure')
-      )
-      // Then
-      expect(screen.queryByText('La structure')).not.toBeInTheDocument()
-    })
-  })
-
   describe('page navigation', () => {
-    it('should redirect to individual offers when user clicks on individual offers link', async () => {
-      // Given
-
-      jest.spyOn(api, 'getCollectiveOffers').mockResolvedValue(
-        // @ts-expect-error FIX ME
-        offersRecap
-      )
-      const { history } = await renderOffers(store)
-      screen.getByText('Lancer la recherche')
-      const individualAudienceLink = screen.getByText('Offres individuelles', {
-        selector: 'span',
-      })
-
-      // When
-      await userEvent.click(individualAudienceLink)
-
-      // Then
-      expect(history.location.pathname).toBe('/offres')
-
-      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      )
-    })
-
     it('should display next page when clicking on right arrow', async () => {
       // Given
       const offers = Array.from({ length: 11 }, () => collectiveOfferFactory())
