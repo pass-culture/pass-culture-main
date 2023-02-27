@@ -1,11 +1,12 @@
-import React, { Fragment, useCallback, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Field, Form } from 'react-final-form'
-import { useHistory, useRouteMatch } from 'react-router-dom'
+import { useParams } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { isErrorAPIError, getError } from 'apiClient/helpers'
+import { getError, isErrorAPIError } from 'apiClient/helpers'
 import LegalInfos from 'components/LegalInfos/LegalInfos'
 import PageTitle from 'components/PageTitle/PageTitle'
+import { useNavigate } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import PasswordField from 'ui-kit/form_rff/fields/PasswordField'
@@ -21,72 +22,67 @@ const DIFFERENT_PASSWORDS_ERROR_MESSAGE =
 const SetPassword = () => {
   const notification = useNotification()
 
-  const history = useHistory()
-  const match = useRouteMatch()
+  const navigate = useNavigate()
+  const params = useParams()
 
   useRedirectLoggedUser()
 
-  const redirectOnTokenError = useCallback(() => {
-    history.push('/creation-de-mot-de-passe-confirmation?error=unvalid-link')
-  }, [history])
-
-  const token = match?.params.token
-
-  if (!token) {
-    redirectOnTokenError()
+  const redirectOnTokenError = () => {
+    // TODO: handle errors with a different route
+    navigate('/creation-de-mot-de-passe-confirmation?error=unvalid-link')
   }
+
+  const token = params.token
+  useEffect(() => {
+    if (!token) {
+      redirectOnTokenError()
+    }
+  }, [])
 
   const [backendErrors, setBackendErrors] = useState(null)
 
-  const submitSetFirstPassword = useCallback(
-    values =>
-      api
-        .postNewPassword({ token, newPassword: values.password })
-        .then(() => {
-          history.push('/creation-de-mot-de-passe-confirmation')
-        })
-        .catch(error => {
-          if (isErrorAPIError(error)) {
-            const errors = getError(error)
+  const submitSetFirstPassword = values =>
+    api
+      .postNewPassword({ token, newPassword: values.password })
+      .then(() => {
+        navigate('/creation-de-mot-de-passe-confirmation')
+      })
+      .catch(error => {
+        if (isErrorAPIError(error)) {
+          const errors = getError(error)
 
-            if (errors.newPassword) {
-              notification.error(INVALID_FORM_MESSAGE)
-              setBackendErrors(errors)
-              return
-            }
-            if (errors.token) {
-              redirectOnTokenError()
-              return
-            }
+          if (errors.newPassword) {
+            notification.error(INVALID_FORM_MESSAGE)
+            setBackendErrors(errors)
+            return
           }
-          notification.error(UNKNOWN_ERROR_MESSAGE)
-        }),
-    [history, token, redirectOnTokenError]
-  )
+          if (errors.token) {
+            redirectOnTokenError()
+            return
+          }
+        }
+        notification.error(UNKNOWN_ERROR_MESSAGE)
+      })
 
-  const getPasswordErrors = useCallback(
-    errors => {
-      if (errors?.password && errors.password !== true) {
-        return errors.password
-      }
+  const getPasswordErrors = errors => {
+    if (errors?.password && errors.password !== true) {
+      return errors.password
+    }
 
-      if (backendErrors?.newPassword) {
-        return backendErrors.newPassword
-      }
+    if (backendErrors?.newPassword) {
+      return backendErrors.newPassword
+    }
 
-      return null
-    },
-    [backendErrors]
-  )
+    return null
+  }
 
-  const validateForm = useCallback(values => {
+  const validateForm = values => {
     const errors = {}
     if (values.passwordConfirmation !== values.password) {
       errors.passwordConfirmation = [DIFFERENT_PASSWORDS_ERROR_MESSAGE]
     }
     return errors
-  }, [])
-
+  }
   return (
     <Fragment>
       <PageTitle title="Définition du mot de passe" />
