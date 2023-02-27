@@ -1,11 +1,11 @@
 import React from 'react'
 import { Form } from 'react-final-form'
-import { useHistory } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { CreateOffererQueryModel } from 'apiClient/v1'
 import GoBackLink from 'components/GoBackLink'
 import PageTitle from 'components/PageTitle/PageTitle'
+import { useNavigate } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { addressAndDesignationFromSirenDecorator } from 'ui-kit/form_rff/fields/SirenField'
@@ -16,11 +16,11 @@ import OffererCreationUnavailable from './OffererCreationUnavailable/OffererCrea
 
 const OffererCreation = (): JSX.Element => {
   const isEntrepriseApiDisabled = useActiveFeature('DISABLE_ENTERPRISE_API')
-  const history = useHistory()
+  const navigate = useNavigate()
   const notification = useNotification()
 
   const redirectAfterSubmit = (createdOffererId: string) => {
-    history.replace(`/accueil?structure=${createdOffererId}`)
+    navigate(`/accueil?structure=${createdOffererId}`, { replace: true })
   }
 
   const handleSubmit = async (offerer: CreateOffererQueryModel) => {
