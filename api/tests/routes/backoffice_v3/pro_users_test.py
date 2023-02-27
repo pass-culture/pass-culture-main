@@ -50,7 +50,6 @@ class GetProUserTest:
             assert response.status_code == 200
 
             assert self.button_label in response.data.decode("utf-8")
-            print(response.data)
             assert f"{settings.PRO_URL}/inscription/validation/{user.validationToken}" in response.data.decode("utf-8")
 
         def test_no_button_if_validated_email(self, authenticated_client):
