@@ -35,7 +35,6 @@ pro-packed-staging/
 .docker-sync
 
 # misc
-/.vscode/
 .dccache
 .graphqlconfig
 
