@@ -1,11 +1,14 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
 import PageTitle from 'components/PageTitle/PageTitle'
 import Icon from 'ui-kit/Icon/Icon'
 
-const NotFound = ({ redirect }) => (
+interface Props {
+  redirect?: string
+}
+
+const NotFound = ({ redirect = '/accueil' }: Props) => (
   <main className="page fullscreen no-match">
     <PageTitle title="Page inaccessible" />
     <Icon svg="ico-404" />
@@ -16,13 +19,5 @@ const NotFound = ({ redirect }) => (
     </Link>
   </main>
 )
-
-NotFound.defaultProps = {
-  redirect: '/accueil',
-}
-
-NotFound.propTypes = {
-  redirect: PropTypes.string,
-}
 
 export default NotFound

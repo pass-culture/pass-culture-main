@@ -1,17 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { MemoryRouter } from 'react-router'
+
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import NotFound from '../NotFound'
 
 describe('src | components | pages | NotFound', () => {
   it('should display a message notifying the user they are on a wrong path and add a link to home', () => {
     // when
-    render(
-      <MemoryRouter>
-        <NotFound />
-      </MemoryRouter>
-    )
+    renderWithProviders(<NotFound />)
     // then
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'Oh non !'
@@ -25,11 +22,7 @@ describe('src | components | pages | NotFound', () => {
     const props = {
       redirect: '/mon/autre/url',
     }
-    render(
-      <MemoryRouter>
-        <NotFound {...props} />
-      </MemoryRouter>
-    )
+    renderWithProviders(<NotFound {...props} />)
 
     // then
     expect(screen.getByRole('link')).toHaveAttribute('href', '/mon/autre/url')
