@@ -4,11 +4,13 @@ import { Link } from 'react-router-dom'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
+import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import FormLayout from 'components/FormLayout'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   IOfferEducationalFormValues,
+  isCollectiveOffer,
   Mode,
 } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
@@ -121,6 +123,11 @@ const OfferEducationalForm = ({
   }, [values.offererId, userOfferers, notify, getIsOffererEligible, mode])
   return (
     <FormLayout className={styles['educational-form']} small>
+      {isCollectiveOffer(offer) && offer.isPublicApi && (
+        <BannerPublicApi className={styles['banner-space']}>
+          Offre importée automatiquement
+        </BannerPublicApi>
+      )}
       <FormLayout.MandatoryInfo />
 
       <Banner

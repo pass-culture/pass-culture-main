@@ -7,9 +7,11 @@ import {
   EducationalRedactor,
 } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
+import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import FormLayout from 'components/FormLayout'
 import {
   CollectiveOffer,
+  isCollectiveOffer,
   Mode,
   VisibilityFormValues,
 } from 'core/OfferEducational'
@@ -47,6 +49,7 @@ export interface CollectiveOfferVisibilityProps {
   }) => void
   institutions: EducationalInstitutionResponseModel[]
   isLoadingInstitutions: boolean
+  offer?: CollectiveOffer
 }
 interface InstitutionOption extends SelectOption {
   postalCode?: string
@@ -70,6 +73,7 @@ const CollectiveOfferVisibility = ({
   onSuccess,
   institutions,
   isLoadingInstitutions,
+  offer,
 }: CollectiveOfferVisibilityProps) => {
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
@@ -183,6 +187,11 @@ const CollectiveOfferVisibility = ({
     <FormikProvider value={formik}>
       <form onSubmit={formik.handleSubmit}>
         <FormLayout>
+          {isCollectiveOffer(offer) && offer.isPublicApi && (
+            <BannerPublicApi className={styles['banner-space']}>
+              Offre importée automatiquement
+            </BannerPublicApi>
+          )}
           <FormLayout.Section title="Visibilité de l’offre">
             <p className={styles['description-text']}>
               Les établissements concernés par vos choix seront les seuls à
