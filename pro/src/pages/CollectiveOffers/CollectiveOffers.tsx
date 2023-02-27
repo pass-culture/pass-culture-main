@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { filterEducationalCategories } from 'core/OfferEducational'
@@ -24,7 +24,7 @@ import { getFilteredCollectiveOffersAdapter } from './adapters'
 const CollectiveOffers = (): JSX.Element => {
   const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()
   const notify = useNotification()
-  const history = useHistory()
+  const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
 
@@ -105,19 +105,15 @@ const CollectiveOffers = (): JSX.Element => {
     [notify]
   )
 
-  const redirectWithUrlFilters = useCallback(
-    (
-      filters: TSearchFilters & {
-        page?: number
-        audience?: Audience
-      }
-    ) => {
-      const newUrl = computeCollectiveOffersUrl(filters, filters.page)
-
-      history.push(newUrl)
-    },
-    [history]
-  )
+  const redirectWithUrlFilters = (
+    filters: TSearchFilters & {
+      page?: number
+      audience?: Audience
+    }
+  ) => {
+    const newUrl = computeCollectiveOffersUrl(filters, filters.page)
+    navigate(newUrl)
+  }
 
   useEffect(() => {
     const filters = { ...urlSearchFilters }
