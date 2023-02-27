@@ -1,4 +1,5 @@
 {% from "offerer/edit_status_modal.html" import build_edit_status_modal with context %}
+{% from "components/badges.html" import build_user_offerer_status_badge %}
 {% from "components/external_links.html" import build_siren_link %}
 
 {% extends "layouts/connected.html" %}
@@ -117,7 +118,7 @@
                                     {{ user_offerer.user.lastName | empty_string_if_null | escape }}
                                 </a>
                             </td>
-                            <td>{% include "components/offerer/user_offerer_status_badge.html" %}</td>
+                            <td>{{ build_user_offerer_status_badge(user_offerer) }}</td>
                             <td>{{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                             <td>{{ get_last_comment_func(offerer, user_offerer.userId) | empty_string_if_null | replace("\n", "<br/>"|safe) }}</td>
                             <td>{{ user_offerer.user.phoneNumber | format_phone_number }}</td>
