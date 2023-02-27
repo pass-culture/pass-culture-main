@@ -1,7 +1,5 @@
 import { useEffect } from 'react'
-import { useLocation } from 'react-router'
-
-import { useNavigate } from 'hooks'
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat'
 
 import useCurrentUser from './useCurrentUser'
 

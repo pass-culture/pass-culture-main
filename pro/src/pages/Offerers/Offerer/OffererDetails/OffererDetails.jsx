@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import GoBackLink from 'components/GoBackLink'
@@ -65,7 +65,7 @@ const OffererDetails = () => {
     )
   }
 
-  return (
+  return offerer ? (
     <div className="offerer-page">
       <GoBackLink
         to={`/accueil?structure=${offerer.id}`}
@@ -103,6 +103,8 @@ const OffererDetails = () => {
       />
       <Venues offererId={offerer.id} venues={physicalVenues} />
     </div>
+  ) : (
+    <></>
   )
 }
 
