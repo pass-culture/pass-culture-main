@@ -1,15 +1,14 @@
 import React, { Fragment } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom-v5-compat'
 
 import PageTitle from 'components/PageTitle/PageTitle'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Logo from 'ui-kit/Logo/Logo'
-import { parse } from 'utils/query-string'
 
 const SetPasswordConfirm = () => {
   const location = useLocation()
-  const { error } = parse(location.search)
-  const displayErrorMessage = error === 'unvalid-link'
+  const displayErrorMessage =
+    location.pathname === '/creation-de-mot-de-passe-erreur'
   useRedirectLoggedUser()
 
   return (
