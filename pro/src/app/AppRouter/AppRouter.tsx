@@ -1,7 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Redirect, Switch, useLocation, Route } from 'react-router'
-import { CompatRoute } from 'react-router-dom-v5-compat'
+import { Routes, Route as RouteV6 } from 'react-router-dom-v5-compat'
 
 import AppLayout from 'app/AppLayout'
 import routes, { routesWithoutLayout } from 'app/AppRouter/routes_map'
@@ -26,63 +26,103 @@ const AppRouter = (): JSX.Element => {
   )
 
   return (
-    <Switch>
-      {getLegacyRedirect().map(
-        ({ redirectFrom, redirectTo }: ILegacyRedirect, index: number) => (
-          <Redirect
-            exact
-            key={`legacy-redirect-${index}`}
-            from={redirectFrom}
-            to={`${redirectTo}${location.search}`}
-          />
-        )
-      )}
+    <>
+      <Switch>
+        {getLegacyRedirect().map(
+          ({ redirectFrom, redirectTo }: ILegacyRedirect, index: number) => (
+            <Redirect
+              exact
+              key={`legacy-redirect-${index}`}
+              from={redirectFrom}
+              to={`${redirectTo}${location.search}`}
+            />
+          )
+        )}
 
-      <Route exact key="logout" path="/logout">
-        <Logout />
-      </Route>
+        <Route exact key="logout" path="/logout">
+          <Logout />
+        </Route>
 
-      {activeRoutes.map(route =>
-        route.useV6Router ? (
-          <CompatRoute
-            exact={route.exact}
-            key={Array.isArray(route.path) ? route.path.join('|') : route.path}
-            path={route.path}
-          >
-            <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
-              <route.component />
-            </AppLayout>
-          </CompatRoute>
-        ) : (
-          <Route
-            exact={route.exact}
-            key={Array.isArray(route.path) ? route.path.join('|') : route.path}
-            path={route.path}
-          >
-            <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
-              <route.component />
-            </AppLayout>
-          </Route>
-        )
-      )}
+        {activeRoutes
+          .filter(route => !route.useV6Router)
+          .map(route => (
+            <Route
+              exact={route.exact}
+              key={
+                Array.isArray(route.path) ? route.path.join('|') : route.path
+              }
+              path={route.path}
+            >
+              <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
+                <route.component />
+              </AppLayout>
+            </Route>
+          ))}
 
-      {activeRoutesWithoutLayout.map(route =>
-        route.useV6Router ? (
-          <CompatRoute
-            {...route}
-            exact={route.exact}
-            key={Array.isArray(route.path) ? route.path.join('|') : route.path}
-          />
-        ) : (
-          <Route
-            {...route}
-            exact={route.exact}
-            key={Array.isArray(route.path) ? route.path.join('|') : route.path}
-          />
-        )
-      )}
-      <Route component={NotFound} />
-    </Switch>
+        {activeRoutesWithoutLayout
+          .filter(route => !route.useV6Router)
+          .map(route => (
+            <Route
+              {...route}
+              exact={route.exact}
+              key={
+                Array.isArray(route.path) ? route.path.join('|') : route.path
+              }
+            />
+          ))}
+        <Route component={NotFound} />
+      </Switch>
+
+      <Routes>
+        {activeRoutes
+          .filter(route => route.useV6Router)
+          .map(route =>
+            Array.isArray(route.path) ? (
+              route.path.map(path => (
+                <RouteV6
+                  key={path}
+                  path={path}
+                  element={
+                    <AppLayout
+                      layoutConfig={route.meta && route.meta.layoutConfig}
+                    >
+                      <route.component />
+                    </AppLayout>
+                  }
+                />
+              ))
+            ) : (
+              <RouteV6
+                key={route.path}
+                path={route.path}
+                element={
+                  <AppLayout
+                    layoutConfig={route.meta && route.meta.layoutConfig}
+                  >
+                    <route.component />
+                  </AppLayout>
+                }
+              />
+            )
+          )}
+
+        {activeRoutesWithoutLayout
+          .filter(route => route.useV6Router)
+          .map(route =>
+            Array.isArray(route.path) ? (
+              route.path.map(path => (
+                <RouteV6 key={path} path={path} element={<route.component />} />
+              ))
+            ) : (
+              <RouteV6
+                key={route.path}
+                path={route.path}
+                element={<route.component />}
+              />
+            )
+          )}
+      </Routes>
+    </>
   )
 }
 
