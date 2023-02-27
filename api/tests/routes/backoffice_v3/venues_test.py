@@ -553,6 +553,29 @@ class UpdateVenueTest:
         db.session.refresh(venue)
         assert venue.contact.phone_number is None
 
+    def test_update_venue_with_same_data(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
+        data = {
+            "siret": venue.siret,
+            "city": venue.city,
+            "postalCode": venue.postalCode,
+            "address": venue.address,
+            "email": venue.contact.email,
+            "phone_number": venue.contact.phone_number,
+            "longitude": venue.longitude,
+            "latitude": venue.latitude,
+        }
+
+        response = send_request(authenticated_client, venue.id, url, data)
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_v3_web.venue.get", venue_id=venue.id, _external=True)
+
+        db.session.refresh(venue)
+
+        assert len(venue.action_history) == 0
+
     def test_update_virtual_venue(self, authenticated_client, offerer):
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
