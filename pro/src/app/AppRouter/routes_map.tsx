@@ -307,13 +307,13 @@ const routes: IRoute[] = [
   },
   {
     component: OfferIndividualWizard,
-    path: ['/offre/individuelle/:offerId'],
+    path: '/offre/individuelle/:offerId/*',
     title: 'Offre étape par étape',
     useV6Router: true,
   },
   {
     component: Reimbursements,
-    path: '/remboursements',
+    path: '/remboursements/*',
     title: 'Remboursements',
     meta: {
       layoutConfig: {
