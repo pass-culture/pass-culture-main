@@ -202,6 +202,7 @@ const Offers = ({
   )
 
   const applyFilters = useCallback(() => {
+    // FIXME : this code's part seems to be useless
     if (!hasDifferentFiltersFromLastSearch(searchFilters)) {
       refreshOffers()
     }
