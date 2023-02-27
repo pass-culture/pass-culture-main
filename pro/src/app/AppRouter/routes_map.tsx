@@ -134,7 +134,7 @@ const routes: IRoute[] = [
   {
     component: SetPassword,
     exact: true,
-    path: ['/creation-de-mot-de-passe/:token?'],
+    path: '/creation-de-mot-de-passe',
     title: 'Création de mot de passe',
     meta: {
       public: true,
@@ -143,6 +143,21 @@ const routes: IRoute[] = [
         pageName: 'sign-in',
       },
     },
+    useV6Router: true,
+  },
+  {
+    component: SetPassword,
+    exact: true,
+    path: '/creation-de-mot-de-passe/:token',
+    title: 'Création de mot de passe',
+    meta: {
+      public: true,
+      layoutConfig: {
+        fullscreen: true,
+        pageName: 'sign-in',
+      },
+    },
+    useV6Router: true,
   },
   {
     component: SetPasswordConfirm,
