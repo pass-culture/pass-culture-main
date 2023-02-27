@@ -1,6 +1,6 @@
 {% from "components/badges.html" import build_venue_badges %}
-{% from "components/external_links.html" import build_siret_link %}
 {% from "components/form_body.html" import build_form_body with context %}
+{% import "components/links.html" as links %}
 
 {% extends "layouts/pro.html" %}
 
@@ -10,12 +10,7 @@
         <div class="card shadow">
             <div class="card-body">
                 <div class="d-flex flex-fill align-items-center">
-                    <h2 class="card-title text-primary">
-                        <a href="{{ venue | pc_pro_venue_link }}" target="_blank"
-                            class="link-primary">
-                            {{ venue.name | escape }}
-                        </a>
-                    </h2>
+                    <h2 class="card-title text-primary">{{ links.build_venue_name_to_pc_pro_link(venue) }}</h2>
                     <span class="fs-5 ps-4">
                         {{ build_venue_badges(venue) }}
                     </span>
@@ -90,7 +85,7 @@
                 </p>
 
                 <p class="card-subtitle text-muted mb-3 h5">
-                    SIRET : {{ build_siret_link(venue) }}
+                    SIRET : {{ links.build_siret_to_external_link(venue) }}
                 </p>
 
                 <div class="row pt-3">
@@ -181,15 +176,7 @@
 
                         <p class="mb-1">
                             <span class="fw-bold">Structure :</span>
-                            <a
-                                href="{{ url_for(
-                                    "backoffice_v3_web.offerer.get",
-                                    offerer_id=venue.managingOffererId
-                                )}}"
-                                class="fw-bold link-primary"
-                            >
-                                {{ venue.managingOfferer.name }}
-                            </a>
+                            {{ links.build_offerer_name_to_details_link(venue.managingOfferer) }}
                         </p>
 
                         <p class="mb-1">
