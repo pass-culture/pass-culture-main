@@ -1,4 +1,5 @@
 from datetime import datetime
+import decimal
 import enum
 import logging
 import typing
@@ -424,6 +425,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     def field_exists_and_has_changed(self, field: str, value: typing.Any) -> typing.Any:
         if field not in type(self).__table__.columns:
             raise ValueError(f"Unknown field {field} for model {type(self)}")
+        if isinstance(getattr(self, field), decimal.Decimal):
+            return str(getattr(self, field)) != value
         return getattr(self, field) != value
 
     @property
