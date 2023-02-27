@@ -66,6 +66,7 @@ const CollectiveOfferVisibility = ({
       onSuccess={onSuccess}
       institutions={institutionsPayload.institutions}
       isLoadingInstitutions={isLoading}
+      offer={offer}
     />
   )
 }

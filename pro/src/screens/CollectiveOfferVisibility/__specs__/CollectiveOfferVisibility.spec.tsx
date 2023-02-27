@@ -8,6 +8,7 @@ import { api } from 'apiClient/api'
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
 import * as useNotification from 'hooks/useNotification'
+import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferVisibility, {
@@ -70,6 +71,19 @@ describe('CollectiveOfferVisibility', () => {
       institutions,
       isLoadingInstitutions: false,
     }
+  })
+
+  it('should show banner if generate from publicApi', () => {
+    const offer = collectiveOfferFactory({ isPublicApi: true })
+
+    renderVisibilityStep({
+      ...props,
+      mode: Mode.EDITION,
+      offer,
+    })
+    expect(
+      screen.getByText('Offre importée automatiquement')
+    ).toBeInTheDocument()
   })
 
   it('should disable visibility form if offer is not editable', async () => {

@@ -31,7 +31,6 @@ const CollectiveOfferVisibility = ({
     EducationalInstitutionResponseModel[]
   >([])
   const [isLoadingInstitutions, setIsLoadingInstitutions] = useState(true)
-
   const onSuccess = ({
     offerId,
     payload,

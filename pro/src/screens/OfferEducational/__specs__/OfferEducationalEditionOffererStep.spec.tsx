@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 
 import { CollectiveBookingStatus } from 'apiClient/v1'
+import { Mode } from 'core/OfferEducational'
 import {
   collectiveOfferFactory,
   collectiveOfferVenueFactory,
@@ -102,5 +103,14 @@ describe('screens | OfferEducational : edition offerer step', () => {
     expect(venueSelect).toBeInTheDocument()
     expect(venueSelect).toHaveValue('VENUE_3')
     expect(venueSelect).toBeDisabled()
+  })
+
+  it('should show banner if generate from publicApi', () => {
+    const offer = collectiveOfferFactory({ isPublicApi: true })
+
+    renderEACOfferForm({ ...props, mode: Mode.EDITION, offer })
+    expect(
+      screen.getByText('Offre importée automatiquement')
+    ).toBeInTheDocument()
   })
 })

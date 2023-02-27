@@ -5,12 +5,14 @@ import React, { useEffect, useState } from 'react'
 import * as yup from 'yup'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
+import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import FormLayout from 'components/FormLayout'
 import OfferEducationalActions from 'components/OfferEducationalActions'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   EducationalOfferType,
+  isCollectiveOffer,
   MAX_DETAILS_LENGTH,
   Mode,
   OfferEducationalStockFormValues,
@@ -100,6 +102,11 @@ const OfferEducationalStock = <
       <FormikProvider value={{ ...formik, resetForm }}>
         <form onSubmit={formik.handleSubmit}>
           <FormLayout className={styles['offer-educational-stock-form-layout']}>
+            {isCollectiveOffer(offer) && offer.isPublicApi && (
+              <BannerPublicApi className={styles['banner-space']}>
+                Offre importée automatiquement
+              </BannerPublicApi>
+            )}
             <FormLayout.MandatoryInfo />
             <FormLayout.Section title="Date et prix">
               {displayElementsForShowcaseOption ? (
