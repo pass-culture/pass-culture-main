@@ -1,3 +1,5 @@
+{% import "components/links.html" as links %}
+
 {% extends "layouts/connected.html" %}
 
 {% block page %}
@@ -42,11 +44,7 @@
                                 </div>
                             </td>
                             <td>{{ offer.id }}</td>
-                            <td>
-                                <a href="{{ offer | pc_pro_offer_link }}" class="link-primary" target="_blank">
-                                    {{ offer.name | escape }}
-                                </a>
-                            </td>
+                            <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
                             <td>{{ offer.category.pro_label }}</td>
                             <td>{{ offer.subcategory_v2.pro_label }}</td>
                             <td>{{ get_initial_stock(offer) }}</td>
@@ -56,11 +54,7 @@
                             <td>{{ offer.validation | format_offer_validation_status }}</td>
                             <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
                             <td>{{ offer.venue.departementCode }}</td>
-                            <td>
-                                <a href="{{ url_for('backoffice_v3_web.venue.get', venue_id=offer.venue.id) }}" class="link-primary">
-                                    {{ offer.venue.name }}
-                                </a>
-                            </td>
+                            <td>{{ links.build_venue_name_to_details_link(offer.venue) }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

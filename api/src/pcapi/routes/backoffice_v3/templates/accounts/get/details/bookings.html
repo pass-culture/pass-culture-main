@@ -1,3 +1,5 @@
+{% import "components/links.html" as links %}
+
 {% if bookings %}
     <table class="table mb-4 get-details-bookings-view">
         <thead>
@@ -22,11 +24,7 @@
                     </button>
                 </th>
                 <td>{{ booking.offerer.name | escape }}</td>
-                <td>
-                    <a href="{{ booking.stock.offer | pc_pro_offer_link }}" target="_blank" class="link-primary">
-                        {{ booking.stock.offer.name | escape }}
-                    </a>
-                </td>
+                <td>{{ links.build_offer_name_to_pc_pro_link(booking.stock.offer) }}</td>
                 <td>
                     {{ booking.amount | format_amount }}
                     {% if booking.stock.offer.isDuo %}(Duo){% endif %}

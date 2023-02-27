@@ -1,3 +1,5 @@
+{% import "components/links.html" as links %}
+
 {# This macro must be imported with context because of is_user_offerer_action_type() #}
 {% macro build_actions_table(actions, show_venue) %}
     <table class="table table-hover my-4">
@@ -17,18 +19,13 @@
                     <td>{{ action.actionType.value }}</td>
                     <td>{{ action.actionDate | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
                     <td class="text-break">
-                        {% if action.userId and action.user.full_name and is_user_offerer_action_type(action) %}
-                            <a href="{{ url_for("backoffice_v3_web.pro_user.get", user_id=action.userId) }}" class="link-primary">
-                                {{ action.user.full_name | empty_string_if_null }} - {{ action.userId }}
-                            </a>
+                        {% if action.userId and is_user_offerer_action_type(action) %}
+                            {{ links.build_pro_user_name_to_details_link(action.user) }}
                         {% elif action.actionType.name == "INFO_MODIFIED" %}
                             <p>
                                 <span class="fw-bold">Informations modifiées</span>
                                 {% if show_venue and action.venueId %}
-                                    sur le lieu
-                                    <a href="{{ url_for("backoffice_v3_web.venue.get", venue_id=action.venueId) }}" class="link-primary">
-                                        {{ action.venue.name }}
-                                    </a>
+                                    sur le lieu {{ links.build_venue_name_to_details_link(action.venue) }}
                                     ({{ action.venueId }})
                                 {% endif %}
                             </p>

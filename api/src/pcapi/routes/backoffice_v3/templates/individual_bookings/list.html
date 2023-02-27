@@ -1,6 +1,7 @@
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
 {% from "components/bookings/extra_row.html" import build_booking_extra_row with context %}
 {% from "components/form_body.html" import build_form_body with context %}
+{% import "components/links.html" as links %}
 
 {% extends "layouts/connected.html" %}
 
@@ -118,40 +119,17 @@
                             </th>
                             <td>{{ booking.id }}</td>
                             <td>{{ booking.token }}</td>
-                            <td>
-                                {% if booking.user %}
-                                    <a href="{{ url_for('backoffice_v3_web.public_accounts.get_public_account', user_id=booking.user.id) }}" class="link-primary">
-                                        {{ booking.user.full_name | escape }} ({{ booking.user.id }})
-                                    </a>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <a href="{{ offer | pc_pro_offer_link }}" target="_blank" class="link-primary">
-                                  {{ offer.name | escape }}
-                                </a>
-                            </td>
-                            <td>
-                                <a href="{{ url_for('backoffice_v3_web.offer.list_offers', q=offer.id) }}" class="link-primary">
-                                    {{ offer.id }}
-                                </a>
-                            </td>
+                            <td>{{ links.build_public_user_name_to_details_link(booking.user) }}</td>
+                            <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
+                            <td>{{ links.a_offer_name_to_details(offer, text_attr="id") }}</td>
                             <td>{{ offer.isDuo | format_bool }}</td>
                             <td>{{ booking.stock.quantity }}</td>
                             <td>{{ booking.total_amount | format_amount }}</td>
                             <td>{{ booking.status | format_booking_status(with_badge=True) | safe }}</td>
                             <td>{{ booking.dateCreated | format_date("%d/%m/%Y") }}</td>
-{#                            <td>{{ booking.dateUsed | format_date("%d/%m/%Y") }}</td>#}
                             <td>{{ booking.stock.beginningDatetime | format_date }}</td>
-                            <td>
-                                <a href="{{ url_for('backoffice_v3_web.offerer.get', offerer_id=booking.offerer.id) }}" class="link-primary">
-                                    {{ booking.offerer.name }}
-                                </a>
-                            </td>
-                            <td>
-                                <a href="{{ url_for('backoffice_v3_web.venue.get', venue_id=booking.venue.id) }}" class="link-primary">
-                                    {{ booking.venue.name }}
-                                </a>
-                            </td>
+                            <td>{{ links.build_offerer_name_to_details_link(booking.offerer) }}</td>
+                            <td>{{ links.build_venue_name_to_details_link(booking.venue) }}</td>
                         </tr>
 						{{ build_booking_extra_row(booking, booking.stock, offer) }}
                     {% endfor %}

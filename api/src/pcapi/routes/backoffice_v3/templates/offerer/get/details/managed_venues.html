@@ -1,4 +1,4 @@
-{% from "components/external_links.html" import build_siret_link %}
+{% import "components/links.html" as links %}
 
 <table class="table table-hover my-4">
     <thead>
@@ -15,17 +15,9 @@
         {% for venue in offerer.managedVenues %}
             <tr>
                 <th scope="row"></th>
-                <td class="fw-bolder">
-                    <a href="{{ url_for("backoffice_v3_web.venue.get", venue_id=venue.id) }}" class="link-primary">
-                        {{ venue.id }}
-                    </a>
-                </td>
-                <td class="text-break">
-                    <a href="{{ venue | pc_pro_venue_link }}" class="link-primary">
-                        {{ venue.publicName or venue.name }}
-                    </a>
-                </td>
-                <td>{{ build_siret_link(venue) }}</td>
+                <td class="fw-bolder">{{ links.build_venue_name_to_details_link(venue, text_attr="id") }}</td>
+                <td class="text-break">{{ links.build_venue_name_to_pc_pro_link(venue, public_name=true) }}</td>
+                <td>{{ links.build_siret_to_external_link(venue) }}</td>
                 <td>{{ venue.venueTypeCode.value }}</td>
             </tr>
         {% endfor %}

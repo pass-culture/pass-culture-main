@@ -1,6 +1,6 @@
 {% from "offerer/edit_status_modal.html" import build_edit_status_modal with context %}
 {% from "components/badges.html" import build_user_offerer_status_badge %}
-{% from "components/external_links.html" import build_siren_link %}
+{% import "components/links.html" as links %}
 
 {% extends "layouts/connected.html" %}
 
@@ -111,25 +111,15 @@
                             </td>
                             <td>{{ user_offerer.user.id }}</td>
                             <td>{{ user_offerer.user.email | empty_string_if_null }}</td>
-                            <td>
-                                <a href="{{ url_for('backoffice_v3_web.pro_user.get', user_id=user_offerer.user.id) }}"
-                                   class="link-primary">
-                                    {{ user_offerer.user.firstName | empty_string_if_null | escape }}
-                                    {{ user_offerer.user.lastName | empty_string_if_null | escape }}
-                                </a>
-                            </td>
+                            <td>{{ links.build_pro_user_name_to_details_link(user_offerer.user) }}</td>
                             <td>{{ build_user_offerer_status_badge(user_offerer) }}</td>
                             <td>{{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                             <td>{{ get_last_comment_func(offerer, user_offerer.userId) | empty_string_if_null | replace("\n", "<br/>"|safe) }}</td>
                             <td>{{ user_offerer.user.phoneNumber | format_phone_number }}</td>
-                            <td>
-                                <a href="{{ url_for('backoffice_v3_web.offerer.get', offerer_id=user_offerer.offererId) }}" class="link-primary">
-                                    {{ offerer.name | upper | escape }}
-                                </a>
-                            </td>
+                            <td>{{ links.build_offerer_name_to_details_link(user_offerer.offerer) }}</td>
                             <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                             <td>{{ (owner and owner.email) | empty_string_if_null }}</td>
-                            <td>{{ build_siren_link(offerer) }}</td>
+                            <td>{{ links.build_siren_to_external_link(offerer) }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
