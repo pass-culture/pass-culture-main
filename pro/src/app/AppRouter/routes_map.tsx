@@ -111,18 +111,21 @@ const routes: IRoute[] = [
     exact: true,
     path: '/accueil',
     title: 'Accueil',
+    useV6Router: true,
   },
   {
     component: Desk,
     exact: true,
     path: '/guichet',
     title: 'Guichet',
+    useV6Router: true,
   },
   {
     component: Bookings,
     exact: true,
     path: '/reservations',
     title: 'Réservations',
+    useV6Router: true,
   },
   {
     component: CollectiveBookings,
@@ -162,7 +165,7 @@ const routes: IRoute[] = [
   {
     component: SetPasswordConfirm,
     exact: true,
-    path: ['/creation-de-mot-de-passe-confirmation'],
+    path: '/creation-de-mot-de-passe-confirmation',
     title: 'Confirmation création de mot de passe',
     meta: {
       public: true,
@@ -171,6 +174,7 @@ const routes: IRoute[] = [
         pageName: 'sign-in',
       },
     },
+    useV6Router: true,
   },
   {
     component: SignIn,
@@ -184,6 +188,7 @@ const routes: IRoute[] = [
         pageName: 'sign-in',
       },
     },
+    useV6Router: true,
   },
   {
     component: EmailChangeValidation,
@@ -196,6 +201,7 @@ const routes: IRoute[] = [
         pageName: 'sign-in',
       },
     },
+    useV6Router: true,
   },
   {
     component: Offerers,
