@@ -17,7 +17,9 @@ on:
 
 jobs:
   node-run-command:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
+    container:
+      image: node:18
     steps:
       - uses: actions/checkout@v3
       - if: inputs.use_cache

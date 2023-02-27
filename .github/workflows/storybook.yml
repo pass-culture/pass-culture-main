@@ -5,10 +5,12 @@ on:
       - master
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
+    container:
+      image: node:18
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v3
         with:
           persist-credentials: false
       - uses: actions/setup-node@v2

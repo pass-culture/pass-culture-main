@@ -11,7 +11,7 @@ defaults:
 jobs:
   read-node-version:
     name: "Read node version from .nvmrc"
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     outputs:
       node_version: ${{ steps.read-node-version.outputs.node_version }}
     steps:
@@ -21,7 +21,9 @@ jobs:
 
   type-check:
     name: "Type check"
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
+    container:
+      image: node:18
     needs: read-node-version
     steps:
       - uses: actions/checkout@v3
@@ -40,7 +42,9 @@ jobs:
 
   quality-check:
     name: "Quality check"
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
+    container:
+      image: node:18
     needs: read-node-version
     steps:
       - uses: actions/checkout@v3
@@ -59,7 +63,9 @@ jobs:
 
   style-quality-check:
     name: "Style quality check"
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
+    container:
+      image: node:18
     needs: read-node-version
     steps:
       - uses: actions/checkout@v3
@@ -78,13 +84,16 @@ jobs:
 
   tests-pro-unit-tests:
     name: "Unit tests"
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
+    container:
+      image: node:18
     needs: read-node-version
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - run: |
+          git config --global --add safe.directory /__w/pass-culture-main/pass-culture-main
           git fetch --no-tags origin +refs/heads/master:refs/remotes/origin/master
           git update-ref refs/heads/master refs/remotes/origin/master
       - if: ${{ env.use_cache }}

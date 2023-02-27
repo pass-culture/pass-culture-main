@@ -22,7 +22,9 @@ on:
 jobs:
   deploy-app:
     name: "[${{ inputs.app_name }}] Deployment"
-    runs-on: ubuntu-latest
+    container:
+      image: node:18
+    runs-on: [self-hosted, linux, x64]
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write

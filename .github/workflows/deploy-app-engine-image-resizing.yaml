@@ -23,7 +23,7 @@ jobs:
     needs: check-image-resizing-folder-changes
     if: ${{ needs.check-image-resizing-folder-changes.outputs.folder_changed == 'true' }}
     environment: ${{ inputs.environment }}
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     permissions:
       contents: 'read'
       id-token: 'write'

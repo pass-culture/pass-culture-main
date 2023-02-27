@@ -25,7 +25,7 @@ jobs:
   create-maintenance-branch:
     name: Create maintenance branch
     needs: build-and-tag-version
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     env:
       MAINTENANCE_BRANCH: maint/v${{ github.event.inputs.releaseNumber }}
     steps:
