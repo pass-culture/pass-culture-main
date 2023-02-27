@@ -209,6 +209,7 @@ const routes: IRoute[] = [
     exact: true,
     path: '/structures/creation',
     title: 'Structures',
+    useV6Router: true,
   },
   {
     component: OffererDetails,
