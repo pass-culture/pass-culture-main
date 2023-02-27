@@ -1,5 +1,5 @@
 {% from "components/badges.html" import build_offerer_badges %}
-{% from "components/form_body.html" import build_form_body with context %}
+{% from "components/forms.html" import build_form_fields_group with context %}
 {% import "components/links.html" as links %}
 
 {% extends "layouts/pro.html" %}
@@ -29,9 +29,7 @@
                                                 <h5 class="modal-title">Modifier les informations de la structure</h5>
                                             </div>
                                             <div class="modal-body pb-3">
-                                                <div class="form-group">
-                                                    {{ build_form_body(edit_offerer_form) }}
-                                                </div>
+                                                {{ build_form_fields_group(edit_offerer_form) }}
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
@@ -64,9 +62,7 @@
                                                     La structure <strong>{{ offerer.name }} ({{ offerer.id }})</strong> sera définitivement supprimée
                                                     de la base de données. Veuillez confirmer ce choix.
                                                 </p>
-                                                <div class="form-group">
-                                                    {{ build_form_body(delete_offerer_form) }}
-                                                </div>
+                                                {{ build_form_fields_group(delete_offerer_form) }}
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
