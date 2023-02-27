@@ -31,7 +31,7 @@ jobs:
       RUN_ENV: tests
       DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
       REDIS_URL: redis://redis:6379
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     needs:
       - check-api-folder-changes
       - build-tests-docker-image

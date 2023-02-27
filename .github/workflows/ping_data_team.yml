@@ -11,10 +11,10 @@ on:
 
 jobs:
   send-message:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     if: github.event.pull_request.merged == true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Ping slack
         shell: bash
