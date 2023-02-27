@@ -129,6 +129,7 @@ const routes: IRoute[] = [
     exact: true,
     path: '/reservations/collectives',
     title: 'Réservations',
+    useV6Router: true,
   },
   {
     component: SetPassword,

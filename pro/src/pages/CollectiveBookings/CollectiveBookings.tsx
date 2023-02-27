@@ -1,5 +1,5 @@
 import React from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom-v5-compat'
 
 import { getVenuesAdapter } from 'core/Bookings/adapters'
 import { Audience } from 'core/shared'
@@ -17,7 +17,7 @@ export type CollectiveBookingsRouterState = {
 }
 
 const CollectiveBookings = (): JSX.Element => {
-  const location = useLocation<CollectiveBookingsRouterState | undefined>()
+  const location = useLocation()
 
   return (
     <BookingsScreen
