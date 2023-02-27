@@ -1,12 +1,15 @@
 import React from 'react'
 
+import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import { SummaryLayout } from 'components/SummaryLayout'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   EducationalCategories,
+  isCollectiveOffer,
 } from 'core/OfferEducational'
 
+import styles from './CollectiveOfferSummary.module.scss'
 import CollectiveOfferAccessibilitySection from './components/CollectiveOfferAccessibilitySection'
 import CollectiveOfferContactSection from './components/CollectiveOfferContactSection'
 import CollectiveOfferImagePreview from './components/CollectiveOfferImagePreview'
@@ -17,8 +20,9 @@ import CollectiveOfferStockSection from './components/CollectiveOfferStockSectio
 import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection'
 import CollectiveOfferVenueSection from './components/CollectiveOfferVenueSection'
 import CollectiveOfferVisibilitySection from './components/CollectiveOfferVisibilitySection'
+export { ReactComponent as LogoPassCultureDarkIcon } from 'icons/logo-pass-culture-dark.svg'
 
-interface ICollectiveOfferSummaryProps {
+export interface ICollectiveOfferSummaryProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
   categories: EducationalCategories
   offerEditLink?: string
@@ -37,6 +41,12 @@ const CollectiveOfferSummary = ({
     <>
       <SummaryLayout>
         <SummaryLayout.Content fullWidth>
+          {isCollectiveOffer(offer) && offer.isPublicApi && (
+            <BannerPublicApi className={styles['banner-space']}>
+              Offre créée par votre outil de billetterie via l’API offres
+              collectives
+            </BannerPublicApi>
+          )}
           <SummaryLayout.Section
             title="Détails de l’offre"
             editLink={offerEditLink}

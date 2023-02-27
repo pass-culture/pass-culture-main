@@ -27,4 +27,18 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
 
     screen.getByText('Date et prix')
   })
+
+  it('should render for offer with a stock', () => {
+    const offer = collectiveOfferFactory({ isPublicApi: true })
+    const testProps: IOfferEducationalStockProps = {
+      ...defaultProps,
+      offer,
+      mode: Mode.EDITION,
+    }
+    renderOfferEducationalStock(testProps)
+
+    expect(
+      screen.getByText('Offre importée automatiquement')
+    ).toBeInTheDocument()
+  })
 })
