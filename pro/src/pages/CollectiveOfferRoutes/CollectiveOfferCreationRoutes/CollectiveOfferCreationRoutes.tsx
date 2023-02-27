@@ -1,6 +1,6 @@
 /* istanbul ignore file: DEBT, TO FIX*/
 import React, { useEffect, useState } from 'react'
-import { Route, Switch, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom-v5-compat'
 
 import PageTitle from 'components/PageTitle/PageTitle'
 import {
@@ -55,49 +55,72 @@ const CollectiveOfferCreationRoutes = ({
   }, [offerId])
 
   return (
-    <Switch>
+    <Routes>
+      {[
+        '/offre/:offerId/collectif/confirmation',
+        '/offre/:offerId/collectif/vitrine/confirmation',
+      ].map(path => (
+        <Route
+          path={path}
+          element={
+            <>
+              <PageTitle title="Confirmation" />
+              {offer ? (
+                <CollectiveOfferConfirmation offer={offer} />
+              ) : (
+                <Spinner />
+              )}
+            </>
+          }
+        />
+      ))}
+
       <Route
-        path={[
-          '/offre/:offerId/collectif/confirmation',
-          '/offre/:offerId/collectif/vitrine/confirmation',
-        ]}
-      >
-        <PageTitle title="Confirmation" />
-        {offer ? <CollectiveOfferConfirmation offer={offer} /> : <Spinner />}
-      </Route>
-      <Route path="/offre/creation/collectif/selection">
-        <CollectiveOfferSelectionDuplication />
-      </Route>
+        path="/offre/creation/collectif/selection"
+        element={<CollectiveOfferSelectionDuplication />}
+      />
+
       <Route
-        path={[
-          '/offre/:offerId/collectif',
-          '/offre/creation/collectif',
-          '/offre/collectif/:offerId/creation',
-          '/offre/creation/collectif/vitrine',
-          '/offre/collectif/vitrine/:offerId/creation',
-        ]}
-        exact={false}
-      >
-        <PageTitle title="Détails de l'offre" />
-        <Switch>
-          <Route path="/offre/creation/collectif/vitrine">
+        path="/offre/creation/collectif/vitrine"
+        element={
+          <>
+            <PageTitle title="Détails de l'offre" />
             <CollectiveOfferCreation
               offer={offer}
               setOffer={setOffer}
               isTemplate
             />
-          </Route>
-          <Route path="/offre/creation/collectif">
+          </>
+        }
+      />
+      <Route
+        path="/offre/creation/collectif"
+        element={
+          <>
+            <PageTitle title="Détails de l'offre" />{' '}
             <CollectiveOfferCreation offer={offer} setOffer={setOffer} />
-          </Route>
-          <Route path="/offre/collectif/:offerId/creation">
+          </>
+        }
+      />
+
+      <Route
+        path="/offre/collectif/:offerId/creation"
+        element={
+          <>
+            <PageTitle title="Détails de l'offre" />
             {offer ? (
               <CollectiveOfferCreation offer={offer} setOffer={setOffer} />
             ) : (
               <Spinner />
             )}
-          </Route>
-          <Route path="/offre/collectif/vitrine/:offerId/creation">
+          </>
+        }
+      />
+      <Route
+        path="/offre/collectif/vitrine/:offerId/creation"
+        element={
+          <>
+            <PageTitle title="Détails de l'offre" />
             {offer ? (
               <CollectiveOfferCreation
                 offer={offer}
@@ -107,16 +130,27 @@ const CollectiveOfferCreationRoutes = ({
             ) : (
               <Spinner />
             )}
-          </Route>
-          <Route path="/offre/:offerId/collectif/stocks">
+          </>
+        }
+      />
+      <Route
+        path="/offre/:offerId/collectif/stocks"
+        element={
+          <>
             <PageTitle title="Date et prix" />
             {offer && isCollectiveOffer(offer) ? (
               <CollectiveOfferStockCreation offer={offer} setOffer={setOffer} />
             ) : (
               <Spinner />
             )}
-          </Route>
-          <Route path="/offre/:offerId/collectif/visibilite">
+          </>
+        }
+      />
+
+      <Route
+        path="/offre/:offerId/collectif/visibilite"
+        element={
+          <>
             <PageTitle title="Visibilité" />
             {offer && isCollectiveOffer(offer) ? (
               <CollectiveOfferVisibilityCreation
@@ -126,26 +160,32 @@ const CollectiveOfferCreationRoutes = ({
             ) : (
               <Spinner />
             )}
-          </Route>
-          <Route
-            path={[
-              '/offre/:offerId/collectif/creation/recapitulatif',
-              '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
-            ]}
-          >
-            <PageTitle title="Récapitulatif" />
-            {offer ? (
-              <CollectiveOfferSummaryCreation
-                offer={offer}
-                setOffer={setOffer}
-              />
-            ) : (
-              <Spinner />
-            )}
-          </Route>
-        </Switch>
-      </Route>
-    </Switch>
+          </>
+        }
+      />
+
+      {[
+        '/offre/:offerId/collectif/creation/recapitulatif',
+        '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
+      ].map(path => (
+        <Route
+          path={path}
+          element={
+            <>
+              <PageTitle title="Récapitulatif" />
+              {offer ? (
+                <CollectiveOfferSummaryCreation
+                  offer={offer}
+                  setOffer={setOffer}
+                />
+              ) : (
+                <Spinner />
+              )}
+            </>
+          }
+        />
+      ))}
+    </Routes>
   )
 }
 
