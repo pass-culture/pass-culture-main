@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 ATTACHED_PRO_USERS_COUNT = 2
 
+
 # Declare locations in various timezones: metropolitan France
 # (UTC+1/+2), Guyane (UTC-3) and Wallis-et-Futuna (UTC+12).
 @dataclass
