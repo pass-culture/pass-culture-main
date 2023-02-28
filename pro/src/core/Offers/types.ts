@@ -54,6 +54,7 @@ export type Offer = {
   productIsbn?: string | null
   venue: Venue
   stocks: Stock[]
+  isPublicApi?: boolean | null
   isEditable: boolean
   isShowcase?: boolean | null
   educationalInstitution?: EducationalInstitutionResponseModel | null

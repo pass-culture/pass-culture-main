@@ -14,6 +14,7 @@ export const collectiveOfferFactory = (customOffer = {}): Offer => ({
   venue: venueFactory(),
   stocks: [],
   isEditable: true,
+  isPublicApi: false,
   ...customOffer,
 })
 
