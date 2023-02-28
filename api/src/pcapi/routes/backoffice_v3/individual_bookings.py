@@ -196,7 +196,7 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
 
     try:
         bookings_api.mark_as_used_with_uncancelling(booking)
-    except sa.exc.SQLAlchemyError as exc:
+    except Exception as exc:  # pylint: disable=broad-except
         flash(f"Une erreur s'est produite : {str(exc)}", "warning")
     else:
         flash(f"La réservation {booking.token} a été validée", "success")
@@ -217,7 +217,7 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
         flash("Impossible d'annuler une réservation remboursée", "warning")
     except bookings_exceptions.BookingIsAlreadyUsed:
         flash("Impossible d'annuler une réservation déjà utilisée", "warning")
-    except sa.exc.SQLAlchemyError as exc:
+    except Exception as exc:  # pylint: disable=broad-except
         flash(f"Une erreur s'est produite : {str(exc)}", "warning")
     else:
         flash(f"La réservation {booking.token} a été annulée", "success")
