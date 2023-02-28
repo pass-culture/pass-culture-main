@@ -1,0 +1,9 @@
+@import 'sass-rem';
+
+.dropdown-indicator {
+  width: rem(16px);
+
+  &-is-closed {
+    transform: rotate(180deg);
+  }
+}
