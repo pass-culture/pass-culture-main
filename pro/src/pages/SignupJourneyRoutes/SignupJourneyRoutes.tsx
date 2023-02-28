@@ -1,4 +1,4 @@
-import { Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
 import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
@@ -8,15 +8,11 @@ const SignupJourneyRoutes = () => {
   return (
     <SignupJourneyContextProvider>
       <SignupJourneyFormLayout>
-        <Route path={'/signup/authentification'}>
-          <div>Authentification</div>
-        </Route>
-        <Route path={'/signup/activite'}>
-          <Activity />
-        </Route>
-        <Route path={'/signup/validation'}>
-          <div>Validation</div>
-        </Route>
+        <Routes>
+          <Route path={'/authentification'} element={<>Authentification</>} />
+          <Route path={'/activite'} element={<Activity />} />
+          <Route path={'/validation'} element={<>Validation</>} />
+        </Routes>
       </SignupJourneyFormLayout>
     </SignupJourneyContextProvider>
   )

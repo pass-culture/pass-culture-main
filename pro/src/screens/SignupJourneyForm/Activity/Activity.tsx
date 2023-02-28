@@ -42,7 +42,7 @@ const Activity = (): JSX.Element => {
   ): Promise<void> => {
     if (Object.keys(formik.errors).length === 0) {
       setActivity(formValues)
-      navigate('/signup/validation')
+      navigate('/parcours-inscription/validation')
     }
   }
 
@@ -54,7 +54,7 @@ const Activity = (): JSX.Element => {
   })
 
   const handlePreviousStep = () => {
-    navigate('/signup/authentification')
+    navigate('/parcours-inscription/authentification')
   }
 
   if (isLoadingVenueTypes) {
