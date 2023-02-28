@@ -3,8 +3,7 @@ import datetime
 from pydantic import fields
 from pydantic import validator
 
-from pcapi.core.fraud.utils import has_latin_or_numeric_chars
-from pcapi.core.fraud.utils import is_latin
+import pcapi.core.fraud.utils as fraud_utils
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
 from pcapi.routes.serialization import BaseModel
@@ -68,23 +67,25 @@ class ProfileUpdateRequest(BaseModel):
         alias_generator = to_camel
 
     @validator("first_name", "last_name", "address", "city", "postal_code")
-    def mandatory_string_fields_cannot_be_empty(cls, v):  # type: ignore [no-untyped-def]
+    def mandatory_string_fields_cannot_be_empty(cls, v: str) -> str:
         v = v.strip()
         if not v:
             raise ValueError("This field cannot be empty")
         return v
 
-    @validator("first_name", "last_name", "city")
-    def string_must_contain_latin_characters(cls, v):  # type: ignore [no-untyped-def]
-        if not is_latin(v):
-            raise ValueError("Les champs textuels doivent contenir des caractères latins")
+    @validator("first_name", "last_name")
+    def string_must_contain_latin_characters(cls, v: str) -> str:
+        fraud_utils.validate_name(v)
+        return v
+
+    @validator("city")
+    def city_must_be_valid(cls, v: str) -> str:
+        fraud_utils.validate_city(v)
         return v
 
     @validator("address")
-    def address_must_be_valid(cls, v):  # type: ignore [no-untyped-def]
-        if not has_latin_or_numeric_chars(v):
-            raise ValueError("L'adresse doit contenir des caractères alphanumériques")
-
+    def address_must_be_valid(cls, v: str) -> str:
+        fraud_utils.validate_address(v)
         return v
 
 
