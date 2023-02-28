@@ -37,6 +37,7 @@ import type { GetOfferersListResponseModel } from '../models/GetOfferersListResp
 import type { GetOfferersNamesResponseModel } from '../models/GetOfferersNamesResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
+import type { GetVenuesOfOffererFromSiretResponseModel } from '../models/GetVenuesOfOffererFromSiretResponseModel';
 import type { InvoiceListResponseModel } from '../models/InvoiceListResponseModel';
 import type { LinkVenueToPricingPointBodyModel } from '../models/LinkVenueToPricingPointBodyModel';
 import type { ListBookingsResponseModel } from '../models/ListBookingsResponseModel';
@@ -2104,6 +2105,28 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/venues-educational-statuses',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_venues_of_offerer_from_siret <GET>
+   * @param siret
+   * @returns GetVenuesOfOffererFromSiretResponseModel OK
+   * @throws ApiError
+   */
+  public getVenuesOfOffererFromSiret(
+    siret: string,
+  ): CancelablePromise<GetVenuesOfOffererFromSiretResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/venues/siret/{siret}',
+      path: {
+        'siret': siret,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
