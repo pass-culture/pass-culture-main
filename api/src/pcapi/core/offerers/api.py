@@ -1433,7 +1433,9 @@ def list_offerers_to_be_validated(
 ) -> sa.orm.Query:
     query = offerers_models.Offerer.query.options(
         sa.orm.joinedload(offerers_models.Offerer.UserOfferers).joinedload(offerers_models.UserOfferer.user),
-        sa.orm.joinedload(offerers_models.Offerer.tags),
+        sa.orm.joinedload(offerers_models.Offerer.tags)
+        .joinedload(offerers_models.OffererTag.categories)
+        .load_only(offerers_models.OffererTagCategory.name),
         sa.orm.joinedload(offerers_models.Offerer.action_history).joinedload(history_models.ActionHistory.authorUser),
     )
 

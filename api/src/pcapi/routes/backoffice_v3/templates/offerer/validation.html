@@ -46,20 +46,20 @@
                 </div>
                 <table class="table mb-4">
                     <thead>
-                    <tr>
-                        <th scope="col"></th>
-                        <th scope="col">ID</th>
-                        <th scope="col">Nom de la structure</th>
-                        <th scope="col">État</th>
-                        <th scope="col">Top Acteur</th>
-                        <th scope="col">Date de la demande</th>
-                        <th scope="col">Dernier commentaire</th>
-                        <th scope="col">SIREN</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Responsable Structure</th>
-                        <th scope="col">Ville</th>
-                        <th scope="col">Téléphone</th>
-                    </tr>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">ID</th>
+                            <th scope="col">Nom de la structure</th>
+                            <th scope="col">État</th>
+                            <th scope="col">Top Acteur</th>
+                            <th scope="col">Tags structure</th>
+                            <th scope="col">Date de la demande</th>
+                            <th scope="col">Dernier commentaire</th>
+                            <th scope="col">SIREN</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Responsable Structure</th>
+                            <th scope="col">Ville</th>
+                        </tr>
                     </thead>
                     <tbody>
                     {% for offerer in rows.items %}
@@ -125,13 +125,13 @@
                                     </form>
                                 </div>
                             </td>
+                            <td>{{ offerer.tags | filter_homologation_tags | format_tag_object_list | escape }}</td>
                             <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                             <td>{{ get_last_comment_func(offerer) | empty_string_if_null | replace("\n", "<br/>"|safe) }}</td>
                             <td>{{ links.build_siren_to_external_link(offerer) }}</td>
                             <td>{{ (owner and owner.email) | empty_string_if_null }}</td>
                             <td>{{ links.build_pro_user_name_to_details_link(owner) }}</td>
                             <td>{{ offerer.city | empty_string_if_null }}</td>
-                            <td>{{ (owner and owner.phoneNumber) | format_phone_number }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
