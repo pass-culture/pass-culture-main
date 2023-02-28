@@ -3,6 +3,7 @@ module.exports = {
     '\\.(png|svg)': '<rootDir>/src/utils/svgrMock.js',
     '\\.module\\.scss$': 'identity-obj-proxy',
     '\\.(css|less|scss|sass)$': '<rootDir>/src/utils/styleMock.js',
+    '@fontsource/barlow': '<rootDir>/src/utils/styleMock.js',
   },
   modulePaths: ['node_modules', 'src'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts', 'jest-canvas-mock'],

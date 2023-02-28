@@ -3,6 +3,7 @@
 import { useLocation } from 'react-router-dom'
 import { Navigate } from 'react-router-dom-v5-compat'
 
+import AdageIframe from 'pages/AdageIframe/AdageIframe'
 import Bookings from 'pages/Bookings'
 import CollectiveBookings from 'pages/CollectiveBookings'
 import CollectiveOfferRoutes from 'pages/CollectiveOfferRoutes'
@@ -64,6 +65,15 @@ export const routesWithoutLayout: IRoute[] = [
     component: RedirectToConnexionComponent,
     exact: true,
     path: '/',
+  },
+  {
+    component: AdageIframe,
+    exact: true,
+    path: '/adage-iframe',
+    meta: {
+      public: true,
+    },
+    useV6Router: true,
   },
   {
     component: Signup,

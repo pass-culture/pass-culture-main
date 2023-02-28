@@ -3,6 +3,11 @@
   "rules": {
     "at-rule-no-unknown": null,
     "no-descending-specificity": null,
-    "scss/at-extend-no-missing-placeholder": null
-  }
+    "scss/at-extend-no-missing-placeholder": null,
+    "font-family-no-missing-generic-family-keyword": null
+  },
+  "ignoreFiles": [
+    "src/pages/AdageIframe/app/ui-kit/MultiSelectAutoComplete/MultiSelectAutocomplete.scss",
+    "src/pages/AdageIframe/app/ui-kit/Button/Button.scss"
+  ]
 }
