@@ -893,6 +893,13 @@ class ListOfferersToValidateTest:
                 offerer__validationStatus=validation_status,
                 user__phoneNumber="+33610203040",
             )
+            tag = offerers_factories.OffererTagFactory(label="Magic Tag")
+            category = offerers_models.OffererTagCategory.query.filter(
+                offerers_models.OffererTagCategory.name == "homologation"
+            ).one()
+            offerers_factories.OffererTagCategoryMappingFactory(tagId=tag.id, categoryId=category.id)
+            offerers_factories.OffererTagMappingFactory(tagId=tag.id, offererId=user_offerer.offerer.id)
+
             commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
             history_factories.ActionHistoryFactory(
                 actionDate=datetime.datetime(2022, 10, 3, 12, 0),
@@ -937,13 +944,13 @@ class ListOfferersToValidateTest:
             assert rows[0]["Nom de la structure"] == user_offerer.offerer.name
             assert rows[0]["État"] == expected_status
             assert rows[0]["Top Acteur"] == ""  # no text
+            assert rows[0]["Tags structure"] == tag.label
             assert rows[0]["Date de la demande"] == "03/10/2022"
             assert rows[0]["Dernier commentaire"] == "Houlala"
             assert rows[0]["SIREN"] == user_offerer.offerer.siren
             assert rows[0]["Email"] == user_offerer.offerer.first_user.email
             assert rows[0]["Responsable Structure"] == user_offerer.offerer.first_user.full_name
             assert rows[0]["Ville"] == user_offerer.offerer.city
-            assert rows[0]["Téléphone"] == user_offerer.offerer.first_user.phoneNumber
 
         def test_payload_content_no_action(self, authenticated_client):
             # given
