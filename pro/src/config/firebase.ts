@@ -1,17 +1,17 @@
 export const firebaseConfig = {
   apiKey:
     process.env.REACT_APP_FIREBASE_PUBLIC_API_KEY ||
-    'AIzaSyAhXSv-Wk5I3hHAga5KhCe_SUhdmY-2eyQ',
+    'AIzaSyDv-igPDFDCvZDofcjiZ-TUBLwB3sIcjZ0',
   authDomain:
     process.env.REACT_APP_FIREBASE_AUTH_DOMAIN ||
-    'passculture-pro.firebaseapp.com',
-  projectId: process.env.FIREBASE_PROJECT_ID || 'passculture-pro',
+    'pc-pro-testing.firebaseapp.com',
+  projectId: process.env.FIREBASE_PROJECT_ID || 'pc-pro-testing',
   storageBucket:
     process.env.REACT_APP_FIREBASE_STORAGE_BUCKET ||
-    'passculture-pro.appspot.com',
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '412444774135',
+    'pc-pro-testing.appspot.com',
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '1086794247971',
   appId:
     process.env.REACT_APP_FIREBASE_APP_ID ||
-    '1:412444774135:web:0cd1b28CCCC6f9d6c54df2',
-  measurementId: process.env.FIREBASE_MEASUREMENT_ID || 'G-FBPYNQPRF6',
+    '1:1086794247971:web:63ee819ffc368e0d102696',
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID || 'G-S7C0MDBZT7',
 }
