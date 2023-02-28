@@ -200,6 +200,10 @@ def format_tag_object_list(
     return ""
 
 
+def filter_homologation_tags(tags: list[offerers_models.OffererTag]) -> list[offerers_models.OffererTag]:
+    return [tag for tag in tags if "homologation" in [cat.name for cat in tag.categories]]
+
+
 def format_criteria(criteria: list[criteria_models.OfferCriterion]) -> str:
     return ", ".join(criterion.name for criterion in criteria)
 
@@ -246,6 +250,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
+    app.jinja_env.filters["filter_homologation_tags"] = filter_homologation_tags
     app.jinja_env.filters["format_fraud_check_url"] = format_fraud_check_url
     app.jinja_env.filters["format_phone_number"] = format_phone_number
     app.jinja_env.filters["format_role"] = format_role
