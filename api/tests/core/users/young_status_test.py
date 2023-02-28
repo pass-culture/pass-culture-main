@@ -173,7 +173,8 @@ class YoungStatusTest:
             )
 
     def should_be_non_eligible_when_too_young(self):
-        user = users_factories.UserFactory(dateOfBirth=_with_age(15) + relativedelta(days=1))
+        # 15 years and 1 day. We add 2 days to be sure that the test will not fail on the 28th of February.
+        user = users_factories.UserFactory(dateOfBirth=_with_age(15) + relativedelta(days=2))
         assert young_status.young_status(user) == young_status.NonEligible()
 
     def should_be_non_eligible_when_too_old(self):
