@@ -1,3 +1,4 @@
+import React from 'react'
 import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
@@ -9,9 +10,12 @@ const SignupJourneyRoutes = () => {
     <SignupJourneyContextProvider>
       <SignupJourneyFormLayout>
         <Routes>
-          <Route path={'/authentification'} element={<>Authentification</>} />
+          <Route
+            path={'/authentification'}
+            element={<div>Authentification</div>}
+          />
           <Route path={'/activite'} element={<Activity />} />
-          <Route path={'/validation'} element={<>Validation</>} />
+          <Route path={'/validation'} element={<div>Validation</div>} />
         </Routes>
       </SignupJourneyFormLayout>
     </SignupJourneyContextProvider>
