@@ -1,7 +1,10 @@
 import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
+import Notification from 'components/Notification/Notification'
 import {
   ISignupJourneyContext,
   SignupJourneyContext,
@@ -10,7 +13,10 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Activity from '../Activity'
 import { IActivityFormValues } from '../ActivityForm'
-import { DEFAULT_ACTIVITY_FORM_VALUES } from '../constants'
+import {
+  DEFAULT_ACTIVITY_FORM_VALUES,
+  TargetCustomerTypeEnum,
+} from '../constants'
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -31,10 +37,23 @@ const renderActivityScreen = (contextValue: ISignupJourneyContext) => {
   }
 
   return renderWithProviders(
-    <SignupJourneyContext.Provider value={contextValue}>
-      <Activity />
-    </SignupJourneyContext.Provider>,
-    { storeOverrides, initialRouterEntries: ['/signup/activite'] }
+    <>
+      <SignupJourneyContext.Provider value={contextValue}>
+        <Routes>
+          <Route
+            path="/parcours-inscription/authentification"
+            element={<div>Authentication screen</div>}
+          />
+          <Route path="/parcours-inscription/activite" element={<Activity />} />
+          <Route
+            path="/parcours-inscription/validation"
+            element={<div>Validation screen</div>}
+          />
+        </Routes>
+      </SignupJourneyContext.Provider>
+      <Notification />
+    </>,
+    { storeOverrides, initialRouterEntries: ['/parcours-inscription/activite'] }
   )
 }
 
@@ -47,11 +66,11 @@ describe('screens:SignupJourney::Activity', () => {
     contextValue = {
       activity: activity,
       setActivity: () => {},
-      setShouldTrack: () => {},
-      shouldTrack: true,
-      setIsLoading: () => {},
     }
-    jest.spyOn(api, 'getVenueTypes').mockResolvedValue([])
+    jest.spyOn(api, 'getVenueTypes').mockResolvedValue([
+      { id: 'venue1', label: 'first venue label' },
+      { id: 'venue2', label: 'second venue label' },
+    ])
   })
 
   it('should render component', async () => {
@@ -67,7 +86,7 @@ describe('screens:SignupJourney::Activity', () => {
       await screen.getAllByText('Site internet, réseau social')
     ).toHaveLength(1)
     expect(
-      await screen.findByRole('button', { name: 'Ajouter un tarif' })
+      await screen.findByRole('button', { name: 'Ajouter une url' })
     ).toBeInTheDocument()
     expect(
       screen.getByLabelText('À destination du grand public', {
@@ -98,5 +117,43 @@ describe('screens:SignupJourney::Activity', () => {
     await waitFor(() => {
       expect(screen.queryByText('Activité')).not.toBeInTheDocument()
     })
+  })
+
+  it('should display validation screen on click next step button', async () => {
+    contextValue.activity = {
+      venueType: 'venue1',
+      socialUrls: [],
+      targetCustomer: TargetCustomerTypeEnum.ALL,
+    }
+    renderActivityScreen(contextValue)
+    expect(await screen.findByText('Activité')).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+    expect(screen.getByText('Validation screen')).toBeInTheDocument()
+  })
+
+  it('should display authentification screen on click previous step button', async () => {
+    renderActivityScreen(contextValue)
+    expect(await screen.findByText('Activité')).toBeInTheDocument()
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape précédente' })
+    )
+    expect(screen.getByText('Authentication screen')).toBeInTheDocument()
+  })
+
+  it('should display error notification', async () => {
+    renderActivityScreen(contextValue)
+    expect(await screen.findByText('Activité')).toBeInTheDocument()
+    await userEvent.click(screen.getByText('À destination du grand public'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+    expect(
+      screen.getByText(
+        'Une ou plusieurs erreurs sont présentes dans le formulaire'
+      )
+    ).toBeInTheDocument()
   })
 })
