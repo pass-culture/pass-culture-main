@@ -7,7 +7,7 @@ from sqlalchemy.orm import Query
 
 from pcapi import settings
 import pcapi.core.finance.exceptions as finance_exceptions
-from pcapi.core.fraud.utils import is_latin
+import pcapi.core.fraud.utils as fraud_utils
 from pcapi.core.history import models as history_models
 import pcapi.core.mails.transactional as transaction_mails
 from pcapi.core.subscription import api as subscription_api
@@ -308,7 +308,12 @@ def is_subscription_name_valid(name: str | None) -> bool:
     if not name:
         return False
     stripped_name = name.strip()
-    return is_latin(stripped_name)
+    try:
+        fraud_utils.validate_name(stripped_name)
+    except ValueError:
+        return False
+
+    return True
 
 
 def _check_user_names_valid(first_name: str | None, last_name: str | None) -> models.FraudItem:
