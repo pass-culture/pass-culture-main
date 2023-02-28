@@ -8,7 +8,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import SignupBreadcrumb from '../SignupJourneyBreadcrumb'
 
 const renderSignupBreadcrumb = (
-  url = '/signup/authentification',
+  url = '/parcours-inscription/authentification',
   storeOverrides = {}
 ) => {
   const rtlReturns = renderWithProviders(
@@ -16,12 +16,15 @@ const renderSignupBreadcrumb = (
       <SignupBreadcrumb />
       <Routes>
         <Route
-          path={'/signup/authentification'}
+          path={'/parcours-inscription/authentification'}
           element={<div>Authentication screen</div>}
         />
-        <Route path={'/signup/activite'} element={<div>Activity screen</div>} />
         <Route
-          path={'/signup/validation'}
+          path={'/parcours-inscription/activite'}
+          element={<div>Activity screen</div>}
+        />
+        <Route
+          path={'/parcours-inscription/validation'}
           element={<div>Validation screen</div>}
         />
       </Routes>
