@@ -45,19 +45,6 @@ class PcUtils extends NonConstructableUtils {
       }, ms)
     }
   }
-
-
-  /**
-   * pop from array at a defined index
-   * @param {array} array - the array to pop from
-   * @param {string|number} value - the value to find in array
-   */
-  static popAtIndex(array, value) {
-    const index = array.indexOf(value)
-    if (index > -1) {
-      array.splice(index, 1)
-    }
-  }
 }
 
 /**
