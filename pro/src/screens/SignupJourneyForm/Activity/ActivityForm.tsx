@@ -19,7 +19,7 @@ export interface IActivityFormValues {
   targetCustomer: TargetCustomerTypeEnum | undefined | null
 }
 
-interface IActivityFormProps {
+export interface IActivityFormProps {
   venueTypes: SelectOption[]
 }
 
@@ -86,7 +86,7 @@ const ActivityForm = ({ venueTypes }: IActivityFormProps): JSX.Element => {
                 arrayHelpers.push('')
               }}
             >
-              Ajouter un tarif
+              Ajouter une url
             </Button>
           </FormLayout.Row>
         )}
