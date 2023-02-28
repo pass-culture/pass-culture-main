@@ -36,12 +36,14 @@
     <script src="{{ url_for('static', filename='backoffice/js/addons/pc-select-multiple-field.js') }}"></script>
     <script src="{{ url_for('static', filename='backoffice/js/addons/pc-override-custom-textarea-enter.js') }}"></script>
     <script src="{{ url_for('static', filename='backoffice/js/addons/pc-table-multi-select.js') }}"></script>
+    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-batch-confirm.js') }}"></script>
 
     <!-- Our app -->
     <script src="{{ url_for('static', filename='backoffice/js/pc-backoffice-app.js') }}"></script>
 
     <script>
       const app = new PcBackofficeApp({
+        csrfToken: '{{ csrf_token }}',
         addOns: [
           BsTooltips,
           PcFormsCheckValidity,
@@ -49,6 +51,7 @@
           PcSelectMultipleField,
           PcOverrideCustomTextareaEnter,
           PcTableMultiSelect,
+          PcBatchConfirm,
         ]
       })
     </script>
@@ -60,9 +63,6 @@
 <body data-turbo="false" class="data-bs-no-jquery">
 
 {% block content %}{% endblock %}
-
-<!-- Useful for local script modification per-view -->
-{% block scripts %}{% endblock %}
 
 <script type="module">
     import hotwiredTurbo from 'https://cdn.skypack.dev/@hotwired/turbo';
@@ -82,5 +82,4 @@
     })
 </script>
 </body>
-
 </html>

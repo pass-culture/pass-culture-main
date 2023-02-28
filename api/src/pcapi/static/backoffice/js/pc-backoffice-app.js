@@ -12,12 +12,17 @@ class PcBackofficeApp {
   /** application state, can be partially persisted per addon using addon.saveState(state) */
   appState = {}
 
+  /** csrfToken input will be stored here **/
+  csrfToken
+
   /**
    * Initialize applications
    * @param {array} addOns - list of addons (class extending AddOn) to be used
+   * @param {string} csrfToken - the csrf token input
    */
-  constructor({ addOns: AddOns }) {
+  constructor({ addOns: AddOns, csrfToken }) {
     this.#rehydrateState()
+    this.csrfToken = csrfToken
     AddOns.forEach((AddOn) => {
       const name = `${AddOn.name[0].toLowerCase()}${AddOn.name.slice(1)}`
       this.addons[name] = new AddOn({
