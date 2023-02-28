@@ -96,8 +96,6 @@ class FeatureToggle(enum.Enum):
         "Protege le pass culture contre les ministeres qui dépenseraient plus que leur budget sur les 4 derniers mois "
         "de l'année"
     )
-    # FIXME (dbaty, 2022-09-21): remove USE_INSEE_SIRENE_API once v207 is deployed.
-    USE_INSEE_SIRENE_API = "Utiliser la nouvelle API Sirene de l'Insee"
     ENABLE_ZENDESK_SELL_CREATION = "Activer la création de nouvelles entrées dans Zendesk Sell (structures et lieux)"
     ENABLE_BOOST_API_INTEGRATION = "Active la réservation de places de cinéma via l'API Boost"
     ENABLE_OFFERER_STATS = "Active l'affichage des statistiques d'une structure sur le portail pro"
