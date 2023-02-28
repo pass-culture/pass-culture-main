@@ -15,9 +15,9 @@ click-option-group==0.5.5
 debugpy
 factory-boy
 fakeredis
-Flask==2.0.*
+Flask==2.2.*
 Flask-Cors==3.0.10
-Flask-JWT-Extended==4.3.1
+Flask-JWT-Extended==4.4.4
 Flask-Limiter==1.4
 Flask-Login==0.6.2
 flask-shell-ipython

@@ -166,6 +166,11 @@ filterwarnings = [
     # see https://github.com/requests/toolbelt/issues/331
     # Remove this when requests-toolbelt fixes its use
     "ignore:'urllib3.contrib.pyopenssl' module is deprecated*:DeprecationWarning",
+
+    # FIXME (dbaty, 2023-02-28): Remove once we have updated to authlib >= 1.2.0
+    "ignore:'_app_ctx_stack' is deprecated and will be removed in Flask 2.3.:DeprecationWarning",
+    # FIXME (dbaty, 2023-02-28): Remove once we have updated sentry_sdk and flask_admin
+    "ignore:'_request_ctx_stack' is deprecated and will be removed in Flask 2.3.:DeprecationWarning",
 ]
 testpaths = ["tests"]
 norecursedirs = [".git", "venv", ".pytest_cache"]

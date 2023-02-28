@@ -55,17 +55,13 @@ class FeatureToggleTest:
         feature = Feature.query.filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = True
         repository.save(feature)
-        context = flask._request_ctx_stack.pop()
 
-        # we don't cache yet outside the scope of a request so it'll be 3 DB queries
-        try:
-            with assert_num_queries(3):
-                FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
-                FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
-                FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
-
-        finally:
-            flask._request_ctx_stack.push(context)
+        with assert_num_queries(3):
+            FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
+            del flask.request._cached_features
+            FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
+            del flask.request._cached_features
+            FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
 
 @pytest.mark.usefixtures("db_session")
