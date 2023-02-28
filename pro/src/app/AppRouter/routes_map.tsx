@@ -1,6 +1,7 @@
 /* No need to test this file */
 /* istanbul ignore file */
-import { Redirect, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
+import { Navigate } from 'react-router-dom-v5-compat'
 
 import Bookings from 'pages/Bookings'
 import CollectiveBookings from 'pages/CollectiveBookings'
@@ -54,7 +55,7 @@ export interface IRoute {
 
 const RedirectToConnexionComponent = () => {
   const location = useLocation()
-  return <Redirect to={`/connexion${location.search}`} />
+  return <Navigate to={`/connexion${location.search}`} />
 }
 
 export const routesWithoutLayout: IRoute[] = [
