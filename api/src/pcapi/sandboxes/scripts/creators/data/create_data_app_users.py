@@ -1,11 +1,10 @@
 from datetime import datetime
 import logging
 from random import choice
+
 import pcapi.core.finance.models as finance_models
 from pcapi.core.users import factories as users_factories
-from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.models import User
-from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
@@ -64,6 +63,7 @@ def create_data_app_beneficiaries() -> dict[str, User]:
     logger.info("created %d beneficiaries data", len(users_by_name))
 
     return users_by_name
+
 
 def create_data_app_underage_beneficiaries() -> dict[str, User]:
     logger.info("create_data_app_underage_beneficiaries_data")

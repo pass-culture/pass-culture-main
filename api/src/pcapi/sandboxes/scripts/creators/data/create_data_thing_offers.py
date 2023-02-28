@@ -23,7 +23,7 @@ def create_data_thing_offers(
     offer_index = 0
     thing_items = list(thing_products_by_name.items())
     for offerer in offerers_by_name.values():
-        virtual_venue = [venue for venue in offerer.managedVenues][0]
+        virtual_venue = list(offerer.managedVenues)[0]
         physical_venue_name = virtual_venue.name.replace(" (Offre numérique)", "")
         physical_venue = venues_by_name.get(physical_venue_name)
         current_offers_count = 0

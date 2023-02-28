@@ -43,7 +43,7 @@ def create_data_mediations(offers_by_name: dict[str, Offer]) -> None:
 
     offer_items = list(offers_by_name.items())
     offer_items_with_mediation = offer_items
-    for (offer_name, offer) in offer_items_with_mediation:
+    for offer_name, offer in offer_items_with_mediation:
         mediations_by_name[offer_name] = offers_factories.MediationFactory(offer=offer)
 
     repository.save(*mediations_by_name.values())

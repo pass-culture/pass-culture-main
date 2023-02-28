@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+import decimal
 import logging
 
 from pcapi.core.categories import subcategories
@@ -11,6 +12,7 @@ from pcapi.models.event_occurence import EventOccurrence
 import pcapi.utils.date as date_utils
 
 from . import utils
+
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +27,7 @@ EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
 EVENT_OFFERS_WITH_OCCURRENCES_REMOVE_MODULO = 3
 
 
-def create_data_event_occurrences(
-        event_offers_by_name: dict[str, offers_models.Offer]
-) -> dict[str, EventOccurrence]:
+def create_data_event_occurrences(event_offers_by_name: dict[str, offers_models.Offer]) -> dict[str, EventOccurrence]:
     logger.info("create_data_event_occurrences_data")
 
     event_occurrences_by_name = {}
