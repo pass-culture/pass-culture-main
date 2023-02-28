@@ -1,11 +1,15 @@
 import unicodedata
 
 
-def is_latin(s: str) -> bool:
+ACCEPTED_CHARS_FOR_NAMES = [" ", "-", ".", ",", "'", "’"]
+ACCEPTED_CHARS_FOR_CITY = [" ", "-", "'", "(", ")"]
+
+
+def is_latin(s: str, accepted_chars: list[str]) -> bool:
     if s == "":
         return False
     for char in s:
-        if char in (" ", "-", ".", ",", "'", "’"):
+        if char in accepted_chars:
             continue
         try:
             if not "LATIN" in unicodedata.name(char):
@@ -16,10 +20,25 @@ def is_latin(s: str) -> bool:
     return True
 
 
-def has_latin_or_numeric_chars(address: str) -> bool:
+def validate_not_empty(value: str) -> None:
+    if not value:
+        raise ValueError("This field cannot be empty")
+
+
+def validate_name(name: str) -> None:
+    validate_not_empty(name)
+    if not is_latin(name, accepted_chars=ACCEPTED_CHARS_FOR_NAMES):
+        raise ValueError("Les champs textuels doivent contenir des caractères latins")
+
+
+def validate_address(address: str) -> None:
+    validate_not_empty(address)
     for char in address:
-        if char == " ":
-            continue
-        if not is_latin(char) and not char.isnumeric():
-            return False
-    return True
+        if not is_latin(char, accepted_chars=[" "]) and not char.isnumeric():
+            raise ValueError("L'adresse doit contenir des caractères alphanumériques")
+
+
+def validate_city(city: str) -> None:
+    validate_not_empty(city)
+    if not is_latin(city, accepted_chars=ACCEPTED_CHARS_FOR_CITY):
+        raise ValueError("Le champs city doit contenir des caractères latins")
