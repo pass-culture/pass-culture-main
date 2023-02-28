@@ -34,8 +34,8 @@ ipaddress
 isort
 itsdangerous==2.0.1
 Jinja2==3.0.3
-MarkupSafe==2.0.1
-mypy # Not pinned. If a new version introduces new errors we cannot fix in one go, see api/bin/mypy_add_type_ignores.py 
+MarkupSafe==2.1.2
+mypy # Not pinned. If a new version introduces new errors we cannot fix in one go, see api/bin/mypy_add_type_ignores.py
 notion-client==1.0.0
 openpyxl
 pgcli # a tool not used in code. There is no point in pinning its version
