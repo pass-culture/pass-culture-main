@@ -97,4 +97,4 @@ Pour que cet ajout soit mis à disposition dans le contrat d'interface généré
 
 1. Enlever toute utilisation du flag
 2. Enlever la ligne de FeatureToggle
-3. Ajouter une [action post-mep](https://www.notion.so/passcultureapp/Manip-faire-pour-les-MES-MEP-MEI-1e3c8bc00b224ca18852be1d717c52e5) pour enlever le Flag de la db (`delete from feature where name='xxx'`) après le prochain déploiement.
+3. Ajouter une [migration post-déploiement](https://github.com/pass-culture/pass-culture-main/blob/565610f9900585e25984c19c02aaacee68e7a49e/api/src/pcapi/alembic/versions/20221207T220341_ba38f011683b_remove_use_pricing_point_feature_flag.py) de suppression du rang concerné dans la table `feature`
