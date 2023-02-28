@@ -98,6 +98,7 @@ export type { GetVenueListResponseModel } from './models/GetVenueListResponseMod
 export type { GetVenueManagingOffererResponseModel } from './models/GetVenueManagingOffererResponseModel';
 export type { GetVenuePricingPointResponseModel } from './models/GetVenuePricingPointResponseModel';
 export type { GetVenueResponseModel } from './models/GetVenueResponseModel';
+export type { GetVenuesOfOffererFromSiretResponseModel } from './models/GetVenuesOfOffererFromSiretResponseModel';
 export type { InvoiceListQueryModel } from './models/InvoiceListQueryModel';
 export type { InvoiceListResponseModel } from './models/InvoiceListResponseModel';
 export type { InvoiceResponseModel } from './models/InvoiceResponseModel';
@@ -177,6 +178,7 @@ export type { VenueLabelListResponseModel } from './models/VenueLabelListRespons
 export type { VenueLabelResponseModel } from './models/VenueLabelResponseModel';
 export type { VenueListItemResponseModel } from './models/VenueListItemResponseModel';
 export type { VenueListQueryModel } from './models/VenueListQueryModel';
+export type { VenueOfOffererFromSiretResponseModel } from './models/VenueOfOffererFromSiretResponseModel';
 export type { VenueProviderResponse } from './models/VenueProviderResponse';
 export type { VenueResponseModel } from './models/VenueResponseModel';
 export type { VenuesEducationalStatusesResponseModel } from './models/VenuesEducationalStatusesResponseModel';
