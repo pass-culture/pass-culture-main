@@ -8,16 +8,16 @@ export const SIGNUP_JOURNEY_STEP_LIST = [
   {
     id: SIGNUP_STEP_IDS.AUTHENTICATION,
     label: 'Authentification',
-    url: '/signup/authentification',
+    url: '/parcours-inscription/authentification',
   },
   {
     id: SIGNUP_STEP_IDS.ACTIVITY,
     label: 'Activité',
-    url: '/signup/activite',
+    url: '/parcours-inscription/activite',
   },
   {
     id: SIGNUP_STEP_IDS.VALIDATION,
     label: 'Validation',
-    url: '/signup/validation',
+    url: '/parcours-inscription/validation',
   },
 ]
