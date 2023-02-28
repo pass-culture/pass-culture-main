@@ -71,7 +71,7 @@ const CollectiveOfferItem = ({
             offerEventDate={offer.stocks[0].beginningDatetime}
           />
         )}
-      {offer.isEditable && (
+      {offer.isEditable && !offer.isPublicApi && (
         <EditOfferCell
           offer={offer}
           isOfferEditable={isOfferEditable}

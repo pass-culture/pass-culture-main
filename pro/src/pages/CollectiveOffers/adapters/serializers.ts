@@ -44,6 +44,7 @@ export const serializeOffers = (
     productIsbn: null,
     venue: serializeVenue(offer.venue),
     stocks: serializeStocks(offer.stocks),
+    isPublicApi: offer.isPublicApi,
     isEditable: offer.isEditable,
     isShowcase: offer.isShowcase,
     educationalInstitution: offer.educationalInstitution,
