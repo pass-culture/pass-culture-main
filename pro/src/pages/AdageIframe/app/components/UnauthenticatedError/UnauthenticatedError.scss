@@ -1,0 +1,24 @@
+@import "sass-rem";
+
+main.error {
+  align-content: center;
+  background-image: linear-gradient(to bottom, #eb0055, #320096);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  grid-column: col-start end-line;
+  justify-content: center;
+  text-align: center;
+
+  a {
+    color: white;
+  }
+
+  h1 {
+    font-size: rem(40px);
+  }
+
+  div {
+    font-size: rem(24px);
+  }
+}
