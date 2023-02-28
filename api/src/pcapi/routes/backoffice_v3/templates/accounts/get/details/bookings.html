@@ -1,4 +1,6 @@
 {% import "components/links.html" as links %}
+{% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
+{% from "components/bookings/extra_row.html" import build_booking_extra_row with context %}
 
 {% if bookings %}
     <table class="table mb-4 get-details-bookings-view">
@@ -17,11 +19,7 @@
         {% for booking in bookings %}
             <tr>
                 <th scope="row">
-                    <button class="btn btn-sm btn-outline-primary " data-bs-toggle="collapse"
-                            data-bs-target="#b{{ booking.id }}"><i
-                            class="bi bi-chevron-right"
-                            id="#icn-{{ booking.id }}"></i>
-                    </button>
+                    {{ build_booking_toggle_extra_row_button(booking) }}
                 </th>
                 <td>{{ booking.offerer.name | escape }}</td>
                 <td>{{ links.build_offer_name_to_pc_pro_link(booking.stock.offer) }}</td>
@@ -78,34 +76,3 @@
 {% else %}
     <p class="m-5">Aucune réservation à ce jour</p>
 {% endif %}
-
-{% block scripts %}
-    <script>
-      class PcGetDetailsBookings {
-        $container
-
-        constructor({ $container }) {
-          this.$container = $container
-        }
-
-        get $collapses() {
-          return this.$container.querySelectorAll('[data-bs-toggle="collapse"]')
-        }
-
-        bindEvents = () => {
-          this.$collapses.forEach(($collapse) => {
-            $collapse.addEventListener('click', (event) => {
-              // check if the event target is `<button> <i></i></button>` or `<i></i>`
-              var icon = event.target.children[0] ? event.target.children[0] : event.target
-              icon.classList.toggle('bi-chevron-down')
-              icon.classList.toggle('bi-chevron-right')
-            })
-          })
-        }
-      }
-
-      new PcGetDetailsBookings({
-        $container: document.querySelector('.get-details-bookings-view')
-      })
-    </script>
-{% endblock %}

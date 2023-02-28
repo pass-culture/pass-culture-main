@@ -1,8 +1,12 @@
 {% macro build_booking_toggle_extra_row_button(booking) %}
-    <button class="btn btn-sm btn-outline-primary " data-bs-toggle="collapse"
-            data-bs-target="#b{{ booking.id }}"><i
-            class="bi bi-chevron-right"
-            id="#icn-{{ booking.id }}"></i>
+    <style>
+        .pc-btn-chevron-toggle[data-bs-toggle="collapse"][aria-expanded="true"] > i.bi-chevron-right::before {
+            transform: rotate(90deg)
+        }
+    </style>
+    <button class="btn btn-sm btn-outline-primary pc-btn-chevron-toggle" data-bs-toggle="collapse"
+            data-bs-target="#b{{ booking.id }}">
+        <i class="bi bi-chevron-right"></i>
     </button>
 {% endmacro %}
 
