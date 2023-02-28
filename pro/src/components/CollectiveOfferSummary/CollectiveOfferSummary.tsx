@@ -5,6 +5,7 @@ import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   EducationalCategories,
+  isCollectiveOffer,
 } from 'core/OfferEducational'
 
 import CollectiveOfferAccessibilitySection from './components/CollectiveOfferAccessibilitySection'
@@ -33,13 +34,14 @@ const CollectiveOfferSummary = ({
   stockEditLink,
   visibilityEditLink,
 }: ICollectiveOfferSummaryProps) => {
+  const offerManuallyCreated = isCollectiveOffer(offer) && !offer.isPublicApi
   return (
     <>
       <SummaryLayout>
         <SummaryLayout.Content fullWidth>
           <SummaryLayout.Section
             title="Détails de l’offre"
-            editLink={offerEditLink}
+            editLink={offerManuallyCreated ? offerEditLink : ''}
           >
             <CollectiveOfferVenueSection venue={offer.venue} />
             <CollectiveOfferTypeSection offer={offer} categories={categories} />
