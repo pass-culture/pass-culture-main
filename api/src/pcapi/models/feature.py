@@ -180,26 +180,6 @@ if settings.IS_PROD or settings.IS_STAGING:
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,)
 
 
-# FIXME (dbaty, 2022-03-15): remove this function once migrations have
-# been squashed and we don't need this function anymore.
-def legacy_add_feature_to_database(feature: FeatureToggle) -> None:
-    """This function is to be used as the "upgrade" function of a
-    migration when introducing a new feature flag.
-    """
-    statement = text(
-        """
-        INSERT INTO feature (name, description, "isActive")
-        VALUES (:name, :description, :initial_value)
-        """
-    )
-    statement = statement.bindparams(
-        name=feature.name,
-        description=feature.value,
-        initial_value=feature not in FEATURES_DISABLED_BY_DEFAULT,
-    )
-    op.execute(statement)
-
-
 def add_feature_to_database(feature: Feature) -> None:
     """This function is to be used in the "downgrade" function of a
     migration when removing a new feature flag (so that it's added
