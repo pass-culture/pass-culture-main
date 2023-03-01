@@ -13,6 +13,10 @@
   width: 100%;
 }
 
+.stock-section {
+  margin-top: rem.torem(32px);
+}
+
 // False positive
 /* stylelint-disable scss/operator-no-newline-after */
 .recurrence-modal {
