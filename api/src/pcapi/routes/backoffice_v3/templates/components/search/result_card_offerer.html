@@ -7,7 +7,9 @@
         </h5>
 
         <h5 class="card-title">
-            {{ row.name | upper }}
+            <a href="{{ get_link_to_detail(row.id) }}" class="link-primary">
+                {{ row.name | upper }}
+            </a>
         </h5>
 
         <h6 class="card-subtitle mt-4 mb-3 text-muted">
@@ -28,10 +30,10 @@
             {% endif %}
         </div>
 
-        <a href="{{ get_link_to_detail(row.id) }}" class="card-link">
-            <button class="btn lead px-0 fw-bold mt-1">
-                CONSULTER CE PROFIL
-            </button>
-        </a>
+        <div class="d-flex flex-row-reverse">
+            <a href="{{ get_link_to_detail(row.id) }}" class="btn btn-md btn-outline-primary fw-bold">
+                CONSULTER CE PROFIL <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
     </div>
 </div>

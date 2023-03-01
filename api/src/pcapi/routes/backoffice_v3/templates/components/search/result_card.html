@@ -18,7 +18,9 @@
         </h5>
 
         <h5 class="card-title">
-            {{ row.full_name }}
+            <a href="{{ get_link_to_detail(row.id) }}" class="link-primary">
+                {{ row.full_name }}
+            </a>
         </h5>
 
         <h6 class="card-subtitle mb-4 text-muted">
@@ -26,16 +28,16 @@
         </h6>
 
         <div class="fs-6">
-            <p class="mb-1"><span class="fw-bold">E-mail :</span> {{ row.email }} </p>
+            <p><span class="fw-bold">E-mail :</span> {{ row.email }} </p>
             {% if row.phoneNumber %}
                 <p><span class="fw-bold">Tél :</span> {{ row.phoneNumber | format_phone_number }} </p>
             {% endif %}
         </div>
 
-        <a href="{{ get_link_to_detail(row.id) }}" class="card-link">
-            <button class="btn lead px-0 fw-bold mt-1">
-                CONSULTER CE PROFIL
-            </button>
-        </a>
+        <div class="d-flex flex-row-reverse">
+            <a href="{{ get_link_to_detail(row.id) }}" class="btn btn-md btn-outline-primary fw-bold">
+                CONSULTER CE PROFIL <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
     </div>
 </div>
