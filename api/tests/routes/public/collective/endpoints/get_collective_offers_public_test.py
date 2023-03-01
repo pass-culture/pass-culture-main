@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from freezegun import freeze_time
 import pytest
 
@@ -60,6 +62,49 @@ class CollectiveOffersPublicGetOfferTest:
                 "venueId": offer5.venueId,
                 "beginningDatetime": "2022-05-02T15:00:00",
                 "status": offer5.status.name,
+            },
+        ]
+
+    def test_get_offers_filter_by_status(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        stock1 = educational_factories.CollectiveStockFactory(
+            collectiveOffer__venue__managingOfferer=offerer,
+            # here we need a date in the future for the database hopefully this code will no longer exists in 20 years
+            beginningDatetime=datetime(2043, 5, 2, 15),
+        )
+        offer1 = stock1.collectiveOffer
+        stock2 = educational_factories.CollectiveStockFactory(
+            collectiveOffer__venue__managingOfferer=offerer,
+            # here we need a date in the future for the database hopefully this code will no longer exists in 20 years
+            beginningDatetime=datetime(2043, 5, 2, 15),
+        )
+        offer2 = stock2.collectiveOffer
+        educational_factories.CollectiveStockFactory(collectiveOffer__venue__managingOfferer=offerer)
+        educational_factories.CollectiveStockFactory(collectiveOffer__venue__managingOfferer=offerer)
+        educational_factories.CollectiveStockFactory(collectiveOffer__venue__managingOfferer=offerer)
+
+        # When
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            "/v2/collective/offers/?status=ACTIVE"
+        )
+
+        # Then
+        assert response.status_code == 200
+
+        assert response.json == [
+            {
+                "id": offer1.id,
+                "venueId": offer1.venueId,
+                "beginningDatetime": "2043-05-02T15:00:00",
+                "status": "ACTIVE",
+            },
+            {
+                "id": offer2.id,
+                "venueId": offer2.venueId,
+                "beginningDatetime": "2043-05-02T15:00:00",
+                "status": "ACTIVE",
             },
         ]
 
