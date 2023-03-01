@@ -7,27 +7,13 @@ import sqlalchemy.orm as sqla_orm
 import pcapi.core.educational.exceptions as educational_exceptions
 from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
-from pcapi.core.offerers.exceptions import ApiKeyCountMaxReached
-from pcapi.core.offerers.exceptions import ApiKeyDeletionDenied
-from pcapi.core.offerers.exceptions import ApiKeyPrefixGenerationError
-from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
+import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offerers_serialize
-from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
-from pcapi.routes.serialization.offerers_serialize import GenerateOffererApiKeyResponse
-from pcapi.routes.serialization.offerers_serialize import GetEducationalOffererResponseModel
-from pcapi.routes.serialization.offerers_serialize import GetEducationalOfferersQueryModel
-from pcapi.routes.serialization.offerers_serialize import GetEducationalOfferersResponseModel
-from pcapi.routes.serialization.offerers_serialize import GetOffererListQueryModel
-from pcapi.routes.serialization.offerers_serialize import GetOffererNameResponseModel
-from pcapi.routes.serialization.offerers_serialize import GetOffererResponseModel
-from pcapi.routes.serialization.offerers_serialize import GetOfferersListResponseModel
-from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesQueryModel
-from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import dehumanize_or_raise
@@ -46,9 +32,11 @@ N_VENUES_THRESHOLD_TO_SHOW_OFFER_COUNT = 20
 @private_api.route("/offerers", methods=["GET"])
 @login_required
 @spectree_serialize(
-    on_error_statuses=[400], response_model=GetOfferersListResponseModel, api=blueprint.pro_private_schema
+    on_error_statuses=[400],
+    response_model=offerers_serialize.GetOfferersListResponseModel,
+    api=blueprint.pro_private_schema,
 )
-def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseModel:
+def get_offerers(query: offerers_serialize.GetOffererListQueryModel) -> offerers_serialize.GetOfferersListResponseModel:
     offerers_query = repository.get_all_offerers_for_user(
         current_user,
         keywords=query.keywords,
@@ -98,7 +86,7 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
             venue_ids = {venue.id for venue in offerer.managedVenues}
         offer_counts.update(repository.get_offer_counts_by_venue(venue_ids))
 
-    return GetOfferersListResponseModel(  # type: ignore [call-arg]
+    return offerers_serialize.GetOfferersListResponseModel(
         offerers=[
             offerers_serialize.GetOfferersResponseModel.from_orm(
                 offerer,
@@ -114,8 +102,10 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
 
 @private_api.route("/offerers/names", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=GetOfferersNamesResponseModel, api=blueprint.pro_private_schema)
-def list_offerers_names(query: GetOfferersNamesQueryModel) -> GetOfferersNamesResponseModel:
+@spectree_serialize(response_model=offerers_serialize.GetOfferersNamesResponseModel, api=blueprint.pro_private_schema)
+def list_offerers_names(
+    query: offerers_serialize.GetOfferersNamesQueryModel,
+) -> offerers_serialize.GetOfferersNamesResponseModel:
     if query.offerer_id is not None:
         offerers = offerers_models.Offerer.query.filter(offerers_models.Offerer.id == dehumanize(query.offerer_id))
     else:
@@ -127,51 +117,57 @@ def list_offerers_names(query: GetOfferersNamesQueryModel) -> GetOfferersNamesRe
         offerers = offerers.order_by(offerers_models.Offerer.name, offerers_models.Offerer.id)
         offerers = offerers.distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
 
-    return GetOfferersNamesResponseModel(
-        offerersNames=[GetOffererNameResponseModel.from_orm(offerer) for offerer in offerers]
+    return offerers_serialize.GetOfferersNamesResponseModel(
+        offerersNames=[offerers_serialize.GetOffererNameResponseModel.from_orm(offerer) for offerer in offerers]
     )
 
 
 @private_api.route("/offerers/educational", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=GetEducationalOfferersResponseModel, api=blueprint.pro_private_schema)
-def list_educational_offerers(query: GetEducationalOfferersQueryModel) -> GetEducationalOfferersResponseModel:
+@spectree_serialize(
+    response_model=offerers_serialize.GetEducationalOfferersResponseModel, api=blueprint.pro_private_schema
+)
+def list_educational_offerers(
+    query: offerers_serialize.GetEducationalOfferersQueryModel,
+) -> offerers_serialize.GetEducationalOfferersResponseModel:
     offerer_id = query.offerer_id
 
     try:
         offerers = api.get_educational_offerers(offerer_id, current_user)
 
-        return GetEducationalOfferersResponseModel(
-            educationalOfferers=[GetEducationalOffererResponseModel.from_orm(offerer) for offerer in offerers]
+        return offerers_serialize.GetEducationalOfferersResponseModel(
+            educationalOfferers=[
+                offerers_serialize.GetEducationalOffererResponseModel.from_orm(offerer) for offerer in offerers
+            ]
         )
 
-    except MissingOffererIdQueryParameter:
+    except offerers_exceptions.MissingOffererIdQueryParameter:
         raise ApiErrors({"offerer_id": "Missing query parameter"})
 
 
 @private_api.route("/offerers/<offerer_id>", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=GetOffererResponseModel, api=blueprint.pro_private_schema)
-def get_offerer(offerer_id: str) -> GetOffererResponseModel:
+@spectree_serialize(response_model=offerers_serialize.GetOffererResponseModel, api=blueprint.pro_private_schema)
+def get_offerer(offerer_id: str) -> offerers_serialize.GetOffererResponseModel:
     check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))  # type: ignore [arg-type]
     offerer = load_or_404(offerers_models.Offerer, offerer_id)
-    return GetOffererResponseModel.from_orm(offerer)
+    return offerers_serialize.GetOffererResponseModel.from_orm(offerer)
 
 
 @private_api.route("/offerers/<offerer_id>/api_keys", methods=["POST"])
 @login_required
-@spectree_serialize(response_model=GenerateOffererApiKeyResponse, api=blueprint.pro_private_schema)
-def generate_api_key_route(offerer_id: str) -> GenerateOffererApiKeyResponse:
+@spectree_serialize(response_model=offerers_serialize.GenerateOffererApiKeyResponse, api=blueprint.pro_private_schema)
+def generate_api_key_route(offerer_id: str) -> offerers_serialize.GenerateOffererApiKeyResponse:
     check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))  # type: ignore [arg-type]
     offerer = load_or_404(offerers_models.Offerer, offerer_id)
     try:
         clear_key = api.generate_and_save_api_key(offerer.id)
-    except ApiKeyCountMaxReached:
+    except offerers_exceptions.ApiKeyCountMaxReached:
         raise ApiErrors({"api_key_count_max": "Le nombre de clés maximal a été atteint"})
-    except ApiKeyPrefixGenerationError:
+    except offerers_exceptions.ApiKeyPrefixGenerationError:
         raise ApiErrors({"api_key": "Could not generate api key"})
 
-    return GenerateOffererApiKeyResponse(apiKey=clear_key)
+    return offerers_serialize.GenerateOffererApiKeyResponse(apiKey=clear_key)
 
 
 @private_api.route("/offerers/api_keys/<api_key_prefix>", methods=["DELETE"])
@@ -181,17 +177,19 @@ def delete_api_key(api_key_prefix: str) -> None:
     with transaction():
         try:
             api.delete_api_key_by_user(current_user, api_key_prefix)
-        except (sqla_orm.exc.NoResultFound, ApiKeyDeletionDenied):
+        except (sqla_orm.exc.NoResultFound, offerers_exceptions.ApiKeyDeletionDenied):
             raise ApiErrors({"prefix": "not found"}, 404)
 
 
 @private_api.route("/offerers", methods=["POST"])
 @login_required
-@spectree_serialize(on_success_status=201, response_model=GetOffererResponseModel, api=blueprint.pro_private_schema)
-def create_offerer(body: CreateOffererQueryModel) -> GetOffererResponseModel:
+@spectree_serialize(
+    on_success_status=201, response_model=offerers_serialize.GetOffererResponseModel, api=blueprint.pro_private_schema
+)
+def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers_serialize.GetOffererResponseModel:
     user_offerer = api.create_offerer(current_user, body)
 
-    return GetOffererResponseModel.from_orm(user_offerer.offerer)
+    return offerers_serialize.GetOffererResponseModel.from_orm(user_offerer.offerer)
 
 
 @private_api.route("/offerers/<humanized_offerer_id>/eac-eligibility", methods=["GET"])
