@@ -65,5 +65,6 @@ export const applyVenueDefaultsToFormValues = (
     },
     email: venue.collectiveEmail ?? values.email,
     phone: venue.collectivePhone ?? values.phone,
+    notificationEmails: [venue.collectiveEmail ?? values.email],
   }
 }
