@@ -13,11 +13,13 @@ class CollectiveOffersPublicGetOfferTest:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.ApiKeyFactory(offerer=offerer)
         domain = educational_factories.EducationalDomainFactory()
+        institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__domains=[domain],
             collectiveOffer__venue__managingOfferer=offerer,
             collectiveOffer__imageCredit="Pouet",
             collectiveOffer__imageCrop={"data": 2},
+            collectiveOffer__institution=institution,
         )
         offer = stock.collectiveOffer
         # When
@@ -45,7 +47,8 @@ class CollectiveOffersPublicGetOfferTest:
             "dateCreated": "2022-04-26T15:00:00",
             "domains": [domain.id],
             "durationMinutes": None,
-            "educationalInstitution": None,
+            "educationalInstitution": "UAI123",
+            "educationalInstitutionId": institution.id,
             "educationalPriceDetail": None,
             "interventionArea": ["93", "94", "95"],
             "isActive": True,
