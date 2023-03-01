@@ -740,7 +740,7 @@ class UpdateObjectsTest:
     @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_replace_product_thumb_when_product_has_already_one_thumb(
+    def test_should_add_product_thumb_when_product_has_already_one_thumb(
         self, mock_get_object_thumb, mock_call_allocine_api, mock_api_poster
     ):
         # Given
@@ -790,8 +790,10 @@ class UpdateObjectsTest:
 
         # Then
         existing_product = offers_models.Product.query.one()
-        assert existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}"
-        assert existing_product.thumbCount == 1
+        assert (
+            existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}_1"
+        )
+        assert existing_product.thumbCount == 2
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
@@ -1502,6 +1504,54 @@ class UpdateObjectsTest:
             # Then
             stock = offers_models.Stock.query.one()
             assert stock.quantity == 50
+
+    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
+    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+    @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")
+    @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
+    @pytest.mark.usefixtures("db_session")
+    def should_not_update_thumbnail_more_then_once_a_day(
+        self, mock_get_object_thumb, mock_call_allocine_api, mock_api_poster
+    ):
+        mock_call_allocine_api.return_value = iter(
+            [
+                {
+                    "node": {
+                        "movie": MOVIE_INFO,
+                        "showtimes": [
+                            {
+                                "startsAt": "2019-10-29T10:30:00",
+                                "diffusionVersion": "LOCAL",
+                                "projection": ["DIGITAL"],
+                                "experience": None,
+                            }
+                        ],
+                    }
+                }
+            ]
+        )
+        file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
+        with open(file_path, "rb") as thumb_file:
+            mock_get_object_thumb.return_value = thumb_file.read()
+
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+        allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
+
+        allocine_stocks_provider.updateObjects()
+
+        created_product = offers_models.Product.query.one()
+
+        assert created_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(created_product.id)}"
+        assert created_product.thumbCount == 1
+        assert mock_get_object_thumb.call_count == 1
+
+        allocine_stocks_provider.updateObjects()
+        created_product = offers_models.Product.query.one()
+
+        assert created_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(created_product.id)}"
+        assert created_product.thumbCount == 1
+        assert mock_get_object_thumb.call_count == 1
 
 
 class GetObjectThumbTest:
