@@ -831,21 +831,41 @@ def is_phone_validation_in_stepper(user: users_models.User) -> bool:
     return user.eligibility == users_models.EligibilityType.AGE18 and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active()
 
 
-def get_subscription_steps_to_display(user: users_models.User) -> list[models.SubscriptionStep]:
+def get_subscription_steps_to_display(user: users_models.User) -> list[models.SubscriptionStepDetails]:
     """
     return the list of steps to complete to subscribe to the pass Culture
     the steps are ordered
     """
     steps = []
     if user.eligibility == users_models.EligibilityType.AGE18 and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
-        steps.append(models.SubscriptionStep.PHONE_VALIDATION)
+        steps.append(
+            models.SubscriptionStepDetails(
+                name=models.SubscriptionStep.PHONE_VALIDATION,
+                title=models.SubscriptionStepTitle.PHONE_VALIDATION,
+            )
+        )
 
-    steps.append(models.SubscriptionStep.PROFILE_COMPLETION)
+    steps.append(
+        models.SubscriptionStepDetails(
+            name=models.SubscriptionStep.PROFILE_COMPLETION,
+            title=models.SubscriptionStepTitle.PROFILE_COMPLETION,
+        )
+    )
 
     if not can_skip_identity_check_step(user):
-        steps.append(models.SubscriptionStep.IDENTITY_CHECK)
+        steps.append(
+            models.SubscriptionStepDetails(
+                name=models.SubscriptionStep.IDENTITY_CHECK,
+                title=models.SubscriptionStepTitle.IDENTITY_CHECK,
+            )
+        )
 
-    steps.append(models.SubscriptionStep.HONOR_STATEMENT)
+    steps.append(
+        models.SubscriptionStepDetails(
+            name=models.SubscriptionStep.HONOR_STATEMENT,
+            title=models.SubscriptionStepTitle.HONOR_STATEMENT,
+        )
+    )
 
     return steps
 
