@@ -47,9 +47,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       renderEACOfferForm({ ...props, getIsOffererEligible })
 
       expect(getIsOffererEligible).toHaveBeenCalledTimes(1)
-      expect(
-        await screen.findByLabelText('Lieu qui percevra le remboursement')
-      ).toBeInTheDocument()
+      expect(await screen.findByLabelText('Lieu')).toBeInTheDocument()
     })
 
     it('should test eligibility and display an error message with a link if the offerer is not eligible', async () => {
@@ -69,9 +67,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
         screen.getByRole('link', { name: 'Faire une demande de référencement' })
       ).toBeInTheDocument()
 
-      expect(
-        screen.queryByLabelText('Lieu qui percevra le remboursement')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByLabelText('Lieu')).not.toBeInTheDocument()
     })
   })
 
@@ -131,9 +127,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
         name: 'Type d’offre',
       })
       const offererSelect = await screen.findByLabelText('Structure')
-      const venueSelect = await screen.findByLabelText(
-        'Lieu qui percevra le remboursement'
-      )
+      const venueSelect = await screen.findByLabelText('Lieu')
 
       expect(offererSelect).toBeInTheDocument()
       expect(offererSelect).toHaveValue('OFFERER_ID')
@@ -237,9 +231,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
     it('should require a venue selection from the user', async () => {
       renderEACOfferForm(props)
-      const venueSelect = await screen.findByLabelText(
-        'Lieu qui percevra le remboursement'
-      )
+      const venueSelect = await screen.findByLabelText('Lieu')
 
       expect(venueSelect).toHaveValue('')
       expect(venueSelect).toHaveDisplayValue('Sélectionner un lieu')
@@ -277,9 +269,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
     it('should display venues by alphabeticall order', async () => {
       renderEACOfferForm(props)
-      const venueSelect = await screen.findByLabelText(
-        'Lieu qui percevra le remboursement'
-      )
+      const venueSelect = await screen.findByLabelText('Lieu')
       const venuesOptions = venueSelect.children
       expect(venuesOptions[0].textContent).toEqual('Sélectionner un lieu')
       expect(venuesOptions[1].textContent).toEqual('A - Venue 3')

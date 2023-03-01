@@ -52,9 +52,7 @@ describe('screens | OfferEducational : event address step', () => {
 
     await userEvent.selectOptions(offererSelect, ['OFFERER_WITH_ACCESSIBILITY'])
 
-    const venuesSelect = await screen.findByLabelText(
-      'Lieu qui percevra le remboursement'
-    )
+    const venuesSelect = await screen.findByLabelText('Lieu')
     await userEvent.selectOptions(venuesSelect, ['VENUE_WITH_ACCESSIBILITY'])
 
     const accessibilityCheckboxes = screen.queryAllByRole('checkbox', {
@@ -84,9 +82,7 @@ describe('screens | OfferEducational : event address step', () => {
 
     await userEvent.selectOptions(offererSelect, ['offerer'])
 
-    const venuesSelect = await screen.findByLabelText(
-      'Lieu qui percevra le remboursement'
-    )
+    const venuesSelect = await screen.findByLabelText('Lieu')
     await userEvent.selectOptions(venuesSelect, ['first_venue'])
 
     const offerVenueSelect = await screen.findByLabelText(
