@@ -18,12 +18,14 @@ export interface IStocksEvent {
 interface IStocksEventListProps {
   stocks: IStocksEvent[]
   priceCategories: PriceCategoryResponseModel[]
+  className?: string
   departmentCode?: string
 }
 
 const StocksEventList = ({
   stocks,
   priceCategories,
+  className,
   departmentCode,
 }: IStocksEventListProps): JSX.Element => {
   const [isCheckedArray, setIsCheckedArray] = useState(stocks.map(() => false))
@@ -44,7 +46,7 @@ const StocksEventList = ({
   }
 
   return (
-    <table className={styles['stock-event-table']}>
+    <table className={cn(styles['stock-event-table'], className)}>
       <thead>
         <tr>
           <th className={cn(styles['first-column'], styles['header'])}>
