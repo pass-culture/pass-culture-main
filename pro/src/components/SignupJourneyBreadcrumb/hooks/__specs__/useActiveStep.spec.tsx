@@ -1,7 +1,7 @@
 import useActiveStep from '../useActiveStep'
 
-jest.mock('react-router', () => ({
-  ...jest.requireActual('react-router'),
+jest.mock('react-router-dom-v5-compat', () => ({
+  ...jest.requireActual('react-router-dom-v5-compat'),
   useLocation: () => ({
     pathname: '',
   }),

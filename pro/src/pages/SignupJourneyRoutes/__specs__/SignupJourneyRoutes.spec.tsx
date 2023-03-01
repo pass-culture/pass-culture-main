@@ -15,19 +15,14 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const renderSignupJourneyRoutes = async (
-  storeOverride?: Partial<RootState>
+  storeOverrides: Partial<RootState> = {}
 ) => {
   renderWithProviders(
-    <>
-      <Routes>
-        <Route
-          path="/parcours-inscription/*"
-          element={<SignupJourneyRoutes />}
-        />
-      </Routes>
-    </>,
+    <Routes>
+      <Route path="/parcours-inscription/*" element={<SignupJourneyRoutes />} />
+    </Routes>,
     {
-      ...storeOverride,
+      storeOverrides,
       initialRouterEntries: ['/parcours-inscription/authentification'],
     }
   )
