@@ -1,4 +1,5 @@
 from datetime import datetime
+import decimal
 from typing import Iterator
 
 from pcapi import settings
@@ -8,6 +9,8 @@ from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.external_bookings.models import Movie
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import PriceCategory
+from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import get_next_product_id_from_database
@@ -35,6 +38,10 @@ class CDSStocks(LocalProvider):
         self.movies: Iterator[Movie] = iter(self._get_cds_movies())
         self.shows = self._get_cds_shows()
         self.filtered_movie_showtimes = None
+        self.price_category_labels: list[PriceCategoryLabel] = PriceCategoryLabel.query.filter(
+            PriceCategoryLabel.venue == self.venue
+        ).all()
+        self.price_category_lists_by_offer: dict[Offer, list[PriceCategory]] = {}
 
     def __next__(self) -> list[ProvidableInfo]:
         movie_infos = next(self.movies)
@@ -121,6 +128,7 @@ class CDSStocks(LocalProvider):
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(cds_stock.idAtProviders)  # type: ignore [arg-type]
         showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)  # type: ignore [arg-type]
         if showtime:
+            price_label = showtime["price_label"]
             show_price = showtime["price"]
             show: ShowCDS = showtime["show_information"]
 
@@ -142,12 +150,42 @@ class CDSStocks(LocalProvider):
 
         if "price" not in cds_stock.fieldsUpdated:
             cds_stock.price = show_price
+            price_category = self.get_or_create_price_category(show_price, price_label)
+            cds_stock.priceCategory = price_category
 
         if not is_new_stock_to_insert:
             if is_internet_sale_gauge_active:
                 cds_stock.quantity = show.internet_remaining_place + cds_stock.dnBookedQuantity
             else:
                 cds_stock.quantity = show.remaining_place + cds_stock.dnBookedQuantity
+
+    def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> PriceCategory:
+        if self.last_offer not in self.price_category_lists_by_offer:
+            self.price_category_lists_by_offer[self.last_offer] = (
+                PriceCategory.query.filter(PriceCategory.offer == self.last_offer).order_by(PriceCategory.price).all()
+                if self.last_offer.id
+                else []
+            )
+        price_categories = self.price_category_lists_by_offer[self.last_offer]
+
+        price_category = next(
+            (category for category in price_categories if category.price == price and category.label == price_label),
+            None,
+        )
+        if not price_category:
+            price_category_label = self.get_or_create_price_category_label(price_label)
+            price_category = PriceCategory(price=price, priceCategoryLabel=price_category_label, offer=self.last_offer)
+            price_categories.append(price_category)
+
+        return price_category
+
+    def get_or_create_price_category_label(self, price_label: str) -> PriceCategoryLabel:
+        price_category_label = next((label for label in self.price_category_labels if label.label == price_label), None)
+        if not price_category_label:
+            price_category_label = PriceCategoryLabel(label=price_label, venue=self.venue)
+            self.price_category_labels.append(price_category_label)
+
+        return price_category_label
 
     def update_from_movie_information(self, obj: Offer | Product, movie_information: Movie) -> None:
         if movie_information.description:
@@ -218,7 +256,11 @@ class CDSStocks(LocalProvider):
             min_price_voucher = client_cds.get_voucher_type_for_show(show)
             if min_price_voucher and min_price_voucher.tariff:
                 shows_with_pass_culture_tariff.append(
-                    {"show_information": show, "price": min_price_voucher.tariff.price}
+                    {
+                        "show_information": show,
+                        "price": min_price_voucher.tariff.price,
+                        "price_label": min_price_voucher.tariff.label,
+                    }
                 )
 
         return shows_with_pass_culture_tariff
