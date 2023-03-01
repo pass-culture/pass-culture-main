@@ -15,13 +15,11 @@ from pcapi.sandboxes.scripts.creators.data.create_data_search_objects import *
 from pcapi.sandboxes.scripts.creators.data.create_data_thing_offers import *
 from pcapi.sandboxes.scripts.creators.data.create_data_thing_products import *
 from pcapi.sandboxes.scripts.creators.data.create_data_thing_stocks import *
-from pcapi.sandboxes.scripts.creators.data.create_data_venue_types import *
 from pcapi.sandboxes.scripts.creators.data.create_data_venues import *
 from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
 
 
 def save_data_sandbox() -> None:
-    venue_types = create_data_venue_types()
     (offerers_by_name_data, pro_users_by_name_data) = create_data_offerers_with_pro_users()
 
     admin_users_by_name = create_data_admin_users()
@@ -29,7 +27,7 @@ def save_data_sandbox() -> None:
 
     app_users_by_name_data = create_data_app_users()
     users_by_name_data = dict(dict(admin_users_by_name, **pro_users_by_name_data), **app_users_by_name_data)
-    venues_by_name_data = create_data_venues(offerers_by_name_data, venue_types)
+    venues_by_name_data = create_data_venues(offerers_by_name_data)
     event_products_by_name_data = create_data_event_products()
     thing_products_by_name_data = create_data_thing_products()
 

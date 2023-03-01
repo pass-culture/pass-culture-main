@@ -61,7 +61,7 @@ def create_data_event_occurrences(event_offers_by_name: dict[str, offers_models.
                 price_category = offers_factories.PriceCategoryFactory(
                     offer=event_offer_with_occurrences,
                     price=price,
-                    priceCategoryLabel=offers_api._get_or_create_label(
+                    priceCategoryLabel=offers_api.get_or_create_label(
                         f"Tarif {index}", event_offer_with_occurrences.venue
                     ),
                 )
