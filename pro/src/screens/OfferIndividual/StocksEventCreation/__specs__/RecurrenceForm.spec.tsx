@@ -41,4 +41,25 @@ describe('RecurrenceForm', () => {
       screen.getByRole('button', { name: 'Supprimer le créneau' })
     ).toBeDisabled()
   })
+
+  it('should add and remove a price category', async () => {
+    render(<RecurrenceForm {...defaultProps} />)
+
+    expect(
+      screen.getByRole('button', { name: 'Supprimer les places' })
+    ).toBeDisabled()
+
+    await userEvent.click(screen.getByText('Ajouter d’autres places et tarifs'))
+
+    const deleteButton = screen.getAllByRole('button', {
+      name: 'Supprimer les places',
+    })[0]
+    expect(deleteButton).toBeEnabled()
+
+    await userEvent.click(deleteButton)
+
+    expect(
+      screen.getByRole('button', { name: 'Supprimer les places' })
+    ).toBeDisabled()
+  })
 })
