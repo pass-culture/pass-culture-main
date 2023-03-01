@@ -1,18 +1,22 @@
 module.exports = {
   extends: [
     'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
     'plugin:import/recommended',
   ],
+  // This parser setting can be removed when there are no more JS files
+  // here we use it to parse normal JS files
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    sourceType: 'module',
+    ecmaVersion: 6,
+  },
   env: {
     browser: true,
     es6: true,
     jest: true,
     node: true,
   },
-  parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint'],
   ignorePatterns: [
     'src/api/v1/gen/*',
     'src/api/v2/gen/*',
@@ -22,16 +26,9 @@ module.exports = {
     '**/*.jpg',
     '**/*.png',
   ],
-  parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 6,
-  },
+  // Rules for all files
   rules: {
     curly: ['error', 'all'],
-    '@typescript-eslint/ban-ts-comment': 'off',
-    '@typescript-eslint/no-explicit-any': 'off',
-    '@typescript-eslint/no-empty-function': 'off',
-    '@typescript-eslint/prefer-ts-expect-error': 'error',
     'no-console': 1,
     'import/order': [
       'warn',
@@ -50,23 +47,49 @@ module.exports = {
     ],
   },
   overrides: [
+    // Rules specific to testcafe files
     {
-      files: ['*.ts', '*.tsx', 'testcafe/**/*'],
+      files: ['testcafe/**/*'],
       rules: {
         'no-undef': 'off',
       },
     },
+    // Rules specific to TS files
+    {
+      files: ['*.ts', '*.tsx'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: ['./tsconfig.json'],
+        tsconfigRootDir: __dirname,
+        sourceType: 'module',
+        ecmaVersion: 6,
+      },
+      plugins: ['@typescript-eslint'],
+      extends: [
+        'plugin:import/recommended',
+        'eslint:recommended',
+        'plugin:prettier/recommended',
+        'plugin:@typescript-eslint/recommended',
+      ],
+      rules: {
+        '@typescript-eslint/ban-ts-comment': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-empty-function': 'off',
+        '@typescript-eslint/prefer-ts-expect-error': 'error',
+      },
+    },
   ],
   settings: {
+    react: {
+      version: 'detect',
+    },
+    // This whole section can be removed when there are no more JS files
     'import/resolver': {
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
         paths: ['.'],
         moduleDirectory: ['node_modules', 'src'],
       },
-    },
-    react: {
-      version: 'detect',
     },
   },
 }

@@ -136,7 +136,9 @@ export function OfferIndividualContextProvider({
       }
       setIsLoading(false)
     }
-    ;(!offerId || offer !== null) && loadData()
+    if (!offerId || offer !== null) {
+      loadData()
+    }
   }, [offerId, offerOfferer])
 
   if (isLoading === true) {
