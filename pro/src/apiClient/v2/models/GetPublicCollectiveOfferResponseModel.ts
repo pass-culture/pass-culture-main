@@ -16,6 +16,7 @@ export type GetPublicCollectiveOfferResponseModel = {
   domains: Array<number>;
   durationMinutes?: number | null;
   educationalInstitution?: string | null;
+  educationalInstitutionId?: number | null;
   educationalPriceDetail?: string | null;
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
