@@ -609,6 +609,105 @@ class NextStepTest:
         assert response.json["subscriptionMessage"] is None
 
 
+class StepperTest:
+    def setup_method(self):
+        self.phone_validation_step = {
+            "name": "phone-validation",
+            "title": "Numéro de téléphone",
+        }
+        self.profile_completion_step = {
+            "name": "profile-completion",
+            "title": "Profil",
+        }
+        self.identity_check_step = {
+            "name": "identity-check",
+            "title": "Identification",
+        }
+        self.honor_statement_step = {
+            "name": "honor-statement",
+            "title": "Confirmation",
+        }
+
+    def should_contain_all_subscription_steps_for_18yo_user(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=18, months=5),
+            isEmailValidated=True,
+        )
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["subscriptionStepsToDisplay"] == [
+            self.phone_validation_step,
+            self.profile_completion_step,
+            self.identity_check_step,
+            self.honor_statement_step,
+        ]
+
+    def should_contain_all_subscription_steps_for_15yo_user(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=15, months=5),
+            isEmailValidated=True,
+        )
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/stepper")
+
+        assert response.status_code == 200
+
+        assert response.json["subscriptionStepsToDisplay"] == [
+            self.profile_completion_step,
+            self.identity_check_step,
+            self.honor_statement_step,
+        ]
+
+    def should_not_contain_id_check_in_steps_if_ubble_or_dms_done_for_underage(self, client):
+        user = users_factories.UnderageBeneficiaryFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=18, months=5),
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/stepper")
+
+        assert response.json["subscriptionStepsToDisplay"] == [
+            self.phone_validation_step,
+            self.profile_completion_step,
+            self.honor_statement_step,
+        ]
+
+    def should_contain_id_check_in_steps_if_educonnect_done_for_underage(self, client):
+        user = users_factories.ExUnderageBeneficiaryFactory()
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            dateCreated=datetime.datetime.utcnow() - relativedelta(years=1),
+        )
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/stepper")
+
+        assert response.json["subscriptionStepsToDisplay"] == [
+            self.phone_validation_step,
+            self.profile_completion_step,
+            self.identity_check_step,
+            self.honor_statement_step,
+        ]
+
+
 class UpdateProfileTest:
     @override_features(ENABLE_UBBLE=True)
     def test_fulfill_profile(self, client):

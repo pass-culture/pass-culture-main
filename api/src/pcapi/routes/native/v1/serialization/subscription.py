@@ -47,7 +47,14 @@ class NextSubscriptionStepResponse(BaseModel):
     allowed_identity_check_methods: list[subscription_models.IdentityCheckMethod]
     has_identity_check_pending: bool
     subscription_message: SubscriptionMessage | None
-    subscription_steps_to_display: list[subscription_models.SubscriptionStep]
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
+class SubscriptionStepperResponse(BaseModel):
+    subscription_steps_to_display: list[subscription_models.SubscriptionStepDetails]
 
     class Config:
         alias_generator = to_camel

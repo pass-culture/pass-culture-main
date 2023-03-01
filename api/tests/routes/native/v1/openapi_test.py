@@ -1532,6 +1532,32 @@ def test_public_api(client):
                     ],
                     "title": "SubscriptionStep",
                 },
+                "SubscriptionStepDetails": {
+                    "properties": {
+                        "name": {"$ref": "#/components/schemas/SubscriptionStep"},
+                        "title": {"$ref": "#/components/schemas/SubscriptionStepTitle"},
+                    },
+                    "required": ["name", "title"],
+                    "title": "SubscriptionStepDetails",
+                    "type": "object",
+                },
+                "SubscriptionStepTitle": {
+                    "description": "An " "enumeration.",
+                    "enum": ["Numéro de téléphone", "Profil", "Identification", "Confirmation"],
+                    "title": "SubscriptionStepTitle",
+                },
+                "SubscriptionStepperResponse": {
+                    "properties": {
+                        "subscriptionStepsToDisplay": {
+                            "items": {"$ref": "#/components/schemas/SubscriptionStepDetails"},
+                            "title": "Subscriptionstepstodisplay",
+                            "type": "array",
+                        }
+                    },
+                    "required": ["subscriptionStepsToDisplay"],
+                    "title": "SubscriptionStepperResponse",
+                    "type": "object",
+                },
                 "UpdateEmailTokenExpiration": {
                     "properties": {
                         "expiration": {"format": "date-time", "nullable": True, "title": "Expiration", "type": "string"}
@@ -3061,6 +3087,33 @@ def test_public_api(client):
                         },
                     },
                     "summary": "get_profile_options <GET>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/subscription/stepper": {
+                "get": {
+                    "description": "",
+                    "operationId": "get_/native/v1/subscription/stepper",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/SubscriptionStepperResponse"}
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable " "Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "get_subscription_stepper " "<GET>",
                     "tags": [],
                 }
             },
