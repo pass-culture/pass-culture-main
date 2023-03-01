@@ -12,6 +12,7 @@ from pcapi.core.offerers.exceptions import ApiKeyDeletionDenied
 from pcapi.core.offerers.exceptions import ApiKeyPrefixGenerationError
 from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
 import pcapi.core.offerers.models as offerers_models
+from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
@@ -221,11 +222,13 @@ def get_available_reimbursement_points(
     check_user_has_access_to_offerer(current_user, offerer_id)
 
     reimbursement_points = repository.find_available_reimbursement_points_for_offerer(offerer_id)
+    # TODO(fseguin, 2023-03-01): cleanup when WIP_ENABLE_NEW_ONBOARDING FF is removed
+    is_new_onboarding_enabled = feature.FeatureToggle.WIP_ENABLE_NEW_ONBOARDING.is_active()
     return offerers_serialize.ReimbursementPointListResponseModel(
         __root__=[
             offerers_serialize.ReimbursementPointResponseModel(
                 venueId=reimbursement_point.id,
-                venueName=reimbursement_point.publicName or reimbursement_point.name,
+                venueName=reimbursement_point.name if is_new_onboarding_enabled else reimbursement_point.common_name,
                 siret=reimbursement_point.siret,
                 iban=reimbursement_point.iban,
                 bic=reimbursement_point.bic,
