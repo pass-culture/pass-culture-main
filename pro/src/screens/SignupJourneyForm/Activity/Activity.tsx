@@ -40,10 +40,8 @@ const Activity = (): JSX.Element => {
   const onSubmitActivity = async (
     formValues: IActivityFormValues
   ): Promise<void> => {
-    if (Object.keys(formik.errors).length === 0) {
-      setActivity(formValues)
-      navigate('/parcours-inscription/validation')
-    }
+    setActivity(formValues)
+    navigate('/parcours-inscription/validation')
   }
 
   const formik = useFormik({
@@ -69,7 +67,7 @@ const Activity = (): JSX.Element => {
     <FormLayout>
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} data-testid="signup-activity-form">
-          <ActivityForm venueTypes={venueTypes ?? []} />
+          <ActivityForm venueTypes={venueTypes} />
           <ActionBar
             onClickPrevious={handlePreviousStep}
             onClickNext={handleNextStep()}
