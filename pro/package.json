@@ -34,7 +34,6 @@
     "testcafe-chromium:debug": "NODE_ENV=test testcafe --assertion-timeout 1000 --selector-timeout 5000 -s path=testcafe_screenshots,takeOnFails=true 'chromium' --live --sf",
     "storybook": "yarn copy-assets && NODE_PATH=src start-storybook -p 6006",
     "build-storybook": "yarn copy-assets && NODE_PATH=src build-storybook -o docs-build",
-    "new:component": "hygen new component",
     "copy-assets": "cp ./src/icons/*.svg ./public/icons/"
   },
   "dependencies": {
@@ -125,8 +124,8 @@
     "count-lines-in-file": "^1.1.0",
     "eslint-config-prettier": "^8.4.0",
     "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-prettier": "^4.2.1",
     "history": "^4.7.2",
-    "hygen": "^6.2.0",
     "jest-canvas-mock": "^2.4.0",
     "jest-fetch-mock": "^3.0.3",
     "lodash": "^4.17.21",
