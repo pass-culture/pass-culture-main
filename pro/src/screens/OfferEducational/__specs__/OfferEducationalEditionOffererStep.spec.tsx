@@ -60,9 +60,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     expect(offererSelect).toHaveValue('OFFERER_2')
     expect(offererSelect).toBeDisabled()
 
-    const venueSelect = await screen.findByLabelText(
-      'Lieu qui percevra le remboursement'
-    )
+    const venueSelect = await screen.findByLabelText('Lieu')
 
     expect(venueSelect).toBeInTheDocument()
     expect(venueSelect).toHaveValue('VENUE_3')
@@ -96,9 +94,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     }
     renderEACOfferForm(props)
 
-    const venueSelect = await screen.findByLabelText(
-      'Lieu qui percevra le remboursement'
-    )
+    const venueSelect = await screen.findByLabelText('Lieu')
 
     expect(venueSelect).toBeInTheDocument()
     expect(venueSelect).toHaveValue('VENUE_3')
