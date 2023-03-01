@@ -132,9 +132,7 @@ describe('screens | OfferEducational : event address step', () => {
       renderEACOfferForm(props)
 
       // wait for page to be rendered
-      const offererSelect = await screen.findByLabelText(
-        'Lieu qui percevra le remboursement'
-      )
+      const offererSelect = await screen.findByLabelText('Lieu')
       // select venue to open step Address
       await userEvent.selectOptions(offererSelect, ['VENUE_1'])
 
@@ -155,9 +153,7 @@ describe('screens | OfferEducational : event address step', () => {
       renderEACOfferForm(props)
 
       // wait for page to be rendered
-      const offererSelect = await screen.findByLabelText(
-        'Lieu qui percevra le remboursement'
-      )
+      const offererSelect = await screen.findByLabelText('Lieu')
       // select venue to open step Address
       await userEvent.selectOptions(offererSelect, ['VENUE_1'])
 
@@ -201,15 +197,13 @@ describe('screens | OfferEducational : event address step', () => {
       'OFFERER_WITH_INTERVENTION_AREA'
     )
 
-    const venuesSelect = await screen.findByLabelText(
-      'Lieu qui percevra le remboursement'
-    )
+    const venuesSelect = await screen.findByLabelText('Lieu')
     await userEvent.selectOptions(venuesSelect, [
       'VENUE_WITH_INTERVENTION_AREA',
     ])
-    expect(
-      screen.queryByLabelText('Lieu qui percevra le remboursement')
-    ).toHaveValue('VENUE_WITH_INTERVENTION_AREA')
+    expect(screen.queryByLabelText('Lieu')).toHaveValue(
+      'VENUE_WITH_INTERVENTION_AREA'
+    )
 
     await userEvent.click(await screen.findByLabelText('Autre'))
     expect(screen.getByLabelText('Autre')).toBeChecked()
