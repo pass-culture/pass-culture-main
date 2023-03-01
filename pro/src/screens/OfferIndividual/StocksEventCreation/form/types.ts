@@ -7,14 +7,16 @@ export enum RecurrenceType {
   MONTHLY = 'MONTHLY',
 }
 
+export type QuantityPerPriceCategoryForm = {
+  quantity: number | ''
+  priceCategory: string
+}
+
 export type RecurrenceFormValues = {
   recurrenceType: string
   startingDate: string
   beginningTimes: string[]
-  quantityPerPriceCategories: {
-    quantity: number | ''
-    priceCategory: string
-  }[]
+  quantityPerPriceCategories: QuantityPerPriceCategoryForm[]
   bookingLimitDateInterval: number | ''
 }
 
