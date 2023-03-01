@@ -52,6 +52,7 @@ from pcapi import settings
 from pcapi.connectors import googledrive
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
+import pcapi.core.external.attributes.api as external_attributes_api
 from pcapi.core.logging import log_elapsed
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.object_storage import store_public_object
@@ -79,11 +80,12 @@ from . import validation
 
 logger = logging.getLogger(__name__)
 
+RECREDIT_UNDERAGE_USERS_BATCH_SIZE = 1000
+
 # When used through the cron, only price bookings that were used in 2022.
 # Prior bookings will be priced manually.
 # FIXME (dbaty, 2021-12-23): remove once prior bookings have been priced.
 MIN_DATE_TO_PRICE = datetime.datetime(2021, 12, 31, 23, 0)  # UTC
-
 
 # The ORDER BY clause to be used to price bookings in a specific,
 # stable order. If you change this, you MUST update
@@ -1971,3 +1973,102 @@ def create_deposit(
     )
 
     return deposit
+
+
+def _can_be_recredited(user: users_models.User) -> bool:
+    return (
+        user.deposit_activation_date is not None
+        and _has_celebrated_birthday_since_registration(user)
+        and not _has_been_recredited(user)
+    )
+
+
+def _has_celebrated_birthday_since_registration(user: users_models.User) -> bool:
+    import pcapi.core.subscription.api as subscription_api
+
+    first_registration_datetime = subscription_api.get_first_registration_date(
+        user, user.validatedBirthDate, users_models.EligibilityType.UNDERAGE
+    )
+    if first_registration_datetime is None:
+        logger.error("No registration date for user to be recredited", extra={"user_id": user.id})
+        return False
+
+    return first_registration_datetime.date() < typing.cast(datetime.date, user.latest_birthday)
+
+
+def _has_been_recredited(user: users_models.User) -> bool:
+    if user.deposit is None:
+        return False
+    if len(user.deposit.recredits) == 0:
+        return False
+
+    sorted_recredits = sorted(user.deposit.recredits, key=lambda recredit: recredit.dateCreated)
+    return sorted_recredits[-1].recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[user.age]  # type: ignore [index]
+
+
+def recredit_underage_users() -> None:
+    import pcapi.core.users.api as users_api
+
+    sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
+    eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18)
+
+    user_ids = [
+        result
+        for result, in (
+            users_models.User.query.filter(users_models.User.has_underage_beneficiary_role)
+            .filter(users_models.User.validatedBirthDate > eighteen_years_ago)
+            .filter(users_models.User.validatedBirthDate <= sixteen_years_ago)
+            .with_entities(users_models.User.id)
+            .all()
+        )
+    ]
+
+    start_index = 0
+    total_users_recredited = 0
+    failed_users = []
+
+    while start_index < len(user_ids):
+        users = (
+            users_models.User.query.filter(
+                users_models.User.id.in_(user_ids[start_index : start_index + RECREDIT_UNDERAGE_USERS_BATCH_SIZE])
+            )
+            .options(sqla_orm.joinedload(users_models.User.deposits).joinedload(models.Deposit.recredits))
+            .all()
+        )
+
+        users_to_recredit = [user for user in users if _can_be_recredited(user)]
+        users_and_recredit_amounts = []
+        with transaction():
+            for user in users_to_recredit:
+                try:
+                    recredit = models.Recredit(
+                        deposit=user.deposit,
+                        amount=conf.RECREDIT_TYPE_AMOUNT_MAPPING[conf.RECREDIT_TYPE_AGE_MAPPING[user.age]],
+                        recreditType=conf.RECREDIT_TYPE_AGE_MAPPING[user.age],
+                    )
+                    users_and_recredit_amounts.append((user, recredit.amount))
+                    recredit.deposit.amount += recredit.amount
+                    user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
+
+                    db.session.add(user)
+                    db.session.add(recredit)
+                    total_users_recredited += 1
+                except Exception as e:  # pylint: disable=broad-except
+                    failed_users.append(user.id)
+                    logger.exception("Could not recredit user %s: %s", user.id, e)
+                    continue
+
+        logger.info("Recredited %s underage users deposits", len(users_to_recredit))
+
+        for user, recredit_amount in users_and_recredit_amounts:
+            external_attributes_api.update_external_user(user)
+            domains_credit = users_api.get_domains_credit(user)
+            if not transactional_mails.send_recredit_email_to_underage_beneficiary(
+                user, recredit_amount, domains_credit
+            ):
+                logger.error("Failed to send recredit email to: %s", user.email)
+
+        start_index += RECREDIT_UNDERAGE_USERS_BATCH_SIZE
+    logger.info("Recredited %s users successfully", total_users_recredited)
+    if failed_users:
+        logger.error("Failed to recredit %s users: %s", len(failed_users), failed_users)

@@ -39,7 +39,6 @@ from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.scripts.booking import handle_expired_bookings as handle_expired_bookings_module
 from pcapi.scripts.booking import notify_soon_to_be_expired_bookings
-from pcapi.scripts.payment import user_recredit
 from pcapi.scripts.subscription import dms as dms_script
 from pcapi.scripts.subscription import ubble as ubble_script
 from pcapi.utils.blueprint import Blueprint
@@ -284,12 +283,6 @@ def _send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
 def clean_past_draft_offers() -> None:
     """Deletes past offers and past collective offers that are in draft status"""
     delete_past_draft_collective_offers()
-
-
-@blueprint.cli.command("recredit_underage_users")
-@log_cron_with_transaction
-def recredit_underage_users() -> None:
-    user_recredit.recredit_underage_users()
 
 
 @blueprint.cli.command("users_turned_eighteen_automation")
