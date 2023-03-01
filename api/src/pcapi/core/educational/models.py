@@ -393,10 +393,11 @@ class CollectiveOffer(
 
     @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
     def hasBookingLimitDatetimesPassed(cls) -> Exists:  # pylint: disable=no-self-argument
+        aliased_collective_stock = sa.orm.aliased(CollectiveStock)
         return (
             sa.exists()
-            .where(CollectiveStock.collectiveOfferId == cls.id)
-            .where(CollectiveStock.hasBookingLimitDatetimePassed.is_(True))
+            .where(aliased_collective_stock.collectiveOfferId == cls.id)
+            .where(aliased_collective_stock.hasBookingLimitDatetimePassed.is_(True))
         )
 
     @hybrid_property
@@ -407,10 +408,11 @@ class CollectiveOffer(
 
     @hasBeginningDatetimePassed.expression  # type: ignore[no-redef]
     def hasBeginningDatetimePassed(cls) -> Exists:  # pylint: disable=no-self-argument
+        aliased_collective_stock = sa.orm.aliased(CollectiveStock)
         return (
             sa.exists()
-            .where(CollectiveStock.collectiveOfferId == cls.id)
-            .where(CollectiveStock.hasBeginningDatetimePassed.is_(True))
+            .where(aliased_collective_stock.collectiveOfferId == cls.id)
+            .where(aliased_collective_stock.hasBeginningDatetimePassed.is_(True))
         )
 
     @property
