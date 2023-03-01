@@ -1009,3 +1009,14 @@ def get_reimbursement_venue_for_booking(booking_id: int) -> offerers_models.Venu
     query = query.with_entities(reimbursement_point)
     query = query.options(sa.orm.joinedload(reimbursement_point.bankInformation))
     return query.one_or_none()
+
+
+def get_educational_institution_public(
+    institution_id: int | None, uai: str | None
+) -> educational_models.EducationalInstitution | None:
+    return educational_models.EducationalInstitution.query.filter(
+        sa.or_(
+            educational_models.EducationalInstitution.institutionId == uai,
+            educational_models.EducationalInstitution.id == institution_id,
+        ),
+    ).one_or_none()

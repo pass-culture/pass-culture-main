@@ -183,6 +183,58 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive == True
 
+    def test_partial_patch_offer_uai(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        educational_institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer__venue=venue)
+
+        payload = {
+            "educationalInstitution": "UAI123",
+        }
+
+        # When
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+            )
+
+        # Then
+        assert response.status_code == 200
+
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        assert offer.institutionId == educational_institution.id
+        assert educational_institution.isActive == True
+
+    def test_patch_offer_uai_and_institution_id(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        educational_institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer__venue=venue)
+
+        payload = {
+            "educationalInstitution": "UAI123",
+            "educationalInstitutionId": educational_institution.id,
+        }
+
+        # When
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+            )
+
+        # Then
+        assert response.status_code == 400
+
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        assert offer.institutionId == None
+
     def test_patch_offer_invalid_domain(self, client):
         # Given
         offerer = offerers_factories.OffererFactory()
