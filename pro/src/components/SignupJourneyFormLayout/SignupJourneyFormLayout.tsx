@@ -5,7 +5,7 @@ import { SignupJourneyBreadcrumb } from 'components/SignupJourneyBreadcrumb'
 import styles from './SignupJourneyFormLayoutContent.module.scss'
 
 interface ISignupOffererFormLayoutProps {
-  children: React.ReactNode | React.ReactNode[]
+  children: React.ReactNode
   className?: string
 }
 

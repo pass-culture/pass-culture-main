@@ -13,7 +13,9 @@
 .first-row {
   display: flex;
   align-items: center;
-  margin-top: rem.torem(24px)
+  margin-top: calc(
+    #{forms.$label-space-before-input} + #{fonts.$caption-line-height} + #{forms.$input-border-width-focus}
+  );
 }
 
 .delete-button {
