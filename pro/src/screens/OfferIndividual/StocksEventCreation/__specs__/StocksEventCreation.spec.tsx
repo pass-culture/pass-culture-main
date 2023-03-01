@@ -18,18 +18,27 @@ describe('StocksEventCreation', () => {
     expect(screen.getByText('Comment faire ?')).toBeInTheDocument()
   })
 
-  it('should not show help section if there are stocks already', () => {
+  it('should not show help section if there are stocks already and show table', () => {
     render(
       <StocksEventCreation
-        offer={individualOfferFactory({ stocks: [individualStockFactory()] })}
+        offer={individualOfferFactory({
+          stocks: [individualStockFactory({ priceCategoryId: 1 })],
+        })}
       />
     )
 
     expect(screen.queryByText('Comment faire ?')).not.toBeInTheDocument()
+    expect(screen.getByText('Date')).toBeInTheDocument()
   })
 
   it('should open recurrence modal', async () => {
-    render(<StocksEventCreation offer={individualOfferFactory()} />)
+    render(
+      <StocksEventCreation
+        offer={individualOfferFactory({
+          stocks: [individualStockFactory({ priceCategoryId: 1 })],
+        })}
+      />
+    )
     expect(
       screen.queryByRole('heading', { name: 'Ajouter une récurrence' })
     ).not.toBeInTheDocument()

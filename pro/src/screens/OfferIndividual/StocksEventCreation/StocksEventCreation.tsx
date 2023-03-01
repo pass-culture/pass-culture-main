@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import DialogBox from 'components/DialogBox'
+import StocksEventList from 'components/StocksEventList'
 import { IStocksEvent } from 'components/StocksEventList/StocksEventList'
 import { IOfferIndividual } from 'core/Offers/types'
 import { MoreCircleIcon } from 'icons'
@@ -18,7 +19,28 @@ interface IStocksEventCreationProps {
 export const StocksEventCreation = ({
   offer,
 }: IStocksEventCreationProps): JSX.Element => {
-  const [stocks] = useState(offer.stocks)
+  const offerStocks = offer.stocks.map((stock): IStocksEvent => {
+    if (
+      stock.beginningDatetime === null ||
+      stock.beginningDatetime === undefined ||
+      stock.bookingLimitDatetime === null ||
+      stock.bookingLimitDatetime === undefined ||
+      stock.priceCategoryId === null ||
+      stock.priceCategoryId === undefined ||
+      stock.quantity === undefined
+    ) {
+      throw 'Error: this stock is not a stockEvent'
+    }
+    return {
+      beginningDatetime: stock.beginningDatetime,
+      bookingLimitDatetime: stock.bookingLimitDatetime,
+      priceCategoryId: stock.priceCategoryId,
+      quantity: stock.quantity,
+    }
+  })
+
+  const [stocks] = useState<IStocksEvent[]>(offerStocks)
+
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
 
   const onCancel = () => setIsRecurrenceModalOpen(false)
@@ -33,7 +55,6 @@ export const StocksEventCreation = ({
       {stocks.length === 0 && (
         <HelpSection className={styles['help-section']} />
       )}
-
       <Button
         id="add-recurrence"
         variant={ButtonVariant.PRIMARY}
@@ -43,7 +64,14 @@ export const StocksEventCreation = ({
       >
         Ajouter une récurrence
       </Button>
-
+      {stocks.length !== 0 && offer?.priceCategories && (
+        <StocksEventList
+          className={styles['stock-section']}
+          stocks={stocks}
+          priceCategories={offer.priceCategories}
+          departmentCode="75"
+        />
+      )}
       {isRecurrenceModalOpen && (
         <DialogBox
           onDismiss={onCancel}
