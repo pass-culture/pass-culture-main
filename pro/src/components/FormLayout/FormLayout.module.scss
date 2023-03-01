@@ -32,7 +32,7 @@ $info-box-margin-left: rem.torem(24px);
         margin-top: rem.torem(45px);
         margin-bottom: rem.torem(32px);
       }
-      
+
       &-content {
         white-space: pre-line;
         margin-top: rem.torem(8px);
@@ -49,7 +49,7 @@ $info-box-margin-left: rem.torem(24px);
   }
 
   &-row {
-    margin-bottom: rem.torem(13px);
+    margin-bottom: rem.torem(32px);
     max-width: 100%;
 
     &.small-space-after {
@@ -98,10 +98,9 @@ $info-box-margin-left: rem.torem(24px);
       width: $info-box-width;
       position: absolute;
       top: 0;
-      right:
-        calc(
-          -#{$info-box-margin-left} - #{$info-box-width}
-        ); // calc(-margin-left - width)
+      right: calc(
+        -#{$info-box-margin-left} - #{$info-box-width}
+      ); // calc(-margin-left - width)
 
       &-inner {
         background: colors.$white;

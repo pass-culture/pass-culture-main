@@ -17,7 +17,7 @@ export const ticketWithdrawalTypeRadios = [
     value: WithdrawalTypeEnum.BY_EMAIL,
   },
   {
-    label: 'Retrait sur place (guichet, comptoir ...)',
+    label: 'Retrait sur place (guichet, comptoir...)',
     value: WithdrawalTypeEnum.ON_SITE,
   },
 ]

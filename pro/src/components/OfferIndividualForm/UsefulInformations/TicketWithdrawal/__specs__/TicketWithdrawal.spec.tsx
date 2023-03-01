@@ -61,7 +61,7 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
 
     // should contain withdrawal hour information when tickets are to withdraw on place
     await userEvent.click(
-      await screen.findByText('Retrait sur place (guichet, comptoir ...)')
+      await screen.findByText('Retrait sur place (guichet, comptoir...)')
     )
     expect(await screen.findByText('Heure de retrait')).toBeInTheDocument()
   })
@@ -100,7 +100,7 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
     expect(screen.getByLabelText('Envoi par e-mail')).toBeDisabled()
     expect(screen.getByLabelText('Évènement sans billet')).toBeDisabled()
     expect(
-      screen.getByLabelText('Retrait sur place (guichet, comptoir ...)')
+      screen.getByLabelText('Retrait sur place (guichet, comptoir...)')
     ).toBeDisabled()
   })
 })
