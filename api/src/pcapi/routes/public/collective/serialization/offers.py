@@ -277,6 +277,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     numberOfTickets: int
     educationalPriceDetail: str | None
     educationalInstitution: str | None
+    educationalInstitutionId: int | None
     offerVenue: OfferVenueModel
     imageCredit: str | None
     imageUrl: str | None
@@ -315,6 +316,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             numberOfTickets=offer.collectiveStock.numberOfTickets,
             educationalPriceDetail=offer.collectiveStock.priceDetail,
             educationalInstitution=offer.institution.institutionId if offer.institutionId else None,
+            educationalInstitutionId=offer.institution.id if offer.institutionId else None,
             offerVenue={
                 "venueId": dehumanize(offer.offerVenue.get("venueId")) or None,
                 "addressType": offer.offerVenue["addressType"],
@@ -352,7 +354,8 @@ class PostCollectiveOfferBodyModel(BaseModel):
     number_of_tickets: int
     educational_price_detail: str | None
     # link to educational institution
-    educational_institution_id: int
+    educational_institution_id: int | None
+    educational_institution: str | None
 
     _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets")
     _validate_total_price = price_validator("total_price")
@@ -385,6 +388,22 @@ class PostCollectiveOfferBodyModel(BaseModel):
             raise ValueError(
                 "Les champs imageFile et imageCredit sont liés, si l'un est rempli l'autre doit l'être aussi"
             )
+        return values
+
+    @root_validator(pre=True)
+    def institution_validator(cls, values: dict) -> dict:
+        institution_id = values.get("educationalInstitutionId")
+        uai = values.get("educationalInstitution")
+        if institution_id is not None and uai is not None:
+            raise ValueError(
+                "Les champs educationalInstitution et educationalInstitutionId sont mutuellement exclusif. "
+                "Vous ne pouvez pas remplir les deux en même temps"
+            )
+        if institution_id is None and uai is None:
+            raise ValueError(
+                "Le remplissage de l'un des champs educationalInstitution ou educationalInstitutionId est obligatoire."
+            )
+
         return values
 
     class Config:
@@ -420,6 +439,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     numberOfTickets: int | None
     # educational_institution
     educationalInstitutionId: int | None
+    educationalInstitution: str | None
 
     _validate_number_of_tickets = number_of_tickets_validator("numberOfTickets")
     _validate_total_price = price_validator("price")
@@ -467,6 +487,18 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         if beginningDatetime is None:
             raise ValueError("La date de début de l'évènement ne peut pas être nulle.")
         return beginningDatetime
+
+    @root_validator(pre=True)
+    def institution_validator(cls, values: dict) -> dict:
+        institution_id = values.get("educationalInstitutionId")
+        uai = values.get("educationalInstitution")
+        if institution_id is not None and uai is not None:
+            raise ValueError(
+                "Les champs educationalInstitution et educationalInstitutionId sont mutuellement exclusif. "
+                "Vous ne pouvez pas remplir les deux en même temps"
+            )
+
+        return values
 
     class Config:
         alias_generator = to_camel

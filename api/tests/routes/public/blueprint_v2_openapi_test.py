@@ -237,6 +237,11 @@ def test_public_api(client, app):
                             "title": "Educationalinstitution",
                             "type": "string",
                         },
+                        "educationalInstitutionId": {
+                            "nullable": True,
+                            "title": "Educationalinstitutionid",
+                            "type": "integer",
+                        },
                         "educationalPriceDetail": {
                             "nullable": True,
                             "title": "Educationalpricedetail",
@@ -368,6 +373,11 @@ def test_public_api(client, app):
                             "type": "array",
                         },
                         "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
+                        "educationalInstitution": {
+                            "nullable": True,
+                            "title": "Educationalinstitution",
+                            "type": "string",
+                        },
                         "educationalInstitutionId": {
                             "nullable": True,
                             "title": "Educationalinstitutionid",
@@ -442,7 +452,16 @@ def test_public_api(client, app):
                         "description": {"title": "Description", "type": "string"},
                         "domains": {"items": {"type": "integer"}, "title": "Domains", "type": "array"},
                         "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
-                        "educationalInstitutionId": {"title": "Educationalinstitutionid", "type": "integer"},
+                        "educationalInstitution": {
+                            "nullable": True,
+                            "title": "Educationalinstitution",
+                            "type": "string",
+                        },
+                        "educationalInstitutionId": {
+                            "nullable": True,
+                            "title": "Educationalinstitutionid",
+                            "type": "integer",
+                        },
                         "educationalPriceDetail": {
                             "nullable": True,
                             "title": "Educationalpricedetail",
@@ -490,7 +509,6 @@ def test_public_api(client, app):
                         "bookingLimitDatetime",
                         "totalPrice",
                         "numberOfTickets",
-                        "educationalInstitutionId",
                     ],
                     "title": "PostCollectiveOfferBodyModel",
                     "type": "object",

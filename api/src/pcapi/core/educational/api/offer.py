@@ -429,9 +429,10 @@ def create_collective_offer_public(
     if not len(educational_domains) == len(body.domains):
         raise exceptions.EducationalDomainsNotFound()
 
-    institution = educational_models.EducationalInstitution.query.filter_by(
-        id=body.educational_institution_id
-    ).one_or_none()
+    institution = educational_repository.get_educational_institution_public(
+        institution_id=body.educational_institution_id,
+        uai=body.educational_institution,
+    )
     if not institution:
         raise exceptions.EducationalInstitutionUnknown()
     if not institution.isActive:
@@ -468,7 +469,7 @@ def create_collective_offer_public(
         visualDisabilityCompliant=body.visual_disability_compliant,
         offerVenue=offer_venue,
         interventionArea=[],
-        institutionId=body.educational_institution_id,
+        institution=institution,
         isPublicApi=True,
     )
     collective_offer.bookingEmails = body.booking_emails
@@ -534,14 +535,17 @@ def edit_collective_offer_public(
             if len(domains) != len(value):
                 raise exceptions.EducationalDomainsNotFound()
             offer.domains = domains
-        elif key == "educationalInstitutionId":
+        elif key in ("educationalInstitutionId", "educationalInstitution"):
             if value is not None:
-                institution = educational_models.EducationalInstitution.query.filter_by(id=value).one_or_none()
+                institution = institution = educational_repository.get_educational_institution_public(
+                    institution_id=new_values.get("educationalInstitutionId"),
+                    uai=new_values.get("educationalInstitution"),
+                )
                 if not institution:
                     raise exceptions.EducationalInstitutionUnknown()
                 if not institution.isActive:
                     raise exceptions.EducationalInstitutionIsNotActive()
-            offer.institutionId = value
+            offer.institution = institution  # type: ignore [assignment]
         elif key == "offerVenue":
             offer.offerVenue["venueId"] = humanize(value["venueId"]) or ""
             offer.offerVenue["addressType"] = value["addressType"].value
