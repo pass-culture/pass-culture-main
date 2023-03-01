@@ -27,13 +27,12 @@
     "strict": true,
     "target": "es6"
   },
-  "include": ["./src/**/*"],
+  "include": ["./src/**/*.ts", "./src/**/*.tsx"],
   "exclude": [
     "node_modules",
-    "babel.config.js",
-    "webpack.config.js",
-    "jest.config.js",
     "__mocks__/**",
-    "coverage/**"
+    "coverage/**",
+    "**/*.js",
+    "**/*.jsx"
   ]
 }
