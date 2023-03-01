@@ -139,7 +139,6 @@ class AllocineStocks(LocalProvider):
     def fill_product_attributes(self, allocine_product: offers_models.Product) -> None:
         allocine_product.name = self.movie_information["title"]  # type: ignore [index]
         allocine_product.subcategoryId = subcategories.SEANCE_CINE.id
-        allocine_product.thumbCount = 0
 
         self.update_from_movie_information(allocine_product, self.movie_information)  # type: ignore [arg-type]
 
