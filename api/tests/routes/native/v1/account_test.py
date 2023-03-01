@@ -20,6 +20,7 @@ from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.finance.api as finance_api
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
@@ -42,7 +43,6 @@ from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.routes.native.v1.serialization import account as account_serializers
-from pcapi.scripts.payment.user_recredit import recredit_underage_users
 
 from tests.connectors import user_profiling_fixtures
 
@@ -181,7 +181,7 @@ class AccountTest:
             users_factories.UnderageBeneficiaryFactory(email=self.identifier)
 
         with freeze_time("2021-01-02"):
-            recredit_underage_users()
+            finance_api.recredit_underage_users()
 
         client.with_token(email=self.identifier)
         me_response = client.get("/native/v1/me")

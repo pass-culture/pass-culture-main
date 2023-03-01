@@ -163,3 +163,9 @@ def move_siret(
         print("Siret has been moved.")
     else:
         print("DRY RUN: NO CHANGES HAVE BEEN MADE")
+
+
+@blueprint.cli.command("recredit_underage_users")
+@cron_decorators.log_cron_with_transaction
+def recredit_underage_users() -> None:
+    finance_api.recredit_underage_users()
