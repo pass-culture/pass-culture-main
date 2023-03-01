@@ -2,6 +2,7 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
+import { ReactComponent as CircleArrowLeftIcon } from 'icons/ico-circle-arrow-left.svg'
 import { ReactComponent as CircleArrowIcon } from 'icons/ico-circle-arrow.svg'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
@@ -17,7 +18,7 @@ export default {
   decorators: [withRouterDecorator],
   argTypes: {
     variant: {
-      options: ['primary', 'secondary', 'ternary', 'box'],
+      options: ['primary', 'secondary', 'ternary', 'quaternary', 'box'],
       control: 'radio',
     },
     iconPosition: {
@@ -82,9 +83,8 @@ DefaultSecondaryButton.args = {
 export const LinkButton = TemplateLink.bind({})
 
 LinkButton.args = {
-  children: 'Hello world',
-  isDisabled: false,
-  variant: ButtonLink.variant.TERNARY,
+  children: 'Éditer',
+  variant: ButtonVariant.TERNARY,
   link: { to: '/my-path', isExternal: false },
 }
 
@@ -95,13 +95,22 @@ LinkButtonWithIcon.args = {
   Icon: PenIcon,
 }
 
+export const LinkQuaternaryButtonWithIcon = TemplateLink.bind({})
+
+LinkQuaternaryButtonWithIcon.args = {
+  children: 'Accueil',
+  variant: ButtonVariant.QUATERNARY,
+  Icon: CircleArrowLeftIcon,
+  link: { to: '/my-path', isExternal: false },
+}
+
 export const WithTooltip = Template.bind({})
 WithTooltip.args = {
   ...DefaultButton.args,
   children: 'Créer une offre réservable pour un établissement scolaire',
   Icon: PenIcon,
   iconPosition: IconPositionEnum.CENTER,
-  variant: ButtonLink.variant.SECONDARY,
+  variant: ButtonVariant.SECONDARY,
   hasTooltip: true,
 }
 
