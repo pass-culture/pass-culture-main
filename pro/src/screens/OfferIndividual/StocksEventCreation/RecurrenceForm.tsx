@@ -24,6 +24,7 @@ import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import { getPriceCategoryOptions } from '../StocksEventEdition/StocksEventEdition'
 
 import { computeInitialValues } from './form/computeInitialValues'
+import { INITIAL_QUANTITY_PER_PRICE_CATEGORY } from './form/constants'
 import { RecurrenceType } from './form/types'
 import { validationSchema } from './form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
@@ -131,28 +132,60 @@ export const RecurrenceForm = ({
             <CalendarIcon className={styles['legend-icon']} /> Places et tarifs
           </div>
 
-          {values.quantityPerPriceCategories.map(
-            (quantityPerPriceCategory, index) => (
-              <FormLayout.Row key={index} inline>
-                <TextInput
-                  label="Nombre de places"
-                  name={`quantityPerPriceCategories[${index}].quantity`}
-                  type="number"
-                  step="1"
-                />
+          <FieldArray
+            name="quantityPerPriceCategories"
+            render={arrayHelpers => (
+              <>
+                {values.quantityPerPriceCategories.map(
+                  (quantityPerPriceCategory, index) => (
+                    <FormLayout.Row key={index} inline>
+                      <TextInput
+                        label="Nombre de places"
+                        name={`quantityPerPriceCategories[${index}].quantity`}
+                        type="number"
+                        step="1"
+                      />
 
-                <Select
-                  label="Tarif"
-                  name={`quantityPerPriceCategories[${index}].priceCategory`}
-                  options={priceCategoryOptions}
-                  defaultOption={{
-                    label: 'Sélectionner un tarif',
-                    value: '',
-                  }}
-                />
-              </FormLayout.Row>
-            )
-          )}
+                      <Select
+                        label="Tarif"
+                        name={`quantityPerPriceCategories[${index}].priceCategory`}
+                        options={priceCategoryOptions}
+                        defaultOption={{
+                          label: 'Sélectionner un tarif',
+                          value: '',
+                        }}
+                      />
+
+                      <div className={styles['align-icon']}>
+                        <Button
+                          variant={ButtonVariant.TERNARY}
+                          Icon={TrashFilledIcon}
+                          iconPosition={IconPositionEnum.CENTER}
+                          disabled={
+                            values.quantityPerPriceCategories.length <= 1
+                          }
+                          onClick={() => arrayHelpers.remove(index)}
+                          hasTooltip
+                        >
+                          Supprimer les places
+                        </Button>
+                      </div>
+                    </FormLayout.Row>
+                  )
+                )}
+
+                <Button
+                  variant={ButtonVariant.TERNARY}
+                  Icon={PlusCircleIcon}
+                  onClick={() =>
+                    arrayHelpers.push(INITIAL_QUANTITY_PER_PRICE_CATEGORY)
+                  }
+                >
+                  Ajouter d’autres places et tarifs
+                </Button>
+              </>
+            )}
+          />
 
           <FormLayout.Row inline>
             <TextInput
