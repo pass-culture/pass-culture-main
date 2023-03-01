@@ -103,10 +103,10 @@
     }
   }
 
-  &-ternary {
+  &-ternary,
+  &-quaternary {
     @include fonts.button;
 
-    color: colors.$black;
     background-color: transparent;
     border-color: transparent;
     padding: 0;
@@ -120,8 +120,8 @@
 
     &:disabled,
     &.button-disabled {
-      color: colors.$grey-dark;
       text-decoration: none;
+      color: colors.$grey-dark;
     }
 
     &:disabled .button-icon,
@@ -130,7 +130,6 @@
     }
 
     .button-icon {
-      fill: colors.$black;
       margin-right: rem.torem(8px);
     }
 
@@ -138,6 +137,22 @@
       .button-icon {
         margin-right: 0;
       }
+    }
+  }
+
+  &-ternary {
+    color: colors.$black;
+
+    .button-icon {
+      fill: colors.$black;
+    }
+  }
+
+  &-quaternary {
+    color: colors.$primary;
+
+    .button-icon {
+      fill: colors.$primary;
     }
   }
 
@@ -152,7 +167,8 @@
     max-width: rem.torem(400px);
 
     &:hover:not(:disabled, .button-disabled) {
-      box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
+      box-shadow:
+        rem.torem(0) rem.torem(3px) rem.torem(4px)
         colors.$grey-medium-shadow;
     }
 
