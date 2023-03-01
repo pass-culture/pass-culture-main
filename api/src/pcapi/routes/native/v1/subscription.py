@@ -46,6 +46,19 @@ def next_subscription_step(
     )
 
 
+@blueprint.native_v1.route("/subscription/stepper", methods=["GET"])
+@spectree_serialize(
+    response_model=serializers.SubscriptionStepperResponse,
+    on_success_status=200,
+    api=blueprint.api,
+)
+@authenticated_and_active_user_required
+def get_subscription_stepper(user: users_models.User) -> serializers.SubscriptionStepperResponse:
+    return serializers.SubscriptionStepperResponse(
+        subscription_steps_to_display=subscription_api.get_subscription_steps_to_display(user),
+    )
+
+
 @blueprint.native_v1.route("/subscription/profile", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
