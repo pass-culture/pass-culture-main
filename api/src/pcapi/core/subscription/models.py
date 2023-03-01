@@ -26,6 +26,13 @@ class SubscriptionStep(enum.Enum):
     HONOR_STATEMENT = "honor-statement"
 
 
+class SubscriptionStepTitle(enum.Enum):
+    PHONE_VALIDATION = "Numéro de téléphone"
+    PROFILE_COMPLETION = "Profil"
+    IDENTITY_CHECK = "Identification"
+    HONOR_STATEMENT = "Confirmation"
+
+
 class SubscriptionItemStatus(enum.Enum):
     KO = "ko"
     NOT_APPLICABLE = "not-applicable"
@@ -36,6 +43,12 @@ class SubscriptionItemStatus(enum.Enum):
     SUSPICIOUS = "suspicious"
     TODO = "todo"
     VOID = "void"
+
+
+@dataclasses.dataclass
+class SubscriptionStepDetails:
+    name: SubscriptionStep
+    title: SubscriptionStepTitle
 
 
 @dataclasses.dataclass
