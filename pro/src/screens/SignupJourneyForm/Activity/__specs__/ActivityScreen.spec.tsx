@@ -12,7 +12,6 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Activity from '../Activity'
-import { IActivityFormValues } from '../ActivityForm'
 import {
   DEFAULT_ACTIVITY_FORM_VALUES,
   TargetCustomerTypeEnum,
@@ -59,12 +58,9 @@ const renderActivityScreen = (contextValue: ISignupJourneyContext) => {
 
 describe('screens:SignupJourney::Activity', () => {
   let contextValue: ISignupJourneyContext
-  let activity: IActivityFormValues
   beforeEach(() => {
-    activity = DEFAULT_ACTIVITY_FORM_VALUES
-
     contextValue = {
-      activity: activity,
+      activity: DEFAULT_ACTIVITY_FORM_VALUES,
       setActivity: () => {},
     }
     jest.spyOn(api, 'getVenueTypes').mockResolvedValue([
@@ -74,6 +70,7 @@ describe('screens:SignupJourney::Activity', () => {
   })
 
   it('should render component', async () => {
+    contextValue.activity = null
     renderActivityScreen(contextValue)
     expect(await screen.findByText('Activité')).toBeInTheDocument()
     expect(
@@ -155,5 +152,7 @@ describe('screens:SignupJourney::Activity', () => {
         'Une ou plusieurs erreurs sont présentes dans le formulaire'
       )
     ).toBeInTheDocument()
+    expect(await screen.findByText('Activité')).toBeInTheDocument()
+    expect(screen.queryByText('Validation screen')).not.toBeInTheDocument()
   })
 })

@@ -1,5 +1,0 @@
-import { DEFAULT_ACTIVITY_FORM_VALUES } from './Activity/constants'
-
-export const DEFAULT_SIGNUP_JOURNEY_FORM_VALUES = {
-  ...DEFAULT_ACTIVITY_FORM_VALUES,
-}
