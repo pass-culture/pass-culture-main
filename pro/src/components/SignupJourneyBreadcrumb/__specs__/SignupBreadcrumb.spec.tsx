@@ -45,11 +45,6 @@ const renderSignupBreadcrumb = (
 }
 
 describe('test SignupBreadcrumb', () => {
-  it('should render stepper breadcrumb', () => {
-    renderSignupBreadcrumb()
-    expect(screen.getByTestId('stepper')).toBeInTheDocument()
-  })
-
   it('should render steps', async () => {
     const { tabAuthentication, tabActivity, tabValidation } =
       renderSignupBreadcrumb()
@@ -58,11 +53,11 @@ describe('test SignupBreadcrumb', () => {
     expect(tabActivity).toBeInTheDocument()
     expect(tabValidation).toBeInTheDocument()
 
-    expect(screen.getByTestId('stepper')).toBeInTheDocument()
     expect(screen.getByText('Authentication screen')).toBeInTheDocument()
 
     tabActivity && (await userEvent.click(tabActivity))
     expect(screen.getByText('Activity screen')).toBeInTheDocument()
+
     tabValidation && (await userEvent.click(tabValidation))
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
   })

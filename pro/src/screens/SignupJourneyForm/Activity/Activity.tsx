@@ -1,12 +1,12 @@
 import { FormikProvider, useFormik } from 'formik'
 import React from 'react'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import FormLayout from 'components/FormLayout'
 import { SIGNUP_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { FORM_ERROR_MESSAGE } from 'core/shared'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
-import { useNavigate } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
 

@@ -94,7 +94,7 @@ const ActivityForm = ({ venueTypes }: IActivityFormProps): JSX.Element => {
       <FormLayout.Row>
         <RadioGroup
           group={activityTargetCustomerTypeRadios}
-          legend="A qui souhaitez-vous proposer vos offres ?"
+          legend="À qui souhaitez-vous proposer vos offres ?"
           name="targetCustomer"
         />
       </FormLayout.Row>
