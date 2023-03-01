@@ -195,8 +195,7 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
 @private_api.route("/offerers/<humanized_offerer_id>/eac-eligibility", methods=["GET"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-# type: ignore [no-untyped-def]
-def can_offerer_create_educational_offer(humanized_offerer_id: str):
+def can_offerer_create_educational_offer(humanized_offerer_id: str) -> None:
     try:
         api.can_offerer_create_educational_offer(dehumanize_or_raise(humanized_offerer_id))
     except educational_exceptions.CulturalPartnerNotFoundException:
