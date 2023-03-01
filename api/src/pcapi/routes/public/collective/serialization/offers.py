@@ -221,6 +221,7 @@ class CollectiveOffersSubCategoryResponseModel(BaseModel):
     id: str
     label: str
     category: str
+    categoryId: str
 
     class Config:
         orm_mode = True
@@ -231,6 +232,7 @@ class CollectiveOffersSubCategoryResponseModel(BaseModel):
             id=subcategory.id,
             label=subcategory.pro_label,
             category=subcategory.category.pro_label,
+            categoryId=subcategory.category.id,
         )
 
 
