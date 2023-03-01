@@ -44,7 +44,7 @@ export enum OFFER_WIZARD_MODE {
 
 export const OFFER_WITHDRAWAL_TYPE_LABELS = {
   [OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE]:
-    'Retrait sur place (guichet, comptoir ...)',
+    'Retrait sur place (guichet, comptoir...)',
   [OFFER_WITHDRAWAL_TYPE_OPTIONS.NO_TICKET]: 'Évènement sans billet',
   [OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL]: 'Envoi par e-mail',
 }
