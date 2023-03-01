@@ -4,28 +4,33 @@ from pcapi.core import testing
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import override_features
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+# TODO(fseguin, 2023-03-01): cleanup when WIP_ENABLE_NEW_ONBOARDING FF is removed
 class Returns200Test:
-    def test_available_reimbursement_points(self, client):
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
+    def test_available_reimbursement_points_sorted_by_common_name(self, client):
         user_offerer = offerers_factories.UserOffererFactory(
             user__email="user.pro@example.com",
         )
         offerer = user_offerer.offerer
         offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        venue_with_siret = offerers_factories.VenueFactory(managingOfferer=offerer, name="Chez Toto")
-        finance_factories.BankInformationFactory(venue=venue_with_siret, status=BankInformationStatus.ACCEPTED)
-        venue_without_siret = offerers_factories.VenueFactory(
-            siret=None,
-            comment="Ceci est une collectivité locale",
+        first_venue = offerers_factories.VenueFactory(
             managingOfferer=offerer,
-            name="Dans l'antre de la folie",
-            publicName="Association des démons",
+            name="Raison sociale A",
+            publicName="Nom public F",
         )
-        finance_factories.BankInformationFactory(venue=venue_without_siret, status=BankInformationStatus.ACCEPTED)
+        finance_factories.BankInformationFactory(venue=first_venue, status=BankInformationStatus.ACCEPTED)
+        second_venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            name="Raison sociale B",
+            publicName="Nom public D",
+        )
+        finance_factories.BankInformationFactory(venue=second_venue, status=BankInformationStatus.ACCEPTED)
         offerers_factories.VenueFactory(siret=None, comment="Pas de SIRET", managingOfferer=offerer)
 
         client = client.with_session_auth("user.pro@example.com")
@@ -36,17 +41,79 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == [
             {
-                "venueId": venue_without_siret.id,
-                "venueName": "Association des démons",
-                "iban": venue_without_siret.iban,
+                "venueId": second_venue.id,
+                "venueName": "Nom public D",
+                "iban": second_venue.iban,
             },
             {
-                "venueId": venue_with_siret.id,
-                "venueName": "Chez Toto",
-                "iban": venue_with_siret.iban,
+                "venueId": first_venue.id,
+                "venueName": "Nom public F",
+                "iban": first_venue.iban,
             },
         ]
 
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
+    def test_no_available_reimbursement_point(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__email="user.pro@example.com",
+        )
+        offerer = user_offerer.offerer
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        _venue_without_siret_nor_bank_info = offerers_factories.VenueFactory(
+            siret=None, comment="Pas de SIRET", managingOfferer=offerer
+        )
+        venue_with_pending_bank_info = offerers_factories.VenueFactory(managingOfferer=offerer)
+        finance_factories.BankInformationFactory(venue=venue_with_pending_bank_info, status=BankInformationStatus.DRAFT)
+
+        client = client.with_session_auth("user.pro@example.com")
+        response = client.get(f"/offerers/{offerer.id}/reimbursement-points")
+
+        assert response.status_code == 200
+        assert response.json == []
+
+
+class NewOnboardingReturns200Test:
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
+    def test_available_reimbursement_points_sorted_by_name(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__email="user.pro@example.com",
+        )
+        offerer = user_offerer.offerer
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        first_venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            name="Raison sociale A",
+            publicName="Nom public F",
+        )
+        finance_factories.BankInformationFactory(venue=first_venue, status=BankInformationStatus.ACCEPTED)
+        second_venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            name="Raison sociale B",
+            publicName="Nom public D",
+        )
+        finance_factories.BankInformationFactory(venue=second_venue, status=BankInformationStatus.ACCEPTED)
+        offerers_factories.VenueFactory(siret=None, comment="Pas de SIRET", managingOfferer=offerer)
+
+        client = client.with_session_auth("user.pro@example.com")
+
+        with testing.assert_no_duplicated_queries():
+            response = client.get(f"/offerers/{offerer.id}/reimbursement-points")
+
+        assert response.status_code == 200
+        assert response.json == [
+            {
+                "venueId": first_venue.id,
+                "venueName": "Raison sociale A",
+                "iban": first_venue.iban,
+            },
+            {
+                "venueId": second_venue.id,
+                "venueName": "Raison sociale B",
+                "iban": second_venue.iban,
+            },
+        ]
+
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_no_available_reimbursement_point(self, client):
         user_offerer = offerers_factories.UserOffererFactory(
             user__email="user.pro@example.com",

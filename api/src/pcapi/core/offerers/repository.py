@@ -18,6 +18,7 @@ import pcapi.core.users.models as users_models
 from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model
 from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_model
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 
@@ -502,11 +503,15 @@ def get_venues_educational_statuses() -> list[models.VenueEducationalStatus]:
     return db.session.query(models.VenueEducationalStatus).order_by(models.VenueEducationalStatus.name).all()
 
 
+# TODO(fseguin, 2023-03-01): cleanup when WIP_ENABLE_NEW_ONBOARDING FF is removed
 def find_available_reimbursement_points_for_offerer(offerer_id: int) -> list[models.Venue]:
     """
     Returns a list of Venues whose SIRETs can be used to reimburse bookings, and their bank info,
-    ordered by `publicName` or name if `publicName` is null
+    ordered by name (if WIP_ENABLE_NEW_ONBOARDING is active) or by common_name
     """
+    sort_attribute = (
+        models.Venue.name if feature.FeatureToggle.WIP_ENABLE_NEW_ONBOARDING.is_active() else models.Venue.common_name
+    )
     return (
         models.Venue.query.join(BankInformation)
         .filter(
@@ -514,7 +519,7 @@ def find_available_reimbursement_points_for_offerer(offerer_id: int) -> list[mod
             models.Venue.managingOffererId == offerer_id,
         )
         .options(sqla_orm.joinedload(models.Venue.bankInformation))
-        .order_by(models.Venue.common_name)
+        .order_by(sort_attribute)
         .all()
     )
 
