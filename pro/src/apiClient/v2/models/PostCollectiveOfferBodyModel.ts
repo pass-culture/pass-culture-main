@@ -14,7 +14,8 @@ export type PostCollectiveOfferBodyModel = {
   description: string;
   domains: Array<number>;
   durationMinutes?: number | null;
-  educationalInstitutionId: number;
+  educationalInstitution?: string | null;
+  educationalInstitutionId?: number | null;
   educationalPriceDetail?: string | null;
   imageCredit?: string | null;
   imageFile?: string | null;
