@@ -1,9 +1,14 @@
-import { FormikProvider, useFormik } from 'formik'
+import { FieldArray, FormikProvider, useFormik } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { IOfferIndividual } from 'core/Offers/types'
-import { CalendarIcon, CircleArrowIcon } from 'icons'
+import {
+  CalendarIcon,
+  CircleArrowIcon,
+  PlusCircleIcon,
+  TrashFilledIcon,
+} from 'icons'
 import {
   Button,
   DatePicker,
@@ -40,6 +45,7 @@ export const RecurrenceForm = ({
     onSubmit: onConfirm,
     validationSchema,
   })
+  const { values } = formik
 
   return (
     <FormikProvider value={formik}>
@@ -78,20 +84,54 @@ export const RecurrenceForm = ({
           </div>
 
           <FormLayout.Row>
-            {formik.values.beginningTimes.map((beginningTime, index) => (
-              <TimePicker
-                key={index}
-                label={`Horaire ${index + 1}`}
-                name={`beginningTimes[${index}]`}
-              />
-            ))}
+            <FieldArray
+              name="beginningTimes"
+              render={arrayHelpers => (
+                <>
+                  <div className={styles['beginning-time-list']}>
+                    {values.beginningTimes.map((beginningTime, index) => (
+                      <div
+                        key={index}
+                        className={styles['beginning-time-wrapper']}
+                      >
+                        <TimePicker
+                          label={`Horaire ${index + 1}`}
+                          name={`beginningTimes[${index}]`}
+                        />
+
+                        <div className={styles['align-icon']}>
+                          <Button
+                            variant={ButtonVariant.TERNARY}
+                            Icon={TrashFilledIcon}
+                            iconPosition={IconPositionEnum.CENTER}
+                            disabled={values.beginningTimes.length <= 1}
+                            onClick={() => arrayHelpers.remove(index)}
+                            hasTooltip
+                          >
+                            Supprimer le créneau
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Button
+                    variant={ButtonVariant.TERNARY}
+                    Icon={PlusCircleIcon}
+                    onClick={() => arrayHelpers.push('')}
+                  >
+                    Ajouter un créneau
+                  </Button>
+                </>
+              )}
+            />
           </FormLayout.Row>
 
           <div className={styles['legend']}>
             <CalendarIcon className={styles['legend-icon']} /> Places et tarifs
           </div>
 
-          {formik.values.quantityPerPriceCategories.map(
+          {values.quantityPerPriceCategories.map(
             (quantityPerPriceCategory, index) => (
               <FormLayout.Row key={index} inline>
                 <TextInput
