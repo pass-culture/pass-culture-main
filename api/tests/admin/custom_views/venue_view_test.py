@@ -675,3 +675,45 @@ class VenueForOffererSubviewTest:
         response = api_client.get(url_for("venue_for_offerer.index", id=42))
 
         assert response.status_code == 404
+
+
+class UpdateVenuesTest:
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_reindexed_after_is_permanent_update(self, mock_async_index_venue_ids, _mocked_validate_csrf_token, client):
+        admin = AdminFactory(email="user@example.com")
+        venue_id = offerers_factories.VenueFactory(isPermanent=False).id
+
+        data = {"ids": [venue_id], "is_permanent": True}
+
+        client = client.with_session_auth(admin.email)
+        response = client.post("/pc/back-office/venue/update/", form=data)
+
+        assert response.status_code == 302
+
+        venue = Venue.query.get(venue_id)
+        assert venue.isPermanent
+
+        mock_async_index_venue_ids.assert_called_once()
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.core.search.reindex_venue_ids")
+    def test_immediate_reindexation_on_tag_update(self, mock_reindex_venue_ids, _mocked_validate_csrf_token, client):
+        admin = AdminFactory(email="user@example.com")
+        venue_id = offerers_factories.VenueFactory(isPermanent=False).id
+        criterion = criteria_factories.CriterionFactory()
+
+        data = {"ids": [venue_id], "is_permanent": True, "tags": [criterion.id]}
+
+        client = client.with_session_auth(admin.email)
+        response = client.post("/pc/back-office/venue/update/", form=data)
+
+        assert response.status_code == 302
+
+        venue = Venue.query.get(venue_id)
+        assert venue.isPermanent
+        assert {criterion.name for criterion in venue.criteria} == {criterion.name}
+
+        mock_reindex_venue_ids.assert_called_once()
