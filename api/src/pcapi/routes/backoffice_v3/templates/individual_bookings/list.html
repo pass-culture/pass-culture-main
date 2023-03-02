@@ -122,8 +122,8 @@
                             <td>{{ booking.stock.quantity }}</td>
                             <td>{{ booking.total_amount | format_amount }}</td>
                             <td>{{ booking.status | format_booking_status(with_badge=True) | safe }}</td>
-                            <td>{{ booking.dateCreated | format_date("%d/%m/%Y") }}</td>
-                            <td>{{ booking.stock.beginningDatetime | format_date }}</td>
+                            <td>{{ booking.dateCreated | format_date_time }}</td>
+                            <td>{{ booking.stock.beginningDatetime | format_date_time }}</td>
                             <td>{{ links.build_offerer_name_to_details_link(booking.offerer) }}</td>
                             <td>{{ links.build_venue_name_to_details_link(booking.venue) }}</td>
                         </tr>
