@@ -459,11 +459,11 @@ class UpdateVenueTest:
         data = {
             "siret": venue.managingOfferer.siren + "98765",
             "city": "Umeå",
-            "postalCode": "90325",
+            "postal_code": "90325",
             "address": "Skolgatan 31A",
             "email": venue.contact.email + ".update",
             "phone_number": "+33102030456",
-            "isPermanent": True,
+            "is_permanent": True,
             "latitude": "48.87056",
             "longitude": "2.34767",
         }
@@ -477,11 +477,11 @@ class UpdateVenueTest:
 
         assert venue.siret == data["siret"]
         assert venue.city == data["city"]
-        assert venue.postalCode == data["postalCode"]
+        assert venue.postalCode == data["postal_code"]
         assert venue.address == data["address"]
         assert venue.contact.email == data["email"]
         assert venue.contact.phone_number == data["phone_number"]
-        assert venue.isPermanent == data["isPermanent"]
+        assert venue.isPermanent == data["is_permanent"]
         assert venue.latitude == Decimal("48.87056")
         assert venue.longitude == Decimal("2.34767")
 
@@ -508,11 +508,11 @@ class UpdateVenueTest:
         data = {
             "siret": venue.siret,
             "city": venue.city,
-            "postalCode": venue.postalCode,
+            "postal_code": venue.postalCode,
             "address": venue.address,
             "email": venue.contact.email + ".update",
             "phone_number": "+33102030456",
-            "isPermanent": venue.isPermanent,
+            "is_permanent": venue.isPermanent,
         }
 
         response = send_request(authenticated_client, venue.id, url, data)
@@ -541,7 +541,7 @@ class UpdateVenueTest:
         data = {
             "siret": venue.siret,
             "city": venue.city,
-            "postalCode": venue.postalCode,
+            "postal_code": venue.postalCode,
             "address": venue.address,
             "email": venue.contact.email,
             "phone_number": "",
@@ -560,7 +560,7 @@ class UpdateVenueTest:
         data = {
             "siret": venue.siret,
             "city": venue.city,
-            "postalCode": venue.postalCode,
+            "postal_code": venue.postalCode,
             "address": venue.address,
             "email": venue.contact.email,
             "phone_number": venue.contact.phone_number,

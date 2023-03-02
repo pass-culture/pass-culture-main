@@ -40,6 +40,36 @@ class PCStringField(wtforms.StringField):
     ]
 
 
+class PCHiddenField(PCStringField):
+    widget = partial(widget, template="components/forms/string_field.html")
+    validators = [
+        validators.InputRequired("Information obligatoire"),
+        validators.Length(max=64, message="doit contenir au maximum %(max)d caractères"),
+    ]
+
+
+class PCOptHiddenField(PCStringField):
+    widget = partial(widget, template="components/forms/string_field.html")
+    validators = [
+        validators.Optional(""),
+        validators.Length(max=64, message="doit contenir au maximum %(max)d caractères"),
+    ]
+
+
+class PCPostalCodeHiddenField(PCOptHiddenField):
+    validators = [
+        validators.InputRequired("Information obligatoire"),
+        PostalCodeValidator("Le code postal doit contenir 5 caractères"),
+    ]
+
+
+class PCOptPostalCodeHiddenField(PCOptHiddenField):
+    validators = [
+        validators.Optional(""),
+        PostalCodeValidator("Le code postal doit contenir 5 caractères"),
+    ]
+
+
 class PCOptPostalCodeField(PCStringField):
     validators = [
         validators.Optional(""),
@@ -155,3 +185,32 @@ class PCSearchField(PCOptSearchField):
 class PCSwitchBooleanField(wtforms.BooleanField):
     widget = partial(widget, template="components/forms/switch_boolean_field.html")
     false_values = (False, "False", "false", "")
+
+
+class PcPostalAddressAutocomplete(wtforms.StringField):
+    widget = partial(widget, template="components/forms/postal_address_autocomplete.html")
+
+    def __init__(
+        self,
+        label: str,
+        address: str | None,
+        city: str | None,
+        postal_code: str | None,
+        latitude: str | None,
+        longitude: str | None,
+        required: bool = False,
+        has_reset: bool = False,
+        has_manual_editing: bool = False,
+        limit: int = 10,
+        **kwargs: typing.Any,
+    ):
+        super().__init__(label, **kwargs)
+        self.address = address
+        self.city = city
+        self.postal_code = postal_code
+        self.latitude = latitude
+        self.longitude = longitude
+        self.required = required
+        self.has_reset = has_reset
+        self.has_manual_editing = has_manual_editing
+        self.limit = limit
