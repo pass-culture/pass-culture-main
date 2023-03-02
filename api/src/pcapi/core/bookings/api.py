@@ -7,7 +7,6 @@ import sentry_sdk
 import sqlalchemy as sa
 
 from pcapi.core import search
-from pcapi.core.bookings import constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
