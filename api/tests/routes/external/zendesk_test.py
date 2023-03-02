@@ -97,7 +97,7 @@ class ZendeskWebhookTest:
             "user": {
                 "email": user.email,
                 "phone": "+33634567890",
-                "tags": ["suspendu", "éligible"],
+                "tags": ["suspendu"],
                 "user_fields": {
                     "backoffice_url": f"{settings.BACKOFFICE_URL}/public-accounts/{user.id}",
                     "user_id": user.id,
