@@ -218,6 +218,8 @@ def edit_collective_offer(
         raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
     except educational_exceptions.VenueIdDontExist:
         raise ApiErrors({"venueId": "The venue does not exist."}, 404)
+    except educational_exceptions.CollectiveOfferIsPublicApi:
+        raise ApiErrors({"global": ["Collective offer created by public API is not editable."]}, 403)
     except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not update offer: educational domains not found.",

@@ -122,6 +122,11 @@ def check_collective_offer_number_of_collective_stocks(
         raise exceptions.CollectiveStockAlreadyExists()
 
 
+def check_if_offer_is_not_public_api(offer: models.CollectiveOffer) -> None:
+    if offer.isPublicApi:
+        raise exceptions.CollectiveOfferIsPublicApi()
+
+
 def check_user_can_prebook_collective_stock(uai: str, stock: models.CollectiveStock) -> None:
     offer_institution = stock.collectiveOffer.institution
     if offer_institution is not None and offer_institution.institutionId != uai:

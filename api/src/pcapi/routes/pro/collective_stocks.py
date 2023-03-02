@@ -93,6 +93,8 @@ def edit_collective_stock(
             body.dict(exclude_unset=True),
         )
         return collective_stock_serialize.CollectiveStockResponseModel.from_orm(collective_stock)
+    except educational_exceptions.CollectiveOfferIsPublicApi:
+        raise ApiErrors({"global": ["Les stocks créés par l'api publique ne sont pas editables."]}, 403)
     except offers_exceptions.BookingLimitDatetimeTooLate:
         raise ApiErrors(
             {"educationalStock": ["La date limite de confirmation ne peut être fixée après la date de l évènement"]},

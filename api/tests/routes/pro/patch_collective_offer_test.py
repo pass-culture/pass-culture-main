@@ -481,6 +481,28 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json == {"offer": "the used or refund offer can't be edited."}
 
+    def test_cannot_update_offer_created_by_public_api(self, client):
+        # Given
+        offer = CollectiveOfferFactory(isPublicApi=True)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        data = {
+            "name": "New name",
+        }
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
+
+        # Then
+        assert response.status_code == 403
+        assert response.json == {"global": ["Collective offer created by public API is not editable."]}
+
     def test_patch_collective_offer_replacing_by_unknown_venue(self, client):
         # Given
         offerer = offerers_factories.OffererFactory()
