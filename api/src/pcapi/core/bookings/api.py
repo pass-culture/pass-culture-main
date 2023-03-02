@@ -104,6 +104,9 @@ def book_offer(
             token=generate_booking_token(),
             venueId=stock.offer.venueId,
             offererId=stock.offer.venue.managingOffererId,
+            priceCategoryLabel=(
+                stock.priceCategory.priceCategoryLabel.label if getattr(stock, "priceCategory") else None
+            ),
             status=BookingStatus.CONFIRMED,
             depositId=beneficiary.deposit.id if beneficiary.has_active_deposit else None,  # type: ignore [union-attr]
         )

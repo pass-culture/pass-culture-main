@@ -66,26 +66,39 @@ class OffersTest:
         )
         MediationFactory(id=111, offer=offer, thumbCount=1, credit="street credit")
 
-        bookableStock = EventStockFactory(
+        bookable_stock = EventStockFactory(
             offer=offer,
             price=12.34,
             quantity=2,
+            priceCategory__priceCategoryLabel__label="bookable",
         )
-        expiredStock = EventStockFactory(
-            offer=offer, price=45.68, beginningDatetime=datetime.utcnow() - timedelta(days=1)
+        another_bookable_stock = EventStockFactory(
+            offer=offer,
+            price=12.34,
+            quantity=3,
+            priceCategory=bookable_stock.priceCategory,
         )
-        exhaustedStock = EventStockFactory(offer=offer, price=89.00, quantity=1)
+        expired_stock = EventStockFactory(
+            offer=offer,
+            price=45.67,
+            beginningDatetime=datetime.utcnow() - timedelta(days=1),
+            priceCategory__priceCategoryLabel__label="expired",
+        )
+        exhausted_stock = EventStockFactory(
+            offer=offer,
+            price=89.00,
+            quantity=1,
+            priceCategory__priceCategoryLabel__label="exhausted",
+        )
 
-        BookingFactory(stock=bookableStock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
-        BookingFactory(stock=exhaustedStock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
+        BookingFactory(stock=bookable_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
+        BookingFactory(stock=exhausted_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
 
         offer_id = offer.id
         with assert_no_duplicated_queries():
             response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
-        response_content = response.json
-        response_content["stocks"].sort(key=lambda stock: stock["price"])
 
         assert response.json["id"] == offer.id
         assert response.json["accessibility"] == {
@@ -97,7 +110,7 @@ class OffersTest:
         assert sorted(response.json["stocks"], key=lambda stock: stock["id"]) == sorted(
             [
                 {
-                    "id": bookableStock.id,
+                    "id": bookable_stock.id,
                     "price": 1234,
                     "beginningDatetime": "2020-01-31T00:00:00Z",
                     "bookingLimitDatetime": "2020-01-30T23:00:00Z",
@@ -107,10 +120,26 @@ class OffersTest:
                     "isSoldOut": False,
                     "isExpired": False,
                     "activationCode": None,
+                    "priceCategoryLabel": "bookable",
+                    "remainingQuantity": 1,
                 },
                 {
-                    "id": expiredStock.id,
-                    "price": 4568,
+                    "id": another_bookable_stock.id,
+                    "price": 1234,
+                    "beginningDatetime": "2020-01-31T00:00:00Z",
+                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
+                    "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+                    "isBookable": True,
+                    "isForbiddenToUnderage": False,
+                    "isSoldOut": False,
+                    "isExpired": False,
+                    "activationCode": None,
+                    "priceCategoryLabel": "bookable",
+                    "remainingQuantity": 3,
+                },
+                {
+                    "id": expired_stock.id,
+                    "price": 4567,
                     "beginningDatetime": "2019-12-31T00:00:00Z",
                     "bookingLimitDatetime": "2019-12-30T23:00:00Z",
                     "cancellationLimitDatetime": "2020-01-01T00:00:00Z",
@@ -119,9 +148,11 @@ class OffersTest:
                     "isSoldOut": True,
                     "isExpired": True,
                     "activationCode": None,
+                    "priceCategoryLabel": "expired",
+                    "remainingQuantity": 1000,
                 },
                 {
-                    "id": exhaustedStock.id,
+                    "id": exhausted_stock.id,
                     "price": 8900,
                     "beginningDatetime": "2020-01-31T00:00:00Z",
                     "bookingLimitDatetime": "2020-01-30T23:00:00Z",
@@ -131,6 +162,8 @@ class OffersTest:
                     "isSoldOut": True,
                     "isExpired": False,
                     "activationCode": None,
+                    "priceCategoryLabel": "exhausted",
+                    "remainingQuantity": 0,
                 },
             ],
             key=lambda stock: stock["id"],
@@ -192,6 +225,8 @@ class OffersTest:
         assert response.status_code == 200
         assert not response.json["stocks"][0]["beginningDatetime"]
         assert response.json["stocks"][0]["price"] == 1234
+        assert response.json["stocks"][0]["priceCategoryLabel"] == None
+        assert response.json["stocks"][0]["remainingQuantity"] == 1000
         assert response.json["subcategoryId"] == "ABO_MUSEE"
         assert response.json["isEducational"] is False
         assert not response.json["isExpired"]

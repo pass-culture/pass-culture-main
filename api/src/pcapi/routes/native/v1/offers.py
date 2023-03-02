@@ -9,8 +9,10 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api
 from pcapi.core.offers.exceptions import OfferReportError
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Reason
+from pcapi.core.offers.models import Stock
 from pcapi.core.offers.validation import check_offer_is_from_current_cinema_provider
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.models import User
@@ -29,7 +31,9 @@ from .serialization import subcategories_v2 as subcategories_v2_serializers
 @spectree_serialize(response_model=serializers.OfferResponse, api=blueprint.api, on_error_statuses=[404])
 def get_offer(offer_id: str) -> serializers.OfferResponse:
     offer: Offer = (
-        Offer.query.options(joinedload(Offer.stocks))
+        Offer.query.options(
+            joinedload(Offer.stocks).joinedload(Stock.priceCategory).joinedload(PriceCategory.priceCategoryLabel)
+        )
         .options(
             joinedload(Offer.venue)
             .joinedload(Venue.managingOfferer)
