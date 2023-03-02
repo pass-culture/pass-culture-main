@@ -51,9 +51,7 @@ jobs:
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
-          wget -O jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
-          chmod +x ./jq
-          issue_type=$(jira view ${{ steps.get_jira_key.outputs.issue }} -t json | ./jq -r '.fields.issuetype.name')
+          issue_type=$(jira view ${{ steps.get_jira_key.outputs.issue }} --template viewType)
           if [[ $issue_type != "OPS Task" ]]; then 
             echo "status=${{ steps.get_jira_key.outputs.issue }}" >> $GITHUB_OUTPUT
           fi
