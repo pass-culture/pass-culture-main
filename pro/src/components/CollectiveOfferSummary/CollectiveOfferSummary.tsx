@@ -50,7 +50,9 @@ const CollectiveOfferSummary = ({
           )}
           <SummaryLayout.Section
             title="Détails de l’offre"
-            editLink={offerManuallyCreated ? offerEditLink : ''}
+            editLink={
+              offerManuallyCreated || offer.isTemplate ? offerEditLink : ''
+            }
           >
             <CollectiveOfferVenueSection venue={offer.venue} />
             <CollectiveOfferTypeSection offer={offer} categories={categories} />
