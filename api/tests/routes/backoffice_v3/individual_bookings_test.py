@@ -112,8 +112,8 @@ class ListIndividualBookingsTest:
         assert rows[0]["Stock"] == "212"
         assert rows[0]["Montant"] == "30,40 €"
         assert rows[0]["Statut"] == "Validée"
-        assert rows[0]["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=4)).strftime(
-            "%d/%m/%Y"
+        assert rows[0]["Date de réservation"].startswith(
+            (datetime.date.today() - datetime.timedelta(days=4)).strftime("%d/%m/%Y")
         )
         assert rows[0]["Structure"] == bookings[0].offerer.name
         assert rows[0]["Lieu"] == bookings[0].venue.name
@@ -121,7 +121,7 @@ class ListIndividualBookingsTest:
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
         assert f"Catégorie : {categories.LIVRE.pro_label}" in extra_data
         assert f"Sous-catégorie : {subcategories_v2.LIVRE_PAPIER.pro_label}" in extra_data
-        assert f"Date de validation : {datetime.date.today().strftime('%d/%m/%Y')}" in extra_data
+        assert f"Date de validation : {datetime.date.today().strftime('%d/%m/%Y')} à " in extra_data
         assert "Date limite de réservation" not in extra_data
         assert "Date d'annulation" not in extra_data
 
@@ -161,7 +161,9 @@ class ListIndividualBookingsTest:
         assert row["Stock"] == "2"
         assert row["Montant"] == "13,95 €"
         assert row["Statut"] == "Confirmée"
-        assert row["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=2)).strftime("%d/%m/%Y")
+        assert row["Date de réservation"].startswith(
+            (datetime.date.today() - datetime.timedelta(days=2)).strftime("%d/%m/%Y à")
+        )
         assert row["Structure"] == bookings[2].offerer.name
         assert row["Lieu"] == bookings[2].venue.name
 
@@ -309,7 +311,7 @@ class ListIndividualBookingsTest:
         assert response.status_code == 200
         reimbursement_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
         assert "Total payé par l'utilisateur : 10,00 €" in reimbursement_data
-        assert f"Date de remboursement : {reimbursed.reimbursementDate.strftime('%d/%m/%Y')}" in reimbursement_data
+        assert f"Date de remboursement : {reimbursed.reimbursementDate.strftime('%d/%m/%Y à ')}" in reimbursement_data
         assert "Montant remboursé : 10,00 €" in reimbursement_data
         assert f"N° de virement : {cashflow.batch.label}" in reimbursement_data
         assert "Taux de remboursement : 100,0 %" in reimbursement_data
