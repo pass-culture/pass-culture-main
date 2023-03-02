@@ -61,6 +61,9 @@ def render_offerer_details(
     )
     if not edit_offerer_form:
         edit_offerer_form = offerer_forms.EditOffererForm(
+            postal_address_autocomplete=f"{offerer.address}, {offerer.postalCode} {offerer.city}"
+            if offerer.address is not None and offerer.city is not None and offerer.postalCode is not None
+            else None,
             city=offerer.city,
             postal_code=offerer.postalCode,
             address=offerer.address,

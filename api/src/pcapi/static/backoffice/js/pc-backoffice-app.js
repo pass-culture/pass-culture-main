@@ -1,24 +1,24 @@
 /**
- * pass Culture application entry point
+ * This is the main entrypoint that initialize the back Office application
+ * @class
  */
 class PcBackofficeApp {
 
   /** localStorage key for this application */
   static LOCALSTORAGE_KEY = 'pc'
 
-  /** addons */
+  /** application addons instance are available from within app  */
   addons = {}
 
-  /** application state, can be partially persisted per addon using addon.saveState(state) */
+  /** application state. It is used by PcAddOn and can be partially persisted per addon using `addon.saveState(state)` */
   appState = {}
 
-  /** csrfToken input will be stored here **/
+  /** csrfToken `<input />` can be useful to generate a form with JavaScript and pass security */
   csrfToken
 
   /**
-   * Initialize applications
-   * @param {array} addOns - list of addons (class extending AddOn) to be used
-   * @param {string} csrfToken - the csrf token input
+   * @constructor
+   * @param {{ addOns: Array<PcAddOn>, csrfToken: string }} config - the application configuration
    */
   constructor({ addOns: AddOns, csrfToken }) {
     this.#rehydrateState()
@@ -36,10 +36,13 @@ class PcBackofficeApp {
   }
 
   /**
-   * initialize addon(s)
-   * @example To initialize a specific addon
+   * This method is automatically called on window `load` event and will run each addons initialize method.
+   * When using XHR, it can be useful to rerun the initialization, or initialize a specific addon.
+   * @example
+   * // To manually initialize a specific addon
    * app.addons.bsTooltips.initialize()
-   * @example To initialize all addons
+   * @example
+   * // To manually initialize all addons
    * app.initialize()
    */
   initialize = () => {
@@ -47,10 +50,13 @@ class PcBackofficeApp {
   }
 
   /**
-   * bind addons events
-   * @example To bind a specific addon
+   * This method is automatically called on window `load` event and will run each addons bindEvents method.
+   * When using XHR, it can be useful to rerun the bindEvents method on XHR response after DOM modification.
+   * @example
+   * // To manually bind a specific addon
    * app.addons.bsTooltips.unbindEvents()
-   * @example To bind all addons
+   * @example
+   * // To manually  bind all addons
    * app.bindEvents()
    */
   bindEvents = () => {
@@ -58,10 +64,14 @@ class PcBackofficeApp {
   }
 
   /**
-   * unbind addons events
-   * @example To unbind a specific addon
+   * This method is not called automatically.
+   * It run each addons unbindEvents method.
+   * When using XHR, it can be useful to run the unbindEvents method prior XHR request to edit the DOM.
+   * @example
+   * // To manually unbind a specific addon
    * app.addons.bsTooltips.unbindEvents()
-   * @example To unbind all addons
+   * @example
+   * // To manually unbind all addons
    * app.unbindEvents()
    */
   unbindEvents = () => {

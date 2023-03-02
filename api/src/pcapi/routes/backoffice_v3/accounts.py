@@ -201,6 +201,9 @@ def edit_public_account(user_id: int) -> utils.BackofficeResponse:
         email=user.email,
         birth_date=user.birth_date,
         id_piece_number=user.idPieceNumber,
+        postal_address_autocomplete=f"{user.address}, {user.postalCode} {user.city}"
+        if user.address is not None and user.city is not None and user.postalCode is not None
+        else None,
         address=user.address,
         postal_code=user.postalCode,
         city=user.city,
