@@ -79,6 +79,10 @@ def format_date(data: datetime.date | datetime.datetime, strformat: str = "%d/%m
     return data.strftime(strformat)
 
 
+def format_date_time(data: datetime.date | datetime.datetime) -> str:
+    return format_date(data, strformat="%d/%m/%Y à %Hh%M")
+
+
 def format_amount(amount: float | None) -> str:
     if amount is None:
         amount = 0.0
@@ -245,6 +249,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_rate"] = format_rate
     app.jinja_env.filters["format_string_list"] = format_string_list
     app.jinja_env.filters["format_date"] = format_date
+    app.jinja_env.filters["format_date_time"] = format_date_time
     app.jinja_env.filters["format_deposit_type"] = format_deposit_type
     app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status
     app.jinja_env.filters["format_offer_category"] = format_offer_category

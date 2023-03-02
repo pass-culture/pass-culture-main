@@ -120,7 +120,9 @@ class ListCollectiveBookingsTest:
         assert row["ID offre"].isdigit()
         assert row["Montant"] == "1 234,00 €"
         assert row["Statut"] == "Confirmée"
-        assert row["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=3)).strftime("%d/%m/%Y")
+        assert row["Date de réservation"].startswith(
+            (datetime.date.today() - datetime.timedelta(days=3)).strftime("%d/%m/%Y à ")
+        )
         assert row["Structure"] == collective_bookings[1].offerer.name
         assert row["Lieu"] == collective_bookings[1].venue.name
 
@@ -129,11 +131,11 @@ class ListCollectiveBookingsTest:
         assert f"Sous-catégorie : {subcategories_v2.VISITE_GUIDEE.pro_label}" in extra_data
         assert "Date de validation" not in extra_data
         assert (
-            f"Date de confirmation de réservation : {(datetime.date.today() - datetime.timedelta(days=1)).strftime('%d/%m/%Y')}"
+            f"Date de confirmation de réservation : {(datetime.date.today() - datetime.timedelta(days=1)).strftime('%d/%m/%Y')} à "
             in extra_data
         )
         assert (
-            f"Date limite de réservation : {(datetime.date.today() + datetime.timedelta(days=1)).strftime('%d/%m/%Y')}"
+            f"Date limite de réservation : {(datetime.date.today() + datetime.timedelta(days=1)).strftime('%d/%m/%Y')} à "
             in extra_data
         )
         assert "Date d'annulation" not in extra_data
@@ -173,7 +175,9 @@ class ListCollectiveBookingsTest:
         assert row["Nom de l'offre"] == collective_bookings[2].collectiveStock.collectiveOffer.name
         assert row["Montant"] == "567,80 €"
         assert row["Statut"] == "Annulée"
-        assert row["Date de réservation"] == (datetime.date.today() - datetime.timedelta(days=2)).strftime("%d/%m/%Y")
+        assert row["Date de réservation"].startswith(
+            (datetime.date.today() - datetime.timedelta(days=2)).strftime("%d/%m/%Y à ")
+        )
         assert row["Structure"] == collective_bookings[2].offerer.name
         assert row["Lieu"] == collective_bookings[2].venue.name
 
@@ -182,14 +186,14 @@ class ListCollectiveBookingsTest:
         assert f"Sous-catégorie : {subcategories_v2.DECOUVERTE_METIERS.pro_label}" in extra_data
         assert "Date de validation" not in extra_data
         assert (
-            f"Date de confirmation de réservation : {(datetime.date.today() - datetime.timedelta(days=1)).strftime('%d/%m/%Y')}"
+            f"Date de confirmation de réservation : {(datetime.date.today() - datetime.timedelta(days=1)).strftime('%d/%m/%Y')} à "
             in extra_data
         )
         assert (
-            f"Date limite de réservation : {(datetime.date.today() + datetime.timedelta(days=1)).strftime('%d/%m/%Y')}"
+            f"Date limite de réservation : {(datetime.date.today() + datetime.timedelta(days=1)).strftime('%d/%m/%Y')} à "
             in extra_data
         )
-        assert f"Date d'annulation : {datetime.date.today().strftime('%d/%m/%Y')}" in extra_data
+        assert f"Date d'annulation : {datetime.date.today().strftime('%d/%m/%Y')} à " in extra_data
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
 
@@ -348,7 +352,7 @@ class ListCollectiveBookingsTest:
         assert response.status_code == 200
         reimbursement_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
         assert "Total payé par l'utilisateur : 100,00 €" in reimbursement_data
-        assert f"Date de remboursement : {reimbursed.reimbursementDate.strftime('%d/%m/%Y')}" in reimbursement_data
+        assert f"Date de remboursement : {reimbursed.reimbursementDate.strftime('%d/%m/%Y')} à " in reimbursement_data
         assert "Montant remboursé : 100,00 €" in reimbursement_data
         assert f"N° de virement : {cashflow.batch.label}" in reimbursement_data
         assert "Taux de remboursement : 100,0 %" in reimbursement_data

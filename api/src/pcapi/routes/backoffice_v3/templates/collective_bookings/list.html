@@ -120,7 +120,7 @@
                             <td>{{ collective_offer.id }}</td>
                             <td>{{ collective_booking.total_amount | format_amount }}</td>
                             <td>{{ collective_booking.status | format_booking_status(with_badge=True) | safe }}</td>
-                            <td>{{ collective_booking.dateCreated | format_date("%d/%m/%Y") }}</td>
+                            <td>{{ collective_booking.dateCreated | format_date_time }}</td>
                             <td>{{ links.build_offerer_name_to_details_link(collective_booking.offerer) }}</td>
                             <td>{{ links.build_venue_name_to_details_link(collective_booking.venue) }}</td>
                         </tr>
