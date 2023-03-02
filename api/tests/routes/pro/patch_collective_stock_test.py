@@ -275,6 +275,26 @@ class Return403Test:
             "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
         }
 
+    def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api(self, client):
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__isPublicApi=True,
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.collectiveOffer.venue.managingOfferer,
+        )
+        # When
+        stock_edition_payload = {
+            "totalPrice": 1500,
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+
+        # Then
+        assert response.status_code == 403
+        assert response.json == {"global": ["Les stocks créés par l'api publique ne sont pas editables."]}
+
 
 @freeze_time("2020-11-17 15:00:00")
 class Return400Test:

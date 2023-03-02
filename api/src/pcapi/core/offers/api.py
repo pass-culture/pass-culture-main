@@ -277,7 +277,7 @@ def update_collective_offer(
     offer_to_update = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.id == offer_id
     ).first()
-
+    educational_validation.check_if_offer_is_not_public_api(offer_to_update)
     educational_validation.check_if_offer_not_used_or_reimbursed(offer_to_update)
 
     if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:

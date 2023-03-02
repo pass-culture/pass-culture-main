@@ -83,6 +83,10 @@ class CollectiveOfferTemplateNotFound(Exception):
     pass
 
 
+class CollectiveOfferIsPublicApi(Exception):
+    pass
+
+
 class CollectiveStockNotFound(Exception):
     pass
 
