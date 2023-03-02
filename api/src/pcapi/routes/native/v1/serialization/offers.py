@@ -52,6 +52,8 @@ class OfferStockResponse(BaseModel):
     isExpired: bool
     price: int
     activationCode: OfferStockActivationCodeResponse | None
+    priceCategoryLabel: str | None
+    remainingQuantity: int | None
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
 
@@ -80,7 +82,20 @@ class OfferStockResponse(BaseModel):
     def from_orm(cls, stock: Stock) -> "OfferStockResponse":
         stock.cancellation_limit_datetime = cls._get_cancellation_limit_datetime(stock)
         stock.activationCode = cls._get_non_scrappable_activation_code(stock)
-        return super().from_orm(stock)
+        stock_response = super().from_orm(stock)
+
+        price_category = getattr(stock, "priceCategory", None)
+        if price_category:
+            stock_response.priceCategoryLabel = price_category.priceCategoryLabel.label
+        else:
+            stock_response.priceCategoryLabel = None
+
+        stock_response.priceCategoryLabel = price_category.priceCategoryLabel.label if price_category else None
+        stock_response.remainingQuantity = (
+            stock.remainingQuantity if stock.remainingQuantity != "unlimited" else None  # type: ignore [assignment]
+        )
+
+        return stock_response
 
 
 class OfferVenueResponse(BaseModel):

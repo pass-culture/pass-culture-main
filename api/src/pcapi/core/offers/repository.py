@@ -657,10 +657,7 @@ def get_offer_by_id(offer_id: int) -> models.Offer:
             .options(joinedload(models.Offer.product, innerjoin=True))
             .options(joinedload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel))
             .options(
-                joinedload(
-                    models.Offer.venue,
-                    innerjoin=True,
-                ).joinedload(
+                joinedload(models.Offer.venue, innerjoin=True).joinedload(
                     Venue.managingOfferer,
                     innerjoin=True,
                 )

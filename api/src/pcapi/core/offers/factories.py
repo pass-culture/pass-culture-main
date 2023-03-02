@@ -161,6 +161,7 @@ class EventStockFactory(StockFactory):
     priceCategory = factory.SubFactory(
         PriceCategoryFactory,
         offer=factory.SelfAttribute("..offer"),
+        price=factory.SelfAttribute("..price"),
         priceCategoryLabel__venue=factory.SelfAttribute("..offer.venue"),
     )
 
