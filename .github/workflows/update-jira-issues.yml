@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
+
 jobs:
   issue-number:
     outputs:
@@ -62,6 +64,19 @@ jobs:
     needs: issue-number
     if: needs.issue-number.outputs.status != null
     steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.4
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # Fetch all history for "git rev-list --count HEAD" info
+
+      - name: Get commit info
+        id: get_commit_info
+        run: |
+          COMMIT_NUMBER=$(git rev-list --count HEAD)
+          COMMIT_HASH=$(git rev-parse HEAD)
+          echo "::set-output name=number::$COMMIT_NUMBER"
+          echo "::set-output name=hash::$COMMIT_HASH"
       - name: Setup gajira cli
         uses: atlassian/gajira-cli@master
         with:
