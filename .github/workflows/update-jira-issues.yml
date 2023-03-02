@@ -4,12 +4,13 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch:
 
 jobs:
   issue-number:
     outputs:
       status: ${{ steps.issue-check.outputs.status }}
+      commit-hash: ${{ steps.issue-check.outputs.commit-hash }}
+      commit-number: ${{ steps.issue-check.outputs.commit-number }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
@@ -54,6 +55,8 @@ jobs:
           issue_type=$(jira view ${{ steps.get_jira_key.outputs.issue }} --template viewType)
           if [[ $issue_type != "OPS Task" ]]; then 
             echo "status=${{ steps.get_jira_key.outputs.issue }}" >> $GITHUB_OUTPUT
+            echo "commit-hash=${{ steps.get_jira_key.outputs.commit-hash }}" >> $GITHUB_OUTPUT
+            echo "commit-number=${{ steps.get_jira_key.outputs.commit-number }}" >> $GITHUB_OUTPUT
           fi
 
   # run only if previous job issue-number has set his output to the issue number 
@@ -68,13 +71,6 @@ jobs:
           persist-credentials: false
           fetch-depth: 0 # Fetch all history for "git rev-list --count HEAD" info
 
-      - name: Get commit info
-        id: get_commit_info
-        run: |
-          COMMIT_NUMBER=$(git rev-list --count HEAD)
-          COMMIT_HASH=$(git rev-parse HEAD)
-          echo "::set-output name=number::$COMMIT_NUMBER"
-          echo "::set-output name=hash::$COMMIT_HASH"
       - name: Setup gajira cli
         uses: atlassian/gajira-cli@master
         with:
@@ -112,8 +108,8 @@ jobs:
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
-          jira edit ${{ steps.get_jira_key.outputs.issue }} \
+          jira edit ${{ needs.issue-number.outputs.status }} \
             --override customfield_10044=false \
-            --override customfield_10059=${{ steps.get_commit_info.outputs.number }} \
-            --override customfield_10060=${{ steps.get_commit_info.outputs.hash }} \
+            --override customfield_10059=${{ needs.issue-number.outputs.commit-number }} \
+            --override customfield_10060=${{ needs.issue-number.outputs.commit-hash }} \
             --noedit
