@@ -6,6 +6,7 @@
 
 .field-layout {
   width: 100%;
+  margin-bottom: rem.torem(16px);
 
   &-label {
     margin-bottom: rem.torem(forms.$label-space-before-input);
