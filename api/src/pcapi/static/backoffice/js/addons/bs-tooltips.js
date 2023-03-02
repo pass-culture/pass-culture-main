@@ -4,7 +4,7 @@
  * Documentation: https://getbootstrap.com/docs/5.0/components/tooltips/#examples
  */
 class BsTooltips extends PcAddOn {
-  static TOOLTIP_SELECTORS = '[data-toggle="tooltip"]'
+  static TOOLTIP_SELECTORS = '[data-bs-toggle="tooltip"]'
   tooltips = []
 
   get $tooltips() {

@@ -13,9 +13,21 @@ class EditAccountForm(utils.PCForm):
     email = fields.PCEmailField("Email")
     birth_date = fields.PCDateField("Date de naissance")
     id_piece_number = fields.PCOptStringField("N° pièce d'identité")
-    address = fields.PCOptStringField("Adresse")
-    postal_code = fields.PCOptPostalCodeField("Code postal")
-    city = fields.PCOptStringField("Ville")
+    postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
+        "Adresse",
+        address="address",
+        city="city",
+        postal_code="postal_code",
+        latitude=None,
+        longitude=None,
+        required=False,
+        has_reset=True,
+        has_manual_editing=True,
+        limit=10,
+    )
+    address = fields.PCOptHiddenField("Adresse")
+    postal_code = fields.PCOptPostalCodeHiddenField("Code postal")
+    city = fields.PCOptHiddenField("Ville")
 
 
 class ManualReviewForm(FlaskForm):

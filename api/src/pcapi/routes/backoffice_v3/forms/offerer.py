@@ -37,17 +37,29 @@ class EditOffererForm(FlaskForm):
         get_pk=lambda tag: tag.id,
         get_label=lambda tag: tag.label or tag.name,
     )
-    address = fields.PCOptStringField(
+    postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
+        "Adresse",
+        address="address",
+        city="city",
+        postal_code="postal_code",
+        latitude=None,
+        longitude=None,
+        required=True,
+        has_reset=True,
+        has_manual_editing=True,
+        limit=10,
+    )
+    address = fields.PCOptHiddenField(
         "Adresse",
         validators=(wtforms.validators.Length(max=200, message="doit contenir moins de %(max)d caractères"),),
     )
-    city = fields.PCStringField(
+    city = fields.PCHiddenField(
         "Ville",
         validators=(
             wtforms.validators.Length(min=1, max=50, message="doit contenir entre %(min)d et %(max)d caractères"),
         ),
     )
-    postal_code = fields.PCPostalCodeField("Code postal")
+    postal_code = fields.PCPostalCodeHiddenField("Code postal")
 
 
 class OffererValidationListForm(FlaskForm):

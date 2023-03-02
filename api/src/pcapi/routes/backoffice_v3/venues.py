@@ -23,8 +23,10 @@ from pcapi.models.api_errors import ApiErrors
 import pcapi.routes.serialization.base as serialize_base
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 import pcapi.utils.regions as regions_utils
+from pcapi.utils.string import to_camelcase
 
 from . import utils
+from ...utils.string import to_camelcase
 from .forms import empty as empty_forms
 from .forms import venue as forms
 from .serialization import offerers as offerers_serialization
@@ -108,7 +110,10 @@ def render_venue_details(
                 venue=venue,
                 siret=venue.siret,
                 city=venue.city,
-                postalCode=venue.postalCode,
+                postal_address_autocomplete=f"{venue.address}, {venue.postalCode} {venue.city}"
+                if venue.address is not None and venue.city is not None and venue.postalCode is not None
+                else None,
+                postal_code=venue.postalCode,
                 address=venue.address,
                 email=venue.contact.email if venue.contact else None,
                 phone_number=venue.contact.phone_number if venue.contact else None,
@@ -258,7 +263,11 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         flash(msg, "warning")
         return render_venue_details(venue, form)
 
-    attrs = {field.name: field.data for field in form if field.name and hasattr(venue, field.name)}
+    attrs = {
+        to_camelcase(field.name): field.data
+        for field in form
+        if field.name and hasattr(venue, to_camelcase(field.name))
+    }
 
     if venue.contact:
         # Use existing values, if any, to ensure that no data (website

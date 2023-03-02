@@ -17,12 +17,32 @@ class EditVirtualVenueForm(utils.PCForm):
 
 class EditVenueForm(EditVirtualVenueForm):
     siret = fields.PCStringField("siret")
-    address = fields.PCStringField("Adresse")
-    city = fields.PCStringField("Ville")
-    postalCode = fields.PCPostalCodeField("Code postal")  # match Venue.postalCode case
-    latitude = wtforms.HiddenField("Latitude")
-    longitude = wtforms.HiddenField("Longitude")
-    isPermanent = fields.PCSwitchBooleanField("Lieu permanent")
+    postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
+        "Adresse",
+        address="address",
+        city="city",
+        postal_code="postal_code",
+        latitude="latitude",
+        longitude="longitude",
+        required=True,
+        has_reset=True,
+        has_manual_editing=True,
+        limit=10,
+    )
+    address = fields.PCHiddenField(
+        "address",
+        validators=(wtforms.validators.Length(max=200, message="doit contenir moins de %(max)d caractères"),),
+    )
+    city = fields.PCHiddenField(
+        "Ville",
+        validators=(
+            wtforms.validators.Length(min=1, max=50, message="doit contenir entre %(min)d et %(max)d caractères"),
+        ),
+    )
+    postal_code = fields.PCPostalCodeHiddenField("Code postal")  # match Venue.postalCode case
+    latitude = fields.PCOptHiddenField("Latitude")
+    longitude = fields.PCOptHiddenField("Longitude")
+    is_permanent = fields.PCSwitchBooleanField("Lieu permanent")
 
     def __init__(self, venue: offerers_models.Venue, *args: typing.Any, **kwargs: typing.Any) -> None:
         """
@@ -35,11 +55,9 @@ class EditVenueForm(EditVirtualVenueForm):
         self.venue = venue
 
         # self._fields is a collections.OrderedDict
-        self._fields.move_to_end("latitude")
-        self._fields.move_to_end("longitude")
         self._fields.move_to_end("email")
         self._fields.move_to_end("phone_number")
-        self._fields.move_to_end("isPermanent")
+        self._fields.move_to_end("is_permanent")
 
     def validate_siret(self, siret: fields.PCStringField) -> fields.PCStringField:
         if not siret.data or len(siret.data) != 14:
