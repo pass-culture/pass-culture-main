@@ -342,6 +342,7 @@ const routes: IRoute[] = [
     path: '/parcours-inscription/*',
     title: 'Parcours de souscription',
     useV6Router: true,
+    featureName: 'WIP_ENABLE_NEW_ONBOARDING',
   },
 ]
 
