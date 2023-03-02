@@ -7,7 +7,6 @@ import sentry_sdk
 import sqlalchemy as sa
 
 from pcapi.core import search
-from pcapi.core.bookings import constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -105,6 +104,9 @@ def book_offer(
             token=generate_booking_token(),
             venueId=stock.offer.venueId,
             offererId=stock.offer.venue.managingOffererId,
+            priceCategoryLabel=(
+                stock.priceCategory.priceCategoryLabel.label if getattr(stock, "priceCategory") else None
+            ),
             status=BookingStatus.CONFIRMED,
             depositId=beneficiary.deposit.id if beneficiary.has_active_deposit else None,  # type: ignore [union-attr]
         )

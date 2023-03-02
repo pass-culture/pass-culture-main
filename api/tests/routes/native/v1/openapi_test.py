@@ -938,6 +938,8 @@ def test_public_api(client):
                         "isForbiddenToUnderage": {"title": "Isforbiddentounderage", "type": "boolean"},
                         "isSoldOut": {"title": "Issoldout", "type": "boolean"},
                         "price": {"title": "Price", "type": "integer"},
+                        "priceCategoryLabel": {"nullable": True, "title": "Pricecategorylabel", "type": "string"},
+                        "remainingQuantity": {"nullable": True, "title": "Remainingquantity", "type": "integer"},
                     },
                     "required": ["id", "isBookable", "isForbiddenToUnderage", "isSoldOut", "isExpired", "price"],
                     "title": "OfferStockResponse",

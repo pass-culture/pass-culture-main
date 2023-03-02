@@ -160,6 +160,7 @@ class BookOfferTest:
         assert len(booking.token) == 6
         assert booking.status is BookingStatus.CONFIRMED
         assert booking.cancellationLimitDate is None
+        assert booking.priceCategoryLabel is None
         assert stock.dnBookedQuantity == 7
 
         mocked_async_index_offer_ids.assert_called_once_with([stock.offer.id])
@@ -243,7 +244,7 @@ class BookOfferTest:
     def test_create_event_booking(self):
         ten_days_from_now = datetime.utcnow() + timedelta(days=10)
         beneficiary = users_factories.BeneficiaryGrant18Factory()
-        stock = offers_factories.StockFactory(price=10, beginningDatetime=ten_days_from_now, dnBookedQuantity=5)
+        stock = offers_factories.EventStockFactory(price=10, beginningDatetime=ten_days_from_now, dnBookedQuantity=5)
 
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
@@ -265,6 +266,7 @@ class BookOfferTest:
         assert len(booking.token) == 6
         assert booking.status is BookingStatus.CONFIRMED
         assert booking.cancellationLimitDate == two_days_after_booking
+        assert booking.priceCategoryLabel == "Tarif unique"
 
     def test_book_stock_with_unlimited_quantity(self):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
