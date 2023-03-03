@@ -1258,5 +1258,5 @@ class ActivateUserTest:
             "event_properties": {
                 "from": fraud_check_type,
             },
-            "user_id": str(user.id),
+            "user_id": user.id,
         }

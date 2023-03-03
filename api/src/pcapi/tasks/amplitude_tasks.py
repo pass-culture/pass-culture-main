@@ -24,7 +24,7 @@ def track_event(
     event_properties = payload.event_properties
 
     backend().track_event(
-        user_id=str(user_id),
+        user_id=user_id,
         event_name=event_name,
         event_properties=event_properties,
     )
