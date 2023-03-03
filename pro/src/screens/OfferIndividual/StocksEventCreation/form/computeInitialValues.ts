@@ -6,8 +6,8 @@ export const computeInitialValues = (
   priceCategoryOptions: SelectOption[]
 ): RecurrenceFormValues => ({
   recurrenceType: RecurrenceType.UNIQUE,
-  startingDate: '',
-  beginningTimes: [''],
+  startingDate: null,
+  beginningTimes: [null],
   quantityPerPriceCategories: [
     {
       quantity: '',

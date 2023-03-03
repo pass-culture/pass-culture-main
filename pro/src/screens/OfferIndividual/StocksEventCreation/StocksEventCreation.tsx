@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import DialogBox from 'components/DialogBox'
+import { IStocksEvent } from 'components/StocksEventList/StocksEventList'
 import { IOfferIndividual } from 'core/Offers/types'
 import { MoreCircleIcon } from 'icons'
 import { Button } from 'ui-kit'
@@ -21,10 +22,10 @@ export const StocksEventCreation = ({
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
 
   const onCancel = () => setIsRecurrenceModalOpen(false)
-  const onConfirm = () => {
+  const onConfirm = (newStocks: IStocksEvent[]) => {
     setIsRecurrenceModalOpen(false)
     // TODO add new stocks to state
-    alert('new stock!')
+    alert(JSON.stringify(newStocks))
   }
 
   return (

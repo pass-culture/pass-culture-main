@@ -2,6 +2,7 @@ import { FieldArray, FormikProvider, useFormik } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
+import { IStocksEvent } from 'components/StocksEventList/StocksEventList'
 import { IOfferIndividual } from 'core/Offers/types'
 import {
   CalendarIcon,
@@ -25,14 +26,15 @@ import { getPriceCategoryOptions } from '../StocksEventEdition/StocksEventEditio
 
 import { computeInitialValues } from './form/computeInitialValues'
 import { INITIAL_QUANTITY_PER_PRICE_CATEGORY } from './form/constants'
-import { RecurrenceType } from './form/types'
+import { onSubmit } from './form/onSubmit'
+import { RecurrenceFormValues, RecurrenceType } from './form/types'
 import { validationSchema } from './form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
 
 interface Props {
   offer: IOfferIndividual
   onCancel: () => void
-  onConfirm: () => void
+  onConfirm: (newStocks: IStocksEvent[]) => void
 }
 
 export const RecurrenceForm = ({
@@ -41,9 +43,14 @@ export const RecurrenceForm = ({
   onConfirm,
 }: Props): JSX.Element => {
   const priceCategoryOptions = getPriceCategoryOptions(offer)
+  const handleSubmit = (values: RecurrenceFormValues) => {
+    const newStocks = onSubmit(values, offer.venue.departmentCode)
+    onConfirm(newStocks)
+  }
+
   const formik = useFormik({
     initialValues: computeInitialValues(priceCategoryOptions),
-    onSubmit: onConfirm,
+    onSubmit: handleSubmit,
     validationSchema,
   })
   const { values } = formik
@@ -70,7 +77,7 @@ export const RecurrenceForm = ({
               variant={BaseRadioVariant.SECONDARY}
               label="Tous les jours"
               name="recurrenceType"
-              value={RecurrenceType.UNIQUE}
+              value={RecurrenceType.DAILY}
               withBorder
             />
           </FormLayout.Row>

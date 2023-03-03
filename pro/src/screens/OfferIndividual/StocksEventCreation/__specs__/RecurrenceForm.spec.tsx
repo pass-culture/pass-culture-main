@@ -17,6 +17,19 @@ describe('RecurrenceForm', () => {
     const onConfirm = jest.fn()
     render(<RecurrenceForm {...defaultProps} onConfirm={onConfirm} />)
 
+    await userEvent.click(
+      screen.getByLabelText('Date de l’évènement', { exact: true })
+    )
+    await userEvent.click(screen.getByText(new Date().getDate()))
+    await userEvent.click(screen.getByLabelText('Horaire 1'))
+    await userEvent.click(screen.getByText('12:00'))
+    await userEvent.type(screen.getByLabelText('Nombre de places'), '10')
+    await userEvent.type(screen.getByLabelText('Tarif'), '21')
+    await userEvent.type(
+      screen.getByLabelText('Date limite de réservation'),
+      '2'
+    )
+
     await userEvent.click(screen.getByText('Ajouter cette date'))
     expect(onConfirm).toHaveBeenCalled()
   })
