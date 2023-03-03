@@ -1,5 +1,6 @@
 import datetime
 
+from flask import g
 from flask import url_for
 import pytest
 
@@ -23,7 +24,7 @@ pytestmark = [
 
 @pytest.fixture(scope="function", name="criteria")
 def criteria_fixture() -> list:
-    return criteria_factories.CriterionFactory.create_batch(2)
+    return criteria_factories.CriterionFactory.create_batch(4)
 
 
 @pytest.fixture(scope="function", name="offers")
@@ -189,3 +190,83 @@ class ListOffersTest:
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+
+
+class EditOffersTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.offer.edit_offer"
+        endpoint_kwargs = {"offer_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+
+    def test_update_offer_tags(self, legit_user, authenticated_client, criteria):
+        offer_to_edit = offers_factories.OfferFactory(
+            name="A Very Specific Name That Is Longer",
+            criteria=[criteria[0]],
+            venue__postalCode="74000",
+            venue__departementCode="74",
+            product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+        choosenRankingWeight = 22
+        base_form = {"criteria": [criteria[0].id, criteria[1].id], "rankingWeight": choosenRankingWeight}
+
+        response = self._update_offerer(authenticated_client, offer_to_edit, base_form)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_v3_web.offer.list_offers", _external=True)
+        assert response.location == expected_url
+
+        offer_list_url = url_for("backoffice_v3_web.offer.list_offers", q=offer_to_edit.id, _external=True)
+        response = authenticated_client.get(offer_list_url)
+
+        assert response.status_code == 200
+        row = html_parser.extract_table_rows(response.data)
+        assert len(row) == 1
+        assert row[0]["Pondération"] == str(choosenRankingWeight)
+        assert criteria[0].name in row[0]["Tag"]
+        assert criteria[1].name in row[0]["Tag"]
+        assert criteria[2].name not in row[0]["Tag"]
+
+        # New Update
+        choosenRankingWeight = 25
+        base_form = {"criteria": [criteria[2].id, criteria[1].id], "rankingWeight": choosenRankingWeight}
+        response = self._update_offerer(authenticated_client, offer_to_edit, base_form)
+        assert response.status_code == 303
+
+        offer_list_url = url_for("backoffice_v3_web.offer.list_offers", q=offer_to_edit.id, _external=True)
+        response = authenticated_client.get(offer_list_url)
+
+        assert response.status_code == 200
+        row = html_parser.extract_table_rows(response.data)
+        assert len(row) == 1
+        assert row[0]["Pondération"] == str(choosenRankingWeight)
+        assert criteria[2].name in row[0]["Tag"]
+        assert criteria[1].name in row[0]["Tag"]
+        assert criteria[0].name not in row[0]["Tag"]
+        assert criteria[3].name not in row[0]["Tag"]
+
+    def _update_offerer(self, authenticated_client, offer, form):
+        edit_url = url_for("backoffice_v3_web.offer.list_offers")
+        authenticated_client.get(edit_url)
+
+        url = url_for("backoffice_v3_web.offer.edit_offer", offer_id=offer.id)
+        form["csrf_token"] = g.get("csrf_token", "")
+
+        return authenticated_client.post(url, form=form)
+
+
+class EditOfferFormTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.offer.get_edit_offer_form"
+        endpoint_kwargs = {"offer_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+
+    def test_get_edit_form_test(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        form_url = url_for("backoffice_v3_web.offer.get_edit_offer_form", offer_id=offer.id, _external=True)
+
+        with assert_num_queries(3):  # session + user + tested_query
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
