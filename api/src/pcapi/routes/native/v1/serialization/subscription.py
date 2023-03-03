@@ -55,6 +55,8 @@ class NextSubscriptionStepResponse(BaseModel):
 
 class SubscriptionStepperResponse(BaseModel):
     subscription_steps_to_display: list[subscription_models.SubscriptionStepDetails]
+    title: str
+    subtitle: str | None
 
     class Config:
         alias_generator = to_camel
