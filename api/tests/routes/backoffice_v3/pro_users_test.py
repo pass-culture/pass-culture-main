@@ -156,12 +156,12 @@ class UpdateProUserTest:
         assert user_to_edit.email == expected_new_email
         assert user_to_edit.postalCode == expected_new_postal_code
 
-        content = response.data.decode("utf-8")
+        content = html_parser.content_as_text(response.data)
 
         assert history_models.ActionType.INFO_MODIFIED.value in content
-        assert f"{old_last_name} =&gt; {user_to_edit.lastName}" in content
-        assert f"{old_email} =&gt; {user_to_edit.email}" in content
-        assert f"{old_postal_code} =&gt; {user_to_edit.postalCode}" in content
+        assert f"{old_last_name} => {user_to_edit.lastName}" in content
+        assert f"{old_email} => {user_to_edit.email}" in content
+        assert f"{old_postal_code} => {user_to_edit.postalCode}" in content
 
     def update_account(self, client, legit_user, user_to_edit, form):
         # generate csrf token
