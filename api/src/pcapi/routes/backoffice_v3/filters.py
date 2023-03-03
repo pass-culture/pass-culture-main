@@ -209,7 +209,9 @@ def filter_homologation_tags(tags: list[offerers_models.OffererTag]) -> list[off
 
 
 def format_criteria(criteria: list[criteria_models.OfferCriterion]) -> str:
-    return ", ".join(criterion.name for criterion in criteria)
+    return " ".join(
+        '<span class="badge text-bg-light shadow-sm">' + criterion.name + "</span>" for criterion in criteria
+    )
 
 
 def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemModel) -> str:
