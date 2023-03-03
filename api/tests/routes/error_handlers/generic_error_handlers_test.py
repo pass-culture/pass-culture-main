@@ -1,6 +1,5 @@
 from datetime import datetime
 import io
-import logging
 import pathlib
 
 import pytest
@@ -79,7 +78,6 @@ class DatabaseErrorHandlerTest:
             params={},
             orig="whatever",
         )
-        with caplog.at_level(logging.INFO):
-            _response, code = generic_error_handlers.database_error_handler(error)
+        _response, code = generic_error_handlers.database_error_handler(error)
         assert code == 500
         assert caplog.records[0].extra["sql_query"] == "SELECT 1 from unknown_table"

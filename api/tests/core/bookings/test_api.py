@@ -1,7 +1,6 @@
 import dataclasses
 from datetime import datetime
 from datetime import timedelta
-import logging
 from unittest import mock
 from unittest.mock import patch
 
@@ -1117,8 +1116,7 @@ class AutoMarkAsUsedAfterEventTest:
         event_date = datetime.utcnow() - timedelta(days=3)
         educational_factories.CollectiveBookingFactory(collectiveStock__beginningDatetime=event_date)
 
-        with caplog.at_level(logging.INFO):
-            api.auto_mark_as_used_after_event()
+        api.auto_mark_as_used_after_event()
 
         collectiveBooking = CollectiveBooking.query.first()
         assert collectiveBooking.status is CollectiveBookingStatus.USED

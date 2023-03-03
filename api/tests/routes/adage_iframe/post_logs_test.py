@@ -1,5 +1,3 @@
-import logging
-
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
 
@@ -10,8 +8,7 @@ class PostLogsTest:
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # when
-        with caplog.at_level(logging.INFO):
-            response = client.post("/adage-iframe/logs/catalog-view", json={"source": "partnersMap"})
+        response = client.post("/adage-iframe/logs/catalog-view", json={"source": "partnersMap"})
 
         # then
         assert response.status_code == 204
@@ -28,17 +25,16 @@ class PostLogsTest:
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # when
-        with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/search-button",
-                json={
-                    "filters": [
-                        "departments",
-                        "institutionId",
-                    ],
-                    "resultsCount": 0,
-                },
-            )
+        response = client.post(
+            "/adage-iframe/logs/search-button",
+            json={
+                "filters": [
+                    "departments",
+                    "institutionId",
+                ],
+                "resultsCount": 0,
+            },
+        )
 
         # then
         assert response.status_code == 204
@@ -59,8 +55,7 @@ class PostLogsTest:
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # when
-        with caplog.at_level(logging.INFO):
-            response = client.post("/adage-iframe/logs/offer-detail", json={"stockId": 1})
+        response = client.post("/adage-iframe/logs/offer-detail", json={"stockId": 1})
 
         # then
         assert response.status_code == 204
@@ -77,8 +72,7 @@ class PostLogsTest:
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # when
-        with caplog.at_level(logging.INFO):
-            response = client.post("/adage-iframe/logs/offer-template-detail", json={"offerId": 1})
+        response = client.post("/adage-iframe/logs/offer-template-detail", json={"offerId": 1})
 
         # then
         assert response.status_code == 204
@@ -95,8 +89,7 @@ class PostLogsTest:
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # when
-        with caplog.at_level(logging.INFO):
-            response = client.post("/adage-iframe/logs/booking-modal-button", json={"stockId": 1})
+        response = client.post("/adage-iframe/logs/booking-modal-button", json={"stockId": 1})
 
         # then
         assert response.status_code == 204
@@ -113,8 +106,7 @@ class PostLogsTest:
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # when
-        with caplog.at_level(logging.INFO):
-            response = client.post("/adage-iframe/logs/offer-template-detail", json={"offerId": 1})
+        response = client.post("/adage-iframe/logs/offer-template-detail", json={"offerId": 1})
 
         # then
         assert response.status_code == 204
@@ -131,8 +123,7 @@ class PostLogsTest:
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # when
-        with caplog.at_level(logging.INFO):
-            response = client.post("/adage-iframe/logs/fav-offer", json={"offerId": 1})
+        response = client.post("/adage-iframe/logs/fav-offer", json={"offerId": 1})
 
         # then
         assert response.status_code == 204

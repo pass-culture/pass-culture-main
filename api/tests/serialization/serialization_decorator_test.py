@@ -1,4 +1,3 @@
-import logging
 from typing import Optional
 from unittest.mock import Mock
 from unittest.mock import patch
@@ -112,12 +111,11 @@ class SerializationDecoratorTest:
         assert response.status_code == 204
 
     def test_post_with_content_type_with_invalid_body(self, client, caplog):
-        with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/test-blueprint/test",
-                headers={"Content-Type": "application/json"},
-                raw_json='{"test": "otherTest" "wrongJSON": "why?"}',
-            )
+        response = client.post(
+            "/test-blueprint/test",
+            headers={"Content-Type": "application/json"},
+            raw_json='{"test": "otherTest" "wrongJSON": "why?"}',
+        )
         assert response.status_code == 204
         assert (
             caplog.records[0].message

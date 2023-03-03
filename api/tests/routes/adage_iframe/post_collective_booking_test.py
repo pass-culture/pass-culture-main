@@ -1,5 +1,4 @@
 from datetime import datetime
-import logging
 
 from freezegun.api import freeze_time
 import pytest
@@ -38,13 +37,12 @@ class Returns200Test:
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # When
-        with caplog.at_level(logging.INFO):
-            response = test_client.post(
-                "/adage-iframe/collective/bookings",
-                json={
-                    "stockId": stock.id,
-                },
-            )
+        response = test_client.post(
+            "/adage-iframe/collective/bookings",
+            json={
+                "stockId": stock.id,
+            },
+        )
 
         # Then
         assert response.status_code == 200

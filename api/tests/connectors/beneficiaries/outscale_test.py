@@ -1,4 +1,3 @@
-import logging
 import pathlib
 from unittest.mock import patch
 
@@ -17,10 +16,9 @@ class UploadFileTest:
         expected_log_message = f"No such file or directory: '{unexisting_file_name}'"
 
         # When
-        with caplog.at_level(logging.INFO):
-            result = outscale.upload_file(
-                user_id="unkown_user", file_path=unexisting_file_name, file_name=unexisting_file_name
-            )
+        result = outscale.upload_file(
+            user_id="unkown_user", file_path=unexisting_file_name, file_name=unexisting_file_name
+        )
 
         # Then
         assert result is False
@@ -37,8 +35,7 @@ class UploadFileTest:
         user_id = "some-user-id"
 
         # When
-        with caplog.at_level(logging.INFO):
-            outscale.upload_file(user_id, file_path, file_name)
+        outscale.upload_file(user_id, file_path, file_name)
 
         # Then
         assert mock_s3_client.return_value.upload_file.call_count == 1

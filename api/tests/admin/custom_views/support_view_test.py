@@ -1,5 +1,4 @@
 from datetime import datetime
-import logging
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
@@ -347,8 +346,7 @@ class ValidatePhoneNumberTest:
         admin = users_factories.AdminFactory()
         user = users_factories.UserFactory(phoneValidationStatus=None)
         client.with_session_auth(admin.email)
-        with caplog.at_level(logging.INFO):
-            response = client.post(f"/pc/back-office/support_beneficiary/validate/beneficiary/phone_number/{user.id}")
+        response = client.post(f"/pc/back-office/support_beneficiary/validate/beneficiary/phone_number/{user.id}")
         assert response.status_code == 302
         assert (
             response.headers["Location"] == f"http://localhost/pc/back-office/support_beneficiary/details/?id={user.id}"

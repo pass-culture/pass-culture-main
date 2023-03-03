@@ -1,5 +1,3 @@
-import logging
-
 import pytest
 
 from pcapi.core.testing import override_settings
@@ -105,8 +103,7 @@ class NotifyImportContactsTest:
         headers = {"X-Forwarded-For": "1.179.112.9"}
 
         # When
-        with caplog.at_level(logging.INFO):
-            response = TestClient(app.test_client()).post("/webhooks/sendinblue/importcontacts/18/1", headers=headers)
+        response = TestClient(app.test_client()).post("/webhooks/sendinblue/importcontacts/18/1", headers=headers)
 
         # Then
         assert response.status_code == 204
