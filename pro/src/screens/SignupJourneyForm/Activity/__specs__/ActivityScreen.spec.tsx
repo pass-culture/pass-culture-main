@@ -61,7 +61,9 @@ describe('screens:SignupJourney::Activity', () => {
   beforeEach(() => {
     contextValue = {
       activity: DEFAULT_ACTIVITY_FORM_VALUES,
+      offerer: null,
       setActivity: () => {},
+      setOfferer: () => {},
     }
     jest.spyOn(api, 'getVenueTypes').mockResolvedValue([
       { id: 'venue1', label: 'first venue label' },
