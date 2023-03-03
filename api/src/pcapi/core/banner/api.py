@@ -1,5 +1,3 @@
-import decimal
-
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.subscription.models as subscription_models
 import pcapi.routes.native.v1.serialization.banner as serializers
@@ -23,10 +21,7 @@ def get_activation_banner(user_age: int | None) -> serializers.Banner | None:
     if not user_age:
         return None
 
-    if user_age == 18:
-        amount_to_display: decimal.Decimal | None = finance_conf.GRANTED_DEPOSIT_AMOUNT_18_v2
-    else:
-        amount_to_display = finance_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE.get(user_age)
+    amount_to_display = finance_conf.get_amount_to_display(user_age)
 
     if amount_to_display is None:
         return None
