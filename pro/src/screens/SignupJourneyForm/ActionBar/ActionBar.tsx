@@ -1,7 +1,6 @@
 import React from 'react'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
-import { SIGNUP_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
 import { ReactComponent as IcoMiniArrowLeft } from 'icons/ico-mini-arrow-left.svg'
 import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.svg'
 import { Button, SubmitButton } from 'ui-kit'
@@ -11,7 +10,8 @@ export interface IActionBarProps {
   onClickNext?: () => void
   onClickPrevious?: () => void
   isDisabled: boolean
-  step: SIGNUP_STEP_IDS
+  nextStepTitle?: string
+  previousStepTitle?: string
   shouldTrack?: boolean
 }
 
@@ -19,8 +19,14 @@ const ActionBar = ({
   onClickNext,
   onClickPrevious,
   isDisabled,
+  nextStepTitle = 'Étape suivante',
+  previousStepTitle = 'Étape précédente',
 }: IActionBarProps) => {
   const Left = (): JSX.Element => {
+    if (!onClickPrevious) {
+      return <></>
+    }
+
     return (
       <Button
         Icon={IcoMiniArrowLeft}
@@ -28,7 +34,7 @@ const ActionBar = ({
         variant={ButtonVariant.SECONDARY}
         disabled={isDisabled}
       >
-        Étape précédente
+        {previousStepTitle}
       </Button>
     )
   }
@@ -41,7 +47,7 @@ const ActionBar = ({
         disabled={isDisabled}
         onClick={onClickNext}
       >
-        Étape suivante
+        {nextStepTitle}
       </SubmitButton>
     )
   }
