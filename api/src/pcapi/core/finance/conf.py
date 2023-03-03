@@ -52,6 +52,15 @@ RECREDIT_TYPE_AMOUNT_MAPPING = {
 }
 
 
+def get_amount_to_display(user_age: int) -> decimal.Decimal | None:
+    if user_age == 18:
+        amount_to_display: decimal.Decimal | None = GRANTED_DEPOSIT_AMOUNT_18_v2
+    else:
+        amount_to_display = GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE.get(user_age)
+
+    return amount_to_display
+
+
 def digital_cap_applies_to_offer(offer: offers_models.Offer) -> bool:
     return offer.isDigital and offer.subcategory.is_digital_deposit
 
