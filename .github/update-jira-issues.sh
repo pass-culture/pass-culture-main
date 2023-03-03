@@ -1,4 +1,5 @@
 #!/bin/bash
+# Iterate over a list of commits. For each commits, grab the github commit number and update the jira ticket
 
 JIRA_BINARY="$HOME/go/bin/jira"
 
@@ -69,8 +70,8 @@ Get_jira_previous_commit_number()
 
 Mark_issue_as_not_deployable()
 {
-  echo 'je m''apprete à update la jira avec jira edit --query=''"Numéro de commit[Number]" > $1'' --override customfield_10044=true --noedit'
-  $JIRA_BINARY edit --query='"Numéro de commit[Number]" > $1' --override customfield_10044=true --noedit
+  echo 'je m''apprete à update la jira avec jira edit --query=''"Numéro de commit[Number]" > '$1''' --override customfield_10044=true --noedit'
+  $JIRA_BINARY edit --query='"Numéro de commit[Number]" > '$1'' --override customfield_10044=true --noedit
 
 }
 
