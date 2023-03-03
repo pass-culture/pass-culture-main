@@ -452,8 +452,6 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
         "Offerer", foreign_keys=[offererId], backref="custom_reimbursement_rules"
     )
 
-    # FIXME (dbaty, 2021-11-04): remove `categories` column once v161 is deployed
-    categories = sqla.Column(sqla_psql.ARRAY(sqla.Text()), server_default="{}")
     # A list of identifiers of subcategories on which the rule applies.
     # If the list is empty, the rule applies on all offers of an
     # offerer.
