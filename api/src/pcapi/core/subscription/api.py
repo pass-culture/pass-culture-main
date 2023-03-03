@@ -6,6 +6,7 @@ from pcapi import settings
 from pcapi.core.external import batch
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.conf as finance_conf
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.common.models as common_fraud_models
@@ -884,3 +885,23 @@ def can_skip_identity_check_step(user: users_models.User) -> bool:
     ):
         return True
     return False
+
+
+def get_stepper_title_and_subtitle(user: users_models.User) -> models.SubscriptionStepperDetails:
+    """Return the titles of the steps to display in the subscription stepper."""
+
+    user_subscription_state = get_user_subscription_state(user)
+
+    if user_subscription_state.young_status == young_status_module.Eligible(
+        subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
+    ):
+        return models.SubscriptionStepperDetails(title=models.STEPPER_HAS_ISSUES_TITLE)
+
+    if not user.age:
+        logger.error("Eligible user has no age", extra={"user": user.id})
+        return models.SubscriptionStepperDetails(title=models.STEPPER_DEFAULT_TITLE)
+
+    amount_to_display = finance_conf.get_amount_to_display(user.age)
+    subtitle = models.STEPPER_DEFAULT_SUBTITLE.format(amount_to_display)
+
+    return models.SubscriptionStepperDetails(title=models.STEPPER_DEFAULT_TITLE, subtitle=subtitle)
