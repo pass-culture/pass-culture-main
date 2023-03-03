@@ -1,4 +1,4 @@
-<div class="form-floating my-3{% if field.type == "PCOptHiddenField" or "PCPostalCodeHiddenField" or "PCOptPostalCodeHiddenField" or "PCHiddenField" %} d-none{% endif %}">
+<div class="form-floating my-3 {% if field.type == "PCIntegerField"  %} d-inline-block {% elif field.type == "PCOptHiddenField" or "PCPostalCodeHiddenField" or "PCOptPostalCodeHiddenField" or "PCHiddenField" %} d-none {% endif %}">
     <input
         type="{% if field.type == "PCIntegerField" %}number{% else %}text{% endif %}"
         id="{{ field.name }}"

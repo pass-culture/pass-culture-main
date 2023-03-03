@@ -1,13 +1,17 @@
 from flask import flash
+from flask import redirect
 from flask import render_template
 from flask import request
+from flask import url_for
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.repository import repository
 from pcapi.utils.clean_accents import clean_accents
 
 from . import autocomplete
@@ -107,6 +111,54 @@ def _get_remaining_stock(offer: offers_models.Offer) -> int | str:
         return "Illimité"
     # only integers in remaining_quantities
     return sum(remaining_quantities)  # type: ignore [arg-type]
+
+
+@list_offers_blueprint.route("/<int:offer_id>/edit", methods=["GET"])
+def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
+    offer = (
+        offers_models.Offer.query.filter_by(id=offer_id)
+        .options(
+            sa.orm.joinedload(offers_models.Offer.criteria).load_only(
+                criteria_models.Criterion.id, criteria_models.Criterion.name
+            )
+        )
+        .one_or_none()
+    )
+    if not offer:
+        raise NotFound()
+
+    form = offer_forms.EditOfferForm()
+    form.criteria.choices = [(criterion.id, criterion.name) for criterion in offer.criteria]
+    if offer.rankingWeight:
+        form.rankingWeight.data = offer.rankingWeight
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.offer.edit_offer", offer_id=offer.id),
+        div_id=f"edit-offer-modal-{offer.id}",
+        title=f"Édition de l'offre {offer.name}",
+        button_text="Enregistrer les modifications",
+    )
+
+
+@list_offers_blueprint.route("/<int:offer_id>/edit", methods=["POST"])
+def edit_offer(offer_id: int) -> utils.BackofficeResponse:
+    offer = offers_models.Offer.query.get_or_404(offer_id)
+    form = offer_forms.EditOfferForm()
+
+    if not form.validate():
+        flash("Le formulaire n'est pas valide", "error")
+        return redirect(request.referrer, 400)
+
+    criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
+
+    offer.criteria = criteria
+    offer.rankingWeight = form.rankingWeight.data
+    repository.save(offer)
+
+    flash("L'offre a été modifiée avec succès", "success")
+    return redirect(request.environ.get("HTTP_REFERER", url_for("backoffice_v3_web.offer.list_offers")), 303)
 
 
 @list_offers_blueprint.route("", methods=["GET"])

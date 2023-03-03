@@ -30,3 +30,10 @@ class GetOffersListForm(FlaskForm):
 
     def is_empty(self) -> bool:
         return not any((self.q.data, self.criteria.data, self.category.data, self.department.data, self.venue.data))
+
+
+class EditOfferForm(FlaskForm):
+    criteria = fields.PCAutocompleteSelectMultipleField(
+        "Tags", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_criteria"
+    )
+    rankingWeight = fields.PCIntegerField("Pondération")
