@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import {
@@ -25,5 +26,17 @@ describe('StocksEventCreation', () => {
     )
 
     expect(screen.queryByText('Comment faire ?')).not.toBeInTheDocument()
+  })
+
+  it('should open recurrence modal', async () => {
+    render(<StocksEventCreation offer={individualOfferFactory()} />)
+    expect(
+      screen.queryByRole('heading', { name: 'Ajouter une récurrence' })
+    ).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Ajouter une récurrence'))
+    expect(
+      screen.getByRole('heading', { name: 'Ajouter une récurrence' })
+    ).toBeInTheDocument()
   })
 })
