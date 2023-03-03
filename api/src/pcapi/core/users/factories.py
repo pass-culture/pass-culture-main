@@ -340,6 +340,21 @@ class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
         )
 
 
+class EligibleGrant18Factory(UserFactory):
+    dateOfBirth = LazyAttribute(
+        lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=18, months=5)
+    )
+
+
+class EligibleUnderageFactory(UserFactory):
+    class Params:
+        age = 15
+
+    dateOfBirth = LazyAttribute(
+        lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=o.age, months=5)
+    )
+
+
 class ProFactory(BaseFactory):
     class Meta:
         model = models.User

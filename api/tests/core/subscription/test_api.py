@@ -2328,3 +2328,52 @@ class GetStatusFromFraudCheckTest:
 
         assert user_subscription_state.fraud_status == subscription_models.SubscriptionItemStatus.KO
         assert user_subscription_state.young_status == young_status.NonEligible()
+
+
+@pytest.mark.usefixtures("db_session")
+class StepperTest:
+    def test_get_stepper_title_18_yo(self):
+        user = users_factories.EligibleGrant18Factory()
+        assert subscription_api.get_stepper_title_and_subtitle(user) == subscription_models.SubscriptionStepperDetails(
+            title="C'est très rapide !",
+            subtitle="Pour débloquer tes 300€ tu dois suivre les étapes suivantes :",
+        )
+
+    @pytest.mark.parametrize(
+        "age,amount",
+        [
+            (15, 20),
+            (16, 30),
+            (17, 30),
+        ],
+    )
+    def test_get_stepper_title_underage_user(self, age, amount):
+        user = users_factories.EligibleUnderageFactory(age=age)
+        assert subscription_api.get_stepper_title_and_subtitle(user) == subscription_models.SubscriptionStepperDetails(
+            title="C'est très rapide !",
+            subtitle=f"Pour débloquer tes {amount}€ tu dois suivre les étapes suivantes :",
+        )
+
+    def test_get_stepper_title_18_yo_retrying_ubble(self):
+        user = users_factories.EligibleGrant18Factory(
+            isEmailValidated=True,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.KO,
+            type=fraud_models.FraudCheckType.UBBLE,
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
+        )
+
+        assert subscription_api.get_stepper_title_and_subtitle(user) == subscription_models.SubscriptionStepperDetails(
+            title="La vérification de ton identité a échoué",
+            subtitle=None,
+        )

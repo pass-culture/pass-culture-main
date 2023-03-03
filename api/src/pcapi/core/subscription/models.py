@@ -16,6 +16,11 @@ VALID_IDENTITY_CHECK_TYPES_AFTER_UNDERAGE_DEPOSIT_EXPIRATION = [
 ]
 
 
+STEPPER_DEFAULT_TITLE = "C'est très rapide !"
+STEPPER_DEFAULT_SUBTITLE = "Pour débloquer tes {}€ tu dois suivre les étapes suivantes :"
+STEPPER_HAS_ISSUES_TITLE = "La vérification de ton identité a échoué"
+
+
 class SubscriptionStep(enum.Enum):
     EMAIL_VALIDATION = "email-validation"
     MAINTENANCE = "maintenance"
@@ -49,6 +54,12 @@ class SubscriptionItemStatus(enum.Enum):
 class SubscriptionStepDetails:
     name: SubscriptionStep
     title: SubscriptionStepTitle
+
+
+@dataclasses.dataclass
+class SubscriptionStepperDetails:
+    title: str
+    subtitle: str | None = None
 
 
 @dataclasses.dataclass
