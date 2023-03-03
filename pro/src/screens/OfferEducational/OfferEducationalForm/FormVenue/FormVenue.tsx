@@ -27,6 +27,7 @@ interface IFormVenueProps {
   isOfferCreated: boolean
   offer?: CollectiveOffer | CollectiveOfferTemplate
   categories: EducationalCategories
+  onChangeOfferer: (event: string) => void
 }
 
 const FormVenue = ({
@@ -37,6 +38,7 @@ const FormVenue = ({
   isOfferCreated,
   offer,
   categories,
+  onChangeOfferer,
 }: IFormVenueProps): JSX.Element => {
   const lastBookingStatus = isCollectiveOffer(offer)
     ? offer.lastBookingStatus
@@ -63,8 +65,7 @@ const FormVenue = ({
       ...offerersOptions,
     ]
   }
-  const { values, setFieldValue, setValues } =
-    useFormikContext<IOfferEducationalFormValues>()
+  const { values, setValues } = useFormikContext<IOfferEducationalFormValues>()
 
   return (
     <FormLayout.Section
@@ -73,7 +74,7 @@ const FormVenue = ({
     >
       <FormLayout.Row>
         <Select
-          onChange={() => setFieldValue('venueId', '')}
+          onChange={e => onChangeOfferer(e.target.value)}
           disabled={offerersOptions.length === 1 || disableOfferSelection}
           label={OFFERER_LABEL}
           name="offererId"
