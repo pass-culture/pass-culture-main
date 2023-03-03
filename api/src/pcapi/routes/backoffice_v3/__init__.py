@@ -19,6 +19,7 @@ def install_routes(app: Flask) -> None:
     from . import pro
     from . import pro_users
     from . import providers
+    from . import tags
     from . import users
     from . import venues
 
