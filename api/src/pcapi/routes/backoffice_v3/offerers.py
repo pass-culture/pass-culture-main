@@ -31,6 +31,7 @@ import pcapi.utils.regions as regions_utils
 
 from . import search_utils
 from . import utils
+from .filters import filter_homologation_tags
 from .forms import empty as empty_forms
 from .forms import offerer as offerer_forms
 from .serialization import offerers as serialization
@@ -381,6 +382,22 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
     return _redirect_after_offerer_validation_action()
 
 
+@validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["GET"])
+def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    form = offerer_forms.OptionalCommentForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.validation.reject_offerer", offerer_id=offerer.id),
+        div_id=f"reject-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
+        title=f"Rejeter la structure la structure {offerer.name.upper()}",
+        button_text="Rejeter la structure",
+    )
+
+
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["POST"])
 def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
@@ -400,16 +417,39 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
     return _redirect_after_offerer_validation_action()
 
 
+@validation_blueprint.route("/offerer/<int:offerer_id>/pending", methods=["GET"])
+def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    form = offerer_forms.CommentAndTagOffererForm(tags=filter_homologation_tags(offerer.tags))
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.validation.set_offerer_pending", offerer_id=offerer.id),
+        div_id=f"pending-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
+        title=f"Mettre en attente la structure {offerer.name.upper()}",
+        button_text="Mettre en attente",
+    )
+
+
 @validation_blueprint.route("/offerer/<int:offerer_id>/pending", methods=["POST"])
 def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
-    form = offerer_forms.OptionalCommentForm()
+    form = offerer_forms.CommentAndTagOffererForm()
     if not form.validate():
         flash("Les données envoyées comportent des erreurs", "warning")
         return _redirect_after_offerer_validation_action()
 
-    offerers_api.set_offerer_pending(offerer, current_user, comment=form.comment.data)
+    # Don't pass directly form.tags.data to set_offerer_pending() because this would remove non-homologation tags
+    saved_homologation_tags = set(filter_homologation_tags(offerer.tags))
+    tags_to_add = set(form.tags.data) - saved_homologation_tags
+    tags_to_remove = saved_homologation_tags - set(form.tags.data)
+
+    offerers_api.set_offerer_pending(
+        offerer, current_user, comment=form.comment.data, tags_to_add=tags_to_add, tags_to_remove=tags_to_remove
+    )
 
     flash(f"La structure {offerer.name} a été mise en attente", "success")
     return _redirect_after_offerer_validation_action()
@@ -550,6 +590,24 @@ def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
     return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
 
+@validation_blueprint.route("/user-offerer/<int:user_offerer_id>/reject", methods=["GET"])
+def get_reject_user_offerer_form(user_offerer_id: int) -> utils.BackofficeResponse:
+    user_offerer = offerers_models.UserOfferer.query.filter_by(id=user_offerer_id).one_or_none()
+    if not user_offerer:
+        raise NotFound()
+
+    form = offerer_forms.OptionalCommentForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.validation.reject_user_offerer", user_offerer_id=user_offerer.id),
+        div_id=f"reject-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
+        title=f"Rejeter le rattachement à {user_offerer.offerer.name.upper()}",
+        button_text="Rejeter le rattachement",
+    )
+
+
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/reject", methods=["POST"])
 def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = offerers_models.UserOfferer.query.filter_by(id=user_offerer_id).one_or_none()
@@ -568,6 +626,24 @@ def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
         "success",
     )
     return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
+
+
+@validation_blueprint.route("/user-offerer/<int:user_offerer_id>/pending", methods=["GET"])
+def get_user_offerer_pending_form(user_offerer_id: int) -> utils.BackofficeResponse:
+    user_offerer = offerers_models.UserOfferer.query.filter_by(id=user_offerer_id).one_or_none()
+    if not user_offerer:
+        raise NotFound()
+
+    form = offerer_forms.OptionalCommentForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.validation.set_user_offerer_pending", user_offerer_id=user_offerer.id),
+        div_id=f"pending-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
+        title=f"Mettre en attente le rattachement à {user_offerer.offerer.name.upper()}",
+        button_text="Mettre en attente le rattachement",
+    )
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/pending", methods=["POST"])

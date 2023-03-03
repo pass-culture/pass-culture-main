@@ -656,11 +656,31 @@ def reject_offerer(
 
 
 def set_offerer_pending(
-    offerer: offerers_models.Offerer, author_user: users_models.User, comment: str | None = None
+    offerer: offerers_models.Offerer,
+    author_user: users_models.User,
+    comment: str | None = None,
+    tags_to_add: typing.Iterable[offerers_models.OffererTag] | None = None,
+    tags_to_remove: typing.Iterable[offerers_models.OffererTag] | None = None,
 ) -> None:
     offerer.validationStatus = ValidationStatus.PENDING
+    extra_data = {}
+    if tags_to_add or tags_to_remove:
+        extra_data["modified_info"] = {
+            "tags": {"old_info": _format_tags(tags_to_remove or set()), "new_info": _format_tags(tags_to_add or set())}
+        }
+        if tags_to_add:
+            offerer.tags += list(tags_to_add)
+        if tags_to_remove:
+            offerer.tags = [tag for tag in offerer.tags if tag not in tags_to_remove]
     action = history_api.log_action(
-        history_models.ActionType.OFFERER_PENDING, author_user, offerer=offerer, comment=comment, save=False
+        history_models.ActionType.OFFERER_PENDING,
+        author_user,
+        offerer=offerer,
+        venue=None,  # otherwise mypy does not accept extra_data dict
+        user=None,  # otherwise mypy does not accept extra_data dict
+        comment=comment,
+        save=False,
+        **extra_data,
     )
     repository.save(offerer, action)
 

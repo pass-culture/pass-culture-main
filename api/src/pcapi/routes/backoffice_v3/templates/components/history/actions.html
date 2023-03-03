@@ -21,25 +21,37 @@
                     <td class="text-break">
                         {% if action.userId and is_user_offerer_action_type(action) %}
                             {{ links.build_pro_user_name_to_details_link(action.user) }}
-                        {% elif action.actionType.name == "INFO_MODIFIED" %}
-                            <p>
-                                <span class="fw-bold">Informations modifiées</span>
-                                {% if show_venue and action.venueId %}
-                                    sur le lieu {{ links.build_venue_name_to_details_link(action.venue) }}
-                                    ({{ action.venueId }})
-                                {% endif %}
-                            </p>
-                            {% for info_name, modified_info in action.extraData.get('modified_info', {}).items() %}
-                                <p>
-                                    <span class="text-decoration-underline">{{ info_name | i18n_column_name }} :</span>
-                                    {{ modified_info['old_info'] | i18n_column_value | escape }} =&gt; {{ modified_info['new_info'] | i18n_column_value | escape }}
-                                </p>
-                            {% endfor %}
                         {% elif action.actionType.name == "USER_SUSPENDED" %}
                             <p>{{ action.extraData['reason'] | format_reason_label }}</p>
                         {% endif %}
                         {% if action.comment %}
                             <p>{{ action.comment | empty_string_if_null | replace("\n", "<br/>"|safe) }}</p>
+                        {% endif %}
+                        {% if action.extraData %}
+                            {% set modified_info = action.extraData.get('modified_info', {}) %}
+                            {% if modified_info %}
+                                {# INFO_MODIFIED but also tags modified in OFFERER_PENDING #}
+                                <div>
+                                    <span class="fw-bold">Informations modifiées :</span>
+                                    {% if show_venue and action.venueId %}
+                                        sur le lieu {{ links.build_venue_name_to_details_link(action.venue) }}
+                                        ({{ action.venueId }})
+                                    {% endif %}
+                                </div>
+                                {% for info_name, modified_info in modified_info.items() %}
+                                    <div>
+                                        <span class="text-decoration-underline">{{ info_name | i18n_column_name }} :</span>
+                                        {% if modified_info['old_info'] and modified_info['new_info'] %}
+                                            {{ modified_info['old_info'] | i18n_column_value | escape }}
+                                            =&gt; {{ modified_info['new_info'] | i18n_column_value | escape }}
+                                        {% elif modified_info['old_info'] %}
+                                            suppression de : {{ modified_info['old_info'] | i18n_column_value | escape }}
+                                        {% elif modified_info['new_info'] %}
+                                            ajout de : {{ modified_info['new_info'] | i18n_column_value | escape }}
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
                         {% endif %}
                     </td>
                     <td>{{ action.authorUser.full_name if action.authorUser else None | empty_string_if_null }}</td>

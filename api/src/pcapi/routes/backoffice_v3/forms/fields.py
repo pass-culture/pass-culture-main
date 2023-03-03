@@ -91,14 +91,16 @@ class PCPhoneNumberField(PCStringField):
     ]
 
 
-class PCOptCommentField(PCOptStringField):
+class PCOptCommentField(wtforms.StringField):
+    widget = partial(widget, template="components/forms/textarea_field.html")
     validators = [
         validators.Optional(""),
         validators.Length(min=1, max=1024, message="doit contenir entre %(min)d et %(max)d caractères"),
     ]
 
 
-class PCCommentField(PCStringField):
+class PCCommentField(wtforms.StringField):
+    widget = partial(widget, template="components/forms/textarea_field.html")
     validators = [
         validators.InputRequired("Information obligatoire"),
         validators.Length(min=1, max=1024, message="doit contenir entre %(min)d et %(max)d caractères"),

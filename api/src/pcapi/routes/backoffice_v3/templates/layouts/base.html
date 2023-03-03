@@ -82,6 +82,15 @@
 
         event.target.textContent = "Une erreur est survenue";
     })
+
+    addEventListener('turbo:before-frame-render', async () => {
+      app.unbindEvents()
+    })
+
+    addEventListener('turbo:frame-render', async () => {
+      app.bindEvents()
+    })
+
 </script>
 </body>
 </html>

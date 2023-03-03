@@ -1,0 +1,25 @@
+{% macro build_loading_spinner() %}
+    <p class="text-center">
+        <span class="spinner-grow spinner-grow-sm" role="status">
+            <span class="visually-hidden">Chargement...</span>
+        </span>
+        Chargement...
+    </p>
+{% endmacro %}
+
+{% macro build_lazy_modal(url, div_id) %}
+    <div class="modal fade" id="{{ div_id }}" tabindex="-1" aria-labelledby="{{ div_id }}-label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <turbo-frame id="turbo-{{ div_id }}" src="{{ url }}" loading="lazy">
+                    <div class="modal-body row">
+                        {{ build_loading_spinner() }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
+                    </div>
+                </turbo-frame>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

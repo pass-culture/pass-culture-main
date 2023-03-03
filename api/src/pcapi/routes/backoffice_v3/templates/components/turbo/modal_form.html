@@ -1,0 +1,19 @@
+<turbo-frame id="turbo-{{ div_id }}">
+    <form action="{{ dst }}" method="POST" target="_top" data-turbo="false"
+          class="modal-content" name="modal-form-{{ div_id }}">
+        {{ csrf_token }}
+        <div class="modal-header">
+            <h5 class="modal-title">{{ title }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body row">
+            {% for form_field in form %}
+                {{ form_field }}
+            {% endfor %}
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-primary">{{ button_text }}</button>
+        </div>
+    </form>
+</turbo-frame>

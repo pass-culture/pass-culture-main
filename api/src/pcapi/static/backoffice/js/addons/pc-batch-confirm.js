@@ -160,15 +160,8 @@ class PcBatchConfirm extends PcAddOn {
               rows="3"
             ></textarea>
             <label for=${identifier}-textarea"><label for="comment">Raison</label></label>
+            <div class="text-muted text-end"><small>Maj+Entrée pour ajouter une nouvelle ligne</small></div>
           </div>
-          <button
-            type="button"
-            class="btn btn-outline-secondary col-1 h-50 pc-override-custom-textarea-enter-line-break"
-            id="${identifier}-newline"
-            data-form-name="user-offerer-validation-form-${identifier}"
-          >
-            ⏎
-          </button>
         </div>
 
         <div class="modal-footer">
