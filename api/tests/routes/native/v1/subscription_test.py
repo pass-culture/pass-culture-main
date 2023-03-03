@@ -614,18 +614,22 @@ class StepperTest:
         self.phone_validation_step = {
             "name": "phone-validation",
             "title": "Numéro de téléphone",
+            "subtitle": None,
         }
         self.profile_completion_step = {
             "name": "profile-completion",
             "title": "Profil",
+            "subtitle": None,
         }
         self.identity_check_step = {
             "name": "identity-check",
             "title": "Identification",
+            "subtitle": None,
         }
         self.honor_statement_step = {
             "name": "honor-statement",
             "title": "Confirmation",
+            "subtitle": None,
         }
 
     def should_contain_all_subscription_steps_for_18yo_user(self, client):
@@ -708,6 +712,31 @@ class StepperTest:
             self.phone_validation_step,
             self.profile_completion_step,
             self.identity_check_step,
+            self.honor_statement_step,
+        ]
+
+    def should_have_subtitle_for_id_check_when_ubble_retryable(self, client):
+        user = fraud_factories.UserEligibleAtIdentityCheckStepFactory()
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.KO,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
+        )
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/stepper")
+
+        assert response.json["subscriptionStepsToDisplay"] == [
+            self.phone_validation_step,
+            self.profile_completion_step,
+            {
+                "name": "identity-check",
+                "title": "Identification",
+                "subtitle": "Réessaie avec ta pièce d'identité en t'assurant qu'elle soit lisible",
+            },
             self.honor_statement_step,
         ]
 

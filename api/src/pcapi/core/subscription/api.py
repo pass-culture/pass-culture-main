@@ -832,7 +832,9 @@ def is_phone_validation_in_stepper(user: users_models.User) -> bool:
     return user.eligibility == users_models.EligibilityType.AGE18 and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active()
 
 
-def get_subscription_steps_to_display(user: users_models.User) -> list[models.SubscriptionStepDetails]:
+def get_subscription_steps_to_display(
+    user: users_models.User, user_subscription_state: models.UserSubscriptionState
+) -> list[models.SubscriptionStepDetails]:
     """
     return the list of steps to complete to subscribe to the pass Culture
     the steps are ordered
@@ -858,6 +860,7 @@ def get_subscription_steps_to_display(user: users_models.User) -> list[models.Su
             models.SubscriptionStepDetails(
                 name=models.SubscriptionStep.IDENTITY_CHECK,
                 title=models.SubscriptionStepTitle.IDENTITY_CHECK,
+                subtitle=_get_step_subtitle(user_subscription_state, models.SubscriptionStep.IDENTITY_CHECK),
             )
         )
 
@@ -885,6 +888,19 @@ def can_skip_identity_check_step(user: users_models.User) -> bool:
     ):
         return True
     return False
+
+
+def _get_step_subtitle(
+    user_subscription_state: models.UserSubscriptionState, step: models.SubscriptionStep
+) -> str | None:
+    if step == models.SubscriptionStep.IDENTITY_CHECK and _has_subscription_issues(user_subscription_state):
+        return (
+            user_subscription_state.subscription_message.action_hint
+            if user_subscription_state.subscription_message
+            else None
+        )
+
+    return None
 
 
 def get_stepper_title_and_subtitle(

@@ -1536,6 +1536,7 @@ def test_public_api(client):
                     "properties": {
                         "name": {"$ref": "#/components/schemas/SubscriptionStep"},
                         "title": {"$ref": "#/components/schemas/SubscriptionStepTitle"},
+                        "subtitle": {"nullable": True, "title": "Subtitle", "type": "string"},
                     },
                     "required": ["name", "title"],
                     "title": "SubscriptionStepDetails",

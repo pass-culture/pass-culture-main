@@ -54,6 +54,7 @@ class SubscriptionItemStatus(enum.Enum):
 class SubscriptionStepDetails:
     name: SubscriptionStep
     title: SubscriptionStepTitle
+    subtitle: str | None = None
 
 
 @dataclasses.dataclass
@@ -103,6 +104,7 @@ class CallToActionMessage:
 @dataclasses.dataclass
 class SubscriptionMessage:
     user_message: str
+    action_hint: str | None = None
     call_to_action: CallToActionMessage | None = None
     pop_over_icon: PopOverIcon | None = None
     updated_at: datetime.datetime | None = None

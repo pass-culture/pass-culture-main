@@ -58,7 +58,7 @@ def get_subscription_stepper(user: users_models.User) -> serializers.Subscriptio
     stepper_header = subscription_api.get_stepper_title_and_subtitle(user, user_subscription_state)
 
     return serializers.SubscriptionStepperResponse(
-        subscription_steps_to_display=subscription_api.get_subscription_steps_to_display(user),
+        subscription_steps_to_display=subscription_api.get_subscription_steps_to_display(user, user_subscription_state),
         title=stepper_header.title,
         subtitle=stepper_header.subtitle,
     )

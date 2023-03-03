@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+from datetime import time
 import random
 import string
 import typing
@@ -16,6 +17,53 @@ from pcapi.core.users import models as users_models
 import pcapi.core.users.factories as users_factories
 
 from . import models
+
+
+# This factory is here instead of in the `pcapi.core.users.factories` module because it needs both UserFactory and BeneficiaryFraudCheckFactory.
+# Also it should mainly be used in fraud- and subscription- related tests.
+class UserEligibleAtIdentityCheckStepFactory(users_factories.UserFactory):
+    class Params:
+        age = 18
+
+    dateOfBirth = LazyAttribute(
+        lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=o.age, months=5)
+    )
+    isEmailValidated = True
+    phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+
+    @factory.post_generation
+    def profile_completion_fraud_check(
+        self,
+        create: bool,
+        extracted: models.BeneficiaryFraudCheck | None,
+        **kwargs: typing.Any,
+    ) -> models.BeneficiaryFraudCheck | None:
+        if not create:
+            return None
+
+        if extracted:
+            return extracted
+
+        return BeneficiaryFraudCheckFactory(
+            user=self, type=models.FraudCheckType.PROFILE_COMPLETION, status=models.FraudCheckStatus.OK
+        )
+
+    @factory.post_generation
+    def phone_validation_fraud_check(
+        self,
+        create: bool,
+        extracted: models.BeneficiaryFraudCheck | None,
+        **kwargs: typing.Any,
+    ) -> models.BeneficiaryFraudCheck | None:
+        if not create:
+            return None
+
+        if extracted:
+            return extracted
+
+        return BeneficiaryFraudCheckFactory(
+            user=self, type=models.FraudCheckType.PHONE_VALIDATION, status=models.FraudCheckStatus.OK
+        )
 
 
 class UserProfilingFraudDataFactory(factory.Factory):
