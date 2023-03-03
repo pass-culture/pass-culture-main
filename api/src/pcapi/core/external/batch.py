@@ -35,6 +35,7 @@ def format_user_attributes(user_attributes: attributes_models.UserAttributes) ->
         "u.credit": int(user_attributes.domains_credit.all.remaining * 100) if user_attributes.domains_credit else None,
         "u.city": user_attributes.city,
         "u.departement_code": user_attributes.departement_code,
+        "u.deposits_count": user_attributes.deposits_count,
         "u.first_name": user_attributes.first_name,
         "u.has_completed_id_check": user_attributes.has_completed_id_check,
         "u.is_beneficiary": user_attributes.is_beneficiary,

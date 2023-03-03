@@ -41,6 +41,7 @@ class SendinblueAttributes(Enum):
     DATE_CREATED = "DATE_CREATED"
     DATE_OF_BIRTH = "DATE_OF_BIRTH"
     DEPARTMENT_CODE = "DEPARTMENT_CODE"
+    DEPOSITS_COUNT = "DEPOSITS_COUNT"
     DEPOSIT_ACTIVATION_DATE = "DEPOSIT_ACTIVATION_DATE"
     DEPOSIT_EXPIRATION_DATE = "DEPOSIT_EXPIRATION_DATE"
     DMS_APPLICATION_APPROVED = "DMS_APPLICATION_APPROVED"
@@ -149,6 +150,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.DATE_CREATED.value: _get_attr(attributes, "date_created"),
         SendinblueAttributes.DATE_OF_BIRTH.value: _get_attr(attributes, "date_of_birth"),
         SendinblueAttributes.DEPARTMENT_CODE.value: _get_attr(attributes, "departement_code", format_list_or_str),
+        SendinblueAttributes.DEPOSITS_COUNT.value: _get_attr(attributes, "deposits_count"),
         SendinblueAttributes.DEPOSIT_ACTIVATION_DATE.value: _get_attr(attributes, "deposit_activation_date"),
         SendinblueAttributes.DEPOSIT_EXPIRATION_DATE.value: _get_attr(attributes, "deposit_expiration_date"),
         SendinblueAttributes.DMS_APPLICATION_APPROVED.value: _get_attr(attributes, "dms_application_approved"),
