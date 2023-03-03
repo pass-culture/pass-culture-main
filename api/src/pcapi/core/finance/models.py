@@ -559,12 +559,6 @@ class Cashflow(Base, Model):
     # generated. Positive (incoming) cashflows are manually created.
     amount: int = sqla.Column(sqla.Integer, nullable=False)
 
-    # The transaction id is a UUID that will be included in the wire
-    # transfer file that is sent to the bank.
-    transactionId: UUID = sqla.Column(
-        sqla_psql.UUID(as_uuid=True), nullable=False, unique=True, server_default=sqla.func.gen_random_uuid()
-    )
-
     logs: list["CashflowLog"] = sqla_orm.relationship(
         "CashflowLog", back_populates="cashflow", order_by="CashflowLog.timestamp"
     )
