@@ -1552,9 +1552,11 @@ def test_public_api(client):
                             "items": {"$ref": "#/components/schemas/SubscriptionStepDetails"},
                             "title": "Subscriptionstepstodisplay",
                             "type": "array",
-                        }
+                        },
+                        "title": {"title": "Title", "type": "string"},
+                        "subtitle": {"title": "Subtitle", "type": "string", "nullable": True},
                     },
-                    "required": ["subscriptionStepsToDisplay"],
+                    "required": ["subscriptionStepsToDisplay", "title"],
                     "title": "SubscriptionStepperResponse",
                     "type": "object",
                 },

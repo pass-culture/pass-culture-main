@@ -645,6 +645,8 @@ class StepperTest:
             self.identity_check_step,
             self.honor_statement_step,
         ]
+        assert response.json["title"] == "C'est très rapide !"
+        assert response.json["subtitle"] == "Pour débloquer tes 300€ tu dois suivre les étapes suivantes :"
 
     def should_contain_all_subscription_steps_for_15yo_user(self, client):
         user = users_factories.UserFactory(
@@ -663,6 +665,8 @@ class StepperTest:
             self.identity_check_step,
             self.honor_statement_step,
         ]
+        assert response.json["title"] == "C'est très rapide !"
+        assert response.json["subtitle"] == "Pour débloquer tes 20€ tu dois suivre les étapes suivantes :"
 
     def should_not_contain_id_check_in_steps_if_ubble_or_dms_done_for_underage(self, client):
         user = users_factories.UnderageBeneficiaryFactory(
