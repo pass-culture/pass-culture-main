@@ -1350,6 +1350,27 @@ class ValidateOffererTest:
         assert "est déjà validée" in redirected_response.data.decode("utf8")
 
 
+class GetRejectOffererFormUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+    method = "post"
+    endpoint = "backoffice_v3_web.validation.get_reject_offerer_form"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+
+class GetRejectOffererFormTest:
+    def test_get_reject_offerer_form(self, legit_user, authenticated_client):
+        # given
+        offerer = offerers_factories.NotValidatedOffererFactory()
+
+        # when
+        url = url_for("backoffice_v3_web.validation.get_reject_offerer_form", offerer_id=offerer.id)
+        response = authenticated_client.get(url)
+
+        # then
+        # Rendering is not checked, but at least the fetched frame does not crash
+        assert response.status_code == 200
+
+
 class RejectOffererUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
     endpoint = "backoffice_v3_web.validation.reject_offerer"
@@ -1408,6 +1429,27 @@ class RejectOffererTest:
         assert "est déjà rejetée" in redirected_response.data.decode("utf8")
 
 
+class GetOffererPendingFormUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+    method = "post"
+    endpoint = "backoffice_v3_web.validation.get_offerer_pending_form"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+
+class GetOffererPendingFormTest:
+    def test_get_offerer_pending_form(self, legit_user, authenticated_client):
+        # given
+        offerer = offerers_factories.NotValidatedOffererFactory()
+
+        # when
+        url = url_for("backoffice_v3_web.validation.get_offerer_pending_form", offerer_id=offerer.id)
+        response = authenticated_client.get(url)
+
+        # then
+        # Rendering is not checked, but at least the fetched frame does not crash
+        assert response.status_code == 200
+
+
 class SetOffererPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
     endpoint = "backoffice_v3_web.validation.set_offerer_pending"
@@ -1416,13 +1458,21 @@ class SetOffererPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperW
 
 
 class SetOffererPendingTest:
-    def test_set_offerer_pending(self, legit_user, authenticated_client):
+    def test_set_offerer_pending(self, legit_user, authenticated_client, offerer_tags):
         # given
-        offerer = offerers_factories.NotValidatedOffererFactory()
+        non_homologation_tag = offerers_factories.OffererTagFactory(name="Tag conservé")
+        offerer = offerers_factories.NotValidatedOffererFactory(
+            tags=[non_homologation_tag, offerer_tags[0], offerer_tags[1]]
+        )
 
         # when
         url = url_for("backoffice_v3_web.validation.set_offerer_pending", offerer_id=offerer.id)
-        response = send_request(authenticated_client, offerer.id, url, {"comment": "En attente de documents"})
+        response = send_request(
+            authenticated_client,
+            offerer.id,
+            url,
+            {"comment": "En attente de documents", "tags": [offerer_tags[0].id, offerer_tags[2].id]},
+        )
 
         # then
         assert response.status_code == 303
@@ -1430,6 +1480,7 @@ class SetOffererPendingTest:
         db.session.refresh(offerer)
         assert not offerer.isValidated
         assert offerer.validationStatus == ValidationStatus.PENDING
+        assert set(offerer.tags) == {non_homologation_tag, offerer_tags[0], offerer_tags[2]}
         action = history_models.ActionHistory.query.one()
 
         assert action.actionType == history_models.ActionType.OFFERER_PENDING
@@ -1439,6 +1490,11 @@ class SetOffererPendingTest:
         assert action.offererId == offerer.id
         assert action.venueId is None
         assert action.comment == "En attente de documents"
+        assert action.extraData == {
+            "modified_info": {
+                "tags": {"old_info": offerer_tags[1].label, "new_info": offerer_tags[2].label},
+            }
+        }
 
     def test_set_offerer_pending_returns_404_if_offerer_is_not_found(self, authenticated_client):
         # when
@@ -1943,6 +1999,27 @@ class ValidateOffererAttachmentTest:
         assert "est déjà validé" in redirected_response.data.decode("utf8")
 
 
+class GetRejectOffererAttachmentFormUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+    method = "post"
+    endpoint = "backoffice_v3_web.validation.get_reject_user_offerer_form"
+    endpoint_kwargs = {"user_offerer_id": 1}
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+
+class GetRejectOffererAttachmentFormTest:
+    def test_get_reject_offerer_attachment_form(self, legit_user, authenticated_client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+
+        # when
+        url = url_for("backoffice_v3_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer.id)
+        response = authenticated_client.get(url)
+
+        # then
+        # Rendering is not checked, but at least the fetched frame does not crash
+        assert response.status_code == 200
+
+
 class RejectOffererAttachmentUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
     endpoint = "backoffice_v3_web.validation.reject_user_offerer"
@@ -1987,6 +2064,27 @@ class RejectOffererAttachmentTest:
 
         # then
         assert response.status_code == 404
+
+
+class GetOffererAttachmentPendingFormUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+    method = "post"
+    endpoint = "backoffice_v3_web.validation.get_user_offerer_pending_form"
+    endpoint_kwargs = {"user_offerer_id": 1}
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+
+class GetOffererAttachmentPendingFormTest:
+    def test_get_offerer_attachment_pending_form(self, legit_user, authenticated_client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+
+        # when
+        url = url_for("backoffice_v3_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer.id)
+        response = authenticated_client.get(url)
+
+        # then
+        # Rendering is not checked, but at least the fetched frame does not crash
+        assert response.status_code == 200
 
 
 class SetOffererAttachmentPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
