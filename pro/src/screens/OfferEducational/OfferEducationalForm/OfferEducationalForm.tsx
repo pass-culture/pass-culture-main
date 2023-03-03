@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
@@ -71,56 +71,70 @@ const OfferEducationalForm = ({
   const [isLoading, setIsLoading] = useState(false)
   const [isEligible, setIsEligible] = useState<boolean>()
 
-  const { values } = useFormikContext<IOfferEducationalFormValues>()
+  const { values, setFieldValue, initialValues } =
+    useFormikContext<IOfferEducationalFormValues>()
 
   useScrollToFirstErrorAfterSubmit()
 
+  const onOffererChange = useCallback(
+    (newOffererId: string) => {
+      const selectedOfferer = userOfferers.find(
+        offerer => offerer.id === newOffererId
+      )
+
+      if (selectedOfferer) {
+        const checkOffererEligibilityToEducationalOffer = async () => {
+          if (mode === Mode.EDITION || !getIsOffererEligible) {
+            setIsEligible(true)
+            return
+          }
+
+          setIsLoading(true)
+
+          const { isOk, message, payload } = await getIsOffererEligible(
+            selectedOfferer.id
+          )
+
+          if (isOk) {
+            setIsEligible(payload.isOffererEligibleToEducationalOffer)
+          }
+
+          if (!isOk) {
+            /* istanbul ignore next: TO FIX -> issue when trying to mock useNotification */
+            notify.error(message)
+          }
+
+          setIsLoading(false)
+        }
+
+        checkOffererEligibilityToEducationalOffer()
+
+        let venuesOptions = selectedOfferer.managedVenues.map(item => ({
+          value: item['id'] as string,
+          label: item['name'] as string,
+        }))
+        if (venuesOptions.length > 1) {
+          venuesOptions = [
+            { value: '', label: 'Sélectionner un lieu' },
+            ...sortByLabel(venuesOptions),
+          ]
+        }
+        setCurrentOfferer(selectedOfferer)
+        setVenuesOptions(venuesOptions)
+        if (venuesOptions.length === 1) {
+          setFieldValue('venueId', venuesOptions[0].value)
+        } else {
+          setFieldValue('venueId', initialValues.venueId)
+        }
+      }
+    },
+    [values.offererId, userOfferers, notify, getIsOffererEligible, mode]
+  )
+
   useEffect(() => {
-    const selectedOfferer = userOfferers.find(
-      offerer => offerer.id === values.offererId
-    )
+    onOffererChange(values.offererId)
+  }, [])
 
-    if (selectedOfferer) {
-      const checkOffererEligibilityToEducationalOffer = async () => {
-        if (mode === Mode.EDITION || !getIsOffererEligible) {
-          setIsEligible(true)
-          return
-        }
-
-        setIsLoading(true)
-
-        const { isOk, message, payload } = await getIsOffererEligible(
-          selectedOfferer.id
-        )
-
-        if (isOk) {
-          setIsEligible(payload.isOffererEligibleToEducationalOffer)
-        }
-
-        if (!isOk) {
-          /* istanbul ignore next: TO FIX -> issue when trying to mock useNotification */
-          notify.error(message)
-        }
-
-        setIsLoading(false)
-      }
-
-      checkOffererEligibilityToEducationalOffer()
-
-      let venuesOptions = selectedOfferer.managedVenues.map(item => ({
-        value: item['id'] as string,
-        label: item['name'] as string,
-      }))
-      if (venuesOptions.length > 1) {
-        venuesOptions = [
-          { value: '', label: 'Sélectionner un lieu' },
-          ...sortByLabel(venuesOptions),
-        ]
-      }
-      setCurrentOfferer(selectedOfferer)
-      setVenuesOptions(venuesOptions)
-    }
-  }, [values.offererId, userOfferers, notify, getIsOffererEligible, mode])
   return (
     <FormLayout className={styles['educational-form']} small>
       {isCollectiveOffer(offer) && offer.isPublicApi && (
@@ -145,6 +159,7 @@ const OfferEducationalForm = ({
         userOfferers={userOfferers}
         venuesOptions={venuesOptions}
         categories={categories}
+        onChangeOfferer={onOffererChange}
         offer={offer}
       />
       {isEligible && values.offererId && values.venueId ? (
