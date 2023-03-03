@@ -56,7 +56,7 @@ jobs:
     name: Test backoffice
     needs: check-backoffice-folder-changes
     if: needs.check-backoffice-folder-changes.outputs.folder_changed == 'true'
-    uses: ./.github/workflows/tests-backoffice.yml
+    uses: ./.github/workflows/tests-backoffice-v3.yml
     secrets: inherit
 
   test-pro:
