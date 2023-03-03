@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from pcapi.core.categories import subcategories
+from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
@@ -20,7 +21,9 @@ from . import fixtures
 
 
 TODAY_STR = datetime.date.today().strftime("%Y-%m-%d")
-DATE_AFTER_30_DAYS_STR = (datetime.date.today() + datetime.timedelta(days=30)).strftime("%Y-%m-%d")
+FUTURE_DATE_STR = (datetime.date.today() + datetime.timedelta(days=boost_constants.BOOST_SHOWS_INTERVAL_DAYS)).strftime(
+    "%Y-%m-%d"
+)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -34,11 +37,11 @@ class BoostStocksTest:
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
 
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{DATE_AFTER_30_DAYS_STR}?page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
         )
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{DATE_AFTER_30_DAYS_STR}?page=2&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=2&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
         )
         requests_mock.get(
@@ -83,11 +86,11 @@ class BoostStocksTest:
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
 
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{DATE_AFTER_30_DAYS_STR}?page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
         )
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{DATE_AFTER_30_DAYS_STR}?page=2&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=2&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
         )
         requests_mock.get(
@@ -162,7 +165,7 @@ class BoostStocksTest:
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
 
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{DATE_AFTER_30_DAYS_STR}?page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.NO_PC_PRICING_JSON_DATA,
         )
         requests_mock.get(
@@ -189,7 +192,7 @@ class BoostStocksTest:
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
 
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{DATE_AFTER_30_DAYS_STR}?page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
         requests_mock.get(
@@ -224,7 +227,7 @@ class BoostStocksTest:
         )
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{DATE_AFTER_30_DAYS_STR}?page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
         requests_mock.get(
@@ -258,7 +261,7 @@ class BoostStocksTest:
         )
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{DATE_AFTER_30_DAYS_STR}?page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
         requests_mock.get(
