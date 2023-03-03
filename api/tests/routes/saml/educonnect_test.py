@@ -527,7 +527,7 @@ class EduconnectTest:
 
         client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
-        assert amplitude_testing.requests[0]["user_id"] == str(user.id)
+        assert amplitude_testing.requests[0]["user_id"] == user.id
         assert amplitude_testing.requests[0]["event_name"] == AmplitudeEventType.EDUCONNECT_ERROR.value
 
         assert (
