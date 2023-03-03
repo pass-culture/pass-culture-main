@@ -798,11 +798,7 @@ def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
     form.categories.choices = [(cat.id, cat.label or cat.name) for cat in categories]
 
     if not form.validate():
-        error_msg = "Les données envoyées comportent des erreurs."
-        for field in form:
-            if field.errors:
-                error_msg += f" {field.label.text}: {', '.join(error for error in field.errors)};"
-
+        error_msg = utils.build_form_error_msg(form)
         flash(error_msg, "warning")
         return redirect(url_for("backoffice_v3_web.offerer_tag.list_offerer_tags"), code=303)
 
@@ -830,11 +826,7 @@ def create_offerer_tag() -> utils.BackofficeResponse:
     form.categories.choices = [(cat.id, cat.label) for cat in categories]
 
     if not form.validate():
-        error_msg = "Les données envoyées comportent des erreurs."
-        for field in form:
-            if field.errors:
-                error_msg += f" {field.label.text}: {', '.join(error for error in field.errors)};"
-
+        error_msg = utils.build_form_error_msg(form)
         flash(error_msg, "warning")
         return redirect(url_for("backoffice_v3_web.offerer_tag.list_offerer_tags"), code=303)
 

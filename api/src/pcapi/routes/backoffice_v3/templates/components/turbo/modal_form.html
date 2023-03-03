@@ -14,6 +14,7 @@
             aria-label="Fermer"></button>
   </div>
   <div class="modal-body row">
+    {{ information | safe }}  {# can be undefined #}
     {% for form_field in form %}{{ form_field }}{% endfor %}
   </div>
   <div class="modal-footer">

@@ -8,6 +8,7 @@ from flask import Response as FlaskResponse
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from flask_wtf import FlaskForm
 import werkzeug
 from werkzeug.exceptions import Forbidden
 from werkzeug.wrappers import Response as WerkzeugResponse
@@ -127,3 +128,12 @@ def is_isbn_valid(isbn: str) -> bool:
 def is_visa_valid(visa: str) -> bool:
     visa = format_isbn_or_visa(visa)
     return visa.isdigit() and len(visa) <= 10
+
+
+def build_form_error_msg(form: FlaskForm) -> str:
+    error_msg = "Les données envoyées comportent des erreurs."
+    for field in form:
+        if field.errors:
+            error_msg += f" {field.label.text}: {', '.join(error for error in field.errors)};"
+
+    return error_msg
