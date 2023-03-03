@@ -368,7 +368,7 @@ class BookOfferTest:
                 "price": 10.00,
                 "subcategory": "SUPPORT_PHYSIQUE_FILM",
             },
-            "user_id": str(beneficiary.id),
+            "user_id": beneficiary.id,
         }
 
     class WhenBookingWithActivationCodeTest:
@@ -1135,7 +1135,7 @@ class CancelByBeneficiaryTest:
                 "reason": BookingCancellationReasons.BENEFICIARY.value,
                 "subcategory": "SUPPORT_PHYSIQUE_FILM",
             },
-            "user_id": str(booking.userId),
+            "user_id": booking.userId,
         }
 
 
@@ -1352,7 +1352,7 @@ class MarkAsUsedTest:
                 "price": 10.10,
                 "subcategory": "SUPPORT_PHYSIQUE_FILM",
             },
-            "user_id": str(booking.userId),
+            "user_id": booking.userId,
         }
 
 
