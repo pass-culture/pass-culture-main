@@ -16,6 +16,7 @@ common_user_attributes = attributes_models.UserAttributes(
     date_created=datetime(2021, 2, 6),
     date_of_birth=datetime(2003, 5, 6),
     departement_code="12",
+    deposits_count=1,
     deposit_activation_date=None,
     deposit_expiration_date=None,
     domains_credit=DomainsCredit(

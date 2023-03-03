@@ -17,6 +17,7 @@ class UserAttributes:
     date_created: datetime.datetime
     date_of_birth: datetime.datetime
     departement_code: str | None
+    deposits_count: int  # number of granted deposits, e.g. 2 if a beneficiary got Pass 15-17 and Pass 18
     deposit_activation_date: datetime.datetime | None
     deposit_expiration_date: datetime.datetime | None
     domains_credit: users_models.DomainsCredit | None

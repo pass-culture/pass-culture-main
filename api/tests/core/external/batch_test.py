@@ -29,6 +29,7 @@ class FormatUserAttributesTest:
             "u.booking_venues_count": 3,
             "u.city": "Rodez",
             "u.departement_code": "12",
+            "u.deposits_count": 1,
             "u.first_name": "First name",
             "u.has_completed_id_check": True,
             "u.is_beneficiary": True,
