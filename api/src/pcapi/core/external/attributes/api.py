@@ -191,6 +191,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         date_created=user.dateCreated,
         date_of_birth=user_birth_date,  # type: ignore [arg-type]
         departement_code=user.departementCode,
+        deposits_count=len(user.deposits),
         deposit_activation_date=user.deposit_activation_date,
         deposit_expiration_date=user.deposit_expiration_date,
         domains_credit=domains_credit,
