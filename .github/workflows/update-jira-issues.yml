@@ -9,8 +9,8 @@ jobs:
   issue-number:
     outputs:
       status: ${{ steps.issue-check.outputs.status }}
-      commit-hash: ${{ steps.issue-check.outputs.commit-hash }}
-      commit-number: ${{ steps.issue-check.outputs.commit-number }}
+      commit-hash: ${{ steps.get_commit_info.outputs.commit-hash }}
+      commit-number: ${{ steps.get_commit_info.outputs.commit-number }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
@@ -52,11 +52,9 @@ jobs:
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
-          issue_type=$(jira view ${{ steps.get_jira_key.outputs.issue }} --template viewType)
+          issue_type=$(jira view ${{ steps.get_jira_key.outputs.issue }} --template viewTicketType)
           if [[ $issue_type != "OPS Task" ]]; then 
             echo "status=${{ steps.get_jira_key.outputs.issue }}" >> $GITHUB_OUTPUT
-            echo "commit-hash=${{ steps.get_jira_key.outputs.commit-hash }}" >> $GITHUB_OUTPUT
-            echo "commit-number=${{ steps.get_jira_key.outputs.commit-number }}" >> $GITHUB_OUTPUT
           fi
 
   # run only if previous job issue-number has set his output to the issue number 
