@@ -71,7 +71,7 @@ const renderActivityForm = ({
   )
 }
 
-describe('screens:SignupJourney::Activity', () => {
+describe('screens:SignupJourney::ActivityForm', () => {
   let activity: IActivityFormValues
   let contextValue: ISignupJourneyContext
   let props: IActivityFormProps
@@ -84,7 +84,9 @@ describe('screens:SignupJourney::Activity', () => {
     }
     contextValue = {
       activity: activity,
+      offerer: null,
       setActivity: () => {},
+      setOfferer: () => {},
     }
     jest.spyOn(api, 'getVenueTypes').mockResolvedValue([])
   })
