@@ -2334,7 +2334,9 @@ class GetStatusFromFraudCheckTest:
 class StepperTest:
     def test_get_stepper_title_18_yo(self):
         user = users_factories.EligibleGrant18Factory()
-        assert subscription_api.get_stepper_title_and_subtitle(user) == subscription_models.SubscriptionStepperDetails(
+        assert subscription_api.get_stepper_title_and_subtitle(
+            user, subscription_api.get_user_subscription_state(user)
+        ) == subscription_models.SubscriptionStepperDetails(
             title="C'est très rapide !",
             subtitle="Pour débloquer tes 300€ tu dois suivre les étapes suivantes :",
         )
@@ -2349,7 +2351,9 @@ class StepperTest:
     )
     def test_get_stepper_title_underage_user(self, age, amount):
         user = users_factories.EligibleUnderageFactory(age=age)
-        assert subscription_api.get_stepper_title_and_subtitle(user) == subscription_models.SubscriptionStepperDetails(
+        assert subscription_api.get_stepper_title_and_subtitle(
+            user, subscription_api.get_user_subscription_state(user)
+        ) == subscription_models.SubscriptionStepperDetails(
             title="C'est très rapide !",
             subtitle=f"Pour débloquer tes {amount}€ tu dois suivre les étapes suivantes :",
         )
@@ -2373,7 +2377,9 @@ class StepperTest:
             reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
         )
 
-        assert subscription_api.get_stepper_title_and_subtitle(user) == subscription_models.SubscriptionStepperDetails(
+        assert subscription_api.get_stepper_title_and_subtitle(
+            user, subscription_api.get_user_subscription_state(user)
+        ) == subscription_models.SubscriptionStepperDetails(
             title="La vérification de ton identité a échoué",
             subtitle=None,
         )

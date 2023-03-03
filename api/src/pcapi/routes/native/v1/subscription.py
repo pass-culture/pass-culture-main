@@ -54,11 +54,13 @@ def next_subscription_step(
 )
 @authenticated_and_active_user_required
 def get_subscription_stepper(user: users_models.User) -> serializers.SubscriptionStepperResponse:
-    titles = subscription_api.get_stepper_title_and_subtitle(user)
+    user_subscription_state = subscription_api.get_user_subscription_state(user)
+    stepper_header = subscription_api.get_stepper_title_and_subtitle(user, user_subscription_state)
+
     return serializers.SubscriptionStepperResponse(
         subscription_steps_to_display=subscription_api.get_subscription_steps_to_display(user),
-        title=titles.title,
-        subtitle=titles.subtitle,
+        title=stepper_header.title,
+        subtitle=stepper_header.subtitle,
     )
 
 

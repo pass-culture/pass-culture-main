@@ -887,14 +887,12 @@ def can_skip_identity_check_step(user: users_models.User) -> bool:
     return False
 
 
-def get_stepper_title_and_subtitle(user: users_models.User) -> models.SubscriptionStepperDetails:
+def get_stepper_title_and_subtitle(
+    user: users_models.User, user_subscription_state: models.UserSubscriptionState
+) -> models.SubscriptionStepperDetails:
     """Return the titles of the steps to display in the subscription stepper."""
 
-    user_subscription_state = get_user_subscription_state(user)
-
-    if user_subscription_state.young_status == young_status_module.Eligible(
-        subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
-    ):
+    if _has_subscription_issues(user_subscription_state):
         return models.SubscriptionStepperDetails(title=models.STEPPER_HAS_ISSUES_TITLE)
 
     if not user.age:
@@ -905,3 +903,9 @@ def get_stepper_title_and_subtitle(user: users_models.User) -> models.Subscripti
     subtitle = models.STEPPER_DEFAULT_SUBTITLE.format(amount_to_display)
 
     return models.SubscriptionStepperDetails(title=models.STEPPER_DEFAULT_TITLE, subtitle=subtitle)
+
+
+def _has_subscription_issues(user_subscription_state: models.UserSubscriptionState) -> bool:
+    return user_subscription_state.young_status == young_status_module.Eligible(
+        subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
+    )
