@@ -7,7 +7,12 @@ import { Router } from 'react-router'
 
 import { apiAdresse } from 'apiClient/adresse'
 import { api } from 'apiClient/api'
-import { ApiError, SharedCurrentUserResponseModel } from 'apiClient/v1'
+import {
+  ApiError,
+  GetVenueResponseModel,
+  SharedCurrentUserResponseModel,
+  VenueTypeCode,
+} from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
@@ -266,6 +271,75 @@ const venue: IVenue = {
   },
 }
 
+const venueResponse: GetVenueResponseModel = {
+  hasPendingBankInformationApplication: false,
+  demarchesSimplifieesApplicationId: '',
+  collectiveDomains: [],
+  dateCreated: '2022-02-02',
+  fieldsUpdated: [],
+  isVirtual: false,
+  managingOffererId: '',
+  visualDisabilityCompliant: false,
+  audioDisabilityCompliant: false,
+  motorDisabilityCompliant: false,
+  mentalDisabilityCompliant: false,
+  address: 'Address',
+  bannerMeta: null,
+  bannerUrl: '',
+  city: 'city',
+  comment: 'comment',
+  contact: {
+    email: 'email',
+    phoneNumber: '0606060606',
+    website: 'web',
+  },
+  description: 'description',
+  departementCode: '75008',
+  dmsToken: '',
+  id: 'id',
+  isPermanent: true,
+  latitude: 0,
+  longitude: 0,
+  bookingEmail: 'a@b.c',
+  name: 'name',
+  nonHumanizedId: 0,
+  pricingPoint: null,
+  postalCode: '75008',
+  publicName: 'name',
+  siret: '88145723823022',
+  venueTypeCode: VenueTypeCode.COURS_ET_PRATIQUE_ARTISTIQUES,
+  venueLabelId: 'AE',
+  reimbursementPointId: 0,
+  withdrawalDetails: 'string',
+  collectiveAccessInformation: 'string',
+  collectiveDescription: 'string',
+  collectiveEmail: 'string',
+  collectiveInterventionArea: [],
+  collectiveLegalStatus: null,
+  collectiveNetwork: [],
+  collectivePhone: 'string',
+  collectiveStudents: [],
+  collectiveWebsite: 'string',
+
+  managingOfferer: {
+    address: null,
+    bic: null,
+    city: 'string',
+    dateCreated: 'string',
+    dateModifiedAtLastProvider: null,
+    demarchesSimplifieesApplicationId: null,
+    fieldsUpdated: [],
+    iban: null,
+    id: 'id',
+    idAtProviders: null,
+    isValidated: true,
+    lastProviderId: null,
+    name: 'name',
+    postalCode: 'string',
+    siren: null,
+  },
+}
+
 describe('screen | VenueForm', () => {
   describe('Navigation', () => {
     describe('With new offer creation journey', () => {
@@ -442,7 +516,9 @@ describe('screen | VenueForm', () => {
         venue
       )
 
-      const editVenue = jest.spyOn(api, 'editVenue').mockResolvedValue(venue)
+      const editVenue = jest
+        .spyOn(api, 'editVenue')
+        .mockResolvedValue(venueResponse)
 
       await userEvent.click(screen.getByText(/Enregistrer/))
       expect(editVenue).toHaveBeenCalledWith('id', { reimbursementPointId: 91 })

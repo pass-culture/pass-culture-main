@@ -2,8 +2,9 @@ import { useField } from 'formik'
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
+import { GetOffererResponseModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { IVenue } from 'core/Venue'
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as ValidCircleIcon } from 'icons/ico-valid.svg'
 import { ReactComponent as ValidIcon } from 'icons/ico-valide-cercle.svg'
@@ -17,7 +18,7 @@ import styles from './PricingPoint.module.scss'
 export interface IPricingPointProps {
   readOnly: boolean
   offerer: GetOffererResponseModel
-  venue: GetVenueResponseModel
+  venue: IVenue
   setVenueHasPricingPoint: (venueHasPricingPoint: boolean) => void
 }
 

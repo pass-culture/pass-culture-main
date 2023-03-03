@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
+import { GetOffererResponseModel } from 'apiClient/v1'
 import InfoDialog from 'components/InfoDialog'
 import ReimbursmentPointDialog from 'components/reimbursementPointDialog'
 import { Events } from 'core/FirebaseEvents/constants'
+import { IVenue } from 'core/Venue'
+import { serializeVenueApi } from 'core/Venue/adapters/getVenueAdapter/serializers'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as IcoWarningGrey } from 'icons/ico-warning-grey.svg'
 import ApplicationBanner from 'pages/Offerers/Offerer/VenueV1/fields/ApplicationBanner'
@@ -17,7 +19,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import styles from './ReimbursementPoint.module.scss'
 
 interface IReimbursementPointV2 {
-  initialVenue: GetVenueResponseModel
+  initialVenue: IVenue
   isCreatingVenue?: boolean
   offerer: GetOffererResponseModel
   readOnly: boolean
@@ -79,7 +81,7 @@ const ReimbursementPoint = ({
   const closeDmsDialog = useCallback(async () => {
     setIsDmsDialogOpen(false)
     const venueRequest = await api.getVenue(venue.id)
-    setVenue(venueRequest)
+    setVenue(serializeVenueApi(venueRequest))
   }, [])
 
   useEffect(() => {

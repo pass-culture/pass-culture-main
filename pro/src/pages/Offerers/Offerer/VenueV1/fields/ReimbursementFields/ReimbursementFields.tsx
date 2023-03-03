@@ -1,8 +1,9 @@
 import React, { useCallback, useState } from 'react'
 
-import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
+import { GetOffererResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import ReimbursementPoint from 'components/VenueForm/ReimbursementPoint/ReimbursementPoint'
+import { IVenue } from 'core/Venue'
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
@@ -12,7 +13,7 @@ export interface ReimbursementInterface {
   offerer: GetOffererResponseModel
   readOnly: boolean
   scrollToSection?: boolean
-  venue: GetVenueResponseModel
+  venue: IVenue
 }
 
 const ReimbursementFields = ({
