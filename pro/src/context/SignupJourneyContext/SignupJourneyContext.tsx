@@ -2,15 +2,25 @@ import React, { createContext, useContext, useState } from 'react'
 
 import { IActivityFormValues } from 'screens/SignupJourneyForm/Activity/ActivityForm'
 import { DEFAULT_ACTIVITY_FORM_VALUES } from 'screens/SignupJourneyForm/Activity/constants'
+import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
+import { IOffererFormValues } from 'screens/SignupJourneyForm/Offerer/OffererForm'
+
+export interface IOfferer extends IOffererFormValues {
+  name: string
+}
 
 export interface ISignupJourneyContext {
   activity: IActivityFormValues | null
+  offerer: IOfferer | null
   setActivity: (activityFormValues: IActivityFormValues | null) => void
+  setOfferer: (offererFormValues: IOfferer | null) => void
 }
 
 export const SignupJourneyContext = createContext<ISignupJourneyContext>({
   activity: null,
+  offerer: null,
   setActivity: () => {},
+  setOfferer: () => {},
 })
 
 export const useSignupJourneyContext = () => {
@@ -28,11 +38,17 @@ export function SignupJourneyContextProvider({
     DEFAULT_ACTIVITY_FORM_VALUES
   )
 
+  const [offerer, setOfferer] = useState<IOfferer | null>(
+    DEFAULT_OFFERER_FORM_VALUES
+  )
+
   return (
     <SignupJourneyContext.Provider
       value={{
         activity,
         setActivity,
+        offerer,
+        setOfferer,
       }}
     >
       {children}

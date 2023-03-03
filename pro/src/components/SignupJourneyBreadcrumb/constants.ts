@@ -1,4 +1,5 @@
 export enum SIGNUP_STEP_IDS {
+  OFFERER = 'structure',
   AUTHENTICATION = 'authentification',
   ACTIVITY = 'activite',
   VALIDATION = 'validation',
