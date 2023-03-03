@@ -128,7 +128,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         self,
         per_page: int = 30,
         start_date: datetime.date = datetime.date.today(),
-        interval_days: int = 30,
+        interval_days: int = constants.BOOST_SHOWS_INTERVAL_DAYS,
         film: int | None = None,
     ) -> list[boost_serializers.ShowTime4]:
         pattern_values = {
