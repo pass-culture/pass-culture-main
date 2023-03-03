@@ -31,7 +31,7 @@ jobs:
       RUN_ENV: tests
       DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
       REDIS_URL: redis://redis:6379
-    runs-on: [self-hosted, linux, X64] 
+    runs-on: ubuntu-latest
     needs:
       - check-api-folder-changes
       - build-tests-docker-image
@@ -138,9 +138,9 @@ jobs:
                 "author_name": "${{github.actor}}",
                 "author_link": "https://github.com/${{github.actor}}",
                 "author_icon": "https://github.com/${{github.actor}}.png",
-                "title": "Api tests",
+                "title": "Backoffice tests",
                 "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Les tests backoffice `v3` échouent sur `master` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
+                "text": "Les tests backoffice échouent sur `master` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
               }
             ],
             "unfurl_links": false,
@@ -148,4 +148,3 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-
