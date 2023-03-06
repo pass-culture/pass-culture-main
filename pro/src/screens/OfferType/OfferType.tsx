@@ -234,7 +234,7 @@ const OfferType = (): JSX.Element => {
                 title="Quel est le type de l’offre ?"
                 className={styles['subtype-section']}
               >
-                <FormLayout.Row inline>
+                <FormLayout.Row inline mdSpaceAfter>
                   <RadioButtonWithImage
                     name="offer-subtype"
                     Icon={CalendarCheckIcon}
@@ -249,7 +249,7 @@ const OfferType = (): JSX.Element => {
                   />
                 </FormLayout.Row>
 
-                <FormLayout.Row inline>
+                <FormLayout.Row inline mdSpaceAfter>
                   <RadioButtonWithImage
                     name="offer-subtype"
                     Icon={TemplateOfferIcon}
@@ -273,7 +273,7 @@ const OfferType = (): JSX.Element => {
               title="Quel est le type de l’offre ?"
               className={styles['subtype-section']}
             >
-              <FormLayout.Row inline>
+              <FormLayout.Row inline mdSpaceAfter>
                 <RadioButtonWithImage
                   className={styles['individual-radio-button']}
                   name="offer-subtype"
@@ -290,7 +290,7 @@ const OfferType = (): JSX.Element => {
                 />
               </FormLayout.Row>
 
-              <FormLayout.Row inline>
+              <FormLayout.Row inline mdSpaceAfter>
                 <RadioButtonWithImage
                   className={styles['individual-radio-button']}
                   name="offer-subtype"
@@ -307,7 +307,7 @@ const OfferType = (): JSX.Element => {
                 />
               </FormLayout.Row>
 
-              <FormLayout.Row inline>
+              <FormLayout.Row inline mdSpaceAfter>
                 <RadioButtonWithImage
                   className={styles['individual-radio-button']}
                   name="offer-subtype"
@@ -324,7 +324,7 @@ const OfferType = (): JSX.Element => {
                 />
               </FormLayout.Row>
 
-              <FormLayout.Row inline>
+              <FormLayout.Row inline mdSpaceAfter>
                 <RadioButtonWithImage
                   className={styles['individual-radio-button']}
                   name="offer-subtype"
@@ -352,7 +352,7 @@ const OfferType = (): JSX.Element => {
                 title="Créer une nouvelle offre ou dupliquer une offre ?"
                 className={styles['subtype-section']}
               >
-                <FormLayout.Row inline>
+                <FormLayout.Row inline mdSpaceAfter>
                   <RadioButtonWithImage
                     name="offer-duplicate"
                     Icon={NewOfferIcon}
@@ -366,7 +366,7 @@ const OfferType = (): JSX.Element => {
                     value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER}
                   />
                 </FormLayout.Row>
-                <FormLayout.Row inline>
+                <FormLayout.Row inline mdSpaceAfter>
                   <RadioButtonWithImage
                     name="offer-duplicate"
                     transparent

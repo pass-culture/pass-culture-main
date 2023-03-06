@@ -8,7 +8,7 @@ interface IFormLayoutRowWithInfoProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
   inline?: boolean
-  lgSpaceAfter?: boolean
+  mdSpaceAfter?: boolean
   smSpaceAfter?: boolean
   sideComponent: JSX.Element | null
 }
@@ -17,14 +17,14 @@ const RowWithInfo = ({
   children,
   className,
   inline,
-  lgSpaceAfter,
+  mdSpaceAfter,
   smSpaceAfter,
   sideComponent,
 }: IFormLayoutRowWithInfoProps): JSX.Element => {
   return (
     <Row
       className={cn(className, style['form-layout-row-info'])}
-      lgSpaceAfter={lgSpaceAfter}
+      mdSpaceAfter={mdSpaceAfter}
       smSpaceAfter={smSpaceAfter}
     >
       <Row className={style['form-layout-row-info-field']} inline={inline}>
