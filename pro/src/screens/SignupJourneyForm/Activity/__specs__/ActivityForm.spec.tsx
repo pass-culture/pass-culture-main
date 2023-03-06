@@ -168,13 +168,17 @@ describe('screens:SignupJourney::Activity', () => {
     )
     await userEvent.click(screen.getByText('Submit'))
     expect(
-      await screen.findByText('Vous devez cocher l’une des options ci-dessus')
+      await screen.findByText(
+        'Veuillez sélectionner une des réponses ci-dessus'
+      )
     ).toBeInTheDocument()
     expect(
-      await screen.findByText('Veuillez sélectionner un type de lieu')
+      await screen.findByText('Veuillez sélectionner une activité principale')
     ).toBeInTheDocument()
     expect(
-      await screen.findByText('Veuillez renseigner une URL valide')
+      await screen.findByText(
+        'Veuillez renseigner une URL valide. Ex : https://exemple.com'
+      )
     ).toBeInTheDocument()
   })
 
