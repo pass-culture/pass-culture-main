@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { CreateOffererQueryModel } from 'apiClient/v1'
-import GoBackLink from 'components/GoBackLink'
 import PageTitle from 'components/PageTitle/PageTitle'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
+import { ReactComponent as CircleArrowIcon } from 'icons/ico-circle-arrow-left.svg'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { addressAndDesignationFromSirenDecorator } from 'ui-kit/form_rff/fields/SirenField'
 import Titles from 'ui-kit/Titles/Titles'
 
@@ -53,11 +55,14 @@ const OffererCreation = (): JSX.Element => {
 
   return (
     <div className="offerer-page">
-      <GoBackLink
-        to="/accueil"
-        title="Accueil"
+      <ButtonLink
+        link={{ to: '/accueil', isExternal: false }}
+        variant={ButtonVariant.QUATERNARY}
+        Icon={CircleArrowIcon}
         className="offerer-page-go-back-link"
-      />
+      >
+        Accueil
+      </ButtonLink>
       <PageTitle title="Créer une structure" />
       <Titles title="Structure" />
       {isEntrepriseApiDisabled ? (
