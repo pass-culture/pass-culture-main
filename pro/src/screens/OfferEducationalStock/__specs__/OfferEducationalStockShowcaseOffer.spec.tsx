@@ -41,4 +41,21 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
       screen.getByText('Offre importée automatiquement')
     ).toBeInTheDocument()
   })
+
+  it('should not disable price and place when offer status is reimbursment', () => {
+    jest.useFakeTimers().setSystemTime(new Date('2021-10-16T12:00:00Z'))
+    const offer = collectiveOfferFactory({ isPublicApi: false })
+    const testProps: IOfferEducationalStockProps = {
+      ...defaultProps,
+      offer,
+      mode: Mode.READ_ONLY,
+    }
+    renderOfferEducationalStock(testProps)
+
+    const priceInput = screen.getByLabelText('Prix global TTC')
+    const placeInput = screen.getByLabelText('Nombre de places')
+
+    expect(priceInput).not.toBeDisabled()
+    expect(placeInput).not.toBeDisabled()
+  })
 })
