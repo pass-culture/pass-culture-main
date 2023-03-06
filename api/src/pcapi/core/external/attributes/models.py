@@ -42,6 +42,7 @@ class UserAttributes:
     most_booked_subcategory: str | None  # Single subcategory most frequently booked by the user
     most_booked_movie_genre: str | None
     most_booked_music_type: str | None
+    most_favorite_offer_subcategories: list[str] | None
     phone_number: str | None  # Added for Zendesk, type: ignore [arg-type]
     postal_code: str | None
     products_use_date: dict
