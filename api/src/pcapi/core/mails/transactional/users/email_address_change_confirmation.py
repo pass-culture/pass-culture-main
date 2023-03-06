@@ -13,6 +13,7 @@ def get_email_confirmation_email_data(
     # Email confirmation token always have an expiration date.
     assert token.expirationDate  # helps mypy
     expiration_timestamp = int(token.expirationDate.timestamp())
+    print("userEmail " + user.email)
     email_confirmation_link = generate_firebase_dynamic_link(
         path="signup-confirmation",
         params={"token": token.value, "expiration_timestamp": expiration_timestamp, "email": user.email},

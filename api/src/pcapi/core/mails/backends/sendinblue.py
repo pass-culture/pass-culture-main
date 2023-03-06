@@ -79,6 +79,9 @@ class ToDevSendinblueBackend(SendinblueBackend):
     def _get_whitelisted_recipients(self, recipient_list: Iterable) -> list:
         whitelisted_recipients = set()
         end_to_end_tests_email_address_arr = settings.END_TO_END_TESTS_EMAIL_ADDRESS.split("@")
+        print("END_TO_END_TESTS_EMAIL_ADDRESS " + settings.END_TO_END_TESTS_EMAIL_ADDRESS)
+        print("recipient_list")
+        print(list(recipient_list))
         for recipient in recipient_list:
             # Imported test users are whitelisted (Internal users, Bug Bounty, audit, etc.)
             user = find_user_by_email(recipient)

@@ -150,8 +150,11 @@ def create_account(
     apps_flyer_user_id: str = None,
     apps_flyer_platform: str = None,
 ) -> models.User:
+    print("email " + email)
     email = email_utils.sanitize_email(email)
+    print("sanitized email " + email)
     if users_repository.find_user_by_email(email):
+        print("user already exists " + email)
         raise exceptions.UserAlreadyExistsException()
 
     user = models.User(
