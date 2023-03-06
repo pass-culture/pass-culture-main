@@ -7,6 +7,7 @@ import { IOffererFormValues } from 'screens/SignupJourneyForm/Offerer/OffererFor
 
 export interface IOfferer extends IOffererFormValues {
   name: string
+  publicName?: string
 }
 
 export interface ISignupJourneyContext {
