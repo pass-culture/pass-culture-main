@@ -33,7 +33,7 @@ const Offerer = (): JSX.Element => {
     }
   }
 
-  const onSubmitActivity = async (
+  const onSubmitOfferer = async (
     formValues: IOffererFormValues
   ): Promise<void> => {
     const response = await getSiretData(formValues.siret)
@@ -58,7 +58,7 @@ const Offerer = (): JSX.Element => {
 
   const formik = useFormik({
     initialValues,
-    onSubmit: onSubmitActivity,
+    onSubmit: onSubmitOfferer,
     validationSchema,
     enableReinitialize: true,
   })
