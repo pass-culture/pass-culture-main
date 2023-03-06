@@ -3,7 +3,6 @@ import React from 'react'
 import ReactTooltip from 'react-tooltip'
 
 import DomainNameBanner from 'components/DomainNameBanner'
-import GoBackLink from 'components/GoBackLink'
 import Header from 'components/Header/Header'
 import TutorialDialog from 'components/TutorialDialog'
 
@@ -17,12 +16,11 @@ export interface AppLayoutProps {
 
 const AppLayout = ({ children, layoutConfig, className }: AppLayoutProps) => {
   const defaultConfig: ILayoutConfig = {
-    backTo: null,
     fullscreen: false,
     pageName: 'Accueil',
   }
 
-  const { backTo, fullscreen, pageName } = {
+  const { fullscreen, pageName } = {
     ...defaultConfig,
     ...layoutConfig,
   }
@@ -52,16 +50,8 @@ const AppLayout = ({ children, layoutConfig, className }: AppLayoutProps) => {
           children
         ) : (
           <div className="page-content">
-            <div
-              className={classnames('after-notification-content', {
-                'with-padding': backTo,
-              })}
-            >
+            <div className={classnames('after-notification-content')}>
               <DomainNameBanner />
-              {
-                /* istanbul ignore next: DEBT, TO FIX */
-                backTo && <GoBackLink to={backTo.path} title={backTo.label} />
-              }
               {children}
             </div>
           </div>
