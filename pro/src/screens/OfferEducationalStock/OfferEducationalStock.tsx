@@ -1,9 +1,11 @@
 /* @debt standard "Gautier: Do not load internal page dependencies"*/
 
+import { addDays, isAfter, isBefore } from 'date-fns'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import * as yup from 'yup'
 
+import { CollectiveBookingStatus } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import FormLayout from 'components/FormLayout'
@@ -53,6 +55,26 @@ const OfferEducationalStock = <
 }: IOfferEducationalStockProps<T>): JSX.Element => {
   const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
+
+  const beginningDatetime =
+    isCollectiveOffer(offer) && offer.collectiveStock?.beginningDatetime
+
+  const preventPriceIncrease = Boolean(
+    isCollectiveOffer(offer) &&
+      offer.lastBookingStatus === CollectiveBookingStatus.USED &&
+      beginningDatetime &&
+      isBefore(new Date(), addDays(new Date(beginningDatetime), 2))
+  )
+
+  const disablePriceAndParticipantInputs =
+    isCollectiveOffer(offer) &&
+    mode === Mode.READ_ONLY &&
+    Boolean(
+      offer.lastBookingStatus === CollectiveBookingStatus.REIMBURSED ||
+        (offer.lastBookingStatus === CollectiveBookingStatus.USED &&
+          beginningDatetime &&
+          isAfter(new Date(), addDays(new Date(beginningDatetime), 2)))
+    )
 
   const submitForm = async (values: OfferEducationalStockFormValues) => {
     setIsLoading(true)
@@ -136,7 +158,13 @@ const OfferEducationalStock = <
                       global de mon offre s'élève à 150€ TTC)
                     </span>
                   </p>
-                  <FormStock mode={mode} />
+                  <FormStock
+                    mode={mode}
+                    disablePriceAndParticipantInputs={
+                      disablePriceAndParticipantInputs
+                    }
+                    preventPriceIncrease={preventPriceIncrease}
+                  />
                 </>
               )}
               <FormLayout.Row>
@@ -167,7 +195,10 @@ const OfferEducationalStock = <
               <ActionsBarSticky.Right>
                 <SubmitButton
                   className=""
-                  disabled={offerIsDisabled || mode === Mode.READ_ONLY}
+                  disabled={
+                    (offerIsDisabled || mode === Mode.READ_ONLY) &&
+                    disablePriceAndParticipantInputs
+                  }
                   isLoading={isLoading}
                 >
                   {mode === Mode.EDITION ? 'Enregistrer' : 'Étape suivante'}
