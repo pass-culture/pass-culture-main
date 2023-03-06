@@ -79,22 +79,6 @@ class DigitalLocation(serialization.ConfiguredBaseModel):
     )
 
 
-class ImageBody(serialization.ConfiguredBaseModel):
-    credit: str | None = pydantic.Field(None, description="Image owner or author.")
-    file: str = pydantic.Field(
-        ...,
-        description="Image file encoded in base64 string. Image format must be PNG or JPEG. Size must be between 400x600 and 800x1200 pixels. Aspect ratio must be 2:3 (portrait format).",
-        example="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=",
-    )
-
-
-class ImageResponse(serialization.ConfiguredBaseModel):
-    credit: str | None = pydantic.Field(None, description="Image owner or author.")
-    url: str = pydantic.Field(
-        ..., description="Url where the image is accessible", example="https://example.com/image.png"
-    )
-
-
 class ExtraDataModel(serialization.ConfiguredBaseModel):
     author: str | None
     ean: str | None
@@ -134,6 +118,7 @@ EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic.Field(
 IMAGE_FIELD = pydantic.Field(
     None, description="Image illustrating the offer. Offers with images are more likely to be booked."
 )
+IMAGE_CREDIT_FIELD = pydantic.Field(None, description="Image owner or author.", example="Jane Doe")
 WITHDRAWAL_DETAILS_FIELD = pydantic.Field(
     None,
     description="Further information that will be provided to attendees to ease the offer collection.",
@@ -167,6 +152,22 @@ BY_EMAIL_DAYS_BEFORE_EVENT_FIELD = pydantic.Field(
     description="Number of days before the event when the ticket will be sent. Only some values are accepted (1 to 7).",
     example=1,
 )
+
+
+class ImageBody(serialization.ConfiguredBaseModel):
+    credit: str | None = IMAGE_CREDIT_FIELD
+    file: str = pydantic.Field(
+        ...,
+        description="Image file encoded in base64 string. Image format must be PNG or JPEG. Size must be between 400x600 and 800x1200 pixels. Aspect ratio must be 2:3 (portrait format).",
+        example="iVBORw0KGgoAAAANSUhEUgAAAhUAAAMgCAAAAACxT88IAAABImlDQ1BJQ0MgcHJvZmlsZQAAKJGdkLFKw1AUhr+0oiKKg6IgDhlcO5pFB6tCKCjEWMHqlCYpFpMYkpTiG/gm+jAdBMFXcFdw9r/RwcEs3nD4Pw7n/P+9gZadhGk5dwBpVhWu3x1cDq7shTfa+lbZZC8Iy7zreSc0ns9XLKMvHePVPPfnmY/iMpTOVFmYFxVY+2JnWuWGVazf9v0j8YPYjtIsEj+Jd6I0Mmx2/TSZhD+e5jbLcXZxbvqqbVx6nOJhM2TCmISKjjRT5xiHXalLQcA9JaE0IVZvqpmKG1EpJ5dDUV+k2zTkbdV5nlKG8hjLyyTckcrT5GH+7/fax1m9aW3M8qAI6lZb1RqN4P0RVgaw9gxL1w1Zi7/f1jDj1DP/fOMXG7hQfuNVil0AAAAJcEhZcwAALiMAAC4jAXilP3YAAAAHdElNRQfnAwMPGDrdy1JyAAABtElEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8GaFGgABH6N7kwAAAABJRU5ErkJggg==",
+    )
+
+
+class ImageResponse(serialization.ConfiguredBaseModel):
+    credit: str | None = IMAGE_CREDIT_FIELD
+    url: str = pydantic.Field(
+        ..., description="Url where the image is accessible", example="https://example.com/image.png"
+    )
 
 
 class OfferCreationBase(serialization.ConfiguredBaseModel):
