@@ -41,6 +41,7 @@ class FormatUserAttributesTest:
             "u.most_booked_subcategory": "CINE_PLEIN_AIR",
             "ut.booking_categories": ["CINEMA", "LIVRE"],
             "ut.booking_subcategories": ["ABO_LIVRE_NUMERIQUE", "CARTE_CINE_ILLIMITE", "CINE_PLEIN_AIR"],
+            "ut.most_favorite_offer_subcat": ["CINE_PLEIN_AIR", "SUPPORT_PHYSIQUE_FILM"],
             "u.marketing_push_subscription": True,
             "u.postal_code": None,
             "ut.roles": ["BENEFICIARY"],

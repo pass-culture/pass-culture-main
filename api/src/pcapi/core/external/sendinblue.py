@@ -72,6 +72,7 @@ class SendinblueAttributes(Enum):
     MOST_BOOKED_OFFER_SUBCATEGORY = "MOST_BOOKED_OFFER_SUBCATEGORY"
     MOST_BOOKED_MOVIE_GENRE = "MOST_BOOKED_MOVIE_GENRE"
     MOST_BOOKED_MUSIC_TYPE = "MOST_BOOKED_MUSIC_TYPE"
+    MOST_FAVORITE_OFFER_SUBCATEGORIES = "MOST_FAVORITE_OFFER_SUBCATEGORIES"
     OFFERER_NAME = "OFFERER_NAME"
     POSTAL_CODE = "POSTAL_CODE"
     PRODUCT_BRUT_X_USE_DATE = "PRODUCT_BRUT_X_USE_DATE"
@@ -185,6 +186,9 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.MOST_BOOKED_OFFER_SUBCATEGORY.value: _get_attr(attributes, "most_booked_subcategory"),
         SendinblueAttributes.MOST_BOOKED_MOVIE_GENRE.value: _get_attr(attributes, "most_booked_movie_genre"),
         SendinblueAttributes.MOST_BOOKED_MUSIC_TYPE.value: _get_attr(attributes, "most_booked_music_type"),
+        SendinblueAttributes.MOST_FAVORITE_OFFER_SUBCATEGORIES.value: _get_attr(
+            attributes, "most_favorite_offer_subcategories", format_list
+        ),
         SendinblueAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerers_names", format_list),
         SendinblueAttributes.POSTAL_CODE.value: _get_attr(attributes, "postal_code", format_list_or_str),
         SendinblueAttributes.PRODUCT_BRUT_X_USE_DATE.value: _get_attr(

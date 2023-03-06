@@ -11,6 +11,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.external.attributes.api import TRACKED_PRODUCT_IDS
 from pcapi.core.external.attributes.api import get_bookings_categories_and_subcategories
+from pcapi.core.external.attributes.api import get_most_favorite_subcategories
 from pcapi.core.external.attributes.api import get_user_attributes
 from pcapi.core.external.attributes.api import get_user_bookings
 from pcapi.core.external.attributes.api import update_external_user
@@ -25,6 +26,7 @@ from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
+from pcapi.core.users.factories import FavoriteFactory
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.factories import UnderageBeneficiaryFactory
 from pcapi.core.users.factories import UserFactory
@@ -107,6 +109,21 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
     BookingFactory(
         user=user, amount=100, dateCreated=datetime(2022, 12, 6, 12), status=BookingStatus.CANCELLED
     )  # should be ignored
+    FavoriteFactory(
+        user=user,
+        offer=OfferFactory(subcategoryId=subcategories.VISITE.id),
+        dateCreated=datetime.utcnow() - relativedelta(days=3),
+    )
+    FavoriteFactory(
+        user=user,
+        offer=OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id),
+        dateCreated=datetime.utcnow() - relativedelta(days=2),
+    )
+    last_favorite = FavoriteFactory(
+        user=user,
+        offer=OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id),
+        dateCreated=datetime.utcnow() - relativedelta(days=1),
+    )
 
     last_date_created = max(booking.dateCreated for booking in [b1, b2])
 
@@ -148,12 +165,13 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         is_eligible=True,
         is_email_validated=True,
         is_phone_validated=True,
-        last_favorite_creation_date=None,
+        last_favorite_creation_date=last_favorite.dateCreated,
         last_visit_date=None,
         marketing_email_subscription=True,
         most_booked_subcategory="SEANCE_CINE",
         most_booked_movie_genre="THRILLER",
         most_booked_music_type=None,
+        most_favorite_offer_subcategories=["LIVRE_PAPIER"],
         roles=[UserRole.BENEFICIARY.value],
         suspension_date=None,
         suspension_reason=None,
@@ -215,6 +233,7 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
         most_booked_subcategory=None,
         most_booked_movie_genre=None,
         most_booked_music_type=None,
+        most_favorite_offer_subcategories=None,
         roles=[UserRole.BENEFICIARY.value],
         suspension_date=None,
         suspension_reason=None,
@@ -237,6 +256,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
     BookingFactory(user=user, amount=100, dateCreated=datetime(2022, 12, 6, 11), stock__offer=offer1)
     BookingFactory(user=user, amount=120, dateCreated=datetime(2022, 12, 6, 12), stock__offer=offer2)
     last_booking = BookingFactory(user=user, amount=80, dateCreated=datetime(2022, 12, 6, 13), stock__offer=offer3)
+    favorite = FavoriteFactory(user=user, offer=OfferFactory(subcategoryId=subcategories.CONCERT.id))
 
     with assert_no_duplicated_queries():
         attributes = get_user_attributes(user)
@@ -276,12 +296,13 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         is_eligible=True,
         is_email_validated=True,
         is_phone_validated=True,
-        last_favorite_creation_date=None,
+        last_favorite_creation_date=favorite.dateCreated,
         last_visit_date=None,
         marketing_email_subscription=True,
         most_booked_subcategory="SUPPORT_PHYSIQUE_FILM",
         most_booked_movie_genre=None,
         most_booked_music_type=None,
+        most_favorite_offer_subcategories=["CONCERT"],
         roles=[UserRole.BENEFICIARY.value],
         suspension_date=None,
         suspension_reason=None,
@@ -417,6 +438,7 @@ def test_get_user_attributes_not_beneficiary():
         most_booked_subcategory=None,
         most_booked_movie_genre=None,
         most_booked_music_type=None,
+        most_favorite_offer_subcategories=None,
         roles=[],
         suspension_date=None,
         suspension_reason=None,
@@ -542,3 +564,30 @@ def test_get_bookings_categories_and_subcategories_music_first():
     assert booking_attributes.most_booked_subcategory == "SUPPORT_PHYSIQUE_FILM"
     assert booking_attributes.most_booked_movie_genre is None
     assert booking_attributes.most_booked_music_type == "800"
+
+
+def test_get_most_favorite_subcategories_none():
+    assert get_most_favorite_subcategories([]) == None
+
+
+def test_get_most_favorite_subcategories_one():
+    user = UserFactory()
+    favorites = FavoriteFactory.create_batch(3, user=user, offer__subcategoryId=subcategories.SEANCE_CINE.id)
+
+    assert get_most_favorite_subcategories(favorites) == [subcategories.SEANCE_CINE.id]
+
+
+def test_get_most_favorite_subcategories_two_equal():
+    user = UserFactory()
+    favorites = [
+        FavoriteFactory(user=user, offer__subcategoryId=subcategories.SEANCE_CINE.id),
+        FavoriteFactory(user=user, offer__subcategoryId=subcategories.MATERIEL_ART_CREATIF.id),
+        FavoriteFactory(user=user, offer__subcategoryId=subcategories.FESTIVAL_MUSIQUE.id),
+        FavoriteFactory(user=user, offer__subcategoryId=subcategories.SEANCE_CINE.id),
+        FavoriteFactory(user=user, offer__subcategoryId=subcategories.FESTIVAL_MUSIQUE.id),
+    ]
+
+    assert set(get_most_favorite_subcategories(favorites)) == {
+        subcategories.SEANCE_CINE.id,
+        subcategories.FESTIVAL_MUSIQUE.id,
+    }
