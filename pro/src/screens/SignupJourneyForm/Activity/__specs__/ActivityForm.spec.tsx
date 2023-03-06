@@ -96,11 +96,6 @@ describe('screens:SignupJourney::Activity', () => {
       contextValue,
     })
     expect(await screen.findByText('Activité')).toBeInTheDocument()
-    expect(
-      await screen.getByText(
-        'Tous les champs sont obligatoires sauf mention contraire.'
-      )
-    ).toBeInTheDocument()
     expect(await screen.getByLabelText('Activité principale')).toHaveValue('')
     expect(
       await screen.getAllByText('Site internet, réseau social')
@@ -177,6 +172,9 @@ describe('screens:SignupJourney::Activity', () => {
     ).toBeInTheDocument()
     expect(
       await screen.findByText('Veuillez sélectionner un type de lieu')
+    ).toBeInTheDocument()
+    expect(
+      await screen.findByText('Veuillez renseigner une URL valide')
     ).toBeInTheDocument()
   })
 

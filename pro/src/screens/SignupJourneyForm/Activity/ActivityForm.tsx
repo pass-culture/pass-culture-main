@@ -28,7 +28,6 @@ const ActivityForm = ({ venueTypes }: IActivityFormProps): JSX.Element => {
 
   return (
     <FormLayout.Section title="Activité">
-      <FormLayout.MandatoryInfo />
       <FormLayout.Row>
         <Select
           options={[

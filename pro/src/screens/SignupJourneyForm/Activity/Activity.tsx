@@ -67,6 +67,7 @@ const Activity = (): JSX.Element => {
     <FormLayout>
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} data-testid="signup-activity-form">
+          <FormLayout.MandatoryInfo />
           <ActivityForm venueTypes={venueTypes} />
           <ActionBar
             onClickPrevious={handlePreviousStep}
