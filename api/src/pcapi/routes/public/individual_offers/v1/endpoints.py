@@ -779,6 +779,9 @@ def patch_event_date(
     date_id: int,
     body: serialization.DateEdition,
 ) -> serialization.DateResponse:
+    """
+    Patch an event date.
+    """
     offer: offers_models.Offer | None = (
         _retrieve_offer_relations_query(_retrieve_offer_query(event_id))
         .filter(offers_models.Offer.isEvent == True)
