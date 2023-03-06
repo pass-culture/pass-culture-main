@@ -10,6 +10,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
+from pcapi.core.offers.repository import get_next_product_id_from_database
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.repository import get_cds_cinema_details
 from pcapi.local_providers.local_provider import LocalProvider
@@ -87,6 +88,10 @@ class CDSStocks(LocalProvider):
         cds_product.subcategoryId = subcategories.SEANCE_CINE.id
 
         self.update_from_movie_information(cds_product, self.movie_information)
+
+        is_new_product_to_insert = cds_product.id is None
+        if is_new_product_to_insert:
+            cds_product.id = get_next_product_id_from_database()
 
         self.last_product = cds_product
 
