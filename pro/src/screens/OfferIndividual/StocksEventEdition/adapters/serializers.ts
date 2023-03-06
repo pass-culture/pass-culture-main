@@ -2,7 +2,7 @@ import { set } from 'date-fns'
 import endOfDay from 'date-fns/endOfDay'
 
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
-import { IStockEventFormValues } from 'components/StockEventForm'
+import { IStockEventFormValues } from 'screens/OfferIndividual/StocksEventEdition/StockFormList'
 import { getToday, toISOStringWithoutMilliseconds } from 'utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
 

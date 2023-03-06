@@ -1,5 +1,4 @@
-import { IStockEventFormValues } from 'components/StockEventForm'
-import { stockEventFactory } from 'components/StockEventForm/stockEventFactory'
+import { stockEventFactory } from 'screens/OfferIndividual/StocksEventEdition/StockFormList/stockEventFactory'
 
 import { hasChangesOnStockWithBookings } from '../StocksEventEdition'
 
@@ -14,9 +13,7 @@ describe('hasChangesOnStockWithBookings', () => {
 
   it('should return false when booking quantity is 0', () => {
     const values = {
-      stocks: [
-        { stockId: 'AA', bookingQuantity: 0 },
-      ] as unknown as IStockEventFormValues[],
+      stocks: [stockEventFactory({ bookingsQuantity: 0 })],
     }
     const initialValues = { stocks: [] }
 
