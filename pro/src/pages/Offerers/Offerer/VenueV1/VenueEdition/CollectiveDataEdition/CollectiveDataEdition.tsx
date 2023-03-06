@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 
 import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
-import GoBackLink from 'components/GoBackLink'
 import {
   EducationalCategories,
   getEducationalCategoriesAdapter,
@@ -12,7 +11,9 @@ import {
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
-import { Banner, Title } from 'ui-kit'
+import { ReactComponent as CircleArrowIcon } from 'icons/ico-circle-arrow-left.svg'
+import { Banner, Title, ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { getCulturalPartnersAdapter } from '../adapters'
@@ -124,15 +125,17 @@ const CollectiveDataEdition = (): JSX.Element | null => {
   }
   return (
     <div>
-      <GoBackLink
-        to={{
-          pathname: `/structures/${offererId}/lieux/${venueId}`,
-          state: { scrollToElementId: 'venue-collective-data' },
+      <ButtonLink
+        link={{
+          to: `/structures/${offererId}/lieux/${venueId}#venue-collective-data`,
+          isExternal: false,
         }}
-        title="Retour page lieu"
+        variant={ButtonVariant.QUATERNARY}
+        Icon={CircleArrowIcon}
         className={styles['go-back-link']}
-      />
-
+      >
+        Retour page lieu
+      </ButtonLink>
       <Title level={1} className={styles['title']}>
         Mes informations pour les enseignants
       </Title>
