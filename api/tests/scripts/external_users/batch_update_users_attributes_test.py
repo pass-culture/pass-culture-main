@@ -8,6 +8,7 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
+from pcapi.core.users.factories import FavoriteFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import UserRole
 import pcapi.notifications.push.testing as push_testing
@@ -75,6 +76,7 @@ def test_run_sendinblue_only(mock_import_contacts):
 def test_format_batch_user():
     user = BeneficiaryGrant18Factory(departementCode="75", city="Paris")
     booking = BookingFactory(user=user)
+    FavoriteFactory(user=user)
 
     res = format_batch_users([user])
 
@@ -102,6 +104,7 @@ def test_format_batch_user():
         "u.most_booked_movie_genre": None,
         "u.most_booked_music_type": None,
         "u.most_booked_subcategory": "SUPPORT_PHYSIQUE_FILM",
+        "ut.most_favorite_offer_subcat": ["SUPPORT_PHYSIQUE_FILM"],
         "u.postal_code": None,
         "ut.booking_categories": ["FILM"],
         "ut.booking_subcategories": ["SUPPORT_PHYSIQUE_FILM"],
@@ -114,6 +117,7 @@ def test_format_batch_user():
 def test_format_sendinblue_user():
     user = BeneficiaryGrant18Factory(departementCode="75")
     booking = BookingFactory(user=user, dateCreated=datetime.datetime(2022, 12, 6, 10))
+    favorite = FavoriteFactory(user=user)
 
     res = format_sendinblue_users([user])
 
@@ -155,12 +159,13 @@ def test_format_sendinblue_user():
         "IS_VIRTUAL": None,
         "LASTNAME": "Doux",
         "LAST_BOOKING_DATE": booking.dateCreated,
-        "LAST_FAVORITE_CREATION_DATE": None,
+        "LAST_FAVORITE_CREATION_DATE": favorite.dateCreated,
         "LAST_VISIT_DATE": None,
         "MARKETING_EMAIL_SUBSCRIPTION": True,
         "MOST_BOOKED_OFFER_SUBCATEGORY": "SUPPORT_PHYSIQUE_FILM",
         "MOST_BOOKED_MOVIE_GENRE": None,
         "MOST_BOOKED_MUSIC_TYPE": None,
+        "MOST_FAVORITE_OFFER_SUBCATEGORIES": "SUPPORT_PHYSIQUE_FILM",
         "OFFERER_NAME": None,
         "POSTAL_CODE": None,
         "PRODUCT_BRUT_X_USE_DATE": None,

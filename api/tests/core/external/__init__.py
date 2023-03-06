@@ -44,6 +44,7 @@ common_user_attributes = attributes_models.UserAttributes(
     most_booked_subcategory="CINE_PLEIN_AIR",
     most_booked_movie_genre="COMEDY",
     most_booked_music_type="900",
+    most_favorite_offer_subcategories=["CINE_PLEIN_AIR", "SUPPORT_PHYSIQUE_FILM"],
     phone_number="0706050403",
     postal_code=None,
     products_use_date={"product_brut_x_use": datetime(2021, 5, 6)},

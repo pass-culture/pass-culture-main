@@ -1,3 +1,4 @@
+from collections import Counter
 from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal
@@ -161,12 +162,22 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         user.has_pro_role
         or db.session.query(offerers_models.UserOfferer.query.filter_by(userId=user.id).exists()).scalar()
     )
-    user_bookings: List[bookings_models.Booking] = get_user_bookings(user) if not is_pro_user else []
-    last_favorite = (
-        users_models.Favorite.query.filter_by(userId=user.id).order_by(users_models.Favorite.id.desc()).first()
-        if not is_pro_user
-        else None
-    )
+
+    if is_pro_user:
+        user_bookings: List[bookings_models.Booking] = []
+        favorites: List[users_models.Favorite] = []
+    else:
+        user_bookings = get_user_bookings(user) if not is_pro_user else []
+        favorites = (
+            users_models.Favorite.query.filter_by(userId=user.id)
+            .options(joinedload(users_models.Favorite.offer).load_only(offers_models.Offer.subcategoryId))
+            .order_by(users_models.Favorite.id.desc())
+            .all()
+        )
+
+    last_favorite = favorites[0] if favorites else None
+    most_favorite_offer_subcategories = get_most_favorite_subcategories(favorites)
+
     domains_credit = get_domains_credit(user, user_bookings) if not is_pro_user else None
     bookings_attributes = get_bookings_categories_and_subcategories(user_bookings)
     booking_venues_count = len({booking.venueId for booking in user_bookings})
@@ -208,7 +219,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         is_phone_validated=user.is_phone_validated,  # type: ignore [arg-type]
         is_pro=is_pro_user,  # type: ignore [arg-type]
         last_booking_date=user_bookings[0].dateCreated if user_bookings else None,
-        last_favorite_creation_date=last_favorite.dateCreated if last_favorite else None,  # type: ignore [attr-defined]
+        last_favorite_creation_date=last_favorite.dateCreated if last_favorite else None,
         last_name=user.lastName,
         last_visit_date=user.lastConnectionDate,
         marketing_email_subscription=user.get_notification_subscriptions().marketing_email,
@@ -216,6 +227,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         most_booked_subcategory=bookings_attributes.most_booked_subcategory,
         most_booked_movie_genre=bookings_attributes.most_booked_movie_genre,
         most_booked_music_type=bookings_attributes.most_booked_music_type,
+        most_favorite_offer_subcategories=most_favorite_offer_subcategories,
         phone_number=user.phoneNumber,  # type: ignore [arg-type]
         postal_code=user.postalCode,
         products_use_date={
@@ -344,3 +356,13 @@ def get_user_bookings(user: users_models.User) -> List[bookings_models.Booking]:
         .order_by(db.desc(bookings_models.Booking.dateCreated))
         .all()
     )
+
+
+def get_most_favorite_subcategories(favorites: list[users_models.Favorite]) -> list[str] | None:
+    if not favorites:
+        return None
+
+    favorites_count = Counter([favorite.offer.subcategoryId for favorite in favorites])
+    sorted_by_count = favorites_count.most_common()
+    highest_count = sorted_by_count[0][1]
+    return [key for (key, value) in sorted_by_count if value == highest_count]

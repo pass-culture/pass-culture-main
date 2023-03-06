@@ -51,6 +51,7 @@ def format_user_attributes(user_attributes: attributes_models.UserAttributes) ->
         "u.most_booked_subcategory": user_attributes.most_booked_subcategory,
         "u.most_booked_movie_genre": user_attributes.most_booked_movie_genre,
         "u.most_booked_music_type": user_attributes.most_booked_music_type,
+        "ut.most_favorite_offer_subcat": user_attributes.most_favorite_offer_subcategories,  # max 30 char.
     }
 
     for product_use_date_key, product_use_date_value in user_attributes.products_use_date.items():
