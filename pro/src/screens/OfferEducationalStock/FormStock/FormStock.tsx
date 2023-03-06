@@ -16,10 +16,16 @@ import {
 
 export interface IFormStockProps {
   mode: Mode
+  disablePriceAndParticipantInputs: boolean
+  preventPriceIncrease: boolean
 }
 
-const FormStock = ({ mode }: IFormStockProps): JSX.Element => {
-  const { values, setFieldValue } =
+const FormStock = ({
+  mode,
+  disablePriceAndParticipantInputs,
+  preventPriceIncrease,
+}: IFormStockProps): JSX.Element => {
+  const { values, setFieldValue, initialValues } =
     useFormikContext<OfferEducationalStockFormValues>()
 
   return (
@@ -43,7 +49,7 @@ const FormStock = ({ mode }: IFormStockProps): JSX.Element => {
         smallLabel
       />
       <TextInput
-        disabled={mode === Mode.READ_ONLY}
+        disabled={disablePriceAndParticipantInputs}
         label={NUMBER_OF_PLACES_LABEL}
         name="numberOfPlaces"
         placeholder="Ex : 30"
@@ -51,12 +57,13 @@ const FormStock = ({ mode }: IFormStockProps): JSX.Element => {
         type="number"
       />
       <TextInput
-        disabled={mode === Mode.READ_ONLY}
+        disabled={disablePriceAndParticipantInputs}
         label={TOTAL_PRICE_LABEL}
         name="totalPrice"
         smallLabel
         step={0.01} // allow user to enter a price with cents
         type="number"
+        {...(preventPriceIncrease ? { max: initialValues.totalPrice } : {})}
         rightIcon={() => <EuroIcon />}
       />
       <DatePicker
