@@ -9,15 +9,17 @@
   margin-bottom: rem.torem(16px);
 
   &-label {
-    margin-bottom: rem.torem(forms.$label-space-before-input);
+    &-container {
+      margin-bottom: rem.torem(forms.$label-space-before-input);
+
+      &.label-hidden {
+        display: none;
+      }
+    }
     display: flex;
     justify-content: space-between;
     align-items: center;
     white-space: nowrap;
-
-    &.label-hidden {
-      display: none;
-    }
   }
 
   &-small-label &-label {
