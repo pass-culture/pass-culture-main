@@ -30,9 +30,8 @@ const useCollectiveOfferRoute = (
     const splitOfferId = offerIdFromParam?.split('T-')
 
     const isTemplate =
-      splitOfferId && splitOfferId.length === 1
-        ? pathname.includes('vitrine') // creation
-        : true // edition
+      (splitOfferId === undefined && pathname.includes('vitrine')) ||
+      Boolean(offerIdFromParam?.includes('T-'))
 
     setOfferId(
       splitOfferId && splitOfferId.length > 1
