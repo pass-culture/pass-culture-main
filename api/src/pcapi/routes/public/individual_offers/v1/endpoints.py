@@ -40,7 +40,9 @@ ASPECT_RATIO = image_conversion.ImageRatio.PORTRAIT
 
 
 @blueprint.v1_blueprint.route("/offerer_venues", methods=["GET"])
-@spectree_serialize(api=blueprint.v1_schema, tags=[OFFERER_VENUES_TAG])
+@spectree_serialize(
+    api=blueprint.v1_schema, tags=[OFFERER_VENUES_TAG], response_model=serialization.GetOffererVenuesResponse
+)
 @api_key_required
 def get_offerer_venues() -> serialization.GetOffererVenuesResponse:
     """
