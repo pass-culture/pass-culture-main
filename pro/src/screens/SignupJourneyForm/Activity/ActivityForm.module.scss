@@ -11,10 +11,8 @@
 }
 
 .first-row {
-  display: flex;
-  align-items: center;
   margin-top: calc(
-    #{forms.$label-space-before-input} + #{fonts.$caption-line-height} + #{forms.$input-border-width-focus}
+    #{forms.$label-space-before-input} + #{forms.$input-space-before-error} + #{fonts.$caption-line-height} + #{forms.$input-border-width-focus * 2}
   );
 }
 
