@@ -4,7 +4,10 @@ import { TargetCustomerTypeEnum } from './constants'
 
 export const validationSchema = yup.object().shape({
   venueType: yup.string().required('Veuillez sélectionner un type de lieu'),
-  socialUrls: yup.array().of(yup.string()).nullable(),
+  socialUrls: yup
+    .array()
+    .of(yup.string().url('Veuillez renseigner une URL valide'))
+    .nullable(),
   targetCustomer: yup
     .string()
     .oneOf(
