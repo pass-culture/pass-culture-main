@@ -6,12 +6,6 @@ import { api } from 'apiClient/api'
 import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
-import {
-  getValidationSchema,
-  buildInitialValues,
-  IStockEventFormValues,
-  STOCK_EVENT_FORM_DEFAULT_VALUES,
-} from 'components/StockEventForm'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
@@ -39,7 +33,13 @@ import { getSuccessMessage } from '../utils'
 import { logTo } from '../utils/logTo'
 
 import { upsertStocksEventAdapter } from './adapters'
-import { StockFormList } from './StockFormList'
+import {
+  getValidationSchema,
+  buildInitialValues,
+  IStockEventFormValues,
+  STOCK_EVENT_FORM_DEFAULT_VALUES,
+  StockFormList,
+} from './StockFormList'
 
 // remove price when removing WIP_ENABLE_MULTI_PRICE_STOCKS
 export const hasChangesOnStockWithBookings = (
