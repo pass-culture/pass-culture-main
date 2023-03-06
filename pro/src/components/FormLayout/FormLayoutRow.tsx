@@ -8,7 +8,7 @@ interface IFormLayoutRowProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
   inline?: boolean
-  lgSpaceAfter?: boolean
+  mdSpaceAfter?: boolean
   smSpaceAfter?: boolean
   sideComponent?: JSX.Element | null
 }
@@ -17,7 +17,7 @@ const Row = ({
   children,
   className,
   inline,
-  lgSpaceAfter,
+  mdSpaceAfter,
   smSpaceAfter,
   sideComponent,
 }: IFormLayoutRowProps): JSX.Element => {
@@ -25,7 +25,7 @@ const Row = ({
     <RowWithInfo
       className={className}
       inline={inline}
-      lgSpaceAfter={lgSpaceAfter}
+      mdSpaceAfter={mdSpaceAfter}
       smSpaceAfter={smSpaceAfter}
       sideComponent={sideComponent}
     >
@@ -35,7 +35,7 @@ const Row = ({
     <div
       className={cn(style['form-layout-row'], className, {
         [style['inline-group']]: inline,
-        [style['large-space-after']]: lgSpaceAfter,
+        [style['medium-space-after']]: mdSpaceAfter,
         [style['small-space-after']]: smSpaceAfter,
       })}
     >
