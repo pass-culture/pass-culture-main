@@ -28,7 +28,7 @@ import { computeInitialValues } from './form/computeInitialValues'
 import { INITIAL_QUANTITY_PER_PRICE_CATEGORY } from './form/constants'
 import { onSubmit } from './form/onSubmit'
 import { RecurrenceFormValues, RecurrenceType } from './form/types'
-import { validationSchema } from './form/validationSchema'
+import { getValidationSchema } from './form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
 
 interface Props {
@@ -51,7 +51,7 @@ export const RecurrenceForm = ({
   const formik = useFormik({
     initialValues: computeInitialValues(priceCategoryOptions),
     onSubmit: handleSubmit,
-    validationSchema,
+    validationSchema: getValidationSchema(priceCategoryOptions),
   })
   const { values } = formik
 
@@ -151,6 +151,7 @@ export const RecurrenceForm = ({
                         name={`quantityPerPriceCategories[${index}].quantity`}
                         type="number"
                         step="1"
+                        placeholder="Illimité"
                       />
 
                       <Select

@@ -25,6 +25,7 @@ const getRecurrenceDates = (values: RecurrenceFormValues): Date[] => {
       return [new Date(values.startingDate)]
 
     default:
+      /* istanbul ignore next: should be already validated by yup */
       throw new Error(`Unhandled recurrence type: ${values.recurrenceType}`)
   }
 }
@@ -38,7 +39,7 @@ const generateStocksForDates = (
     values.beginningTimes.flatMap(beginningTime =>
       values.quantityPerPriceCategories.flatMap(quantityPerPriceCategory => {
         /* istanbul ignore next: should be already validated by yup */
-        if (beginningTime === null || values.bookingLimitDateInterval === '') {
+        if (beginningTime === null) {
           throw new Error('Some values are empty')
         }
 
@@ -47,6 +48,10 @@ const generateStocksForDates = (
           beginningTime,
           departmentCode
         )
+        const bookingLimitDateInterval =
+          values.bookingLimitDateInterval === ''
+            ? 0
+            : values.bookingLimitDateInterval
 
         return {
           priceCategoryId: parseInt(quantityPerPriceCategory.priceCategory),
@@ -57,7 +62,7 @@ const generateStocksForDates = (
           beginningDatetime,
           bookingLimitDatetime: toISOStringWithoutMilliseconds(
             sub(new Date(beginningDatetime), {
-              days: values.bookingLimitDateInterval,
+              days: bookingLimitDateInterval,
             })
           ),
         }
