@@ -1,16 +1,17 @@
 /**
- * Create a table multi select selectedRowsIds controller button group
- * On .btn-group container, you must set attributes :
- * - [data-toggle="pc-batch-confirm-btn-group"]
- * - [data-toggle-id] with a unique identifier
- * - [data-pc-table-multi-select-id] with a valid pc table multi select identifier
+ * Add support for button group actions that use the table multi select selections.
  *
- * Within the .btn--group container, you can add as much button as necessary with attributes :
- * - [data-url] with a valid endpoint for the form submit
- * - [data-title] for setting the form title
- * - [data-batch-confirm-id] with a unique identifier
- * - [data-modal-button-text] with the button text
- * - [data-user-confirmation-modal] true to open a modal to add a comment or false to submit directly
+ * To work, each `.btn-group` must set the following attributes:
+ * - `[data-toggle="pc-batch-confirm-btn-group"]`: this value is fixed,
+ * - `[data-toggle-id]`: this value must be a unique identifier,
+ * - `[data-pc-table-multi-select-id]`: this value must be a valid pc table multi select identifier.
+ *
+ * Within the `.btn-group` container, you can add as many buttons as needed, and you must set some attributes too:
+ * - `[data-url]`: this value must be a valid endpoint for the form submit,
+ * - `[data-title]`: this value is used as a title by the modal opening form,
+ * - `[data-batch-confirm-id]`: this value must be a unique identifier,
+ * - `[data-modal-button-text]`: this value is used as the button text,
+ * - `[data-user-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly.
  *
  * @example
  * <div

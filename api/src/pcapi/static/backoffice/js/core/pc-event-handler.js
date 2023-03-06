@@ -1,32 +1,62 @@
+// The MIT License (MIT)
+//
+// Copyright (c) 2011-2023 The Bootstrap Authors
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//
+//
 /**
- * The MIT License (MIT)
-
- Copyright (c) 2011-2023 The Bootstrap Authors
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
  *
- * Inspired from Bootstrap (v5.3.0-alpha1): dom/event-handler.js
- * https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js
- * --------------------------------------------------------------------------
- * This singleton can be used to bind/unbind event in the style of jQuery.on/jQuery.off and allow manual trigger
+ * This singleton utility class can be used to bind/unbind event in the style of `jQuery.on`/`jQuery.off`.
+ *
+ * It is heavily inspired from Bootstrap (v5.3.0-alpha1): `dom/event-handler.js`
+ *
+ * Original source: https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js
+ *
+ * As the original source, this addon is licensed as MIT.
+ *
+ * The event will have:
+ * - `event.target`: the target DOM element.
+ * - `event.delegateTarget`: the parent DOM element that hold the bind.
+ *
+ * Each addon must have a `bindEvents` and `unbindEvent` method,
+ * and can have an `initialize` method which will be called on document load.
+ *
+ * @example
+ * // We must add DOM events using PcAddOn class.
+ * class PcLoggingOnImage extend PcAddOn {
+ *   bindEvents() {
+ *     // bind events
+ *     EventHandler.on(document.body, 'click', 'img', this.#onClick)
+ *   }
+ *
+ *   unbindEvents() {
+ *     // unbind events (revert)
+ *     EventHandler.off(document.body, 'click', 'img', this.#onClick)
+ *   }
+ *
+ *   #onClick() {
+ *     console.log('Image as been clicked!')
+ *   }
+ * }
+ *
+ *
  */
 class PcEventHandler {
+
   static #isInternalConstructing = false
   static NAMESPACE_REGEX = /[^.]*(?=\..*)\.|.*/
   static STRIP_NAME_REGEX = /\..*/
@@ -93,12 +123,13 @@ class PcEventHandler {
   }
 
   /**
+   * @private
    * Create EventHandler singleton
    * @returns {PcEventHandler}
    * @example
    * const EventHandler = PcEventHandler.create()
    */
-  static create() {
+  static _create() {
     PcEventHandler.#isInternalConstructing = true
     const instance = new PcEventHandler()
     PcEventHandler.#isInternalConstructing = false
@@ -369,4 +400,4 @@ class PcEventHandler {
   }
 }
 
-const EventHandler = PcEventHandler.create()
+const EventHandler = PcEventHandler._create()
