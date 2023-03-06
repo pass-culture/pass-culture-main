@@ -178,7 +178,7 @@ class BoostStocksTest:
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
 
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{DATE_AFTER_30_DAYS_STR}?page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.SAME_FILM_TWICE_JSON_DATA,
         )
         requests_mock.get(
