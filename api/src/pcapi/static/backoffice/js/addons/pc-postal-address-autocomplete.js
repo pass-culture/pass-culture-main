@@ -1,26 +1,32 @@
 /**
- * Render a postal address autocomplete that fills value in hidden inputs
+ * Renders a postal address autocomplete that fills values in hidden inputs.
  *
- * There is no HTML markup example as it use a wtforms fields: postal_address_autocomplete.html
+ * It can be used when declaring form fields in the backend using `fields.PcPostalAddressAutocomplete`.
+ *
+ * > There is no HTML markup example as it uses a wtforms fields: `postal_address_autocomplete.html`
  *
  * @example
- * postalAddressAutocomplete = fields.PcPostalAddressAutocomplete(
+ * // We declare a field mapping to tell what field the autocomplete must set.
+ * // None of them are mandatory, however, you must choose one so your autocomplete can submit something to the backend.
+ *
+ * postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
  *   "Adresse",
- *   address="address", // address field name within your form to be autocompleted
- *   city="city", // city field name within your form to be autocompleted
- *   postalCode="postalCode", // postalCode field name within your form to be autocompleted
- *   latitude="latitude", // latitude field name within your form to be autocompleted
- *   longitude="longitude", // longitude field name within your form to be autocompleted
- *   required=True, // if True, we will add required attribute to autocomplete input (default: false)
- *   hasReset=True, // if True, it will add a reset to initial values button (default: false)
+ *   address="address", // the name of your address field within your form, for its autocomplete to work
+ *   city="city", // the name of your city field within your form, for its autocomplete to work
+ *   postalCode="postalCode", // the name of your postalCode field within your form, for its autocomplete to work
+ *   latitude="latitude", // the name of your latitude field within your form, for its autocomplete to work
+ *   longitude="longitude", // the name of your longitude field within your form, for its autocomplete to work
+ *   required=True, // if True, it will add the required attribute to autocomplete the input (default: false)
+ *   hasReset=True, // if True, it will add a reset-to-initial-values button (default: false)
  *   hasManualEditing=True, // if True, it will propose manual edition (default: false)
- *   limit=10, // limit of autocompletes choices (default: 10)
+ *   limit=10, // limit of autocomplete choices (default: 10)
  * )
- * address = fields.PCOptHiddenField("address") // if set, it will be set on selection
- * city = fields.PCOptHiddenField("Ville") // if set, it will be set on selection
- * postalCode = fields.PCOptPostalCodeHiddenField("Code postal") // if set, it will be set on selection
- * latitude = fields.PCOptHiddenField("Latitude") // if set, it will be set on selection
- * longitude = fields.PCOptHiddenField("Longitude") // if set, it will be set on selection
+ * // Below are the hidden fields, you can decide to add form validators to them.
+ * address = fields.PCOptHiddenField("address") // if selected in the autocomplete, it will be filled in the form
+ * city = fields.PCOptHiddenField("Ville") // if selected in the autocomplete, it will be filled in the form
+ * postalCode = fields.PCOptPostalCodeHiddenField("Code postal") // if selected in the autocomplete, it will be filled in the form
+ * latitude = fields.PCOptHiddenField("Latitude") // if selected in the autocomplete, it will be filled in the form
+ * longitude = fields.PCOptHiddenField("Longitude") // if selected in the autocomplete, it will be filled in the form
  *
  */
 class PcPostalAddressAutocomplete extends PcAddOn {
@@ -386,7 +392,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     // this timeout is useful to skip blur when clicking a valid choice
     setTimeout(() => {
       const $dropdown = this.#getDropdown(event.target)
-      if($dropdown.classList.contains('show')) {
+      if ($dropdown.classList.contains('show')) {
         this.#getDropdown(event.target).classList.remove('show')
         this.#resetForm(event.target)
       }

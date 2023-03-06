@@ -1,7 +1,14 @@
 /**
- * Add select all rows features to a table
+ * Adds select all rows features to a table.
+ *
+ * When rows selection change, it emit a `CustomEvent` named `pcTableMultiSelect:change` with:
+ *
+ * - `detail.tableMultiSelectId`: the unique identifier of the table multi select,
+ * - `detail.rowsIds`: the list of table entities identifier,
+ * - `detail.selectedRowsIds`: the list of selected identifier.
  *
  * @example
+ * // create a new table multi select using HTML markup
  * <table data-table-multi-select-id="my-unique-id">
  *   <tr>
  *     <th><input type="checkbox" name="pc-table-multi-select-check-all"></th>
@@ -14,6 +21,22 @@
  *     <td>Example 2</td>
  *   </tr>
  * </table>
+ *
+ * @example
+ * // Example of addon which listen for selection change of any pc table multi select
+ * class PcExample extends PcAddOn {
+ *   bindEvents() {
+ *     addEventListener('pcTableMultiSelect:change', this.#onUpdate)
+ *   }
+ *
+ *   unbindEvents() {
+ *     removeEventListener('pcTableMultiSelect:change', this.#onUpdate)
+ *   }
+ *
+ *   #onUpdate(event) {
+ *     console.log(event.detail)
+ *   }
+ * }
  */
 class PcTableMultiSelect extends PcAddOn {
 
