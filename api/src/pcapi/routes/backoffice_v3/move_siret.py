@@ -12,11 +12,11 @@ from . import utils
 from .forms import pro_support as pro_support_forms
 
 
-pro_support_blueprint = utils.child_backoffice_blueprint(
-    "pro_support",
+move_siret_blueprint = utils.child_backoffice_blueprint(
+    "move_siret",
     __name__,
-    url_prefix="/pro/support",
-    permission=perm_models.Permissions.ADVANCED_PRO_SUPPORT,
+    url_prefix="/pro/support/move_siret",
+    permission=perm_models.Permissions.MOVE_SIRET,
 )
 
 
@@ -75,13 +75,13 @@ def _render_confirmation_page(
     )
 
 
-@pro_support_blueprint.route("/move_siret", methods=["GET"])
+@move_siret_blueprint.route("", methods=["GET"])
 def move_siret() -> utils.BackofficeResponse:
     form = pro_support_forms.MoveSiretForm()
     return _render_form_page(form)
 
 
-@pro_support_blueprint.route("/move_siret", methods=["POST"])
+@move_siret_blueprint.route("", methods=["POST"])
 def post_move_siret() -> utils.BackofficeResponse:
     form, source_venue, target_venue = _validate_move_siret_form()
     if not source_venue or not target_venue:
@@ -101,7 +101,7 @@ def post_move_siret() -> utils.BackofficeResponse:
     return _render_confirmation_page(form, source_venue, target_venue)
 
 
-@pro_support_blueprint.route("/move_siret/apply", methods=["POST"])
+@move_siret_blueprint.route("/apply", methods=["POST"])
 def apply_move_siret() -> utils.BackofficeResponse:
     form, source_venue, target_venue = _validate_move_siret_form()
     if not source_venue or not target_venue:

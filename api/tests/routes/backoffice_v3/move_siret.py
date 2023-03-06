@@ -21,29 +21,29 @@ pytestmark = [
 
 
 class MoveSiretUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-    endpoint = "backoffice_v3_web.pro_support.move_siret"
-    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    endpoint = "backoffice_v3_web.move_siret.move_siret"
+    needed_permission = perm_models.Permissions.MOVE_SIRET
 
 
 class PostMoveSiretUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    endpoint = "backoffice_v3_web.pro_support.post_move_siret"
-    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    endpoint = "backoffice_v3_web.move_siret.post_move_siret"
+    needed_permission = perm_models.Permissions.MOVE_SIRET
 
 
 class ApplyMoveSiretUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    endpoint = "backoffice_v3_web.pro_support.apply_move_siret"
-    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    endpoint = "backoffice_v3_web.move_siret.apply_move_siret"
+    needed_permission = perm_models.Permissions.MOVE_SIRET
 
 
 class MoveSiretTest:
     def _post_request(self, authenticated_client, form: dict, apply: bool):
-        form_response = authenticated_client.get(url_for("backoffice_v3_web.pro_support.move_siret"))
+        form_response = authenticated_client.get(url_for("backoffice_v3_web.move_siret.move_siret"))
         assert form_response.status_code == 200
 
         if apply:
-            endpoint = "backoffice_v3_web.pro_support.apply_move_siret"
+            endpoint = "backoffice_v3_web.move_siret.apply_move_siret"
         else:
-            endpoint = "backoffice_v3_web.pro_support.post_move_siret"
+            endpoint = "backoffice_v3_web.move_siret.post_move_siret"
 
         form["csrf_token"] = g.get("csrf_token", "")
         return authenticated_client.post(url_for(endpoint), form=form)
