@@ -5,6 +5,7 @@ import enum
 import logging
 import typing
 
+from dateutil import relativedelta
 import pydantic
 from pydantic.utils import GetterDict
 import typing_extensions
@@ -319,13 +320,16 @@ else:
         pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
 
+next_month = datetime.datetime.utcnow().replace(hour=12, minute=0, second=0) + relativedelta.relativedelta(months=1)
+paris_tz_next_month = date_utils.utc_datetime_to_department_timezone(next_month, "75")
+
 BEGINNING_DATETIME_FIELD = pydantic.Field(
     description="Timezone aware datetime of the event.",
-    example="2023-01-02T00:00:00+01:00",
+    example=paris_tz_next_month.isoformat(timespec="seconds"),
 )
 BOOKING_LIMIT_DATETIME_FIELD = pydantic.Field(
     description="Timezone aware datetime after which the offer can no longer be booked.",
-    example="2023-01-01T00:00:00+01:00",
+    example=paris_tz_next_month.isoformat(timespec="seconds"),
 )
 PRICE_FIELD = pydantic.Field(description="Offer price in euro cents.", example=1000)
 QUANTITY_FIELD = pydantic.Field(
