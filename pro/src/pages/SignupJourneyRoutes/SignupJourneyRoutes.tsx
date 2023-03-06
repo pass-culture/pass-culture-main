@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router-dom-v5-compat'
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
 import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
 import { Activity } from 'screens/SignupJourneyForm/Activity'
+import { OffererAuthentication } from 'screens/SignupJourneyForm/Authentication'
 import { Offerer } from 'screens/SignupJourneyForm/Offerer'
 
 const SignupJourneyRoutes = () => {
@@ -14,7 +15,7 @@ const SignupJourneyRoutes = () => {
           <Route path={'/structure'} element={<Offerer />} />
           <Route
             path={'/authentification'}
-            element={<div>Authentification</div>}
+            element={<OffererAuthentication />}
           />
           <Route path={'/activite'} element={<Activity />} />
           <Route path={'/validation'} element={<div>Validation</div>} />
