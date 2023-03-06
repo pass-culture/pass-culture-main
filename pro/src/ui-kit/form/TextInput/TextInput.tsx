@@ -29,6 +29,7 @@ export interface ITextInputProps
   hasDecimal?: boolean
   refForInput?: ForwardedRef<HTMLInputElement>
   hideHiddenFooter?: boolean
+  description?: string
 }
 
 const TextInput = ({
@@ -54,6 +55,7 @@ const TextInput = ({
   hasDecimal = true,
   inline = false,
   hideHiddenFooter = false,
+  description,
   ...props
 }: ITextInputProps): JSX.Element => {
   const [field, meta] = useField({
@@ -82,6 +84,7 @@ const TextInput = ({
       smallLabel={smallLabel}
       inline={inline}
       hideFooter={hideFooter || (hideHiddenFooter && !showError)}
+      description={description}
     >
       {readOnly ? (
         <span
