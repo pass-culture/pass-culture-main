@@ -2,8 +2,8 @@ import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
 import {
   IStockEventFormValues,
   STOCK_EVENT_FORM_DEFAULT_VALUES,
-} from 'components/StockEventForm'
-import { stockEventFactory } from 'components/StockEventForm/stockEventFactory'
+} from 'screens/OfferIndividual/StocksEventEdition/StockFormList'
+import { stockEventFactory } from 'screens/OfferIndividual/StocksEventEdition/StockFormList/stockEventFactory'
 
 import { serializeStockEventList } from '../serializers'
 

@@ -274,6 +274,26 @@ describe('screens:StocksEventEdition', () => {
     ])
   })
 
+  it('render stock event row', async () => {
+    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+
+    renderStockEventScreen()
+
+    expect(await screen.findByLabelText('Date')).toBeInTheDocument()
+    expect(screen.getByLabelText('Horaire')).toBeInTheDocument()
+    expect(screen.getByLabelText('Tarif')).toBeInTheDocument()
+    expect(
+      screen.getByLabelText('Date limite de réservation')
+    ).toBeInTheDocument()
+    expect(screen.getByLabelText('Quantité restante')).toBeInTheDocument()
+
+    expect(screen.getByText('Réservations')).toBeInTheDocument()
+
+    expect(
+      screen.getByTestId('stock-form-actions-button-open')
+    ).toBeInTheDocument()
+  })
+
   it('should allow user to delete a stock', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
     apiOffer.stocks = [
