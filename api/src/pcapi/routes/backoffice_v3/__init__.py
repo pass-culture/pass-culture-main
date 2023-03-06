@@ -13,11 +13,12 @@ def install_routes(app: Flask) -> None:
     from . import home
     from . import i18n
     from . import individual_bookings
+    from . import move_siret
     from . import offerers
     from . import offers
     from . import pro
-    from . import pro_support
     from . import pro_users
+    from . import providers
     from . import users
     from . import venues
 

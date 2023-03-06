@@ -29,7 +29,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_OFFERS,
     ],
     "support-PRO-N2": [
-        perm_models.Permissions.ADVANCED_PRO_SUPPORT,
+        perm_models.Permissions.MOVE_SIRET,
+        perm_models.Permissions.MANAGE_PROVIDERS,
     ],
     "fraude-conformite": [
         perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT,
