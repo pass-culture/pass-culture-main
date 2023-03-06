@@ -21,6 +21,7 @@ interface IFieldLayoutProps {
   inline?: boolean
   classNameLabel?: string
   classNameFooter?: string
+  description?: string
 }
 /* istanbul ignore next: DEBT, TO FIX */
 const FieldLayout = ({
@@ -39,6 +40,7 @@ const FieldLayout = ({
   inline = false,
   classNameLabel,
   classNameFooter,
+  description,
 }: IFieldLayoutProps): JSX.Element => {
   const hasError = showError && !!error
   const hasCounter = count !== undefined && maxLength !== undefined
@@ -51,18 +53,24 @@ const FieldLayout = ({
       })}
       data-testid={`wrapper-${name}`}
     >
-      <label
-        className={cn(styles['field-layout-label'], classNameLabel, {
+      <div
+        className={cn(styles['field-layout-label-container'], {
           [styles['label-hidden']]: isLabelHidden,
+          classNameLabel,
         })}
-        htmlFor={name}
       >
-        {label}
-        {isOptional && (
-          <span className={styles['field-layout-optional']}>Optionnel</span>
+        <label className={cn(styles['field-layout-label'])} htmlFor={name}>
+          {label}
+          {isOptional && (
+            <span className={styles['field-layout-optional']}>Optionnel</span>
+          )}
+        </label>
+        {description && (
+          <span className={styles['field-layout-input-description']}>
+            {description}
+          </span>
         )}
-      </label>
-
+      </div>
       <div className={styles['field-layout-content']}>
         <div>{children}</div>
 
