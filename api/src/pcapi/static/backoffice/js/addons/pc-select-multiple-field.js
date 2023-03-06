@@ -1,17 +1,20 @@
 /**
- * Configure TomSelect on a select multiple
- * There is two type of tom select:
- * 1. select multiple field
- * 2. select multiple field with xhr autocomplete
+ * Configure TomSelect on a `<select multiple />`.
  *
- * @example select multiple field
+ * In the front-end business, we note two types of tom select instances:
+ * 1. select multiple field.
+ * 2. select multiple field with xhr autocomplete.
+ *
+ * @example
+ * // select multiple field
  * <select multiple class="pc-select-multiple-field">
  *   <option value="1">item #1</option>
  *   <option value="2">item #2</option>
  * </select>
  *
- * @example select multiple field with xhr autocomplete
- * @description in this example, our backend automatically set data attributes, this permit the initial render with initialValues
+ * @example
+ * // select multiple field with xhr autocomplete.
+ * // In this example, our backend automatically sets data attributes, this allows the initial render to have the initialValues
  * <select
  *   multiple
  *   class="pc-select-multiple-field pc-select-multiple-autocomplete-field"

@@ -1,6 +1,8 @@
 /**
- * Addon for checking validity client side of forms prior submit
- * It works with all <form />
+ * This edits the  default `submit` event on forms.
+ * It internally runs `form.checkValidity()` first and aborts in case of invalid form.
+ *
+ * > There is no markup necessary as this selects all `<form />`
  */
 class PcFormsCheckValidity extends PcAddOn {
   static FORM_SELECTOR = 'form'

@@ -1,5 +1,5 @@
 /**
- * Addon to add filters toggling using a button and make it's settings persistent
+ * Addon to add filters toggling using a button and make their state persistent.
  *
  * @example
  * <div class="table-example" data-toggle="filters" data-toggle-id="something-unique">

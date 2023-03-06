@@ -1,8 +1,7 @@
 /**
- * Add on that remove the submit on enter for line break on enter
- * Also support line break button
+ * This class tricks the default event of a `<textarea />` by submitting the form on <kbd>ENTER</kbd>,
+ * and goes to the next line on <kbd>CTRL</kbd>+<kbd>ENTER</kbd> or <kbd>SHIFT</kbd>+<kbd>ENTER</kbd>.
  * @example
- * // disable submit on enter for line break on enter
  * <textarea class="pc-override-custom-textarea-enter"></textarea>
  */
 class PcOverrideCustomTextareaEnter extends PcAddOn {

@@ -1,7 +1,7 @@
 /**
- * Addon for bootstrap 5 tooltips
- * It works using bootstrap 5 html markup
- * Documentation: https://getbootstrap.com/docs/5.0/components/tooltips/#examples
+ * This adds PcAddOn support for bootstrap 5 tooltips.
+ * It works using bootstrap 5 html markup.
+ * Read documentation: https://getbootstrap.com/docs/5.0/components/tooltips/#examples
  */
 class BsTooltips extends PcAddOn {
   static TOOLTIP_SELECTORS = '[data-bs-toggle="tooltip"]'

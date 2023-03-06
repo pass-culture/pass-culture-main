@@ -1,0 +1,11 @@
+toc:
+  - PcBackofficeApp
+  - name: "Core features"
+    description: Those are the core features
+  - PcUtils
+  - KeyboardKeyCode
+  - NonConstructableUtils
+  - PcEventHandler
+  - PcAddOn
+  - name: "Add Ons features"
+    description: Below addons are created using PcAddOn class.
