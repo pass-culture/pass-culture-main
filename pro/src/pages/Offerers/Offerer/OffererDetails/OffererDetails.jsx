@@ -2,9 +2,11 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import GoBackLink from 'components/GoBackLink'
 import PageTitle from 'components/PageTitle/PageTitle'
+import { ReactComponent as CircleArrowIcon } from 'icons/ico-circle-arrow-left.svg'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Titles from 'ui-kit/Titles/Titles'
 
@@ -67,11 +69,14 @@ const OffererDetails = () => {
 
   return offerer ? (
     <div className="offerer-page">
-      <GoBackLink
-        to={`/accueil?structure=${offerer.id}`}
-        title="Accueil"
+      <ButtonLink
+        link={{ to: `/accueil?structure=${offerer.id}`, isExternal: false }}
+        variant={ButtonVariant.QUATERNARY}
+        Icon={CircleArrowIcon}
         className="offerer-page-go-back-link"
-      />
+      >
+        Accueil
+      </ButtonLink>
       <PageTitle title="Détails de votre structure" />
       <Titles subtitle={offerer.name} title="Structure" />
       <p className="op-teaser">
