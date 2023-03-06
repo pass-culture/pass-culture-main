@@ -73,6 +73,7 @@ BEGIN;
   ALTER TABLE booking ADD CONSTRAINT booking_token_key UNIQUE (token);
   ALTER TABLE booking ENABLE TRIGGER stock_update_cancellation_date;
 COMMIT;
+
 -- Set fake IBAN and BIC in `bank_information` and `payment` table.
 UPDATE bank_information SET iban = pg_temp.fake_iban_from_id(id) WHERE iban is not null;
 UPDATE bank_information SET bic = pg_temp.fake_bic_from_id(id) WHERE bic is not null;
@@ -80,6 +81,8 @@ UPDATE payment
 SET iban = pg_temp.fake_iban_from_id(id), bic = pg_temp.fake_bic_from_id(id)
 WHERE payment.iban IS NOT NULL
 ;
+
+UPDATE invoice SET token = 'anonymized-' || id::text;
 
 UPDATE activation_code SET code = 'FAKE-' || id::text ;
 
