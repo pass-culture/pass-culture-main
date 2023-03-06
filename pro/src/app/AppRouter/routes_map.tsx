@@ -43,7 +43,6 @@ import CollectiveOfferSelectionDuplication from 'screens/CollectiveOfferSelectio
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 export interface ILayoutConfig {
-  backTo?: { path: string; label: string } | null
   pageName?: string
   fullscreen?: boolean
 }
