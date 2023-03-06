@@ -317,7 +317,7 @@ class CDSStocksTest:
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def should_fill_offer_and_product_and_stock_informations_for_each_movie(
-        self, mock_get_venue_movies, mock_get_shows, mock_get_internet_sale_gauge
+        self, mock_get_venue_movies, mock_get_shows, mock_get_internet_sale_gauge, requests_mock
     ):
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
@@ -333,7 +333,7 @@ class CDSStocksTest:
                 duration=120,
                 description="Ca tourne mal",
                 visa="123456",
-                posterpath="fakeUrl/coupez.png",
+                posterpath="http://fakeUrl/coupez.png",
             ),
             Movie(
                 id="51",
@@ -341,10 +341,14 @@ class CDSStocksTest:
                 duration=150,
                 description="Film sur les avions",
                 visa="333333",
-                posterpath="fakeUrl/topgun.png",
+                posterpath="http://fakeUrl/topgun.png",
             ),
         ]
         mock_get_venue_movies.return_value = mocked_movies
+
+        requests_mock.get("http://fakeUrl/coupez.png", content=bytes())
+        requests_mock.get("http://fakeUrl/topgun.png", content=bytes())
+
         mocked_shows = [
             {
                 "show_information": ShowCDS(
@@ -431,6 +435,9 @@ class CDSStocksTest:
         assert created_stocks[1].offer == created_offers[1]
         assert created_stocks[1].bookingLimitDatetime == datetime(2022, 7, 1, 10)
         assert created_stocks[1].beginningDatetime == datetime(2022, 7, 1, 10)
+
+        assert cds_stocks.erroredObjects == 0
+        assert cds_stocks.erroredThumbs == 0
 
     @patch(
         "pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_internet_sale_gauge",
@@ -528,6 +535,9 @@ class CDSStocksTest:
             == f"http://localhost/storage/thumbs/products/{humanize(created_products[1].id)}"
         )
         assert created_products[1].thumbCount == 1
+
+        assert cds_stocks.erroredObjects == 0
+        assert cds_stocks.erroredThumbs == 0
 
     @patch(
         "pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_internet_sale_gauge",

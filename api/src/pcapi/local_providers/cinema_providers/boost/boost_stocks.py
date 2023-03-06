@@ -9,6 +9,7 @@ from pcapi.core.external_bookings.boost.client import get_pcu_pricing_if_exists
 from pcapi.core.external_bookings.models import Movie
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
@@ -80,6 +81,10 @@ class BoostStocks(LocalProvider):
         product.subcategoryId = subcategories.SEANCE_CINE.id
 
         self.update_from_movie_information(product, self.showtime_details.film.to_generic_movie())
+
+        is_new_product_to_insert = product.id is None
+        if is_new_product_to_insert:
+            product.id = offers_repository.get_next_product_id_from_database()
 
         self.last_product = product
 
